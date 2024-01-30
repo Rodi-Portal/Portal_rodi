@@ -1,0 +1,299 @@
+*{
+	font-family: 'Roboto', sans-serif !important;
+}
+
+body{
+	background-color: #9ba0a8 !important ;
+	/*background-image: url("../img/bg.jpg");
+	background-repeat: no-repeat;
+	height: 100vh;
+  	background-position: center;
+  	background-size: cover;
+  	position: relative;*/
+}
+
+/********************************************************************* Alertas de Mensaje *********************************************************************/
+
+.mensaje{
+	width: 60%;
+	margin: 0px auto 0px auto !important;
+	text-align: center;
+}
+
+	#incompleto{
+		
+	}
+
+/********************************************************************* Login Form *********************************************************************/
+
+
+.flex-container{
+	display: flex;
+	padding-top: 10%;
+	/*height: 500px;*/
+	justify-content: center;
+	align-items: center;
+
+}
+
+	.flex-item{
+		width: 25%;
+		height: 80%;
+		padding: 15px 20px 10px 20px;
+		/*margin: -10% auto 0 auto;*/
+		position: relative;
+		-webkit-box-shadow: 2px 2px 2px #ccc;
+	    -moz-box-shadow: 2px 2px 2px #ccc;
+		border-radius: 10px;
+		border: 1px solid #ccc;
+		background: white;
+		top: 40%;
+		text-align: center;
+	}
+
+		.logo{
+			display: block;
+			margin: 5% 3% 8% 3%;
+		}
+
+			.logo img{
+				width: 100%;
+			}
+
+		form{
+			top: 10%;
+		}
+
+			input{
+		        border-radius: 0.80rem !important;
+			}
+
+			.submit{
+				margin-top: 5% !important;
+				margin-bottom: 5% !important;
+				width: 90% !important;
+				border-radius: 0.80rem !important;
+			}
+
+			a{
+				text-align: right;
+				color: #0066ff;
+				text-decoration: none !important;
+			}
+
+				a:hover{	
+					text-decoration: none !important;
+				}
+
+			::placeholder{
+				color: gray !important;
+				opacity: 0.7 !important;
+			}
+
+
+/********************************************************  Media Queries *********************************************************/
+
+
+/* Large desktop 
+@media (min-width: 1200px) { ... }*/
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen and (min-width : 980px) and (max-width : 1024px) {
+	
+	.flex-container{
+		padding-top: 10%;
+		/*height: 500px;*/
+
+	}
+
+	.flex-item{
+		width: 40%;
+		height: 80%;
+		top: 50%;
+	}
+
+		.logo{
+			margin: 5% 3% 8% 3%;
+		}
+
+			.logo img{
+				width: 80%;
+			}
+
+		form{
+			top: 10%;
+		}
+
+			input{
+		        border-radius: 0.70rem !important;
+			}
+
+			.submit{
+				width: 90% !important;
+			}
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) { 
+	.flex-container{
+		padding-top: 10%;
+		/*height: 500px;*/
+
+	}
+
+	.flex-item{
+		width: 40%;
+		height: 80%;
+		top: 50%;
+	}
+
+		.logo{
+			margin: 5% 3% 8% 3%;
+		}
+
+			.logo img{
+				width: 100%;
+			}
+
+		form{
+			top: 10%;
+		}
+
+			input{
+		        border-radius: 0.70rem !important;
+			}
+
+			.submit{
+				width: 90% !important;
+			}
+
+
+}
+
+@media (min-width: 668px) and (max-width: 767px) {
+	.flex-container{
+		padding-top: 10%;
+		/*height: 500px;*/
+
+	}
+
+	.flex-item{
+		width: 40%;
+		height: 80%;
+		top: 50%;
+	}
+
+		.logo{
+			margin: 5% 3% 8% 3%;
+		}
+
+			.logo img{
+				width: 100%;
+			}
+
+		form{
+			top: 10%;
+		}
+
+			input{
+		        border-radius: 0.70rem !important;
+			}
+
+			.submit{
+				width: 90% !important;
+			}
+
+
+}
+
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (min-width : 320px) and (max-width : 480px){
+	.flex-container{
+		padding-top: 10%;
+		/*height: 500px;*/
+
+	}
+
+	.flex-item{
+		width: 70%;
+		height: 80%;
+		top: 50%;
+	}
+
+		.logo{
+			margin: 5% 3% 8% 3%;
+		}
+
+			.logo img{
+				width: 100%;
+			}
+
+		form{
+			top: 10%;
+		}
+
+			input{
+		        border-radius: 0.70rem !important;
+			}
+
+			.submit{
+				width: 90% !important;
+			}
+
+}
+
+@media only screen and (min-width : 1px) and (max-width : 319px){
+	.flex-container{
+		padding-top: 10%;
+		/*height: 500px;*/
+
+	}
+
+	.flex-item{
+		width: 70%;
+		height: 80%;
+		top: 50%;
+	}
+
+		.logo{
+			margin: 5% 3% 8% 3%;
+		}
+
+			.logo img{
+				width: 100%;
+			}
+
+		form{
+			top: 10%;
+		}
+
+			input{
+		        border-radius: 0.70rem !important;
+			}
+
+			.submit{
+				width: 90% !important;
+			}
+
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen and (min-width : 321px) { }
+
+/* Smartphones (portrait) ----------- */
+@media only screen and (max-width : 320px) { }
+
+
+
+
+/* Desktops and laptops ----------- */
+@media only screen and (min-width : 1224px) { }
+
+/* Large screens ----------- */
+@media only screen and (min-width : 1824px) { }
+
+/* iPhone 4 and high pixel ratio devices ----------- */
+@media
+only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) { }
