@@ -1,7 +1,7 @@
 ---
 deployment:
       tasks:
-        - export DEPLOYPATH=/home/rodicomm/rodicontrol.rodi.com.mx/
+        - export DEPLOYPATH=/home/rodicomm/public_html/panel.rodi.com.mx/
         - /bin/cp -R application $DEPLOYPATH
         - /bin/cp -R css $DEPLOYPATH
         - /bin/cp -R img $DEPLOYPATH
