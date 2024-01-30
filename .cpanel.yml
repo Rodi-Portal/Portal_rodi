@@ -1,0 +1,15 @@
+---
+deployment:
+      tasks:
+        - export DEPLOYPATH=/home/rodicomm/rodicontrol.rodi.com.mx/
+        - /bin/cp -R application $DEPLOYPATH
+        - /bin/cp -R css $DEPLOYPATH
+        - /bin/cp -R img $DEPLOYPATH
+        - /bin/cp -R js $DEPLOYPATH
+        - /bin/cp -R privacy_notice $DEPLOYPATH
+        - /bin/cp -R scss $DEPLOYPATH
+        - /bin/cp -R system $DEPLOYPATH
+        - /bin/cp -R vendor $DEPLOYPATH
+        - /bin/cp .htaccess $DEPLOYPATH
+        - /bin/cp index.php $DEPLOYPATH
+        
