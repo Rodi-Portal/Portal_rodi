@@ -138,17 +138,29 @@ abstract class CI_Session_driver implements SessionHandlerInterface {
 	 * @return	bool
 	 */
 	protected function _cookie_destroy()
-	{
-		return setcookie(
-			$this->_config['cookie_name'],
-			NULL,
-			1,
-			$this->_config['cookie_path'],
-			$this->_config['cookie_domain'],
-			$this->_config['cookie_secure'],
-			TRUE
-		);
-	}
+{
+    // Establece el valor de la cookie como una cadena vacía
+    $value = '';
+
+    $success = setcookie(
+        $this->_config['cookie_name'],
+        $value,
+        1,
+        $this->_config['cookie_path'],
+        $this->_config['cookie_domain'],
+        $this->_config['cookie_secure'],
+        TRUE
+    );
+
+    // Verifica si la operación fue exitosa
+    if ($success) {
+        return true;
+    } else {
+        // Maneja el caso en que la operación falla
+        // Puedes agregar un registro de error o tomar medidas adicionales si es necesario
+        return false;
+    }
+}
 
 	// ------------------------------------------------------------------------
 
