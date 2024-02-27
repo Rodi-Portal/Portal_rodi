@@ -19,6 +19,25 @@ class Usuario_model extends CI_Model{
         $resultado = $consulta->row();
         return $resultado;
 	}
+
+    //Probando   el modelo para   el usuario_portal 
+    function existeUsuarioPortal($correo, $pass){
+    	$this->db
+    	->select('u.id, d.correo, d.nombre, d.paterno,  u.id_rol, rol.nombre as rol, u.logueado as loginBD, p.nombre')
+    	->from('usuario_portal as u')
+    	->join('rol', 'rol.id = u.id_rol')
+        ->join('portal as p', 'p.id = u.id_portal')
+        ->join('datos_generales as d', 'd.id = u.id_datos_generales')
+    	->where('d.correo', $correo)
+    	->where('d.clave', $pass)
+        //->where('u.id_rol !=', 3)
+    	->where('u.status', 1)
+    	->where('u.eliminado', 0);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
+	}
    
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     function existeUsuarioCliente($correo, $pass){

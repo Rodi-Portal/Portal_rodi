@@ -10,13 +10,13 @@ class Dashboard extends CI_Controller{
 	public function index(){
 		if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1){
 			$data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
-			//
+			
 			$data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 			foreach($data['submodulos'] as $row) {
 				$items[] = $row->id_submodulo;
 			}
 			$data['submenus'] = $items;
-			//
+			
 			$config = $this->funciones_model->getConfiguraciones();
 			$data['version'] = $config->version_sistema;
 
@@ -34,7 +34,7 @@ class Dashboard extends CI_Controller{
 				$data['titulo_dato4'] = 'Total de Exámenes Médicos Finalizados';
 				$data['dato4'] = $medicoFinalizados->total;
 				
-			}/*
+			} /*
 			if($this->session->userdata('idrol') == 2){
 				$num = $this->estadistica_model->countCandidatosAnalista($this->session->userdata('id'));
 				$data['dato_totalcandidatos'] = $num->total;
@@ -46,7 +46,7 @@ class Dashboard extends CI_Controller{
 				$data['texto_3'] = "Candidatos sin envío de documentos";
 			}*/
 
-			$notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
+			/*$notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
 			if(!empty($notificaciones)){
 				$contador = 0;
 				foreach($notificaciones as $row){
@@ -55,7 +55,7 @@ class Dashboard extends CI_Controller{
 					}
 				}
 				$data['contadorNotificaciones'] = $contador;
-			}
+			}*/
 
 			//Modals
 			$modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);

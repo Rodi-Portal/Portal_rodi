@@ -41,7 +41,7 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">WELCOME!</h1>
                   </div>
-                  <form class="user" action="<?php echo base_url('Login/veryfing_account'); ?>" method="POST">
+                  <form class="user" action="<?php echo base_url('Login/verifying_account'); ?>" method="POST">
                     <div class="form-group">
                       <input type="email" class="form-control form-control-user" id="correo" name="correo" aria-describedby="emailHelp" placeholder="Email">
                     </div>
