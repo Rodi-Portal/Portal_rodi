@@ -23,9 +23,9 @@ class Usuario_model extends CI_Model{
     //Probando   el modelo para   el usuario_portal 
     function existeUsuarioPortal($correo, $pass){
     	$this->db
-    	->select('u.id, d.correo, d.nombre, d.paterno,  u.id_rol, rol.nombre as rol, u.logueado as loginBD, p.nombre')
-    	->from('usuario_portal as u')
-    	->join('rol', 'rol.id = u.id_rol')
+    	->select('u.id, d.correo, d.nombre, d.paterno,  u.id_rol, r.nombre as rol, u.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
+    	->from('usuarios_portal as u')
+    	->join('rol as r', 'r.id = u.id_rol')
         ->join('portal as p', 'p.id = u.id_portal')
         ->join('datos_generales as d', 'd.id = u.id_datos_generales')
     	->where('d.correo', $correo)
@@ -38,7 +38,30 @@ class Usuario_model extends CI_Model{
         $resultado = $consulta->row();
         return $resultado;
 	}
-   
+   // posible mejora  a la funcion de inicio de session 
+  /* function existeUsuarioPortal($correo, $contrasena) {
+    $consulta = $this->db
+        ->select('u.id, u.id_rol, u.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
+        ->from('usuarios_portal as u')
+        ->join('portal as p', 'p.id = u.id_portal')
+        ->join('datos_generales as d', 'd.id = u.id_datos_generales')
+        ->where('d.correo', $correo)
+        ->where('u.eliminado', 0)
+        ->where('u.status', 1)
+        ->limit(1)
+        ->get();
+
+    if ($consulta->num_rows() == 1) {
+
+        $usuario = $consulta->row();
+        // Verifica la contraseña
+        if (password_verify($contrasena, $usuario->clave)) {
+            return $usuario;
+        }
+      }
+    }*/
+
+
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     function existeUsuarioCliente($correo, $pass){
         $this->db

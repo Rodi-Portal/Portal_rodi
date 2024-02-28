@@ -30,7 +30,7 @@ class Login extends CI_Controller
 			$base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS'; 
 			$pass = md5($base . $this->input->post('pwd'));
 			$correo = $this->input->post('correo');
-			$usuario = $this->usuario_model->existeUsuario($correo, $pass);
+			$usuario = $this->usuario_model->existeUsuarioPortal($correo, $pass);
 			if ($usuario) {
 				$this->session->set_userdata('correo', $correo);
 				$codigo_autenticacion = $this->generar_codigo_autenticacion();
@@ -46,10 +46,13 @@ class Login extends CI_Controller
 						"idrol" => $usuario->id_rol,
 						"tipo" => 1,
 						"loginBD" => $usuario->loginBD,
-						"logueado" => TRUE
+						"logueado" => TRUE,
+						"idPortal" => $usuario->idPortal,
+						"nombrePortal" => $usuario->nombrePortal
+
 				);
 				$this->session->set_userdata($usuario_data);
-		
+				
 				// Redirigir al dashboard o a donde sea necesario
 				if ($usuario->id_rol != 3) {
 						$this->session->set_userdata('tipo_acceso', 'usuario');

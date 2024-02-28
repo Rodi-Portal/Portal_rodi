@@ -15,7 +15,8 @@
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1; ?></div>
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
+								 ?></div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $dato1; ?></div>
               </div>
               <div class="col-auto">
@@ -84,7 +85,19 @@
           </div>
         </div>
       </div>
-    </div>
+				<ul>
+					<li>ID: <?php echo $this->session->userdata('id'); ?></li>
+					<li>Nombre: <?php echo $this->session->userdata('nombre'); ?></li>
+					<li>Apellido Paterno: <?php echo $this->session->userdata('paterno'); ?></li>
+					<li>Rol: <?php echo $this->session->userdata('rol'); ?></li>
+					<li>ID Rol: <?php echo $this->session->userdata('idrol'); ?></li>
+					<li>Tipo: <?php echo $this->session->userdata('tipo'); ?></li>
+					<li>Login BD: <?php echo $this->session->userdata('loginBD'); ?></li>
+					<li>Logueado: <?php echo $this->session->userdata('logueado') ? 'Sí' : 'No'; ?></li>
+					<li>ID Portal: <?php echo $this->session->userdata('idPortal'); ?></li>
+					<li>Nombre Portal: <?php echo $this->session->userdata('nombrePortal'); ?></li>
+				</ul>
+   	 </div>
   <?php 
   }
   if($this->session->userdata('idrol') == 2 || $this->session->userdata('idrol') == 9){ ?>
