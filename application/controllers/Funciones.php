@@ -23,7 +23,7 @@ class Funciones extends CI_Controller{
     $pass = "";
     //Se define la longitud de la contraseña, puedes poner la longitud que necesites
     //Se debe tener en cuenta que cuanto más larga sea más segura será.
-    $longitudPass=12;
+    $longitudPass=8;
   
     //Creamos la contraseña recorriendo la cadena tantas veces como hayamos indicado
     for($i=1 ; $i<=$longitudPass ; $i++){
@@ -36,20 +36,7 @@ class Funciones extends CI_Controller{
     
     echo $pass;
   }
-  function getMunicipios(){
-		$id_estado = $this->input->post('id_estado');
-		$data['municipios'] = $this->funciones_model->getMunicipios($id_estado);
-		$salida = "<option value=''>Selecciona</option>";
-		if($data['municipios']){
-			foreach ($data['municipios'] as $row){
-				$salida .= "<option value='".$row->id."'>".$row->nombre."</option>";
-			} 
-	        echo $salida;
-	    }
-	    else{
-	    	echo $salida;
-	    }
-  }
+  
   function getPaises(){
     $res = $this->funciones_model->getPaises();
     if($res != null){

@@ -29,7 +29,7 @@ class Usuario_model extends CI_Model{
         ->join('portal as p', 'p.id = u.id_portal')
         ->join('datos_generales as d', 'd.id = u.id_datos_generales')
     	->where('d.correo', $correo)
-    	->where('d.clave', $pass)
+    	->where('d.password', $pass)
         //->where('u.id_rol !=', 3)
     	->where('u.status', 1)
     	->where('u.eliminado', 0);

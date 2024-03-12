@@ -133,6 +133,7 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = array(
+  'generales_model',
   'area_model',
   'avance_model',
   'candidato_avance_model',

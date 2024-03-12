@@ -119,7 +119,7 @@ class Notificacion extends CI_Controller{
       echo json_encode($data);
     }
     else{
-      $data['contadorNotificaciones'] = $contador;
+      $data['contadorNotificaciones'] = null;
       echo json_encode($data);
     }
   }

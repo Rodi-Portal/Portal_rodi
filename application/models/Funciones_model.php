@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Funciones_model extends CI_Model{
 
-  function getEstados(){
+  /*function getEstados(){
     $this->db
     ->select('*')
     ->from('estado')
@@ -15,7 +15,7 @@ class Funciones_model extends CI_Model{
     }else{
       return FALSE;
     }
-  }
+  }*/
   function getMunicipios($id_estado){
     $this->db
     ->select('id, nombre')
