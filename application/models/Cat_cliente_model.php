@@ -61,26 +61,29 @@ class Cat_cliente_model extends CI_Model{
     } 
 }
 
-  function existe($nombre, $clave, $id){
-    $this->db
-    ->select('id')
-    ->from('cliente')
-    ->or_where('nombre', $nombre)
-    ->or_where('clave', $clave)
-    ->where_not_in('id',$id);
-    
-    $query = $this->db->get();
-    return $query->num_rows();
-  }
-  function check($id){
-    $this->db
-    ->select('id')
-    ->from('cliente')
-    ->where('id', $id);
-    
-    $query = $this->db->get();
-    return $query->num_rows();
-  }
+function existe($nombre, $clave, $id){
+  $this->db
+     ->select('id')
+     ->from('cliente')
+     ->where("(nombre = '$nombre' OR clave = '$clave') AND id != '$id'");
+  
+  $query = $this->db->get();
+  // Loguear la consulta SQL generada
+  log_message('info', 'Consulta SQL en existe: ' . $this->db->last_query());
+  return $query->num_rows();
+}
+
+function check($id){
+  $this->db
+     ->select('id')
+     ->from('cliente')
+     ->where('id', $id);
+  
+  $query = $this->db->get();
+  // Loguear la consulta SQL generada
+  log_message('info', 'Consulta SQL en check: ' . $this->db->last_query());
+  return $query->num_rows();
+}
 
   function addCliente($cliente, $datosFacturacion, $datosDomicilios, $datosGenerales) {
     try {
@@ -130,7 +133,7 @@ class Cat_cliente_model extends CI_Model{
         $this->db->trans_start();
 
         // Agregar los datos generales y obtener el ID
-        $usuarioClienteDatos['id_datos_generales'] = $this->generales_model->addDatosGenerales($usuarioClienteDatos);
+        $usuarioCliente['id_datos_generales'] = $this->generales_model->addDatosGenerales($usuarioClienteDatos);
 
         // Insertar en la tabla usuarios_clientes
         $this->db->insert("usuarios_clientes", $usuarioCliente);
@@ -171,31 +174,37 @@ class Cat_cliente_model extends CI_Model{
   function addPermiso($permiso){
     $this->db->insert("permiso", $permiso);
   }
-  function editCliente($cliente, $datosFacturacion, $datosDomicilios, $datosGenerales, $idCliente) {
+  function editCliente($idCliente, $cliente ,$datosFacturacion = null,   $datosDomicilios = null, $datosGenerales = null, ) {
     try {
         // Iniciar la transacción
         $this->db->trans_start();
 
-        // Editar los datos generales
-        $this->generales_model->editDatosGenerales($cliente['id_datos_generales'],$datosGenerales);
+        // Editar los datos generales si se proporcionaron
+        if (!is_null($datosGenerales)) {
+            $this->generales_model->editDatosGenerales($cliente['id_datos_generales'], $datosGenerales);
+        }
 
-        // Editar los domicilios
-        $this->generales_model->editDomicilios($cliente['id_domicilios'],$datosDomicilios);
+        // Editar los domicilios si se proporcionaron
+        if (!is_null($datosDomicilios)) {
+            $this->generales_model->editDomicilios($cliente['id_domicilios'], $datosDomicilios);
+        }
 
-        // Editar los datos de facturación
-        $this->editDatosFacturacion($cliente['id_datos_facturacion'],$datosFacturacion);
+        // Editar los datos de facturación si se proporcionaron
+        if (!is_null($datosFacturacion)) {
+            $this->editDatosFacturacion($cliente['id_datos_facturacion'], $datosFacturacion);
+        }
 
-        // Actualizar el cliente en la tabla correspondiente
-        $this->db->where('id', $idCliente)
-                 ->update('cliente', $cliente);
+        // Actualizar el cliente en la tabla correspondiente si se proporcionó
+        if (!is_null($cliente)) {
+            $this->db->where('id', $idCliente)->update('cliente', $cliente);
+        }
 
         // Completar la transacción
         $this->db->trans_complete();
 
         // Verificar si la transacción fue exitosa
         if ($this->db->trans_status() === false) {
-            // Ocurrió un error durante la transacción, puedes manejarlo según tus necesidades
-            // Puedes lanzar una excepción o retornar un código de error, dependiendo de tu lógica de manejo de errores.
+            // Ocurrió un error durante la transacción, manejar según tus necesidades
             return false;
         }
 
@@ -203,7 +212,6 @@ class Cat_cliente_model extends CI_Model{
         return true;
     } catch (Exception $e) {
         // Manejar la excepción si ocurre algún error
-        // Puedes lanzar una excepción personalizada o loggear el error, dependiendo de tus necesidades.
         log_message('error', 'Error en editCliente: ' . $e->getMessage());
         return false;
     }
@@ -239,10 +247,11 @@ class Cat_cliente_model extends CI_Model{
         ->select("cli.*, CONCAT(dup.nombre,' ',dup.paterno) as usuario, CONCAT(duc.nombre,' ',duc.paterno) as usuario_cliente, duc.correo as correo_usuario, uc.creacion as alta, uc.id as idUsuarioCliente, uc.privacidad")
         ->from("cliente AS cli")
         ->join("usuarios_clientes uc", "uc.id_cliente = cli.id")
-        ->join("usuarios_portal u", "u.id = uc.id_usuario")
+        ->join("usuarios_portal u", "u.id = cli.id_portal")
         ->join("datos_generales dup", "dup.id = u.id_datos_generales")
         ->join("datos_generales duc", "duc.id = uc.id_datos_generales")
-        ->where("cli.id", $id_cliente);
+        ->where("cli.id", $id_cliente)
+        ->where("u.id", $id_portal);
        
     $query = $this->db->get();
     
@@ -252,12 +261,12 @@ class Cat_cliente_model extends CI_Model{
         return FALSE;
     }
 }
-  function editAccesoUsuarioCliente($usuario, $idCliente){
+  function editAccesoUsuarioCliente($idCliente,$usuario ){
     $this->db
     ->where('id_cliente', $idCliente)
-    ->update('usuario_cliente', $usuario);
+    ->update('usuarios_clientes', $usuario);
   }
-  function editAccesoUsuarioSubcliente($usuario, $idCliente){
+  function editAccesoUsuarioSubcliente($idCliente, $usuario){
     $this->db
     ->where('id_cliente', $idCliente)
     ->update('usuario_subcliente', $usuario);
@@ -269,7 +278,7 @@ class Cat_cliente_model extends CI_Model{
   function deleteAccesoUsuarioCliente($idUsuarioCliente){
     $this->db
     ->where('id', $idUsuarioCliente)
-    ->delete('usuario_cliente');
+    ->delete('usuarios_clientes');
   }
 
   

@@ -54,6 +54,13 @@ var tipos_bloqueo_php =
 var tipos_desbloqueo_php =
   '<?php foreach($tipos_desbloqueo as $row){ echo '<option value="'.$row->tipo.'">'.$row->descripcion.'</option>';} ?>';
 $(document).ready(function() {
+    $("#cerrarModal").on("click", function() {
+     
+           
+            // Resetea el formulario al cerrar el modal
+            $("#formCatCliente")[0].reset();
+        });
+
   console.log('Documento listo. Iniciando script.');
   $('[data-toggle="tooltip"]').tooltip();
   $('#newModal').on('shown.bs.modal', function() {
@@ -218,23 +225,25 @@ $(document).ready(function() {
         $("#forma_pago").val(data.forma_pago).change();
         $("#metodo_pago").val(data.metodo_pago).change();
         $("#uso_cfdi").val(data.uso_cfdi);
-        $("#password_name").val(data.password_contacto)
+        $("#password_name").val(data.password_contacto);
+        setTimeout(function() {
         $("#newModal").modal("show");
+      }, 1500);
       });
       $("a#activar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('activar cliente', data.nombre, data.id)
+        mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente)
       });
       $("a#desactivar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.id)
+        mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.idCliente)
       });
       $("a#bloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.id)
+        mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.idCliente)
       });
       $("a#desbloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.id)
+        mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.idCliente)
       });
       $("a#eliminar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.id)
+        mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idCliente)
       });
       $("a#acceso", row).bind('click', () => {
         $(".nombreCliente").text(data.nombre);
@@ -424,7 +433,7 @@ function cargarDatosDomicilioGeneral(datos) {
                   },
                   success: function(data) {
                     var cities = data;
-                    var comboCities = "<option value=''>" + datos.ciudad + "</option>";
+                    var comboCities = "<option value='" + datos.ciudad + "'>" + datos.ciudad + "</option>";
                     cities.forEach(element => {
                       comboCities += '<option value="' + element['city_name'] + '">' +
                         element['city_name'] + '</option>';
@@ -601,15 +610,16 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
 }
 
 function accionCliente(accion, id) {
+  console.log("id del cliente:  "+ id +"  accion d a realizar:  " + accion)
   let opcion_motivo = $('#mensajeModal #opcion_motivo').val()
   let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
   let mensaje_comentario = $('#mensajeModal #mensaje_comentario').val()
   let bloquear_subclientes = $("#mensajeModal #bloquear_subclientes").is(":checked") ? 'SI' : 'NO';
   $.ajax({
     url: '<?php echo base_url('Cat_Cliente/status'); ?>',
-    type: 'post',
+    type: 'POST',
     data: {
-      'id': id,
+      'idCliente': id,
       'accion': accion,
       'opcion_motivo': opcion_motivo,
       'mensaje_comentario': mensaje_comentario,
@@ -666,51 +676,51 @@ function registrarAccesoCliente() {
 los datos  del formulario mdl_cat_cliente los transforma en JSon y los envia Medisnte  El protocolo POST 
   al archivo Cat_usuario a la funcion addUsuario */
   function crearAccesoClientes() {
-  let tipoUsuarioSwitch = document.getElementById("tipoUsuarioSwitch");
-  let tipoUsuarioValue = tipoUsuarioSwitch.checked ? 1 : 0;
+    let tipoUsuarioSwitch = document.getElementById("tipoUsuarioSwitch");
+    let tipoUsuarioValue = tipoUsuarioSwitch.checked ? 1 : 0;
 
-  let datosArray = $('#formAccesoCliente').serializeArray();
-  datosArray.push({ name: 'tipo_usuario', value: tipoUsuarioValue });
+    let datosArray = $('#formAccesoCliente').serializeArray();
+    datosArray.push({ name: 'tipo_usuario', value: tipoUsuarioValue });
 
-  $.ajax({
-    url: '<?php echo base_url('Cat_Cliente/addUsuarioCliente'); ?>',
-    type: 'POST',
-    data: datosArray,
-    beforeSend: function () {
-      $('.loader').css("display", "block");
-    },
-    success: function (res) {
-      setTimeout(function () {
-        $('.loader').fadeOut();
-      }, 200);
-      console.log(res);
-
-      try {
-        var data = JSON.parse(res);
-
-        if (data.codigo === 1) {
-          $("#nuevoAccesoClienteModal").modal('hide');
-          recargarTable();
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Usuario guardado correctamente',
-            showConfirmButton: false,
-            timer: 2500
-          });
-        } else {
-          $("#nuevoAccesoClienteModal #msj_error").css('display', 'block').html(data.msg);
-        }
-      } catch (error) {
-        console.error("Error al analizar la respuesta JSON:", error);
+    $.ajax({
+      url: '<?php echo base_url('Cat_Cliente/addUsuarioCliente'); ?>',
+      type: 'POST',
+      data: datosArray,
+      beforeSend: function () {
+        $('.loader').css("display", "block");
+      },
+      success: function (res) {
+        setTimeout(function () {
+          $('.loader').fadeOut();
+        }, 200);
         console.log(res);
+
+        try {
+          var data = JSON.parse(res);
+
+          if (data.codigo === 1) {
+            $("#nuevoAccesoClienteModal").modal('hide');
+            recargarTable();
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'Usuario guardado correctamente',
+              showConfirmButton: false,
+              timer: 2500
+            });
+          } else {
+            $("#nuevoAccesoClienteModal #msj_error").css('display', 'block').html(data.msg);
+          }
+        } catch (error) {
+          console.error("Error al analizar la respuesta JSON:", error);
+          console.log(res);
+        }
+      },
+      error: function (xhr, textStatus, errorThrown) {
+        console.error("Error en la llamada AJAX:", textStatus, errorThrown);
+        console.log(xhr.responseText);
       }
-    },
-    error: function (xhr, textStatus, errorThrown) {
-      console.error("Error en la llamada AJAX:", textStatus, errorThrown);
-      console.log(xhr.responseText);
-    }
-  });
+    });
 }
 
 

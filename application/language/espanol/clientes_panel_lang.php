@@ -11,3 +11,4 @@ $lang['col_bgv'] = "Resultados";
 $lang['titulo_tabla'] = "Historial de Candidatos";
 
 $lang['titulo_modal_avances'] = "Mensajes de avances:";
+$lang['form_validation_check_unique'] = 'El campo %s ya existe en la base de datos.';

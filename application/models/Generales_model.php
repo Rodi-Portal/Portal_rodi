@@ -62,6 +62,21 @@ function getPortalCliente($id_cliente){
     }
 }
 
+public function correoExiste($correo, $idDatos = null) {
+    $this->db->select('id')
+             ->from('datos_generales')
+             ->where('correo', $correo);
+
+    // Si estás editando un cliente, excluye el cliente actual de la búsqueda
+    if ($idDatos !== null) {
+        $this->db->where_not_in('id', $idDatos);
+    }
+
+    $query = $this->db->get();
+    return $query->num_rows();
+}
+
+
 
 
 }

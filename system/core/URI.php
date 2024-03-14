@@ -633,11 +633,13 @@ class CI_URI {
 	/**
 	 * Fetch Re-routed URI string
 	 *
-	 * @return	string
-	 */
+	 * @return  string
+	*/
 	public function ruri_string()
 	{
-		return ltrim(load_class('Router', 'core')->directory, '/').implode('/', $this->rsegments);
+			$router =& load_class('Router', 'core');
+			$directory = $router->directory ?? '';
+			return rtrim($directory, '/').'/'.implode('/', $this->rsegments);
 	}
 
 }

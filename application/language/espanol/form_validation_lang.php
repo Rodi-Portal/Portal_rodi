@@ -23,5 +23,10 @@ $lang['less_than']			= "El campo %s debe contener un número menor que %s.";
 $lang['greater_than']		= "El campo %s debe contener un número mayor que %s.";
 /* Added after 2.0.2 */
 $lang['is_unique'] 			= "El campo %s debe contener un valor único.";
+$lang['form_validation_check_unique'] = 'El campo %s ya existe en la base de datos.';
+$lang['form_validation_callback'] = 'El campo %s ya existe en la base de datos .';
+
+
+
 /* End of file form_validation_lang.php */
 /* Location: ./system/language/spanish/form_validation_lang.php */

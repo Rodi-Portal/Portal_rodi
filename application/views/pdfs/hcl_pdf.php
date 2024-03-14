@@ -1084,7 +1084,7 @@
   <br>
 	
 
-  <pagebreak>
+  
 	<!-- Datos Personales -->
   <?php 
   if($secciones->id_seccion_datos_generales == 111){ ?>
@@ -1213,7 +1213,7 @@
     <br><br>
   <?php 
   } ?>
-
+<pagebreak>
   <!-- Documentos -->
   <?php 
   if($ver_documento){ ?>

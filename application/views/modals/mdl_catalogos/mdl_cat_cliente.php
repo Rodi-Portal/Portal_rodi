@@ -3,7 +3,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_nuevo_modal">Nuevo cliente</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="cerrarModal">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -118,7 +118,7 @@
                 <label for="telefono">Teléfono *</label>
                 <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese el teléfono"
                   required>
-                <input type="hidden" class="form-control" id="idCliente" name="idCliente">
+                <input type="hidden" class="form-control" id="idCliente" name="idCliente" >
                 <input type="hidden" id="idDomicilios" name="idDomicilios" class="form-control">
                 <input type="hidden" id="idFacturacion" name="idFacturacion" class="form-control">
                 <input type="hidden" id="idGenerales" name="idGenerales" class="form-control">
@@ -389,6 +389,10 @@ function registrarCliente() {
     $("#btnSiguiente").on("click", function() {
       nextStep();
     });
+    $("#cerrarModal").on("click", function() {
+            // Resetea el formulario al cerrar el modal
+            $("#formCatCliente")[0].reset();
+        });
 
     // Event listener para el botón "Anterior"
     $("#btnAnterior").on("click", function() {
@@ -459,6 +463,7 @@ function registrarCliente() {
 
 function cargarPaisesEstadosCiudades(auth_token) {
   $.ajax({
+  
     url: 'https://www.universal-tutorial.com/api/getaccesstoken',
     method: 'GET',
     headers: {

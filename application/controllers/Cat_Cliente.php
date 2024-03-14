@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+require_once(APPPATH.'libraries/custom_validation_rules.php');
+
 
 class Cat_Cliente extends CI_Controller{
 
@@ -8,85 +10,21 @@ class Cat_Cliente extends CI_Controller{
     if(!$this->session->userdata('id')){
       redirect('Login/index');
     }
-		$this->load->library('usuario_sesion');
+    
+		$this->load->library('custom_validation_rules');
+    $this->load->library('usuario_sesion');
+
 		$this->usuario_sesion->checkStatusBD();
 	}
   
-  function index(){
-    $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
-    $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
-    foreach($data['submodulos'] as $row) {
-      $items[] = $row->id_submodulo;
-    }
-    $data['submenus'] = $items;
-   // $datos['estados'] = $this->funciones_model->getEstados();
-    $datos['tipos_bloqueo'] = $this->funciones_model->getTiposBloqueo();
-    $datos['tipos_desbloqueo'] = $this->funciones_model->getTiposDesbloqueo();
-    $datos['modals'] = $this->load->view('modals/mdl_catalogos/mdl_cat_cliente','', TRUE);
-
-    $config = $this->funciones_model->getConfiguraciones();
-		$data['version'] = $config->version_sistema;
-
-    //Modals
-    $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
-
-    $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
-    if(!empty($notificaciones)){
-      $contador = 0;
-      foreach($notificaciones as $row){
-        if($row->visto == 0){
-          $contador++;
-        }
-      }
-      $data['contadorNotificaciones'] = $contador;
-    }
-    
-    $this->load
-    ->view('adminpanel/header',$data)
-    ->view('adminpanel/scripts',$modales)
-    ->view('catalogos/cliente',$datos)
-    ->view('adminpanel/footer');
-  }
-  function getClientes(){
-    $portal = $this->session->userdata('idPortal');
-
-    try {
-        // Obtener el total de registros (recordsTotal)
-        $recordsTotal = $this->cat_cliente_model->getTotal($portal);
-
-        // Obtener el total de registros después de aplicar filtros (recordsFiltered)
-        $recordsFiltered = $this->cat_cliente_model->getTotal($portal);
-
-        // Obtener los datos de clientes (data)
-        $data = $this->cat_cliente_model->getC($portal);
-
-        // Configurar el tipo de contenido de la respuesta como JSON
-        $this->output->set_content_type('application/json');
-
-        // Construir la respuesta JSON
-        $response = [
-            'recordsTotal' => $recordsTotal,
-            'recordsFiltered' => $recordsFiltered,
-            'data' => $data,
-        ];
-
-        // Enviar la respuesta JSON
-        $this->output->set_output(json_encode($response));
-    } catch (Exception $e) {
-        log_message('error', 'Excepción en la función getClientes: ' . $e->getMessage());
-
-        // Configurar el tipo de contenido de la respuesta como JSON
-        $this->output->set_content_type('application/json');
-
-        // Enviar una respuesta JSON de error
-        $this->output->set_output(json_encode(['error' => 'Error en la consulta.']));
-    }
-}
-
-
-  // Funcion   para registrar Clientes 
   function set() {
-    $this->form_validation->set_rules('nombre', 'Nombre del cliente', 'trim|required');
+  
+    $idCliente = $this->input->post('idCliente');
+
+    // Define la regla de validación con los parámetros como un arreglo
+    $this->form_validation->set_rules('nombre', 'Nombre del Cliente', 'required');
+    
+    // Define las demás reglas de validación
     $this->form_validation->set_rules('clave', 'Clave', 'trim|required|max_length[3]');
     $this->form_validation->set_rules('pais_name', 'País', 'trim');
     $this->form_validation->set_rules('state_name', 'Estado', 'trim');
@@ -106,13 +44,24 @@ class Cat_Cliente extends CI_Controller{
     $this->form_validation->set_rules('forma_pago', 'Forma de Pago', 'trim');
     $this->form_validation->set_rules('metodo_pago', 'Método de Pago', 'trim');
     $this->form_validation->set_rules('uso_cfdi', 'Uso de CFDI', 'trim');
+
+    // Define los mensajes de error personalizados
     $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-    $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
+    $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} caracteres.');
+    $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del cliente ya existe en la base de datos.');
 
-
+    // Validación de formulario
     $msj = array();
-        
-    $id_usuario = $this->session->userdata('id');
+    if ($this->form_validation->run() == FALSE) {
+        $msj = array(
+            'codigo' => 0,
+            'msg' => validation_errors()
+        );
+    }
+    else {
+
+    
+      $id_usuario = $this->session->userdata('id');
     date_default_timezone_set('America/Mexico_City');
     $date = date('Y-m-d H:i:s');
 
@@ -155,29 +104,25 @@ class Cat_Cliente extends CI_Controller{
         'id_domicilios' => null,
         'id_datos_facturacion' => null
     );
+
     $idCliente = $this->input->post('idCliente');
-   
-    if ($this->form_validation->run() == FALSE) {
-      $msj = array(
-        'codigo' => 0,
-        'msg' => validation_errors()
-      );
-    } 
-    else {
-    
-      $existe = $this->cat_cliente_model->existe($this->input->post('nombre'),$this->input->post('clave'),$idCliente);
-      if(!empty($idCliente)){
+
+
+
+
+    $existe = $this->cat_cliente_model->existe($this->input->post('nombre'),$this->input->post('clave'),$idCliente);
+      if($existe ==0){
       $hayId = $this->cat_cliente_model->check($idCliente);
         if($hayId > 0){
-          $datos_cliente = array(
-            'edicion' => $date,
-            'id_usuario' => $id_usuario,
-            'id_datos_generales' => $this->input->post('idGenerales'),
-            'id_domicilios' => $this->input->post('idDomicilios'),
-            'id_datos_facturacion' => $this->input->post('idFacturacion'),
-
-          );
-          $this->cat_cliente_model->editCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, $idCliente);
+            $datos_cliente = array(
+                'edicion' => $date,
+                'id_usuario' => $id_usuario,
+                'id_datos_generales' => $this->input->post('idGenerales'),
+                'id_domicilios' => $this->input->post('idDomicilios'),
+                'id_datos_facturacion' => $this->input->post('idFacturacion'),
+            );
+          
+          $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, );
           $permiso = array(
             'id_usuario' => $id_usuario,
             'cliente' => $this->input->post('nombre')
@@ -189,14 +134,26 @@ class Cat_Cliente extends CI_Controller{
           );
         }
         else{
-         
+          $correo = $this->input->post('correo');
+      
+          $existeCorreo =  $this->generales_model->correoExiste($correo);
+
+          if ($existeCorreo !== 0) {
+            $msj = array(
+              'codigo' => 2,
+              'msg' => 'El correo proporcionado ya existe'
+            );
+            echo json_encode($msj);
+            return; // Detener el flujo del código ya que hay un error
+        }
+        
           $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
 
           $url = "Cliente_General/index/".$idCliente;
           $data_url = array(
             'url' => $url
           );
-          $this->cat_cliente_model->editCliente($data_url, $idCliente);
+          $this->cat_cliente_model->editCliente($idCliente, $data_url );
 
           $permiso = array(
             'id_usuario' => $id_usuario,
@@ -208,47 +165,127 @@ class Cat_Cliente extends CI_Controller{
             'codigo' => 1,
             'msg' => 'success'
           );
-       }
       }
+      
+    }
       else{
-        $msj = array(
-          'codigo' => 2,
+      $msj = array(
+        'codigo' => 2,
           'msg' => 'El nombre del cliente y/o clave ya existe'
-        );
-      }
+      );
+    }
     }
     echo json_encode($msj);
   }
+  function index(){
+    $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+    $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+    foreach($data['submodulos'] as $row) {
+      $items[] = $row->id_submodulo;
+    }
+    $data['submenus'] = $items;
+   // $datos['estados'] = $this->funciones_model->getEstados();
+    $datos['tipos_bloqueo'] = $this->funciones_model->getTiposBloqueo();
+    $datos['tipos_desbloqueo'] = $this->funciones_model->getTiposDesbloqueo();
+    $datos['modals'] = $this->load->view('modals/mdl_catalogos/mdl_cat_cliente','', TRUE);
+
+    $config = $this->funciones_model->getConfiguraciones();
+		$data['version'] = $config->version_sistema;
+
+    //Modals
+    $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
+
+    $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
+    if(!empty($notificaciones)){
+      $contador = 0;
+      foreach($notificaciones as $row){
+        if($row->visto == 0){
+          $contador++;
+        }
+      }
+      $data['contadorNotificaciones'] = $contador;
+    }
+    
+    $this->load
+    ->view('adminpanel/header',$data)
+    ->view('adminpanel/scripts',$modales)
+    ->view('catalogos/cliente',$datos)
+    ->view('adminpanel/footer');
+  }
+
+  function getClientes(){
+    $portal = $this->session->userdata('idPortal');
+
+    try {
+        // Obtener el total de registros (recordsTotal)
+        $recordsTotal = $this->cat_cliente_model->getTotal($portal);
+
+        // Obtener el total de registros después de aplicar filtros (recordsFiltered)
+        $recordsFiltered = $this->cat_cliente_model->getTotal($portal);
+
+        // Obtener los datos de clientes (data)
+        $data = $this->cat_cliente_model->getC($portal);
+
+        // Configurar el tipo de contenido de la respuesta como JSON
+        $this->output->set_content_type('application/json');
+
+        // Construir la respuesta JSON
+        $response = [
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data,
+        ];
+
+        // Enviar la respuesta JSON
+        $this->output->set_output(json_encode($response));
+    } catch (Exception $e) {
+        log_message('error', 'Excepción en la función getClientes: ' . $e->getMessage());
+
+        // Configurar el tipo de contenido de la respuesta como JSON
+        $this->output->set_content_type('application/json');
+
+        // Enviar una respuesta JSON de error
+        $this->output->set_output(json_encode(['error' => 'Error en la consulta.']));
+    }
+  }
+
+
+// Funcion para registrar Clientes
+
 
 
   function status(){
+    $msj = array();
     $id_usuario = $this->session->userdata('id');
     $date = date('Y-m-d H:i:s');
-    $idCliente = $this->input->post('id');
+    $idCliente = $this->input->post('idCliente');
     $accion = $this->input->post('accion');
+
+   // var_dump("esta es la accion :  ".$accion."  Este es el id del cliente :  ".$idCliente);
     if($accion == "desactivar"){
-      $data = array(
+      $cliente = array(
         'edicion' => $date,
         'id_usuario' => $id_usuario,
         'status' => 0
       );
-      $this->cat_cliente_model->edit($data, $idCliente);
-      $this->cat_cliente_model->editAccesoUsuarioCliente($data, $idCliente);
-      $this->cat_cliente_model->editAccesoUsuarioSubcliente($data, $idCliente);
+      $this->cat_cliente_model->editCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
       $msj = array(
         'codigo' => 1,
         'msg' => 'Cliente inactivado correctamente'
       );
     }
+
     if($accion == "activar"){
-      $data = array(
+      $cliente = array(
         'edicion' => $date,
         'id_usuario' => $id_usuario,
         'status' => 1
       );
-      $this->cat_cliente_model->edit($data, $idCliente);
-      $this->cat_cliente_model->editAccesoUsuarioCliente($data, $idCliente);
-      $this->cat_cliente_model->editAccesoUsuarioSubcliente($data, $idCliente);
+      $this->cat_cliente_model->editCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
 
       $msj = array(
         'codigo' => 1,
@@ -256,26 +293,39 @@ class Cat_Cliente extends CI_Controller{
       );
     }
     if($accion == "eliminar"){
-      $data = array(
+
+      $cliente = array(
         'edicion' => $date,
         'id_usuario' => $id_usuario,
         'eliminado' => 1
-      );
-      $this->cat_cliente_model->edit($data, $idCliente);
-      $this->cat_cliente_model->editAccesoUsuarioCliente($data, $idCliente);
-      $this->cat_cliente_model->editAccesoUsuarioSubcliente($data, $idCliente);
+      ); 
+      /*
+      // ver  que traen las variables
+      echo "usuarioCliente: ";
+      print_r($idCliente);
+      echo "<br>";
+  
+      echo "usuarioClienteDatos: ";
+      print_r($data);
+      echo "<br>";
+      */
+      $this->cat_cliente_model->editCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
       $msj = array(
         'codigo' => 1,
         'msg' => 'Cliente eliminado correctamente'
       );
     }
+
+
     if($accion == "bloquear"){
       $cliente = array(
         'edicion' => $date,
         'id_usuario' => $id_usuario,
         'bloqueado' => $this->input->post('opcion_motivo')
       );
-      $this->cat_cliente_model->edit($cliente, $idCliente);
+      $this->cat_cliente_model->editCliente($idCliente, $cliente );
 
       if($this->input->post('bloquear_subclientes') === 'SI'){
         $data['subclientes'] = $this->cat_subclientes_model->getSubclientesByIdCliente($idCliente);
@@ -297,6 +347,7 @@ class Cat_Cliente extends CI_Controller{
       );
       $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idCliente);
 
+
       $data_bloqueo = array(
         'creacion' => $date,
         'id_usuario' => $id_usuario,
@@ -312,13 +363,14 @@ class Cat_Cliente extends CI_Controller{
         'msg' => 'Cliente bloqueado correctamente'
       );
     }
+
     if($accion == "desbloquear"){
       $cliente = array(
         'edicion' => $date,
         'id_usuario' => $id_usuario,
         'bloqueado' => 'NO'
       );
-      $this->cat_cliente_model->edit($cliente, $idCliente);
+      $this->cat_cliente_model->editCliente( $idCliente, $cliente);
 
       $data['subclientes'] = $this->cat_subclientes_model->getSubclientesByIdCliente($idCliente);
       if($data['subclientes']){
@@ -353,8 +405,10 @@ class Cat_Cliente extends CI_Controller{
         'msg' => 'Cliente desbloqueado correctamente'
       );
     }
+
     echo json_encode($msj);
   }
+
   function getClientesActivos(){
     $res = $this->cat_cliente_model->getClientesActivosModel();
     if($res){
@@ -364,6 +418,7 @@ class Cat_Cliente extends CI_Controller{
       echo $res = 0;
     }
   }
+
   function addUsuarioCliente(){
     $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
     $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
@@ -388,7 +443,7 @@ class Cat_Cliente extends CI_Controller{
       $date = date('Y-m-d H:i:s');
       $nombre = $this->input->post('nombre');
       $paterno = $this->input->post('paterno');
-      $telefono = ($this->input->post('telefono1') !== null) ? $this->input->post('telefono') : null;
+      $telefono = ($this->input->post('telefono') !== null) ? $this->input->post('telefono') : null;
       $privacidad = $this->input->post('privacidad');
       $correo = $this->input->post('correo_cliente_name');
       $uncode_password = $this->input->post('password_name');
@@ -396,7 +451,7 @@ class Cat_Cliente extends CI_Controller{
     
       $idCliente = $this->input->post('cliente');
       $espectador = $this->input->post('tipo_usuario');
-
+      
       $usuarioCliente = array(
         'creacion' => $date,
         'edicion' => $date,
@@ -415,6 +470,8 @@ class Cat_Cliente extends CI_Controller{
         'password' => $hashed_password,
       
       );
+
+     
       $this->cat_cliente_model->addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos);
 
       $dataCliente = $this->cat_cliente_model->getById($idCliente);
@@ -441,17 +498,19 @@ class Cat_Cliente extends CI_Controller{
     }
     echo json_encode($msj);
   }
+
+
   function getClientesAccesos(){
    
     $id_cliente = $this->input->post('id_cliente');
-   $id_portal = $this->generales_model->getPortalCliente($id_cliente);
-   
+    $id_portal = $this->generales_model->getPortalCliente($id_cliente);
+   // var_dump("Este  es el id del cliente: ".$id_cliente."Este  es el id del portal: ".$id_portal);
     $res = $this->cat_cliente_model->getAccesosClienteModal($id_cliente, $id_portal);
     if($res){
       echo json_encode($res);
     }
     else{
-      echo $res = 0;
+      echo json_encode([]);
     }
   }
 
