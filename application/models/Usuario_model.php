@@ -63,13 +63,15 @@ class Usuario_model extends CI_Model{
 
 
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
-    function existeUsuarioCliente($correo, $pass){
+    function existeUsuarioCliente($correo, $pass ){
         $this->db
-        ->select('u.id, u.correo, u.nombre, u.paterno, u.nuevo_password, u.id_cliente, u.espectador, cl.nombre as cliente, u.logueado as loginBD, u.privacidad, cl.ingles')
-        ->from('usuario_cliente as u')
+        ->select('u.id, dg.correo, dg.nombre, dg.paterno,  u.id_cliente, u.espectador, dgc.nombre as cliente, u.logueado as loginBD, u.privacidad, cl.ingles')
+        ->from('usuarios_clientes as u')
         ->join('cliente as cl', 'cl.id = u.id_cliente')
-        ->where('u.correo', $correo)
-        ->where('u.password', $pass)
+        ->join('datos_generales as dg', 'dg.id = cl.id_datos_generales')
+        ->join('datos_generales as dgc', 'dg.id = u.id_datos_generales')
+        ->where('dg.correo', $correo)
+        ->where('dg.password', $pass)
         ->where('u.status', 1)
         ->where('u.eliminado', 0);
 
@@ -243,12 +245,13 @@ class Usuario_model extends CI_Model{
     }
     function getTipoUsuarios($roles){
       $this->db
-      ->select("U.id, CONCAT(U.nombre,' ',U.paterno) as usuario, U.id_rol")
-      ->from('usuario as U')
+      ->select("U.id, CONCAT(gen.nombre,' ',gen.paterno) as usuario, U.id_rol")
+      ->from('usuarios_portal as U')
+      ->join('datos_generales as gen', 'gen.id = U.id_datos_generales','left')
       ->where('U.status', 1)
       ->where('U.eliminado', 0)
       ->where_in('U.id_rol', $roles)
-      ->order_by('U.nombre','ASC');
+      ->order_by('gen.nombre','ASC');
 
       $query = $this->db->get();
       if($query->num_rows() > 0){
@@ -276,7 +279,7 @@ class Usuario_model extends CI_Model{
 			function checkUsuarioActivo($id_usuario){
 				$this->db
 				->select('status, eliminado')
-				->from('usuario')
+				->from('usuarios_portal')
 				->where('id', $id_usuario);
 
 				$consulta = $this->db->get();

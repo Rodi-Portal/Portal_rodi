@@ -8,9 +8,10 @@ class Reclutamiento_model extends CI_Model{
 	/*----------------------------------------*/
 		function getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder){
 			$this->db
-			->select("R.id, R.creacion, R.nombre, R.telefono, R.contacto, R.puesto, R.numero_vacantes, R.status, R.correo, R.tipo, CONCAT(U.nombre,' ',U.paterno) as usuario, R.nombre_comercial")
+			->select("R.id, R.creacion, R.nombre, R.telefono, R.contacto, R.puesto, R.numero_vacantes, R.status, R.correo, R.tipo, CONCAT(gen.nombre,' ',gen.paterno) as usuario, R.nombre_comercial")
 			->from('requisicion as R')
-			->join('usuario as U','U.id = R.id_usuario','left')
+			->join('usuarios_portal as U','U.id = R.id_usuario','left')
+			->join('datos_generales as gen','U.id_datos_generales = gen.id','left')
 			->where($filterOrder, $filter)
 			->where_in('R.status', [1,2])
       ->where($condition_order, $id_order)
@@ -99,9 +100,10 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getAllApplicants($id_usuario, $condition){
 			$this->db
-			->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(U.nombre,' ',U.paterno) as usuario")
+			->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
 			->from('bolsa_trabajo as B')
-			->join('usuario as U', 'U.id = B.id_usuario','left')
+			->join('usuarios_portal as U', 'U.id = B.id_usuario','left')
+			->join('datos_generales as gen', 'gen.id = U.id_datos_generales','left')
 			->where($condition, $id_usuario)
 			->order_by('B.id', 'DESC');
 
@@ -114,9 +116,10 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getBolsaTrabajo($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $id_usuario, $condition_user, $area, $condition_area){
 			$this->db
-			->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(U.nombre,' ',U.paterno) as usuario")
+			->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
 			->from('bolsa_trabajo as B')
-			->join('usuario as U', 'U.id = B.id_usuario','left')
+			->join('usuarios_portal as U', 'U.id = B.id_usuario','left')
+			->join('datos_generales as gen', 'gen.id = U.id_datos_generales','left')
 			->where($condition_area, $area)
 			->where($filterApplicant, $filter)
 			->where($condition_applicant, $id_applicant)

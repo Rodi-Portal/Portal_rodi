@@ -54,12 +54,12 @@ var tipos_bloqueo_php =
 var tipos_desbloqueo_php =
   '<?php foreach($tipos_desbloqueo as $row){ echo '<option value="'.$row->tipo.'">'.$row->descripcion.'</option>';} ?>';
 $(document).ready(function() {
-    $("#cerrarModal").on("click", function() {
-     
-           
-            // Resetea el formulario al cerrar el modal
-            $("#formCatCliente")[0].reset();
-        });
+  $("#cerrarModal").on("click", function() {
+
+
+    // Resetea el formulario al cerrar el modal
+    $("#formCatCliente")[0].reset();
+  });
 
   console.log('Documento listo. Iniciando script.');
   $('[data-toggle="tooltip"]').tooltip();
@@ -120,7 +120,8 @@ $(document).ready(function() {
         bSortable: false,
         "width": "25%",
         mRender: function(data, type, full) {
-          return '<span class="badge badge-pill badge-dark">#' + full.idCliente + '</span><br><b>' + data + '</b>';
+          return '<span class="badge badge-pill badge-dark">#' + full.idCliente + '</span><br><b>' + data +
+            '</b>';
         }
       },
       {
@@ -192,13 +193,13 @@ $(document).ready(function() {
       });
     },
     rowCallback: function(row, data) {
-     
       $("a#editar", row).bind('click', () => {
+        resetModal();
         $("#idCliente").val(data.idCliente);
         $("#idFacturacion").val(data.dFac);
         $("#idDomicilios").val(data.dDom);
         $("#idGenerales").val(data.dGen);
-     
+
         $("#titulo_nuevo_modal").text("Editar cliente");
 
         // Generales
@@ -227,8 +228,8 @@ $(document).ready(function() {
         $("#uso_cfdi").val(data.uso_cfdi);
         $("#password_name").val(data.password_contacto);
         setTimeout(function() {
-        $("#newModal").modal("show");
-      }, 1500);
+          $("#newModal").modal("show");
+        }, 1500);
       });
       $("a#activar", row).bind('click', () => {
         mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente)
@@ -401,7 +402,9 @@ function cargarDatosDomicilioGeneral(datos) {
             });
 
             $("#item-details-countryValue").html(comboCountries);
-            $("#item-details-countryValue").val(datos.pais);
+            if (datos.pais !== '') {
+              $("#item-details-countryValue").val(datos.pais);
+            }
 
             // Obtener estados
             $.ajax({
@@ -414,7 +417,7 @@ function cargarDatosDomicilioGeneral(datos) {
               success: function(data) {
                 var states = data;
                 var comboStates = "<option value='" + datos.estado + "'>" + datos.estado +
-                "</option>";
+                  "</option>";
                 states.forEach(element => {
                   comboStates += '<option value="' + element['state_name'] + '">' + element[
                     'state_name'] + '</option>';
@@ -433,7 +436,8 @@ function cargarDatosDomicilioGeneral(datos) {
                   },
                   success: function(data) {
                     var cities = data;
-                    var comboCities = "<option value='" + datos.ciudad + "'>" + datos.ciudad + "</option>";
+                    var comboCities = "<option value='" + datos.ciudad + "'>" + datos.ciudad +
+                      "</option>";
                     cities.forEach(element => {
                       comboCities += '<option value="' + element['city_name'] + '">' +
                         element['city_name'] + '</option>';
@@ -469,7 +473,7 @@ function cargarDatosDomicilioGeneral(datos) {
 
                       $("#item-details-stateValue").html(comboStates);
                       $("#item-details-stateValue").val(
-                      ""); // Limpiar el valor del estado al cambiar el país
+                        ""); // Limpiar el valor del estado al cambiar el país
 
                       // Obtener ciudades al cambiar el estado
                       $("#item-details-stateValue").on("change", function() {
@@ -495,7 +499,8 @@ function cargarDatosDomicilioGeneral(datos) {
 
                             $("#item-details-cityValue").html(comboCities);
                             $("#item-details-cityValue").val(
-                            ""); // Limpiar el valor de la ciudad al cambiar el estado
+                              ""
+                              ); // Limpiar el valor de la ciudad al cambiar el estado
                           },
                           error: function(e) {
                             console.log("Error al obtener ciudades: " + e);
@@ -527,11 +532,11 @@ function cargarDatosDomicilioGeneral(datos) {
 }
 </script>
 <script>
-function guardarCliente() {
+/*  function guardarCliente() {
   let datos = $('#formCatCliente').serialize();
   datos += '&id=' + $("#idCliente").val();
   $.ajax({
-    url: '<?php echo base_url('Cat_Cliente/set'); ?>',
+    url: '< ? php echo base_url('Cat_Cliente/setCliente'); ?>',
     type: "POST",
     data: datos,
     beforeSend: function() {
@@ -556,7 +561,7 @@ function guardarCliente() {
       }
     }
   });
-}
+  }*/
 
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
   if (accion == "activar cliente") {
@@ -610,7 +615,7 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
 }
 
 function accionCliente(accion, id) {
-  console.log("id del cliente:  "+ id +"  accion d a realizar:  " + accion)
+  console.log("id del cliente:  " + id + "  accion d a realizar:  " + accion)
   let opcion_motivo = $('#mensajeModal #opcion_motivo').val()
   let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
   let mensaje_comentario = $('#mensajeModal #mensaje_comentario').val()
@@ -675,52 +680,56 @@ function registrarAccesoCliente() {
 /*Funcion para  crear  acesos  para  los usuarios de los clientes, esta  captura  
 los datos  del formulario mdl_cat_cliente los transforma en JSon y los envia Medisnte  El protocolo POST 
   al archivo Cat_usuario a la funcion addUsuario */
-  function crearAccesoClientes() {
-    let tipoUsuarioSwitch = document.getElementById("tipoUsuarioSwitch");
-    let tipoUsuarioValue = tipoUsuarioSwitch.checked ? 1 : 0;
+function crearAccesoClientes() {
+  let tipoUsuarioSwitch = document.getElementById("tipoUsuarioSwitch");
+  let tipoUsuarioValue = tipoUsuarioSwitch.checked ? 1 : 0;
 
-    let datosArray = $('#formAccesoCliente').serializeArray();
-    datosArray.push({ name: 'tipo_usuario', value: tipoUsuarioValue });
+  let datosArray = $('#formAccesoCliente').serializeArray();
+  datosArray.push({
+    name: 'tipo_usuario',
+    value: tipoUsuarioValue
+  });
 
-    $.ajax({
-      url: '<?php echo base_url('Cat_Cliente/addUsuarioCliente'); ?>',
-      type: 'POST',
-      data: datosArray,
-      beforeSend: function () {
-        $('.loader').css("display", "block");
-      },
-      success: function (res) {
-        setTimeout(function () {
-          $('.loader').fadeOut();
-        }, 200);
-        console.log(res);
+  $.ajax({
+    url: '<?php echo base_url('Cat_Cliente/addUsuarioCliente'); ?>',
+    type: 'POST',
+    data: datosArray,
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      console.log(res);
 
-        try {
-          var data = JSON.parse(res);
+      try {
+        var data = JSON.parse(res);
 
-          if (data.codigo === 1) {
-            $("#nuevoAccesoClienteModal").modal('hide');
-            recargarTable();
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: 'Usuario guardado correctamente',
-              showConfirmButton: false,
-              timer: 2500
-            });
-          } else {
-            $("#nuevoAccesoClienteModal #msj_error").css('display', 'block').html(data.msg);
-          }
-        } catch (error) {
-          console.error("Error al analizar la respuesta JSON:", error);
-          console.log(res);
+        if (data.codigo === 1) {
+          $("#nuevoAccesoClienteModal").modal('hide');
+          recargarTable();
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Usuario guardado correctamente',
+            showConfirmButton: false,
+            timer: 2500
+          });
+          $('#formAccesoCliente¿')[0].reset();
+                } else {
+          $("#nuevoAccesoClienteModal #msj_error").css('display', 'block').html(data.msg);
         }
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.error("Error en la llamada AJAX:", textStatus, errorThrown);
-        console.log(xhr.responseText);
+      } catch (error) {
+        console.error("Error al analizar la respuesta JSON:", error);
+        console.log(res);
       }
-    });
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      console.error("Error en la llamada AJAX:", textStatus, errorThrown);
+      console.log(xhr.responseText);
+    }
+  });
 }
 
 

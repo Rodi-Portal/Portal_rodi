@@ -5,9 +5,10 @@ class Notificacion_model extends CI_Model{
 
   function get_by_usuario($idUsuario, $visto){
     $this->db
-    ->select("N.*,CONCAT(U.nombre,' ',U.paterno) as usuario")
+    ->select("N.*,CONCAT(dat.nombre,' ',dat.paterno) as usuario")
     ->from("notificacion as N")
-    ->join("usuario as U","U.id = N.usuario_destino")
+    ->join("usuarios_portal as U","U.id = N.usuario_destino")
+    ->join("datos_generales as dat","U.id_usuario = N.usuario_destino")
     ->where_in("N.visto", $visto)
     ->where("N.usuario_destino", $idUsuario)
     ->order_by("N.id", 'desc');

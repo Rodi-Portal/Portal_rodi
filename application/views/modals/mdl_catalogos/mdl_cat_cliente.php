@@ -3,204 +3,225 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_nuevo_modal">Nuevo cliente</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="cerrarModal">
+        <button type="button" class="close custom_modal_close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-      <div class="modal-body" id="formContainer">
-        <form id="formCatCliente">
-          <div id="paso1">
-            <div class="row">
-              <div class="col-md-12">
-                <h3 class="text-center">Generales</h3>
-                <label for="nombre">Nombre del cliente *</label>
-                <input type="text" class="form-control" id="nombre" name="nombre"
-                  placeholder="Ingrese el nombre del cliente" onkeyup="this.value=this.value.toUpperCase()" required>
-                <br>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12">
-                <label for="clave">Clave *</label>
-                <input type="text" class="form-control" id="clave" name="clave"
-                  placeholder="Ingrese la clave del cliente" maxlength="3" onkeyup="this.value=this.value.toUpperCase()"
-                  required>
-                <br>
-              </div>
+      <div class="modal-body">
+        <div>
+
+        </div>
+        <div class="alert alert-info">¡Bienvenido al registro de un nuevo cliente! Estamos aquí para facilitarte el
+          proceso. Puedes completar el formulario parcialmente si así lo deseas. Los campos marcados con un
+          asterisco (*) son obligatorios: Nombre y Clave
+        </div>
+        <div class="row justify-content-center align-items-center text-center mb-3">
+          <div class="col-1">
+            <button type="button" class="btn btn-primary" id="paso1">1</button>
+          </div>
+          <div class="col-1 barra_espaciadora_off" id="barra1"></div>
+          <div class="col-1">
+            <button type="button" class="btn btn-primary" id="paso2">2</button>
+          </div>
+          <div class="col-1 barra_espaciadora_off" id="barra2"></div>
+          <div class="col-1">
+            <button type="button" class="btn btn-primary" id="paso3">3</button>
+          </div>
+        </div>
+        <h5 class="text-center" id="titulo_paso"></h5>
+        <form id="formPaso1">
+          <div class="row">
+            <div class="col-md-12">
+
+              <label for="nombre">Nombre del cliente *</label>
+              <input type="text" class="form-control" data-field="Nombre del Cliente" data-required="required"
+                id="nombre" name="nombre" placeholder="Ingrese el nombre del cliente"
+                onkeyup="this.value=this.value.toUpperCase()" required>
+              <br>
             </div>
           </div>
-          <!-- Paso 2: Domicilio -->
-          <div id="paso2">
-            <div class="row">
-              <div class="col-md-12">
-                <h3 class="text-center">Domicilio</h3>
-              </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label for="clave">Clave *</label>
+              <input type="text" class="form-control" data-field="Clave" id="clave" name="clave"
+                data-required="required" placeholder="Ingrese la clave del cliente" maxlength="3"
+                onkeyup="this.value=this.value.toUpperCase()" required>
+              <br>
             </div>
-
-            <div class="row">
-              <div class="col-md-6">
-                <label for="item-details-countryValue">País *</label>
-                <select class="form-control" id="item-details-countryValue" name="pais_name">
-                  <!-- Opciones de país cargadas dinámicamente -->
-                </select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label for="item-details-stateValue">Estado *</label>
-                <select class="form-control" id="item-details-stateValue" name="state_name">
-                  <option value="NULL">Primero Selecciona un Pais</option>
-                  <!-- Opciones de estado cargadas dinámicamente -->
-                </select>
-                <br>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <label for="item-details-cityValue">Ciudad *</label>
-                <select class="form-control" id="item-details-cityValue" name="ciudad_name">
-                  <option value="NULL">Primero Selecciona un Estado</option>
-                  <!-- Opciones de ciudad cargadas dinámicamente -->
-                </select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label for="colonia">Colonia *</label>
-                <input type="text" class="form-control" id="colonia" name="colonia" placeholder="Ingrese la colonia"
-                  required>
-                <br>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12">
-                <label for="calle">Calle *</label>
-                <input type="text" class="form-control" id="calle" name="calle" placeholder="Ingrese la calle" required>
-                <br>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-3 mx-auto">
-                <label for="numero_exterior">Número Exterior *</label>
-                <input type="number" class="form-control" id="numero_exterior" name="numero_exterior"
-                  placeholder="Ingrese el número exterior" required>
-                <br>
-              </div>
-              <div class="col-md-3 mx-auto">
-                <label for="numero_interior">Número Interior</label>
-                <input type="text" class="form-control" id="numero_interior" name="numero_interior"
-                  placeholder="Ingrese el número interior">
-                <br>
-              </div>
-              <div class="col-md-3 mx-auto">
-                <label for="cp">Codigo Postal</label>
-                <input type="number" class="form-control" id="cp" name="numero_cp"
-                  placeholder="Ingrese el codigo postal">
-                <br>
-              </div>
-            </div>
-            <br>
           </div>
 
-          <!-- Paso 3 -->
-          <div id="paso3">
-            <div class="row">
-              <div class="col-md-12">
-                <h3 class="text-center">Datos de Facturación</h3>
-                <label for="razon_social">Razón Social *</label>
-                <input type="text" class="form-control" id="razon_social" name="razon_social"
-                  placeholder="Ingrese la razón social" required>
-                <br>
-              </div>
+        </form>
+        <form id="formPaso2" class="hidden">
+          <div class="row">
+            <div class="col-md-12">
+
+              <label for="razon_social">Razón Social</label>
+              <input type="text" class="form-control" id="razon_social" name="razon_social"
+                placeholder="Ingrese la razón social" >
+              <br>
             </div>
-            <hr style="border-top: 1px solid #ccc;">
-            <div class="row">
-              <div class="col-md-6">
-                <label for="telefono">Teléfono *</label>
-                <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese el teléfono"
-                  required>
-                <input type="hidden" class="form-control" id="idCliente" name="idCliente" >
-                <input type="hidden" id="idDomicilios" name="idDomicilios" class="form-control">
-                <input type="hidden" id="idFacturacion" name="idFacturacion" class="form-control">
-                <input type="hidden" id="idGenerales" name="idGenerales" class="form-control">
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label for="correo">Correo *</label>
-                <input type="text" class="form-control" id="correo" name="correo"
-                  placeholder="Ingrese el correo electrónico" required>
-                <br>
-              </div>
+          </div>
+          <hr style="border-top: 1px solid #ccc;">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="telefono">Teléfono</label>
+              <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese el teléfono"
+                >
+              <input type="hidden" class="form-control" id="idCliente" name="idCliente">
+              <input type="hidden" id="idDomicilios" name="idDomicilios" class="form-control">
+              <input type="hidden" id="idFacturacion" name="idFacturacion" class="form-control">
+              <input type="hidden" id="idGenerales" name="idGenerales" class="form-control">
+              <br>
             </div>
-            <div class="row">
-              <div class="col-md-6">
-                <label for="nombre_contacto">Nombre Contacto *</label>
-                <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto"
-                  placeholder="Nombre " required>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label for="apellido_contacto">Apellido Contacto *</label>
-                <input type="text" class="form-control" id="apellido_contacto" name="apellido_contacto"
-                  placeholder="Apellido paterno" required>
-                <br>
-              </div>
+            <div class="col-md-6">
+              <label for="correo">Correo</label>
+              <input type="text" class="form-control" id="correo" name="correo"
+                placeholder="Ingrese el correo electrónico" >
+              <br>
             </div>
-            <hr style="border-top: 1px solid #ccc;">
-            <div class="row">
-              <div class="col-md-6">
-                <label for="rfc">RFC *</label>
-                <input type="text" class="form-control" id="rfc" name="rfc" placeholder="Ingrese el RFC" required>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label for="regimen">Régimen *</label>
-                <input type="text" class="form-control" id="regimen" name="regimen" placeholder="Ingrese el régimen"
-                  required>
-                <br>
-              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="nombre_contacto">Nombre Contacto</label>
+              <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto" placeholder="Nombre "
+                >
+              <br>
             </div>
-            <div class="row">
-              <div class="col-md-6">
-                <label for="forma_pago">Forma de Pago *</label>
-                <select class="form-control" id="forma_pago" name="forma_pago">
-                  <option value="una_sola_exhibicion">Una sola exhibición</option>
-                  <option value="pago_parcialidades">Pago en parcialidades</option>
-                  <option value="pago_diferido">Pago en diferido</option>
-                </select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label for="metodo_pago">Método de Pago *</label>
-                <select class="form-control" id="metodo_pago" name="metodo_pago">
-                  <option value="efectivo">Efectivo</option>
-                  <option value="cheque">Cheque de nómina</option>
-                  <option value="transferencia">Transferencia electrónica</option>
-                  <option value="tarjeta_credito">Tarjeta de crédito</option>
-                  <option value="tarjeta_debito">Tarjeta de débito</option>
-                </select>
-                <br>
-              </div>
+            <div class="col-md-6">
+              <label for="apellido_contacto">Apellido Contacto</label>
+              <input type="text" class="form-control" id="apellido_contacto" name="apellido_contacto"
+                placeholder="Apellido paterno" >
+              <br>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <label for="uso_cfdi">Uso de CFDI *</label>
-                <input type="text" class="form-control" id="uso_cfdi" name="uso_cfdi"
-                  placeholder="Ingrese el uso de CFDI" value="Gastos Generales" required>
-                <br>
-              </div>
+          </div>
+          <hr style="border-top: 1px solid #ccc;">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="rfc">RFC</label>
+              <input type="text" class="form-control" id="rfc" name="rfc" placeholder="Ingrese el RFC" >
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="regimen">Régimen</label>
+              <input type="text" class="form-control" id="regimen" name="regimen" placeholder="Ingrese el régimen"
+                >
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="forma_pago">Forma de Pago</label>
+              <select class="form-control" id="forma_pago" name="forma_pago">
+                <option value="una_sola_exhibicion">Una sola exhibición</option>
+                <option value="pago_parcialidades">Pago en parcialidades</option>
+                <option value="pago_diferido">Pago en diferido</option>
+              </select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="metodo_pago">Método de Pago</label>
+              <select class="form-control" id="metodo_pago" name="metodo_pago">
+                <option value="efectivo">Efectivo</option>
+                <option value="cheque">Cheque de nómina</option>
+                <option value="transferencia">Transferencia electrónica</option>
+                <option value="tarjeta_credito">Tarjeta de crédito</option>
+                <option value="tarjeta_debito">Tarjeta de débito</option>
+              </select>
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label for="uso_cfdi">Uso de CFDI</label>
+              <input type="text" class="form-control" id="uso_cfdi" name="uso_cfdi" placeholder="Ingrese el uso de CFDI"
+                value="Gastos Generales" >
+              <br>
             </div>
           </div>
         </form>
+        <form id="formPaso3" class="hidden">
+          <!-- Paso 2: Domicilio -->
+          <div class="row">
+
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="item-details-countryValue">País</label>
+              <select class="form-control" id="item-details-countryValue" name="pais_name">
+                <!-- Opciones de país cargadas dinámicamente -->
+              </select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="item-details-stateValue">Estado</label>
+              <select class="form-control" id="item-details-stateValue" name="state_name">
+                <option value="NULL">Primero Selecciona un Pais</option>
+                <!-- Opciones de estado cargadas dinámicamente -->
+              </select>
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="item-details-cityValue">Ciudad</label>
+              <select class="form-control" id="item-details-cityValue" name="ciudad_name">
+                <option value="NULL">Primero Selecciona un Estado</option>
+                <!-- Opciones de ciudad cargadas dinámicamente -->
+              </select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="colonia">Colonia</label>
+              <input type="text" class="form-control" id="colonia" name="colonia" placeholder="Ingrese la colonia"
+                >
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label for="calle">Calle</label>
+              <input type="text" class="form-control" id="calle" name="calle" placeholder="Ingrese la calle" >
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mx-auto">
+              <label for="numero_exterior">Número Exterior</label>
+              <input type="number" class="form-control" id="numero_exterior" name="numero_exterior"
+                placeholder="Ingrese el número exterior" >
+              <br>
+            </div>
+            <div class="col-md-3 mx-auto">
+              <label for="numero_interior">Número Interior</label>
+              <input type="text" class="form-control" id="numero_interior" name="numero_interior"
+                placeholder="Ingrese el número interior">
+              <br>
+            </div>
+            <div class="col-md-3 mx-auto">
+              <label for="cp">Codigo Postal</label>
+              <input type="number" class="form-control" id="cp" name="numero_cp" placeholder="Ingrese el codigo postal">
+              <br>
+            </div>
+          </div>
+          <br>
+        </form>
+        <!-- Paso 3 -->
+
       </div>
-
-
-      <div id="msj_error" class="alert alert-danger hidden"></div>
-      <hr style="border-top: 1px solid #ccc;">
-      <div class="modal-footer">
-
-        <button type="button" class="btn btn-secondary" id="btnAnterior">Anterior</button>
-        <button type="button" class="btn btn-primary" id="btnSiguiente">Siguiente</button>
-        <button type="button" class="btn btn-success" id="btnGuardar" onclick="guardarCliente()">Guardar</button>
+      <div class="modal-footer custom_modal_footer">
+        <button type="button" class="btn btn-primary btn-icon-split" id="btnRegresar">
+          <span class="icon text-white-50">
+            <i class="fas fa-arrow-left"></i>
+          </span>
+          <span class="text">Regresar</span>
+        </button>
+        <button type="button" class="btn btn-success btn-icon-split" id="btnContinuar">
+          <span class="text"></span>
+          <span class="icon text-white-50">
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </button>
       </div>
     </div>
   </div>
@@ -373,184 +394,7 @@
     </div>
   </div>
 </div>
+<input type="hidden" id="base_url" value="<?php echo base_url('Cat_Cliente/setCliente'); ?>">
 
-<script>
-function registrarCliente() {
-  // Resto de tu código...
+<script src="<?php echo base_url() ?>js/apis/domicilios.js"></script>
 
-  // Llamada AJAX para obtener el token y cargar países, estados y ciudades
-  var auth_token = "MUJkuDQTBwg6L_OLJghlvf5LDwdas3Tnm5EaF3Kny_7GIUXTah_7nbuE-K15HdxxTxo";
-
-  // Agrega la lógica para cargar países, estados y ciudades aquí
-  cargarPaisesEstadosCiudades(auth_token);
-  $(document).ready(function() {
-
-    // Event listener para el botón "Siguiente"
-    $("#btnSiguiente").on("click", function() {
-      nextStep();
-    });
-    $("#cerrarModal").on("click", function() {
-            // Resetea el formulario al cerrar el modal
-            $("#formCatCliente")[0].reset();
-        });
-
-    // Event listener para el botón "Anterior"
-    $("#btnAnterior").on("click", function() {
-      previousStep();
-    });
-    // Función para avanzar al siguiente paso
-    function nextStep() {
-      console.log("Avanzando al siguiente paso");
-      if (currentStep < totalSteps) {
-        currentStep++;
-        loadStep(currentStep);
-      }
-    }
-
-    // Función para retroceder al paso anterior
-    function previousStep() {
-      console.log("Retrocediendo al paso anterior");
-      if (currentStep > 1) {
-        currentStep--;
-        loadStep(currentStep);
-      }
-    }
-
-    // Cargar los países, estados y ciudades al abrir el modal
-
-
-    $("#newModal").on("hide.bs.modal", function() {
-      $("#newModal input").val("");
-      $("#newModal #msj_error").css('display', 'none');
-      $("#titulo_nuevo_modal").text("Nuevo cliente");
-    });
-
-    // Variables para el control del formulario por pasos
-    var currentStep = 1;
-    var totalSteps = 3;
-
-    // Función para cargar el contenido del formulario según el paso
-    function loadStep(step) {
-      console.log("Cargando paso " + step);
-      // Ocultar todos los pasos
-      $("#formContainer > div").hide();
-      // Mostrar solo el paso actual
-      $("#paso" + step).show();
-
-      // Lógica específica del paso, como mostrar/ocultar botones
-      if (currentStep === 1) {
-        $("#btnAnterior").hide();
-        $("#btnSiguiente").show();
-        $("#btnGuardar").show();
-      } else if (currentStep === totalSteps) {
-        $("#btnAnterior").show();
-        $("#btnSiguiente").hide();
-        $("#btnGuardar").show();
-      } else {
-        $("#btnAnterior").show();
-        $("#btnSiguiente").show();
-        $("#btnGuardar").show();
-      }
-
-    }
-
-    // Cargar el primer paso al abrir el modal
-    loadStep(currentStep);
-  });
-
-}
-
-
-function cargarPaisesEstadosCiudades(auth_token) {
-  $.ajax({
-  
-    url: 'https://www.universal-tutorial.com/api/getaccesstoken',
-    method: 'GET',
-    headers: {
-      "Accept": "application/json",
-      "api-token": auth_token,
-      "user-email": "rodi.control@gmail.com"
-    },
-    success: function(data) {
-      if (data.auth_token) {
-        var auth_token = data.auth_token;
-        $.ajax({
-          url: 'https://www.universal-tutorial.com/api/countries/',
-          method: 'GET',
-          headers: {
-            "Authorization": "Bearer " + auth_token,
-            "Accept": "application/json"
-          },
-          success: function(data) {
-            var countries = data;
-            var comboCountries = "<option value=''>Seleccionar</option>";
-            countries.forEach(element => {
-              comboCountries += '<option value="' + element['country_name'] + '">' + element[
-                'country_name'] + '</option>';
-            });
-
-            $("#item-details-countryValue").html(comboCountries);
-
-            // State list
-            $("#item-details-countryValue").on("change", function() {
-              var country = this.value;
-              $.ajax({
-                url: 'https://www.universal-tutorial.com/api/states/' + country,
-                method: 'GET',
-                headers: {
-                  "Authorization": "Bearer " + auth_token,
-                  "Accept": "application/json"
-                },
-                success: function(data) {
-                  var states = data;
-                  var comboStates = "<option value=''>Estados de: " + country + "</option>";
-                  states.forEach(element => {
-                    comboStates += '<option value="' + element['state_name'] + '">' + element[
-                      'state_name'] + '</option>';
-                  });
-                  $("#item-details-stateValue").html(comboStates);
-                  // City list
-                  $("#item-details-stateValue").on("change", function() {
-                    var state = this.value;
-                    $.ajax({
-                      url: 'https://www.universal-tutorial.com/api/cities/' + state,
-                      method: 'GET',
-                      headers: {
-                        "Authorization": "Bearer " + auth_token,
-                        "Accept": "application/json"
-                      },
-                      success: function(data) {
-                        var cities = data;
-                        var comboCities = "<option value=''>Ciudades de: " + state +
-                          "</option>"; // Aquí se indica el estado seleccionado
-                        cities.forEach(element => {
-                          comboCities += '<option value="' + element['city_name'] +
-                            '">' + element['city_name'] + '</option>';
-                        });
-                        $("#item-details-cityValue").html(comboCities);
-                      },
-                      error: function(e) {
-                        console.log("Error al obtener ciudades: " + e);
-                      }
-                    });
-                  });
-                },
-                error: function(e) {
-                  console.log("Error al obtener estados: " + e);
-                }
-              });
-
-            });
-          },
-          error: function(e) {
-            console.log("Error al obtener países: " + e);
-          }
-        });
-      }
-    },
-    error: function(e) {
-      console.log("Error al obtener el token de acceso: " + e);
-    }
-  });
-}
-</script>

@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-require_once(APPPATH.'libraries/custom_validation_rules.php');
+
 
 
 class Cat_Cliente extends CI_Controller{
@@ -11,13 +11,21 @@ class Cat_Cliente extends CI_Controller{
       redirect('Login/index');
     }
     
-		$this->load->library('custom_validation_rules');
+	
     $this->load->library('usuario_sesion');
 
 		$this->usuario_sesion->checkStatusBD();
 	}
+  /*
   
-  function set() {
+  Esta  funcion sirve  para Insertar   o editar clientes  dentro de la misma,  al insertar  tambien crea  
+  
+  */
+  
+  
+  
+  
+  function setCliente() {
   
     $idCliente = $this->input->post('idCliente');
 
@@ -66,31 +74,32 @@ class Cat_Cliente extends CI_Controller{
     $date = date('Y-m-d H:i:s');
 
     $datos_generales = array(
-        'nombre' => $this->input->post('nombre_contacto') ?? null,
-        'paterno' => $this->input->post('apellido_contacto') ?? null,
-        'correo' => $this->input->post('correo') ?? null,
-        'telefono' => $this->input->post('telefono') ?? null
+      'nombre' => ($this->input->post('nombre_contacto') !== '') ? $this->input->post('nombre_contacto') : null,
+      'paterno' => ($this->input->post('apellido_contacto') !== '') ? $this->input->post('apellido_contacto') : null,
+      'correo' => ($this->input->post('correo') !== '') ? $this->input->post('correo') : null,
+      'telefono' => ($this->input->post('telefono') !== '') ? $this->input->post('telefono') : null
     );
-
+  
     $datos_domicilios = array(
-        'pais' => $this->input->post('pais_name') ?: null,
-        'estado' => $this->input->post('state_name') ?: null,
-        'ciudad' => $this->input->post('ciudad_name') ?: null,
-        'colonia' => $this->input->post('colonia') ?: null,
-        'calle' => $this->input->post('calle') ?: null,
-        'exterior' => $this->input->post('numero_exterior') ?: null,
-        'interior' => $this->input->post('numero_interior') ?: null,
-        'cp' => $this->input->post('numero_cp') ?: null
+      'pais' => ($this->input->post('pais_name') !== '') ? $this->input->post('pais_name') : null,
+      'estado' => ($this->input->post('state_name') !== '') ? $this->input->post('state_name') : null,
+      'ciudad' => ($this->input->post('ciudad_name') !== '') ? $this->input->post('ciudad_name') : null,
+      'colonia' => ($this->input->post('colonia') !== '') ? $this->input->post('colonia') : null,
+      'calle' => ($this->input->post('calle') !== '') ? $this->input->post('calle') : null,
+      'exterior' => ($this->input->post('numero_exterior') !== '') ? $this->input->post('numero_exterior') : null,
+      'interior' => ($this->input->post('numero_interior') !== '') ? $this->input->post('numero_interior') : null,
+      'cp' => ($this->input->post('numero_cp') !== '') ? $this->input->post('numero_cp') : null
     );
-
+  
     $datos_factura = array(
-        'razon_social' => $this->input->post('razon_social') ?: null,
-        'rfc' => $this->input->post('rfc') ?: null,
-        'regimen' => $this->input->post('regimen') ?: null,
-        'forma_pago' => $this->input->post('forma_pago') ?: null,
-        'metodo_pago' => $this->input->post('metodo_pago') ?: null,
-        'uso_cfdi' => $this->input->post('uso_cfdi') ?: null
+      'razon_social' => ($this->input->post('razon_social') !== '') ? $this->input->post('razon_social') : null,
+      'rfc' => ($this->input->post('rfc') !== '') ? $this->input->post('rfc') : null,
+      'regimen' => ($this->input->post('regimen') !== '') ? $this->input->post('regimen') : null,
+      'forma_pago' => ($this->input->post('forma_pago') !== '') ? $this->input->post('forma_pago') : null,
+      'metodo_pago' => ($this->input->post('metodo_pago') !== '') ? $this->input->post('metodo_pago') : null,
+      'uso_cfdi' => ($this->input->post('uso_cfdi') !== '') ? $this->input->post('uso_cfdi') : null
     );
+  
 
     $datos_cliente = array(
         'creacion' => $date,
@@ -106,35 +115,47 @@ class Cat_Cliente extends CI_Controller{
     );
 
     $idCliente = $this->input->post('idCliente');
-
-
+    $correo = $this->input->post('correo');
+    $idGenerales = $this->input->post('idGenerales');
+    
 
 
     $existe = $this->cat_cliente_model->existe($this->input->post('nombre'),$this->input->post('clave'),$idCliente);
+   // echo $existe."+ aqui existe";
+    //return;
       if($existe ==0){
       $hayId = $this->cat_cliente_model->check($idCliente);
         if($hayId > 0){
-            $datos_cliente = array(
+          $datos_cliente = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
                 'id_datos_generales' => $this->input->post('idGenerales'),
                 'id_domicilios' => $this->input->post('idDomicilios'),
                 'id_datos_facturacion' => $this->input->post('idFacturacion'),
-            );
+          );
+          $existeCorreo =  $this->generales_model->correoExiste($correo, $idGenerales);
           
+          if ($existeCorreo !== 0) {
+            $msj = array(
+              'codigo' => 2,
+              'msg' => 'El correo proporcionado ya existe'
+            );
+            echo json_encode($msj);
+            return; // Detener el flujo del código ya que hay un error
+          }
           $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, );
           $permiso = array(
             'id_usuario' => $id_usuario,
             'cliente' => $this->input->post('nombre')
           );
+          
           $this->cat_cliente_model->editPermiso($permiso, $this->input->post('id'));
           $msj = array(
             'codigo' => 1,
-            'msg' => 'success'
+            'msg' => 'Cliente actualizado exitosamente'
           );
         }
         else{
-          $correo = $this->input->post('correo');
       
           $existeCorreo =  $this->generales_model->correoExiste($correo);
 
@@ -145,10 +166,10 @@ class Cat_Cliente extends CI_Controller{
             );
             echo json_encode($msj);
             return; // Detener el flujo del código ya que hay un error
-        }
+          }
         
           $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
-
+          //echo $idCliente."   este  es el id obtenido ";
           $url = "Cliente_General/index/".$idCliente;
           $data_url = array(
             'url' => $url
@@ -163,9 +184,10 @@ class Cat_Cliente extends CI_Controller{
           $this->cat_cliente_model->addPermiso($permiso);
           $msj = array(
             'codigo' => 1,
-            'msg' => 'success'
+            'msg' => 'Cliente registrado exitosamente '
           );
-      }
+        
+       }
       
     }
       else{
@@ -173,10 +195,11 @@ class Cat_Cliente extends CI_Controller{
         'codigo' => 2,
           'msg' => 'El nombre del cliente y/o clave ya existe'
       );
-    }
+      }
     }
     echo json_encode($msj);
   }
+
   function index(){
     $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
     $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
@@ -268,9 +291,9 @@ class Cat_Cliente extends CI_Controller{
         'id_usuario' => $id_usuario,
         'status' => 0
       );
-      $this->cat_cliente_model->editCliente($idCliente, $cliente );
-      $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente );
-      $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
+      $this->cat_subclientes_model->editSubcliente($idCliente, $cliente );
+      $this->cat_subclientes_model->editAccesoUsuarioCliente($idCliente, $cliente );
+      $this->cat_subclientes_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
       $msj = array(
         'codigo' => 1,
         'msg' => 'Cliente inactivado correctamente'
@@ -424,7 +447,7 @@ class Cat_Cliente extends CI_Controller{
     $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
     $this->form_validation->set_rules('cliente', 'Cliente', 'required|trim');
  
-    $this->form_validation->set_rules('correo_cliente_name', 'Correo', 'required|trim|valid_email|is_unique[usuario_cliente.correo]');
+    $this->form_validation->set_rules('correo_cliente_name', 'Correo', 'required|trim|valid_email|is_unique[datos_generales.correo]');
     $this->form_validation->set_rules('password_name', 'Contraseña', 'required|trim');
 
     $this->form_validation->set_message('required','El campo %s es obligatorio');
@@ -482,7 +505,7 @@ class Cat_Cliente extends CI_Controller{
           $cliente = array(
             'url' => $url
           );
-          $this->cat_cliente_model->edit($cliente, $idCliente);
+          $this->cat_cliente_model->editCliente($idCliente, $cliente );
           $permiso = array(
             'id_usuario' => $id_usuario,
             'cliente' => $dataCliente->nombre,

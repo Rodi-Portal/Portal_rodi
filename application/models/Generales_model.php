@@ -16,6 +16,7 @@ function addDomicilios($datosDomicilios){
     return $this->db->insert_id();
   }
 function editDatosGenerales($idDatosGenerales, $datosGenerales){
+   
     try {
         $this->db->where('id', $idDatosGenerales);
         $this->db->update('datos_generales', $datosGenerales);
@@ -76,7 +77,21 @@ public function correoExiste($correo, $idDatos = null) {
     return $query->num_rows();
 }
 
+function editDatosFacturacion($idDatosFacturacion, $datosFacturacion){
+    try {
+        $this->db->where('id', $idDatosFacturacion);
+        $this->db->update('datos_facturacion', $datosFacturacion);
+    } catch (Exception $e) {
+        log_message('error', 'Error en editDatosFacturacion: ' . $e->getMessage());
+        // Puedes lanzar una excepción personalizada o retornar un código de error, dependiendo de tus necesidades.
+        return false;
+    }
+}
 
+function addDatosFacturacion($datosFacturacion){
+  $this->db->insert("datos_facturacion", $datosFacturacion);
+  return $this->db->insert_id();
+}
 
 
 }

@@ -36,9 +36,9 @@ class Cat_cliente_model extends CI_Model{
       ->from('cliente AS c')
       ->join("datos_generales AS dg", "c.id_datos_generales = dg.id")
       ->join("domicilios AS d", "c.id_domicilios = d.id")
-      ->join("datos_facturacion_cliente AS f", "c.id_datos_facturacion = f.id")
-      ->join("datos_generales AS dgc", "c.id_datos_generales = dgc.id", "left")
-      ->where(['c.id_portal' => 1, 'c.eliminado' => 0])
+      ->join("datos_facturacion AS f", "c.id_datos_facturacion = f.id")
+      ->join("datos_generales AS dgc", "c.id_datos_generales = dgc.id")
+      ->where(['c.id_portal' => $portal, 'c.eliminado' => 0])
       ->order_by('c.creacion', 'ASC');
 
         $query = $this->db->get();
@@ -97,7 +97,7 @@ function check($id){
         $id_domicilios = $this->generales_model->addDomicilios($datosDomicilios);
 
         // Agregar los datos de facturación y obtener el ID
-        $id_datosFacturacion = $this->addDatosFacturacion($datosFacturacion);
+        $id_datosFacturacion =  $this->generales_model->addDatosFacturacion($datosFacturacion);
 
         // Asignar los IDs obtenidos al cliente
         $cliente['id_datos_generales'] = $id_datosGenerales;
@@ -106,7 +106,7 @@ function check($id){
 
         // Insertar el cliente en la tabla correspondiente
         $this->db->insert("cliente", $cliente);
-
+        $idCliente = $this->db->insert_id();
         // Completar la transacción
         $this->db->trans_complete();
 
@@ -116,9 +116,9 @@ function check($id){
             // Puedes lanzar una excepción o retornar un código de error, dependiendo de tu lógica de manejo de errores.
             return false;
         }
-
         // La transacción fue exitosa, retornar el ID del cliente insertado
-        return $this->db->insert_id();
+         return $idCliente;
+
     } catch (Exception $e) {
         // Manejar la excepción si ocurre algún error
         // Puedes lanzar una excepción personalizada o loggear el error, dependiendo de tus necesidades.
@@ -155,26 +155,7 @@ function check($id){
 }
 
 
-  function addDatosFacturacion($datosFacturacion){
-    $this->db->insert("datos_facturacion_cliente", $datosFacturacion);
-    return $this->db->insert_id();
-  }
-
-  function editDatosFacturacion($idDatosFacturacion, $datosFacturacion){
-    try {
-        $this->db->where('id', $idDatosFacturacion);
-        $this->db->update('datos_facturacion_cliente', $datosFacturacion);
-    } catch (Exception $e) {
-        log_message('error', 'Error en editDatosFacturacion: ' . $e->getMessage());
-        // Puedes lanzar una excepción personalizada o retornar un código de error, dependiendo de tus necesidades.
-        return false;
-    }
-}
-
-  function addPermiso($permiso){
-    $this->db->insert("permiso", $permiso);
-  }
-  function editCliente($idCliente, $cliente ,$datosFacturacion = null,   $datosDomicilios = null, $datosGenerales = null, ) {
+  function editCliente($idCliente, $cliente ,$datosFacturacion = null,   $datosDomicilios = null, $datosGenerales = null ) {
     try {
         // Iniciar la transacción
         $this->db->trans_start();
@@ -191,7 +172,7 @@ function check($id){
 
         // Editar los datos de facturación si se proporcionaron
         if (!is_null($datosFacturacion)) {
-            $this->editDatosFacturacion($cliente['id_datos_facturacion'], $datosFacturacion);
+            $this->generales_model->editDatosFacturacion($cliente['id_datos_facturacion'], $datosFacturacion);
         }
 
         // Actualizar el cliente en la tabla correspondiente si se proporcionó
@@ -216,11 +197,19 @@ function check($id){
         return false;
     }
 }
+
+ 
+
+  function addPermiso($permiso){
+    $this->db->insert("permiso", $permiso);
+  }
+ 
   function editPermiso($permiso, $id_cliente){
     $this->db
     ->where('id_cliente', $id_cliente)
     ->update('permiso', $permiso);
   }
+  
   function getById($idCliente){
     $this->db
     ->select('*')
