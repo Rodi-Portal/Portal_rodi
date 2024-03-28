@@ -42,6 +42,29 @@ function assignToUser(url, view) {
     }
   });
 }
+function cargarClientesActivos(url) {
+  $.ajax({
+    url: url,
+    type: 'post',
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      if (res != 0) {
+        $('#id_cliente').empty();
+        var dato = JSON.parse(res);
+        $('#id_cliente').append('<option value="">Selecciona</option>');
+        for (let i = 0; i < dato.length; i++) {
+          $('#id_cliente').append('<option value="' + dato[i]['id'] + '">' + dato[i]['nombre'] + '</option>');
+        }
+        $('#nuevoAccesoClienteModal').modal('show');
+      }
+    }
+  });
+}
 //* #2 Documentacion Excel - Funciones Base - Carga/Subida de registros desde formato CSV - Reclutamiento
 function uploadCSV(url){
   var docs = new FormData();
@@ -103,6 +126,8 @@ function uploadCSV(url){
     }
   });
 }
+
+
 //*
 function deleteUserOrder(id, url){
   $('#mensajeModal').modal('hide');

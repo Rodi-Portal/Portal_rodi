@@ -12,22 +12,26 @@
           <div class="row mb-3">
             <div class="col-12">
               <label>Asignar requisición *</label>
-              <select name="req_asignada" id="req_asignada" class="form-control obligado" data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona"></select>
+              <select name="req_asignada" id="req_asignada" class="form-control obligado" data-live-search="true"
+                data-style="btn-custom-selectpicker" title="Selecciona"></select>
               <br>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
               <label>Nombre(s) *</label>
-              <input type="text" class="form-control obligado" name="nombre" id="nombre" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control obligado" name="nombre" id="nombre"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
             <div class="col-sm-12 col-md-4">
               <label>Primer apellido *</label>
-              <input type="text" class="form-control obligado" name="paterno" id="paterno" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control obligado" name="paterno" id="paterno"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
             <div class="col-sm-12 col-md-4">
               <label>Segundo apellido</label>
-              <input type="text" class="form-control" name="materno" id="materno" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control" name="materno" id="materno"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
           </div>
           <div class="row mb-3">
@@ -47,7 +51,7 @@
                 <option value="">Selecciona</option>
                 <?php
                 foreach ($medios as $m) { ?>
-                  <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
+                <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
                 <?php  
                 } ?>
                 <option value="0">N/A</option>
@@ -73,6 +77,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="nuevaAccionModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -91,7 +97,7 @@
                 <option value="">Selecciona</option>
                 <?php
                 foreach ($acciones as $a) { ?>
-                  <option value="<?php echo $a->id.':'.$a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
+                <option value="<?php echo $a->id.':'.$a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
                 <?php   
                 } ?>
               </select>
@@ -115,6 +121,7 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="historialModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
@@ -133,6 +140,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="estatusRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -152,8 +161,10 @@
                 <?php
                 if ($reqs) {
                   foreach ($reqs as $req) { ?>
-                    <option value="<?php echo $req->id; ?>"><?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?></option>
-                  <?php   
+                <option value="<?php echo $req->id; ?>">
+                  <?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?>
+                </option>
+                <?php   
                   }
                 } ?>
               </select>
@@ -175,7 +186,7 @@
           <div class="row">
             <div class="col-12">
               <label>Comentarios *</label>
-             <textarea class="form-control" name="comentario_estatus" id="comentario_estatus" rows="4"></textarea>
+              <textarea class="form-control" name="comentario_estatus" id="comentario_estatus" rows="4"></textarea>
               <br>
             </div>
           </div>
@@ -189,6 +200,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="reactivarRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -207,8 +220,10 @@
               <?php
               if ($reqs) {
                 foreach ($reqs as $req) { ?>
-                  <option value="<?php echo $req->id; ?>"><?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?></option>
-                <?php   
+              <option value="<?php echo $req->id; ?>">
+                <?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?>
+              </option>
+              <?php   
                 }
               } ?>
             </select>
@@ -224,6 +239,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="empleosModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -242,6 +259,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="registroCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -252,23 +271,28 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-warning text-center"><h5>El aspirante será registrado como candidato para RODI RECLUTAMIENTO</h5></div>
+        <div class="alert alert-warning text-center">
+          <h5>El aspirante será registrado como candidato para RODI RECLUTAMIENTO</h5>
+        </div>
         <div class="alert alert-info text-center">Datos Generales</div>
         <form id="nuevoRegistroForm">
           <div class="row">
             <div class="col-4">
               <label>Nombre(s) *</label>
-              <input type="text" class="form-control obligado" name="nombre_registro" id="nombre_registro" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control obligado" name="nombre_registro" id="nombre_registro"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
               <label>Apellido paterno *</label>
-              <input type="text" class="form-control obligado" name="paterno_registro" id="paterno_registro" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control obligado" name="paterno_registro" id="paterno_registro"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
               <label>Apellido materno</label>
-              <input type="text" class="form-control" name="materno_registro" id="materno_registro" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control" name="materno_registro" id="materno_registro"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
           </div>
@@ -283,24 +307,25 @@
             <?php 
             $id_cliente = $this->uri->segment(3);
             if($id_cliente != 172){ ?>
-              <div class="col-4">
-                <label>Puesto *</label>
-                <select name="puesto" id="puesto" class="form-control"></select>
-                <br>
-              </div>
+            <div class="col-4">
+              <label>Puesto *</label>
+              <select name="puesto" id="puesto" class="form-control"></select>
+              <br>
+            </div>
             <?php 
             }
             else{ ?>
-              <div class="col-4">
-                <label>Puesto *</label>
-                <input type="text" class="form-control obligado" name="puesto" id="puesto">
-                <br>
-              </div>
+            <div class="col-4">
+              <label>Puesto *</label>
+              <input type="text" class="form-control obligado" name="puesto" id="puesto">
+              <br>
+            </div>
             <?php
             } ?>
             <div class="col-4">
               <label>Teléfono *</label>
-              <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro" maxlength="16">
+              <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro"
+                maxlength="16">
               <br>
             </div>
           </div>
@@ -311,8 +336,8 @@
                 <?php
                   foreach ($paises as $p) {
                     $default = ($p->nombre == 'México')? 'selected' : ''; ?>
-                    <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
-                  <?php
+                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <?php
                   } 
                 ?>
               </select>
@@ -325,7 +350,9 @@
             </div>
             <div class="col-4">
               <label>CURP</label>
-              <input type="text" class="form-control obligado" name="curp_registro" id="curp_registro" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()" maxlength="18">
+              <input type="text" class="form-control obligado" name="curp_registro" id="curp_registro"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()"
+                maxlength="18">
               <br>
             </div>
           </div>
@@ -353,7 +380,7 @@
                 <option value="0" selected>N/A</option>
                 <?php
                 foreach ($paquetes_antidoping as $paq) { ?>
-                  <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>
+                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>
                 <?php
                 } ?>
               </select>
@@ -392,6 +419,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="historialComentariosModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
@@ -402,7 +431,8 @@
         </button>
       </div>
       <div class="modal-body">
-        <div id="div_historial_comentario" class="escrolable"></div><hr>
+        <div id="div_historial_comentario" class="escrolable"></div>
+        <hr>
         <div class="row">
           <div class="col-12">
             <label for="comentario_bolsa">Registra un nuevo comentario o estatus *</label>
@@ -411,7 +441,8 @@
         </div>
         <div class="row mt-2">
           <div class="col-12">
-            <button type="button" class="btn btn-primary text-lg btn-block" id="btnComentario">Guardar comentario</button>
+            <button type="button" class="btn btn-primary text-lg btn-block" id="btnComentario">Guardar
+              comentario</button>
           </div>
         </div>
       </div>
@@ -421,17 +452,23 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="nuevaRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl custom_modal_size" role="document">
     <div class="modal-content">
-    
+
       <div class="modal-body">
         <div>
           <button type="button" class="close custom_modal_close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="alert alert-info">Este formulario es para el registro de requisiciones express o que fueron solicitadas de manera rápida. Se registrarán los datos más elementales y podrá ser completada en otro momento.</div>
+        <div class="alert alert-info">
+          Este formulario permite registrar una requisición de manera completa o parcial. Cada paso está dividido en dos
+          secciones, siendo la sección superior la que solicita los datos elementales para crear una requisición de
+          manera rápida.
+        </div>
         <div class="row justify-content-center align-items-center text-center mb-3">
           <div class="col-1">
             <button type="button" class="btn btn-primary" id="paso1">1</button>
@@ -448,29 +485,43 @@
         <h5 class="text-center" id="titulo_paso"></h5>
         <form id="formPaso1">
           <div class="row mb-3">
+            <div class="col-sm-12 col-md-6">
+              <label for="id_cliente">Cliente *</label>
+              <select name="id_cliente" id="id_cliente" class="form-control acceso_obligado">
+              </select>
+              <br>
+            </div>
             <div class="col-6">
+
               <label for="nombre_comercial_req">Nombre comercial *</label>
-              <input type="text" class="form-control" data-required="required" data-field="Nombre comercial" name="nombre_comercial_req" id="nombre_comercial_req" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control" data-required="required" data-field="Nombre comercial"
+                name="nombre_comercial_req" id="nombre_comercial_req"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
-            <div class="col-6">
-              <label for="nombre_req">Razón social </label>
-              <input type="text" class="form-control" data-required="required" data-field="Razón social" name="nombre_req" id="nombre_req" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-            </div>
+
           </div>
           <div class="row mb-3">
-            <div class="col-12">
-              <label for="domicilio_req">Domicilio fiscal</label>
-              <input type="text" class="form-control" data-field="Domicilio fiscal" name="domicilio_req" id="domicilio_req">
+            <div class="col-6">
+              <label for="nombre_req">Razón social </label>
+              <input type="text" class="form-control" data-required="required" data-field="Razón social"
+                name="nombre_req" id="nombre_req"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+            </div>
+            <div class="col-6">
+              <label for="correo_req">Correo </label>
+              <input type="text" class="form-control" data-field="Correo" name="correo_req" id="correo_req">
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-3">
               <label for="cp_req">Código postal </label>
-              <input type="number" class="form-control" data-field="Código postal" name="cp_req" id="cp_req" maxlength="5">
+              <input type="number" class="form-control" data-field="Código postal" name="cp_req" id="cp_req"
+                maxlength="5">
             </div>
             <div class="col-3">
               <label for="telefono_req">Teléfono</label>
-              <input type="text" class="form-control" data-field="Teléfono" name="telefono_req" id="telefono_req" maxlength="16">
+              <input type="text" class="form-control" data-field="Teléfono" name="telefono_req" id="telefono_req"
+                maxlength="16">
             </div>
             <div class="col-3">
               <label for="contacto_req">Contacto</label>
@@ -478,109 +529,574 @@
             </div>
             <div class="col-3">
               <label for="rfc_req">RFC </label>
-              <input type="text" class="form-control" data-field="RFC" name="rfc_req" id="rfc_req" maxlength="13" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control" data-field="RFC" name="rfc_req" id="rfc_req" maxlength="13"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
           </div>
-          <div class="row mb-3">
-            <div class="col-3">
-              <label for="correo_req">Correo </label>
-              <input type="text" class="form-control" data-field="Correo" name="correo_req" id="correo_req">
-            </div>
+          <hr>
+        <p style="text-align: center; color: #808080;""> Datos Para llenar Requisicion Completa ↓</p>
+        <hr>
+          <div class=" row mb-3">
+
+          <div class="col-9">
+            <label for="domicilio_req">Domicilio fiscal</label>
+            <input type="text" class="form-control" data-field="Domicilio fiscal" name="domicilio_req"
+              id="domicilio_req">
           </div>
-        </form>
-        <form id="formPaso2" class="hidden">
-          <div class="row mb-3">
-            <div class="col-6">
-              <label for="puesto_req">Nombre de la posición *</label>
-              <input type="text" class="form-control" data-required="required" data-field="Nombre de la posición" name="puesto_req" id="puesto_req">
-            </div>
-            <div class="col-6">
-              <label for="numero_vacantes_req">Número de vacantes *</label>
-              <input type="number" class="form-control" data-required="required" data-field="Número de vacantes" name="numero_vacantes_req" id="numero_vacantes_req">
-            </div>
+          <div class="col-3">
+            <label for="puesto_req">Uso de CFDI</label>
+            <input type="text" class="form-control"  data-field="Uso de CFDI"
+              name="cfdi_req" id="cfdi_req" value ="Gastos Generales">
           </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="residencia_req">Lugar de residencia </label>
-              <textarea class="form-control" data-field="Lugar de residencia" name="residencia_req" id="residencia_req" rows="2"></textarea>
-            </div>
-          </div>
-        </form>
-        <form id="formPaso3" class="hidden">
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="zona_req">Domicilio de trabajo *</label>
-              <textarea class="form-control" data-required="required" data-field="Zona de trabajo" name="zona_req" id="zona_req" rows="2"></textarea>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-3">
-              <label for="tipo_sueldo_req">Tipo de sueldo *</label>
-              <select class="form-control" data-required="required" data-field="Tipo de sueldo" id="tipo_sueldo_req" name="tipo_sueldo_req">
-						    <option value="" selected>Selecciona</option>
-						    <option value="Fijo">Fijo</option>
-						    <option value="Variable">Variable</option>
-						    <option value="Neto">Neto (libre)</option>
-						    <option value="Nominal">Nominal</option>
-						  </select>
-            </div>
-            <div class="col-3">
-              <label for="sueldo_minimo_req">Sueldo mínimo </label>
-						  <input type="number" class="form-control" data-field="Sueldo mínimo" id="sueldo_minimo_req" name="sueldo_minimo_req">
-            </div>
-            <div class="col-3">
-              <label for="sueldo_maximo_req">Sueldo máximo </label>
-						  <input type="number" class="form-control" data-field="Sueldo máximo" id="sueldo_maximo_req" name="sueldo_maximo_req">
-            </div>
-            <div class="col-3">
-              <label for="tipo_pago_req">Tipo de pago *</label>
-              <select class="form-control" data-required="required" data-field="Tipo de pago" id="tipo_pago_req" name="tipo_pago_req">
-						    <option value="" selected>Selecciona</option>
-						    <option value="Mensual">Mensual</option>
-						    <option value="Quincenal">Quincenal</option>
-						    <option value="Semanal">Semanal</option>
-						  </select>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-3">
-              <label for="ley_req">¿Tendrá prestaciones de ley? *</label>
-              <select class="form-control" data-required="required" data-field="¿Tendrá prestaciones de ley?" id="ley_req" name="ley_req">
-						    <option value="" selected>Selecciona</option>
-						    <option value="SI">SI</option>
-						    <option value="NO">NO</option>
-						  </select>
-            </div>
-            <div class="col-9">
-              <label for="experiencia_req">Se requiere experiencia en</label>
-              <textarea class="form-control" data-field="Se requiere experiencia en" name="experiencia_req" id="experiencia_req" rows="2"></textarea>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label for="observaciones_req">Observaciones</label>
-              <textarea class="form-control" data-field="Observaciones" name="observaciones_req" id="observaciones_req" rows="2"></textarea>
-            </div>
-          </div>
-        </form>
       </div>
-      <div class="modal-footer custom_modal_footer">
-        <button type="button" class="btn btn-primary btn-icon-split" id="btnRegresar">
-          <span class="icon text-white-50">
-            <i class="fas fa-arrow-left"></i>
-          </span>
-          <span class="text">Regresar</span>
-        </button>
-        <button type="button" class="btn btn-success btn-icon-split" id="btnContinuar">
-          <span class="text"></span>
-          <span class="icon text-white-50">
-            <i class="fas fa-arrow-right"></i>
-          </span>
-        </button>
+      <div class="row mb-3">
+
+        <div class="col-4">
+          <label for="regimen">Régimen Fiscal *</label>
+          <div class="input-group mb-3">
+
+            <input type="text" class="form-control" id="regimen" name="regimen">
+          </div>
+          <div id="errorregimen" class="text-danger"></div>
+        </div>
+        <div class="col-sm-12 col-md-4 col-lg-4">
+          <label for="forma_pago">Forma de pago *</label>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="far fa-credit-card"></i></span>
+            </div>
+            <select class="custom-select" id="forma_pago" name="forma_pago">
+              <option value="" selected>Selecciona</option>
+              <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
+              <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
+            </select>
+            <div id="forma_pago" class="text-danger"></div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-4 col-lg-4">
+          <label for="metodo_pago">Método de pago *</label>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="far fa-credit-card"></i></span>
+            </div>
+            <select class="custom-select" id="metodo_pago" name="metodo_pago">
+              <option value="" selected>Selecciona</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Cheque nominativo">Cheque nominativo</option>
+              <option value="Transferencia electrónica de fondos">Transferencia electrónica de fondos</option>
+              <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+              <option value="Tarjeta de débito">Tarjeta de débito</option>
+              <option value="Por definir">Por definir</option>
+            </select>
+          </div>
+        </div>
       </div>
-    </div>
+
+      </form>
+      <form id="formPaso2" class="hidden">
+        <div class="row mb-3">
+          <div class="col-6">
+            <label for="puesto_req">Nombre de la posición *</label>
+            <input type="text" class="form-control" data-required="required" data-field="Nombre de la posición"
+              name="puesto_req" id="puesto_req">
+          </div>
+          <div class="col-6">
+            <label for="numero_vacantes_req">Número de vacantes *</label>
+            <input type="number" class="form-control" data-required="required" data-field="Número de vacantes"
+              name="numero_vacantes_req" id="numero_vacantes_req">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="residencia_req">Lugar de residencia </label>
+            <textarea class="form-control" data-field="Lugar de residencia" name="residencia_req" id="residencia_req"
+              rows="2"></textarea>
+          </div>
+        </div>
+        <hr>
+        <p style="text-align: center; color: #808080;""> Datos Para llenar Requisicion Completa ↓</p>
+        <hr>
+        <div class="row">
+          <div class="col-sm-12 col-md-4 col-lg-4">
+            <label for="escolaridad">Formación académica requerida *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+              </div>
+              <select class="custom-select" id="escolaridad" name="escolaridad"
+                data-siguiente-campo="estatus_escolaridad">
+                <option value="" selected>Selecciona</option>
+                <option value="Primaria">Primaria</option>
+                <option value="Secundaria">Secundaria</option>
+                <option value="Bachiller">Bachiller</option>
+                <option value="Licenciatura">Licenciatura</option>
+                <option value="Maestría">Maestría</option>
+              </select>
+            </div>
+            <div id="errorescolaridad" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4">
+            <label for="estatus_escolaridad">Estatus académico *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+              </div>
+              <select class="custom-select" id="estatus_escolaridad" name="estatus_escolaridad"
+                data-siguiente-campo="carrera">
+                <option value="" selected>Selecciona</option>
+                <option value="Técnico">Técnico</option>
+                <option value="Pasante">Pasante</option>
+                <option value="Estudiante">Estudiante</option>
+                <option value="Titulado">Titulado</option>
+                <option value="Trunco">Trunco</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div id="errorestatus_escolaridadd" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-4 col-lg-4">
+            <label for="otro_estatus">Otro estatus académico</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+              </div>
+              <input type="text" class="form-control" id="otro_estatus" name="otro_estatus">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <label for="carrera">Carrera requerida para el puesto *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+              </div>
+              <input type="text" class="form-control" id="carrera" name="carrera" data-siguiente-campo="genero">
+            </div>
+            <div id="errorcarrera" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-6">
+            <label for="otros_estudios">Otros estudios</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+              </div>
+              <input type="text" class="form-control" id="otros_estudios" name="otros_estudios">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="idioma1">Idioma nativo</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-language"></i></span>
+              </div>
+              <input type="text" class="form-control" id="idioma1" name="idioma1">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="por_idioma1">Porcentaje del idioma nativo</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+              </div>
+              <input type="number" class="form-control" id="por_idioma1" name="por_idioma1">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="idioma2">Segundo idioma</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-language"></i></span>
+              </div>
+              <input type="text" class="form-control" id="idioma2" name="idioma2">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="por_idioma2">Porcentaje del segundo idioma</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+              </div>
+              <input type="number" class="form-control" id="por_idioma2" name="por_idioma2">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="idioma3">Tercer idioma </label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-language"></i></span>
+              </div>
+              <input type="text" class="form-control" id="idioma3" name="idioma3">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="por_idioma3">Porcentaje del tercer idioma</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+              </div>
+              <input type="number" class="form-control" id="por_idioma3" name="por_idioma3">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="habilidad1">Habilidad informática requerida</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+              </div>
+              <input type="text" class="form-control" id="habilidad1" name="habilidad1">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="por_habilidad1">Porcentaje de la habilidad</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+              </div>
+              <input type="number" class="form-control" id="por_habilidad1" name="por_habilidad1">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="habilidad2">Otra habilidad informática</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+              </div>
+              <input type="text" class="form-control" id="habilidad2" name="habilidad2">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="por_habilidad2">Porcentaje de la habilidad</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+              </div>
+              <input type="number" class="form-control" id="por_habilidad2" name="por_habilidad2">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="habilidad3">Otra habilidad informática </label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+              </div>
+              <input type="text" class="form-control" id="habilidad3" name="habilidad3">
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-2 col-lg-2">
+            <label for="por_habilidad3">Porcentaje de la habilidad</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+              </div>
+              <input type="number" class="form-control" id="por_habilidad3" name="por_habilidad3">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="genero">Sexo *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+              </div>
+              <select class="custom-select" id="genero" name="genero" data-siguiente-campo="civil">
+                <option value="" selected>Selecciona</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Indistinto">Indistinto</option>
+              </select>
+            </div>
+            <div id="errorgenero" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="civil">Estado civil *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
+              </div>
+              <select class="custom-select" id="civil" name="civil" data-siguiente-campo="edad_minima">
+                <option value="" selected>Selecciona</option>
+                <option value="Soltero(a)">Soltero(a)</option>
+                <option value="Casado(a)">Casado(a)</option>
+                <option value="Indistinto">Indistinto</option>
+              </select>
+            </div>
+            <div id="errorcivil" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="edad_minima">Edad mínima *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-minus"></i></span>
+              </div>
+              <input type="number" id="edad_minima" name="edad_minima" class="form-control"
+                data-siguiente-campo="edad_maxima">
+            </div>
+            <div id="erroredad_minima" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="edad_maxima">Edad máxima *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-plus"></i></span>
+              </div>
+              <input type="number" id="edad_maxima" name="edad_maxima" class="form-control"
+                data-siguiente-campo="licencia">
+            </div>
+            <div id="erroredad_maxima" class="text-danger"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="licencia">Licencia de conducir *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+              </div>
+              <select class="custom-select" id="licencia" name="licencia" data-siguiente-campo="tipo_licencia">
+                <option value="" selected>Selecciona</option>
+                <option value="Indispensable">Indispensable</option>
+                <option value="Deseable">Deseable</option>
+                <option value="No necesaria">No necesaria</option>
+              </select>
+            </div>
+            <div id="errorlicencia" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="tipo_licencia">Tipo de licencia de conducir*</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+              </div>
+              <input type="text" class="form-control" id="tipo_licencia" name="tipo_licencia"
+                data-siguiente-campo="discapacidad">
+            </div>
+            <div id="errortipo_licencia" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="discapacidad">Discapacidad aceptable *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-wheelchair"></i></span>
+              </div>
+              <select class="custom-select" id="discapacidad" name="discapacidad" data-siguiente-campo="causa">
+                <option value="" selected>Selecciona</option>
+                <option value="Motora">Motora</option>
+                <option value="Auditiva">Auditiva</option>
+                <option value="Visual">Visual</option>
+                <option value="Motora y auditiva">Motora y auditiva</option>
+                <option value="Motora y visual">Motora y visual</option>
+                <option value="Sin discapacidad">Sin discapacidad</option>
+              </select>
+            </div>
+            <div id="errordiscapacidad" class="text-danger"></div>
+          </div>
+          <div class="col-sm-12 col-md-3 col-lg-3">
+            <label for="causa">Causa que origina la vacante *</label>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="far fa-question-circle"></i></span>
+              </div>
+              <select class="custom-select" id="causa" name="causa" data-siguiente-campo="residencia">
+                <option value="" selected>Selecciona</option>
+                <option value="Empresa nueva">Empresa nueva</option>
+                <option value="Empleo temporal">Empleo temporal</option>
+                <option value="Puesto de nueva creación">Puesto de nueva creación</option>
+                <option value="Reposición de personal">Reposición de personal</option>
+              </select>
+            </div>
+            <div id="errorcausa" class="text-danger"></div>
+          </div>
+        </div>
+      </form>
+      <form id="formPaso3" class="hidden">
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="zona_req">Domicilio de trabajo *</label>
+            <textarea class="form-control" data-required="required" data-field="Zona de trabajo" name="zona_req"
+              id="zona_req" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-3">
+            <label for="tipo_sueldo_req">Tipo de sueldo *</label>
+            <select class="form-control" data-required="required" data-field="Tipo de sueldo" id="tipo_sueldo_req"
+              name="tipo_sueldo_req">
+              <option value="" selected>Selecciona</option>
+              <option value="Fijo">Fijo</option>
+              <option value="Variable">Variable</option>
+              <option value="Neto">Neto (libre)</option>
+              <option value="Nominal">Nominal</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label for="sueldo_minimo_req">Sueldo mínimo </label>
+            <input type="number" class="form-control" data-field="Sueldo mínimo" id="sueldo_minimo_req"
+              name="sueldo_minimo_req">
+          </div>
+          <div class="col-3">
+            <label for="sueldo_maximo_req">Sueldo máximo </label>
+            <input type="number" class="form-control" data-field="Sueldo máximo" id="sueldo_maximo_req"
+              name="sueldo_maximo_req">
+          </div>
+          <div class="col-3">
+            <label for="tipo_pago_req">Tipo de pago *</label>
+            <select class="form-control" data-required="required" data-field="Tipo de pago" id="tipo_pago_req"
+              name="tipo_pago_req">
+              <option value="" selected>Selecciona</option>
+              <option value="Mensual">Mensual</option>
+              <option value="Quincenal">Quincenal</option>
+              <option value="Semanal">Semanal</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-3">
+            <label for="ley_req">¿Tendrá prestaciones de ley? *</label>
+            <select class="form-control" data-required="required" data-field="¿Tendrá prestaciones de ley?" id="ley_req"
+              name="ley_req">
+              <option value="" selected>Selecciona</option>
+              <option value="SI">SI</option>
+              <option value="NO">NO</option>
+            </select>
+          </div>
+          <div class="col-9">
+            <label for="experiencia_req">Se requiere experiencia en</label>
+            <textarea class="form-control" data-field="Se requiere experiencia en" name="experiencia_req"
+              id="experiencia_req" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="observaciones_req">Observaciones</label>
+            <textarea class="form-control" data-field="Observaciones" name="observaciones_req" id="observaciones_req"
+              rows="2"></textarea>
+          </div>
+        </div>
+        <hr>
+        <p style="text-align: center; color: #808080;""> Datos Para llenar Requisicion Completa ↓</p>
+        <hr>
+
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label class="container_checkbox">Comunicación
+                <input type="checkbox" id="Comunicación" value="Comunicación">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Análisis
+                <input type="checkbox" id="Análisis">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Liderazgo
+                <input type="checkbox" id="Liderazgo">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Negociación
+                <input type="checkbox" id="Negociación">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Apego a normas
+                <input type="checkbox" id="Apego">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Planeación
+                <input type="checkbox" id="Planeación">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Organización
+                <input type="checkbox" id="Organización">
+                <span class="checkmark"></span>
+              </label>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label class="container_checkbox">Orientado a resultados
+                <input type="checkbox" id="Orientado_resultados">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Manejo de conflictos
+                <input type="checkbox" id="Manejo_conflictos">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Trabajo en equipo
+                <input type="checkbox" id="Trabajo_equipo">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Toma de decisiones
+                <input type="checkbox" id="Toma_decisiones">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Trabajo bajo presión
+                <input type="checkbox" id="Trabajo_presion">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Don de mando
+                <input type="checkbox" id="Don_mando">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Versátil
+                <input type="checkbox" id="Versátil">
+                <span class="checkmark"></span>
+              </label>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label class="container_checkbox">Sociable
+                <input type="checkbox" id="Sociable">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Intuitivo
+                <input type="checkbox" id="Intuitivo">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Autodidacta
+                <input type="checkbox" id="Autodidacta">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Creativo
+                <input type="checkbox" id="Creativo">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Proactivo
+                <input type="checkbox" id="Proactivo">
+                <span class="checkmark"></span>
+              </label>
+              <label class="container_checkbox">Adaptable
+                <input type="checkbox" id="Adaptable">
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+   
+    </form>
+  </div>
+  <div class="modal-footer custom_modal_footer">
+    <button type="button" class="btn btn-primary btn-icon-split" id="btnRegresar">
+      <span class="icon text-white-50">
+        <i class="fas fa-arrow-left"></i>
+      </span>
+      <span class="text">Regresar</span>
+    </button>
+    <button type="button" class="btn btn-success btn-icon-split" id="btnContinuar">
+      <span class="text"></span>
+      <span class="icon text-white-50">
+        <i class="fas fa-arrow-right"></i>
+      </span>
+    </button>
   </div>
 </div>
+</div>
+</div>
+
+
+
 <div class="modal fade" id="asignarUsuarioModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
@@ -595,15 +1111,17 @@
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_usuario"></label>
-              <select id="asignar_usuario" class="form-control selectpicker dropup" data-dropup-auto="false" data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona" data-selected-text-format="count > 4" multiple>
+              <select id="asignar_usuario" class="form-control selectpicker dropup" data-dropup-auto="false"
+                data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona"
+                data-selected-text-format="count > 4" multiple>
                 <?php 
                 if(!empty($usuarios_asignacion)){
                   foreach($usuarios_asignacion as $row){ ?>
-                    <option value="<?php echo $row->id ?>"><?php echo $row->usuario ?></option>
-                  <?php 
+                <option value="<?php echo $row->id ?>"><?php echo $row->usuario ?></option>
+                <?php 
                   }
                 }else{ ?>
-                  <option value="">No hay usuarios correspondientes</option>
+                <option value="">No hay usuarios correspondientes</option>
                 <?php 
                 } ?>
               </select>
@@ -612,15 +1130,16 @@
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_registro"></label>
-              <select name="asignar_registro" id="asignar_registro" class="form-control selectpicker" data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona" data-size="10">
+              <select name="asignar_registro" id="asignar_registro" class="form-control selectpicker"
+                data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona" data-size="10">
                 <?php 
                 if(!empty($registros_asignacion)){
                   foreach($registros_asignacion as $fila){ ?>
-                    <option value="<?php echo $fila->id ?>"><?php echo '#'.$fila->id.' '.$fila->nombreCompleto ?></option>
-                  <?php 
+                <option value="<?php echo $fila->id ?>"><?php echo '#'.$fila->id.' '.$fila->nombreCompleto ?></option>
+                <?php 
                   }
                 }else{ ?>
-                  <option value="">No hay registros para asignar</option>
+                <option value="">No hay registros para asignar</option>
                 <?php 
                 } ?>
               </select>
@@ -635,11 +1154,13 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="resultadosModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Resultados de los estudios y exámenes de los candidatos de la Requisición: <br><span class="nombreRegistro"></span></h4>
+        <h4 class="modal-title">Resultados de los estudios y exámenes de los candidatos de la Requisición: <br><span
+            class="nombreRegistro"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -653,6 +1174,7 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="subirCSVModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
@@ -667,7 +1189,8 @@
           <div class="row">
             <div class="col-12">
               <label for="archivo_csv" id="label"></label>
-              <input type="file" class="form-control" name="archivo_csv" id="archivo_csv" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+              <input type="file" class="form-control" name="archivo_csv" id="archivo_csv"
+                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
               <br>
             </div>
           </div>
@@ -680,18 +1203,21 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="ingresoCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Información de ingreso al empleo del candidato: <br><span class="nombreRegistro"></span></h4>
+        <h4 class="modal-title">Información de ingreso al empleo del candidato: <br><span class="nombreRegistro"></span>
+        </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <div class="alert alert-info text-center">Registros del estatus de la garantía</div>
-        <div id="divHistorialGarantia" class="escrolable"></div><hr>
+        <div id="divHistorialGarantia" class="escrolable"></div>
+        
         <form id="formIngreso">
           <div class="row mb-3">
             <div class="col-4">
@@ -715,10 +1241,11 @@
           </div>
           <div class="row mt-2">
             <div class="col-12">
-              <button type="button" class="btn btn-primary text-lg btn-block" onclick="updateAdmission()">Guardar información</button>
+              <button type="button" class="btn btn-primary text-lg btn-block" onclick="updateAdmission()">Guardar
+                información</button>
             </div>
           </div>
-        </div>
+      </div>
       </form>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -726,6 +1253,7 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="avancesModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -761,6 +1289,8 @@
     </div>
   </div>
 </div>
+
+
 <div class="modal fade" id="mensajeModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
@@ -781,197 +1311,209 @@
     </div>
   </div>
 </div>
+
+
 <script>
-  var pag = 1;
-  $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
-    $("#nuevaRequisicionModal #titulo_paso").text('Información Básica');
-    $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
-    $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2, #nuevaRequisicionModal #paso3").prop('disabled', true);
-  });
-  $('#nuevaRequisicionModal #btnContinuar').on('click', function() {
-    var formulario_actual = document.getElementById('formPaso'+pag);
-    var todoCorrecto = true;
-    var formulario = formulario_actual;
-    for (var i = 0; i < formulario.length; i++) {
-      if(formulario[i].type == 'text' || formulario[i].type == 'number' || formulario[i].type == 'textarea' || formulario[i].type == 'select-one') {
-        if(formulario[i].getAttribute("data-required") == 'required'){
-          if(formulario[i].value == null || formulario[i].value == '' || formulario[i].value == 0 || formulario[i].value.length == 0 || /^\s*$/.test(formulario[i].value)){
-            Swal.fire({
-              icon: 'error',
-              title: 'Hubo un problema',
-              html: 'El campo <b>'+formulario[i].getAttribute("data-field")+'</b> no es válido',
-              width: '50em',
-              confirmButtonText: 'Cerrar'
-            })
-            todoCorrecto = false;
-          }
+var urltraerClientes = '<?php echo base_url('Cat_Cliente/getClientesActivos'); ?>';
+var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId'); ?>';
+</script>
+
+<script>
+var pag = 1;
+$('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
+  cargarClientesActivos(urltraerClientes);
+  $("#nuevaRequisicionModal #titulo_paso").text('Datos  ');
+  $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
+  $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2, #nuevaRequisicionModal #paso3").prop(
+    'disabled', true);
+});
+$('#nuevaRequisicionModal #btnContinuar').on('click', function() {
+  var formulario_actual = document.getElementById('formPaso' + pag);
+  var todoCorrecto = true;
+  var formulario = formulario_actual;
+  for (var i = 0; i < formulario.length; i++) {
+    if (formulario[i].type == 'text' || formulario[i].type == 'number' || formulario[i].type == 'textarea' ||
+      formulario[i].type == 'select-one') {
+      if (formulario[i].getAttribute("data-required") == 'required') {
+        if (formulario[i].value == null || formulario[i].value == '' || formulario[i].value == 0 || formulario[i]
+          .value.length == 0 || /^\s*$/.test(formulario[i].value)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Hubo un problema',
+            html: 'El campo <b>' + formulario[i].getAttribute("data-field") + '</b> no es válido',
+            width: '50em',
+            confirmButtonText: 'Cerrar'
+          })
+          todoCorrecto = false;
         }
       }
     }
-    if (todoCorrecto == true) {
-      if(pag == 1){
-        document.getElementById('formPaso1').className = "animate__animated animate__fadeOut ";
-        setTimeout(function(){
-          document.getElementById('formPaso1').className = "hidden";
-          document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
-        },500)
-        $("#nuevaRequisicionModal #titulo_paso").text('Información de la Vacante');
-        $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2").prop('disabled', false);
-        document.getElementById('barra1').classList.remove('barra_espaciadora_off');
-        document.getElementById('barra1').className += ' barra_espaciadora_on';
-      }
-      if(pag == 2){
-        document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
-        setTimeout(function(){
-          document.getElementById('formPaso2').className = "hidden";
-          document.getElementById('formPaso3').className = "animate__animated animate__fadeInUp";
-        },500)
-        $("#nuevaRequisicionModal #titulo_paso").text('Información sobre el Cargo');
-        $("#nuevaRequisicionModal #paso3").prop('disabled', false);
-        document.getElementById('barra2').classList.remove('barra_espaciadora_off');
-        document.getElementById('barra2').className += ' barra_espaciadora_on';
-        $("#nuevaRequisicionModal #btnContinuar span.text").text('Finalizar');
-      }
-      if(pag == 3){
-        let datos = $('#formPaso1').serialize();
-        datos += '&' + $("#formPaso2").serialize();
-        datos += '&' + $("#formPaso3").serialize();
-        let currentPage =  $('#currentPage').val();
-        $.ajax({
-          url: '<?php echo base_url('Reclutamiento/addRequisicion'); ?>',
-          type: 'post',
-          data: datos,
-          beforeSend: function() {
-            $('.loader').css("display", "block");
-          },
-          success: function(res) {
-            setTimeout(function() {
-              $('.loader').fadeOut();
-            }, 200);
-            var data = JSON.parse(res);
-            if (data.codigo === 1) {
-              $("#nuevaRequisicionModal").modal('hide');
-              Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: data.msg,
-                showConfirmButton: false,
-                timer: 3000
-              })
-              if(currentPage == 'requisicion'){
-                setTimeout(function(){
-                  location.reload()
-                },3000)
-              }
-            }
-            else{
-              Swal.fire({
-                icon: 'error',
-                title: 'Hubo un problema',
-                html: data.msg,
-                width: '50em',
-                confirmButtonText: 'Cerrar'
-              })
-            }
-          }
-        });
-      }
-      if(pag == 1 || pag == 2)
-        pag++;
-    }
-  });
-  $('#nuevaRequisicionModal #btnRegresar').on('click', function() {
-    if(pag == 2){
-      document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
-      setTimeout(function(){
-        document.getElementById('formPaso2').className = "hidden";
-        document.getElementById('formPaso1').className = "animate__animated animate__fadeInUp";
-      },500)
-      $("#nuevaRequisicionModal #titulo_paso").text('Información Básica');
-      $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2").prop('disabled', true);
-      document.getElementById('barra1').classList.remove('barra_espaciadora_on');
-      document.getElementById('barra1').className += ' barra_espaciadora_off';
-      $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
-      pag--;
-    }
-    if(pag == 3){
-      document.getElementById('formPaso3').className = "animate__animated animate__fadeOut ";
-      setTimeout(function(){
-        document.getElementById('formPaso3').className = "hidden";
+  }
+  if (todoCorrecto == true) {
+    if (pag == 1) {
+      document.getElementById('formPaso1').className = "animate__animated animate__fadeOut ";
+      setTimeout(function() {
+        document.getElementById('formPaso1').className = "hidden";
         document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
-      },500)
+      }, 500)
       $("#nuevaRequisicionModal #titulo_paso").text('Información de la Vacante');
-      $("#nuevaRequisicionModal #paso3").prop('disabled', true);
-      document.getElementById('barra2').classList.remove('barra_espaciadora_on');
-      document.getElementById('barra2').className += ' barra_espaciadora_off';
-      $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
-      pag--;
+      $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2").prop('disabled', false);
+      document.getElementById('barra1').classList.remove('barra_espaciadora_off');
+      document.getElementById('barra1').className += ' barra_espaciadora_on';
     }
-  });
-  $('#nuevoAspiranteModal').on('hidden.bs.modal', function(e) {
-    $("#nuevoAspiranteModal #msj_error").css('display', 'none');
-    $("#nuevoAspiranteModal input, #nuevoAspiranteModal select, #nuevoAspiranteModal textarea").val('');
-    $("#nuevoAspiranteModal #req_asignada").val('').selectpicker('refresh');
-    $('#cv_previo').html('');
-    $('#idAspirante').val('');
-  });
-  $('#nuevaAccionModal').on('hidden.bs.modal', function(e) {
-    $("#nuevaAccionModal #msj_error").css('display', 'none');
-    $("#nuevaAccionModal textarea, #nuevaAccionModal select").val('');
-  });
-  $('#estatusRequisicionModal').on('hidden.bs.modal', function(e) {
-    $("#estatusRequisicionModal #msj_error").css('display', 'none');
-    $("#estatusRequisicionModal textarea, #estatusRequisicionModal select").val('');
-  });
-  $("#registroCandidatoModal").on("hidden.bs.modal", function() {
-    $("#examen_registro").empty();
-    $("#examen_registro").append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
-    <?php
-    foreach ($paquetes_antidoping as $paq) { ?>
-      $("#examen_registro").append('<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>');
-    <?php
-    } ?>
-    $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
-    $("#examen_registro,#examen_medico,#examen_psicometrico").val(0);
-    $('#pais').val('México')
-    $('#subcliente').val(0)
-    $('#detalles_previo').empty();
-    $("#registroCandidatoModal .selectpicker").val('').selectpicker('refresh');
-
-  })
-  $('#mensajeModal').on('hidden.bs.modal', function(e) {
-    $("#mensajeModal #titulo_mensaje, #mensajeModal #mensaje").text('');
-    $("#mensajeModal #campos_mensaje").empty();
-    $("#mensajeModal #btnConfirmar").removeAttr('onclick');
-  });
-  $('#historialComentariosModal').on('hidden.bs.modal', function(e) {
-    $("#historialComentariosModal .nombreRegistro").text('');
-    $("#historialComentariosModal #comentario_bolsa").val('');
-    $("#historialComentariosModal #div_historial_comentario").empty();
-    $("#historialComentariosModal #btnComentario").removeAttr('onclick');
-  });
-  $('#nuevaRequisicionModal').on('hidden.bs.modal', function(e) {
-    $("#nuevaRequisicionModal input, #nuevaRequisicionModal select, #nuevaRequisicionModal textarea").val('');
-    document.getElementById('formPaso1').className = "block";
-    document.getElementById('formPaso2').className = "hidden";
-    document.getElementById('formPaso3').className = "hidden";
+    if (pag == 2) {
+      document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
+      setTimeout(function() {
+        document.getElementById('formPaso2').className = "hidden";
+        document.getElementById('formPaso3').className = "animate__animated animate__fadeInUp";
+      }, 500)
+      $("#nuevaRequisicionModal #titulo_paso").text('Información sobre el Cargo');
+      $("#nuevaRequisicionModal #paso3").prop('disabled', false);
+      document.getElementById('barra2').classList.remove('barra_espaciadora_off');
+      document.getElementById('barra2').className += ' barra_espaciadora_on';
+      $("#nuevaRequisicionModal #btnContinuar span.text").text('Finalizar');
+    }
+    if (pag == 3) {
+      let datos = $('#formPaso1').serialize();
+      datos += '&' + $("#formPaso2").serialize();
+      datos += '&' + $("#formPaso3").serialize();
+      let currentPage = $('#currentPage').val();
+      $.ajax({
+        url: '<?php echo base_url('Reclutamiento/addRequisicion'); ?>',
+        type: 'post',
+        data: datos,
+        beforeSend: function() {
+          $('.loader').css("display", "block");
+        },
+        success: function(res) {
+          setTimeout(function() {
+            $('.loader').fadeOut();
+          }, 200);
+          var data = JSON.parse(res);
+          if (data.codigo === 1) {
+            $("#nuevaRequisicionModal").modal('hide');
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: data.msg,
+              showConfirmButton: false,
+              timer: 3000
+            })
+            if (currentPage == 'requisicion') {
+              setTimeout(function() {
+                location.reload()
+              }, 3000)
+            }
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Hubo un problema',
+              html: data.msg,
+              width: '50em',
+              confirmButtonText: 'Cerrar'
+            })
+          }
+        }
+      });
+    }
+    if (pag == 1 || pag == 2)
+      pag++;
+  }
+});
+$('#nuevaRequisicionModal #btnRegresar').on('click', function() {
+  if (pag == 2) {
+    document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
+    setTimeout(function() {
+      document.getElementById('formPaso2').className = "hidden";
+      document.getElementById('formPaso1').className = "animate__animated animate__fadeInUp";
+    }, 500)
     $("#nuevaRequisicionModal #titulo_paso").text('Información Básica');
     $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2").prop('disabled', true);
     document.getElementById('barra1').classList.remove('barra_espaciadora_on');
     document.getElementById('barra1').className += ' barra_espaciadora_off';
+    $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
+    pag--;
+  }
+  if (pag == 3) {
+    document.getElementById('formPaso3').className = "animate__animated animate__fadeOut ";
+    setTimeout(function() {
+      document.getElementById('formPaso3').className = "hidden";
+      document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
+    }, 500)
+    $("#nuevaRequisicionModal #titulo_paso").text('Información de la Vacante');
+    $("#nuevaRequisicionModal #paso3").prop('disabled', true);
     document.getElementById('barra2').classList.remove('barra_espaciadora_on');
     document.getElementById('barra2').className += ' barra_espaciadora_off';
     $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
-    pag = 1;
-  });
-  $('#asignarUsuarioModal').on('hidden.bs.modal', function(e) {
-    $("#asignarUsuarioModal .selectpicker").val('').selectpicker('refresh');
-  });
-  $('#subirCSVModal').on('hidden.bs.modal', function(e) {
-    $("#subirCSVModal input").val('');
-  });
-  $('#ingresoCandidatoModal').on('hidden.bs.modal', function(e) {
-    $("#ingresoCandidatoModal input, #ingresoCandidatoModal textarea").val('');
-  });
-  
+    pag--;
+  }
+});
+
+
+$('#nuevoAspiranteModal').on('hidden.bs.modal', function(e) {
+  $("#nuevoAspiranteModal #msj_error").css('display', 'none');
+  $("#nuevoAspiranteModal input, #nuevoAspiranteModal select, #nuevoAspiranteModal textarea").val('');
+  $("#nuevoAspiranteModal #req_asignada").val('').selectpicker('refresh');
+  $('#cv_previo').html('');
+  $('#idAspirante').val('');
+});
+$('#nuevaAccionModal').on('hidden.bs.modal', function(e) {
+  $("#nuevaAccionModal #msj_error").css('display', 'none');
+  $("#nuevaAccionModal textarea, #nuevaAccionModal select").val('');
+});
+$('#estatusRequisicionModal').on('hidden.bs.modal', function(e) {
+  $("#estatusRequisicionModal #msj_error").css('display', 'none');
+  $("#estatusRequisicionModal textarea, #estatusRequisicionModal select").val('');
+});
+$("#registroCandidatoModal").on("hidden.bs.modal", function() {
+  $("#examen_registro").empty();
+  $("#examen_registro").append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
+  <?php
+    foreach ($paquetes_antidoping as $paq) { ?>
+  $("#examen_registro").append(
+    '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>');
+  <?php
+    } ?>
+  $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
+  $("#examen_registro,#examen_medico,#examen_psicometrico").val(0);
+  $('#pais').val('México')
+  $('#subcliente').val(0)
+  $('#detalles_previo').empty();
+  $("#registroCandidatoModal .selectpicker").val('').selectpicker('refresh');
+
+})
+$('#mensajeModal').on('hidden.bs.modal', function(e) {
+  $("#mensajeModal #titulo_mensaje, #mensajeModal #mensaje").text('');
+  $("#mensajeModal #campos_mensaje").empty();
+  $("#mensajeModal #btnConfirmar").removeAttr('onclick');
+});
+$('#historialComentariosModal').on('hidden.bs.modal', function(e) {
+  $("#historialComentariosModal .nombreRegistro").text('');
+  $("#historialComentariosModal #comentario_bolsa").val('');
+  $("#historialComentariosModal #div_historial_comentario").empty();
+  $("#historialComentariosModal #btnComentario").removeAttr('onclick');
+});
+$('#nuevaRequisicionModal').on('hidden.bs.modal', function(e) {
+  $("#nuevaRequisicionModal input, #nuevaRequisicionModal select, #nuevaRequisicionModal textarea").val('');
+  document.getElementById('formPaso1').className = "block";
+  document.getElementById('formPaso2').className = "hidden";
+  document.getElementById('formPaso3').className = "hidden";
+  $("#nuevaRequisicionModal #titulo_paso").text('Información Básica');
+  $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2").prop('disabled', true);
+  document.getElementById('barra1').classList.remove('barra_espaciadora_on');
+  document.getElementById('barra1').className += ' barra_espaciadora_off';
+  document.getElementById('barra2').classList.remove('barra_espaciadora_on');
+  document.getElementById('barra2').className += ' barra_espaciadora_off';
+  $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
+  pag = 1;
+});
+$('#asignarUsuarioModal').on('hidden.bs.modal', function(e) {
+  $("#asignarUsuarioModal .selectpicker").val('').selectpicker('refresh');
+});
+$('#subirCSVModal').on('hidden.bs.modal', function(e) {
+  $("#subirCSVModal input").val('');
+});
+$('#ingresoCandidatoModal').on('hidden.bs.modal', function(e) {
+  $("#ingresoCandidatoModal input, #ingresoCandidatoModal textarea").val('');
+});
 </script>

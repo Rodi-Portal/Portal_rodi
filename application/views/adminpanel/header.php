@@ -6,47 +6,43 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Panel de Control | RODI</title>
-
-  <!-- CSS -->
-  <?php echo link_tag("css/custom.css"); ?>
-  <?php echo link_tag("css/sb-admin-2.min.css"); ?>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
-
-  <!-- Custom fonts for this template -->
+	<!-- CSS -->
+	<?php echo link_tag("css/custom.css"); ?>
+	<?php echo link_tag("css/sb-admin-2.min.css"); ?>
+	<!-- DataTables -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
+  <!-- Custom fonts for this template-->
   <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/jpg" href="<?php echo base_url() ?>img/favicon.jpg" sizes="64x64">
-
-  <!-- Bootstrap core JavaScript -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
+	<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+	<!-- FullCalendar -->
+	<!--<link href='<?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >
+	<!-- Favicon -->
+	<link rel="icon" type="image/jpg" href="<?php echo base_url() ?>img/favicon.jpg" sizes="64x64">
+	<!-- Select Bootstrap -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+	<!-- Sweetalert 2 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
+	<!-- Bootstrap core JavaScript-->
+	<script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
+	<script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- Animate -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-
-  <!-- Core plugin JavaScript -->
+  <!-- Core plugin JavaScript-->
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
-
-  <!-- Page level plugins -->
+	<!-- Page level plugins -->
   <script src="<?php echo base_url() ?>js/chart.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
-  <!-- Select Bootstrap -->
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
 
-  <!-- Sweetalert 2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
+
 </head>
 
 <body id="page-top">
+    <!-- JavaScript -->
+   
+
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->

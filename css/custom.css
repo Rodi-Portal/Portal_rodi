@@ -545,3 +545,11 @@ color: white;
   font-size: 2em;
   color: white;
 }
+
+
+/*modales  */
+.custom_modal_size{
+  max-width: 90%;
+  width: auto;
+  height: 90%;
+}

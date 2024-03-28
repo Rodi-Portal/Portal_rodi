@@ -227,7 +227,7 @@ foreach ($clientes as $cl) {?>
       <div class="modal-body">
         <div class="row">
           <div class="col-sm-12 col-md-6">
-            <label>Cliente *</label>
+            <label for="id_cliente">Cliente *</label>
             <select name="id_cliente" id="id_cliente" class="form-control acceso_obligado">
               <option value="">Selecciona</option>
               <?php

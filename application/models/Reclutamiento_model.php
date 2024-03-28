@@ -8,10 +8,12 @@ class Reclutamiento_model extends CI_Model{
 	/*----------------------------------------*/
 		function getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder){
 			$this->db
-			->select("R.id, R.creacion, R.nombre, R.telefono, R.contacto, R.puesto, R.numero_vacantes, R.status, R.correo, R.tipo, CONCAT(gen.nombre,' ',gen.paterno) as usuario, R.nombre_comercial")
+			->select("R.id, R.creacion, cl.nombre, gencl.telefono, CONCAT(gencl.nombre,' ',gencl.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, gencl.correo, R.tipo, CONCAT(genus.nombre,' ',genus.paterno) as usuario, cl.nombre")
 			->from('requisicion as R')
 			->join('usuarios_portal as U','U.id = R.id_usuario','left')
-			->join('datos_generales as gen','U.id_datos_generales = gen.id','left')
+			->join('datos_generales as genus','U.id_datos_generales = genus.id','left')
+			->join('cliente as cl','R.id_cliente = cl.id','left')
+			->join('datos_generales as gencl','cl.id_datos_generales = gencl.id','left')
 			->where($filterOrder, $filter)
 			->where_in('R.status', [1,2])
       ->where($condition_order, $id_order)
@@ -27,10 +29,15 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getOrdersByUser($id_usuario, $sort, $id_order, $condition_order){
 			$this->db
-			->select("R.id, R.creacion, R.nombre, R.telefono, R.contacto, R.puesto, R.numero_vacantes, R.status, R.correo, R.tipo, CONCAT(U.nombre,' ',U.paterno) as usuario, R.nombre_comercial")
+			->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCATCONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario,      FAC.razon_social as nombre_comercial")
 			->from('requisicion as R')
+			->join('usuarios_portal as U','U.id = RU.id_usuario')
+			->join('cliente as CL','CL.id = R.id_cliente')
+			->join('datos_facturacion as FAC','FAC.id = CL.id_datos_facturacion')
+			->join('datos_generales  as GENCL ','GENCL.id = CL.id_datos_generales')
 			->join('requisicion_usuario as RU','RU.id_requisicion = R.id')
-			->join('usuario as U','U.id = RU.id_usuario')
+			->join('usuarios_portal as U','U.id = RU.id_usuario')
+			->join('datos_generales  as GENUS ','GENUS.id = U.id_datos_generales')
 			->where_in('R.status', [1,2])
 			->where('RU.id_usuario', $id_usuario)
       ->where($condition_order, $id_order)
@@ -46,10 +53,13 @@ class Reclutamiento_model extends CI_Model{
 		}
 		function getRequisicionesEnProceso($id_usuario, $condicion){
 			$this->db
-			->select("r.id, r.nombre, r.puesto, r.numero_vacantes, CONCAT(USER.nombre,' ',USER.paterno) as usuario")
+			->select("r.id, CL.nombre, r.puesto, r.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
 			->from('requisicion as r')
 			->join('requisicion_usuario as RU','RU.id_requisicion = r.id')
 			->join('usuario as USER','USER.id = RU.id_usuario')
+			->join('datos_generales as GENUS','GENUS.id = U.id_datos_generales')
+			->join('clientes as CL','CL.id = R.id_cliente')
+			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
 			->where('r.eliminado', 0)
 			->where('r.status', 2)
 			->where($condicion, $id_usuario)
@@ -65,10 +75,13 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getOrdersInProcessByUser($id_usuario){
 			$this->db
-			->select("R.id, R.nombre, R.puesto, R.numero_vacantes, CONCAT(U.nombre,' ',U.paterno) as usuario")
+			->select("R.id, CL.nombre, R.puesto, R.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
 			->from('requisicion as R')
 			->join('requisicion_usuario as RU','RU.id_requisicion = R.id')
 			->join('usuario as U','U.id = RU.id_usuario')
+			->join('datos_generales as GENUS','GENUS.id = U.id_datos_generales')
+			->join('clientes as CL','CL.id = R.id_cliente')
+			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
 			->where('R.eliminado', 0)
 			->where('R.status', 2)
 			->where('RU.id_usuario', $id_usuario)
@@ -82,22 +95,31 @@ class Reclutamiento_model extends CI_Model{
 				return FALSE;
 			}
 		}
-    function getAllOrdersInProcess(){
-			$this->db
-			->select("R.id, R.nombre, R.puesto, R.numero_vacantes, CONCAT(U.nombre,' ',U.paterno) as usuario")
-			->from('requisicion as R')
-			->join('usuario as U','U.id = R.id_usuario')
-			->where('R.eliminado', 0)
-			->where('R.status', 2)
-			->order_by('R.id','DESC');
-
-			$query = $this->db->get();
-			if($query->num_rows() > 0){
-				return $query->result();
-			}else{
-				return FALSE;
+    function getAllOrdersInProcess() {
+			try {
+					$this->db
+							->select("R.id, CL.nombre, R.puesto, R.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
+							->from('requisicion as R')
+							->join('usuarios_portal as U', 'U.id = R.id_usuario')
+							->join('datos_generales as GENUS', 'GENUS.id = U.id_datos_generales', 'left')
+							->join('cliente as CL', 'CL.id = R.id_cliente')
+							->where('R.eliminado', 0)
+							->where('R.status', 1)
+							->order_by('R.id', 'DESC');
+	
+					$query = $this->db->get();
+					
+					if ($query->num_rows() > 0) {
+							return $query->result();
+					} else {
+							return array(); // Devuelve un array vacío en lugar de FALSE
+					}
+			} catch (Exception $e) {
+					// Manejar el error
+					log_message('error', 'Error en getAllOrdersInProcess(): ' . $e->getMessage());
+					return array(); // Devuelve un array vacío en caso de error
 			}
-		}
+	}
     function getAllApplicants($id_usuario, $condition){
 			$this->db
 			->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
@@ -153,8 +175,9 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getRequisicionesActivas(){
 			$this->db
-			->select("R.*, R.nombre as nombreCompleto")
+			->select("R.*, C.nombre as nombreCompleto")
 			->from('requisicion as R')
+			->join('cliente as C','C.id = R.id_cliente')
 			->where('R.eliminado', 0)
 			->where_in('R.status', [1,2])
 			->order_by('R.id','DESC');
@@ -168,8 +191,10 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getTestsByOrder($id){
 			$this->db
-			->select("R.*, R.nombre as nombreCompleto,C.id as idCandidato,CONCAT(C.nombre,' ',C.paterno,' ',C.materno) as candidato,C.status_bgc, C.fecha_nacimiento, P.antidoping, P.status_doping, P.psicometrico, P.medico, DOP.id as idDoping, DOP.fecha_resultado,DOP.resultado as resultado_doping, M.id as idMedico, M.conclusion as conclusionMedica, PSI.id as idPsicometrico, PSI.archivo as archivoPsicometria ")
+			->select("R.*, CL.nombre as nombreCompleto,C.id as idCandidato,CONCAT(C.nombre,' ',C.paterno,' ',C.materno) as candidato,C.status_bgc, C.fecha_nacimiento, P.antidoping, P.status_doping, P.psicometrico, P.medico, DOP.id as idDoping, DOP.fecha_resultado,DOP.resultado as resultado_doping, M.id as idMedico, M.conclusion as conclusionMedica, PSI.id as idPsicometrico, PSI.archivo as archivoPsicometria ")
 			->from('requisicion as R')
+			->join('cliente as CL','CL.id= R.id_cliente')
+
       ->join('requisicion_aspirante as A','A.id_requisicion = R.id')
       ->join('candidato as C','C.id_aspirante = A.id')
       ->join('candidato_pruebas as P','P.id_candidato = C.id')
@@ -186,6 +211,34 @@ class Reclutamiento_model extends CI_Model{
 			}else{
 				return FALSE;
 			}
+		}
+
+		function getRequisionById($id){
+		
+			$this->db
+    ->select("R.*, CL.id_datos_generales, CL.id_datos_facturacion, CL.id_domicilios, CL.nombre as nombre,
+    FAC.razon_social, GEN.telefono, GEN.correo,
+    DOM.pais, DOM.estado, DOM.ciudad, DOM.colonia, DOM.calle, DOM.exterior, DOM.interior, DOM.cp,
+    CONCAT('País: ', DOM.pais, ', ', 
+       'Estado: ', DOM.estado, ', ', 
+       'Ciudad: ', DOM.ciudad, ', ', 
+       'Colonia: ', DOM.colonia, ', ', 
+       'Calle: ', DOM.calle, ', ', 
+       'Número Exterior: ', DOM.exterior, ', ', 
+       'CP: ', DOM.cp) as domicilio, 
+    CONCAT(GEN.nombre, ' ', GEN.paterno) as contacto, FAC.forma_pago, FAC.metodo_pago, FAC.uso_cfdi as uso_cfdi, FAC.rfc, FAC.regimen ")
+    ->from('requisicion as R') 
+    ->join('cliente as CL', 'CL.id = R.id_cliente')
+    ->join('domicilios as DOM', 'DOM.id = CL.id_domicilios')
+    ->join('datos_facturacion as FAC', 'CL.id_datos_facturacion = FAC.id')
+    ->join('datos_generales as GEN', 'GEN.id = CL.id_datos_generales')
+    ->where('R.id', $id);
+
+    $consulta = $this->db->get();
+    return $consulta->row();
+
+			$consulta = $this->db->get();
+      return $consulta->row();
 		}
 	/*----------------------------------------*/
 	/*	Acciones
@@ -223,15 +276,7 @@ class Reclutamiento_model extends CI_Model{
 				$resultado = $consulta->row();
 				return $resultado;
 		}
-    function getRequisionById($id){
-			$this->db
-			->select("r.*")
-			->from('requisicion as r')
-			->where('r.id', $id);
-
-			$consulta = $this->db->get();
-      return $consulta->row();
-		}
+    
     function editBolsaTrabajo($datos, $id){
 			$this->db
 			->where('id', $id)
@@ -243,11 +288,30 @@ class Reclutamiento_model extends CI_Model{
     function addRequisicion($data){
       $this->db->insert('requisicion', $data);
     }
+
+		
+			function addRequsicionCompleta($req){
+				$this->db->insert('requisicion', $req);
+			}
+
+			
     function updateOrder($data, $id){
       $this->db
 			->where('id', $id)
 			->update('requisicion', $data);
     }
+		function updateOrderGenerales($data, $id){
+      $this->db
+			->where('id', $id)
+			->update('datos_generales', $data);
+    }
+
+		function updateOrderFacturacion($data, $id){
+      $this->db
+			->where('id', $id)
+			->update('datos_facturacion', $data);
+    }
+
     function addBolsaTrabajo($data){
       $this->db->insert('bolsa_trabajo', $data);
     }
@@ -269,12 +333,13 @@ class Reclutamiento_model extends CI_Model{
     /*----------------------------------------*/
     function getUsersOrder($id_requisicion){
       $this->db
-      ->select("RU.id, RU.id_requisicion, CONCAT(U.nombre,' ',U.paterno) as usuario")
+      ->select("RU.id, RU.id_requisicion, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
       ->from('requisicion_usuario as RU')
       ->join('requisicion as R', 'RU.id_requisicion = R.id','left')
-      ->join('usuario as U', 'U.id = RU.id_usuario','left')
+      ->join('usuarios_portal as U', 'U.id = RU.id_usuario','left')
+			->join('datos_generales AS gen', 'U.id_datos_generales = gen.id','left')
       ->where_in('R.id', $id_requisicion)
-      ->order_by('U.nombre','ASC');
+      ->order_by('gen.nombre','ASC');
     
       $query = $this->db->get();
       if($query->num_rows() > 0){
@@ -294,15 +359,23 @@ class Reclutamiento_model extends CI_Model{
 	/*----------------------------------------*/
 	/*	Consultas
 	/*----------------------------------------*/
-		function getDetailsOrderById($id){
-			$this->db
-			->select("*")
-			->from('requisicion')
-			->where('id', $id);
+	function getDetailsOrderById($id){
+		$this->db
+		->select("R.*, FAC.*,CL.id_datos_generales, CL.id_datos_facturacion, CL.id_domicilios,  CL.nombre as nombre,
+		FAC.razon_social ,
+		DOM.pais, DOM.estado,  DOM.ciudad,  DOM.colonia, DOM.calle,  DOM.exterior,  DOM.interior,  DOM.cp,
+		DOM.cp as cp, GEN.telefono as telefono, GEN.correo as correo, 
+		CONCAT(GEN.nombre, ' ', GEN.paterno) as contacto, FAC.forma_pago, FAC.metodo_pago , FAC.uso_cfdi as uso_cfdi, FAC.rfc, FAC.regimen ")
+		->from('requisicion as R') 
+		->join('cliente as CL', 'CL.id =  R.id_cliente')
+		->join('domicilios as DOM', 'DOM.id = CL.id_domicilios')
+		->join('datos_facturacion as FAC', 'CL.id_datos_facturacion = FAC.id')
+		->join('datos_generales as GEN', 'GEN.id = CL.id_datos_generales')
+		->where('R.id', $id);
 
-			$consulta = $this->db->get();
-			return $consulta->row();
-		}
+		$consulta = $this->db->get();
+		return $consulta->row();
+	}
 		function getHistorialAspirante($id, $campo){
 			$this->db
 			->select("H.*,R.nombre")
@@ -390,9 +463,12 @@ class Reclutamiento_model extends CI_Model{
 		}
 		function getRequisicionesFinalizadas($id_usuario, $condicion){
 			$this->db
-			->select("r.id, r.nombre, r.puesto, r.numero_vacantes, CONCAT(USER.nombre,' ',USER.paterno) as usuario")
-			->from('requisicion as r')
-			->join('usuario as USER','USER.id = r.id_usuario','left')
+			->select("r.id, CL.nombre, r.puesto, r.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
+			->from('requisicion as R')
+			->join('usuario as U','U.id = r.id_usuario','left')
+			->join('datos_generales as GENUS','GENUS.id = U.id_datos_generales')
+			->join('clientes as CL','CL.id = R.id_cliente')
+			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
 			->where('r.eliminado', 0)
 			->where_in('r.status', [0,3])
 			->where($condicion, $id_usuario)
@@ -441,11 +517,14 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getAspirantesPorRequisicionesFinalizadas($id_usuario, $condicion, $id){
 			$this->db
-			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(USER.nombre,' ',USER.paterno) as usuario, R.nombre as empresa,R.puesto, H.id as idHistorial, R.status as statusReq, R.comentario_final")
+			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, 			->join('cliente as CL', 'CL.id = R.id_cliente')
+			.nombre as empresa,R.puesto, H.id as idHistorial, R.status as statusReq, R.comentario_final")
 			->from('requisicion_aspirante as A')
 			->join('requisicion as R','R.id = A.id_requisicion')
+			->join('cliente as CL', 'CL.id = R.id_cliente')
 			->join('requisicion_historial as H','H.id_requisicion = R.id','left')
-			->join('usuario as USER','USER.id = A.id_usuario')
+			->join('usuarios_portal as USER','USER.id = A.id_usuario')
+			->join('datos_generales as GENUS', 'GENUS.id = USER.id_datos_generales')
 			->where('A.id_requisicion', $id)
 			->where_in('R.status', [0,3])
 			->where($condicion, $id_usuario)

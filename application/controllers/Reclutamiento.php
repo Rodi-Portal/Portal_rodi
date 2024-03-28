@@ -82,6 +82,7 @@ class Reclutamiento extends CI_Controller{
       else{
 			  $info['requisiciones'] = $this->reclutamiento_model->getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder);
 			  $info['orders_search'] = $this->reclutamiento_model->getAllOrders($sort, 0, 'R.id >', $filter, $filterOrder);
+        //var_dump($info['orders_search']);
 			  $info['sortOrder'] = $getSort;
 			  $info['filter'] = $getFilter;
       }
@@ -90,13 +91,23 @@ class Reclutamiento extends CI_Controller{
       $info['puestos'] = $this->funciones_model->getPuestos();
       $info['paises'] = $this->funciones_model->getPaises();
 			$info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
+      
       //Obtiene los usuarios con id rol 4 y 11 que pertencen a reclutadores y coordinadores de reclutadores
 			$info['usuarios_asignacion'] = $this->usuario_model->getTipoUsuarios([4,11]);
 			$info['registros_asignacion'] = $this->reclutamiento_model->getRequisicionesActivas();
-			//Modals
+			$info['acciones'] = $this->funciones_model->getAccionesRequisicion();
+      if($this->session->userdata('idrol') == 4){
+				$id_usuario = $this->session->userdata('id');
+        $reqs = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
+			}
+			else{
+        $reqs = $this->reclutamiento_model->getAllOrdersInProcess();
+      }
+      $info['reqs'] = $reqs;
+      //Modals
 			$modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
-			$vista['modals_reclutamiento'] = $this->load->view('modals/mdl_reclutamiento',$info, TRUE);
-
+      			$vista['modals_reclutamiento'] = $this->load->view('modals/mdl_reclutamiento',$info, TRUE);
+      
       $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
 			if(!empty($notificaciones)){
 				$contador = 0;
@@ -939,7 +950,14 @@ class Reclutamiento extends CI_Controller{
       if($section == 'data_facturacion'){
         $this->form_validation->set_rules('comercial_update', 'Nombre comercial', 'required|trim');
         $this->form_validation->set_rules('nombre_update', 'Razón social', 'required|trim');
-        $this->form_validation->set_rules('domicilio_update', 'Domicilio Fiscal', 'required|trim');
+        $this->form_validation->set_rules('pais_update', 'País', 'required|trim');
+        $this->form_validation->set_rules('estado_update', 'Estado', 'required|trim');
+        $this->form_validation->set_rules('ciudad_update', 'Ciudad', 'required|trim');
+        $this->form_validation->set_rules('colonia_update', 'Colonia', 'required|trim');
+        $this->form_validation->set_rules('calle_update', 'Calle', 'required|trim');
+        $this->form_validation->set_rules('interior_update', 'Número Interior', 'trim');
+        $this->form_validation->set_rules('exterior_update', 'Número Exterior', 'trim');
+       
         $this->form_validation->set_rules('cp_update', 'Código postal', 'required|trim|max_length[5]');
         $this->form_validation->set_rules('regimen_update', 'Régimen Fiscal', 'required|trim');
         $this->form_validation->set_rules('telefono_update', 'Teléfono', 'required|trim|max_length[16]');
@@ -994,6 +1012,7 @@ class Reclutamiento extends CI_Controller{
         $this->form_validation->set_rules('competencias', 'Competencias requeridas para el puesto', 'required|trim');
         $this->form_validation->set_rules('observaciones_update', 'Observaciones adicionales', 'trim');
       }
+
       $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
       $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
       $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
@@ -1006,24 +1025,51 @@ class Reclutamiento extends CI_Controller{
         );
       }
       else{
-        if($section == 'data_facturacion'){
-          $req = array(
+        $generales = array();
+
+        if ($section == 'data_facturacion') {
+           
+          $contacto = $this->input->post('contacto_update');
+          $palabras = explode(' ', $contacto);
+
+          // Asignar las palabras a variables individuales
+          $nombre = isset($palabras[0]) ? $palabras[0] : ''; // Primer palabra
+          $paterno = isset($palabras[1]) ? $palabras[1] : '';
+
+             // Agregar los valores al arreglo $generales
+          $generales['telefono'] = $this->input->post('telefono_update');
+          $generales['correo'] = $this->input->post('correo_update');
+          $generales['nombre'] = $nombre;
+          $generales['paterno'] = $paterno;
+          
+          $req= array(
             'edicion' => date('Y-m-d H:i:s'),
-            'id_usuario' => $this->session->userdata('id'),
-            'nombre_comercial' => $this->input->post('comercial_update'),
-            'nombre' => $this->input->post('nombre_update'),
-            'domicilio' => $this->input->post('domicilio_update'),
-            'cp' => $this->input->post('cp_update'),
-            'telefono' => $this->input->post('telefono_update'),
-            'correo' => $this->input->post('correo_update'),
-            'contacto' => $this->input->post('contacto_update'),
+            'id_usuario'=> $this->session->userdata('id')
+          );
+
+          $facturacion = array(
+           
+            
+            'razon_social' => $this->input->post('nombre_update'),
             'rfc' => $this->input->post('rfc_update'),
             'regimen' => $this->input->post('regimen_update'),
             'forma_pago' => $this->input->post('forma_pago_update'),
             'metodo_pago' => $this->input->post('metodo_pago_update'),
             'uso_cfdi' => $this->input->post('uso_cfdi_update'),
           );
-          $sectionSuccessMessage = 'Datos de facturación actualizados correctamente';
+
+          $domicilios = array(
+            'pais' => $this->input->post('pais_update'),
+            'estado' => $this->input->post('estado_update'),
+            'ciudad' => $this->input->post('ciudad_update'),
+            'colonia' => $this->input->post('colonia_update'),
+            'calle' => $this->input->post('calle_update'),
+            'interior' => $this->input->post('interior_update'),
+            'exterior' => $this->input->post('exterior_update'),
+            'cp'=> $this->input->post('cp_update'),
+          );
+          
+          $sectionSuccessMessage = 'Datos de facturación, domicilios, generales del cliente actualizados correctamente';
         }
         if($section == 'vacante'){
           $req = array(
@@ -1077,11 +1123,61 @@ class Reclutamiento extends CI_Controller{
           );
           $sectionSuccessMessage = 'Información del perfil actualizada correctamente';
         }
-        $this->reclutamiento_model->updateOrder($req, $this->input->post('id_requisicion'));
-        $msj = array(
-          'codigo' => 1,
-          'msg' => $sectionSuccessMessage
-        );
+       // Comprobar si $generales no está vacío
+          if (!empty($generales)) {
+            // Si $generales no está vacío, se ha editado datos de facturación y generales
+            /*  var_dump($generales);
+            var_dump($domicilios);
+            var_dump($facturacion);*/
+          
+           $idFac =$this->input->post('id_facturacion_update');
+            // Iniciar la transacción
+            $this->db->trans_start();
+
+            // Actualizar la orden
+            $this->reclutamiento_model->updateOrder($req, $this->input->post('id_requisicion'));
+
+            $this->generales_model->editDomicilios($this->input->post('id_domicilios_update'), $domicilios);
+
+            // Editar los datos de facturación
+            $this->generales_model->editDatosFacturacion($idFac, $facturacion);
+
+            // Editar los datos generales
+            $this->generales_model->editDatosGenerales($this->input->post('id_generales_update'), $generales);
+
+
+            // Finalizar la transacción
+            $this->db->trans_complete();
+
+            // Verificar si la transacción se completó correctamente
+            if ($this->db->trans_status() === FALSE) {
+                // Si la transacción falló, revertir los cambios y mostrar un mensaje de error
+                $this->db->trans_rollback();
+
+                $msj = array(
+                    'codigo' => 0,
+                    'msg' => 'Error al procesar la transacción'
+                );
+            } else {
+                // Si la transacción se completó correctamente, mostrar un mensaje de éxito
+                $msj = array(
+                    'codigo' => 1,
+                    'msg' => $sectionSuccessMessage
+                );
+            }
+          } else {
+            // Si $generales está vacío, solo se ha editado la orden
+          //  var_dump($req);
+            // Actualizar la orden
+            $this->reclutamiento_model->updateOrder($req, $this->input->post('id_requisicion'));
+
+            // Mostrar un mensaje de éxito
+            $msj = array(
+                'codigo' => 1,
+                'msg' => $sectionSuccessMessage
+            );
+          }
+        
       }
       echo json_encode($msj);
     }
@@ -1261,6 +1357,7 @@ class Reclutamiento extends CI_Controller{
         $this->form_validation->set_rules('civil_update', 'Estado civil', 'required|trim');
         $this->form_validation->set_rules('dependientes_update', 'Personas que dependan del aspirante', 'required|trim');
         $this->form_validation->set_rules('escolaridad_update', 'Grado máximo de estudios', 'required|trim');
+        
       }
       if($section == 'salud'){
         $this->form_validation->set_rules('salud_update', '¿Cómo es su estado de salud actual?', 'required|trim');

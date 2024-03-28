@@ -14,32 +14,36 @@ class Cat_cliente_model extends CI_Model{
     $query = $this->db->get();
     return $query->num_rows();
   }
-  function getC($portal) {
+ function getC($portal, $id_cliente = null) {
     try {
-      $this->db->select("c.*,
-      c.id AS idCliente,
-      c.id_datos_facturacion AS dFac,
-      c.id_domicilios AS dDom,
-      c.id_datos_generales AS dGen, 
-      dg.nombre AS nombre_contacto, 
-      dg.paterno AS apellido_contacto, 
-      dg.correo AS correo_contacto, 
-      dg.telefono AS telefono_contacto,
-      dg.password AS password_contacto,
-      d.*, 
-      f.*,
-      (SELECT COUNT(id) FROM usuarios_clientes WHERE id_cliente = c.id) AS numero_usuarios_clientes,
-      dgc.nombre AS nombre_usuario_cliente,
-      dgc.paterno AS apellido_usuario_cliente,
-      dgc.correo AS correo_usuario_cliente,
-      dgc.telefono AS telefono_usuario_cliente")
-      ->from('cliente AS c')
-      ->join("datos_generales AS dg", "c.id_datos_generales = dg.id")
-      ->join("domicilios AS d", "c.id_domicilios = d.id")
-      ->join("datos_facturacion AS f", "c.id_datos_facturacion = f.id")
-      ->join("datos_generales AS dgc", "c.id_datos_generales = dgc.id")
-      ->where(['c.id_portal' => $portal, 'c.eliminado' => 0])
-      ->order_by('c.creacion', 'ASC');
+        $this->db->select("c.*,
+            c.id AS idCliente,
+            c.id_datos_facturacion AS dFac,
+            c.id_domicilios AS dDom,
+            c.id_datos_generales AS dGen, 
+            dg.nombre AS nombre_contacto, 
+            dg.paterno AS apellido_contacto, 
+            dg.correo AS correo_contacto, 
+            dg.telefono AS telefono_contacto,
+            dg.password AS password_contacto,
+            d.*, 
+            f.*,
+            (SELECT COUNT(id) FROM usuarios_clientes WHERE id_cliente = c.id) AS numero_usuarios_clientes,
+            dgc.nombre AS nombre_usuario_cliente,
+            dgc.paterno AS apellido_usuario_cliente,
+            dgc.correo AS correo_usuario_cliente,
+            dgc.telefono AS telefono_usuario_cliente")
+            ->from('cliente AS c')
+            ->join("datos_generales AS dg", "c.id_datos_generales = dg.id")
+            ->join("domicilios AS d", "c.id_domicilios = d.id")
+            ->join("datos_facturacion AS f", "c.id_datos_facturacion = f.id")
+            ->join("datos_generales AS dgc", "c.id_datos_generales = dgc.id")
+            ->where(['c.id_portal' => $portal, 'c.eliminado' => 0]);
+
+        // Si se proporciona un id_cliente, añade un filtro adicional
+        if ($id_cliente !== null) {
+            $this->db->where('c.id', $id_cliente);
+        }
 
         $query = $this->db->get();
 

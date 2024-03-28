@@ -112,22 +112,24 @@
           <div class="row">
             <div class="col-md-6">
               <label for="forma_pago">Forma de Pago</label>
-              <select class="form-control" id="forma_pago" name="forma_pago">
-                <option value="una_sola_exhibicion">Una sola exhibición</option>
-                <option value="pago_parcialidades">Pago en parcialidades</option>
-                <option value="pago_diferido">Pago en diferido</option>
-              </select>
+              <select class="custom-select" id="forma_pago" name="forma_pago">
+                  <option value="" selected>Selecciona</option>
+                  <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
+                  <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
+                </select>
               <br>
             </div>
             <div class="col-md-6">
               <label for="metodo_pago">Método de Pago</label>
-              <select class="form-control" id="metodo_pago" name="metodo_pago">
-                <option value="efectivo">Efectivo</option>
-                <option value="cheque">Cheque de nómina</option>
-                <option value="transferencia">Transferencia electrónica</option>
-                <option value="tarjeta_credito">Tarjeta de crédito</option>
-                <option value="tarjeta_debito">Tarjeta de débito</option>
-              </select>
+              <select class="custom-select" id="metodo_pago" name="metodo_pago">
+                  <option value="" selected>Selecciona</option>
+                  <option value="Efectivo">Efectivo</option>
+                  <option value="Cheque de nómina">Cheque de nómina</option>
+                  <option value="Transferencia electrónica">Transferencia electrónica</option>
+                  <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+                  <option value="Tarjeta de débito">Tarjeta de débito</option>
+                  <option value="Por definir">Por definir</option>
+                </select>
               <br>
             </div>
           </div>

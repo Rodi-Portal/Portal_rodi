@@ -286,7 +286,7 @@ table.dataTable {
   table.dataTable thead .sorting_asc_disabled,
   table.dataTable thead .sorting_desc_disabled {
     cursor: pointer  !important;
-    *cursor: hand  !important;
+    cursor: hand  !important;
     background-repeat: no-repeat  !important;
     background-position: center right  !important;
     /*width: 150px !important;*/ }
@@ -466,18 +466,19 @@ table.dataTable td {
     text-align: right  !important;
     padding-top: 0.25em  !important; }
     .dataTables_wrapper .dataTables_paginate .paginate_button {
-      box-sizing: border-box  !important;
-      display: inline-block  !important;
-      min-width: 1.5em  !important;
-      /*padding: 0  !important;*/
-      margin-left: 2px  !important;
-      text-align: center  !important;
-      text-decoration: none !important  !important;
-      cursor: pointer  !important;
-      cursor: hand  !important;
+      box-sizing: border-box !important;
+      display: inline-block !important;
+      min-width: 1.5em !important;
+      /*padding: 0 !important;*/
+      margin-left: 2px !important;
+      text-align: center !important;
+      text-decoration: none !important; /* Corregido */
+      cursor: pointer !important;
+      cursor: hand !important;
       color: #333333 !important;
-      border: 1px solid transparent  !important;
-      border-radius: 2px  !important; }
+      border: 1px solid transparent !important;
+      border-radius: 2px !important; 
+  }
       .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
         cursor: default  !important;
         color: #666 !important;
@@ -513,8 +514,10 @@ table.dataTable td {
   .dataTables_wrapper .dataTables_scroll {
     clear: both  !important; }
     .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
-      *margin-top: -1px  !important;
-      -webkit-overflow-scrolling: touch  !important; }
+      /* *margin-top: -1px !important; */ /* Corregido */
+      margin-top: -1px !important;
+      -webkit-overflow-scrolling: touch !important;
+  }
       .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > td, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > td {
         vertical-align: middle  !important; }
       .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > th > div.dataTables_sizing,

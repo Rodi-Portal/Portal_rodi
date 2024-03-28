@@ -43,7 +43,9 @@
 </head>
 <body>
   <h2 class="centrado">Requisicion #<?php echo $requisicion->id ?> <br>Empresa: <?php echo $requisicion->nombre ?> <br>Fecha solicitud: <?php echo formatoFechaEspanolPDF($requisicion->creacion) ?></h2>
-  
+ <!--pre>
+   // < ?php print_r($requisicion); ?>
+</pre>
   <!-- Vacante -->
   <table class="table">
     <tr>

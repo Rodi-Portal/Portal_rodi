@@ -272,6 +272,45 @@ class Cat_Cliente extends CI_Controller{
     }
   }
 
+  
+  function getClientesPorId(){
+    $portal = $this->session->userdata('idPortal');
+    $cliente_id = $this->input->get('cliente_id');
+
+    try {
+        // Obtener los datos de clientes (data)
+        $data = $this->cat_cliente_model->getC($portal, $cliente_id);
+
+        // Configurar el tipo de contenido de la respuesta como JSON
+        $this->output->set_content_type('application/json');
+
+        // Verificar si se encontraron datos de clientes
+        if (!empty($data)) {
+            // Construir la respuesta JSON
+            $response = [
+                'success' => true,
+                'data' => $data,
+            ];
+        } else {
+            // Construir la respuesta JSON si no se encontraron datos
+            $response = [
+                'success' => false,
+                'message' => 'No se encontraron datos de clientes.',
+            ];
+        }
+
+        // Enviar la respuesta JSON
+        $this->output->set_output(json_encode($response));
+    } catch (Exception $e) {
+        log_message('error', 'Excepción en la función getClientes: ' . $e->getMessage());
+
+        // Configurar el tipo de contenido de la respuesta como JSON
+        $this->output->set_content_type('application/json');
+
+        // Enviar una respuesta JSON de error
+        $this->output->set_output(json_encode(['error' => 'Error en la consulta.']));
+    }
+}
 
 // Funcion para registrar Clientes
 
@@ -441,6 +480,38 @@ class Cat_Cliente extends CI_Controller{
       echo $res = 0;
     }
   }
+
+
+  function getDatosClientesActivos() {
+    // Obtener el ID del cliente enviado por la solicitud AJAX
+    $cliente_id = $this->input->get('cliente_id');
+
+    // Realizar la lógica para obtener los datos del cliente según su ID
+    // Por ejemplo, puedes hacer una consulta a la base de datos
+    // Aquí asumiremos que tienes un modelo llamado "Cliente_model" que maneja la lógica de la base de datos
+    $this->load->model('Cliente_model');
+    $clienteData = $this->Cliente_model->obtenerClientePorId($cliente_id);
+
+    // Verificar si se encontraron datos del cliente
+    if ($clienteData) {
+        // Preparar los datos del cliente para enviarlos como respuesta
+        $response = array(
+            'success' => true,
+            'data' => $clienteData
+        );
+    } else {
+        // Si no se encontraron datos del cliente, enviar un mensaje de error
+        $response = array(
+            'success' => false,
+            'error' => 'No se encontraron datos para el cliente seleccionado.'
+        );
+    }
+
+    // Devolver la respuesta en formato JSON
+    echo json_encode($response);
+}
+
+
 
   function addUsuarioCliente(){
     $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
