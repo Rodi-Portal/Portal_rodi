@@ -70,7 +70,7 @@
         
         if ($orders_search) {
           foreach ($orders_search as $row) { ?>
-        <option value="<?php echo $row->id; ?>"><?php echo '#'.$row->id.' '.$row->nombre; ?></option>
+        <option value="<?php echo $row->id; ?>"><?php echo '#'.$row->id.' '.$row->nombre.' - '.$row->puesto; ?></option>
         <?php 
           }
         }else{ ?>

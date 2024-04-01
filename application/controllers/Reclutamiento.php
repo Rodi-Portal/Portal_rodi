@@ -834,30 +834,76 @@ class Reclutamiento extends CI_Controller{
 			echo json_encode($msj);
 		}
     function addRequisicion(){
-      $this->form_validation->set_rules('nombre_req', 'Razón social', 'trim');
+      $this->form_validation->set_rules('id_cliente', 'Cliente', 'required|trim');
       $this->form_validation->set_rules('nombre_comercial_req', 'Nombre comercial', 'required|trim');
-      $this->form_validation->set_rules('domicilio_req', 'Domicilio Fiscal', 'trim');
-      $this->form_validation->set_rules('cp_req', 'Código postal', 'trim|numeric|max_length[5]');
-      $this->form_validation->set_rules('telefono_req', 'Teléfono', 'trim|max_length[16]');
-      $this->form_validation->set_rules('correo_req', 'Correo', 'trim|valid_email');
-      $this->form_validation->set_rules('contacto_req', 'Contacto', 'trim');
+      $this->form_validation->set_rules('nombre_req', 'Razón social', 'required|trim');
+      $this->form_validation->set_rules('correo_req', 'Correo', 'required|trim|valid_email');
+      $this->form_validation->set_rules('cp_req', 'Código postal', 'required|trim|max_length[5]');
+      $this->form_validation->set_rules('telefono_req', 'Teléfono', 'required|trim|max_length[16]');
+      $this->form_validation->set_rules('contacto_req', 'Contacto', 'trim|required');
       $this->form_validation->set_rules('rfc_req', 'RFC', 'trim|max_length[13]');
+      $this->form_validation->set_rules('pais_req', 'País', 'trim');
+      $this->form_validation->set_rules('estado_req', 'Estado', 'trim');
+      $this->form_validation->set_rules('ciudad_req', 'Ciudad', 'trim');
+      $this->form_validation->set_rules('colonia_req', 'Colonia', 'trim');
+      $this->form_validation->set_rules('calle_req', 'Calle', 'trim');
+      $this->form_validation->set_rules('interior_req', 'Número Interior', 'trim');
+      $this->form_validation->set_rules('exterior_req', 'Número Exterior', 'trim');
+      $this->form_validation->set_rules('regimen_req', 'Régimen Fiscal', 'trim');
+      $this->form_validation->set_rules('forma_pago_req', 'Forma de pago', 'trim');
+      $this->form_validation->set_rules('metodo_pago_req', 'Método de pago', 'trim');
+      $this->form_validation->set_rules('uso_cfdi_req', 'Uso de CFDI', 'trim');
+    
       $this->form_validation->set_rules('puesto_req', 'Nombre de la posición', 'required|trim');
       $this->form_validation->set_rules('numero_vacantes_req', 'Número de vacantes', 'required|numeric|max_length[2]');
       $this->form_validation->set_rules('residencia_req', 'Lugar de residencia', 'trim');
+      $this->form_validation->set_rules('escolaridad_req', 'Formación académica requerida', 'trim');
+      $this->form_validation->set_rules('estatus_escolaridad_req', 'Estatus académico', 'trim');
+      $this->form_validation->set_rules('otro_estatus_req', 'Otro estatus académico', 'trim');
+      $this->form_validation->set_rules('carrera_req', 'Carrera requerida para el puesto', 'trim');
+      $this->form_validation->set_rules('otros_estudios_req', 'Otro estatus académico', 'trim');
+      $this->form_validation->set_rules('idioma1_req', 'Idiomas que habla  ', 'trim');
+      $this->form_validation->set_rules('por_idioma1_req', 'Porcentaje idioma uno', 'trim');
+      $this->form_validation->set_rules('idioma2_req', 'Idiomas que habla  dos ', 'trim');
+      $this->form_validation->set_rules('por_idioma2_req', 'Porcentaje idioma dos', 'trim');
+      $this->form_validation->set_rules('idioma3_req', 'Idiomas que habla  tres ', 'trim');
+      $this->form_validation->set_rules('por_idioma3_req', 'Porcentaje idioma tres', 'trim');
+      $this->form_validation->set_rules('habilidad1_req', 'Habilidades informáticas requeridas', 'trim');
+      $this->form_validation->set_rules('por_habilidad1_req', 'Porcentaje habilidad  requerida uno', 'trim');
+      $this->form_validation->set_rules('habilidad2_req', 'Habilidad  requeridas dos', 'trim');
+      $this->form_validation->set_rules('por_habilidad2_req', 'Porcentaje habilidad  requeridas dos', 'trim');
+      $this->form_validation->set_rules('habilidad3_req', 'Habilidad  requeridas tres', 'trim');
+      $this->form_validation->set_rules('por_habilidad3_req', 'Porcentaje habilidad  requeridas tres', 'trim');
+      $this->form_validation->set_rules('genero_req', 'Sexo', 'trim');
+      $this->form_validation->set_rules('civil_req', 'Estado civil', 'trim');
+      $this->form_validation->set_rules('edad_minima_req', 'Edad mínima', 'max_length[2]');
+      $this->form_validation->set_rules('edad_maxima_req', 'Edad máxima', 'max_length[2]');
+      $this->form_validation->set_rules('licencia_req', 'Licencia de conducir', 'trim');
+      $this->form_validation->set_rules('licenctipo_licencia_reqia_req', 'Tipo de licencia', 'trim');
+      $this->form_validation->set_rules('discapacidad_req', 'Discapacidad aceptable', 'trim');
+      $this->form_validation->set_rules('causa_req', 'Causa que origina la vacante', 'trim');
+      
       $this->form_validation->set_rules('zona_req', 'Zona de trabajo', 'required|trim');
       $this->form_validation->set_rules('tipo_sueldo_req', 'Sueldo', 'required|trim');
       $this->form_validation->set_rules('sueldo_minimo_req', 'Sueldo mínimo', 'numeric|max_length[8]');
-      $this->form_validation->set_rules('sueldo_maximo_req', 'Sueldo máximo', 'numeric|max_length[8]');
-      $this->form_validation->set_rules('tipo_pago_req', 'Tipo de pago', 'required|trim');
-      $this->form_validation->set_rules('ley_req', '¿Tendrá prestaciones de ley?', 'required');
-      $this->form_validation->set_rules('experiencia_req', 'Se requiere experiencia en', 'trim');
+      $this->form_validation->set_rules('sueldo_maximo_req', 'Sueldo máximo', 'required|numeric|max_length[8]');
+      $this->form_validation->set_rules('tipo_pago_req', 'Tipo de pago ', 'required');
+      $this->form_validation->set_rules('tipo_prestaciones_req', '¿Tendrá prestaciones de ley?', 'required');
+      $this->form_validation->set_rules('experiencia_req', 'Se requiere experiencia en', 'required|trim');
       $this->form_validation->set_rules('observaciones_req', 'Observaciones adicionales', 'trim');
-
+  
       $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
       $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
       $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
       $this->form_validation->set_message('numeric','El campo {field} debe ser numérico');
+     
+
+    if ($this->form_validation->run() == FALSE) {
+      $msj = array(
+        'codigo' => 0,
+        'msg' => validation_errors()
+      );
+    }
 
       $msj = array();
       if ($this->form_validation->run() == FALSE) {
@@ -866,39 +912,157 @@ class Reclutamiento extends CI_Controller{
           'msg' => validation_errors()
         );
       }else{
-        $date = date('Y-m-d H:i:s');
-        $req = array(
-          'creacion' => $date,
-          'tipo' => 'EXPRESS',
-          'id_usuario' => $this->session->userdata('id'),
-          'nombre' => $this->input->post('nombre_req'),
-          'nombre_comercial' => $this->input->post('nombre_comercial_req'),
-          'domicilio' => $this->input->post('domicilio_req'),
-          'cp' => $this->input->post('cp_req'),
-          'telefono' => $this->input->post('telefono_req'),
-          'correo' => $this->input->post('correo_req'),
-          'contacto' => $this->input->post('contacto_req'),
-          'rfc' => $this->input->post('rfc_req'),
-          'puesto' => $this->input->post('puesto_req'),
-          'numero_vacantes' => $this->input->post('numero_vacantes_req'),
-          'lugar_residencia' => $this->input->post('residencia_req'),
-          'zona_trabajo' => $this->input->post('zona_req'),
-          'sueldo' => $this->input->post('tipo_sueldo_req'),
-          'sueldo_minimo' => $this->input->post('sueldo_minimo_req'),
-          'sueldo_maximo' => $this->input->post('sueldo_maximo_req'),
-          'tipo_pago_sueldo' => $this->input->post('tipo_pago_req'),
-          'tipo_prestaciones' => $this->input->post('ley_req'),
-          'experiencia' => $this->input->post('experiencia_req'),
-          'observaciones' => $this->input->post('observaciones_req')
-        );
-        $this->reclutamiento_model->addRequisicion($req);
-        $msj = array(
-          'codigo' => 1,
-          'msg' => 'Requisición express registrada correctamente'
-        );
+
+        $cadena_competencias = $this->input->post('competencias');
+        $competencias = '';
+        
+        if (!empty($cadena_competencias)) {
+            $competencias = implode('_', $cadena_competencias);
+        }
+
+      $date = date('Y-m-d H:i:s');
+      $id_usuario = $this->session->userdata('id');
+      $id_cliente = $this->input->post('id_cliente');
+      $contacto = $this->input->post('contacto_req');
+      $palabras = explode(' ', $contacto);
+
+      // Asignar las palabras a variables individuales
+      $nombre = isset($palabras[0]) ? $palabras[0] : ''; // Primer palabra
+      $paterno = isset($palabras[1]) ? $palabras[1] : '';
+
+
+
+      $cliente= array(
+        'edicion' => $date,
+        'nombre' => $this->input->post('nombre_comercial_req'),
+      );
+      $domicilios= array(
+        'pais' => $this->input->post('pais_req'),
+        'estado' => $this->input->post('estado_req'),
+        'ciudad' => $this->input->post('ciudad_req'),
+        'colonia' => $this->input->post('colonia_req'),
+        'calle' => $this->input->post('calle_req'),
+        'interior' => $this->input->post('interior_req'),
+        'exterior' => $this->input->post('exterior_req'),
+        'cp' => $this->input->post('cp_req'),
+      );
+
+      $generales= array(
+        'telefono_req' => $this->input->post('telefono_req'),
+        'correo_req' => $this->input->post('correo_req'),
+        'nombre' => $nombre,
+        'paterno'=> $paterno,
+      );
+
+      $facturacion= array(
+        'razon_social' => $this->input->post('nombre_req'),
+        'regimen' => $this->input->post('regimen_req'),
+        'rfc' => $this->input->post('rfc_req'),
+        'forma_pago' => $this->input->post('forma_pago_req'),
+        'metodo_pago' => $this->input->post('metodo_pago_req'),
+        'uso_cfdi' => $this->input->post('uso_cfdi_req')
+       
+      );
+      $idiomas = "";
+
+      if($this->input->post('idioma1_req') != ""){
+      	$idiomas .= ($this->input->post('por_idioma1_req') != '')? $this->input->post('idioma1_req').' con '.$this->input->post('por_idioma1_req').'% ' : $this->input->post('idioma1_req');
+      }
+      if($this->input->post('idioma2_req') != ""){
+      	$idiomas .= ($this->input->post('por_idioma2_req') != '')? $this->input->post('idioma2_req').' con '.$this->input->post('por_idioma2_req').'% ' : $this->input->post('idioma2_req');
+      }
+      if($this->input->post('idioma3_req') != ""){
+      	$idiomas .= ($this->input->post('por_idioma3_req') != '')? $this->input->post('idioma3_req').' con '.$this->input->post('por_idioma3_req').'% ' : $this->input->post('idioma3_req');
+      }
+      if($this->input->post('idioma3_req') == ""){
+      	$idiomas .= "Sin Idiomas";
+      }
+
+      $habilidades = "";
+
+      if($this->input->post('habilidad1_req') != ""){
+      	$habilidades .= ($this->input->post('por_habilidad1_req') != '')? $this->input->post('habilidad1_req').' con '.$this->input->post('por_habilidad1_req').'% ' : $this->input->post('habilidad1_req');
+      }
+      if($this->input->post('habilidad2_req') != ""){
+      	$habilidades .= ($this->input->post('por_habilidad2_req') != '')? $this->input->post('habilidad2_req').' con '.$this->input->post('por_habilidad2_req').'% ' : $this->input->post('habilidad2_req');
+      }
+      if($this->input->post('habilidad3_req') != ""){
+      	$habilidades .= ($this->input->post('por_habilidad3_req') != '')? $this->input->post('habilidad3_req').' con '.$this->input->post('por_habilidad3_req').'% ' : $this->input->post('habilidad3_req');
+      }
+      if($this->input->post('habilidad1_req') == ""){
+      	$habilidades .= "Sin Habilidades requeridas";
+      }
+
+
+
+
+      $licencia = '';
+     
+      if($this->input->post('licencia_req') != "No necesaria"  || $this->input->post('licencia_req') != ''){
+      $licencia .= ($this->input->post('tipo_licencia_req') != '')? $this->input->post('licencia_req').' '.$this->input->post('tipo_licencia_req') : $this->input->post('licencia_req');
+      }
+      else{
+      	$licencia .= "N/A";
+      }
+      
+     
+
+      $req = array(
+        'creacion' => $date,
+        'edicion' => $date,
+        'tipo' => 'EXPRESS',
+        'id_usuario' => $id_usuario,
+        'id_cliente' => $id_cliente,
+        'puesto' => $this->input->post('puesto_req') ?? null,
+        'numero_vacantes' => $this->input->post('numero_vacantes_req') ?? null,
+        'escolaridad' => !empty($this->input->post('escolaridad_req')) ? $this->input->post('escolaridad_req') : null,
+        'estatus_escolar' => !empty($this->input->post('estatus_escolaridad_req')) ? $this->input->post('estatus_escolaridad_req') : null,
+        'otro_estatus_escolar' => !empty($this->input->post('otro_estatus_req')) ? $this->input->post('otro_estatus_req') : null,
+        'carrera_requerida' => !empty($this->input->post('carrera_req')) ? $this->input->post('carrera_req') : null,
+        'otros_estudios' => $this->input->post('otros_estudios_req') ?? null,
+        'idiomas' => $idiomas ?? null,
+        'habilidad_informatica' => $habilidades ?? null,
+        'genero' => $this->input->post('genero_req') ?? null,
+        'estado_civil' => $this->input->post('civil_req') ?? null,
+        'edad_minima' => $this->input->post('edad_minima_req') ?? null,
+        'edad_maxima' => $this->input->post('edad_maxima_req') ?? null,
+        'licencia' => $licencia ?? null,
+        'discapacidad_aceptable' => $this->input->post('discapacidad_req') ?? null,
+        'causa_vacante' => $this->input->post('causa_req') ?? null,
+        'lugar_residencia' => $this->input->post('residencia_req') ?? null,
+        'zona_trabajo' => $this->input->post('zona_req') ?? null,
+        'tipo_pago_sueldo' => $this->input->post('tipo_sueldo_req') ?? null,
+        'sueldo_minimo' => $this->input->post('sueldo_minimo_req') ?? null,
+        'sueldo_maximo' => $this->input->post('sueldo_maximo_req') ?? null,
+        'tipo_prestaciones' => $this->input->post('tipo_prestaciones_req') ?? null,
+        'experiencia' => $this->input->post('experiencia_req') ?? null,        
+        'competencias' => $competencias ?? null,
+        'observaciones' => $this->input->post('observaciones_req') ?? null,
+      );
+
+     /* var_dump($cliente);
+      var_dump($generales);
+      var_dump($facturacion);
+      var_dump($domicilios);
+      var_dump($req);
+      die('pausa');
+      */
+
+          if ($this->reclutamiento_model->addRequisicion($id_cliente, $cliente, $domicilios,    $generales, $facturacion, $req)) {
+              $msj = array(
+                  'codigo' => 1,
+                  'msg' => 'Requisición express registrada correctamente'
+              );
+          } else {
+              $msj = array(
+                  'codigo' => 0,
+                  'msg' => 'Error al registrar la requisición'
+              );
+          }
       }
 			echo json_encode($msj);
     }
+
     //* Funcion base
     function assignToUser(){
 			$this->form_validation->set_rules('asignar_usuario[]', $this->input->post('label_usuario'), 'required|numeric|trim');

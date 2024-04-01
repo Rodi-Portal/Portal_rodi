@@ -29,14 +29,14 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getOrdersByUser($id_usuario, $sort, $id_order, $condition_order){
 			$this->db
-			->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCATCONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario,      FAC.razon_social as nombre_comercial")
+			->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario,      FAC.razon_social as nombre_comercial")
 			->from('requisicion as R')
-			->join('usuarios_portal as U','U.id = RU.id_usuario')
+			->join('usuarios_portal as U','U.id = R.id_usuario')
 			->join('cliente as CL','CL.id = R.id_cliente')
 			->join('datos_facturacion as FAC','FAC.id = CL.id_datos_facturacion')
 			->join('datos_generales  as GENCL ','GENCL.id = CL.id_datos_generales')
 			->join('requisicion_usuario as RU','RU.id_requisicion = R.id')
-			->join('usuarios_portal as U','U.id = RU.id_usuario')
+		
 			->join('datos_generales  as GENUS ','GENUS.id = U.id_datos_generales')
 			->where_in('R.status', [1,2])
 			->where('RU.id_usuario', $id_usuario)
@@ -78,9 +78,9 @@ class Reclutamiento_model extends CI_Model{
 			->select("R.id, CL.nombre, R.puesto, R.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
 			->from('requisicion as R')
 			->join('requisicion_usuario as RU','RU.id_requisicion = R.id')
-			->join('usuario as U','U.id = RU.id_usuario')
+			->join('usuarios_portal as U','U.id = RU.id_usuario')
 			->join('datos_generales as GENUS','GENUS.id = U.id_datos_generales')
-			->join('clientes as CL','CL.id = R.id_cliente')
+			->join('cliente as CL','CL.id = R.id_cliente')
 			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
 			->where('R.eliminado', 0)
 			->where('R.status', 2)
@@ -157,9 +157,10 @@ class Reclutamiento_model extends CI_Model{
 		}
     function getApplicantsByUser($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $id_usuario, $area, $condition_area){
 			$this->db
-			->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(U.nombre,' ',U.paterno) as usuario")
+			->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(GENUP.nombre,' ',GENUP.paterno) as usuario")
 			->from('bolsa_trabajo as B')
-			->join('usuario as U','U.id = B.id_usuario')
+			->join('usuarios_portal as U','U.id = B.id_usuario')
+			->join('datos_generales as GENUP','GENUP.id = U.id_usuario')
       ->where($condition_area, $area)
 			->where($filterApplicant, $filter)
       ->where($condition_applicant, $id_applicant)
@@ -285,9 +286,62 @@ class Reclutamiento_model extends CI_Model{
     function guardarHistorialBolsaTrabajo($datos){
       $this->db->insert('bolsa_trabajo_historial', $datos);
     }
-    function addRequisicion($data){
-      $this->db->insert('requisicion', $data);
-    }
+    function addRequisicion($id_cliente, $cliente, $domicilios, $generales, $facturacion, $req) {
+			// Iniciar transacción
+		/*	echo "Aquí el id del cliente: " . $id_cliente . PHP_EOL;
+			echo "Aquí el cliente: ";
+			var_dump($cliente);
+			echo "Aquí los domicilios: ";
+			var_dump($domicilios);
+			echo "Aquí los datos generales: ";
+			var_dump($generales);
+			echo "Aquí los datos de facturación: ";
+			var_dump($facturacion);
+			echo "Aquí la nueva requisición: ";
+			var_dump($req);
+			die();*/
+
+			$this->db->trans_start();
+	
+			try {
+					// Paso 1: Actualizar los datos del cliente
+					$this->db->where('id', $id_cliente);
+					$this->db->update('cliente', $cliente);
+	
+					// Paso 2: Obtener y actualizar los datos generales del cliente
+				
+				
+					$id_datos_generales =	$this->generales_model->obtenerIdDatosGenerales($id_cliente);
+				$this->generales_model->editDatosGenerales($id_datos_generales, $generales);
+	
+					// Paso 3: Obtener y actualizar los domicilios del cliente
+					$id_domicilios = $this->generales_model->obtenerIdDomicilios($id_cliente);
+
+
+					$this->generales_model->editDomicilios($id_domicilios, $domicilios);
+
+
+	
+					// Paso 4: Obtener y actualizar los datos de facturación del cliente
+					$id_datos_facturacion = $this->generales_model->obtenerIdDatosFacturacion($id_cliente);
+
+					$this->generales_model->editDatosFacturacion($id_datos_facturacion, $facturacion);
+	
+					// Paso 5: Insertar la nueva requisición
+					
+					//print_r($req);
+					$this->db->insert('requisicion', $req);
+						
+					// Commit de la transacción
+					$this->db->trans_commit();
+			    // Se ejecutó correctamente
+					return true; 
+				} catch (Exception $e) {
+						// Rollback de la transacción en caso de error
+						$this->db->trans_rollback();
+						return false; // Hubo un error
+				}
+	}
 
 		
 			function addRequsicionCompleta($req){
@@ -393,11 +447,14 @@ class Reclutamiento_model extends CI_Model{
 		}
 		function getAspirantesRequisiciones($id_usuario, $condicion){
 			$this->db
-			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(USER.nombre,' ',USER.paterno) as usuario, R.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes,C.id_aspirante as idCandidato, C.status_bgc")
+			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, CL.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes,C.id_aspirante as idCandidato, C.status_bgc")
 			->from('requisicion_aspirante as A')
 			->join('requisicion as R','R.id = A.id_requisicion')
+
+			->join('cliente as CL','CL.id = R.id_cliente')		
+			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
 			->join('requisicion_historial as H','H.id_requisicion = R.id','left')
-			->join('usuario as USER','USER.id = A.id_usuario')
+			->join('usuarios_portal as USER','USER.id = A.id_usuario')
 			->join('candidato as C','C.id_aspirante = A.id','left')
 			->where('A.eliminado', 0)
 			->where('R.eliminado', 0)
@@ -420,7 +477,7 @@ class Reclutamiento_model extends CI_Model{
 			->select("A.id")
 			->from('requisicion_aspirante as A')
 			->join('requisicion as R','R.id = A.id_requisicion')
-			->join('usuario as USER','USER.id = A.id_usuario')
+			->join('usuarios_portal as USPOR','USPOR.id = A.id_usuario')
 			->where('A.eliminado', 0)
 			->where('R.status', 2)
 			->where($condicion, $id_usuario);
@@ -430,11 +487,12 @@ class Reclutamiento_model extends CI_Model{
 		}
 		function getAspirantesPorRequisicion($id_usuario, $condicion, $id){
 			$this->db
-			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(USER.nombre,' ',USER.paterno) as usuario, R.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes")
+			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(DATUP.nombre,' ',DATUP.paterno) as usuario, R.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes")
 			->from('requisicion_aspirante as A')
 			->join('requisicion as R','R.id = A.id_requisicion')
 			->join('requisicion_historial as H','H.id_requisicion = R.id','left')
-			->join('usuario as USER','USER.id = A.id_usuario')
+			->join('usuarios_portal as USPOR','USPOR.id = A.id_usuario')
+			->join('datos_generales as DATUP', 'DATUP.id = USPOR.id_datos_generales')
 			->where('A.id_requisicion', $id)
 			->where('R.status', 2)
 			->where($condicion, $id_usuario)
@@ -465,9 +523,9 @@ class Reclutamiento_model extends CI_Model{
 			$this->db
 			->select("r.id, CL.nombre, r.puesto, r.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
 			->from('requisicion as R')
-			->join('usuario as U','U.id = r.id_usuario','left')
+			->join('usuarios_portal as U','U.id = r.id_usuario','left')
 			->join('datos_generales as GENUS','GENUS.id = U.id_datos_generales')
-			->join('clientes as CL','CL.id = R.id_cliente')
+			->join('cliente as CL','CL.id = R.id_cliente')
 			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
 			->where('r.eliminado', 0)
 			->where_in('r.status', [0,3])
@@ -483,11 +541,15 @@ class Reclutamiento_model extends CI_Model{
 		}
 		function getAspirantesRequisicionesFinalizadas($id_usuario, $condicion){
 			$this->db
-			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(USER.nombre,' ',USER.paterno) as usuario, R.nombre as empresa,R.puesto, H.id as idHistorial, R.status as statusReq, R.comentario_final")
+			->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, CL.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes,C.id_aspirante as idCandidato, C.status_bgc")
 			->from('requisicion_aspirante as A')
 			->join('requisicion as R','R.id = A.id_requisicion')
+
+			->join('cliente as CL','CL.id = R.id_cliente')		
+			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
 			->join('requisicion_historial as H','H.id_requisicion = R.id','left')
-			->join('usuario as USER','USER.id = A.id_usuario')
+			->join('usuarios_portal as USER','USER.id = A.id_usuario')
+			->join('candidato as C','C.id_aspirante = A.id','left')
 			->where('A.eliminado', 0)
 			->where_in('R.status', [0,3])
 			->where($condicion, $id_usuario)
@@ -507,7 +569,7 @@ class Reclutamiento_model extends CI_Model{
 				->select("A.id")
 				->from('requisicion_aspirante as A')
 				->join('requisicion as R','R.id = A.id_requisicion')
-				->join('usuario as USER','USER.id = A.id_usuario')
+				->join('usuarios_portal as USPOR','USPOR.id = A.id_usuario')
 				->where('A.eliminado', 0)
 				->where_in('R.status', [0,3])
 				->where($condicion, $id_usuario);

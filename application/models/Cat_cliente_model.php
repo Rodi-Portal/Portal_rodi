@@ -27,7 +27,7 @@ class Cat_cliente_model extends CI_Model{
             dg.telefono AS telefono_contacto,
             dg.password AS password_contacto,
             d.*, 
-            f.*,
+            f.*, f.regimen as regimen1, f.forma_pago, f.metodo_pago,
             (SELECT COUNT(id) FROM usuarios_clientes WHERE id_cliente = c.id) AS numero_usuarios_clientes,
             dgc.nombre AS nombre_usuario_cliente,
             dgc.paterno AS apellido_usuario_cliente,

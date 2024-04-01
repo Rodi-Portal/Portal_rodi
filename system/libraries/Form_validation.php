@@ -1047,18 +1047,21 @@ class CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Required
-	 *
-	 * @param	string
-	 * @return	bool
-	 */
-	public function required($str)
-	{
-		
-		return is_array($str)
-			? (empty($str) === FALSE)
-			: (trim($str) !== '');
-	}
+ * Required
+ *
+ * @param   mixed
+ * @return  bool
+ */
+public function required($str)
+{
+    if ($str === null) {
+        return false;
+    }
+
+    return is_array($str)
+        ? (empty($str) === FALSE)
+        : (trim($str) !== '');
+}
 
 	// --------------------------------------------------------------------
 

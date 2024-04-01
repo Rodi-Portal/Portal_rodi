@@ -100,4 +100,42 @@ function addDatosFacturacion($datosFacturacion){
 }
 
 
+public function obtenerIdDatosGenerales($id_cliente) {
+    $this->db->select('id_datos_generales');
+    $this->db->where('id', $id_cliente);
+    $query = $this->db->get('cliente');
+
+    if ($query->num_rows() > 0) {
+        $row = $query->row();
+        return $row->id_datos_generales;
+    } else {
+        return null;
+    }
+}
+
+public function obtenerIdDatosFacturacion($id_cliente) {
+    $this->db->select('id_datos_facturacion');
+    $this->db->where('id', $id_cliente);
+    $query = $this->db->get('cliente');
+
+    if ($query->num_rows() > 0) {
+        $row = $query->row();
+        return $row->id_datos_facturacion;
+    } else {
+        return null;
+    }
+}
+
+public function obtenerIdDomicilios($id_cliente) {
+    $this->db->select('id_domicilios');
+    $this->db->where('id', $id_cliente);
+    $query = $this->db->get('cliente');
+
+    if ($query->num_rows() > 0) {
+        $row = $query->row();
+        return $row->id_domicilios;
+    } else {
+        return null;
+    }
+}
 }

@@ -23,18 +23,24 @@ function cargarDatosCliente() {
           var cliente = response.data[0]; // Datos del cliente recibidos
 
           // Llena los campos del formulario con los datos del cliente
-          $('#nombre_comercial_req').val(cliente.nombre_contacto);
+          $('#nombre_comercial_req').val(cliente.nombre);
           $('#nombre_req').val(cliente.razon_social);
-          $('#domicilio_req').val(cliente.pais+", "+cliente.estado+", "+cliente.ciudad+", "+cliente.colonia+", "+cliente.calle+", #ext"+cliente.exterior+", #int"+cliente.interior);
           $('#cp_req').val(cliente.cp);
+          $('#pais_req').val(cliente.pais);
+          $('#estado_req').val(cliente.estado);
+          $('#ciudad_req').val(cliente.ciudad);
+          $('#colonia_req').val(cliente.colonia);
+          $('#calle_req').val(cliente.calle);
+          $('#interior_req').val(cliente.interior);
+          $('#exterior_req').val(cliente.exterior);
           $('#telefono_req').val(cliente.telefono_contacto);
           $('#contacto_req').val(cliente.nombre_contacto+" "+cliente.apellido_contacto);
           $('#rfc_req').val(cliente.rfc);
           $('#correo_req').val(cliente.correo_contacto);
-          $('#regimen').val(cliente.regimen);
-          $('#forma_pago').val(cliente.forma_pago);
-          $('#metodo_pago').val(cliente.metodo_pago);
-          $('#uso_cfdi').val(cliente.uso_cfdi);
+          $('#regimen_req').val(cliente.regimen1);
+          $('#forma_pago_req').val(cliente.forma_pago);
+          $('#metodo_pago_req').val(cliente.metodo_pago);
+          $('#uso_cfdi_req').val(cliente.uso_cfdi);
 
           // Llena los demás campos del formulario de manera similar
         } else {

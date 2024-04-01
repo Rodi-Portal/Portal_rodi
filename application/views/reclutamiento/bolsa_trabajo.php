@@ -1170,3 +1170,4 @@
 </script>
 <!-- Funciones Reclutamiento -->
 <script src="<?php echo base_url(); ?>js/reclutamiento/functions.js"></script>
+<script src="<?php echo base_url(); ?>js/reclutamiento/requisicion.js"></script>

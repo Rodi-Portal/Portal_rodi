@@ -48,8 +48,10 @@
             <div class="col-sm-12 col-md-4">
               <label>Medio de contacto *</label>
               <select name="medio" id="medio" class="form-control obligado">
+              
                 <option value="">Selecciona</option>
                 <?php
+              
                 foreach ($medios as $m) { ?>
                 <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
                 <?php  
@@ -536,36 +538,58 @@
           <hr>
         <p style="text-align: center; color: #808080;""> Datos Para llenar Requisicion Completa ↓</p>
         <hr>
-          <div class=" row mb-3">
-
-          <div class="col-9">
-            <label for="domicilio_req">Domicilio fiscal</label>
-            <input type="text" class="form-control" data-field="Domicilio fiscal" name="domicilio_req"
-              id="domicilio_req">
+        <div class="row">
+            <div class="col-md-3">
+              <label for="pais_req">País *</label>
+              <input type="text" class="form-control" id="pais_req" name="pais_req">
+            </div>
+            <div class="col-md-3">
+              <label for="estado_req">Estado *</label>
+              <input type="text" class="form-control" id="estado_req" name="estado_req">
+            </div>
+            <div class="col-md-3">
+              <label for="ciudad_req">Ciudad *</label>
+              <input type="text" class="form-control" id="ciudad_req" name="ciudad_req">
+            </div>
+            <div class="col-md-3">
+              <label for="colonia_req">Colonia *</label>
+              <input type="text" class="form-control" id="colonia_req" name="colonia_req">
+            </div>
           </div>
-          <div class="col-3">
-            <label for="puesto_req">Uso de CFDI</label>
-            <input type="text" class="form-control"  data-field="Uso de CFDI"
-              name="cfdi_req" id="cfdi_req" value ="Gastos Generales">
-          </div>
+          <div class="row mt-3">
+            
+            <div class="col-md-8">
+              <label for="calle_req">Calle *</label>
+              <input type="text" class="form-control" id="calle_req" name="calle_req">
+            </div>
+            <div class="col-md-2">
+              <label for="interior_req">Interior</label>
+              <input type="text" class="form-control" id="interior_req" name="interior_req">
+            </div>
+            <div class="col-md-2">
+              <label for="num_exterior">Exterior</label>
+              <input type="text" class="form-control" id="exterior_req" name="exterior_req">
+            </div>
+          
       </div>
+      <br>
       <div class="row mb-3">
 
-        <div class="col-4">
-          <label for="regimen">Régimen Fiscal *</label>
+        <div class="col-3">
+          <label for="regimen_req">Régimen Fiscal *</label>
           <div class="input-group mb-3">
 
-            <input type="text" class="form-control" id="regimen" name="regimen">
+            <input type="text" class="form-control" id="regimen_req" name="regimen_req">
           </div>
           <div id="errorregimen" class="text-danger"></div>
         </div>
-        <div class="col-sm-12 col-md-4 col-lg-4">
+        <div class="col-sm-12 col-md-4 col-lg-3">
           <label for="forma_pago">Forma de pago *</label>
           <div class="input-group mb-3">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="far fa-credit-card"></i></span>
             </div>
-            <select class="custom-select" id="forma_pago" name="forma_pago">
+            <select class="custom-select" id="forma_pago_req" name="forma_pago_req">
               <option value="" selected>Selecciona</option>
               <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
               <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
@@ -573,23 +597,28 @@
             <div id="forma_pago" class="text-danger"></div>
           </div>
         </div>
-        <div class="col-sm-12 col-md-4 col-lg-4">
+        <div class="col-sm-12 col-md-4 col-lg-3">
           <label for="metodo_pago">Método de pago *</label>
           <div class="input-group mb-3">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="far fa-credit-card"></i></span>
             </div>
-            <select class="custom-select" id="metodo_pago" name="metodo_pago">
+            <select class="custom-select" id="metodo_pago_req" name="metodo_pago_req">
               <option value="" selected>Selecciona</option>
               <option value="Efectivo">Efectivo</option>
-              <option value="Cheque nominativo">Cheque nominativo</option>
-              <option value="Transferencia electrónica de fondos">Transferencia electrónica de fondos</option>
-              <option value="Tarjeta de crédito">Tarjeta de crédito</option>
-              <option value="Tarjeta de débito">Tarjeta de débito</option>
-              <option value="Por definir">Por definir</option>
+                  <option value="Cheque de nómina">Cheque de nómina</option>
+                  <option value="Transferencia electrónica">Transferencia electrónica</option>
+                  <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+                  <option value="Tarjeta de débito">Tarjeta de débito</option>
+                  <option value="Por definir">Por definir</option>
             </select>
           </div>
         </div>
+        <div class="col-3">
+            <label for="puesto_req">Uso de CFDI</label>
+            <input type="text" class="form-control"  data-field="Uso de CFDI"
+              name="uso_cfdi_req" id="uso_cfdi_req" value ="Gastos Generales">
+          </div>
       </div>
 
       </form>
@@ -597,12 +626,12 @@
         <div class="row mb-3">
           <div class="col-6">
             <label for="puesto_req">Nombre de la posición *</label>
-            <input type="text" class="form-control" data-required="required" data-field="Nombre de la posición"
+            <input type="text" class="form-control"  data-field="Nombre de la posición"
               name="puesto_req" id="puesto_req">
           </div>
           <div class="col-6">
             <label for="numero_vacantes_req">Número de vacantes *</label>
-            <input type="number" class="form-control" data-required="required" data-field="Número de vacantes"
+            <input type="number" class="form-control"  data-field="Número de vacantes"
               name="numero_vacantes_req" id="numero_vacantes_req">
           </div>
         </div>
@@ -623,7 +652,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
               </div>
-              <select class="custom-select" id="escolaridad" name="escolaridad"
+              <select class="custom-select" id="escolaridad_req" name="escolaridad_req"
                 data-siguiente-campo="estatus_escolaridad">
                 <option value="" selected>Selecciona</option>
                 <option value="Primaria">Primaria</option>
@@ -641,7 +670,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
               </div>
-              <select class="custom-select" id="estatus_escolaridad" name="estatus_escolaridad"
+              <select class="custom-select" id="estatus_escolaridad_req" name="estatus_escolaridad_req"
                 data-siguiente-campo="carrera">
                 <option value="" selected>Selecciona</option>
                 <option value="Técnico">Técnico</option>
@@ -655,12 +684,12 @@
             <div id="errorestatus_escolaridadd" class="text-danger"></div>
           </div>
           <div class="col-sm-12 col-md-4 col-lg-4">
-            <label for="otro_estatus">Otro estatus académico</label>
+            <label for="otro_estatus_req">Otro estatus académico</label>
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
               </div>
-              <input type="text" class="form-control" id="otro_estatus" name="otro_estatus">
+              <input type="text" class="form-control" id="otro_estatus_req" name="otro_estatus_req">
             </div>
           </div>
         </div>
@@ -671,7 +700,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
               </div>
-              <input type="text" class="form-control" id="carrera" name="carrera" data-siguiente-campo="genero">
+              <input type="text" class="form-control" id="carrera_req" name="carrera_req" data-siguiente-campo="genero">
             </div>
             <div id="errorcarrera" class="text-danger"></div>
           </div>
@@ -681,7 +710,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
               </div>
-              <input type="text" class="form-control" id="otros_estudios" name="otros_estudios">
+              <input type="text" class="form-control" id="otros_estudios_req" name="otros_estudios_req">
             </div>
           </div>
         </div>
@@ -692,7 +721,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-language"></i></span>
               </div>
-              <input type="text" class="form-control" id="idioma1" name="idioma1">
+              <input type="text" class="form-control" id="idioma1_req" name="idioma1_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -701,7 +730,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-percentage"></i></span>
               </div>
-              <input type="number" class="form-control" id="por_idioma1" name="por_idioma1">
+              <input type="number" class="form-control" id="por_idioma1_req" name="por_idioma1_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -710,7 +739,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-language"></i></span>
               </div>
-              <input type="text" class="form-control" id="idioma2" name="idioma2">
+              <input type="text" class="form-control" id="idioma2_req" name="idioma2_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -719,7 +748,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-percentage"></i></span>
               </div>
-              <input type="number" class="form-control" id="por_idioma2" name="por_idioma2">
+              <input type="number" class="form-control" id="por_idioma2_req" name="por_idioma2_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -728,7 +757,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-language"></i></span>
               </div>
-              <input type="text" class="form-control" id="idioma3" name="idioma3">
+              <input type="text" class="form-control" id="idioma3_req" name="idioma3_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -737,7 +766,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-percentage"></i></span>
               </div>
-              <input type="number" class="form-control" id="por_idioma3" name="por_idioma3">
+              <input type="number" class="form-control" id="por_idioma3_req" name="por_idioma3_req">
             </div>
           </div>
         </div>
@@ -748,7 +777,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-laptop"></i></span>
               </div>
-              <input type="text" class="form-control" id="habilidad1" name="habilidad1">
+              <input type="text" class="form-control" id="habilidad1_req" name="habilidad1_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -757,7 +786,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-percentage"></i></span>
               </div>
-              <input type="number" class="form-control" id="por_habilidad1" name="por_habilidad1">
+              <input type="number" class="form-control" id="por_habilidad1_req" name="por_habilidad1_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -766,7 +795,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-laptop"></i></span>
               </div>
-              <input type="text" class="form-control" id="habilidad2" name="habilidad2">
+              <input type="text" class="form-control" id="habilidad2_req" name="habilidad2_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -775,7 +804,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-percentage"></i></span>
               </div>
-              <input type="number" class="form-control" id="por_habilidad2" name="por_habilidad2">
+              <input type="number" class="form-control" id="por_habilidad2_req" name="por_habilidad2_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -784,7 +813,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-laptop"></i></span>
               </div>
-              <input type="text" class="form-control" id="habilidad3" name="habilidad3">
+              <input type="text" class="form-control" id="habilidad3_req" name="habilidad3_req">
             </div>
           </div>
           <div class="col-sm-12 col-md-2 col-lg-2">
@@ -793,7 +822,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-percentage"></i></span>
               </div>
-              <input type="number" class="form-control" id="por_habilidad3" name="por_habilidad3">
+              <input type="number" class="form-control" id="por_habilidad3_req" name="por_habilidad3_req">
             </div>
           </div>
         </div>
@@ -804,8 +833,8 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
               </div>
-              <select class="custom-select" id="genero" name="genero" data-siguiente-campo="civil">
-                <option value="" selected>Selecciona</option>
+              <select class="custom-select" id="genero_req" name="genero_req" data-siguiente-campo="civil">
+                <option value="NULL" selected>Selecciona</option>
                 <option value="Femenino">Femenino</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Indistinto">Indistinto</option>
@@ -819,8 +848,8 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
               </div>
-              <select class="custom-select" id="civil" name="civil" data-siguiente-campo="edad_minima">
-                <option value="" selected>Selecciona</option>
+              <select class="custom-select" id="civil_req" name="civil_req" data-siguiente-campo="edad_minima">
+                <option value="NULL" selected>Selecciona</option>
                 <option value="Soltero(a)">Soltero(a)</option>
                 <option value="Casado(a)">Casado(a)</option>
                 <option value="Indistinto">Indistinto</option>
@@ -834,7 +863,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-minus"></i></span>
               </div>
-              <input type="number" id="edad_minima" name="edad_minima" class="form-control"
+              <input type="number" id="edad_minima_req" name="edad_minima_req" class="form-control"
                 data-siguiente-campo="edad_maxima">
             </div>
             <div id="erroredad_minima" class="text-danger"></div>
@@ -845,7 +874,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-plus"></i></span>
               </div>
-              <input type="number" id="edad_maxima" name="edad_maxima" class="form-control"
+              <input type="number" id="edad_maxima_req" name="edad_maxima_req" class="form-control"
                 data-siguiente-campo="licencia">
             </div>
             <div id="erroredad_maxima" class="text-danger"></div>
@@ -858,7 +887,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-id-card"></i></span>
               </div>
-              <select class="custom-select" id="licencia" name="licencia" data-siguiente-campo="tipo_licencia">
+              <select class="custom-select" id="licencia_req" name="licencia_req" data-siguiente-campo="tipo_licencia">
                 <option value="" selected>Selecciona</option>
                 <option value="Indispensable">Indispensable</option>
                 <option value="Deseable">Deseable</option>
@@ -868,12 +897,12 @@
             <div id="errorlicencia" class="text-danger"></div>
           </div>
           <div class="col-sm-12 col-md-3 col-lg-3">
-            <label for="tipo_licencia">Tipo de licencia de conducir*</label>
+            <label for="tipo_licencia_req">Tipo de licencia de conducir*</label>
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-id-card"></i></span>
               </div>
-              <input type="text" class="form-control" id="tipo_licencia" name="tipo_licencia"
+              <input type="text" class="form-control" id="tipo_licencia_req" name="tipo_licencia_req"
                 data-siguiente-campo="discapacidad">
             </div>
             <div id="errortipo_licencia" class="text-danger"></div>
@@ -884,8 +913,8 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-wheelchair"></i></span>
               </div>
-              <select class="custom-select" id="discapacidad" name="discapacidad" data-siguiente-campo="causa">
-                <option value="" selected>Selecciona</option>
+              <select class="custom-select" id="discapacidad" name="discapacidad_req" data-siguiente-campo="discapacidad_req">
+                <option value="NULL" selected>Selecciona</option>
                 <option value="Motora">Motora</option>
                 <option value="Auditiva">Auditiva</option>
                 <option value="Visual">Visual</option>
@@ -902,8 +931,8 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="far fa-question-circle"></i></span>
               </div>
-              <select class="custom-select" id="causa" name="causa" data-siguiente-campo="residencia">
-                <option value="" selected>Selecciona</option>
+              <select class="custom-select" id="causa_req" name="causa_req" data-siguiente-campo="residencia">
+                <option value="NULL" selected>Selecciona</option>
                 <option value="Empresa nueva">Empresa nueva</option>
                 <option value="Empleo temporal">Empleo temporal</option>
                 <option value="Puesto de nueva creación">Puesto de nueva creación</option>
@@ -927,7 +956,7 @@
             <label for="tipo_sueldo_req">Tipo de sueldo *</label>
             <select class="form-control" data-required="required" data-field="Tipo de sueldo" id="tipo_sueldo_req"
               name="tipo_sueldo_req">
-              <option value="" selected>Selecciona</option>
+              <option value="NULL" selected>Selecciona</option>
               <option value="Fijo">Fijo</option>
               <option value="Variable">Variable</option>
               <option value="Neto">Neto (libre)</option>
@@ -948,7 +977,7 @@
             <label for="tipo_pago_req">Tipo de pago *</label>
             <select class="form-control" data-required="required" data-field="Tipo de pago" id="tipo_pago_req"
               name="tipo_pago_req">
-              <option value="" selected>Selecciona</option>
+              <option value="NULL" selected>Selecciona</option>
               <option value="Mensual">Mensual</option>
               <option value="Quincenal">Quincenal</option>
               <option value="Semanal">Semanal</option>
@@ -958,8 +987,8 @@
         <div class="row mb-3">
           <div class="col-3">
             <label for="ley_req">¿Tendrá prestaciones de ley? *</label>
-            <select class="form-control" data-required="required" data-field="¿Tendrá prestaciones de ley?" id="ley_req"
-              name="ley_req">
+            <select class="form-control" data-required="required" data-field="¿Tendrá prestaciones de ley?" id="tipo_prestaciones_req"
+              name="tipo_prestaciones_req">
               <option value="" selected>Selecciona</option>
               <option value="SI">SI</option>
               <option value="NO">NO</option>
@@ -987,87 +1016,87 @@
           <div class="row">
             <div class="col-sm-12 col-md-4 col-lg-4">
               <label class="container_checkbox">Comunicación
-                <input type="checkbox" id="Comunicación" value="Comunicación">
+                <input type="checkbox"  name="competencias[]"  id="Comunicación" value="Comunicación">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Análisis
-                <input type="checkbox" id="Análisis">
+                <input type="checkbox"  name="competencias[]"  id="Análisis" value="Análisis">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Liderazgo
-                <input type="checkbox" id="Liderazgo">
+                <input type="checkbox"  name="competencias[]"  id="Liderazgo" value="Liderazgo">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Negociación
-                <input type="checkbox" id="Negociación">
+                <input type="checkbox"  name="competencias[]"  id="Negociación" value="Negociación">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Apego a normas
-                <input type="checkbox" id="Apego">
+                <input type="checkbox"  name="competencias[]"  id="Apego" value="Apego">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Planeación
-                <input type="checkbox" id="Planeación">
+                <input type="checkbox"  name="competencias[]"  id="Planeación" value="Planeación">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Organización
-                <input type="checkbox" id="Organización">
+                <input type="checkbox"  name="competencias[]"  id="Organización" value="Organización">
                 <span class="checkmark"></span>
               </label>
             </div>
             <div class="col-sm-12 col-md-4 col-lg-4">
               <label class="container_checkbox">Orientado a resultados
-                <input type="checkbox" id="Orientado_resultados">
+                <input type="checkbox"  name="competencias[]"  id="Orientado_resultados" value="Orientado_resultados">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Manejo de conflictos
-                <input type="checkbox" id="Manejo_conflictos">
+                <input type="checkbox"  name="competencias[]"  id="Manejo-conflictos" value="Manejo-conflictos">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Trabajo en equipo
-                <input type="checkbox" id="Trabajo_equipo">
+                <input type="checkbox"  name="competencias[]"  id="Trabajo_equipo" value="Trabajo-equipo">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Toma de decisiones
-                <input type="checkbox" id="Toma_decisiones">
+                <input type="checkbox"  name="competencias[]"  id="Toma-decisiones" value="Toma_decisiones">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Trabajo bajo presión
-                <input type="checkbox" id="Trabajo_presion">
+                <input type="checkbox"  name="competencias[]"  id="Trabajo-presion" value="Trabajo-presion">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Don de mando
-                <input type="checkbox" id="Don_mando">
+                <input type="checkbox"  name="competencias[]"  id="Don_mando" value="Don-mando">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Versátil
-                <input type="checkbox" id="Versátil">
+                <input type="checkbox"  name="competencias[]"  id="Versátil" value="Versátil">
                 <span class="checkmark"></span>
               </label>
             </div>
             <div class="col-sm-12 col-md-4 col-lg-4">
               <label class="container_checkbox">Sociable
-                <input type="checkbox" id="Sociable">
+                <input type="checkbox"  name="competencias[]"  id="Sociable" value="Sociable">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Intuitivo
-                <input type="checkbox" id="Intuitivo">
+                <input type="checkbox"  name="competencias[]"  id="Intuitivo" value="Intuitivo">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Autodidacta
-                <input type="checkbox" id="Autodidacta">
+                <input type="checkbox"  name="competencias[]"  id="Autodidacta" value="Autodidacta">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Creativo
-                <input type="checkbox" id="Creativo">
+                <input type="checkbox"  name="competencias[]"  id="Creativo" value="Creativo">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Proactivo
-                <input type="checkbox" id="Proactivo">
+                <input type="checkbox"  name="competencias[]"  id="Proactivo" value="Proactivo">
                 <span class="checkmark"></span>
               </label>
               <label class="container_checkbox">Adaptable
-                <input type="checkbox" id="Adaptable">
+                <input type="checkbox"  name="competencias[]"  id="Adaptable" value="Adaptable">
                 <span class="checkmark"></span>
               </label>
             </div>
