@@ -66,7 +66,7 @@
 
                 <div class="col-md-6" id="labelOcultar">
                  <label>Contraseña *</label>
-                   <input type="text" class="form-control" name="password" id="password" maxlength="8" readonly>
+                   <input type="text" class="form-control" name="password1" id="password1" maxlength="8" readonly>
                     <br>
                  </div>
 

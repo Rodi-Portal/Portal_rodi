@@ -540,6 +540,7 @@ function generarPassword() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
+      $("#password1").val(res)
       $("#password").val(res)
     }
   });
