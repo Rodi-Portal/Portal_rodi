@@ -99,13 +99,13 @@
           $fecha_registro = fechaTexto($r->creacion,'espanol');
 					$color_estatus = ''; $text_estatus = '';
 					if($r->status == 1){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Iniciar proceso" onclick="iniciarProceso('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-play-circle"></i></a>';
+						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequicision('.$r->id.',\''.$r->nombre.'\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
             $text_estatus = 'Estatus: <b>En espera</b>';
 						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
 						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Eliminar requisicion" onclick="openDeleteOrder('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-trash"></i></a>';
 					}
 					if($r->status == 2){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Iniciar proceso"><i class="fas fa-play-circle"></i></a>';
+						$botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar'.$r->id.'"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequicision('.$r->id.',\''.$r->nombre.'\', \'detener\')"><i class="fas fa-stop"></i></a>';
 						$color_estatus = 'req_activa';
             $text_estatus = 'Estatus: <b>En proceso de reclutamiento</b>';
 						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-file-alt"></i></a>';
@@ -1125,24 +1125,46 @@ function regresarListado() {
   location.reload();
 }
 
-function iniciarProceso(id, nombre) {
-  $('#titulo_mensaje').text('Confirmación de inicio de requisición');
-  $('#mensaje').html('¿Desea iniciar el proceso de la requisición <b>#' + id + ' ' + nombre + '</b>?');
+function cambiarStatusRequicision(id, nombre, accion) {
+  var titulo = '';
+  var mensaje = '';
+  var status ='';
+
+  if (accion === 'iniciar') {
+    titulo = 'Confirmación de inicio de requisición';
+    mensaje = '¿Desea iniciar el proceso de la requisición <b>#' + id + ' ' + nombre + '</b>?';
+    status = 2;
+  } else if (accion === 'detener') {
+    titulo = 'Confirmación de detención de requisición';
+    mensaje = '¿Desea detener el proceso de la requisición <b>#' + id + ' ' + nombre + '</b>?';
+    status = 1;
+  }
+
+  $('#titulo_mensaje').text(titulo);
+  $('#mensaje').html(mensaje);
   $('#idRequisicion').val(id);
-  $('#btnConfirmar').attr("onclick", "confirmarAccion(1,0)");
+
+  // Configurar el evento onclick del botón #btnConfirmar
+  $('#btnConfirmar').off('click').on('click', function() {
+    confirmarAccion(status);
+  });
+
   $('#mensajeModal').modal('show');
 }
 
-function confirmarAccion(accion, valor) {
+function confirmarAccion(status) {
+  
   $('#mensajeModal').modal('hide');
-  var id = $('#idRequisicion').val();
+  var idRequisicion = $('#idRequisicion').val();
+  
   //Colocar en privado o publico
-  if (accion == 1) {
+  if (status == 1 || status == 2) {
     $.ajax({
-      url: '<?php echo base_url('Reclutamiento/iniciarRequisicion'); ?>',
+      url: '<?php echo base_url('Reclutamiento/cambiarStatusRequicision'); ?>',
       type: 'post',
       data: {
-        'id': id
+        'id': idRequisicion,
+        'status': status,
       },
       beforeSend: function() {
         $('.loader').css("display", "block");
@@ -1153,13 +1175,13 @@ function confirmarAccion(accion, valor) {
         }, 300);
         var dato = JSON.parse(res);
         if (dato.codigo === 1) {
-          $('#divIniciar' + id).html('<h5 class="text-info"><b>En proceso</b></h5>');
+         
           Swal.fire({
             position: 'center',
             icon: 'success',
             title: dato.msg,
             showConfirmButton: false,
-            timer: 3000
+            timer: 1500
           })
           setTimeout(function() {
             location.reload();
@@ -1167,15 +1189,15 @@ function confirmarAccion(accion, valor) {
         }
       }
     });
-  }
-  //Eliminar requisicion
-  if (accion == 2) {
+  } else {
     let comentario = $('#mensaje_comentario').val();
     $.ajax({
-      url: '<?php echo base_url('Reclutamiento/deleteOrder'); ?>',
+      url: '<?php echo 
+
+base_url('Reclutamiento/deleteOrder'); ?>',
       type: 'post',
       data: {
-        'id': id,
+        'id': idRequisicion,
         'comentario': comentario
       },
       beforeSend: function() {

@@ -78,10 +78,12 @@ function getPortalCliente($id_cliente){
     }
 }
 
-public function correoExiste($correo, $idDatos = null) {
+public function correoExiste($correo ,$idDatos = null, ) {
+    $id_portal = $this->session->userdata('idPortal');
     $this->db->select('id')
              ->from('datos_generales')
              ->where('correo', $correo);
+        
 
     // Si estás editando un cliente, excluye el cliente actual de la búsqueda
     if ($idDatos !== null) {

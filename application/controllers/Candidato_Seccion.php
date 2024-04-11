@@ -77,12 +77,12 @@ class Candidato_Seccion extends CI_Controller{
       }
     }
     else{
-      //$salida = "<option value='0'>N/A</option>";
-      $previos = $this->candidato_seccion_model->getHistorialProyectosByCliente(0);
-      $salida = "<option value='0'>Select</option>";
-      foreach($previos as $prev){
-        $salida .= '<option value="'.$prev->id.'">'.$prev->proyecto.'</option>';
-      }
+      $salida = "<option value='0'>N/A</option>";
+     // $previos = $this->candidato_seccion_model->getHistorialProyectosByCliente(0);
+     // $salida = "<option value='0'>Select</option>";
+      //foreach($previos as $prev){
+        //$salida .= '<option value="'.$prev->id.'">'.$prev->proyecto.'</option>';
+      //}
     }
     echo $salida;
   }

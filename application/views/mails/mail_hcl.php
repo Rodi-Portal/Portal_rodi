@@ -23,7 +23,8 @@
             <br>
 
             <div class="body-text" style="font-family:Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;text-align:left;color:black;">
-              <?php echo $cliente.' has started a process through our platform.' ?> Please, register your data in this <b><a href="rodicontrol.rodi.com.mx" style="font-size: 13px;">form</a>.</b>
+              <?php echo $cliente.' has started a process through our platform.' ?> Please, register your data in this <b>
+                <a href="https://rodicontrol.rodi.com.mx" style="font-size: 13px;">form</a>.</b>
               <br><br>
               Your access credentials are: <br>
               Email: <strong><?php echo $email; ?></strong><br>

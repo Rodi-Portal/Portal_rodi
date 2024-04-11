@@ -216,6 +216,11 @@
         </a>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
+          <?php 
+							if(in_array(40, $submenus)){ ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios</a>
+            <?php
+							} ?>
             <?php 
 							if(in_array(6, $submenus)){ ?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Clientes</a>
@@ -226,7 +231,8 @@
             <a class="collapse-item" href="<?php echo site_url('Cat_Subclientes/index') ?>">Subclientes</a>
             <?php
 							} ?>
-            <?php 
+            
+              <?php 
 							if(in_array(8, $submenus)){ ?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
             <?php

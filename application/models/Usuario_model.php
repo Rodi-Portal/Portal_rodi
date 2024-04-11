@@ -19,7 +19,20 @@ class Usuario_model extends CI_Model{
         $resultado = $consulta->row();
         return $resultado;
 	}
-
+    function traerPass($correo) {
+        $this->db
+            ->select('password')
+            ->from('datos_generales')
+            ->where('correo', $correo);
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+        
+        if ($resultado) {
+            return $resultado->password; // Devolver solo la contraseña como una cadena
+        } else {
+            return ''; // O un valor predeterminado en caso de que no se encuentre el correo en la base de datos
+        }
+    }
     //Probando   el modelo para   el usuario_portal 
     function existeUsuarioPortal($correo, $pass){
     	$this->db
@@ -38,29 +51,7 @@ class Usuario_model extends CI_Model{
         $resultado = $consulta->row();
         return $resultado;
 	}
-   // posible mejora  a la funcion de inicio de session 
-  /* function existeUsuarioPortal($correo, $contrasena) {
-    $consulta = $this->db
-        ->select('u.id, u.id_rol, u.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
-        ->from('usuarios_portal as u')
-        ->join('portal as p', 'p.id = u.id_portal')
-        ->join('datos_generales as d', 'd.id = u.id_datos_generales')
-        ->where('d.correo', $correo)
-        ->where('u.eliminado', 0)
-        ->where('u.status', 1)
-        ->limit(1)
-        ->get();
-
-    if ($consulta->num_rows() == 1) {
-
-        $usuario = $consulta->row();
-        // Verifica la contraseña
-        if (password_verify($contrasena, $usuario->clave)) {
-            return $usuario;
-        }
-      }
-    }*/
-
+  
 
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     function existeUsuarioCliente($correo, $pass ){
@@ -245,13 +236,13 @@ class Usuario_model extends CI_Model{
     }
     function getTipoUsuarios($roles){
       $this->db
-      ->select("U.id, CONCAT(gen.nombre,' ',gen.paterno) as usuario, U.id_rol")
+      ->select("U.id, CONCAT(GEN.nombre,' ',GEN.paterno) as usuario, U.id_rol")
       ->from('usuarios_portal as U')
-      ->join('datos_generales as gen', 'gen.id = U.id_datos_generales','left')
+      ->join('datos_generales as GEN', 'GEN.id = U.id_datos_generales','left')
       ->where('U.status', 1)
       ->where('U.eliminado', 0)
       ->where_in('U.id_rol', $roles)
-      ->order_by('gen.nombre','ASC');
+      ->order_by('GEN.nombre','ASC');
 
       $query = $this->db->get();
       if($query->num_rows() > 0){
@@ -264,7 +255,7 @@ class Usuario_model extends CI_Model{
     function getUserByIdByRole($id,$roles){
       $this->db
       ->select("U.id")
-      ->from('usuario as U')
+      ->from('usuarios_portal as U')
       ->where('U.status', 1)
       ->where('U.eliminado', 0)
       ->where('U.id', $id)

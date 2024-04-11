@@ -27,10 +27,21 @@ class Login extends CI_Controller
 			redirect('Login/index');
 		} 
 		else{
-			$base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS'; 
-			$pass = md5($base . $this->input->post('pwd'));
+		
+			$pass = $this->input->post('pwd');
 			$correo = $this->input->post('correo');
-			$usuario = $this->usuario_model->existeUsuarioPortal($correo, $pass);
+			$hash_guardado = $this->usuario_model->traerPass($correo);
+		
+			if (password_verify($pass, $hash_guardado)) {
+				
+		
+				$password = $hash_guardado;
+		} else {
+				
+				$password = '000';
+		}
+
+			$usuario = $this->usuario_model->existeUsuarioPortal($correo, $password);
 			if ($usuario) {
 				$this->session->set_userdata('correo', $correo);
 				$codigo_autenticacion = $this->generar_codigo_autenticacion();

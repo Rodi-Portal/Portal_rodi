@@ -157,6 +157,7 @@ $autoload['model'] = array(
   'candidato_social_model',
   'candidato_vivienda_model',
   'calendario_model',
+  'cat_usuario_model',
   'cat_cliente_model',
   'cat_generos_model',
   'cat_puestos_model', 

@@ -135,12 +135,12 @@
 					"width": "8%",
           mRender: function(data, type, full){
 						var cv = (full.cv != null)? '<a href="<?php echo base_url(); ?>_docs/'+full.cv+'" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' : '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
-						var historial = '<a href="javascript:void(0)" id="ver_historial" class="fa-tooltip icono_datatable"><i class="fas fa-history"></i></a> ';
+						//var historial = '<a href="javascript:void(0)" id="ver_historial" class="fa-tooltip icono_datatable"><i class="fas fa-history"></i></a> ';
 						if(full.status_final == null){
             	return cv+'<a href="javascript:void(0)" id="editar_aspirante" class="fa-tooltip icono_datatable"><i class="fas fa-user-edit"></i></a> <a href="javascript:void(0)" id="accion" class="fa-tooltip icono_datatable"><i class="fas fa-plus-circle"></i></a> '+historial;
 						}
 						else{
-							return cv+historial;
+							return cv;
 						}
           }
 				},
@@ -207,7 +207,8 @@
 						url: '<?php echo base_url('Reclutamiento/getHistorialAspirante'); ?>',
 						type: 'post',
 						data: {
-							'id_aspirante': data.id
+							'id': data.id,
+							'tipo_id':'bolsa'
 						},
 						success: function(res) {
 							var salida = '<table class="table table-striped" style="font-size: 14px">';
@@ -262,7 +263,7 @@
 		datos.append('id', $("#reactivar_req").val());
 
 		$.ajax({
-			url: '<?php echo base_url('Reclutamiento/iniciarRequisicion'); ?>',
+			url: '<?php echo base_url('Reclutamiento/reactivarRequisicion'); ?>',
 			type: 'POST',
 			data: datos,
 			contentType: false,
