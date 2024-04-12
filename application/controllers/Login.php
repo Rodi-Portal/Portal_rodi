@@ -30,15 +30,15 @@ class Login extends CI_Controller
 		
 			$pass = $this->input->post('pwd');
 			$correo = $this->input->post('correo');
-		echo	$hash_guardado = $this->usuario_model->traerPass($correo);
+			$hash_guardado = $this->usuario_model->traerPass($correo);
 		
 			if (password_verify($pass, $hash_guardado)) {
 				
 		
-		echo		$password = $hash_guardado;
+				$password = $hash_guardado;
 		} else {
 				
-		echo 		$password = '000';
+			$password = '000';
 		}
 
 			$usuario = $this->usuario_model->existeUsuarioPortal($correo, $password);
