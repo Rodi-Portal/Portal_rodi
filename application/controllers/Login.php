@@ -135,7 +135,7 @@ class Login extends CI_Controller
 					}
 				} 
 				else {
-					$pass = md5($this->input->post('pwd') . $base);
+					
 					$candidato = $this->candidato_model->existeCandidato($this->input->post('correo'), $pass);
 					if ($candidato) {
 						$this->session->set_userdata('correo', $correo);
