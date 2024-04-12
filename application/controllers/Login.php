@@ -193,7 +193,7 @@ class Login extends CI_Controller
 						
 					} 
 					else {
-						$pass = md5($base . $this->input->post('pwd'));
+				
 						$subcliente = $this->usuario_model->existeUsuarioSubcliente($this->input->post('correo'), $pass);
 						if ($subcliente) {
 						
@@ -265,10 +265,9 @@ class Login extends CI_Controller
 			redirect('Login/recovery_view');
 		} 
 		else{
-			$correo = $this->input->post('correo');
-			$base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
+			
 			$pwd = generarPassword();
-			$password = md5($base . $pwd);
+			$password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
 
 			$hayIDCliente = $this->usuario_model->checkCorreoCliente($correo);
 			if($hayIDCliente != NULL){
