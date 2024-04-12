@@ -27,25 +27,27 @@ class Login extends CI_Controller
 			redirect('Login/index');
 		} 
 		else{
-		
-			$pass = $this->input->post('pwd');
-			$correo = $this->input->post('correo');
-			$hash_guardado = $this->usuario_model->traerPass($correo);
-		
-			if (password_verify($pass, $hash_guardado)) {
 				
-		
-				$password = $hash_guardado;
-		} else {
+					$pass = $this->input->post('pwd');
+					$correo = $this->input->post('correo');
+					$hash_guardado = $this->usuario_model->traerPass($correo);
 				
-			$password = '000';
-		}
+					if (password_verify($pass, $hash_guardado)) {
+						
+				
+						$password = $hash_guardado;
+				} else {
+						
+					$password = '000';
+				}
 
-			$usuario = $this->usuario_model->existeUsuarioPortal($correo, $password);
-			if ($usuario) {
-				$this->session->set_userdata('correo', $correo);
-				$codigo_autenticacion = $this->generar_codigo_autenticacion();
-				
+					$usuario = $this->usuario_model->existeUsuarioPortal($correo, $password);
+
+					var_dump($usuario);
+					if ($usuario) {
+						$this->session->set_userdata('correo', $correo);
+						$codigo_autenticacion = $this->generar_codigo_autenticacion();
+						
 				// Aquí deberías establecer el tipo de acceso, no el código de autenticación
 		
 				// Otras variables de sesión que necesites

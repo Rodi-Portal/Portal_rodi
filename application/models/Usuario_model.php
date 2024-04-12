@@ -49,6 +49,8 @@ class Usuario_model extends CI_Model{
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
+        var_dump($resultado);
+        die();
         return $resultado;
 	}
   
