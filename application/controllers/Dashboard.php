@@ -19,8 +19,9 @@ class Dashboard extends CI_Controller{
 			
 			$config = $this->funciones_model->getConfiguraciones();
 			$data['version'] = $config->version_sistema;
-
-			if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){
+			//TODO:pendiente  si es  util   para 	 la plataforma  de reclutamiento 
+		/* 
+		if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){
 				$ESEFinalizados = $this->estadistica_model->countESEFinalizados();
 				$data['titulo_dato1'] = 'Total de ESE Finalizados';
 				$data['dato1'] = $ESEFinalizados->total;
@@ -34,7 +35,7 @@ class Dashboard extends CI_Controller{
 				$data['titulo_dato4'] = 'Total de Exámenes Médicos Finalizados';
 				$data['dato4'] = $medicoFinalizados->total;
 				
-			} /*
+			} */ /*
 			if($this->session->userdata('idrol') == 2){
 				$num = $this->estadistica_model->countCandidatosAnalista($this->session->userdata('id'));
 				$data['dato_totalcandidatos'] = $num->total;

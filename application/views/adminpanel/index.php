@@ -8,7 +8,8 @@
     <!--a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</!--a-->
   </div>
   <?php 
-  if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){ ?>
+	//TODO: revisar esta  parte 
+  if($this->session->userdata('idrol') == 100 || $this->session->userdata('idrol') == 100){ ?>
     <div class="row">
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
@@ -85,18 +86,18 @@
           </div>
         </div>
       </div>
-				<ul>
-					<li>ID: <?php echo $this->session->userdata('id'); ?></li>
-					<li>Nombre: <?php echo $this->session->userdata('nombre'); ?></li>
-					<li>Apellido Paterno: <?php echo $this->session->userdata('paterno'); ?></li>
-					<li>Rol: <?php echo $this->session->userdata('rol'); ?></li>
-					<li>ID Rol: <?php echo $this->session->userdata('idrol'); ?></li>
-					<li>Tipo: <?php echo $this->session->userdata('tipo'); ?></li>
-					<li>Login BD: <?php echo $this->session->userdata('loginBD'); ?></li>
-					<li>Logueado: <?php echo $this->session->userdata('logueado') ? 'Sí' : 'No'; ?></li>
-					<li>ID Portal: <?php echo $this->session->userdata('idPortal'); ?></li>
-					<li>Nombre Portal: <?php echo $this->session->userdata('nombrePortal'); ?></li>
-				</ul>
+				<!--ul>
+					<li>ID: < ?php echo $this->session->userdata('id'); ?></li>
+					<li>Nombre: < ?php echo $this->session->userdata('nombre'); ?></li>
+					<li>Apellido Paterno: < ?php echo $this->session->userdata('paterno'); ?></li>
+					<li>Rol: < ?php echo $this->session->userdata('rol'); ?></li>
+					<li>ID Rol: < ?php echo $this->session->userdata('idrol'); ?></li>
+					<li>Tipo: < ?php echo $this->session->userdata('tipo'); ?></li>
+					<li>Login BD: < ?php echo $this->session->userdata('loginBD'); ?></li>
+					<li>Logueado:  < ?php echo $this->session->userdata('logueado') ? 'Sí' : 'No'; ?></li>
+					<li>ID Portal: < ?php echo $this->session->userdata('idPortal'); ?></li>
+					<li>Nombre Portal: < ?php echo $this->session->userdata('nombrePortal'); ?></li>
+				</ul -->
    	 </div>
   <?php 
   }
