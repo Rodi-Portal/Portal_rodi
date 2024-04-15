@@ -30,30 +30,30 @@ class Usuario_model extends CI_Model{
         if ($resultado) {
             return $resultado->password; // Devolver solo la contraseña como una cadena
         } else {
-            return ''; // O un valor predeterminado en caso de que no se encuentre el correo en la base de datos
+            return false; // Devolver falso si el correo electrónico no se encuentra en la base de datos
         }
     }
     //Probando   el modelo para   el usuario_portal 
-    function existeUsuarioPortal($correo, $pass){
-    	$this->db
-    	->select('u.id, d.correo, d.nombre, d.paterno,  u.id_rol, r.nombre as rol, u.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
-    	->from('usuarios_portal as u')
-    	->join('rol as r', 'r.id = u.id_rol')
-        ->join('portal as p', 'p.id = u.id_portal')
-        ->join('datos_generales as d', 'd.id = u.id_datos_generales')
-    	->where('d.correo', $correo)
-    	->where('d.password', $pass)
-        //->where('u.id_rol !=', 3)
-    	->where('u.status', 1)
-    	->where('u.eliminado', 0);
-
+    function existeUsuarioPortal($correo) {
+        $this->db
+            ->select('u.id, d.correo, d.nombre, d.paterno, d.password, u.id_rol, r.nombre as rol, u.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
+            ->from('usuarios_portal as u')
+            ->join('rol as r', 'r.id = u.id_rol')
+            ->join('portal as p', 'p.id = u.id_portal')
+            ->join('datos_generales as d', 'd.id = u.id_datos_generales')
+            ->where('d.correo', $correo)
+            ->where('u.status', 1)
+            ->where('u.eliminado', 0);
+    
         $consulta = $this->db->get();
         $resultado = $consulta->row();
-        var_dump($resultado);
-        die();
-        return $resultado;
-	}
-  
+        
+        if ($resultado) {
+            return $resultado; // Devolver los datos del usuario si existe
+        } else {
+            return false; // Devolver falso si el usuario no se encuentra en la base de datos
+        }
+    }
 
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     function existeUsuarioCliente($correo, $pass ){
