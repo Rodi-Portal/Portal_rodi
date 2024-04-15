@@ -626,16 +626,16 @@ class Reclutamiento_model extends CI_Model{
 		}
 		function getRequisicionesFinalizadas($id_usuario, $condicion){
 			$this->db
-			->select("r.id, CL.nombre, r.puesto, r.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
+			->select("R.id, CL.nombre, R.puesto, R.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
 			->from('requisicion as R')
-			->join('usuarios_portal as U','U.id = r.id_usuario','left')
+			->join('usuarios_portal as U','U.id = R.id_usuario','left')
 			->join('datos_generales as GENUS','GENUS.id = U.id_datos_generales')
 			->join('cliente as CL','CL.id = R.id_cliente')
 			->join('datos_generales as GENCL','GENCL.id = CL.id_datos_generales')
-			->where('r.eliminado', 0)
-			->where_in('r.status', [0,3])
+			->where('R.eliminado', 0)
+			->where_in('R.status', [0,3])
 			->where($condicion, $id_usuario)
-			->order_by('r.status','ASC');
+			->order_by('R.status','ASC');
 
 			$query = $this->db->get();
 			if($query->num_rows() > 0){
