@@ -647,7 +647,7 @@ class Reclutamiento_model extends CI_Model{
 		function getAspirantesRequisicionesFinalizadas($id_usuario, $condicion){
 			$this->db
 			->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, CL.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes,C.id_aspirante as idCandidato, C.status_bgc, R.comentario_final")
-			->from('requisicion_aspirante as A')
+			->from('requisicion_aspirante as A') 
 			->join('requisicion as R','R.id = A.id_requisicion')
 			->join('bolsa_trabajo as BT','BT.id = A.id_bolsa_trabajo')
 			->join('cliente as CL','CL.id = R.id_cliente')		
