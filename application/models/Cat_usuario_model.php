@@ -21,7 +21,8 @@ class Cat_usuario_model extends CI_Model{
         ->from('usuarios_portal as U')
         ->join('datos_generales as DATUP', 'DATUP.id = U.id_datos_generales')
         ->join('portal as POR', 'POR.id = U.id_portal')
-        ->join('rol as R', 'R.id = U.id_rol')  //JOIN con la tabla 'rol'
+        ->join('rol as R', 'R.id = U.id_rol') 
+        ->where('id_portal',$id_portal ) //JOIN con la tabla 'rol'
         ->where('U.eliminado', 0)
         ->order_by('U.creacion','ASC')
         ->group_by('U.id');
