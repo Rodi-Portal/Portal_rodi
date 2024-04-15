@@ -40,10 +40,9 @@ class Login extends CI_Controller
 						
 					$password = '000';
 				}
-
+  echo ' aqui esta  el pass  si si se parea : '.$password;
 					$usuario = $this->usuario_model->existeUsuarioPortal($correo, $password);
 
-					var_dump($usuario);
 					if ($usuario) {
 						$this->session->set_userdata('correo', $correo);
 						$codigo_autenticacion = $this->generar_codigo_autenticacion();
