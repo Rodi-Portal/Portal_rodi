@@ -26,7 +26,7 @@ class Doping_model extends CI_Model{
 			->join('candidato as c','c.id = dop.id_candidato')
 			->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 			->join('cliente as cl','cl.id = dop.id_cliente')
-			->join('subcliente as sub','sub.id = dop.id_subcliente',"left")
+			->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
 			->join('usuario as u','u.id = dop.id_usuario')
 			->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
@@ -66,7 +66,7 @@ class Doping_model extends CI_Model{
 			->from('candidato_pruebas as pr')
 			->join('candidato as c','c.id = pr.id_candidato')
 			->join('cliente as cl','cl.id = c.id_cliente')
-			->join('subcliente as sub','sub.id = c.id_subcliente',"left")
+			->join('subclientes as sub','sub.id = c.id_subcliente',"left")
 			->join('usuario as u','u.id = c.id_usuario','left')
 			->join('proyecto as pro','pro.id = c.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = pr.antidoping',"left")
@@ -95,7 +95,7 @@ class Doping_model extends CI_Model{
 			->join('candidato as c','c.id = dop.id_candidato')
 			->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 			->join('cliente as cl','cl.id = dop.id_cliente')
-			->join('subcliente as sub','sub.id = dop.id_subcliente',"left")
+			->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
 			->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
 			->where('c.eliminado', 0)
@@ -134,7 +134,7 @@ class Doping_model extends CI_Model{
 				->join('candidato as c','c.id = dop.id_candidato')
 				->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 				->join('cliente as cl','cl.id = dop.id_cliente')
-				->join('subcliente as sub','sub.id = dop.id_subcliente',"left")
+				->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
 				//->join('usuario as u','u.id = dop.id_usuario')
 				->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
 				->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
@@ -159,7 +159,7 @@ class Doping_model extends CI_Model{
 			->join('candidato as c','c.id = dop.id_candidato')
 			->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 			->join('cliente as cl','cl.id = c.id_cliente')
-			->join('subcliente as sub','sub.id = c.id_subcliente',"left")
+			->join('subclientes as sub','sub.id = c.id_subcliente',"left")
 			->join('proyecto as pro','pro.id = c.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
 			->join('usuario as u','u.id = dop.id_usuario',"left")
@@ -204,7 +204,7 @@ class Doping_model extends CI_Model{
 							JOIN candidato as c ON c.id = dop.id_candidato
 							JOIN candidato_pruebas as pr ON pr.id_candidato = c.id
 							JOIN cliente as cl ON cl.id = c.id_cliente
-							LEFT JOIN subcliente as sub ON sub.id = c.id_subcliente
+							LEFT JOIN subclientes as sub ON sub.id = c.id_subcliente
 							LEFT JOIN proyecto as pro ON pro.id = c.id_proyecto
 							LEFT JOIN antidoping_paquete as paq ON paq.id = dop.id_antidoping_paquete
 							LEFT JOIN usuario as u ON u.id = dop.id_usuario
@@ -231,7 +231,7 @@ class Doping_model extends CI_Model{
 							JOIN candidato as c ON c.id = dop.id_candidato
 							JOIN candidato_pruebas as pr ON pr.id_candidato = c.id
 							JOIN cliente as cl ON cl.id = c.id_cliente
-							LEFT JOIN subcliente as sub ON sub.id = c.id_subcliente
+							LEFT JOIN subclientes as sub ON sub.id = c.id_subcliente
 							LEFT JOIN proyecto as pro ON pro.id = c.id_proyecto
 							LEFT JOIN antidoping_paquete as paq ON paq.id = dop.id_antidoping_paquete
 							LEFT JOIN usuario as u ON u.id = dop.id_usuario
@@ -267,7 +267,7 @@ class Doping_model extends CI_Model{
 			->select('c.id, c.nombre, c.paterno, c.materno, c.id_cliente, c.id_subcliente, cl.clave as claveCliente, sub.clave as claveSubcliente, cl.nombre as cliente, sub.nombre as subcliente, pro.nombre as proyecto, c.fecha_nacimiento, c.id_proyecto, prueba.antidoping')
 			->from('candidato as c')
 			->join('cliente as cl','cl.id = c.id_cliente')
-			->join('subcliente as sub','sub.id = c.id_subcliente','left')
+			->join('subclientes as sub','sub.id = c.id_subcliente','left')
 			->join('proyecto as pro','pro.id = c.id_proyecto','left')
 			->join('candidato_pruebas as prueba','prueba.id_candidato = c.id','left')
 			->where('c.id', $id_candidato);
@@ -376,7 +376,7 @@ class Doping_model extends CI_Model{
 			->from('candidato_pruebas as p')
 			->join('candidato as c','c.id = p.id_candidato')
 			->join('cliente as cl','cl.id = c.id_cliente')
-			->join('subcliente as sub','sub.id = c.id_subcliente','left')
+			->join('subclientes as sub','sub.id = c.id_subcliente','left')
 			->join('proyecto as pro','pro.id = c.id_proyecto','left')
 			->where_in('p.tipo_antidoping', [1,2])
 			->where('p.status_doping', 0)
@@ -394,7 +394,7 @@ class Doping_model extends CI_Model{
     function getSubclientes($id_cliente){
         $this->db
         ->select('*')
-        ->from('subcliente')
+        ->from('subclientes')
         ->where('id_cliente', $id_cliente)
         ->where('status', 1)
         ->where('eliminado', 0)
@@ -618,7 +618,7 @@ class Doping_model extends CI_Model{
         ->join('candidato as c','c.id = dop.id_candidato')
         ->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete')
         ->join('cliente as cl','cl.id = dop.id_cliente')
-        ->join('subcliente as sub','sub.id = dop.id_subcliente','left')
+        ->join('subclientes as sub','sub.id = dop.id_subcliente','left')
         ->join('proyecto as pro','pro.id = dop.id_proyecto','left')
         ->join('tipo_identificacion as ide','ide.id = dop.id_tipo_identificacion','left')
         ->join('area as A','A.id = dop.id_area','left')
@@ -648,7 +648,7 @@ class Doping_model extends CI_Model{
         ->join('candidato as c','c.id = dop.id_candidato')
         ->join('candidato_pruebas as pr','pr.id_candidato = c.id')
         ->join('cliente as cl','cl.id = dop.id_cliente')
-        ->join('subcliente as sub','sub.id = dop.id_subcliente',"left")
+        ->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
         ->join('usuario as u','u.id = dop.id_usuario')
         ->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
         ->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
