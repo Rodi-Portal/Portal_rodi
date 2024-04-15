@@ -7,9 +7,9 @@ class Cat_subclientes_model extends CI_Model
     public function getTotal()
     {
         $this->db
-            ->select("sub.id")
-            ->from('subcliente as sub')
-            ->where('sub.eliminado', 0);
+            ->select("SUB.id")
+            ->from('subclientes as SUB')
+            ->where('SUB.eliminado', 0);
 
         $query = $this->db->get();
         return $query->num_rows();
@@ -18,8 +18,8 @@ class Cat_subclientes_model extends CI_Model
     public function getSubclientes()
     {
         $this->db
-            ->select("sub.*,
-    sub.id AS idSub,
+            ->select("SUB.*,
+    SUB.id AS idSub,
      gen.nombre, gen.paterno,
       gen.correo,gen.telefono,
        sub.nombre_subcliente as nombreSubcliente,
@@ -29,18 +29,19 @@ class Cat_subclientes_model extends CI_Model
           cl.nombre as cliente, fac.razon_social, fac.rfc,
           dom.pais, dom.estado, dom.ciudad, dom.calle, dom.exterior, dom.interior, dom.cp, dom.colonia,
            COUNT(us.id) as numero_accesos")
-            ->from('subclientes as sub')
-            ->join('cliente as cl', 'cl.id = sub.id_cliente')
-            ->join('domicilios as dom', 'dom.id = sub.id_domicilios')
-            ->join('datos_facturacion as fac', 'fac.id = sub.id_datos_facturacion')
-            ->join('datos_generales as gen', 'gen.id = sub.id_datos_generales')
-            ->join('usuarios_portal as u', 'u.id = sub.id_usuario', "left")
-            ->join('usuario_subcliente as us', 'us.id_subcliente = sub.id', "left")
+            ->from('subclientes as SUB')
+            ->join('datos_generales as GENSUB', 'GENSUB.id = SUB.id_datos_generales')
+            ->join('cliente as cl', 'cl.id = SUB.id_cliente')
+            ->join('domicilios as dom', 'dom.id = SUB.id_domicilios')
+            ->join('datos_facturacion as fac', 'fac.id = SUB.id_datos_facturacion')
+            ->join('datos_generales as gen', 'gen.id = SUB.id_datos_generales')
+            ->join('usuarios_portal as u', 'u.id = SUB.id_usuario', "left")
+            ->join('usuario_subcliente as us', 'us.id_subcliente = SUB.id', "left")
 
-            ->where('sub.eliminado', 0)
+            ->where('SUB.eliminado', 0)
             ->where('cl.eliminado', 0)
-            ->order_by('sub.creacion', 'ASC')
-            ->group_by('sub.id');
+            ->order_by('SUB.creacion', 'ASC')
+            ->group_by('SUB.id');
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -53,13 +54,13 @@ class Cat_subclientes_model extends CI_Model
     public function getAccesos($id_subcliente)
     {
         $this->db
-            ->select("sub.*,CONCAT(datup.nombre,' ',datup.paterno) as usuario, CONCAT(usub.nombre,' ',usub.paterno) as usuario_subcliente, usub.correo as correo_usuario, usub.creacion as alta, usub.id as idUsuarioSubcliente, cl.nombre as cliente")
-            ->from("subclientes as sub")
+            ->select("SUB.*,CONCAT(datup.nombre,' ',datup.paterno) as usuario, CONCAT(usub.nombre,' ',usub.paterno) as usuario_subcliente, usub.correo as correo_usuario, usub.creacion as alta, usub.id as idUsuarioSubcliente, cl.nombre as cliente")
+            ->from("subclientes as SUB")
             ->join("cliente as cl", "cl.id = sub.id_cliente")
-            ->join("usuario_subcliente as usub", "usub.id_subcliente = sub.id")
+            ->join("usuario_subcliente as usub", "usub.id_subcliente = SUB.id")
             ->join("usuarios_portal as u", "u.id = usub.id_usuario")
             ->join("datos_generales as datup", "datup.id = usub.id_usuario")
-            ->where("sub.id", $id_subcliente)
+            ->where("SUB.id", $id_subcliente)
             ->order_by("usub.id", 'desc');
 
         $query = $this->db->get();
