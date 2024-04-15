@@ -74,9 +74,9 @@ class Usuario_model extends CI_Model{
     }
     function existeUsuarioSubcliente($correo, $pass){
         $this->db
-        ->select('u.id, u.correo, u.nombre, u.paterno, u.nuevo_password, u.id_cliente, cl.nombre as cliente, u.id_subcliente, sub.nombre as subcliente, u.logueado as loginBD, sub.tipo_acceso, cl.ingles')
+        ->select('u.id, u.correo, u.nombre, u.paterno, u.nuevo_password, u.id_cliente, cl.nombre as cliente, u.id_subcliente, SUB.nombre_subcliente as subcliente, u.logueado as loginBD, SUB.tipo_acceso, cl.ingles')
         ->from('usuario_subcliente as u')
-        ->join('subcliente as sub', 'sub.id = u.id_subcliente','left')
+        ->join('subclientes as SUB', 'SUB.id = u.id_subcliente','left')
         ->join('cliente as cl', 'cl.id = u.id_cliente')
         ->where('u.correo', $correo)
         ->where('u.password', $pass)

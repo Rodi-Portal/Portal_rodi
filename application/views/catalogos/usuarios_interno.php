@@ -69,7 +69,7 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" class="form-control" name="idUsuarioInterno" id="idUsuarioInterno">
+                <input type="hidden" class="form-control" name="idUsuarioInternoEditPass" id="idUsuarioInternoEditPass">
                 <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
             </div>
             
@@ -257,7 +257,7 @@ $(document).ready(function() {
         $("#nuevoAccesoUsuariosInternos").modal("show");
 
       });
-      // console.log("🚀 ~ $ ~ data:", data)
+       console.log("🚀 ~ $ ~ data:", data)
 
     },
 
@@ -277,6 +277,7 @@ $(document).ready(function() {
       }
     }
   });
+    console.log("🚀 ~ $ ~ data:", data)
 
 
 });
@@ -309,7 +310,7 @@ function enviarCredenciales(valor1, valor2) {
     $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña <b>' + valor1 + '</b>?');
     $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
     $('#btnEnviarPass').attr("data-dismiss", "modal");
-    $('#idUsuarioInterno').val(valor2); // Asignar valor a idUsuarioInterno
+    $('#idUsuarioInternoEditPass').val(valor2); // Asignar valor a idUsuarioInterno
     $('#idCorreo').val(valor1);
     $('#password').val(''); // Asignar valor a idCorreo
     $('#enviarCredenciales').modal('show');
