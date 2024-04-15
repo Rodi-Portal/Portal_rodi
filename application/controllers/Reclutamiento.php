@@ -232,11 +232,11 @@ class Reclutamiento extends CI_Controller{
 			//Dependiendo el rol del usuario se veran todas o sus propias requisiciones
 			if($this->session->userdata('idrol') == 4){
 				$id_usuario = $this->session->userdata('id');
-				$condicion = 'r.id_usuario';
+				$condicion = 'R.id_usuario';
 			}
 			else{
 				$id_usuario = 0;
-				$condicion = 'r.id_usuario >=';
+				$condicion = 'R.id_usuario >=';
 			}
 			$reqs = $this->reclutamiento_model->getRequisicionesFinalizadas($id_usuario, $condicion);
 			$data['reqs'] = $reqs;
