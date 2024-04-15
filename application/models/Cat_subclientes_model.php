@@ -22,7 +22,7 @@ class Cat_subclientes_model extends CI_Model
     SUB.id AS idSub,
      gen.nombre, gen.paterno,
       gen.correo,gen.telefono,
-       sub.nombre_subcliente as nombreSubcliente,
+      SUB.nombre_subcliente as nombreSubcliente,
         gen.paterno as paternoSubcliente,
          us.id as idUsuarioSubcliente,
          us.status as statusUsuario,
