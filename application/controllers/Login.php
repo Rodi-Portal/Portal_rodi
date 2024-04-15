@@ -36,16 +36,10 @@ class Login extends CI_Controller
 			// Obtener el hash de la contraseña almacenado en la base de datos
 			$hash_guardado = $this->usuario_model->traerPass($correo);
 			
-			if ($hash_guardado !== false && password_verify($pass, $hash_guardado)) {
-					echo "¡La contraseña es válida!";
-			} else {
-					echo "¡La contraseña es inválida!";
-			}
-			die();
+			
 
 			$usuario = $this->usuario_model->existeUsuarioPortal($correo);
-			var_dump($usuario);
-			die();
+		
 			if ($usuario && password_verify($pass, $usuario->password)) {
 						$this->session->set_userdata('correo', $correo);
 						$codigo_autenticacion = $this->generar_codigo_autenticacion();
