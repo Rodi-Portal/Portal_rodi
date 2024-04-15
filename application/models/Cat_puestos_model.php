@@ -22,6 +22,7 @@ class Cat_puestos_model extends CI_Model{
     ->join("usuarios_portal as u","u.id = p.id_usuario")
     ->join("datos_generales as gen","u.id_datos_generales = gen.id")
     ->where("p.eliminado", 0)
+    ->where("p.id_portal", $portal)
     ->order_by("p.nombre", 'ASC');
 
     $query = $this->db->get();
