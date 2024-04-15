@@ -21,12 +21,13 @@ class Doping_model extends CI_Model{
 		}
 		function getDopingsGenerales(){
 			$this->db
-			->select("dop.*, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, sub.nombre as subcliente, pr.antidoping, c.fecha_nacimiento, CONCAT(u.nombre,' ',u.paterno) as usuario, pro.nombre as proyecto, paq.nombre as paquete, pr.socioeconomico, per.id as idPermiso")
+			->select("dop.*, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, DATSUB.nombre as subcliente, pr.antidoping, c.fecha_nacimiento, CONCAT(u.nombre,' ',u.paterno) as usuario, pro.nombre as proyecto, paq.nombre as paquete, pr.socioeconomico, per.id as idPermiso")
 			->from('doping as dop')
 			->join('candidato as c','c.id = dop.id_candidato')
 			->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 			->join('cliente as cl','cl.id = dop.id_cliente')
 			->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
+			->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
 			->join('usuario as u','u.id = dop.id_usuario')
 			->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
@@ -62,11 +63,12 @@ class Doping_model extends CI_Model{
 		}
 		function getDopingsPendientes(){
 			$this->db
-			->select("c.id as idCandidato, c.id_cliente, c.id_subcliente, c.id_proyecto, c.fecha_alta, c.celular, c.telefono_casa, c.correo, pr.id_candidato, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, sub.nombre as subcliente, pr.antidoping, c.fecha_nacimiento, CONCAT(u.nombre,' ',u.paterno) as usuario, pro.nombre as proyecto, paq.nombre as paquete, pr.socioeconomico")
+			->select("c.id as idCandidato, c.id_cliente, c.id_subcliente, c.id_proyecto, c.fecha_alta, c.celular, c.telefono_casa, c.correo, pr.id_candidato, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, DATSUB.nombre as subcliente, pr.antidoping, c.fecha_nacimiento, CONCAT(u.nombre,' ',u.paterno) as usuario, pro.nombre as proyecto, paq.nombre as paquete, pr.socioeconomico")
 			->from('candidato_pruebas as pr')
 			->join('candidato as c','c.id = pr.id_candidato')
 			->join('cliente as cl','cl.id = c.id_cliente')
 			->join('subclientes as sub','sub.id = c.id_subcliente',"left")
+			->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
 			->join('usuario as u','u.id = c.id_usuario','left')
 			->join('proyecto as pro','pro.id = c.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = pr.antidoping',"left")
@@ -90,12 +92,13 @@ class Doping_model extends CI_Model{
 	/*----------------------------------------*/
 		function getDopingsFinalizadosFiltrados(){
 			$this->db
-			->select("dop.id, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, sub.nombre as subcliente, pro.nombre as proyecto, paq.nombre as paquete")
+			->select("dop.id, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, DATSUB.nombre as subcliente, pro.nombre as proyecto, paq.nombre as paquete")
 			->from('doping as dop')
 			->join('candidato as c','c.id = dop.id_candidato')
 			->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 			->join('cliente as cl','cl.id = dop.id_cliente')
 			->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
+			->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
 			->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
 			->where('c.eliminado', 0)
@@ -129,12 +132,13 @@ class Doping_model extends CI_Model{
 		}
 		function getDopingsFinalizados(){
 				$this->db
-				->select("dop.id, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, sub.nombre as subcliente, pr.antidoping, pro.nombre as proyecto, paq.nombre as paquete")
+				->select("dop.id, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, DATSUB.nombre as subcliente, pr.antidoping, pro.nombre as proyecto, paq.nombre as paquete")
 				->from('doping as dop')
 				->join('candidato as c','c.id = dop.id_candidato')
 				->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 				->join('cliente as cl','cl.id = dop.id_cliente')
 				->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
+				->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
 				//->join('usuario as u','u.id = dop.id_usuario')
 				->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
 				->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
@@ -154,12 +158,13 @@ class Doping_model extends CI_Model{
 		}
 		function getDopingsFinalizadosListado(){
 			$this->db
-			->select("dop.id, dop.id_candidato, dop.id_usuario, dop.codigo_prueba, dop.fecha_doping, dop.fecha_resultado, dop.resultado, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, dop.foraneo, cl.nombre as cliente, sub.nombre as subcliente, pro.nombre as proyecto, paq.nombre as paquete, CONCAT(u.nombre,' ',u.paterno) as usuario, c.id_subcliente, c.id_proyecto, c.id_cliente, c.fecha_nacimiento, dop.id_tipo_identificacion, dop.ine, dop.razon, dop.medicamentos, dop.foto, dop.comentarios, dop.id_antidoping_paquete, c.nombre, c.paterno, c.materno, pr.socioeconomico")
+			->select("dop.id, dop.id_candidato, dop.id_usuario, dop.codigo_prueba, dop.fecha_doping, dop.fecha_resultado, dop.resultado, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, dop.foraneo, cl.nombre as cliente, DATSUB.nombre as subcliente, pro.nombre as proyecto, paq.nombre as paquete, CONCAT(u.nombre,' ',u.paterno) as usuario, c.id_subcliente, c.id_proyecto, c.id_cliente, c.fecha_nacimiento, dop.id_tipo_identificacion, dop.ine, dop.razon, dop.medicamentos, dop.foto, dop.comentarios, dop.id_antidoping_paquete, c.nombre, c.paterno, c.materno, pr.socioeconomico")
 			->from('doping as dop')
 			->join('candidato as c','c.id = dop.id_candidato')
 			->join('candidato_pruebas as pr','pr.id_candidato = c.id')
 			->join('cliente as cl','cl.id = c.id_cliente')
 			->join('subclientes as sub','sub.id = c.id_subcliente',"left")
+			->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
 			->join('proyecto as pro','pro.id = c.id_proyecto',"left")
 			->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
 			->join('usuario as u','u.id = dop.id_usuario',"left")
@@ -199,12 +204,13 @@ class Doping_model extends CI_Model{
 			$filtros .= ($cliente != '' && $inicio != '' && $fin != '')? ' AND c.id_cliente = '.$cliente.' AND dop.fecha_doping >= "'.$inicio.' 00:00:00"  AND dop.fecha_resultado <= "'.$fin.' 23:59:59" ' : '';
 
 			$query = $this->db
-			->query("SELECT dop.id, dop.id_candidato, dop.id_usuario, dop.codigo_prueba, dop.fecha_doping, dop.fecha_resultado, dop.resultado, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, sub.nombre as subcliente, pro.nombre as proyecto, paq.nombre as paquete, CONCAT(u.nombre,' ',u.paterno) as usuario, c.id_subcliente, c.id_proyecto, c.id_cliente, c.fecha_nacimiento, dop.id_tipo_identificacion, dop.ine, dop.razon, dop.medicamentos, dop.foto, dop.comentarios, dop.id_antidoping_paquete, c.nombre, c.paterno, c.materno, pr.socioeconomico, dop.foraneo
+			->query("SELECT dop.id, dop.id_candidato, dop.id_usuario, dop.codigo_prueba, dop.fecha_doping, dop.fecha_resultado, dop.resultado, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, DATSUB.nombre as subcliente, pro.nombre as proyecto, paq.nombre as paquete, CONCAT(u.nombre,' ',u.paterno) as usuario, c.id_subcliente, c.id_proyecto, c.id_cliente, c.fecha_nacimiento, dop.id_tipo_identificacion, dop.ine, dop.razon, dop.medicamentos, dop.foto, dop.comentarios, dop.id_antidoping_paquete, c.nombre, c.paterno, c.materno, pr.socioeconomico, dop.foraneo
 							FROM doping as dop
 							JOIN candidato as c ON c.id = dop.id_candidato
 							JOIN candidato_pruebas as pr ON pr.id_candidato = c.id
 							JOIN cliente as cl ON cl.id = c.id_cliente
 							LEFT JOIN subclientes as sub ON sub.id = c.id_subcliente
+							JOIN datos_generales as DATSUB sub.id_datos_generales = DATSUB.id
 							LEFT JOIN proyecto as pro ON pro.id = c.id_proyecto
 							LEFT JOIN antidoping_paquete as paq ON paq.id = dop.id_antidoping_paquete
 							LEFT JOIN usuario as u ON u.id = dop.id_usuario
@@ -264,10 +270,11 @@ class Doping_model extends CI_Model{
     }
 		function getDatosCandidato($id_candidato){
 			$this->db
-			->select('c.id, c.nombre, c.paterno, c.materno, c.id_cliente, c.id_subcliente, cl.clave as claveCliente, sub.clave as claveSubcliente, cl.nombre as cliente, sub.nombre as subcliente, pro.nombre as proyecto, c.fecha_nacimiento, c.id_proyecto, prueba.antidoping')
+			->select('c.id, c.nombre, c.paterno, c.materno, c.id_cliente, c.id_subcliente, cl.clave as claveCliente, sub.clave as claveSubcliente, cl.nombre as cliente, DATSUB.nombre as subcliente, pro.nombre as proyecto, c.fecha_nacimiento, c.id_proyecto, prueba.antidoping')
 			->from('candidato as c')
 			->join('cliente as cl','cl.id = c.id_cliente')
 			->join('subclientes as sub','sub.id = c.id_subcliente','left')
+			->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
 			->join('proyecto as pro','pro.id = c.id_proyecto','left')
 			->join('candidato_pruebas as prueba','prueba.id_candidato = c.id','left')
 			->where('c.id', $id_candidato);
@@ -372,11 +379,12 @@ class Doping_model extends CI_Model{
 
 		function getCandidatosSinDoping(){
 			$this->db
-			->select('p.*,c.id as idCandidato, c.nombre, c.paterno, c.materno, cl.nombre as cliente, sub.nombre as subcliente, p.antidoping, pro.nombre as proyecto')
+			->select('p.*,c.id as idCandidato, c.nombre, c.paterno, c.materno, cl.nombre as cliente, DATSUB.nombre as subcliente, p.antidoping, pro.nombre as proyecto')
 			->from('candidato_pruebas as p')
 			->join('candidato as c','c.id = p.id_candidato')
 			->join('cliente as cl','cl.id = c.id_cliente')
 			->join('subclientes as sub','sub.id = c.id_subcliente','left')
+			->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
 			->join('proyecto as pro','pro.id = c.id_proyecto','left')
 			->where_in('p.tipo_antidoping', [1,2])
 			->where('p.status_doping', 0)
@@ -612,13 +620,14 @@ class Doping_model extends CI_Model{
     
     function getDatosDoping($id_doping){
         $this->db
-        ->select("dop.*, c.nombre, c.paterno, c.materno, paq.nombre as paquete, paq.sustancias, cl.nombre as cliente, sub.nombre as subcliente, det.id_sustancia, pro.nombre as proyecto, ide.nombre as identificacion, c.fecha_nacimiento, paq.nombre as drogas, CONCAT(US.nombre,' ',US.paterno,' ',US.materno) as responsable, A.profesion_responsable, A.firma as firmaResponsable, A.cedula ")
+        ->select("dop.*, c.nombre, c.paterno, c.materno, paq.nombre as paquete, paq.sustancias, cl.nombre as cliente, DATSUB.nombre as subcliente, det.id_sustancia, pro.nombre as proyecto, ide.nombre as identificacion, c.fecha_nacimiento, paq.nombre as drogas, CONCAT(US.nombre,' ',US.paterno,' ',US.materno) as responsable, A.profesion_responsable, A.firma as firmaResponsable, A.cedula ")
         ->from('doping as dop')
         ->join('doping_detalle as det','det.id_doping = dop.id')
         ->join('candidato as c','c.id = dop.id_candidato')
         ->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete')
         ->join('cliente as cl','cl.id = dop.id_cliente')
         ->join('subclientes as sub','sub.id = dop.id_subcliente','left')
+				->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
         ->join('proyecto as pro','pro.id = dop.id_proyecto','left')
         ->join('tipo_identificacion as ide','ide.id = dop.id_tipo_identificacion','left')
         ->join('area as A','A.id = dop.id_area','left')
@@ -643,12 +652,13 @@ class Doping_model extends CI_Model{
     }
     function getDetalleDoping($idDoping){
         $this->db
-        ->select("dop.*, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, sub.nombre as subcliente, pr.antidoping, c.fecha_nacimiento, CONCAT(u.nombre,' ',u.paterno) as usuario, pro.nombre as proyecto, paq.nombre as paquete")
+        ->select("dop.*, c.nombre, c.paterno, c.materno, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, cl.nombre as cliente, DATSUB.nombre as subcliente, pr.antidoping, c.fecha_nacimiento, CONCAT(u.nombre,' ',u.paterno) as usuario, pro.nombre as proyecto, paq.nombre as paquete")
         ->from('doping as dop')
         ->join('candidato as c','c.id = dop.id_candidato')
         ->join('candidato_pruebas as pr','pr.id_candidato = c.id')
         ->join('cliente as cl','cl.id = dop.id_cliente')
         ->join('subclientes as sub','sub.id = dop.id_subcliente',"left")
+				->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
         ->join('usuario as u','u.id = dop.id_usuario')
         ->join('proyecto as pro','pro.id = dop.id_proyecto',"left")
         ->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete',"left")
