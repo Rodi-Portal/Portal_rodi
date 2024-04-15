@@ -13,9 +13,12 @@ class Cat_puestos_model extends CI_Model{
     return $query->num_rows();
   }
   function getPuestosActivos(){
+    $portal = $this->session->userdata('idPortal');
     $this->db
+    
     ->select("p.*,CONCAT(gen.nombre,' ',gen.paterno) as usuario")
     ->from("puesto as p")
+    ->join('portal as POR','POR.id = p.id_portal')
     ->join("usuarios_portal as u","u.id = p.id_usuario")
     ->join("datos_generales as gen","u.id_datos_generales = gen.id")
     ->where("p.eliminado", 0)

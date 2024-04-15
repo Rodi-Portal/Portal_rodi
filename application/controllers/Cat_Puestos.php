@@ -62,10 +62,12 @@ class Cat_Puestos extends CI_Controller{
       );
     } else {
       $id_usuario = $this->session->userdata('id');
+      $portal = $this->session->userdata('idPortal');
       $date = date('Y-m-d H:i:s');
       $puesto = array(
         'creacion' => $date,
         'edicion' => $date,
+        'id_portal'=> $portal,
         'id_usuario' => $id_usuario,
         'nombre' => $this->input->post('nombre')
       );
