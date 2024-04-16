@@ -188,13 +188,16 @@ class Usuario_model extends CI_Model{
         return $resultado;
     }
     function getUsuarios(){
+        $portal = $this->session->userdata('idPortal');
         $this->db
-        ->select('u.id, u.nombre, u.paterno, u.id_rol')
-        ->from('usuario as u')
-        ->where('u.status', 1)
-        ->where('u.eliminado', 0)
-        ->where_in('u.id_rol', [2,9])
-        ->order_by('u.nombre','ASC');
+        ->select('DATUP.id, DATUP.nombre, DATUP.paterno, U.id_rol')
+        ->from('usuarios_portal as U')
+        ->join('datos_generales as DATUP','DATUP.id = U.id_datos_generales')
+        ->where('U.status', 1)
+        ->where('U.eliminado', 0)
+        ->where_in('U.id_portal', $portal)
+        ->where_in('U.id_rol', [2,9])
+        ->order_by('DATUP.nombre','ASC');
 
         $query = $this->db->get();
         if($query->num_rows() > 0){

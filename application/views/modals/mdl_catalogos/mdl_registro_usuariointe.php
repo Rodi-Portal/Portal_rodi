@@ -25,34 +25,31 @@
               <br>
             </div>
             <div class="col-md-4">
-              <label>Apellido Materno </label>
-              <input type="text" class="form-control" name="materno" id="materno" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-              <br>
-            </div>
-          </div> 
-          <div class="row">
-            <div class="col-6">
               <label>Tipo de rol *</label>
               <select class="form-control" id="id_rol" name="id_rol">
                <option value="">Selecciona un rol</option>
+               <option value="6">Administrador</option>
                 <option value="4">Reclutadora</option>
-                <option value="6">Administrador</option>
                 <option value="11">Coordinadora de reclutamiento </option>
               </select>
               <br>
             </div>
+          </div> 
+          <div class="row">
+           
             <div class="col-6">
             <label for="telefono">Telefono *</label>
               <input type="text" class="form-control" name="telefono" id="telefono">
               <br>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
+            <div class="col-6">
               <label>Correo *</label>
               <input type="text" class="form-control" name="correo" id="correo">
               <br>
             </div>
+          </div>
+          <div class="row">
+           
           </div>
               <div class="row">
                  <div class="col-md-3"  id="divGenerarPassword">

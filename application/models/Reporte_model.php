@@ -6,7 +6,7 @@ class Reporte_model extends CI_Model{
     function getSubclientes($id_cliente){
         $this->db
         ->select('*')
-        ->from('subcliente')
+        ->from('subclientes')
         ->where('id_cliente', $id_cliente)
         ->where('status', 1)
         ->where('eliminado', 0)
@@ -77,7 +77,7 @@ class Reporte_model extends CI_Model{
             FROM doping as dop 
             JOIN candidato as c ON c.id = dop.id_candidato
             JOIN cliente as cl ON cl.id = dop.id_cliente
-            LEFT JOIN subcliente as sub ON sub.id = dop.id_subcliente
+            LEFT JOIN subclientes as sub ON sub.id = dop.id_subcliente
             LEFT JOIN proyecto as pro ON pro.id = dop.id_proyecto
             JOIN antidoping_paquete as paq ON paq.id = dop.id_antidoping_paquete
             WHERE  ".$filtros."
@@ -180,7 +180,7 @@ class Reporte_model extends CI_Model{
             FROM doping as dop 
             JOIN candidato as c ON c.id = dop.id_candidato
             JOIN cliente as cl ON cl.id = dop.id_cliente
-            LEFT JOIN subcliente as sub ON sub.id = dop.id_subcliente
+            LEFT JOIN subclientes as sub ON sub.id = dop.id_subcliente
             LEFT JOIN proyecto as pro ON pro.id = dop.id_proyecto
             JOIN antidoping_paquete as paq ON paq.id = dop.id_antidoping_paquete
             WHERE  ".$filtros."
@@ -283,9 +283,10 @@ class Reporte_model extends CI_Model{
 			$filtros .= ($cliente == "" || $cliente == 0)? "":" AND C.id = ".$cliente;
 
 			$query = $this->db
-			->query("SELECT C.*,S.nombre as subcliente, S.clave as claveSubcliente
+			->query("SELECT C.*, S.nombre_subcliente as subcliente, S.clave_subcliente as claveSubcliente
 							FROM cliente as C 
-							LEFT JOIN subcliente as S ON S.id_cliente = C.id AND S.eliminado = 0
+							LEFT JOIN subclientes as S ON S.id_cliente = C.id AND S.eliminado = 0
+                            LEFT JOIN datos_generales as D ON S.id_datos_generales = D.id
 							WHERE C.eliminado = 0 ".$filtros."
 							ORDER BY C.id DESC");
 			if($query->num_rows() > 0){
@@ -318,10 +319,10 @@ class Reporte_model extends CI_Model{
       //$centro_costo = ($centro_costo == 'true')? ',c.centro_costo,' : ',';
       
       $query = $this->db
-      ->query("SELECT c.fecha_alta, c.centro_costo, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, bgc.creacion as fechaBGC, f.creacion as fechaFinal, cl.nombre as cliente, sub.nombre as subcliente, c.status, c.status_bgc, s.proyecto
+      ->query("SELECT c.fecha_alta, c.centro_costo, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, bgc.creacion as fechaBGC, f.creacion as fechaFinal, cl.nombre as cliente, sub.nombre_subcliente as subcliente, c.status, c.status_bgc, s.proyecto
           FROM candidato as c 
           JOIN cliente as cl ON cl.id = c.id_cliente 
-          LEFT JOIN subcliente as sub ON sub.id = c.id_subcliente
+          LEFT JOIN subclientes as sub ON sub.id = c.id_subcliente
           LEFT JOIN candidato_seccion as s ON s.id_candidato = c.id
           LEFT JOIN candidato_bgc as bgc ON bgc.id_candidato = c.id
           LEFT JOIN candidato_finalizado as f ON f.id_candidato = c.id
@@ -343,13 +344,16 @@ class Reporte_model extends CI_Model{
       $filtros .= ($usuario == "" || $usuario == 0)? "":" AND B.id_usuario = ".$usuario;
       
       $query = $this->db
-      ->query("SELECT A.creacion, A.id_requisicion, A.telefono, A.medio_contacto, A.sueldo_acordado, A.fecha_ingreso, A.pago, B.domicilio, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(U.nombre,' ',U.paterno) as usuario, R.puesto, R.nombre as cliente, R.nombre_comercial, R.creacion as fechaRequisicion, (SELECT descripcion FROM aspirante_garantia WHERE id_aspirante = A.id ORDER BY id DESC LIMIT 1) AS garantia
+      ->query("SELECT A.creacion, A.id_requisicion, B.telefono, B.medio_contacto, A.sueldo_acordado, A.fecha_ingreso, A.pago, B.domicilio, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as aspirante, CONCAT(DATUP.nombre,' ',DATUP.paterno) as usuario, R.puesto, C.nombre as cliente, FAC.razon_social, R.creacion as fechaRequisicion, (SELECT descripcion FROM aspirante_garantia WHERE id_aspirante = A.id ORDER BY id DESC LIMIT 1) AS garantia
           FROM requisicion_aspirante as A 
           JOIN bolsa_trabajo as B ON B.id = A.id_bolsa_trabajo 
           JOIN requisicion as R ON R.id = A.id_requisicion
-          LEFT JOIN usuario as U ON U.id = B.id_usuario
+          JOIN cliente as C ON C.id =R.id_cliente
+          JOIN datos_facturacion as FAC ON FAC.id = C.id_datos_facturacion
+          LEFT JOIN usuarios_portal as U ON U.id = B.id_usuario
+          LEFT JOIN datos_generales as DATUP ON U.id_datos_generales = DATUP.id
           WHERE A.eliminado = 0 AND R.status = 2 AND ".$filtros."
-          ORDER BY A.creacion DESC, A.nombre ASC");
+          ORDER BY A.creacion DESC, B.nombre ASC");
       if($query->num_rows() > 0){
         return $query->result();
       }

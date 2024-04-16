@@ -14,7 +14,8 @@ class Cat_cliente_model extends CI_Model{
     $query = $this->db->get();
     return $query->num_rows();
   }
- function getC($portal, $id_cliente = null) {
+ function getC($id_cliente = null) {
+  $portal = $this->session->userdata('idPortal');
     try {
         $this->db->select("c.*,
             c.id AS idCliente,

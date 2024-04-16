@@ -71,11 +71,16 @@ function editarUsuarioControlador()
       $materno = $this->input->post('materno');
       $id_rol = $this->input->post('id_rol');
       $correo = $this->input->post('correo');
+      $telefono = $this->input->post('telefono');
+
+     
      // $uncode_password = $this->input->post('password');
      // $base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
      // $password = md5($base.$uncode_password);
       $idUsuario = $this->input->post('idUsuarioInterno');
       $idDatos = $this->input->post('idDatosGenerales');
+      $existeTelefono = $this->generales_model->telefonoExiste($telefono, $idDatos );
+
 
       $usuariosInternos = array(
         'edicion' => $date,
@@ -86,7 +91,9 @@ function editarUsuarioControlador()
       $datosGenerales = array(
         'nombre' => $nombre,
         'paterno' => $paterno,
+        
         'correo' => $correo,
+        'telefono' => $telefono,
       );
 
 
@@ -141,7 +148,7 @@ function editarUsuarioControlador()
     $this->form_validation->set_rules('telefono', 'telefono', 'required|is_unique[datos_generales.telefono]');
 
     $this->form_validation->set_rules('correo', 'Correo', 'required|valid_email|is_unique[datos_generales.correo]');
-    $this->form_validation->set_rules('password', 'Contraseña', 'required');
+    $this->form_validation->set_rules('password1', 'Contraseña', 'required');
 
     $this->form_validation->set_message('required','El campo %s es obligatorio');
     $this->form_validation->set_message('is_unique','El %s ya esta registrado');
@@ -168,7 +175,7 @@ function editarUsuarioControlador()
       $id_rol = $this->input->post('id_rol');
       $correo = $this->input->post('correo');
       $telefono = $this->input->post('telefono');
-      $uncode_password = $this->input->post('password');
+      $uncode_password = $this->input->post('password1');
       $password = password_hash($uncode_password, PASSWORD_BCRYPT, ['cost' => 12]);
       $idUsuario = $this->input->post('id_usuario');
      
@@ -216,7 +223,7 @@ function editarUsuarioControlador()
   }
 
   function actualizarPass(){
-    $this->form_validation->set_rules('id', 'nombre', 'required');
+    $this->form_validation->set_rules('id', 'id', 'required');
     $this->form_validation->set_rules('correo', 'Correo', 'required');
     $this->form_validation->set_rules('pass', 'Contraseña', 'required');
 

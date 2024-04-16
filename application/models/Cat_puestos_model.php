@@ -16,14 +16,14 @@ class Cat_puestos_model extends CI_Model{
     $portal = $this->session->userdata('idPortal');
     $this->db
     
-    ->select("p.*,CONCAT(gen.nombre,' ',gen.paterno) as usuario")
-    ->from("puesto as p")
-    ->join('portal as POR','POR.id = p.id_portal')
-    ->join("usuarios_portal as u","u.id = p.id_usuario")
-    ->join("datos_generales as gen","u.id_datos_generales = gen.id")
-    ->where("p.eliminado", 0)
-    ->where("p.id_portal", $portal)
-    ->order_by("p.nombre", 'ASC');
+    ->select("P.*,CONCAT(GEN.nombre,' ',GEN.paterno) as usuario")
+    ->from("puesto as P")
+    ->join('portal as POR','POR.id = P.id_portal')
+    ->join("usuarios_portal as U","U.id = P.id_usuario")
+    ->join("datos_generales as GEN","U.id_datos_generales = GEN.id")
+    ->where("P.eliminado", 0)
+    ->where("P.id_portal", $portal)
+    ->order_by("P.nombre", 'ASC');
 
     $query = $this->db->get();
     if($query->num_rows() > 0){

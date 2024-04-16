@@ -94,6 +94,24 @@ public function correoExiste($correo ,$idDatos = null, ) {
     return $query->num_rows();
 }
 
+public function telefonoExiste($telefono ,$idDatos = null, ) {
+    $id_portal = $this->session->userdata('idPortal');
+    $this->db->select('GEN.id')
+             ->from('datos_generales as GEN')
+             ->join('usuarios_portal as UP', 'UP.id_datos_generales = GEN.id ')
+             ->where('GEN.telefono', $telefono)
+             ->where('UP.id_portal', $id_portal);
+        
+
+    // Si estás editando un cliente, excluye el cliente actual de la búsqueda
+    if ($idDatos !== null) {
+        $this->db->where_not_in('GEN.id', $idDatos);
+    }
+
+    $query = $this->db->get();
+    return $query->num_rows();
+}
+
 
 
 function addDatosFacturacion($datosFacturacion){

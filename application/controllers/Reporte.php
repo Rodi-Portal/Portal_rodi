@@ -1831,7 +1831,7 @@ class Reporte extends CI_Controller{
     /*  Listado Clientes
     /*----------------------------------------*/
 			function listado_clientes_index(){
-				$datos['clientes'] = $this->cat_cliente_model->getActivos();
+				$datos['clientes'] = $this->cat_cliente_model->getC();
 				$data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
 				$datos['usuarios'] = $this->usuario_model->getUsuarios();
 				$data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));

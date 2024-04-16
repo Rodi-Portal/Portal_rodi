@@ -247,7 +247,7 @@ class Cat_Cliente extends CI_Controller{
         $recordsFiltered = $this->cat_cliente_model->getTotal($portal);
 
         // Obtener los datos de clientes (data)
-        $data = $this->cat_cliente_model->getC($portal);
+        $data = $this->cat_cliente_model->getC();
 
         // Configurar el tipo de contenido de la respuesta como JSON
         $this->output->set_content_type('application/json');
@@ -279,7 +279,7 @@ class Cat_Cliente extends CI_Controller{
 
     try {
         // Obtener los datos de clientes (data)
-        $data = $this->cat_cliente_model->getC($portal, $cliente_id);
+        $data = $this->cat_cliente_model->getC($cliente_id);
 
         // Configurar el tipo de contenido de la respuesta como JSON
         $this->output->set_content_type('application/json');

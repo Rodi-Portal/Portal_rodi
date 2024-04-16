@@ -69,8 +69,8 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" class="form-control" name="idUsuarioInternoEditPass" id="idUsuarioInternoEditPass">
-                <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
+                <input type="text" class="form-control" name="idUsuarioInternoEditPass" id="idUsuarioInternoEditPass">
+                <input type="text" class="form-control" name="idCorreo" id="idCorreo">
             </div>
             
             <div class="modal-footer">
@@ -277,7 +277,7 @@ $(document).ready(function() {
       }
     }
   });
-    console.log("🚀 ~ $ ~ data:", data)
+ 
 
 
 });
@@ -312,9 +312,10 @@ function enviarCredenciales(valor1, valor2) {
     $('#btnEnviarPass').attr("data-dismiss", "modal");
     $('#idUsuarioInternoEditPass').val(valor2); // Asignar valor a idUsuarioInterno
     $('#idCorreo').val(valor1);
-    $('#password').val(''); // Asignar valor a idCorreo
+    $('#password').val(); // Asignar valor a idCorreo
     $('#enviarCredenciales').modal('show');
 }
+    console.log("🚀 ~ enviarCredenciales ~ valor2:", valor2)
 
 
 /*********************************************************************************/
@@ -478,7 +479,7 @@ function botonesAccionesUsuario(accion, idUsuario) {
 function actualizarContraseña() {
   var pass = $('#password').val();
   var correo = $('#idCorreo').val();
-  var id_datos = $('#idUsuarioInterno').val();
+  var id_datos = $('#idUsuarioInternoEditPass').val();
   $.ajax({
     url: '<?php echo base_url('Cat_UsuarioInternos/actualizarPass'); ?>',
     type: 'post',
