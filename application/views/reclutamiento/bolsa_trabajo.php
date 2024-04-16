@@ -177,12 +177,13 @@
   <div class="">
     <div id="seccionTarjetas">
       <?php 
+     
 			if($registros){
-    
+  
 
 				echo '<div class="row mb-3">';
 				foreach($registros as $r){
-       
+          
           
 					date_default_timezone_set('America/Mexico_City');
 					$hoy = date('Y-m-d H:i:s');
@@ -215,17 +216,17 @@
             }
 					}
           if($r->status == 2){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
+						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
 						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>En proceso de reclutamiento<br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>';
             $disabled_comentario = 'isDisabled';
 					}
           if($r->status == 3 && $r->semaforo == 1){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
+						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
 						$color_estatus = 'req_positivo'; $text_estatus = 'Estatus: <b>Aceptado para iniciar ESE<br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>';
             $disabled_comentario = 'isDisabled';
 					}
           if($r->status == 4){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
+						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
 						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>ESE en proceso<br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>'; 
             $disabled_comentario = 'isDisabled';
 					}
@@ -873,6 +874,7 @@
     $('#materno').val(materno);
     $('#telefono').val(telefono);
     $('#medio').val(medio);
+   
     $('#area_interes').val(area_interes);
     $('#domicilio').val(domicilio);
     // Limpiar el select antes de agregar nuevas opciones
