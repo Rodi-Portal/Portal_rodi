@@ -116,28 +116,38 @@ function formatoFechaDescripcion($f){
   return $f_alta;
 }
 function generarPassword(){
-	//Se define una cadena de caractares.
-	//Os recomiendo desordenar las minúsculas, mayúsculas y números para mejorar la probabilidad.
-	$cadena = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-	//Obtenemos la longitud de la cadena de caracteres
-	$longitudCadena=strlen($cadena);
+  //Se define una cadena de caractares.
+  //Os recomiendo desordenar las minúsculas, mayúsculas y números para mejorar la probabilidad.
+  $cadena = "A1BCDEFGHI2JKLMNO3PQRST4UV5WXYZabc6defgh7ijk8lmn9opqr0stuvwxyz";
+  $cadenaSimbolos ="!$*#&?";
+  //Obtenemos la longitud de la cadena de caracteres
+  $longitudCadena=strlen($cadena);
+  $longitudSimbolos=strlen($cadenaSimbolos);
+  //Definimos la variable que va a contener la contraseña
+  $pass = "";
+  //Se define la longitud de la contraseña, puedes poner la longitud que necesites
+  //Se debe tener en cuenta que cuanto más larga sea más segura será.
+  $longitudPass=10;
 
-	//Definimos la variable que va a contener la contraseña
-	$pass = "";
-	//Se define la longitud de la contraseña, puedes poner la longitud que necesites
-	//Se debe tener en cuenta que cuanto más larga sea más segura será.
-	$longitudPass=12;
+  //Creamos la contraseña recorriendo la cadena tantas veces como hayamos indicado
+  for($i=1 ; $i<=$longitudPass ; $i++){
+      //Definimos numero aleatorio entre 0 y la longitud de la cadena de caracteres-1
+      $pos=rand(0,$longitudCadena-1);
 
-	//Creamos la contraseña recorriendo la cadena tantas veces como hayamos indicado
-	for($i=1 ; $i<=$longitudPass ; $i++){
-			//Definimos numero aleatorio entre 0 y la longitud de la cadena de caracteres-1
-			$pos=rand(0,$longitudCadena-1);
+      //Vamos formando la contraseña con cada carácter aleatorio.
+      $pass .= substr($cadena,$pos,1);
+  }
 
-			//Vamos formando la contraseña con cada carácter aleatorio.
-			$pass .= substr($cadena,$pos,1);
-	}
+  for($i=1 ; $i<=2 ; $i++){
+    //Definimos numero aleatorio entre 0 y la longitud de la cadena de caracteres-1
+    $pos=rand(0,$longitudSimbolos-1);
 
-	return $pass;
+    //Vamos formando la contraseña con cada carácter aleatorio.
+    $pass .= substr($cadenaSimbolos,$pos,1);
+} 
+echo $pass;
+  
+  
 }
 //* Formato fecha en texto
 function fechaTexto($f,$idioma){
@@ -169,3 +179,4 @@ function validar_fecha_espanol($fecha){
     }
 	return false;
 }
+

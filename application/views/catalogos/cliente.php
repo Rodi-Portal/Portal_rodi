@@ -3,7 +3,7 @@
 
   <!-- Page Heading -->
   <div class="align-items-center mb-4">
-    <div class="row">
+    <div class="row justify-content-between">
       <div class="col-sm-12 col-md-8">
         <h1 class="h3 mb-0 text-gray-800">Clientes</h1>
       </div>
@@ -16,14 +16,14 @@
           <span class="text">Agregar cliente</span>
         </a>
       </div>
-      <div class="col-sm-12 col-md-2">
+      <!-- div class="col-sm-12 col-md-2" style="display: none;">
         <a href="#" class="btn btn-primary btn-icon-split" onclick="registrarAccesoCliente()">
           <span class="icon text-white-50">
             <i class="fas fa-sign-in-alt"></i>
           </span>
           <span class="text">Acceso a clientes</span>
         </a>
-      </div>
+      </div -->
     </div>
   </div>
 
@@ -46,6 +46,43 @@
 
 
 </div>
+
+
+
+<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+                <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
+                    <div class="col-md-9">
+                        <label>Generar contraseña *</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8" readonly>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
+                <input type="text" class="form-control" name="idCorreo" id="idCorreo">
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- /.content-wrapper -->
 <script>
 var url = '<?php echo base_url('Cat_Cliente/getClientes'); ?>';
@@ -61,12 +98,13 @@ $(document).ready(function() {
     $("#formCatCliente")[0].reset();
   });
 
-  console.log('Documento listo. Iniciando script.');
+  //console.log('Documento listo. Iniciando script.');
   $('[data-toggle="tooltip"]').tooltip();
   $('#newModal').on('shown.bs.modal', function() {
+
     $(this).find('input[type=text],select,textarea').filter(':visible:first').focus();
   });
-  console.log('URL de Ajax:', url);
+  //console.log('URL de Ajax:', url);
   var msj = localStorage.getItem("success");
   if (msj == 1) {
     Swal.fire({
@@ -85,11 +123,11 @@ $(document).ready(function() {
     console.log('jQuery cargado correctamente.');
   }
 
-  if (typeof $.fn.dataTable === 'undefined') {
-    console.error('Error: DataTables no está cargado correctamente.');
-  } else {
-    console.log('DataTables cargado correctamente.');
-  }
+  /* if (typeof $.fn.dataTable === 'undefined') {
+     console.error('Error: DataTables no está cargado correctamente.');
+   } else {
+     console.log('DataTables cargado correctamente.');
+   }*/
   $('#tabla').DataTable({
     "pageLength": 25,
     //"pagingType": "simple",
@@ -195,6 +233,7 @@ $(document).ready(function() {
     rowCallback: function(row, data) {
       $("a#editar", row).bind('click', () => {
         resetModal();
+        console.log('abriendo editar  ');
         $("#idCliente").val(data.idCliente);
         $("#idFacturacion").val(data.dFac);
         $("#idDomicilios").val(data.dDom);
@@ -219,6 +258,7 @@ $(document).ready(function() {
         $("#razon_social").val(data.razon_social);
         $("#telefono").val(data.telefono_contacto);
         $("#correo").val(data.correo_contacto);
+
         $("#nombre_contacto").val(data.nombre_contacto);
         $("#apellido_contacto").val(data.apellido_contacto);
         $("#rfc").val(data.rfc);
@@ -226,10 +266,15 @@ $(document).ready(function() {
         $("#forma_pago").val(data.forma_pago).change();
         $("#metodo_pago").val(data.metodo_pago).change();
         $("#uso_cfdi").val(data.uso_cfdi);
-        $("#password_name").val(data.password_contacto);
-        setTimeout(function() {
-          $("#newModal").modal("show");
-        }, 1500);
+
+        $("#password").val(data.password_contacto).hide().prev("label").hide();
+        $("#generarPass").hide();
+        $("#passLabel").hide();
+        // Ocultar elementos
+
+
+        // Mostrar el modal
+        $("#newModal").modal("show");
       });
       $("a#activar", row).bind('click', () => {
         mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente)
@@ -248,6 +293,8 @@ $(document).ready(function() {
       });
       $("a#acceso", row).bind('click', () => {
         $(".nombreCliente").text(data.nombre);
+        mostrarLoader();
+
         $.ajax({
           url: '<?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
           type: 'post',
@@ -255,50 +302,82 @@ $(document).ready(function() {
             'id_cliente': data.idCliente
           },
           beforeSend: function() {
-            $('.loader').css("display", "block");
+            mostrarLoader();
           },
           success: function(res) {
+            ocultarLoader();
             console.log(res);
-            setTimeout(function() {
-              $('.loader').fadeOut();
-            }, 200);
-            if (res != 0) {
-              let dato = JSON.parse(res);
-              let salida = '<table class="table table-striped">';
-              salida += '<thead>';
-              salida += '<tr>';
-              salida += '<th scope="col">Nombre</th>';
-              salida += '<th scope="col">Correo</th>';
-              salida += '<th scope="col">Alta</th>';
-              salida += '<th scope="col">Usuario</th>';
-              salida += '<th scope="col">Categoría</th>';
-              salida += '<th scope="col">Eliminar</th>';
-              salida += '</tr>';
-              salida += '</thead>';
-              salida += '<tbody>';
-              for (let i = 0; i < dato.length; i++) {
-                let privacidad = (dato[i]['privacidad'] > 0) ? 'Nivel ' + dato[i]['privacidad'] :
-                  'Sin privacidad';
-                let fecha = fechaCompletaAFront(dato[i]['alta']);
-                salida += "<tr id='" + dato[i]['idUsuarioCliente'] + "'><th>" + dato[i][
-                    'usuario_cliente'
-                  ] + "</th><th>" + dato[i]['correo_usuario'] + "</th><th>" + fecha + "</th><th>" +
-                  dato[i]['usuario'] + "</th><th>" + privacidad +
-                  "</th><th><a href='javascript:void(0)' class='fa-tooltip icono_datatable icono_accion_gris' onclick='mostrarMensajeConfirmacion(\"eliminar usuario cliente\",\"" +
-                  dato[i]['usuario_cliente'] + "\"," + dato[i]['idUsuarioCliente'] +
-                  ")'><i class='fas fa-trash'></i></a></th></tr>";
-              }
-              salida += '</tbody>';
-              salida += '</table>';
+            if (res !== 0) {
+              let datos = JSON.parse(res);
+              let salida = generarTabla(datos);
+              console.log("🚀 ~ $ ~ datos:", datos)
               $("#div_accesos").html(salida);
             } else {
-              $('#div_accesos').html(
-                '<p style="text-align:center; font-size: 20px;">No hay registro de accesos</p>');
+              mostrarMensajeNoRegistros();
             }
           }
         });
-        $("#accesosClienteModal").modal('show');
+
+        mostrarModal();
       });
+
+      function mostrarModal() {
+        $("#accesosClienteModal").modal('show');
+      }
+
+      function mostrarLoader() {
+        $('.loader').css("display", "block");
+      }
+
+      function ocultarLoader() {
+        setTimeout(() => {
+          $('.loader').fadeOut();
+        }, 200);
+      }
+
+      function generarTabla(datos) {
+        let salida = `<table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Correo</th>
+                            <th scope="col">Alta</th>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        datos.forEach(dato => {
+          let usuarioCliente = dato['usuario_cliente'] === null ? 'Pendiente de registrar' : dato[
+            'usuario_cliente'];
+          let privacidad = dato['privacidad'] > 0 ? `Nivel ${dato['privacidad']}` : 'Sin privacidad';
+          let fecha = fechaCompletaAFront(dato['alta']);
+
+          salida += `<tr id="${dato['idUsuarioCliente']}">
+                        <th>${usuarioCliente}</th>
+                        <th>${dato['correo_usuario']}</th>
+                        <th>${fecha}</th>
+                        <th>${dato['usuario']}</th>
+                        <th>${privacidad}</th>
+                        <th>
+                            <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_gris" onclick="mostrarMensajeConfirmacion('eliminar usuario cliente', '${usuarioCliente}', ${dato['idUsuarioCliente']})"><i class="fas fa-trash"></i></a>
+                            <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_amarillo" onclick="enviarCredenciales( '${dato['correo_usuario']}', ${dato['id_datos_generales']})"><i class="fas fa-sync-alt style="font-size: 16px;"></i></a>
+                        </th>
+                    </tr>`;
+        });
+
+        salida += `</tbody>
+                </table>`;
+
+        return salida;
+      }
+
+      function mostrarMensajeNoRegistros() {
+        $('#div_accesos').html(
+          '<p style="text-align:center; font-size: 20px;">No hay registro de accesos</p>');
+      }
       $("a#desactivar_acceso", row).bind('click', () => {
         $.ajax({
           url: '<?php echo base_url('Cliente/controlAccesoCliente'); ?>',
@@ -500,7 +579,7 @@ function cargarDatosDomicilioGeneral(datos) {
                             $("#item-details-cityValue").html(comboCities);
                             $("#item-details-cityValue").val(
                               ""
-                              ); // Limpiar el valor de la ciudad al cambiar el estado
+                            ); // Limpiar el valor de la ciudad al cambiar el estado
                           },
                           error: function(e) {
                             console.log("Error al obtener ciudades: " + e);
@@ -571,26 +650,26 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
     $('#mensajeModal').modal('show');
   }
   if (accion == "desactivar cliente") {
-    $('#titulo_mensaje2').text('Desactivar cliente');
+    $('#titulo_mensaje1').text('Desactivar cliente');
     $('#mensaje').html('¿Desea desactivar al cliente <b>' + valor1 + '</b>?');
     $('#btnConfirmar').attr("onclick", "accionCliente('desactivar'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
   if (accion == "eliminar cliente") {
-    $('#titulo_mensaje3').text('Eliminar cliente');
+    $('#titulo_mensaje1').text('Eliminar cliente');
     $('#mensaje').html('¿Desea eliminar al cliente <b>' + valor1 + '</b>?');
     $('#btnConfirmar').attr("onclick", "accionCliente('eliminar'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
   if (accion == "eliminar usuario cliente") {
-    $('#titulo_mensaje4').text('Eliminar usuario');
+    $('#titulo_mensaje1').text('Eliminar usuario');
     $('#mensaje').html('¿Desea eliminar al usuario <b>' + valor1 + '</b>?');
     $('#btnConfirmar').attr("onclick", "controlAcceso('eliminar'," + valor2 + ")");
     $("#accesosClienteModal").modal('hide')
     $('#mensajeModal').modal('show');
   }
   if (accion == "bloquear cliente") {
-    $('#titulo_mensaje5').text('Bloquear cliente');
+    $('#titulo_mensaje1').text('Bloquear cliente');
     $('#mensaje').html('¿Desea bloquear al cliente <b>' + valor1 + '</b>?');
     $('#mensaje').append(
       '<div class="row mt-3"><div class="col-12"><label>Motivo de bloqueo *</label><select class="form-control" id="opcion_motivo" name="opcion_motivo"><option value="">Selecciona</option>' +
@@ -604,7 +683,7 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
     $('#mensajeModal').modal('show');
   }
   if (accion == "desbloquear cliente") {
-    $('#titulo_mensaje6').text('Desbloquear cliente');
+    $('#titulo_mensaje5').text('Desbloquear cliente');
     $('#mensaje').html('¿Desea desbloquear al cliente <b>' + valor1 + '</b>?');
     $('#mensaje').append(
       '<div class="row mt-3"><div class="col-12"><label>Razón de desbloqueo *</label><select class="form-control" id="opcion_motivo" name="opcion_motivo"><option value="">Selecciona</option>' +
@@ -612,9 +691,23 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
     $('#btnConfirmar').attr("onclick", "accionCliente('desbloquear'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
+ 
 }
 
-function accionCliente(accion, id) {
+ 
+function enviarCredenciales(valor1, valor2) {
+    $('#titulo_mensaje_contraseña').text('Reenviar Contraseña'+valor2);
+    $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña  al usuario <b>' + valor1  + '</b>?');
+    $('#password_cliente').val('');
+    $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
+    $('#btnEnviarPass').attr("data-dismiss", "modal");
+    $('#idDatosGeneralesEditPass').val(valor2); // Asignar valor a idUsuarioInterno
+    $('#idCorreo').val(valor1);
+  // Asignar valor a idCorreo
+    $('#enviarCredenciales').modal('show');
+}
+
+function accionCliente(accion, id, correo = null) {
   console.log("id del cliente:  " + id + "  accion d a realizar:  " + accion)
   let opcion_motivo = $('#mensajeModal #opcion_motivo').val()
   let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
@@ -717,7 +810,7 @@ function crearAccesoClientes() {
             timer: 2500
           });
           $('#formAccesoCliente¿')[0].reset();
-                } else {
+        } else {
           $("#nuevoAccesoClienteModal #msj_error").css('display', 'block').html(data.msg);
         }
       } catch (error) {
@@ -731,7 +824,51 @@ function crearAccesoClientes() {
     }
   });
 }
-
+function actualizarContraseña() {
+  var pass = $('#password_cliente').val();
+  var correo = $('#idCorreo').val();
+  var id_datos = $('#idDatosGeneralesEditPass').val();
+  $.ajax({
+    url: '<?php echo base_url('Cat_UsuarioInternos/actualizarPass'); ?>',
+    type: 'post',
+    data: {
+      'id': id_datos,
+      'correo': correo,
+      'pass': pass
+    },
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      var data = JSON.parse(res);
+      if (data.codigo === 1) {
+        recargarTable();
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: data.msg,
+          showConfirmButton: false,
+          timer: 3000
+        });
+      } else {
+        Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: 'Error al realizar la acción',
+          text: data.msg,
+          showConfirmButton: false,
+          timer: 2500
+        });
+      }
+    },
+    error: function(err) {
+      console.error('Error en la petición AJAX:', err.responseText);
+    }
+  });
+}
 
 function controlAcceso(accion, idUsuarioCliente) {
   $("tr#" + idUsuarioCliente).hide();
@@ -764,6 +901,23 @@ function controlAcceso(accion, idUsuarioCliente) {
     }
   });
 }
+function generarPassword1() {
+  $.ajax({
+    url: '<?php echo base_url('Funciones/generarPassword'); ?>',
+    type: 'post',
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+    
+      $("#password_cliente").val(res);
+
+    }
+  });
+}
 
 function generarPassword() {
   $.ajax({
@@ -776,7 +930,25 @@ function generarPassword() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
-      $("#password").val(res)
+      $("#password").val(res);
+
+    }
+  });
+}
+
+function generarPassword_us() {
+  $.ajax({
+    url: '<?php echo base_url('Funciones/generarPassword'); ?>',
+    type: 'post',
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+
+      $("#password_us").val(res)
     }
   });
 }

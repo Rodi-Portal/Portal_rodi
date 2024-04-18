@@ -13,8 +13,9 @@ class Cat_Cliente extends CI_Controller{
     
 	
     $this->load->library('usuario_sesion');
-
+   
 		$this->usuario_sesion->checkStatusBD();
+    $this->load->helper('funciones_helper');
 	}
   /*
   
@@ -34,6 +35,8 @@ class Cat_Cliente extends CI_Controller{
     
     // Define las demás reglas de validación
     $this->form_validation->set_rules('clave', 'Clave', 'trim|required|max_length[3]');
+    $this->form_validation->set_rules('correo', 'Correo', 'trim|required|valid_email');
+    $this->form_validation->set_rules('password', 'Contraseña', 'trim|required');
     $this->form_validation->set_rules('pais_name', 'País', 'trim');
     $this->form_validation->set_rules('state_name', 'Estado', 'trim');
     $this->form_validation->set_rules('ciudad_name', 'Ciudad', 'trim');
@@ -44,7 +47,7 @@ class Cat_Cliente extends CI_Controller{
     $this->form_validation->set_rules('numero_cp', 'Codigo Postal', 'trim|max_length[5]');
     $this->form_validation->set_rules('razon_social', 'Razón Social', 'trim');
     $this->form_validation->set_rules('telefono', 'Teléfono', 'trim');
-    $this->form_validation->set_rules('correo', 'Correo', 'trim|valid_email');
+    
     $this->form_validation->set_rules('nombre_contacto', 'Nombre de Contacto', 'trim');
     $this->form_validation->set_rules('apellido_contacto', 'Apellido de Contacto', 'trim');
     $this->form_validation->set_rules('rfc', 'RFC', 'trim');
@@ -72,12 +75,17 @@ class Cat_Cliente extends CI_Controller{
       $id_usuario = $this->session->userdata('id');
     date_default_timezone_set('America/Mexico_City');
     $date = date('Y-m-d H:i:s');
+    $uncode_password = $this->input->post('password');
+    $password = password_hash($uncode_password, PASSWORD_BCRYPT);
+    
+
 
     $datos_generales = array(
       'nombre' => ($this->input->post('nombre_contacto') !== '') ? $this->input->post('nombre_contacto') : null,
       'paterno' => ($this->input->post('apellido_contacto') !== '') ? $this->input->post('apellido_contacto') : null,
       'correo' => ($this->input->post('correo') !== '') ? $this->input->post('correo') : null,
-      'telefono' => ($this->input->post('telefono') !== '') ? $this->input->post('telefono') : null
+      'telefono' => ($this->input->post('telefono') !== '') ? $this->input->post('telefono') : null,
+      'password'=> $password
     );
   
     $datos_domicilios = array(
@@ -117,13 +125,12 @@ class Cat_Cliente extends CI_Controller{
     $idCliente = $this->input->post('idCliente');
     $correo = $this->input->post('correo');
     $idGenerales = $this->input->post('idGenerales');
-    
+  
 
-
-    $existe = $this->cat_cliente_model->existe($this->input->post('nombre'),$this->input->post('clave'),$idCliente);
+    $existe = $this->cat_cliente_model->existeCliente($this->input->post('nombre'),$this->input->post('clave'),$idCliente);
    // echo $existe."+ aqui existe";
     //return;
-      if($existe ==0){
+      if($existe == 0){
       $hayId = $this->cat_cliente_model->check($idCliente);
         if($hayId > 0){
           $datos_cliente = array(
@@ -154,6 +161,8 @@ class Cat_Cliente extends CI_Controller{
             'codigo' => 1,
             'msg' => 'Cliente actualizado exitosamente'
           );
+          echo json_encode($msj);
+          return; 
         }
         else{
       
@@ -169,27 +178,34 @@ class Cat_Cliente extends CI_Controller{
           }
         
           $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
-          //echo $idCliente."   este  es el id obtenido ";
-          $url = "Cliente_General/index/".$idCliente;
-          $data_url = array(
-            'url' => $url
-          );
-          $this->cat_cliente_model->editCliente($idCliente, $data_url );
+          
+         
 
-          $permiso = array(
-            'id_usuario' => $id_usuario,
-            'id_cliente' => $idCliente,
-            'cliente' => strtoupper($this->input->post('nombre')),
-          );
-          $this->cat_cliente_model->addPermiso($permiso);
-          $msj = array(
-            'codigo' => 1,
-            'msg' => 'Cliente registrado exitosamente '
-          );
+          if($idCliente > 0 ){
+
+        
+
+            
+              $msj = array(
+                'codigo' => 1,
+                'msg' => 'Cliente registrado exitosamente,  se  enviaron   las  credenciales a '.$correo
+              );
+              echo json_encode($msj);
+            return; 
+            }else{
+              $msj = array(
+                'codigo' => 0,
+                'msg' => 'Error  al registrar al cliente'
+              );
+              echo json_encode($msj);
+            return; 
+            }
+
+        }
         
        }
       
-    }
+    
       else{
       $msj = array(
         'codigo' => 2,
@@ -330,9 +346,9 @@ class Cat_Cliente extends CI_Controller{
         'id_usuario' => $id_usuario,
         'status' => 0
       );
-      $this->cat_subclientes_model->editSubcliente($idCliente, $cliente );
-      $this->cat_subclientes_model->editAccesoUsuarioCliente($idCliente, $cliente );
-      $this->cat_subclientes_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
+      $this->cat_cliente_model->editCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente );
+      $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
       $msj = array(
         'codigo' => 1,
         'msg' => 'Cliente inactivado correctamente'
@@ -390,7 +406,7 @@ class Cat_Cliente extends CI_Controller{
       $this->cat_cliente_model->editCliente($idCliente, $cliente );
 
       if($this->input->post('bloquear_subclientes') === 'SI'){
-        $data['subclientes'] = $this->cat_subclientes_model->getSubclientesByIdCliente($idCliente);
+        $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idCliente);
         if($data['subclientes']){
           foreach($data['subclientes'] as $row){
             $subcliente = array(
@@ -434,7 +450,7 @@ class Cat_Cliente extends CI_Controller{
       );
       $this->cat_cliente_model->editCliente( $idCliente, $cliente);
 
-      $data['subclientes'] = $this->cat_subclientes_model->getSubclientesByIdCliente($idCliente);
+      $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idCliente);
       if($data['subclientes']){
         foreach($data['subclientes'] as $row){
           $subcliente = array(
@@ -442,7 +458,7 @@ class Cat_Cliente extends CI_Controller{
             'id_usuario' => $id_usuario,
             'bloqueado' => 'NO'
           );
-          $this->cat_subclientes_model->editar($subcliente, $row->id);
+          $this->cat_subclientes_model->editarSubcliente($row->id, $subcliente);
           unset($subcliente);
         }
       }
@@ -607,7 +623,7 @@ class Cat_Cliente extends CI_Controller{
       echo json_encode([]);
     }
   }
-
+  
   function controlAcceso(){
     $id_usuario = $this->session->userdata('id');
     date_default_timezone_set('America/Mexico_City');
@@ -617,6 +633,13 @@ class Cat_Cliente extends CI_Controller{
 
     if($accion == 'eliminar'){
       $this->cat_cliente_model->deleteAccesoUsuarioCliente($idUsuarioCliente);
+      $msj = array(
+        'codigo' => 1,
+        'msg' => 'Usuario eliminado correctamente'
+      );
+    }
+    if($accion == 'credenciales'){
+      $this->generales_model->editDatosGenerales();
       $msj = array(
         'codigo' => 1,
         'msg' => 'Usuario eliminado correctamente'

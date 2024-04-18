@@ -156,9 +156,10 @@ function addUsuarioInterno($usuario, $datos_generales) {
       return "error  excepcion ".$e;
   }
 }
+function updatePass($id, $datos,  $pass, $correo) {
+
   
-function updatePass($id, $datos) {
-  // Inicia la transacción
+
   $this->db->trans_start();
 
   try {
@@ -166,21 +167,24 @@ function updatePass($id, $datos) {
       $this->db->where('id', $id);
       $this->db->update('datos_generales', $datos);
 
+      // Envía el correo y verifica si fue exitoso
+      $envioExitoso = $this->accesosUsuariosCorreo($correo, $pass, 1);
+
+      if (!$envioExitoso) {
+          throw new Exception("Error al enviar el correo");
+      }
+
       // Finaliza la transacción
       $this->db->trans_complete();
 
-      // Verifica si la transacción fue exitosa
       if ($this->db->trans_status() === FALSE) {
-          // Si la transacción falla, revierte las operaciones
           $this->db->trans_rollback();
-          return "error en la consulta";
+          return 0;
       } else {
-          // Si la transacción tiene éxito, confirma las operaciones
           $this->db->trans_commit();
-          return "se actualizó correctamente";
+          return 1;
       }
   } catch (Exception $e) {
-      // Si ocurre una excepción, revierte las operaciones y devuelve false
       $this->db->trans_rollback();
       return "error excepcion ".$e;
   }
@@ -216,4 +220,46 @@ function getById($idusuario){
     }
   }
 
-} 
+  function accesosUsuariosCorreo($correo, $pass, $soloPass = 0)
+  {
+      if ($correo === null || $correo === '') {
+          return false;
+      }
+  
+      $subject = "Credenciales Portal Rodi";
+      // Cargar la vista email_verification_view.php
+      $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass'=>$pass, 'switch'=>$soloPass], true);
+  
+      $this->load->library('phpmailer_lib');
+      $mail = $this->phpmailer_lib->load();
+      $mail->isSMTP();
+      $mail->Host = 'mail.rodicontrol.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'soporte@portal.rodi.com.mx';
+      $mail->Password = 'iU[A}vWg+JFiRxe+LK';
+      $mail->SMTPSecure = 'ssl';
+      $mail->Port = 465;
+  
+      if ($correo !== null && $correo !== '') {
+          $mail->setFrom('soporte@portal.rodi.com.mx', 'RODICONTROL');
+          $mail->addAddress($correo);
+      } else {
+          return false;
+      }
+  
+      $mail->Subject = $subject;
+      $mail->isHTML(true); // Enviar el correo como HTML
+      $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
+      $mail->Body = $message;
+  
+      if ($mail->send()) {
+          return true;
+      } else {
+        log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
+          return false;
+      }
+  }
+
+
+}
+

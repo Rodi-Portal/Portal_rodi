@@ -315,7 +315,7 @@ function enviarCredenciales(valor1, valor2) {
     $('#password').val(); // Asignar valor a idCorreo
     $('#enviarCredenciales').modal('show');
 }
-    console.log("🚀 ~ enviarCredenciales ~ valor2:", valor2)
+   
 
 
 /*********************************************************************************/

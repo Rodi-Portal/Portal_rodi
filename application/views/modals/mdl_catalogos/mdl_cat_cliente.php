@@ -42,56 +42,65 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <label for="clave">Clave *</label>
               <input type="text" class="form-control" data-field="Clave" id="clave" name="clave"
                 data-required="required" placeholder="Ingrese la clave del cliente" maxlength="3"
                 onkeyup="this.value=this.value.toUpperCase()" required>
               <br>
             </div>
-          </div>
-
-        </form>
-        <form id="formPaso2" class="hidden">
-          <div class="row">
-            <div class="col-md-12">
-
-              <label for="razon_social">Razón Social</label>
-              <input type="text" class="form-control" id="razon_social" name="razon_social"
-                placeholder="Ingrese la razón social" >
+            <div class="col-md-6">
+              <label for="correo">Correo</label>
+              <input type="text" class="form-control" data-field="Correo" id="correo" name="correo"
+                data-required="required" placeholder="Ingrese el correo electrónico" required>
               <br>
             </div>
           </div>
-          <hr style="border-top: 1px solid #ccc;">
+          <div class="row">
+            <div class="col-md-12">
+              <label for="password" id="passLabel">Generar contraseña *</label>
+              <div class="input-group">
+                <input type="password" class="form-control" data-field="Contraseña" name="password" id="password" data-required="required"  readonly required>
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-primary" id="generarPass" onclick="generarPassword()">Generar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <form id="formPaso2" class="hidden">
           <div class="row">
             <div class="col-md-6">
+              <label for="razon_social">Razón Social</label>
+              <input type="text" class="form-control" id="razon_social" name="razon_social"
+                placeholder="Ingrese la razón social">
+              <br>
+            </div>
+            <div class="col-md-6">
               <label for="telefono">Teléfono</label>
-              <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese el teléfono"
-                >
+              <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese el teléfono">
               <input type="hidden" class="form-control" id="idCliente" name="idCliente">
               <input type="hidden" id="idDomicilios" name="idDomicilios" class="form-control">
               <input type="hidden" id="idFacturacion" name="idFacturacion" class="form-control">
               <input type="hidden" id="idGenerales" name="idGenerales" class="form-control">
               <br>
             </div>
-            <div class="col-md-6">
-              <label for="correo">Correo</label>
-              <input type="text" class="form-control" id="correo" name="correo"
-                placeholder="Ingrese el correo electrónico" >
-              <br>
-            </div>
+          </div>
+          <hr style="border-top: 1px solid #ccc;">
+          <div class="row">
+
+
           </div>
           <div class="row">
             <div class="col-md-6">
               <label for="nombre_contacto">Nombre Contacto</label>
-              <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto" placeholder="Nombre "
-                >
+              <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto" placeholder="Nombre ">
               <br>
             </div>
             <div class="col-md-6">
               <label for="apellido_contacto">Apellido Contacto</label>
               <input type="text" class="form-control" id="apellido_contacto" name="apellido_contacto"
-                placeholder="Apellido paterno" >
+                placeholder="Apellido paterno">
               <br>
             </div>
           </div>
@@ -99,13 +108,12 @@
           <div class="row">
             <div class="col-md-6">
               <label for="rfc">RFC</label>
-              <input type="text" class="form-control" id="rfc" name="rfc" placeholder="Ingrese el RFC" >
+              <input type="text" class="form-control" id="rfc" name="rfc" placeholder="Ingrese el RFC">
               <br>
             </div>
             <div class="col-md-6">
               <label for="regimen">Régimen</label>
-              <input type="text" class="form-control" id="regimen" name="regimen" placeholder="Ingrese el régimen"
-                >
+              <input type="text" class="form-control" id="regimen" name="regimen" placeholder="Ingrese el régimen">
               <br>
             </div>
           </div>
@@ -113,31 +121,32 @@
             <div class="col-md-6">
               <label for="forma_pago">Forma de Pago</label>
               <select class="custom-select" id="forma_pago" name="forma_pago">
-                  <option value="" selected>Selecciona</option>
-                  <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
-                  <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
-                </select>
+                <option value="" selected>Selecciona</option>
+                <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
+                <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
+              </select>
               <br>
             </div>
             <div class="col-md-6">
               <label for="metodo_pago">Método de Pago</label>
               <select class="custom-select" id="metodo_pago" name="metodo_pago">
-                  <option value="" selected>Selecciona</option>
-                  <option value="Efectivo">Efectivo</option>
-                  <option value="Cheque de nómina">Cheque de nómina</option>
-                  <option value="Transferencia electrónica">Transferencia electrónica</option>
-                  <option value="Tarjeta de crédito">Tarjeta de crédito</option>
-                  <option value="Tarjeta de débito">Tarjeta de débito</option>
-                  <option value="Por definir">Por definir</option>
-                </select>
+                <option value="" selected>Selecciona</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Cheque de nómina">Cheque de nómina</option>
+                <option value="Transferencia electrónica">Transferencia electrónica</option>
+                <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+                <option value="Tarjeta de débito">Tarjeta de débito</option>
+                <option value="Por definir">Por definir</option>
+              </select>
               <br>
             </div>
           </div>
           <div class="row">
             <div class="col-md-12">
+              <br>
               <label for="uso_cfdi">Uso de CFDI</label>
               <input type="text" class="form-control" id="uso_cfdi" name="uso_cfdi" placeholder="Ingrese el uso de CFDI"
-                value="Gastos Generales" >
+                value="Gastos Generales">
               <br>
             </div>
           </div>
@@ -175,15 +184,14 @@
             </div>
             <div class="col-md-6">
               <label for="colonia">Colonia</label>
-              <input type="text" class="form-control" id="colonia" name="colonia" placeholder="Ingrese la colonia"
-                >
+              <input type="text" class="form-control" id="colonia" name="colonia" placeholder="Ingrese la colonia">
               <br>
             </div>
           </div>
           <div class="row">
             <div class="col-md-12">
               <label for="calle">Calle</label>
-              <input type="text" class="form-control" id="calle" name="calle" placeholder="Ingrese la calle" >
+              <input type="text" class="form-control" id="calle" name="calle" placeholder="Ingrese la calle">
               <br>
             </div>
           </div>
@@ -191,7 +199,7 @@
             <div class="col-md-3 mx-auto">
               <label for="numero_exterior">Número Exterior</label>
               <input type="number" class="form-control" id="numero_exterior" name="numero_exterior"
-                placeholder="Ingrese el número exterior" >
+                placeholder="Ingrese el número exterior">
               <br>
             </div>
             <div class="col-md-3 mx-auto">
@@ -345,18 +353,15 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-3 mx-auto">
-              <label for="generarPass">Da click</label>
-              <button type="button" class="btn btn-primary" id="generarPass" onclick="generarPassword()">Generar
-                contraseña</button>
-              <br>
+            <div class="col-md-12">
+              <label for="password_us" >Generar contraseña *</label>
+              <div class="input-group">
+                <input type="password" class="form-control" data-field="Contraseña" name="password_us" id="password_us" data-required="required"  readonly required>
+                <div class="input-group-append">
+                  <button type="button" class="btn btn-primary"  onclick="generarPassword_us()">Generar</button>
+                </div>
+              </div>
             </div>
-            <div class="col-md-6 mx-auto">
-              <label for="password">Contraseña *</label>
-              <input type="password" class="form-control" name="password_name" id="password" maxlength="8" readonly>
-              <br>
-            </div>
-
           </div>
         </form>
         <div class="row">
@@ -399,4 +404,3 @@
 <input type="hidden" id="base_url" value="<?php echo base_url('Cat_Cliente/setCliente'); ?>">
 
 <script src="<?php echo base_url() ?>js/apis/domicilios.js"></script>
-

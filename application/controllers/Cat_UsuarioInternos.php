@@ -247,7 +247,7 @@ function editarUsuarioControlador()
       $uncode_password = $this->input->post('pass');
       $password = password_hash($uncode_password, PASSWORD_BCRYPT, ['cost' => 12]);
   
-     
+    // var_dump($uncode_password);
 
 
       $DatosGenerales= array(
@@ -255,14 +255,13 @@ function editarUsuarioControlador()
       );
 
     
-     $result = $this->cat_usuario_model->updatePass($id, $DatosGenerales);
+     $result = $this->cat_usuario_model->updatePass($id, $DatosGenerales, $uncode_password, $correo);
      
 
     
 
     
-      if($result){
-        $envioCredenciales = $this->accesosUsuariosCorreo($correo, $uncode_password, 1 );
+      if($result >  0){
         $msj = array(
           'codigo' => 1,
           'msg' => 'La nueva  contraseña  fue  enviada  a '.$correo

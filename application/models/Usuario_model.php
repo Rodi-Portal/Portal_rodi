@@ -36,14 +36,14 @@ class Usuario_model extends CI_Model{
     //Probando   el modelo para   el usuario_portal 
     function existeUsuarioPortal($correo) {
         $this->db
-            ->select('u.id, d.correo, d.nombre, d.paterno, d.password, u.id_rol, r.nombre as rol, u.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
-            ->from('usuarios_portal as u')
-            ->join('rol as r', 'r.id = u.id_rol')
-            ->join('portal as p', 'p.id = u.id_portal')
-            ->join('datos_generales as d', 'd.id = u.id_datos_generales')
-            ->where('d.correo', $correo)
-            ->where('u.status', 1)
-            ->where('u.eliminado', 0);
+            ->select('U.id, D.correo, D.nombre, D.paterno, D.password, U.id_rol, r.nombre as rol, U.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
+            ->from('usuarios_portal as U')
+            ->join('rol as R', 'R.id = U.id_rol')
+            ->join('portal as p', 'p.id = U.id_portal')
+            ->join('datos_generales as D', 'D.id = U.id_datos_generales')
+            ->where('D.correo', $correo)
+            ->where('U.status', 1)
+            ->where('U.eliminado', 0);
     
         $consulta = $this->db->get();
         $resultado = $consulta->row();
@@ -58,14 +58,12 @@ class Usuario_model extends CI_Model{
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     function existeUsuarioCliente($correo, $pass ){
         $this->db
-        ->select('u.id, dg.correo, dg.nombre, dg.paterno,  u.id_cliente, u.espectador, dgc.nombre as cliente, u.logueado as loginBD, u.privacidad, cl.ingles')
-        ->from('usuarios_clientes as u')
-        ->join('cliente as cl', 'cl.id = u.id_cliente')
-        ->join('datos_generales as dg', 'dg.id = cl.id_datos_generales')
-        ->join('datos_generales as dgc', 'dg.id = u.id_datos_generales')
-        ->where('dg.correo', $correo)
-        ->where('dg.password', $pass)
-        ->where('u.status', 1)
+        ->select('u.id, DG.correo, DG.nombre, DG.paterno,  u.id_cliente, u.espectador, DGc.nombre as cliente, u.logueado as loginBD, u.privacidad, cl.ingles')
+        ->from('cliente as CL')
+        ->join('datos_generales as DG', 'DG.id = cl.id_datos_generales')
+        ->where('DG.correo', $correo)
+        ->where('DG.password', $pass)
+        ->where('cl.status', 1)
         ->where('u.eliminado', 0);
 
         $consulta = $this->db->get();

@@ -200,12 +200,13 @@ class Subcliente_model extends CI_Model{
     }
   function getSubclientesByIdCliente($id_cliente){
     $this->db
-    ->select("*")
-    ->from('subcliente')
-    ->where('id_cliente',$id_cliente)
+    ->select("SUB.*, DATSB.*")
+    ->from('subclientes SUB')
+    ->join('datos_generales as DATSB', 'DATSB.id = SUB.id_datos_generales')
+    ->where('SUB.id_cliente',$id_cliente)
     ->where('status', 1)
     ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
+    ->order_by('SUB.nombre_subcliente','ASC');
 
     $query = $this->db->get();
     if($query->num_rows() > 0){
@@ -217,4 +218,26 @@ class Subcliente_model extends CI_Model{
   function addSubclient($data){
     $this->db->insert('subcliente', $data);
   }
+
+
+  public function editarSubcliente($id, $subcliente) {
+    try {
+        // Realizar la lógica para editar el subcliente
+        // Por ejemplo, supongamos que tienes una tabla llamada 'subclientes'
+        // y quieres actualizar los datos del subcliente con el ID proporcionado
+        $this->db->where('id', $id);
+        $this->db->update('subclientes', $subcliente);
+        
+        // Verificar si se realizó la actualización correctamente
+        if ($this->db->affected_rows() > 0) {
+            return true; // La actualización fue exitosa
+        } else {
+            return false; // No se actualizó ningún registro
+        }
+    } catch (Exception $e) {
+        log_message('error', 'Error al editar subcliente: ' . $e->getMessage());
+        return false; // Manejar el error y devolver falso
+    }
+}
+
 }

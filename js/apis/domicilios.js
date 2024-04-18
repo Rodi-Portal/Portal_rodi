@@ -8,6 +8,9 @@ function registrarCliente() {
 
   // Agrega la lógica para cargar países, estados y ciudades aquí
   cargarPaisesEstadosCiudades(auth_token);
+  $("#password").show();
+  $("#generarPass").show();
+  $("#passLabel").show();
   resetModal();
 
   
