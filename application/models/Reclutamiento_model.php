@@ -485,12 +485,16 @@ class Reclutamiento_model extends CI_Model{
     /*	#requisicion_usuario
     /*----------------------------------------*/
     function getUsersOrder($id_requisicion){
+			$id_portal = $this->session->userdata('idPortal');
+
       $this->db
       ->select("RU.id, RU.id_requisicion, CONCAT(GEN.nombre,' ',GEN.paterno) as usuario")
       ->from('requisicion_usuario as RU')
       ->join('requisicion as R', 'RU.id_requisicion = R.id','left')
       ->join('usuarios_portal as U', 'U.id = RU.id_usuario','left')
 			->join('datos_generales AS GEN', 'U.id_datos_generales = GEN.id','left')
+			->where('R.id_portal', $id_portal)
+
       ->where_in('R.id', $id_requisicion)
       ->order_by('GEN.nombre','ASC');
     
@@ -513,6 +517,8 @@ class Reclutamiento_model extends CI_Model{
 	/*	Consultas
 	/*----------------------------------------*/
 	function getDetailsOrderById($id){
+		$id_portal = $this->session->userdata('idPortal');
+
 		$this->db
 		->select("R.*, FAC.*,CL.id_datos_generales, CL.id_datos_facturacion, CL.id_domicilios,  CL.nombre as nombre,
 		FAC.razon_social ,
@@ -524,12 +530,16 @@ class Reclutamiento_model extends CI_Model{
 		->join('domicilios as DOM', 'DOM.id = CL.id_domicilios')
 		->join('datos_facturacion as FAC', 'CL.id_datos_facturacion = FAC.id')
 		->join('datos_generales as GEN', 'GEN.id = CL.id_datos_generales')
+		->where('R.id_portal', $id_portal)
+
 		->where('R.id', $id);
 
 		$consulta = $this->db->get();
 		return $consulta->row();
 	}
 		function getHistorialAspirante($id, $campo){
+			$id_portal = $this->session->userdata('idPortal');
+
 		
 
 			$this->db
@@ -537,6 +547,8 @@ class Reclutamiento_model extends CI_Model{
 			->from('requisicion_historial as H')
       ->join('requisicion as R','R.id = H.id_requisicion')
 			->join('cliente as CL', 'CL.id = R.id_cliente')
+			->where('R.id_portal', $id_portal)
+
 			->where('H.'.$campo, $id)
 			->order_by('H.id','DESC');
 
@@ -548,6 +560,8 @@ class Reclutamiento_model extends CI_Model{
 			}
 		}
 		function getAspirantesRequisiciones($id_usuario, $condicion){
+			$id_portal = $this->session->userdata('idPortal');
+
 			$this->db
 			->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as empresa, R.puesto as req_puesto, H.id as idHistorial, R.numero_vacantes")
 			->from('requisicion_aspirante as A')
@@ -558,6 +572,8 @@ class Reclutamiento_model extends CI_Model{
 			->join('requisicion_historial as H','H.id_requisicion = R.id','left')
 			->join('usuarios_portal as USER','USER.id = A.id_usuario')
 			//->join('candidato as C','C.id_aspirante = A.id','left')
+			->where('R.id_portal', $id_portal)
+
 			->where('A.eliminado', 0)
 			->where('R.eliminado', 0)
 			->where('R.status', 2)
