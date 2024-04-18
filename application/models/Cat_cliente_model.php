@@ -310,12 +310,14 @@ class Cat_cliente_model extends CI_Model{
   }
   
   function getClientesActivosModel(){
+    $id_portal = $this->session->userdata('id_portal');
     $this->db
-    ->select("c.*")
-    ->from('cliente as c')
-    ->where('c.status', 1)
-    ->where('c.eliminado', 0)
-    ->order_by('c.nombre','ASC');
+    ->select("C.*")
+    ->from('cliente as C')
+    ->where('C.status', 1)
+    ->where('C.eliminado', 0)
+    ->where('C.id_portal', $id_portal)
+    ->order_by('C.nombre','ASC');
 
     $query = $this->db->get();
     if($query->num_rows() > 0){
