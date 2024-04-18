@@ -239,10 +239,12 @@ class Usuario_model extends CI_Model{
       }
     }
     function getTipoUsuarios($roles){
+        $id_portal = $this->session->userdata('idPortal');
       $this->db
       ->select("U.id, CONCAT(GEN.nombre,' ',GEN.paterno) as usuario, U.id_rol")
       ->from('usuarios_portal as U')
       ->join('datos_generales as GEN', 'GEN.id = U.id_datos_generales','left')
+      ->where('U.id_portal', $id_portal)
       ->where('U.status', 1)
       ->where('U.eliminado', 0)
       ->where_in('U.id_rol', $roles)
@@ -257,11 +259,14 @@ class Usuario_model extends CI_Model{
       }
     }
     function getUserByIdByRole($id,$roles){
+        $id_portal = $this->session->userdata('idPortal');
+
       $this->db
       ->select("U.id")
       ->from('usuarios_portal as U')
       ->where('U.status', 1)
       ->where('U.eliminado', 0)
+      ->where('U.id_portal', $id_portal)
       ->where('U.id', $id)
       ->where_in('U.id_rol', $roles);
 
@@ -272,16 +277,23 @@ class Usuario_model extends CI_Model{
     /*  Control de Seguridad
     /*----------------------------------------*/
 			function checkUsuarioActivo($id_usuario){
+                $id_portal = $this->session->userdata('idPortal');
+
 				$this->db
 				->select('status, eliminado')
 				->from('usuarios_portal')
+                ->where('id_portal', $id_portal)
+
 				->where('id', $id_usuario);
 
 				$consulta = $this->db->get();
 				$resultado = $consulta->row();
 				return $resultado;
 			}
+            //TODO: pendiente de revisar  si sirve
 			function checkPasswordUsuarioInterno($id, $pass){
+                $id_portal = $this->session->userdata('idPortal');
+
 				$this->db
 				->select('u.id')
 				->from('usuario as u')
@@ -293,6 +305,8 @@ class Usuario_model extends CI_Model{
 				return $resultado;
 			}
 			function checkPasswordUsuarioCliente($id, $pass){
+                $id_portal = $this->session->userdata('idPortal');
+
 				$this->db
 				->select('u.id')
 				->from('usuario_cliente as u')
@@ -355,12 +369,12 @@ class Usuario_model extends CI_Model{
 					return FALSE;
         }
     	}
-
-			function get_usuarios_by_rol($roles){
+//TODO: pendiente  de revision si funciona  
+	function get_usuarios_by_rol($roles){
         $this->db
         ->select("U.id, CONCAT(U.nombre,' ',U.paterno) as usuario")
         ->from('usuario as U')
-				->where_in('U.id_rol', $roles)
+		->where_in('U.id_rol', $roles)
         ->where('U.status', 1)
         ->where('U.eliminado', 0);
 
@@ -371,5 +385,5 @@ class Usuario_model extends CI_Model{
         else{
 					return FALSE;
         }
-    	}
+    }
 }

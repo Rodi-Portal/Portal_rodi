@@ -182,9 +182,11 @@ class Funciones_model extends CI_Model{
     }
   }
   function getPuestos(){
+    $id_portal = $this->session->userdata('ídPortal');
     $this->db
     ->select('*')
     ->from('puesto')
+    ->where('id_portal', $id_portal)
     ->where('status', 1)
     ->where('eliminado', 0)
     ->order_by('nombre','ASC');
