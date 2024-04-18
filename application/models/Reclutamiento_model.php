@@ -535,7 +535,7 @@ class Reclutamiento_model extends CI_Model{
 			->select("H.*,CL.nombre")
 			->from('requisicion_historial as H')
       ->join('requisicion as R','R.id = H.id_requisicion')
-			->join('cliente as CL', 'Cl.id = R.id_cliente')
+			->join('cliente as CL', 'CL.id = R.id_cliente')
 			->where('H.'.$campo, $id)
 			->order_by('H.id','DESC');
 
