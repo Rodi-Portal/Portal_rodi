@@ -71,8 +71,8 @@
                         </div>
                     </div>
                 </div>
-                <input type="text" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
-                <input type="text" class="form-control" name="idCorreo" id="idCorreo">
+                <input type="hidden" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
+                <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
             </div>
             
             <div class="modal-footer">
