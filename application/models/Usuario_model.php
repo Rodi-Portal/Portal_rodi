@@ -36,10 +36,10 @@ class Usuario_model extends CI_Model{
     //Probando   el modelo para   el usuario_portal 
     function existeUsuarioPortal($correo) {
         $this->db
-            ->select('U.id, D.correo, D.nombre, D.paterno, D.password, U.id_rol, r.nombre as rol, U.logueado as loginBD, p.nombre as nombrePortal, p.id as idPortal')
+            ->select('U.id, D.correo, D.nombre, D.paterno, D.password, U.id_rol, R.nombre as rol, U.logueado as loginBD, P.nombre as nombrePortal, P.id as idPortal')
             ->from('usuarios_portal as U')
             ->join('rol as R', 'R.id = U.id_rol')
-            ->join('portal as p', 'p.id = U.id_portal')
+            ->join('portal as P', 'P.id = U.id_portal')
             ->join('datos_generales as D', 'D.id = U.id_datos_generales')
             ->where('D.correo', $correo)
             ->where('U.status', 1)
