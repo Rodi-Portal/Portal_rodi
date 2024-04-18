@@ -310,7 +310,7 @@ class Cat_cliente_model extends CI_Model{
   }
   
   function getClientesActivosModel(){
-    $id_portal = $this->session->userdata('id_portal');
+    $id_portal = $this->session->userdata('idPortal');
     $this->db
     ->select("C.*")
     ->from('cliente as C')
