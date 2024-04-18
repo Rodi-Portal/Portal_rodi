@@ -277,13 +277,10 @@ class Usuario_model extends CI_Model{
     /*  Control de Seguridad
     /*----------------------------------------*/
 			function checkUsuarioActivo($id_usuario){
-                $id_portal = $this->session->userdata('idPortal');
 
 				$this->db
 				->select('status, eliminado')
 				->from('usuarios_portal')
-                ->where('id_portal', $id_portal)
-
 				->where('id', $id_usuario);
 
 				$consulta = $this->db->get();
