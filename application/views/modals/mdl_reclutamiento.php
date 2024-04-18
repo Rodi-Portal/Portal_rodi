@@ -1000,10 +1000,8 @@
           <select class="form-control" data-required="required" data-field="Tipo de sueldo" id="tipo_sueldo_req"
             name="tipo_sueldo_req">
             <option value="NULL" selected>Selecciona</option>
-            <option value="Fijo">Fijo</option>
-            <option value="Variable">Variable</option>
-            <option value="Neto">Neto (libre)</option>
-            <option value="Nominal">Nominal</option>
+            <option value="Neto">Neto (Libre)</option>
+            <option value="Nominal">Nominal(Salario bruto)</option>
           </select>
         </div>
         <div class="col-3">
