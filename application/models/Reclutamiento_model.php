@@ -15,6 +15,7 @@ class Reclutamiento_model extends CI_Model{
 			->join('datos_generales as GENUS','U.id_datos_generales = GENUS.id','left')
 			->join('cliente as CL','R.id_CLiente = CL.id','left')
 			->join('datos_generales as GENCL','CL.id_datos_generales = GENCL.id','left')
+			->where('CL.id_portal', $id_portal)
 			->where($filterOrder, $filter)
 			->where_in('R.status', [1,2])
       ->where($condition_order, $id_order)
