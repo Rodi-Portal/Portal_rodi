@@ -143,7 +143,9 @@ function changeDataTable(url) {
         "width": "10%",
         mRender: function(data, type, full) {
           var correo = (full.correo != '') ? full.correo : 'No registrado';
-          //console.log("aqui full :  "+JSON.stringify(full));
+          console.log("aqui full :  "+JSON.stringify(full));
+          console.log("aqui type :  "+JSON.stringify(type));
+          console.log("aqui data :  "+JSON.stringify(data));
           return '<b>Teléfono: </b>' + data + '<br><b>Correo: </b>' + correo + '<br><b>Medio: </b>' + full
             .medio_contacto;
         }
@@ -154,9 +156,17 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-          var cvLink = (full.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + full.cv +
-            '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.id + ')" data-toggle="tooltip" title="Cargar CV/Solicitud"><i class="fas fa-upload"></i> Cargar CV/Solicitud</a>';
+          var cvLink = (full.cv != null) ?
+            '<a href="<?php echo base_url(); ?>_docs/' + full.cv +
+            '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' +
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.id +
+            ')" data-toggle="tooltip" title="Actualizar CV/Solicitud"><i class="fas fa-upload"></i> Actualizar CV/Solicitud</a>' :
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.id +
+            ')" data-toggle="tooltip" title="Cargar CV/Solicitud"><i class="fas fa-upload"></i> Cargar CV/Solicitud</a>';
+
+
+            var comentarios = '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id + ', \'' + full.nombre_aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
+
 
           var historial =
             '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
@@ -188,14 +198,17 @@ function changeDataTable(url) {
             '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
             '<div class="dropdown-menu">' +
             acciones +
+            comentarios+
             cvLink +
             historial +
             ingreso +
-            
+
             '</div>' +
             '</div>';
         }
       },
+       
+
       {
         title: 'Estatus actual',
         data: 'status',
@@ -212,7 +225,7 @@ function changeDataTable(url) {
       });
     },
     rowCallback: function(row, data) {
-      console.log(data);
+
 
       //Color de estatus
       if (data.status_final == 'CANCELADO') {
@@ -242,12 +255,12 @@ function changeDataTable(url) {
         }
       }
       $("a#editar_aspirante", row).bind('click', () => {
-        console.log(data);
+      
         $("#idAspirante").val(data.id);
         $("#idBolsa").val(data.id_bolsa_trabajo);
 
         var nombre = data.aspirante.split(' ');
-       
+
         $('#req_asignada').val(data.id_req);
         $('#req_asignada').selectpicker('refresh');
         $('#nombre').val(nombre[0]);
@@ -468,54 +481,54 @@ function addApplicant() {
 }
 
 
-  function subirCVReqAspirante() {
-    var idAspirante = $('#id_aspirante').val();
-    console.log("🚀 ~ subirCVReqAspirante ~ idAspirante:", idAspirante);
-    var idCV = $('#id_cv').val();
-    console.log("🚀 ~ subirCVReqAspirante ~ idCV:", idCV);
-    
-   
+function subirCVReqAspirante() {
+  var idAspirante = $('#id_aspirante').val();
+  console.log("🚀 ~ subirCVReqAspirante ~ idAspirante:", idAspirante);
+  var idCV = $('#id_cv').val();
+  console.log("🚀 ~ subirCVReqAspirante ~ idCV:", idCV);
 
-    var formData = new FormData($('#formularioCargaCV')[0]);
 
-    formData.append('id_aspirante', idAspirante);
-    formData.append('id_cv', idCV);
 
-    $.ajax({
-      url: '<?php echo base_url('Reclutamiento/subirCVReqAspirante'); ?>',
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      beforeSend: function() {
-        $('.loader').css("display", "block");
-      },
-      success: function(res) {
-        setTimeout(function() {
-          $('.loader').fadeOut();
-        }, 200);
-        var data = JSON.parse(res);
-        if (data.codigo === 1) {
-          $("#modalCargaCV").modal('hide');
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'CV subido correctamente',
-            showConfirmButton: false,
-            timer: 2500
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al subir CV',
-            text: data.msg,
-            width: '50em',
-            confirmButtonText: 'Cerrar'
-          });
-        }
+  var formData = new FormData($('#formularioCargaCV')[0]);
+
+  formData.append('id_aspirante', idAspirante);
+  formData.append('id_cv', idCV);
+
+  $.ajax({
+    url: '<?php echo base_url('Reclutamiento/subirCVReqAspirante'); ?>',
+    type: 'POST',
+    data: formData,
+    processData: false,
+    contentType: false,
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      var data = JSON.parse(res);
+      if (data.codigo === 1) {
+        $("#modalCargaCV").modal('hide');
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'CV subido correctamente',
+          showConfirmButton: false,
+          timer: 2500
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al subir CV',
+          text: data.msg,
+          width: '50em',
+          confirmButtonText: 'Cerrar'
+        });
       }
-    });
-  }
+    }
+  });
+}
 
 
 function guardarAccion() {
@@ -727,6 +740,47 @@ function getIngresoCandidato(id) {
   });
   $('#ingresoCandidatoModal').modal('show');
 }
+function verHistorialBolsaTrabajo(id, nombreCompleto) {
+    $(".nombreRegistro").text(nombreCompleto);
+    $('#div_historial_comentario').empty();
+    $('#btnComentario').attr('onclick', 'guardarComentario(' + id + ')');
+    $.ajax({
+      url: '<?php echo base_url('Reclutamiento/getHistorialBolsaTrabajo'); ?>',
+      type: 'post',
+      data: {
+        'id': id,
+        'tipo_id': 'bolsa'
+      },
+      success: function(res) {
+        var salida = '<table class="table table-striped" style="font-size: 14px">';
+        salida += '<tr style="background: gray;color:white;">';
+        salida += '<th>Fecha</th>';
+        salida += '<th>Usuario</th>';
+        salida += '<th>Comentario / Estatus</th>';
+        salida += '</tr>';
+        if (res != 0) {
+          var dato = JSON.parse(res);
+          for (var i = 0; i < dato.length; i++) {
+            var aux = dato[i]['creacion'].split(' ');
+            var f = aux[0].split('-');
+            var fecha = f[2] + '/' + f[1] + '/' + f[0];
+            salida += "<tr>";
+            salida += '<td>' + fecha + '</td>';
+            salida += '<td>' + dato[i]['usuario'] + '</td>';
+            salida += '<td>' + dato[i]['comentario'] + '</td>';
+            salida += "</tr>";
+          }
+        } else {
+          salida += "<tr>";
+          salida += '<td colspan="4" class="text-center"><h5>Sin comentarios</h5></td>';
+          salida += "</tr>";
+        }
+        salida += "</table>";
+        $('#div_historial_comentario').html(salida);
+        $("#historialComentariosModal").modal('show');
+      }
+    });
+  }
 
 function updateAdmission(section) {
   let id_aspirante = $('#idAspirante').val()

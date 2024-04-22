@@ -403,4 +403,4 @@
 </div>
 <input type="hidden" id="base_url" value="<?php echo base_url('Cat_Cliente/setCliente'); ?>">
 
-<script src="<?php echo base_url() ?>js/apis/domicilios.js"></script>
+<script src="<?php echo base_url() ?>js/apis/registrarClientes.js"></script>

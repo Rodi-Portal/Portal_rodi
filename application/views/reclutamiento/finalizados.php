@@ -133,12 +133,21 @@
 					data: 'id',
 					bSortable: false,
 					"width": "8%",
-          mRender: function(data, type, full){
+
+					mRender: function(data, type, full){
 						var cv = (full.cv != null)? '<a href="<?php echo base_url(); ?>_docs/'+full.cv+'" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' : '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
-						//var historial = '<a href="javascript:void(0)" id="ver_historial" class="fa-tooltip icono_datatable"><i class="fas fa-history"></i></a> ';
+					
 						if(full.status_final == null){
-            	return cv+'<a href="javascript:void(0)" id="editar_aspirante" class="fa-tooltip icono_datatable"><i class="fas fa-user-edit"></i></a> <a href="javascript:void(0)" id="accion" class="fa-tooltip icono_datatable"><i class="fas fa-plus-circle"></i></a> '+historial;
+            	return cv;
 						}
+						//TODO: revisar  que se agrega  y a¿que se quita   de esta  seccion  fue  remplazada por la de arriba
+						/* 
+          mRender: function(data, type, full){
+						var cv = (full.cv != null)? '<a href="< ?php echo base_url(); ?>_docs/'+full.cv+'" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' : '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
+						var historial = '<a href="javascript:void(0)" id="ver_historial" class="fa-tooltip icono_datatable"><i class="fas fa-history"></i></a> ';
+						if(full.status_final == null){
+            	return cv+'<a href="javascript:void(0)" id="editar_aspirante" class="fa-tooltip icono_datatable"><i class="fas fa-user-edit"></i></a> <a href="javascript:void(0)" id="accion" class="fa-tooltip icono_datatable"><i class="fas fa-plus-circle"></i></a> ';;
+						}*/
 						else{
 							return cv;
 						}

@@ -56,14 +56,13 @@ class Usuario_model extends CI_Model{
     }
 //TODO: pendiente  de revisar  esta  consulta   ya  que 
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
-    function existeUsuarioCliente($correo, $pass ){
+    function existeUsuarioCliente($correo){
         $this->db
-        ->select('UCL.id, DG.correo, DG.nombre, DG.paterno,  UCL.id_cliente, UCL.espectador, CL.nombre as cliente, UCL.logueado as loginBD, UCL.privacidad, CL.ingles')
+        ->select('UCL.id, CL.id as  id_cliente, DG.correo, DG.nombre, DG.paterno, DG.password,  UCL.id_cliente, UCL.espectador, CL.nombre as cliente, UCL.logueado as loginBD, UCL.privacidad, CL.ingles, CL.id_portal ')
         ->from('usuarios_clientes as UCL')
         ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
         ->join('cliente  as CL', ' CL.id = UCL. id_cliente')
         ->where('DG.correo', $correo)
-        ->where('DG.password', $pass)
         ->where('CL.status', 1)
         ->where('CL.eliminado', 0);
 

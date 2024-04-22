@@ -16,6 +16,8 @@ class Reclutamiento extends CI_Controller{
   /*  Submenus 
   /*----------------------------------------*/
 		function requisicion(){
+      $filter = '';
+      $getFilter = '';
 			$data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
 			$data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 			foreach($data['submodulos'] as $row) {
@@ -40,7 +42,9 @@ class Reclutamiento extends CI_Controller{
         $getSort = '';
       }
       if(isset($_GET['filter'])){
+       
         $getFilter = $_GET['filter'];
+        $filterOrder = ''; 
         if($getFilter == 'COMPLETA' || $getFilter == 'EXPRESS'){
           $filter = $getFilter;
           $filterOrder = 'R.tipo';
@@ -54,7 +58,7 @@ class Reclutamiento extends CI_Controller{
           $filterOrder = 'R.status';
         }
       }else{
-        $getFilter = '';
+      
         $filter = '';
         $filterOrder = 'R.tipo !=';
       }
@@ -80,6 +84,7 @@ class Reclutamiento extends CI_Controller{
 			  $info['filter'] = $getFilter;
       }
       else{
+       
 			  $info['requisiciones'] = $this->reclutamiento_model->getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder);
 			  $info['orders_search'] = $this->reclutamiento_model->getAllOrders($sort, 0, 'R.id >', $filter, $filterOrder);
         //var_dump($info['orders_search']);
@@ -699,7 +704,7 @@ class Reclutamiento extends CI_Controller{
         if($estatus_final == 0){
           $status = 'status';
           $acciones = 1;
-          $id_usuario = 0;
+          
 				  $condicion = 'A.id_usuario >';
           $data['aspirantes'] = $this->reclutamiento_model->getAspirantesPorRequisicion($id_usuario, $condicion, $id_requisicion);
           if($data['aspirantes']){
@@ -887,11 +892,18 @@ class Reclutamiento extends CI_Controller{
 				$comentario = $this->input->post('comentario');
 				$id_usuario = $this->session->userdata('id');
 				$id_bolsa = $this->input->post('id_bolsa');
-				
+				$tipo = $this->session->userdata('tipo');
+        if($tipo == 1){
+          $nombre = 'Reclutador';
+        }else{
+          $nombre = 'Cliente';
+        }
+
 				$datos = array(
 					'creacion' => $date,
 					'id_usuario' => $id_usuario,
 					'id_bolsa_trabajo' => $id_bolsa,
+          'nombre_rol' => $nombre,
 					'comentario' => $comentario
 				);
 				$this->reclutamiento_model->guardarHistorialBolsaTrabajo($datos);
@@ -1764,6 +1776,9 @@ class Reclutamiento extends CI_Controller{
       $this->form_validation->set_rules('id_aspirante', 'aspirante no fue detectado y ', 'required');
       $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
       $id_req_aspirante = $this->input->post('id_aspirante');  
+
+
+
       // Array para almacenar el mensaje de respuesta
       $msj = array();
   

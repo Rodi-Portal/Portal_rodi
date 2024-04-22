@@ -195,13 +195,13 @@
 					$color_estatus = ''; $disabled_bloqueo = ''; $disabled_comentario = ''; $text_estatus = '';  $desbloquear_aspirante = '';
           if($r->status == 0){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_negativa'; $text_estatus = 'Estatus: <b>Bloqueado <br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>';
+						$color_estatus = 'req_negativa'; $text_estatus = 'Estatus: <b>Bloqueado <br></b>';
             $disabled_bloqueo = 'isDisabled'; $disabled_comentario = 'isDisabled';
             $desbloquear_aspirante = '<a href="javascript:void(0)" class="btn btn-success  text-lg unlockButton" onclick="confirmarDesbloqueo()" data-toggle="tooltip" title="Desbloquear"><i class="fas fa-lock-open"></i></a>';
 					}
 					if($r->status == 1){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-            $text_estatus = 'Estatus: <b>En espera <br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>';
+            $text_estatus = 'Estatus: <b>En espera <br></b>';
             if($r->semaforo == 0){
               $color_estatus = '';
             }
@@ -217,17 +217,17 @@
 					}
           if($r->status == 2){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>En proceso de reclutamiento<br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>';
+						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>En proceso de reclutamiento<br></b>';
             $disabled_comentario = 'isDisabled';
 					}
           if($r->status == 3 && $r->semaforo == 1){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_positivo'; $text_estatus = 'Estatus: <b>Aceptado para iniciar ESE<br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>';
+						$color_estatus = 'req_positivo'; $text_estatus = 'Estatus: <b>Aceptado para iniciar ESE<br></b>';
             $disabled_comentario = 'isDisabled';
 					}
           if($r->status == 4){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>ESE en proceso<br><a href="javascript:void(0)" class="" onclick="verHistorialBolsaTrabajo('.$r->id.',\''.$r->nombreCompleto.'\')">(ver/registrar comentarios)</a></b>'; 
+						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>ESE en proceso<br></b>'; 
             $disabled_comentario = 'isDisabled';
 					}
           $usuario = (empty($r->usuario))? 'Sin asignar' : $r->usuario;

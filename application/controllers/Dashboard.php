@@ -84,6 +84,28 @@ class Dashboard extends CI_Controller{
 			redirect('Login/index');
 		}
 	}
+
+
+
+	function client(){
+    $ingles = $this->session->userdata('ingles');
+		if($ingles == 1){
+			$this->lang->load('clientes_panel','english');
+		}
+		else{
+			$this->lang->load('clientes_panel','espanol');
+		}
+		$data['translations'] = $this->lang->language;
+		$modal['translations'] = $this->lang->language;
+		$data['modals'] = $this->load->view('modals/clientes/mdl_panel',$modal, TRUE);
+		$data['procesosActuales'] = $this->cliente_model->get_current_procedures2();
+		
+		
+			// Muestra el contenido del arreglo con print_r
+		
+    $this->load->view('clientes/index',$data);
+	}
+
 	public function hcl_panel(){
 		$data['paises'] = $this->funciones_model->getPaises();
 		$data['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
@@ -92,7 +114,7 @@ class Dashboard extends CI_Controller{
     $data['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
 		$data['bloqueo'] = $this->cat_cliente_model->getBloqueoHistorial($this->session->userdata('idcliente'));
 		if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2){
-			$this->load->view('clientes/hcl_cliente', $data);
+			$this->load->view('clientes/panel', $data);
 		}
 		else{
 			redirect('Login/index');
@@ -111,17 +133,7 @@ class Dashboard extends CI_Controller{
 			redirect('Login/index');
 		}
 	}
-	public function tata_panel(){
-		/*$data['baterias'] = $this->configuracion_model->getBateriasPsicometricas();
-		$data['proyectos'] = $this->candidato_model->getProyectosCliente($this->session->userdata('idcliente'));
-		$data['subclientes'] = $this->cliente_model->getSubclientes($this->session->userdata('idcliente'));*/
-		if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2){
-			$this->load->view('clientes/tata_cliente');
-		}
-		else{
-			redirect('Login/index');
-		}
-	}
+	
 	
 	
 	function candidate_panel(){
@@ -160,8 +172,8 @@ class Dashboard extends CI_Controller{
 		$data['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
     $data['paises'] = $this->funciones_model->getPaises();
 		$data['bloqueo'] = $this->cat_cliente_model->getBloqueoHistorial($id_cliente);
-    if($id_cliente != 172 && $id_cliente != 178 && $id_cliente != 205 && $id_cliente != 235 && $id_cliente != 201 && $id_cliente != 236 && $id_cliente != 1 && $id_cliente != 249)
-      $this->load->view('clientes/clientes_index',$data);
+    if($id_cliente != 172 && $id_cliente != 178 && $id_cliente != 205 && $id_cliente != 235 && $id_cliente != 201 && $id_cliente != 236 && $id_cliente != 999 && $id_cliente != 249)
+      $this->load->view('clientes/panel',$data);
     else 
       $this->load->view('clientes/clientes_index_ingles',$data);
 	}

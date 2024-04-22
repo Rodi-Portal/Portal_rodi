@@ -67,15 +67,21 @@ class Cat_cliente_model extends CI_Model{
   }
 
   function existeCliente($nombre, $clave, $id){
+
+    //echo " nombre: ". $nombre. " Clave: ". $clave.  "  ID: ". $id;
+    //die();
     $id_portal = $this->session->userdata('idPortal');
     $this->db
-      ->select('id')
+      ->select('*')
       ->from('cliente')
       ->where('id_portal', $id_portal)
       ->where("(nombre = '$nombre' OR clave = '$clave') AND id != '$id'");
+     
     
     $query = $this->db->get();
     // Loguear la consulta SQL generada
+
+   
     log_message('info', 'Consulta SQL en existe: ' . $this->db->last_query());
     return $query->num_rows();
   }

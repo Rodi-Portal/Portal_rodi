@@ -43,6 +43,7 @@ class Cliente extends CI_Controller{
 		$sub['data'] = $this->cliente_model->getCandidatosSubclientes(3);
 		$this->output->set_output( json_encode( $sub ) );
 	}
+
 	function getCandidatosSubcliente(){
 		$id_subcliente = $_GET['id_subcliente'];
 		$sub['recordsTotal'] = $this->subcliente_model->getCandidatosSubclienteTotal(3, $id_subcliente);
@@ -187,6 +188,7 @@ class Cliente extends CI_Controller{
 				}
 		}          
 	}
+
 	function guardarCandidatoExpress(){
         $id_cliente = $this->input->post('id_cliente');
         $nombre = strtoupper($this->input->post('nombre'));
@@ -326,10 +328,20 @@ class Cliente extends CI_Controller{
         }
         
 	}
+
   function getControlesById(){
     $res = $this->cliente_control_model->getById($this->input->post('id_cliente'));
     echo json_encode($res);
   }
+
+
+
+
+	function get_requisicion_details(){
+		$requicision_id = $this->input->post('requicision_id');
+		$requisicion['data'] = $this->cliente_model->get_requisicion_details($requicision_id);
+		$this->output->set_output( json_encode( $requisicion ) );
+	}
 
   //* Datatable
   function get_data(){

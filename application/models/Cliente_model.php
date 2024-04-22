@@ -103,8 +103,78 @@ class Cliente_model extends CI_Model{
     /*----------------------------------------*/
     /*  UST GLOBAL
     /*----------------------------------------*/
+   
+
+    function get_requisicion_details ($id_requisicion){
+      $id_usuario = $this->session->userdata('id');
+      $id_cliente = $this->session->userdata('idcliente');
+     
+     
+			$this->db
+			->select(" RA.*, RA.id as id_ra, CONCAT(BT.nombre, ' ',BT.paterno, ' ', BT.materno) AS nombre_aspirante, BT.*")
+			->from('requisicion_aspirante as RA')
+			->join('requisicion as R','R.id = RA.id_requisicion')
+			->join('bolsa_trabajo as BT','BT.id = RA.id_bolsa_trabajo')
+      
+      ->where('RA.id_requisicion', $id_requisicion)
+			->where('RA.eliminado', 0)
+			
+      ->order_by('R.creacion','desc');
+
+			$query = $this->db->get();
+     
+/*
+      echo '<pre>';
+      print_r($query->result());
+      echo '</pre>';
+
+   die();*/
+   
+			if($query->num_rows() > 0){
+  
+
+				return $query->result();
+			}else{
+				return FALSE;
+			}
+
+    }
     
-    
+
+
+    function get_current_procedures2(){
+			$id_usuario = $this->session->userdata('id');
+      $id_cliente = $this->session->userdata('idcliente');
+     
+     
+			$this->db
+			->select(" R.*, R.id  as idReq, CL.*, R.status as statusReq")
+			->from('requisicion as R')
+			->join('cliente as CL','CL.id = R.id_cliente')
+			//->join('subclientes as SUB','CL.id = SUB.id_cliente')
+      ->join('datos_generales as DATCL', 'DATCL.id  = CL.id_datos_generales')
+      ->where('R.id_cliente', $id_cliente)
+			->where('R.eliminado', 0)
+			
+      ->order_by('R.creacion','desc');
+
+			$query = $this->db->get();
+     
+/*
+      echo '<pre>';
+      print_r($query->result());
+      echo '</pre>';
+
+   die();
+   */
+			if($query->num_rows() > 0){
+  
+
+				return $query->result();
+			}else{
+				return FALSE;
+			}
+		}
     
     
     /*----------------------------------------*/
@@ -487,7 +557,7 @@ class Cliente_model extends CI_Model{
     function getUsuario($id){
 			$this->db
 			->select('privacidad')
-			->from('usuario_cliente')
+			->from('usuarios_clientes')
 			->where('id', $id);
 
 			$consulta = $this->db->get();

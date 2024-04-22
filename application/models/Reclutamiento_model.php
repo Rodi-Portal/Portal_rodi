@@ -6,29 +6,34 @@ class Reclutamiento_model extends CI_Model{
 	/*----------------------------------------*/
 	/*  Submenus 
 	/*----------------------------------------*/
-		function getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder){
-			$id_portal = $this->session->userdata('idPortal');
-			$this->db
-			->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre")
-			->from('requisicion as R')
-			->join('usuarios_portal as U','U.id = R.id_usuario','left')
-			->join('datos_generales as GENUS','U.id_datos_generales = GENUS.id','left')
-			->join('cliente as CL','R.id_CLiente = CL.id','left')
-			->join('datos_generales as GENCL','CL.id_datos_generales = GENCL.id','left')
-			->where('CL.id_portal', $id_portal)
-			->where($filterOrder, $filter)
-			->where_in('R.status', [1,2])
-      ->where($condition_order, $id_order)
-      ->where('R.eliminado', 0)
-			->order_by('R.id', $sort);
+	function getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder) {
+    $id_portal = $this->session->userdata('idPortal');
+    $this->db
+        ->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre")
+        ->from('requisicion as R')
+        ->join('usuarios_portal as U','U.id = R.id_usuario','left')
+        ->join('datos_generales as GENUS','U.id_datos_generales = GENUS.id','left')
+        ->join('cliente as CL','R.id_CLiente = CL.id','left')
+        ->join('datos_generales as GENCL','CL.id_datos_generales = GENCL.id','left')
+        ->where('CL.id_portal', $id_portal)
+        ->where_in('R.status', [1,2])
+        ->where($condition_order, $id_order)
+        ->where('R.eliminado', 0)
+        ->order_by('R.id', $sort);
 
-			$query = $this->db->get();
-			if($query->num_rows() > 0){
-				return $query->result();
-			}else{
-				return FALSE;
-			}
-		}
+    // Verifica si hay un filtro y lo aplica si existe
+    if (!empty($filter) && isset($filterOrder)) {
+        $this->db->where($filterOrder, $filter);
+    }
+
+    $query = $this->db->get();
+
+    if ($query->num_rows() > 0) {
+        return $query->result();
+    } else {
+        return FALSE;
+    }
+}
     function getOrdersByUser($id_usuario, $sort, $id_order, $condition_order){
 			$id_portal = $this->session->userdata('idPortal');
 			$this->db
@@ -363,9 +368,14 @@ class Reclutamiento_model extends CI_Model{
 			->where('id', $id)
 			->update('bolsa_trabajo', $datos);
 		}
+
+
+
     function guardarHistorialBolsaTrabajo($datos){
       $this->db->insert('bolsa_trabajo_historial', $datos);
     }
+
+
     function addRequisicion($id_cliente, $cliente, $domicilios, $generales, $facturacion, $req) {
 			// Iniciar transacción
 		/*	echo "Aquí el id del cliente: " . $id_cliente . PHP_EOL;
@@ -868,16 +878,20 @@ class Reclutamiento_model extends CI_Model{
     function getHistorialBolsaTrabajo($id){
 			$id_portal = $this->session->userdata('idPortal');
 			$this->db
-			->select("BH.*, CONCAT(DATUP.nombre,' ',DATUP.paterno) as usuario ")
+			->select("BH.*, nombre_rol as usuario ")
 			->from('bolsa_trabajo_historial as BH')
-			->join('usuarios_portal as DATUP','DATUP.id = BH.id_usuario')
-      ->join('bolsa_trabajo as B','B.id = BH.id_bolsa_trabajo')
-			->join('datos_generales as DATUP','DATUP.id = BH.id_datos_generales')
-			->where('B.id_portal', $id_portal)
-			->where('BH.id_bolsa_trabajo', $id)
+      ->join('requisicion_aspirante as RA','RA.id = BH.id_requisicion_aspirante')
+	
+			
+			->where('BH.id_requisicion_aspirante', $id)
 			->order_by('BH.id','DESC');
 
 			$query = $this->db->get();
+
+
+
+    
+
 			if($query->num_rows() > 0){
         return $query->result();
 			}else{

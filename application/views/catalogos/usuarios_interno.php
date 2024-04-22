@@ -298,7 +298,7 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
     $('#btnConfirmar').attr("data-dismiss", "modal");
     $('#mensajeModal').modal('show');
   } else if (accion == "Activar usuario") {
-    $('#titulo_mensaje').text('Desactivar usuario');
+    $('#titulo_mensaje').text('Activar usuario');
     $('#mensaje').html('¿Desea Activar al usuario <b>' + valor1 + '</b>?');
     $('#btnConfirmar').attr("onclick", "botonesAccionesUsuario('activar'," + valor2 + ")");
     $('#btnConfirmar').attr("data-dismiss", "modal");

@@ -30,7 +30,7 @@
                <option value="">Selecciona un rol</option>
                <option value="6">Administrador</option>
                 <option value="4">Reclutadora</option>
-                <option value="11">Coordinadora de reclutamiento </option>
+                <option value="11">Coordinador  reclutamiento </option>
               </select>
               <br>
             </div>

@@ -72,27 +72,53 @@ class Login extends CI_Controller
 				}
 			}
 			else {
-				$cliente = $this->usuario_model->existeUsuarioCliente($this->input->post('correo'), $pass);
-				if ($cliente) {
+
+				$hash_guardado = $this->usuario_model->traerPass($correo);
+			
+			
+
+				$cliente = $this->usuario_model->existeUsuarioCliente($correo);
+			
+				
+
+
+				
+				
+				 if ($cliente && password_verify($pass, $cliente->password)) {
 					$this->session->set_userdata('correo', $correo);
+				
+
 					$codigo_autenticacion = $this->generar_codigo_autenticacion();
 					
+			
 
 					$cliente_data = array(
 						"id" => $cliente->id,
 						"correo" => $cliente->correo,
 						"nombre" => $cliente->nombre,
-						"paterno" => $cliente->paterno,
-						"nuevopassword" => $cliente->nuevo_password,
+						"paterno" => $cliente->paterno,		
 						"idcliente" => $cliente->id_cliente,
 						"cliente" => $cliente->cliente,
 						"privacidad" => $cliente->privacidad,
 						"tipo" => 2,
+						"idPortal" => $usuario->idPortal,
 						"loginBD" => $cliente->loginBD,
 						"ingles" => $cliente->ingles,
 						"espectador" =>$cliente->espectador,
 						"logueado" => TRUE
 					);
+
+
+				/*	echo '<pre>';
+					print_r($cliente);
+					echo '</pre>';
+
+					echo '<pre>';
+					print_r($cliente_data);
+					echo '</pre>';
+		
+			 die();*/
+
 					$this->session->set_userdata($cliente_data);
 					$this->session->set_userdata('tipo_acceso', 'cliente');
 
@@ -470,11 +496,11 @@ class Login extends CI_Controller
                 break;
             case 'cliente_español':
 
-                redirect('Dashboard/clientes_panel');
+                redirect('Dashboard/client');
                 break;
 						case 'cliente_ingles':
 
-									redirect('Dashboard/hcl_panel');
+									redirect('Dashboard/client');
 									break;
             case 'candidato':
                 redirect('Dashboard/candidate_panel');

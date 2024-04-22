@@ -121,25 +121,31 @@ class Cat_Cliente extends CI_Controller{
         'id_domicilios' => null,
         'id_datos_facturacion' => null
     );
-
+    $nombreCliente  = $this->input->post('nombre');
+    $claveCliente = $this->input->post('clave');
     $idCliente = $this->input->post('idCliente');
+    
     $correo = $this->input->post('correo');
     $idGenerales = $this->input->post('idGenerales');
   
 
     $existe = $this->cat_cliente_model->existeCliente($this->input->post('nombre'),$this->input->post('clave'),$idCliente);
-   // echo $existe."+ aqui existe";
-    //return;
+   
       if($existe == 0){
       $hayId = $this->cat_cliente_model->check($idCliente);
+     
+
         if($hayId > 0){
           $datos_cliente = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
+                'nombre' => strtoupper($this->input->post('nombre')),
+                'clave' => $this->input->post('clave'),
                 'id_datos_generales' => $this->input->post('idGenerales'),
                 'id_domicilios' => $this->input->post('idDomicilios'),
                 'id_datos_facturacion' => $this->input->post('idFacturacion'),
           );
+         
           $existeCorreo =  $this->generales_model->correoExiste($correo, $idGenerales);
           
           if ($existeCorreo !== 0) {
