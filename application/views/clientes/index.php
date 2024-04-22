@@ -548,7 +548,7 @@
       if (res) {
         let data = JSON.parse(res);
         let tbody = '';
-        data.data.forEach(function(resp) {
+  
           data.data.forEach(function(resp) {
             //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
             let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
@@ -578,7 +578,7 @@
             tbody += '</div>';
             tbody += '</td>';
           });
-        });
+      
         $('#dataTable tbody').html(tbody);
         $('#dataTable').DataTable(); // Inicializa el DataTable
       } else {
