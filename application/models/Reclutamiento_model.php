@@ -800,8 +800,8 @@ class Reclutamiento_model extends CI_Model{
 			->select("RA.*")
 			->from('requisicion_aspirante as RA')
 			->join('requisicion as R','R.id = RA.id_requisicion')
-			->where('B.id_portal', $id_portal)
-			->where('id', $id);
+			->where('R.id_portal', $id_portal)
+			->where('RA.id', $id);
 
 			$consulta = $this->db->get();
       return $consulta->row();
