@@ -544,14 +544,17 @@
         $('.loader').css("display", "block");
       },
       success: function(res) {
-        let data = JSON.parse(res);
-        let tbody = '';
-        
-        if (data.data.length === 0) {
+       
+        if (!res) {
+        // El AJAX devolvió false, lo que indica que no hay datos
+        let tbody = '<tr>'
             tbody += '<tr>';
             tbody += '<td colspan="4" class="text-center">Aún no  hay aspirantes para esta requisición</td>';
             tbody += '</tr>';
         } else {
+
+        let data = JSON.parse(res);
+        let tbody = '';
           data.data.forEach(function(resp) {
           //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
