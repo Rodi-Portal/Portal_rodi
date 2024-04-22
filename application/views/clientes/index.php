@@ -545,7 +545,8 @@
         $('.loader').css("display", "block");
       }
     }).done(function(res) {
-      if (res.data != '') {
+      console.log("🚀 ~ openDetails ~ res:", res.data)
+      if (res.data !== "") {
         let data = JSON.parse(res);
         let tbody = '';
   
