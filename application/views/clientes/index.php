@@ -545,12 +545,13 @@
       },
       success: function(res) {
        
-        if (res == false) {
-        // El AJAX devolvió false, lo que indica que no hay datos
-        var tbody = '<tr>'
-            tbody += '<tr>';
-            tbody += '<td colspan="4" class="text-center">Aún no  hay aspirantes para esta requisición</td>';
-            tbody += '</tr>';
+        if (res.data === false) {
+        // No hay datos, muestra el mensaje correspondiente
+        let tbody = '<tr>';
+        tbody += '<td colspan="4" class="text-center">Aún no hay aspirantes para esta requisición</td>';
+        tbody += '</tr>';
+        $('#dataTable tbody').html(tbody);
+        $('#dataTable').DataTable(); 
         } else {
 
         let data = JSON.parse(res);
