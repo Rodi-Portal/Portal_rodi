@@ -555,7 +555,7 @@
 
         let data = JSON.parse(res);
         let tbody = '';
-          data.data.forEach(function(resp) {
+          data.data.forEach(function(res) {
           //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
