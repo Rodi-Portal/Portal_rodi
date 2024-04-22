@@ -545,7 +545,7 @@
       },
       success: function(res) {
        
-        if (!res) {
+        if (res == false) {
         // El AJAX devolvió false, lo que indica que no hay datos
         var tbody = '<tr>'
             tbody += '<tr>';
