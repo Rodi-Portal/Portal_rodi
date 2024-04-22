@@ -599,7 +599,7 @@
 
 
 
-  function openDetails(requicision_id) {
+  function openDetailss(requicision_id) {
     $('.div-candidato').removeClass('card-proceso-active');
     $('#div-candidato' + requicision_id).addClass('card-proceso-active');
     $.ajax({
