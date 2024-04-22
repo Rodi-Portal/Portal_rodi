@@ -475,8 +475,8 @@
       });
   }
   // escuchador  para   comentarios 
-  function  descargarCV (){
-    
+  function descargarCV() {
+
   }
 
   function verHistorialMovimientos(nombreCompleto, id) {
@@ -515,14 +515,14 @@
           salida += "</tr>";
         }
         salida += "</table>";
-        
+
         $('#comentario_bolsa').val('');
         $('#div_historial_comentario').html(salida);
         // Mostrar el modal
         $('#historialComentariosModal ').modal('show');
         $('#historialComentariosModal .btn-secondary').click(function() {
-                $('#historialComentariosModal').modal('hide');
-            });
+          $('#historialComentariosModal').modal('hide');
+        });
       },
       error: function(xhr, status, error) {
         // Manejar errores si es necesario
@@ -530,6 +530,74 @@
       }
     });
   }
+
+
+  function openDetails(requicision_id) {
+    $('.div-candidato').removeClass('card-proceso-active');
+    $('#div-candidato' + requicision_id).addClass('card-proceso-active');
+    $.ajax({
+      url: '<?php echo base_url('Cliente/get_requisicion_details'); ?>',
+      method: 'POST',
+      data: {
+        'requicision_id': requicision_id,
+      },
+      beforeSend: function() {
+        $('.loader').css("display", "block");
+      }
+    }).done(function(res) {
+      if (res) {
+        let data = JSON.parse(res);
+        let tbody = '';
+        data.data.forEach(function(resp) {
+          data.data.forEach(function(resp) {
+            //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
+            let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
+              '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
+              '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp
+              .id_ra + ')">Cargar CV/Solicitud</button>';
+            tbody += '<tr>';
+            tbody += '<td>' + resp.id + '</td>';
+            tbody += '<td>' + resp.nombre_aspirante + '</td>';
+            tbody += '<td>' + resp.medio_contacto + '</td>';
+            tbody += '<td>';
+            tbody += '<div class="btn-group">';
+            tbody +=
+              '<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
+            tbody += 'Acciones';
+            tbody += '</button>';
+            tbody += '<ul class="dropdown-menu">';
+            tbody +=
+              '<li><button type="button" class="dropdown-item" onclick="openModal1()">Detalles del Aspirante</button></li>';
+            tbody +=
+              '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
+              resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
+            tbody +=
+              '<li>' + cvLink + '</li>';
+            // Agrega más opciones de modales dentro del dropdown según necesites
+            tbody += '</ul>';
+            tbody += '</div>';
+            tbody += '</td>';
+          });
+        });
+        $('#dataTable tbody').html(tbody);
+        $('#dataTable').DataTable(); // Inicializa el DataTable
+      } else {
+        // No se devolvió ningún dato, muestra un mensaje
+        let tbody = '<tr>';
+        tbody += '<td colspan="4" class="text-center">Aún no hay aspirantes para esta requisición</td>';
+        tbody += '</tr>';
+        $('#dataTable tbody').html(tbody);
+      }
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+      console.error("Error en la solicitud AJAX:", textStatus, errorThrown);
+      // Maneja el error como desees, por ejemplo, mostrando un mensaje de error
+    }).always(function() {
+      // Oculta el loader independientemente del resultado de la solicitud AJAX
+      $('.loader').fadeOut();
+    });
+  }
+
+
 
   function openDetails(requicision_id) {
     $('.div-candidato').removeClass('card-proceso-active');
@@ -544,14 +612,15 @@
         $('.loader').css("display", "block");
       },
       success: function(res) {
-     
+
         let data = JSON.parse(res);
         let tbody = '';
         data.data.forEach(function(resp) {
           //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
-            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra + ')">Cargar CV/Solicitud</button>';
+            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra +
+            ')">Cargar CV/Solicitud</button>';
           tbody += '<tr>';
           tbody += '<td>' + resp.id + '</td>';
           tbody += '<td>' + resp.nombre_aspirante + '</td>';
@@ -566,9 +635,10 @@
           tbody +=
             '<li><button type="button" class="dropdown-item" onclick="openModal1()">Detalles del Aspirante</button></li>';
           tbody +=
-          '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' + resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
+            '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
+            resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
           tbody +=
-          '<li>' + cvLink + '</li>';
+            '<li>' + cvLink + '</li>';
           // Agrega más opciones de modales dentro del dropdown según necesites
           tbody += '</ul>';
           tbody += '</div>';
@@ -585,7 +655,7 @@
 
   urlGuardarComentario = "<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>";
   </script>
-<script src="<?php echo base_url() ?>js/bolsa/aspirantes.js"></script>
+  <script src="<?php echo base_url() ?>js/bolsa/aspirantes.js"></script>
 
 </body>
 
