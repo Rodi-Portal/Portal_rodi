@@ -257,7 +257,6 @@ $(document).ready(function() {
         $("#nuevoAccesoUsuariosInternos").modal("show");
 
       });
-       console.log("🚀 ~ $ ~ data:", data)
 
     },
 
@@ -312,7 +311,7 @@ function enviarCredenciales(valor1, valor2) {
     $('#btnEnviarPass').attr("data-dismiss", "modal");
     $('#idUsuarioInternoEditPass').val(valor2); // Asignar valor a idUsuarioInterno
     $('#idCorreo').val(valor1);
-    $('#password').val(); // Asignar valor a idCorreo
+    $('#password').val(''); // Asignar valor a idCorreo
     $('#enviarCredenciales').modal('show');
 }
    
@@ -342,7 +341,9 @@ function BotonRegistroUsuarioInterno() {
       $("#btnGuardar").text("Guardar");
       $("#btnGuardar").off("click").on("click", function() {
         registroUsuariosInternos(); // Llama a la función con el ID del usuario
-      });
+      }); 
+      $('#formAccesoUsuariosinternos')[0]
+          .reset()
       $('#nuevoAccesoUsuariosInternos').modal('show');
 
     }

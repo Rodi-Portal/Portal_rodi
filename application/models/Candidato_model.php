@@ -262,9 +262,51 @@ class Candidato_model extends CI_Model{
             $id = $this->db->insert_id();
             return  $id;
         }
+
+
         function registrarDocumento($documento){
-            $this->db->insert('candidato_documento', $documento);
+            // Iniciar la transacción
+            $this->db->trans_start();
+        
+            try {
+                // Insertar el documento en la tabla candidato_documento
+                $this->db->insert('candidato_documento', $documento);
+        
+                // Extraer el nombre del archivo
+                $nombreArchivo = $documento['archivo'];
+        
+                // ID de la requisición del aspirante
+                $idRa = $documento['id_requisicion_aspirante'];
+        
+                // Actualizar la tabla requisicion_aspirante
+                $this->db->set('cv', $nombreArchivo);
+                $this->db->where('id', $idRa);
+                $this->db->update('requisicion_aspirante');
+        
+                // Completar la transacción
+                $this->db->trans_complete();
+        
+                // Verificar si la transacción se completó con éxito
+                if ($this->db->trans_status() === FALSE) {
+                    throw new Exception('Error al completar la transacción');
+                }
+        
+                return true; // La transacción se completó correctamente
+            } catch (Exception $e) {
+                // Revertir la transacción en caso de excepción
+                $this->db->trans_rollback();
+                return false; // La transacción falló
+            }
         }
+
+        function eliminarCV($id_req_aspirante){
+            // Define la condición para eliminar el CV
+            $this->db->where('id_requisicion_aspirante', $id_req_aspirante);
+            
+            // Ejecuta la sentencia DELETE
+            $this->db->delete('candidato_documento');
+        }
+
         function crearVisita($visita){
             $this->db->insert('visita', $visita);
         }

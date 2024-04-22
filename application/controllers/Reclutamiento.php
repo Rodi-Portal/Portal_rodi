@@ -902,7 +902,7 @@ class Reclutamiento extends CI_Controller{
 				$datos = array(
 					'creacion' => $date,
 					'id_usuario' => $id_usuario,
-					'id_bolsa_trabajo' => $id_bolsa,
+					'id_requisicion_aspirante' => $id_bolsa,
           'nombre_rol' => $nombre,
 					'comentario' => $comentario
 				);
@@ -1771,26 +1771,33 @@ class Reclutamiento extends CI_Controller{
 			$this->output->set_output( json_encode( $req ) );
 		}
     function subirCVReqAspirante() {
-      // Verifica si se ha enviado el formulario con archivos CV
       $this->form_validation->set_rules('id_cv', 'Archivos CV', 'required');
-      $this->form_validation->set_rules('id_aspirante', 'aspirante no fue detectado y ', 'required');
+      $this->form_validation->set_rules('id_aspirante', 'Aspirante', 'required');
       $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-      $id_req_aspirante = $this->input->post('id_aspirante');  
-
-
-
-      // Array para almacenar el mensaje de respuesta
+  
+      $id_req_aspirante = $this->input->post('id_aspirante');
       $msj = array();
   
       if ($this->form_validation->run() == FALSE) {
-          // La validación falló, prepara el mensaje de error
           $msj = array(
               'codigo' => 0,
               'msg' => validation_errors()
           );
       } else {
-          // Verifica si se ha subido algún archivo
           if (!empty($_FILES['id_cv']['name'])) {
+              // Consultar si hay un CV previamente subido para este aspirante
+              $cv_anterior = $this->reclutamiento_model->traerNombreCV($id_req_aspirante);
+
+           
+              if ($cv_anterior) {
+                  // Eliminar el CV anterior del servidor
+                  unlink('./_docs/' . $cv_anterior);
+  
+                  // Eliminar el registro del CV anterior de la base de datos
+                  $this->candidato_model->eliminarCV($id_req_aspirante);
+              }
+  
+              // Continuar con la carga del nuevo archivo CV
               // Define el array $_FILES para el archivo actual
               $_FILES['file'] = $_FILES['id_cv'];
   
@@ -1799,15 +1806,10 @@ class Reclutamiento extends CI_Controller{
               $config['allowed_types'] = 'pdf|jpeg|jpg|png';
               $config['file_name'] = $id_req_aspirante . "_CV." . pathinfo($_FILES['id_cv']['name'], PATHINFO_EXTENSION);
   
-              // Carga la biblioteca de carga de archivos de CodeIgniter
               $this->load->library('upload', $config);
   
-              // Realiza la carga del archivo
               if ($this->upload->do_upload('file')) {
-                  // Obtiene los datos del archivo cargado
                   $data = $this->upload->data();
-  
-                  // Registra la información del archivo en la base de datos
                   $documento = array(
                       'creacion' => date('Y-m-d H:i:s'),
                       'edicion' => date('Y-m-d H:i:s'),
@@ -1815,36 +1817,28 @@ class Reclutamiento extends CI_Controller{
                       'id_tipo_documento' => 16,
                       'archivo' => $data['file_name'] // Nombre del archivo
                   );
-                
+  
+                  $registroExitoso = $this->candidato_model->registrarDocumento($documento);  
 
-                
-                  $this->candidato_model->registrarDocumento($documento);
-                  $nombreCV = $this->reclutamiento_model->traerNombreCV($id_req_aspirante);
-                 // echo "aqui el nombre del CV:  ";
-                  $aspirante = array(
-                    'edicion' => date('Y-m-d H:i:s'),
-                    'cv' => $nombreCV
-                  );
-
-                  $this->reclutamiento_model->editarAspirante($aspirante, $id_req_aspirante);
-                  // Muestra un mensaje de éxito
+                  if ($registroExitoso) {
                   $msj = array(
                       'codigo' => 1,
                       'msg' => 'El archivo se subió correctamente'
                   );
+                }else{
+                  $msj = array(
+                    'codigo' => 0,
+                    'msg' => 'Ocurrio un problema  intentelo  mas  tarde '
+                );
+                }
               } else {
-                  // La carga del archivo falló
-
-                  // Manejo de errores si la carga del archivo falla
                   $error = $this->upload->display_errors();
-                  // Puedes manejar el error según tus requisitos, por ejemplo, mostrar un mensaje de error al usuario
                   $msj = array(
                       'codigo' => 0,
                       'msg' => 'Error al cargar el archivo: ' . $error
                   );
               }
           } else {
-              // No se seleccionó ningún archivo para cargar, muestra un mensaje de error
               $msj = array(
                   'codigo' => 0,
                   'msg' => 'No se seleccionó ningún archivo para cargar'
@@ -1852,7 +1846,6 @@ class Reclutamiento extends CI_Controller{
           }
       }
   
-      // Devuelve el mensaje como respuesta JSON
       echo json_encode($msj);
   }
   

@@ -35,7 +35,7 @@
         </div>
         <div class="row mt-2">
           <div class="col-12">
-            <button type="button" class="btn btn-primary text-lg btn-block" id="btnComentario">Guardar
+            <button type="button" class="btn btn-primary text-lg btn-block w-100" id="btnComentario">Guardar
               comentario</button>
           </div>
         </div>

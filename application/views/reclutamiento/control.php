@@ -143,9 +143,7 @@ function changeDataTable(url) {
         "width": "10%",
         mRender: function(data, type, full) {
           var correo = (full.correo != '') ? full.correo : 'No registrado';
-          console.log("aqui full :  "+JSON.stringify(full));
-          console.log("aqui type :  "+JSON.stringify(type));
-          console.log("aqui data :  "+JSON.stringify(data));
+    
           return '<b>Teléfono: </b>' + data + '<br><b>Correo: </b>' + correo + '<br><b>Medio: </b>' + full
             .medio_contacto;
         }
@@ -479,13 +477,50 @@ function addApplicant() {
     }
   });
 }
-
+function guardarComentario(id_bolsa) {
+    let comentario = $('#comentario_bolsa').val();
+    $.ajax({
+      url: '<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>',
+      type: 'post',
+      data: {
+        'id_bolsa': id_bolsa,
+        'comentario': comentario
+      },
+      beforeSend: function() {
+        $('.loader').css("display", "block");
+      },
+      success: function(res) {
+        setTimeout(function() {
+          $('.loader').fadeOut();
+        }, 200);
+        var data = JSON.parse(res);
+        if (data.codigo === 1) {
+          $("#historialComentariosModal").modal('hide');
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: data.msg,
+            showConfirmButton: false,
+            timer: 3000
+          })
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Hubo un problema',
+            html: data.msg,
+            width: '50em',
+            confirmButtonText: 'Cerrar'
+          })
+        }
+      }
+    });
+  }
 
 function subirCVReqAspirante() {
   var idAspirante = $('#id_aspirante').val();
-  console.log("🚀 ~ subirCVReqAspirante ~ idAspirante:", idAspirante);
+ // console.log("🚀 ~ subirCVReqAspirante ~ idAspirante:", idAspirante);
   var idCV = $('#id_cv').val();
-  console.log("🚀 ~ subirCVReqAspirante ~ idCV:", idCV);
+ // console.log("🚀 ~ subirCVReqAspirante ~ idCV:", idCV);
 
 
 
