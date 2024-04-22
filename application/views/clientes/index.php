@@ -544,10 +544,15 @@
         $('.loader').css("display", "block");
       },
       success: function(res) {
-     
         let data = JSON.parse(res);
         let tbody = '';
-        data.data.forEach(function(resp) {
+        
+        if (data.data.length === 0) {
+            tbody += '<tr>';
+            tbody += '<td colspan="4" class="text-center">Aún no  hay aspirantes para esta requisición</td>';
+            tbody += '</tr>';
+        } else {
+          data.data.forEach(function(resp) {
           //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
@@ -574,6 +579,8 @@
           tbody += '</div>';
           tbody += '</td>';
         });
+        }
+        
         $('#dataTable tbody').html(tbody);
         $('#dataTable').DataTable(); // Inicializa el DataTable
         setTimeout(function() {
@@ -581,6 +588,7 @@
         }, 200);
       }
     });
+      
   }
 
   urlGuardarComentario = "<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>";
