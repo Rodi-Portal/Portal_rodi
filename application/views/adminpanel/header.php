@@ -255,26 +255,26 @@
         </a>
         <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <a class="collapse-item" href="<?php echo site_url('Reporte/index') ?>">Reportes</a>
-            <?php 
+            <!--a class="collapse-item" href="< ?php echo site_url('Reporte/index') ?>">Reportes</a>
+           < ?php 
               if(in_array(27, $submenus)){ ?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Estudios"
-              href="<?php echo site_url('Reporte/listado_estudios_index') ?>">Listado de Estudios</a>
-            <?php
-							}/*
+              href="< ?php echo site_url('Reporte/listado_estudios_index') ?>">Listado de Estudios</a>
+            < ?php
+							}
 							if(in_array(26, $submenus)){ ?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Doping Finalizados"
-              href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Doping Finalizados</a>
-            <?php
-							}*/
-							if(in_array(13, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
-            <?php
-							}  
-							if(in_array(16, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reporte/listado_doping_index') ?>">Listado de Doping</a>
-            <?php
+              href="< ?php echo site_url('Reporte/listado_clientes_index') ?>">Doping Finalizados</a>
+            < ?php
 							}
+							if(in_array(13, $submenus)){ ?>
+            <a class="collapse-item" href="< ?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
+            < ?php
+							}  */
+							if(in_array(16, $submenus)){ ?>
+            <a class="collapse-item" href="< ?php echo site_url('Reporte/listado_doping_index') ?>">Listado de Doping</a-->
+            
+              <?php
 							if(in_array(25, $submenus)){ ?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
               href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Listado de Clientes</a>

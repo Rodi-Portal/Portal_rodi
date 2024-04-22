@@ -283,10 +283,11 @@ class Reporte_model extends CI_Model{
 			$filtros .= ($cliente == "" || $cliente == 0)? "":" AND C.id = ".$cliente;
 
 			$query = $this->db
-			->query("SELECT C.*, S.nombre_subcliente as subcliente, S.clave_subcliente as claveSubcliente
+			->query("SELECT C.*,F.razon_social , S.nombre_subcliente as subcliente, S.clave_subcliente as claveSubcliente
 							FROM cliente as C 
 							LEFT JOIN subclientes as S ON S.id_cliente = C.id AND S.eliminado = 0
                             LEFT JOIN datos_generales as D ON S.id_datos_generales = D.id
+                            LEFT JOIN datos_facturacion as F ON C.id_datos_facturacion = F.id
 							WHERE C.eliminado = 0 ".$filtros."
 							ORDER BY C.id DESC");
 			if($query->num_rows() > 0){
@@ -344,7 +345,7 @@ class Reporte_model extends CI_Model{
       $filtros .= ($usuario == "" || $usuario == 0)? "":" AND B.id_usuario = ".$usuario;
       
       $query = $this->db
-      ->query("SELECT A.creacion, A.id_requisicion, B.telefono, B.medio_contacto, A.sueldo_acordado, A.fecha_ingreso, A.pago, B.domicilio, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as aspirante, CONCAT(DATUP.nombre,' ',DATUP.paterno) as usuario, R.puesto, C.nombre as cliente, FAC.razon_social, R.creacion as fechaRequisicion, (SELECT descripcion FROM aspirante_garantia WHERE id_aspirante = A.id ORDER BY id DESC LIMIT 1) AS garantia
+      ->query("SELECT A.creacion, A.id_requisicion, B.telefono, B.medio_contacto, A.sueldo_acordado, A.fecha_ingreso, A.pago, B.domicilio, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as aspirante, CONCAT(DATUP.nombre,' ',DATUP.paterno) as usuario, R.puesto, C.nombre as cliente, FAC.razon_social as nombre_comercial, R.creacion as fechaRequisicion, (SELECT descripcion FROM aspirante_garantia WHERE id_aspirante = A.id ORDER BY id DESC LIMIT 1) AS garantia
           FROM requisicion_aspirante as A 
           JOIN bolsa_trabajo as B ON B.id = A.id_bolsa_trabajo 
           JOIN requisicion as R ON R.id = A.id_requisicion

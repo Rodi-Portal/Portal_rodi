@@ -43,7 +43,8 @@
           <a class="nav-link text-light active" href="javascript:void(0)" onclick="openProcedures()"><i
               class="fas fa-list-ol"></i> <?php echo $translations['menu_inicio_candidatos']; ?></a>
         </li>
-        //TODO:  boton para  en un futuro  poder  ver las  requisiciones  finalizadas  actualmente  sin funcionamiento 
+
+        <!--//TODO:  boton para  en un futuro  poder  ver las  requisiciones  finalizadas  actualmente  sin funcionamiento -->
         <!--li class="nav-item">
           <a class="nav-link text-light active" href="javascript:void(0)" onclick="openHistory()"><i
               class="fas fa-history"></i> < ?php echo $translations['menu_historial_candidatos']; ?></a>
@@ -84,7 +85,7 @@
             <?php $totalRequisiciones = (!empty($procesosActuales))? count($procesosActuales) : 0 ?>
             <h4 class="text-wrap"><?php echo $translations['proceso_titulo'].':  <b>'.$totalRequisiciones.'</b> ' ?>
             </h4>
-            <button type="button" class="btn btn-primary btn-sm" onclick="choseOption()"><i class="fas fa-plus"></i>
+            <button type="button" class="btn btn-primary btn-sm"  onclick="redirectToPage('<?php echo base_url('application\views\requisicion\requisicionCompleta.php'); ?>')"><i class="fas fa-plus"></i>
               <?php echo $translations['accion_nueva_requisicion']; ?></button>
           </div>
           <hr>
@@ -652,7 +653,11 @@
       }
     });
   }
-
+  function redirectToPage(url) {
+    // Aquí puedes agregar el parámetro que necesitas, por ejemplo:
+    let parametro = 'valor'; // Cambia 'valor' por el valor que necesites pasar
+    window.location.href = `${url}?parametro=${parametro}`;
+  }
   urlGuardarComentario = "<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>";
   </script>
   <script src="<?php echo base_url() ?>js/bolsa/aspirantes.js"></script>
