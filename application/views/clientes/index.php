@@ -43,10 +43,11 @@
           <a class="nav-link text-light active" href="javascript:void(0)" onclick="openProcedures()"><i
               class="fas fa-list-ol"></i> <?php echo $translations['menu_inicio_candidatos']; ?></a>
         </li>
-        <li class="nav-item">
+        //TODO:  boton para  en un futuro  poder  ver las  requisiciones  finalizadas  actualmente  sin funcionamiento 
+        <!--li class="nav-item">
           <a class="nav-link text-light active" href="javascript:void(0)" onclick="openHistory()"><i
-              class="fas fa-history"></i> <?php echo $translations['menu_historial_candidatos']; ?></a>
-        </li>
+              class="fas fa-history"></i> < ?php echo $translations['menu_historial_candidatos']; ?></a>
+        </li -->
         <!-- <li class="nav-item">
           <a class="nav-link text-light active" href="javascript:void(0)" onclick="openUsers()"><i class="fas fa-users"></i> <?php //echo $translations['menu_usuarios']; ?></a>
         </li> -->
