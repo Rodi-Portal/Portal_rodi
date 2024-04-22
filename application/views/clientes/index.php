@@ -557,13 +557,13 @@
         let tbody = '';
           data.data.forEach(function(res) {
           //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
-          let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
+          let cvLink = (res.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + res.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
-            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra + ')">Cargar CV/Solicitud</button>';
+            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + res.id_ra + ')">Cargar CV/Solicitud</button>';
           tbody += '<tr>';
-          tbody += '<td>' + resp.id + '</td>';
-          tbody += '<td>' + resp.nombre_aspirante + '</td>';
-          tbody += '<td>' + resp.medio_contacto + '</td>';
+          tbody += '<td>' + res.id + '</td>';
+          tbody += '<td>' + res.nombre_aspirante + '</td>';
+          tbody += '<td>' + res.medio_contacto + '</td>';
           tbody += '<td>';
           tbody += '<div class="btn-group">';
           tbody +=
@@ -574,7 +574,7 @@
           tbody +=
             '<li><button type="button" class="dropdown-item" onclick="openModal1()">Detalles del Aspirante</button></li>';
           tbody +=
-          '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' + resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
+          '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' + res.nombre_aspirante + '\', \'' + res.id_ra + '\')">Comentarios Reclutador</button>';
           tbody +=
           '<li>' + cvLink + '</li>';
           // Agrega más opciones de modales dentro del dropdown según necesites
