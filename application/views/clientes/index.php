@@ -545,7 +545,7 @@
       },
       success: function(res) {
        
-        if (res.data === false) {
+        if (res.data === FALSE) {
         // No hay datos, muestra el mensaje correspondiente
         let tbody = '<tr>';
         tbody += '<td colspan="4" class="text-center">Aún no hay aspirantes para esta requisición</td>';
