@@ -546,6 +546,7 @@
       }
     }).done(function(res) {
       if (res) {
+        console.log("🚀 ~ openDetails ~ res:", res)
         let data = JSON.parse(res);
         let tbody = '';
   
