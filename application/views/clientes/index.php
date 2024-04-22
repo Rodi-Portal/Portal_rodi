@@ -545,7 +545,7 @@
         $('.loader').css("display", "block");
       }
     }).done(function(res) {
-      if (res.length > 0) {
+      if (res.data.length > 0) {
         let data = JSON.parse(res);
         let tbody = '';
   
