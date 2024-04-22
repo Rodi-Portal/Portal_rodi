@@ -547,14 +547,14 @@
        
         if (!res) {
         // El AJAX devolvió false, lo que indica que no hay datos
-        let tbody = '<tr>'
+        var tbody = '<tr>'
             tbody += '<tr>';
             tbody += '<td colspan="4" class="text-center">Aún no  hay aspirantes para esta requisición</td>';
             tbody += '</tr>';
         } else {
 
         let data = JSON.parse(res);
-        let tbody = '';
+        var tbody = '';
           data.data.forEach(function(res) {
           //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
           let cvLink = (res.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + res.cv +
