@@ -101,7 +101,7 @@ class Login extends CI_Controller
 						"cliente" => $cliente->cliente,
 						"privacidad" => $cliente->privacidad,
 						"tipo" => 2,
-						"idPortal" => $usuario->id_portal,
+						"idPortal" => $cliente->id_portal,
 						"loginBD" => $cliente->loginBD,
 						"ingles" => $cliente->ingles,
 						"espectador" =>$cliente->espectador,
