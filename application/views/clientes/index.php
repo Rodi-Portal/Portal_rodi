@@ -107,23 +107,22 @@
 
           <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
             <!-- Boton de acciones -->
-            <div class="btn-group dropstart position-absolute btn-acciones">
+            <!--div class="btn-group dropstart position-absolute btn-acciones">
               <button type="button" class="btn  dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">
                 <i class="fas fa-ellipsis-v"></i>
               </button>
               <ul class="dropdown-menu">
-                <!-- <li><a class="dropdown-item" href="#"><i class="fas fa-edit"></i> <?php //echo $translations['proceso_accion_editar'] ?></a></li> -->
+                <li><a class="dropdown-item" href="#"><i class="fas fa-edit"></i> < ?php //echo $translations['proceso_accion_editar'] ?></a></li> 
                 <li><a class="dropdown-item" href="javascript:void(0)"
-                    onclick="viewMessages(<?php echo $proceso->idReq ?>, '<?php echo $idioma ?>')"><i
-                      class="fas fa-comment-dots"></i> <?php echo $translations['proceso_accion_ver_comentarios'] ?></a>
+                    onclick="viewMessages(< ?php echo $proceso->idReq ?>, '< ?php echo $idioma ?>')"><i
+                      class="fas fa-comment-dots"></i> < ?php echo $translations['proceso_accion_ver_comentarios'] ?></a>
                 </li>
                 <li><a class="dropdown-item" href="javascript:void(0)"
-                    onclick="viewFiles(<?php echo $proceso->idReq ?>)"><i class="fas fa-folder"></i>
-                    <?php echo $translations['proceso_accion_archivos'] ?></a></li>
+                    onclick="viewFiles(< ?php echo $proceso->idReq ?>)"><i class="fas fa-folder"></i>
+                    < ?php echo $translations['proceso_accion_archivos'] ?></a></li>
               </ul>
-            </div>
-            <?php 
+            </div -->             <?php 
               echo '<div class="card-title" onclick="openDetails('.$proceso->idReq.')">';
               echo '<span class="badge text-bg-dark">Nombre de la  vacante </span><h4 class="d-inline align-middle"> <b>'.$proceso->puesto.'</b></h4><br>';
               echo $status;               
@@ -134,8 +133,8 @@
                 
                 ?>
             <div>
-              <span class="badge text-bg-info">Sueldo Minimo: <?php echo $proceso->sueldo_minimo ?> </span>
-              <span class="badge text-bg-info">Sueldo MAximo: <?php echo $proceso->sueldo_maximo ?> </span>
+              <span class="badge text-bg-info">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo ?> </span>
+              <span class="badge text-bg-info">Sueldo Máximo: <?php echo $proceso->sueldo_maximo ?> </span>
             </div>
 
             <?php  
@@ -545,8 +544,7 @@
         $('.loader').css("display", "block");
       }
     }).done(function(res) {
-      console.log("🚀 ~ openDetails ~ res:", res.data)
-      if (res.data !== "") {
+      if (res.length !== 14) {
         let data = JSON.parse(res);
         let tbody = '';
   
@@ -555,7 +553,7 @@
             let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
               '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
               '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp
-              .id_ra + ')">Cargar CV/Solicitud</button>';
+              .id_ra + ')">CV/Pendiente</button>';
             tbody += '<tr>';
             tbody += '<td>' + resp.id + '</td>';
             tbody += '<td>' + resp.nombre_aspirante + '</td>';
