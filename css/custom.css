@@ -80,9 +80,17 @@
 /*  Login
 /*----------------------------------------*/
 .bg-login-image {
-  background: url("../img/imagen_login.jpg") !important;
-  background-position: center !important;
-  background-size: cover !important;
+  background-color: rgba(7, 9, 139, 0.993); /* Color de fondo azul marino */
+  position: relative; /* Posición relativa para el contenedor */
+}
+
+.bg-login-image img {
+  position: absolute; /* Posición absoluta para la imagen */
+  top: 50%; /* Alinear la parte superior de la imagen al 50% del contenedor */
+  left: 50%; /* Alinear la parte izquierda de la imagen al 50% del contenedor */
+  transform: translate(-50%, -50%); /* Mover la imagen hacia arriba y hacia la izquierda en un 50% de su propio tamaño */
+  max-width: 100%; /* Establecer el ancho máximo de la imagen */
+  max-height: 100%; /* Establecer la altura máxima de la imagen */
 }
 .msj_login{
   opacity: 0;

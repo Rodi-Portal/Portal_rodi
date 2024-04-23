@@ -49,14 +49,13 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/Dashboard/index">
-        <div class="sidebar-brand-icon">
-          <img width="200px" src="<?php echo base_url(); ?>img/portal_icon_nombre.png">
-        </div>
-     
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" >
+       
+          <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png">
+        
+       
       </a>
-
-      <!-- Divider -->
+      <h2 class="text-white text-center font-weight-bold">Talent Safe</h2>      <!-- Divider -->
       <hr class="sidebar-divider my-0">
 
       <!-- Dashboard -->
