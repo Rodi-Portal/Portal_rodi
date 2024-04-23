@@ -28,13 +28,13 @@
 			</button>
 		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 		    <ul class="navbar-nav ml-auto">
-		    	<li class="nav-item">
+		    	<!--li class="nav-item">
 					<a class="nav-link text-light font-weight-bold english-version-link" href="#" onclick="loadEnglishVersion()"><i class="fas fa-globe"></i> English version</a>
 
 
 
 
-					</li>
+					</li-->
 		    </ul>
 		  </div>
 		</nav>
@@ -51,13 +51,15 @@
 		  <div class="card-body">
 		    <div class="row">
 		    	<div class="col-12">
+					<?php foreach ($datos as $dato): ?>
 		    		<label for="nombre">Nombre o Razón social *</label>
 		    		<div class="input-group mb-3">
 						  <div class="input-group-prepend">
 						    <span class="input-group-text"><i class="fas fa-user"></i></span>
 						  </div>
-							<input type="text" class="form-control" id="nombre" name="nombre" data-siguiente-campo="domicilio">
-           </div>
+							<input type="text" class="form-control" id="nombre" name="nombre" data-siguiente-campo="domicilio" value=
+							"<?php echo $dato->razon_social ; ?>" disabled>
+           </div
 					 <div id="errornombre" class="text-danger"></div>
 					</div>
 				</div>
@@ -68,7 +70,8 @@
 				  		<div class="input-group-prepend">
 				    		<span class="input-group-text"><i class="fas fa-home"></i></span>
 				  		</div>
-				  		<input type="text" class="form-control" id="domicilio" name="domicilio" data-siguiente-campo="cp" disabled>
+				  		<input type="text" class="form-control" id="domicilio" name="domicilio" data-siguiente-campo="cp" disabled value=
+							"<?php echo $dato->pais.", ".$dato->estado.", ".$dato->ciudad.", ".$dato->colonia.", ".$dato->calle.", Ext.".$dato->exterior.", Int.".$dato->interior.", " ; ?>">
 						</div>
 						<div id="errordomicilio" class="text-danger"></div>
 					</div>
@@ -80,7 +83,8 @@
 				  		<div class="input-group-prepend">
 				    		<span class="input-group-text"><i class="fas fa-home"></i></span>
 				  		</div>
-				  		<input type="number" class="form-control solo_numeros" id="cp" name="cp" maxlength="5"  data-siguiente-campo="regimen" disabled>
+				  		<input type="number" class="form-control solo_numeros" id="cp" name="cp" maxlength="5"  data-siguiente-campo="regimen" value=
+							"<?php echo $dato->cp ; ?>" disabled>
 						</div>
 						<div id="errorcp" class="text-danger"></div>
 					</div>
@@ -90,7 +94,8 @@
 				  		<div class="input-group-prepend">
 				    		<span class="input-group-text"><i class="fas fa-user-tag"></i></span>
 				  		</div>
-				  		<input type="text" class="form-control" id="regimen" name="regimen" data-siguiente-campo="telefono" disabled>
+				  		<input type="text" class="form-control" id="regimen" name="regimen" data-siguiente-campo="telefono" value=
+							"<?php echo $dato->regimen1 ; ?>" disabled>
 						</div>
 						<div id="errorregimen" class="text-danger"></div>
 					</div>
@@ -102,7 +107,8 @@
 						  <div class="input-group-prepend">
 						    <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
 						  </div>
-						  <input type="number" class="form-control" id="telefono" name="telefono" maxlength="16" data-siguiente-campo="correo" disabled>
+						  <input type="number" class="form-control" id="telefono" name="telefono" maxlength="16" data-siguiente-campo="correo" value=
+							"<?php echo $dato->telefono_contacto ; ?>" disabled>
 						</div>
 						<div id="errortelefono" class="text-danger"></div>
 					</div>
@@ -112,7 +118,8 @@
 						  <div class="input-group-prepend">
 						    <span class="input-group-text"><i class="far fa-envelope"></i></span>
 						  </div>
-						  <input type="text" class="form-control" id="correo" name="correo" data-siguiente-campo="contacto" disabled>
+						  <input type="text" class="form-control" id="correo" name="correo" data-siguiente-campo="contacto" value=
+							"<?php echo $dato->correo_contacto ; ?>" disabled>
 						</div>
 						<div id="errorcorreo" class="text-danger"></div>
 					</div>
@@ -122,7 +129,8 @@
 						  <div class="input-group-prepend">
 						    <span class="input-group-text"><i class="fas fa-user"></i></span>
 						  </div>
-						  <input type="text" class="form-control" id="contacto" name="contacto" data-siguiente-campo="rfc" disabled>
+						  <input type="text" class="form-control" id="contacto" name="contacto" data-siguiente-campo="rfc" value=
+							"<?php echo $dato->nombre_contacto." ".$dato->apellido_contacto ; ?>" disabled>
 						</div>
 						<div id="errorcontacto" class="text-danger"></div>
 					</div>
@@ -134,7 +142,8 @@
 						  <div class="input-group-prepend">
 						    <span class="input-group-text"><i class="fas fa-user"></i></span>
 						  </div>
-						  <input type="text" class="form-control" id="rfc" name="rfc" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()" maxlength="13" data-siguiente-campo="forma_pago" disabled>
+						  <input type="text" class="form-control" id="rfc" name="rfc" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()" maxlength="13" data-siguiente-campo="forma_pago" value=
+							"<?php echo $dato->rfc ; ?>" disabled>
 						</div>
 						<div id="errorrfc" class="text-danger"></div>
 	    		</div>
@@ -145,7 +154,7 @@
 						    <span class="input-group-text"><i class="far fa-credit-card"></i></span>
 						  </div>
 						  <select class="custom-select" id="forma_pago" name="forma_pago" data-siguiente-campo="metodo_pago" disabled>
-						    <option value="" selected>Selecciona</option>
+						    <option value="<?php echo $dato->forma_pago?>" selected><?php echo $dato->forma_pago?></option>
 						    <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
 						    <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
 						  </select>
@@ -159,7 +168,7 @@
 						    <span class="input-group-text"><i class="far fa-credit-card"></i></span>
 						  </div>
 						  <select class="custom-select" id="metodo_pago" name="metodo_pago" data-siguiente-campo="uso_cfdi" disabled>
-						    <option value="" selected>Selecciona</option>
+							<option value="<?php echo $dato->idCliente ?>" selected><?php echo $dato->metodo_pago?></option>
 						    <option value="Efectivo">Efectivo</option>
 						    <option value="Cheque nominativo">Cheque nominativo</option>
 						    <option value="Transferencia electrónica de fondos">Transferencia electrónica de fondos</option>
@@ -177,11 +186,13 @@
 				  		<div class="input-group-prepend">
 				    		<span class="input-group-text"><i class="fas fa-file-invoice"></i></span>
 				  		</div>
-				  		<input type="text" class="form-control" id="uso_cfdi" name="uso_cfdi" value="" data-siguiente-campo="puesto" disabled>
+				  		<input type="text" class="form-control" id="uso_cfdi" name="uso_cfdi"  data-siguiente-campo="puesto" value=
+							"<?php echo $dato->uso_cfdi; ?>" disabled>
 						</div>
 						<div id="erroruso_cfdi" class="text-danger"></div>
 					</div>
 				</div>
+				<?php endforeach; ?>
 	    </div>
 	  </div>
 	</div> 
@@ -196,7 +207,7 @@
 						  <div class="input-group-prepend">
 						    <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
 						  </div>
-		    			<input type="text" class="form-control" id="puesto" name="puesto" data-siguiente-campo="num_vacantes" disabled>
+		    			<input type="text" class="form-control" id="puesto" name="puesto" data-siguiente-campo="num_vacantes" >
 						</div>
 						<div id="errorpuesto" class="text-danger"></div>
 					</div>

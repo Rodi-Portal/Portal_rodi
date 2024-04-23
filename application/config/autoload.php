@@ -182,6 +182,7 @@ $autoload['model'] = array(
   'medico_model',
   'notificacion_model',
   'psicometrico_model',
+  'requisicion_model',
   'reclutamiento_model',
   'referencia_cliente_model',
   'referencia_profesional_model',

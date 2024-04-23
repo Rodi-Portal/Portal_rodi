@@ -51,9 +51,9 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/Dashboard/index">
         <div class="sidebar-brand-icon">
-          <img width="40px" src="<?php echo base_url(); ?>img/rodi_icon.png">
+          <img width="200px" src="<?php echo base_url(); ?>img/portal_icon_nombre.png">
         </div>
-        <div class="sidebar-brand-text mx-3">RODI</div>
+     
       </a>
 
       <!-- Divider -->

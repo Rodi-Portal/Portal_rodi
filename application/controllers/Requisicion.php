@@ -13,7 +13,7 @@ class Requisicion extends CI_Controller{
     $data['id_cliente'] = $_GET['id_cliente'];
    
     $data['datos'] = $this->cat_cliente_model->getC($data['id_cliente']);
-  
+   
 		$this->load->view('requisicion/requisicionCompleta', $data);
 	}
   public function vista_ingles() {
@@ -22,7 +22,10 @@ class Requisicion extends CI_Controller{
     $data['hoy'] = date("d/m/Y");
 
     $data['id_cliente'] = $id_cliente;
- 
+    echo "<pre>";
+    print_r($id_cliente);
+    echo "</pre>";
+    die();
 
 
     $data['datos'] = $this->cat_cliente_model->getC($id_cliente);
@@ -31,19 +34,15 @@ class Requisicion extends CI_Controller{
     $this->load->view('requisicion/en/requisicionCompletaIngles', $data);
 }
 	function registrar(){
+
+    $id_cliente = $this->input->post('metodo_pago');
+    $id_portal = $this->session->userdata('idPortal');
+    $id_usuario = $this->session->userdata('id');
+
+;
     if($this->input->post('version') == 'espanol'){
-  		$this->form_validation->set_rules('nombre', 'Nombre o Razón social', 'trim|required'); // trim se coloca antes de required. Esto asegura que cualquier espacio en blanco adicional al principio o al final del valor ingresado en el campo, será eliminado antes de que la validación required se lleve a cabo.
-      $this->form_validation->set_rules('domicilio', 'Domicilio Fiscal', 'trim|required');
-      $this->form_validation->set_rules('cp', 'Código postal', 'required|trim|max_length[5]');
-      $this->form_validation->set_rules('regimen', 'Régimen Fiscal', 'trim|required');
-      $this->form_validation->set_rules('telefono', 'Teléfono', 'required|trim|max_length[16]');
-      $this->form_validation->set_rules('correo', 'Correo', 'required|trim|valid_email');
-      $this->form_validation->set_rules('contacto', 'Contacto', 'trim|required');
-      $this->form_validation->set_rules('rfc', 'RFC', 'trim|required|max_length[13]');
-      $this->form_validation->set_rules('forma_pago', 'Forma de pago', 'trim|required');
-      $this->form_validation->set_rules('metodo_pago', 'Método de pago', 'trim|required');
-      $this->form_validation->set_rules('uso_cfdi', 'Uso de CFDI', 'trim|required');
-      $this->form_validation->set_rules('puesto', 'Nombre de la posición', 'trim|required');
+  	 // trim se coloca antes de required. Esto asegura que cualquier espacio en blanco adicional al principio o al final del valor ingresado en el campo, será eliminado antes de que la validación required se lleve a cabo.
+   
       $this->form_validation->set_rules('num_vacantes', 'Número de vacantes', 'required|numeric|max_length[2]');
       $this->form_validation->set_rules('escolaridad', 'Formación académica requerida','trim|required');
       $this->form_validation->set_rules('estatus_escolaridad', 'Estatus académico','trim|required');
@@ -205,19 +204,18 @@ class Requisicion extends CI_Controller{
       else{
       	$licencia .= $this->input->post('licencia');
       }
+     
+
+      
+
       $req = array(
         'creacion' => $date,
-        'nombre' => $this->input->post('nombre'),
-        'domicilio' => $this->input->post('domicilio'),
-        'cp' => $this->input->post('cp'),
-        'telefono' => $this->input->post('telefono'),
-        'correo' => $this->input->post('correo'),
-        'contacto' => $this->input->post('contacto'),
-        'rfc' => $this->input->post('rfc'),
-        'regimen' => $this->input->post('regimen'),
-        'forma_pago' => $this->input->post('forma_pago'),
-        'metodo_pago' => $this->input->post('metodo_pago'),
-        'uso_cfdi' => $this->input->post('uso_cfdi'),
+        'edicion' => $date,
+        
+        'id_portal'=> $id_portal,
+        'id_usuario_cliente'=> $id_usuario,
+        'id_cliente'=> $id_cliente,
+        'tipo'=> "COMPLETA",
         'puesto' => $this->input->post('puesto'),
         'numero_vacantes' => $this->input->post('num_vacantes'),
         'escolaridad' => $this->input->post('escolaridad'),

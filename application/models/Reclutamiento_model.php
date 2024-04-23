@@ -820,7 +820,7 @@ class Reclutamiento_model extends CI_Model{
 			->select("RA.id")
 			->from('requisicion_aspirante as RA')
 			->join('requisicion as R','R.id = RA.id_requisicion')
-			->where('B.id_portal', $id_portal)
+			->where('R.id_portal', $id_portal)
       ->where('RA.id_requisicion', $id_requisicion)
       ->where('RA.sueldo_acordado !=', NULL)
       ->where('RA.fecha_ingreso !=', NULL)

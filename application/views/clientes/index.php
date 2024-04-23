@@ -39,7 +39,7 @@
   <header>
     <nav class="navbar navbar-dark" style="background-color: #0a39a6;">
       <a class="navbar-brand" href="javascript:void(0)">
-        <img src="<?php echo base_url(); ?>img/rodi_icon.png" width="30" height="30"
+        <img src="<?php echo base_url(); ?>img/portal_icon.png" width="40" height="35"
           class="d-inline-block align-top ms-1" alt="RODI">
         <h5 class="d-inline text-wrap">
           <?php echo $this->session->userdata('nombre').' '.$this->session->userdata('paterno') ?></h5>
@@ -133,7 +133,7 @@
                     < ?php echo $translations['proceso_accion_archivos'] ?></a></li>
               </ul>
             </div --> <?php 
-            echo $id_cliente;
+         
               echo '<div class="card-title" onclick="openDetails('.$proceso->idReq.')">';
               echo '<span class="badge text-bg-dark">Nombre de la  vacante </span><h4 class="d-inline align-middle"> <b>'.$proceso->puesto.'</b></h4><br>';
               echo $status;               

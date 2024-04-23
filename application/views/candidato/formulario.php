@@ -22,7 +22,7 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
   <style>
     body{
-      /* background-image: url('../img/rodi_icon.png');
+      /* background-image: url('../img/portal_icon.png');
       background-position-y: 0;
       background-position-x: 50%;
       background-size: 30%;
@@ -214,7 +214,7 @@
   <header>
     <nav class="navbar navbar-dark" style="background-color: #0a39a6;">
       <a class="navbar-brand" href="#">
-        <img src="<?php echo base_url(); ?>img/rodi_icon.png" width="30" height="30" class="d-inline-block align-top" alt="RODI">
+        <img src="<?php echo base_url(); ?>img/portal_icon.png" width="30" height="30" class="d-inline-block align-top" alt="RODI">
         <?php echo $nombre.' '.$paterno ?>
       </a>
       <ul class="nav justify-content-end">
