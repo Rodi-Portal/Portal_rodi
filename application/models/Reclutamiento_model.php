@@ -489,7 +489,7 @@ class Reclutamiento_model extends CI_Model{
 
     function updateApplicantByIdBolsaTrabajo($datos,  $id){
 			$this->db
-			->where('id_bolsa_trabajo', $id)
+			->where('id', $id)
 			->update('bolsa_trabajo', $datos);
 		}
 
