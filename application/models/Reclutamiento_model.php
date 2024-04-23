@@ -859,7 +859,7 @@ class Reclutamiento_model extends CI_Model{
     }
 
 		//TODO: revisar  si funciona   para  reclutamiento 
-   /* function getCandidatosByRequisicion($id_requisicion){
+   function getCandidatosByRequisicion($id_requisicion){
       $this->db
 			->select("C.id,C.id_aspirante")
 			->from('requisicion_aspirante as R')
@@ -882,7 +882,7 @@ class Reclutamiento_model extends CI_Model{
 
       $consulta = $this->db->get();
       return $consulta->row();
-    }*/
+    }
     function getHistorialBolsaTrabajo($id){
 			$id_portal = $this->session->userdata('idPortal');
 			$this->db
