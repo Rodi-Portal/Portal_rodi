@@ -74,15 +74,15 @@
       <hr class="sidebar-divider">
 
       <!-- Manual de Usuario -->
-      <?php 
+      <!-- ?php 
 			if(in_array(30, $submenus)){ ?>
       <li class="nav-item">
-        <a class="nav-link" href="<?php echo site_url('Manual/index') ?>">
+        <a class="nav-link" href="< ?php echo site_url('Manual/index') ?>">
           <i class="fas fa-book"></i>
           <span>Manual de usuario</span></a>
       </li>
-      <?php
-			}?>
+      < ?php
+			}? -->
 
       <!-- Clientes -->
       <?php 
@@ -232,11 +232,11 @@
             <?php
 							} ?>
             
-              <?php 
+           /*   <!-- ?php 
 							if(in_array(8, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
-            <?php
-							} ?>
+            <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
+            < ?php
+							} ? --> 
           </div>
         </div>
       </li>
