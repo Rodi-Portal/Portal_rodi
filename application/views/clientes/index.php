@@ -680,6 +680,7 @@
     $.ajax({
         url: "<?php echo base_url('Requisicion/index'); ?>",
         method: "GET",
+        data: { id_cliente: id_cliente },
         success: function(response) {
             // Insertar el contenido de la página en la sección
             $('#panel-agregar-candidato').html(response);
@@ -692,31 +693,27 @@
         }
     });
 }
-
-
-function loadPageInSection() {
-    // Ocultar el contenido actual
-    var id_cliente = <?php echo $id_cliente; ?>;
-  
-
-    $('#panel-inicio').hide();
+function loadEnglishVersion() {
+  var id_cliente = <?php echo $id_cliente; ?>;
+  $('#panel-inicio').hide();
     $('#panel-historial').hide();
-    
     $.ajax({
-        url: "<?php echo base_url('Requisicion/index'); ?>",
-        method: "GET",
+        url: "<?php echo site_url('Requisicion/vista_ingles'); ?>",
+        method: "POST",
+        data: { 'id_cliente': id_cliente },
         success: function(response) {
-            // Insertar el contenido de la página en la sección
-            $('#panel-agregar-candidato').html(response);
+          $('#panel-agregar-candidato').html(response);
             // Mostrar la sección
             $('#panel-agregar-candidato').show();
         },
         error: function(xhr, status, error) {
-            // Manejar cualquier error que ocurra durante la solicitud AJAX
             console.error(xhr.responseText);
         }
     });
 }
+
+
+
 
   urlGuardarComentario = "<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>";
   </script>

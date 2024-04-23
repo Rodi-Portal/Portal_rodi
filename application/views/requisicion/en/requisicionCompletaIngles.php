@@ -39,6 +39,7 @@
   <div class="loader" style="display: none;"></div>
   <div class="alert alert-info">
   	<h5 class="text-center">All fields are required (*)</h5>
+
   </div>
 	<div class="contenedor mt-5">
 		<div class="card">

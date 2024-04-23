@@ -10,15 +10,26 @@ class Requisicion extends CI_Controller{
 	function index(){
 		date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d/m/Y");
-
+    $data['id_cliente'] = $_GET['id_cliente'];
+   
+    $data['datos'] = $this->cat_cliente_model->getC($data['id_cliente']);
+  
 		$this->load->view('requisicion/requisicionCompleta', $data);
 	}
-  function vista_ingles(){
+  public function vista_ingles() {
+     $id_cliente  = $this->input->post('id_cliente');
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d/m/Y");
 
+    $data['id_cliente'] = $id_cliente;
+ 
+
+
+    $data['datos'] = $this->cat_cliente_model->getC($id_cliente);
+ 
+
     $this->load->view('requisicion/en/requisicionCompletaIngles', $data);
-  }
+}
 	function registrar(){
     if($this->input->post('version') == 'espanol'){
   		$this->form_validation->set_rules('nombre', 'Nombre o Razón social', 'trim|required'); // trim se coloca antes de required. Esto asegura que cualquier espacio en blanco adicional al principio o al final del valor ingresado en el campo, será eliminado antes de que la validación required se lleve a cabo.

@@ -483,11 +483,19 @@ class Reclutamiento_model extends CI_Model{
       $id = $this->db->insert_id();
       return  $id;
     }
-    function updateApplicantByIdBolsaTrabajo($datos, $id){
+
+
+
+
+    function updateApplicantByIdBolsaTrabajo($datos,  $id){
 			$this->db
 			->where('id_bolsa_trabajo', $id)
-			->update('requisicion_aspirante', $datos);
+			->update('bolsa_trabajo', $datos);
 		}
+
+
+
+
     function addWarrantyApplicant($data){
       $this->db->insert('aspirante_garantia', $data);
     }

@@ -1657,11 +1657,9 @@ class Reclutamiento extends CI_Controller{
           $aspirante = array(
             'edicion' => date('Y-m-d H:i:s'),
             'id_usuario' => $this->session->userdata('id'),
-            'nombre' => $this->input->post('nombre_update'),
-            'paterno' => $this->input->post('paterno_update'),
-            'materno' => $this->input->post('materno_update'),
+           
           );
-          $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($aspirante, $this->input->post('id_bolsa'));
+          $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($bolsa, $this->input->post('id_bolsa'));
         }
         if($section == 'salud'){
           $bolsa = array(

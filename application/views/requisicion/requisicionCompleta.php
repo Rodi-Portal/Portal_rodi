@@ -29,7 +29,10 @@
 		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 		    <ul class="navbar-nav ml-auto">
 		    	<li class="nav-item">
-					<a class="nav-link text-light font-weight-bold english-version-link" href="<?php echo site_url('Requisicion/vista_ingles') ?>"><i class="fas fa-globe"></i> English version</a>
+					<a class="nav-link text-light font-weight-bold english-version-link" href="#" onclick="loadEnglishVersion()"><i class="fas fa-globe"></i> English version</a>
+
+
+
 
 					</li>
 		    </ul>
@@ -39,6 +42,8 @@
   <div class="loader" style="display: none;"></div>
   <div class="alert alert-info">
   	<h5 class="text-center">Todos los campos con (*) son obligatorios</h5>
+		<h1>Requisición Completa</h1>
+    
   </div>
 <div class="contenedor mt-5">
 		<div class="card">
