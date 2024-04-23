@@ -148,6 +148,7 @@ function changeDataTable(url) {
             .medio_contacto;
         }
       },
+    
       {
         title: 'Acciones',
         data: 'id',
@@ -163,7 +164,7 @@ function changeDataTable(url) {
             ')" data-toggle="tooltip" title="Cargar CV/Solicitud"><i class="fas fa-upload"></i> Cargar CV/Solicitud</a>';
 
 
-            var comentarios = '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id + ', \'' + full.nombre_aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
+            var comentarios = '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id + ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
 
 
           var historial =
@@ -478,6 +479,7 @@ function addApplicant() {
   });
 }
 function guardarComentario(id_bolsa) {
+ 
     let comentario = $('#comentario_bolsa').val();
     $.ajax({
       url: '<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>',

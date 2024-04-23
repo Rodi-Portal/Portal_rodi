@@ -21,7 +21,7 @@
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Historial de comentarios con respecto a: <br><span class="nombreRegistro"></span></h4>
+        <h4 class="modal-title">Historial de comentarios con respecto a: <br><span class="nombreRegistro" id="nombre_aspirante"></span></h4>
        
       </div>
       <div class="modal-body">

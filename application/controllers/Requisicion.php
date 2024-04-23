@@ -11,13 +11,13 @@ class Requisicion extends CI_Controller{
 		date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d/m/Y");
 
-		$this->load->view('index', $data);
+		$this->load->view('requisicion/requisicionCompleta', $data);
 	}
   function vista_ingles(){
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d/m/Y");
 
-    $this->load->view('en/index', $data);
+    $this->load->view('requisicion/en/requisicionCompletaIngles', $data);
   }
 	function registrar(){
     if($this->input->post('version') == 'espanol'){

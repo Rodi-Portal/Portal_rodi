@@ -2,34 +2,40 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client's Panel | RODI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <!-- CSS -->
-  <?php echo link_tag("css/paneles/clientes.css"); ?>
-  <script src="https://kit.fontawesome.com/fdf6fee49b.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-  <!-- Select Bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css"> -->
-  <!-- Sweetalert 2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" />
-
-  <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client's Panel | RODI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <?php echo link_tag("css/paneles/clientes.css"); ?>
+    <script src="https://kit.fontawesome.com/fdf6fee49b.js"></script>
+    <!-- Bootstrap 5.2.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <!-- Select Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <!-- Sweetalert 2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" />
+    <!-- Bootstrap 4.6 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <!-- Bootstrap Select -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
   <!-- Se imprimen los modals -->
-  <?php echo $modals; ?>
+  <?php echo $modals; 
+  $id_cliente =  $this->session->userdata('idcliente')
+   
+  ?>
   <header>
     <nav class="navbar navbar-dark" style="background-color: #0a39a6;">
       <a class="navbar-brand" href="javascript:void(0)">
@@ -85,11 +91,13 @@
             <?php $totalRequisiciones = (!empty($procesosActuales))? count($procesosActuales) : 0 ?>
             <h4 class="text-wrap"><?php echo $translations['proceso_titulo'].':  <b>'.$totalRequisiciones.'</b> ' ?>
             </h4>
-            <button type="button" class="btn btn-primary btn-sm"  onclick="redirectToPage('<?php echo base_url('application\views\requisicion\requisicionCompleta.php'); ?>')"><i class="fas fa-plus"></i>
-              <?php echo $translations['accion_nueva_requisicion']; ?></button>
+            <button type="button" class="btn btn-primary btn-sm" onclick="loadPageInSection()">
+              <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
+            </button>
           </div>
           <hr>
           <?php 
+          
        
           if(!empty($procesosActuales)){
             foreach($procesosActuales as $proceso){
@@ -124,7 +132,8 @@
                     onclick="viewFiles(< ?php echo $proceso->idReq ?>)"><i class="fas fa-folder"></i>
                     < ?php echo $translations['proceso_accion_archivos'] ?></a></li>
               </ul>
-            </div -->             <?php 
+            </div --> <?php 
+            echo $id_cliente;
               echo '<div class="card-title" onclick="openDetails('.$proceso->idReq.')">';
               echo '<span class="badge text-bg-dark">Nombre de la  vacante </span><h4 class="d-inline align-middle"> <b>'.$proceso->puesto.'</b></h4><br>';
               echo $status;               
@@ -221,18 +230,20 @@
 
   </section>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-    crossorigin="anonymous"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous">
-  </script>
-  <!-- Sweetalert 2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
+    <!-- Scripts al final del cuerpo del documento -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<!-- Sweetalert 2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
+<!-- DataTables -->
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+<!-- Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Bootstrap 4.6.0 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+<!-- Bootstrap Select -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<!-- Custom JS -->
 
-  <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
-
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <script src="<?php echo base_url() ?>js/clientes/panel.js"></script>
 
@@ -481,7 +492,7 @@
   }
 
   function verHistorialMovimientos(nombreCompleto, id) {
-    $(".nombreRegistro").text(nombreCompleto);
+    $("#nombre_aspirante").text(nombreCompleto);
     $('#div_historial_aspirante').empty();
     $('#btnComentario').attr('onclick', 'guardarComentario(' + id + ')');
     $.ajax({
@@ -518,6 +529,7 @@
         salida += "</table>";
 
         $('#comentario_bolsa').val('');
+      
         $('#div_historial_comentario').html(salida);
         // Mostrar el modal
         $('#historialComentariosModal ').modal('show');
@@ -549,37 +561,37 @@
       if (res.length !== 14) {
         let data = JSON.parse(res);
         let tbody = '';
-  
-          data.data.forEach(function(resp) {
-            //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
-            let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
-              '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
-              '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp
-              .id_ra + ')">CV/Pendiente</button>';
-            tbody += '<tr>';
-            tbody += '<td>' + resp.id + '</td>';
-            tbody += '<td>' + resp.nombre_aspirante + '</td>';
-            tbody += '<td>' + resp.medio_contacto + '</td>';
-            tbody += '<td>';
-            tbody += '<div class="btn-group">';
-            tbody +=
-              '<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
-            tbody += 'Acciones';
-            tbody += '</button>';
-            tbody += '<ul class="dropdown-menu">';
-            tbody +=
-              '<li><button type="button" class="dropdown-item" onclick="openModal1()">Detalles del Aspirante</button></li>';
-            tbody +=
-              '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
-              resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
-            tbody +=
-              '<li>' + cvLink + '</li>';
-            // Agrega más opciones de modales dentro del dropdown según necesites
-            tbody += '</ul>';
-            tbody += '</div>';
-            tbody += '</td>';
-          });
-      
+
+        data.data.forEach(function(resp) {
+          //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
+          let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
+            '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
+            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp
+            .id_ra + ')">CV/Pendiente</button>';
+          tbody += '<tr>';
+          tbody += '<td>' + resp.id + '</td>';
+          tbody += '<td>' + resp.nombre_aspirante + '</td>';
+          tbody += '<td>' + resp.medio_contacto + '</td>';
+          tbody += '<td>';
+          tbody += '<div class="btn-group">';
+          tbody +=
+            '<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
+          tbody += 'Acciones';
+          tbody += '</button>';
+          tbody += '<ul class="dropdown-menu">';
+          tbody +=
+            '<li><button type="button" class="dropdown-item" onclick="openModal1()">Detalles del Aspirante</button></li>';
+          tbody +=
+            '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
+            resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
+          tbody +=
+            '<li>' + cvLink + '</li>';
+          // Agrega más opciones de modales dentro del dropdown según necesites
+          tbody += '</ul>';
+          tbody += '</div>';
+          tbody += '</td>';
+        });
+
         $('#dataTable tbody').html(tbody);
         $('#dataTable').DataTable(); // Inicializa el DataTable
       } else {
@@ -617,7 +629,7 @@
         let data = JSON.parse(res);
         let tbody = '';
         data.data.forEach(function(resp) {
-          //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
+          console.log("🚀 ~ data.data.forEach ~ resp:", resp)
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
             '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra +
@@ -653,11 +665,59 @@
       }
     });
   }
-  function redirectToPage(url) {
-    // Aquí puedes agregar el parámetro que necesitas, por ejemplo:
-    let parametro = 'valor'; // Cambia 'valor' por el valor que necesites pasar
-    window.location.href = `${url}?parametro=${parametro}`;
-  }
+  function openProcedures() {
+    // Recargar la página
+    window.location.reload();
+}
+  function loadPageInSection() {
+    // Ocultar el contenido actual
+    var id_cliente = <?php echo $id_cliente; ?>;
+  
+
+    $('#panel-inicio').hide();
+    $('#panel-historial').hide();
+    
+    $.ajax({
+        url: "<?php echo base_url('Requisicion/index'); ?>",
+        method: "GET",
+        success: function(response) {
+            // Insertar el contenido de la página en la sección
+            $('#panel-agregar-candidato').html(response);
+            // Mostrar la sección
+            $('#panel-agregar-candidato').show();
+        },
+        error: function(xhr, status, error) {
+            // Manejar cualquier error que ocurra durante la solicitud AJAX
+            console.error(xhr.responseText);
+        }
+    });
+}
+
+
+function loadPageInSection() {
+    // Ocultar el contenido actual
+    var id_cliente = <?php echo $id_cliente; ?>;
+  
+
+    $('#panel-inicio').hide();
+    $('#panel-historial').hide();
+    
+    $.ajax({
+        url: "<?php echo base_url('Requisicion/index'); ?>",
+        method: "GET",
+        success: function(response) {
+            // Insertar el contenido de la página en la sección
+            $('#panel-agregar-candidato').html(response);
+            // Mostrar la sección
+            $('#panel-agregar-candidato').show();
+        },
+        error: function(xhr, status, error) {
+            // Manejar cualquier error que ocurra durante la solicitud AJAX
+            console.error(xhr.responseText);
+        }
+    });
+}
+
   urlGuardarComentario = "<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>";
   </script>
   <script src="<?php echo base_url() ?>js/bolsa/aspirantes.js"></script>

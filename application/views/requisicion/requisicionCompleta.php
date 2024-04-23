@@ -1,22 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Formulario de Requisición | RODI</title>
-	<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-	<script src="https://kit.fontawesome.com/fdf6fee49b.js"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-	<!-- Select Bootstrap -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-	<!-- Sweetalert 2 -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-	<!-- Favicon -->
-	<link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" />
-	<link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
-	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>  
-</head>
+
 <body>
 	<div class="modal fade" id="avisoModal" role="dialog" data-backdrop="static" data-keyboard="false">
 	  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -35,10 +19,9 @@
 	  </div>
 	</div>
 	<header>
-  	<nav class="navbar navbar-expand-lg navbar-light bg-light" id="menu">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="menu">
 		  <a class="navbar-brand text-light" href="#">
-		   <img src="<?php echo base_url() ?>img/favicon.jpg" class="space">
-		    Formulario de Requisicion
+		 		    Formulario de Requisicion
 		  </a>
 		  <button class="navbar-toggler" type="submit" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
@@ -46,7 +29,8 @@
 		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 		    <ul class="navbar-nav ml-auto">
 		    	<li class="nav-item">
-						<a class="nav-link text-light font-weight-bold" href="<?php echo site_url('Requisicion/vista_ingles') ?>"><i class="fas fa-globe"></i> English version</a>
+					<a class="nav-link text-light font-weight-bold english-version-link" href="<?php echo site_url('Requisicion/vista_ingles') ?>"><i class="fas fa-globe"></i> English version</a>
+
 					</li>
 		    </ul>
 		  </div>
@@ -911,18 +895,12 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="continuarBtn" disabled>Continuar</button>
+        <button type="button" class="btn btn-primary" id="salirAviso" disabled>Continuar</button>
       </div>
     </div>
   </div>
 </div> 
-	<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-	<!-- Sweetalert 2 -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
-	<!-- Bootstrap Select -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+
 	<script>
 
 		$(document).ready(function(){
@@ -958,27 +936,43 @@
 			})
 			
     });
+		$(document).on('click', '.english-version-link', function(e) {
+    e.preventDefault(); // Evita que el enlace cambie de página
 
+    // Realizar solicitud AJAX para cargar la versión en inglés
+    $.ajax({
+        url: "<?php echo site_url('Requisicion/vista_ingles'); ?>",
+        method: "GET",
+        success: function(response) {
+            // Insertar el contenido de la versión en inglés en la sección
+            $('#panel-agregar-candidato').html(response);
+        },
+        error: function(xhr, status, error) {
+            // Manejar cualquier error que ocurra durante la solicitud AJAX
+            console.error(xhr.responseText);
+        }
+    });
+});
 	$(document).ready(function () {
     // Mostrar el modal de aviso de privacidad al cargar la página
     $("#avisoPrivModal").modal('show');
 
     // Deshabilitar inicialmente el botón "Continuar"
-    $("#continuarBtn").prop("disabled", true);
+    $("#salirAviso").prop("disabled", true);
 
     // Deshabilitar el botón de cierre del modal hasta que se acepten los términos
     $("#aceptoTerminos").change(function () {
       $("#closeModalBtn").prop("disabled", !$(this).prop("checked"));
-      $("#continuarBtn").prop("disabled", !$(this).prop("checked"));
+      $("#salirAviso").prop("disabled", !$(this).prop("checked"));
     });
 
     // Habilitar o deshabilitar el botón "Continuar" según si se aceptan los términos
     $("#aceptoTerminos").change(function () {
-      $("#continuarBtn").prop("disabled", !$(this).prop("checked"));
+      $("#salirAviso").prop("disabled", !$(this).prop("checked"));
     });
 
     // Cerrar el modal cuando se presiona "Continuar"
-    $("#continuarBtn").click(function () {
+    $("#salirAviso").click(function () {
       $("#avisoPrivModal").modal('hide');
     });
   });
