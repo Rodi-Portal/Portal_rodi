@@ -101,6 +101,7 @@
 					bSortable: false,
           "width": "3%",
           mRender: function(data, type, full){
+						
             return data;
           }
 				},
@@ -135,6 +136,7 @@
 					"width": "8%",
 
 					mRender: function(data, type, full){
+					
 						var cv = (full.cv != null)? '<a href="<?php echo base_url(); ?>_docs/'+full.cv+'" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' : '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
 					
 						if(full.status_final == null){
@@ -172,6 +174,7 @@
 						return '<b>'+estatus+'<b>';
           }
 				},
+    
         {
 					title: 'Comentario final',
 					data: 'comentario_final',

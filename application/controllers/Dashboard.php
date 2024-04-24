@@ -20,22 +20,25 @@ class Dashboard extends CI_Controller{
 			$config = $this->funciones_model->getConfiguraciones();
 			$data['version'] = $config->version_sistema;
 			//TODO:pendiente  si es  util   para 	 la plataforma  de reclutamiento 
-		/* 
+		
 		if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){
-				$ESEFinalizados = $this->estadistica_model->countESEFinalizados();
-				$data['titulo_dato1'] = 'Total de ESE Finalizados';
-				$data['dato1'] = $ESEFinalizados->total;
-				$dopingFinalizados = $this->estadistica_model->countDopingFinalizados();
-				$data['titulo_dato2'] = 'Total de Exámenes Antidoping Finalizados';
-				$data['dato2'] = $dopingFinalizados->total;
-				$covidFinalizados = $this->estadistica_model->countCovidFinalizados();
-				$data['titulo_dato3'] = 'Total de Pruebas COVID-19 Finalizados';
-				$data['dato3'] = $covidFinalizados->total;
-				$medicoFinalizados = $this->estadistica_model->countMedicoFinalizados();
-				$data['titulo_dato4'] = 'Total de Exámenes Médicos Finalizados';
-				$data['dato4'] = $medicoFinalizados->total;
+				$ReqProceso = $this->estadistica_model->countReqEnProceso();
+				$data['titulo_dato1'] = 'Total de Requisiciones en Proceso';
+				$data['dato1'] = $ReqProceso->total;
+				$ReqFinalizadas = $this->estadistica_model->countReqFinalizadas();
+				$data['titulo_dato2'] = 'Total de Requisiciones Finalizadas';
+				$data['dato2'] = $ReqFinalizadas->total;
+		
+				$ReqCanceladas = $this->estadistica_model->countReqCanceladas();
+				$data['titulo_dato3'] = 'Total de Requisiciones Canceladas';
+				$data['dato3'] = $ReqCanceladas->total;
+			
 				
-			} */ /*
+				$AspirantesTotal = $this->estadistica_model->countReqCanceladas();
+				$data['titulo_dato4'] = 'Aspirantes  en Bolsa de Trabajo';
+				$data['dato4'] = $AspirantesTotal->total;
+				
+			} 
 			if($this->session->userdata('idrol') == 2){
 				$num = $this->estadistica_model->countCandidatosAnalista($this->session->userdata('id'));
 				$data['dato_totalcandidatos'] = $num->total;
@@ -45,9 +48,9 @@ class Dashboard extends CI_Controller{
 				$num = $this->estadistica_model->countCandidatosSinDocumentos($this->session->userdata('id'));
 				$data['dato_3'] = $num->total;
 				$data['texto_3'] = "Candidatos sin envío de documentos";
-			}*/
+			}
 
-			/*$notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
+			$notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
 			if(!empty($notificaciones)){
 				$contador = 0;
 				foreach($notificaciones as $row){
@@ -56,7 +59,7 @@ class Dashboard extends CI_Controller{
 					}
 				}
 				$data['contadorNotificaciones'] = $contador;
-			}*/
+			}
 
 			//Modals
 			$modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
@@ -164,6 +167,7 @@ class Dashboard extends CI_Controller{
 		}
 		$this->load->view('candidato/formulario',$data);
 	}
+
 	function clientes_panel(){
     $id_cliente = $this->session->userdata('idcliente');
 		$data['subclientes'] = $this->cliente_general_model->getSubclientesPanel($id_cliente);

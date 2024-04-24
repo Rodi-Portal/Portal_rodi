@@ -6,17 +6,62 @@ class Estadistica_model extends CI_Model{
   /*----------------------------------------*/
 	/* Estadisticas para altos cargos
 	/*----------------------------------------*/ 
-    function countESEFinalizados(){
-      $this->db
-      ->select("COUNT(c.id) as total")
-      ->from('candidato as c')
-      ->where('c.status', 2)
-      ->where('c.eliminado', 0);
+      function countReqEnProceso(){
+        $this->db
+        ->select("COUNT(R.id) as total")
+        ->from('requisicion as R')
+        ->where('R.status', 2)
+        ->where('R.comentario_final IS NULL') // Corrección aquí
+        ->where('R.eliminado', 0);
 
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
+    }
+
+
+
+    function countReqFinalizadas(){
+      $this->db
+      ->select("COUNT(R.id) as total")
+      ->from('requisicion as R')
+      ->where('R.status', 3)
+      ->where('R.comentario_final IS NOT NULL') // Corrección aquí
+      ->where('R.eliminado', 0);
+    
       $consulta = $this->db->get();
       $resultado = $consulta->row();
       return $resultado;
     }
+
+    function countReqCanceladas(){
+      $this->db
+      ->select("COUNT(R.id) as total")
+      ->from('requisicion as R')
+      ->where('R.status', 0)
+      ->where('R.comentario_final IS NOT NULL') // Corrección aquí
+      ->where('R.eliminado', 0);
+    
+      $consulta = $this->db->get();
+      $resultado = $consulta->row();
+      return $resultado;
+    }
+
+    function countBolsaTrabajo(){
+      $this->db
+      ->select("COUNT(R.id) as total")
+      ->from('bolsa_trabajo as B')
+      ->where('B.status', 1)
+  // Corrección aquí
+      ->where('B.eliminado', 0);
+    
+      $consulta = $this->db->get();
+      $resultado = $consulta->row();
+      return $resultado;
+    }
+
+    /*
+    
     function countDopingFinalizados(){
       $this->db
       ->select("COUNT(dop.id) as total")
@@ -28,6 +73,7 @@ class Estadistica_model extends CI_Model{
       $resultado = $consulta->row();
       return $resultado;
     }
+
     function countCovidFinalizados(){
       $this->db
       ->select("COUNT(c.id) as total")
@@ -39,6 +85,7 @@ class Estadistica_model extends CI_Model{
       $resultado = $consulta->row();
       return $resultado;
     }
+
     function countMedicoFinalizados(){
       $this->db
       ->select("COUNT(m.id) as total")
@@ -49,6 +96,9 @@ class Estadistica_model extends CI_Model{
       $resultado = $consulta->row();
       return $resultado;
     }
+    
+    */
+
     function getCandidatosFinalizadosporMeses($year, $month){
       $this->db
       ->select("c.creacion")

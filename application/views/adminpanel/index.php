@@ -9,7 +9,7 @@
   </div>
   <?php 
 	//TODO: revisar esta  parte 
-  if($this->session->userdata('idrol') == 100 || $this->session->userdata('idrol') == 100){ ?>
+  if($this->session->userdata('idrol') == 6 || $this->session->userdata('idrol') == 1){ ?>
     <div class="row">
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
@@ -18,10 +18,10 @@
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
 								 ?></div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $dato1; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-file-pdf fa-2x text-gray-300"></i>
+							<i class="fas fa-spinner fa-pulse fa-2x text-success"></i>
               </div>
             </div>
           </div>
@@ -33,25 +33,25 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1"><?php echo $titulo_dato2; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $dato2; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-info"><?php echo $dato2; ?></div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-eye-dropper fa-2x text-gray-300"></i>
+							<i class="fas fa-check-circle fa-2x text-primary"></i>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card border-left-danger shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $dato3; ?></div>
+                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-danger"><?php echo $dato3; ?></div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-head-side-mask fa-2x text-gray-300"></i>
+							<i class="fas fa-times-circle fa-2x text-danger"></i>
               </div>
             </div>
           </div>
@@ -63,10 +63,10 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo $titulo_dato4; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $dato4; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-warning"><?php echo $dato4; ?></div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-notes-medical fa-2x text-gray-300"></i>
+							<i class="fas fa-user-tie fa-2x text-warning"></i>
               </div>
             </div>
           </div>
@@ -82,6 +82,8 @@
           <div class="card-body">
             <div class="chart-area">
               <canvas id="chartCandidatosFinalizados"></canvas>
+							<canvas id="chartCandidatosFinalizados"></canvas>
+							<canvas id="chartCandidatosFinalizados"></canvas>
             </div>
           </div>
         </div>
