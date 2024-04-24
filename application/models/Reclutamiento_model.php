@@ -556,21 +556,19 @@ class Reclutamiento_model extends CI_Model{
 		return $consulta->row();
 	}
 		function getHistorialAspirante($id, $campo){
-			$id_portal = $this->session->userdata('idPortal');
-
-		
-
+			
 			$this->db
 			->select("H.*,CL.nombre")
 			->from('requisicion_historial as H')
       ->join('requisicion as R','R.id = H.id_requisicion')
 			->join('cliente as CL', 'CL.id = R.id_cliente')
-			->where('R.id_portal', $id_portal)
+			
 
 			->where('H.'.$campo, $id)
 			->order_by('H.id','DESC');
 
 			$query = $this->db->get();
+			
 			if($query->num_rows() > 0){
         return $query->result();
 			}else{

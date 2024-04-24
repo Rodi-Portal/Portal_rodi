@@ -46,3 +46,20 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="historialModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Historial de movimientos del aspirante: <br><span class="nombreAspirante"></span></h4>
+       
+      </div>
+      <div class="modal-body">
+        <div id="div_historial_aspirante"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCerrarPasos" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

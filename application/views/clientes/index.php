@@ -2,32 +2,35 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client's Panel | RODI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <!-- CSS -->
-    <?php echo link_tag("css/paneles/clientes.css"); ?>
-    <script src="https://kit.fontawesome.com/fdf6fee49b.js"></script>
-    <!-- Bootstrap 5.2.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <!-- Select Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-    <!-- Sweetalert 2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" />
-    <!-- Bootstrap 4.6 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <!-- Bootstrap Select -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client's Panel | RODI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <!-- CSS -->
+  <?php echo link_tag("css/paneles/clientes.css"); ?>
+  <script src="https://kit.fontawesome.com/fdf6fee49b.js"></script>
+  <!-- Bootstrap 5.2.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <!-- Select Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+  <!-- Sweetalert 2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" />
+  <!-- Bootstrap 4.6 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+  <!-- Bootstrap Select -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
@@ -230,19 +233,23 @@
 
   </section>
 
-    <!-- Scripts al final del cuerpo del documento -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-<!-- Sweetalert 2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
-<!-- DataTables -->
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-<!-- Select2 -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- Bootstrap 4.6.0 JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-<!-- Bootstrap Select -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-<!-- Custom JS -->
+  <!-- Scripts al final del cuerpo del documento -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous">
+  </script>
+  <!-- Sweetalert 2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
+  <!-- DataTables -->
+  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+  <!-- Select2 -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Bootstrap 4.6.0 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous">
+  </script>
+  <!-- Bootstrap Select -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <!-- Custom JS -->
 
 
   <script src="<?php echo base_url() ?>js/clientes/panel.js"></script>
@@ -332,6 +339,7 @@
     if ($.fn.DataTable.isDataTable('#lista_candidatos')) {
       $('#lista_candidatos').DataTable().destroy();
     }
+
     $('#lista_candidatos').DataTable({
         "processing": true,
         "serverSide": true,
@@ -491,6 +499,61 @@
 
   }
 
+  function verHistorial(id, nombre) {
+    $('#div_historial_aspirante').empty();
+    var id = id;
+    console.log("🚀 ~ verHistorial ~ id:", id)
+    
+
+    $.ajax({
+      url: '<?php echo base_url('Reclutamiento/getHistorialAspirante'); ?>',
+      type: 'post',
+      data: {
+        'id': id,
+        'tipo_id': 'aspirante'
+      },
+      success: function(res) {
+        var salida = '<table class="table table-striped" style="font-size: 14px">';
+        salida += '<tr style="background: gray;color:white;">';
+        salida += '<th>Fecha</th>';
+        salida += '<th>Estatus</th>';
+        salida += '<th>Comentario / Descripción / Fecha y lugar</th>';
+        salida += '</tr>';
+
+        if (res != 0) {
+          var dato = JSON.parse(res);
+          for (var i = 0; i < dato.length; i++) {
+            var aux = dato[i]['creacion'].split(' ');
+            var f = aux[0].split('-');
+            var fecha = f[2] + '/' + f[1] + '/' + f[0];
+            salida += "<tr>";
+            salida += '<td>' + fecha + '</td>';
+            salida += '<td style="white-space: nowrap;">' + dato[i]['accion'] + '</td>';
+            salida += '<td>' + dato[i]['descripcion'] + '</td>';
+            salida += "</tr>";
+          }
+        } else {
+          salida += "<tr>";
+          salida += '<td colspan="3" class="text-center"><h5>Sin movimientos</h5></td>';
+          salida += "</tr>";
+        }
+        salida += "</table>";
+
+        $('#div_historial_aspirante').html(salida);
+        $("#historialModal").modal('show');
+
+        // Asigna el evento click al botón de cerrar
+        $('#btnCerrarPasos').click(function() {
+          $('#historialModal').modal('hide');
+        });
+      }
+    });
+   
+    
+  }
+
+
+
   function verHistorialMovimientos(nombreCompleto, id) {
     $("#nombre_aspirante").text(nombreCompleto);
     $('#div_historial_aspirante').empty();
@@ -529,7 +592,7 @@
         salida += "</table>";
 
         $('#comentario_bolsa').val('');
-      
+
         $('#div_historial_comentario').html(salida);
         // Mostrar el modal
         $('#historialComentariosModal ').modal('show');
@@ -579,8 +642,8 @@
           tbody += 'Acciones';
           tbody += '</button>';
           tbody += '<ul class="dropdown-menu">';
-          tbody +=
-            '<li><button type="button" class="dropdown-item" onclick="openModal1()">Detalles del Aspirante</button></li>';
+          tbody += '<li><button type="button" class="dropdown-item" id="ver_historial" onclick="verHistorial(' +
+            resp.id_ra + ', \'' + resp.nombre_aspirante + '\')">Movimientos del Aspirante</button></li>';
           tbody +=
             '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
             resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
@@ -629,7 +692,7 @@
         let data = JSON.parse(res);
         let tbody = '';
         data.data.forEach(function(resp) {
-          console.log("🚀 ~ data.data.forEach ~ resp:", resp)
+         
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
             '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra +
@@ -645,8 +708,8 @@
           tbody += 'Acciones';
           tbody += '</button>';
           tbody += '<ul class="dropdown-menu">';
-          tbody +=
-            '<li><button type="button" class="dropdown-item" onclick="openModal1()">Detalles del Aspirante</button></li>';
+          tbody += '<li><button type="button" class="dropdown-item" id="ver_historial" onclick="verHistorial(' +
+            resp.id_ra + ', \'' + resp.nombre_aspirante + '\')">Movimientos del Aspirante</button></li>';
           tbody +=
             '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
             resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
@@ -664,53 +727,61 @@
         }, 200);
       }
     });
+      console.log("🚀 ~ openDetailss ~ res:", res)
   }
+
   function openProcedures() {
     // Recargar la página
     window.location.reload();
-}
+  }
+
   function loadPageInSection() {
     // Ocultar el contenido actual
     var id_cliente = <?php echo $id_cliente; ?>;
-  
+
 
     $('#panel-inicio').hide();
     $('#panel-historial').hide();
-    
+
     $.ajax({
-        url: "<?php echo base_url('Requisicion/index'); ?>",
-        method: "GET",
-        data: { id_cliente: id_cliente },
-        success: function(response) {
-            // Insertar el contenido de la página en la sección
-            $('#panel-agregar-candidato').html(response);
-            // Mostrar la sección
-            $('#panel-agregar-candidato').show();
-        },
-        error: function(xhr, status, error) {
-            // Manejar cualquier error que ocurra durante la solicitud AJAX
-            console.error(xhr.responseText);
-        }
+      url: "<?php echo base_url('Requisicion/index'); ?>",
+      method: "GET",
+      data: {
+        id_cliente: id_cliente
+      },
+      success: function(response) {
+        // Insertar el contenido de la página en la sección
+        $('#panel-agregar-candidato').html(response);
+        // Mostrar la sección
+        $('#panel-agregar-candidato').show();
+      },
+      error: function(xhr, status, error) {
+        // Manejar cualquier error que ocurra durante la solicitud AJAX
+        console.error(xhr.responseText);
+      }
     });
-}
-function loadEnglishVersion() {
-  var id_cliente = <?php echo $id_cliente; ?>;
-  $('#panel-inicio').hide();
+  }
+
+  function loadEnglishVersion() {
+    var id_cliente = <?php echo $id_cliente; ?>;
+    $('#panel-inicio').hide();
     $('#panel-historial').hide();
     $.ajax({
-        url: "<?php echo site_url('Requisicion/vista_ingles'); ?>",
-        method: "POST",
-        data: { 'id_cliente': id_cliente },
-        success: function(response) {
-          $('#panel-agregar-candidato').html(response);
-            // Mostrar la sección
-            $('#panel-agregar-candidato').show();
-        },
-        error: function(xhr, status, error) {
-            console.error(xhr.responseText);
-        }
+      url: "<?php echo site_url('Requisicion/vista_ingles'); ?>",
+      method: "POST",
+      data: {
+        'id_cliente': id_cliente
+      },
+      success: function(response) {
+        $('#panel-agregar-candidato').html(response);
+        // Mostrar la sección
+        $('#panel-agregar-candidato').show();
+      },
+      error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+      }
     });
-}
+  }
 
 
 

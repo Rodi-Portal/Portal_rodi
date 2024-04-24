@@ -169,8 +169,8 @@ function changeDataTable(url) {
 
           var historial =
             '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
-          var iniciar_socio =
-            '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Iniciar ESE"><i class="fas fa-play-circle"></i> Iniciar ESE</a>';
+          //var iniciar_socio =
+            //'<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Iniciar ESE"><i class="fas fa-play-circle"></i> Iniciar ESE</a>';
           let ingreso =
             '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>';
 
@@ -178,14 +178,12 @@ function changeDataTable(url) {
           if (full.status_final == null) {
             acciones =
               '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-              '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar paso</a>';
+              '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
           } else {
             if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
               if (full.idCandidato != null && full.idCandidato != '') {
                 acciones = '<b>ESE finalizado</b>';
-              } else {
-                acciones = iniciar_socio;
-              }
+              } //else {                acciones = iniciar_socio;              }
             } else {
               if (full.status_final != 'CANCELADO') {
                 acciones = ingreso;
@@ -197,10 +195,12 @@ function changeDataTable(url) {
             '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
             '<div class="dropdown-menu">' +
             acciones +
+            historial+
             comentarios+
             cvLink +
-            historial +
+            
             ingreso +
+           
 
             '</div>' +
             '</div>';
