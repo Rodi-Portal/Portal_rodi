@@ -30,6 +30,8 @@
   <!-- Core plugin JavaScript-->
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
 	<!-- Page level plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script src="<?php echo base_url() ?>js/chart.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 

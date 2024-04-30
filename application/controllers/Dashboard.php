@@ -34,7 +34,7 @@ class Dashboard extends CI_Controller{
 				$data['dato3'] = $ReqCanceladas->total;
 			
 				
-				$AspirantesTotal = $this->estadistica_model->countReqCanceladas();
+				$AspirantesTotal = $this->estadistica_model->countBolsaTrabajo();
 				$data['titulo_dato4'] = 'Aspirantes  en Bolsa de Trabajo';
 				$data['dato4'] = $AspirantesTotal->total;
 				

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chart.js</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+</head>
+<body>
+    <div>
+        <canvas id="myChart" width="1647" height="1647" style="display: block; width: 1047px; height: 1047px;" class="chartjs-render-monitor"></canvas>
+    </div>
+</body>
+<script>
+    var ctx= document.getElementById("myChart").getContext("2d");
+    var myChart= new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels:['reclutadora 1','reclutadora 2','reclutadora 3','reclutadora 4','reclutadora 5'],
+            datasets:[
+              {
+                label:'Requisiciones recibidas',
+                data:[10, 9, 15, 19, 12],
+                backgroundColor:'rgba(66, 134, 244, 0.5)'
+              },
+              {
+                label:'Requisiciones cerradas',
+                data:[8, 7, 12, 15, 10],
+                backgroundColor:'rgba(74, 135, 72, 0.5)'
+              },
+              {
+                label:'Requisiciones canceladas',
+                data:[6, 5, 10, 13, 8],
+                backgroundColor:'rgba(229, 89, 50, 0.5)'
+              },
+              {
+                label:'SLA',
+                data:[6, 5, 10, 13, 8],
+                backgroundColor:'rgba(255, 255, 0, 0.5)'
+              }
+            ]
+        },
+        options:{
+            scales:{
+                yAxes:[{
+                        ticks:{
+                            beginAtZero:true
+                        }
+                }]
+            }
+        }
+    });
+</script>
+</html>
+
+

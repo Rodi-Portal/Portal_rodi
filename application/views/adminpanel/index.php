@@ -8,87 +8,108 @@
     <!--a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</!--a-->
   </div>
   <?php 
+
+
+
+
 	//TODO: revisar esta  parte 
-  if($this->session->userdata('idrol') == 6 || $this->session->userdata('idrol') == 1){ ?>
-    <div class="row">
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
+  if($this->session->userdata('idrol') == 6 || $this->session->userdata('idrol') == 1){ 
+    ?>
+  <div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
 								 ?></div>
-                <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
-              </div>
-              <div class="col-auto">
-							<i class="fas fa-spinner fa-pulse fa-2x text-success"></i>
-              </div>
+              <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-info text-uppercase mb-1"><?php echo $titulo_dato2; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-info"><?php echo $dato2; ?></div>
-              </div>
-              <div class="col-auto">
-							<i class="fas fa-check-circle fa-2x text-primary"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-danger shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-danger"><?php echo $dato3; ?></div>
-              </div>
-              <div class="col-auto">
-							<i class="fas fa-times-circle fa-2x text-danger"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo $titulo_dato4; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-warning"><?php echo $dato4; ?></div>
-              </div>
-              <div class="col-auto">
-							<i class="fas fa-user-tie fa-2x text-warning"></i>
-              </div>
+            <div class="col-auto">
+              <i class="fas fa-spinner fa-pulse fa-2x text-success"></i>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12">
-        <div class="card shadow mb-4">
-          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Gráfica de ESE Finalizados durante <?php echo date('Y'); ?></h6>
-          </div>
-          <div class="card-body">
-            <div class="chart-area">
-              <canvas id="chartCandidatosFinalizados"></canvas>
-							<canvas id="chartCandidatosFinalizados"></canvas>
-							<canvas id="chartCandidatosFinalizados"></canvas>
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1"><?php echo $titulo_dato2; ?></div>
+              <div class="h5 mb-0 font-weight-bold text-info"><?php echo $dato2; ?></div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-check-circle fa-2x text-primary"></i>
             </div>
           </div>
         </div>
       </div>
-				<!--ul>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-danger shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
+              <div class="h5 mb-0 font-weight-bold text-danger"><?php echo $dato3; ?></div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-times-circle fa-2x text-danger"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-warning shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo $titulo_dato4; ?></div>
+              <div class="h5 mb-0 font-weight-bold text-warning"><?php echo $dato4; ?></div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-user-tie fa-2x text-warning"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">Estadistica General <?php echo date('Y'); ?>
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="chartCandidatosFinalizados"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">Estadisticas  por reclutadora  <?php echo date('Y'); ?>
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="chartReclu"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--ul>
 					<li>ID: < ?php echo $this->session->userdata('id'); ?></li>
 					<li>Nombre: < ?php echo $this->session->userdata('nombre'); ?></li>
 					<li>Apellido Paterno: < ?php echo $this->session->userdata('paterno'); ?></li>
@@ -100,241 +121,327 @@
 					<li>ID Portal: < ?php echo $this->session->userdata('idPortal'); ?></li>
 					<li>Nombre Portal: < ?php echo $this->session->userdata('nombrePortal'); ?></li>
 				</ul -->
-   	 </div>
-  <?php 
+</div>
+<?php 
   }
   if($this->session->userdata('idrol') == 2 || $this->session->userdata('idrol') == 9){ ?>
-    <div class="row">
-      <div class="col-12">
-        <div class="card shadow mb-4">
-          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Gráfica de ESE Finalizados durante <?php echo date('Y'); ?></h6>
-          </div>
-          <div class="card-body">
-            <div class="chart-area">
-              <canvas id="chartCandidatosPorAnalista"></canvas>
-            </div>
-          </div>
+<div class="row">
+  <div class="col-12">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Gráfica de ESE Finalizados durante <?php echo date('Y'); ?></h6>
+      </div>
+      <div class="card-body">
+        <div class="chart-area">
+          <canvas id="chartCandidatosPorAnalista"></canvas>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-8 offset-4">
-        <div class="card shadow mb-4 grafica-circular">
-          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Gráfica de Estatus de ESE</h6>
-          </div>
-          <div class="card-body">
-            <div class="chart-area">
-              <canvas id="chartEstatusCandidatosPorAnalista"></canvas>
-            </div>
-          </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-8 offset-4">
+    <div class="card shadow mb-4 grafica-circular">
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Gráfica de Estatus de ESE</h6>
+      </div>
+      <div class="card-body">
+        <div class="chart-area">
+          <canvas id="chartReclu"></canvas>
         </div>
       </div>
     </div>
-  <?php 
-  } ?>
-
+  </div>
 </div>
 
-<!-- /.container-fluid -->
 <?php 
-	if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){ ?>
-	<script>
-		let datos = [];
-		$.ajax({
-			async: false,
-			url: '<?php echo base_url('Estadistica/getCandidatosFinalizadosporMeses'); ?>',
-			method: "POST",
-			success: function(res) {
-				var data = JSON.parse(res);
-				for(var i = 0; i < data.length; i++){
-					datos.push(data[i]);
-				}
-			}
-		});
-		const labels = [
-			'Enero',
-			'Febrero',
-			'Marzo',
-			'Abril',
-			'Mayo',
-			'Junio',
-			'Julio',
-			'Agosto',
-			'Septiembre',
-			'Octubre',
-			'Noviembre',
-			'Diciembre'
-		];
-		const data = {
-			labels: labels,
-			datasets: [{
-				label: 'Cantidad Total del Mes',
-				backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
-    		borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-    		borderWidth: 1,// Ancho del borde
-				//borderColor: 'rgba(54, 162, 235, 1)', //Linea trazada
-				pointBackgroundColor: "#fff", // Punto del gráfico
-      	//pointBorderColor: "#000", // Circunferencia que bordean el punto del gráfico
-				pointRadius: 5,
-				//borderWidth: 5,
-				fill: true,
-				data: datos,
-        datalabels: {
-          align: 'end',
-          anchor: 'end',
-          backgroundColor: function(context) {
-            return context.dataset.backgroundColor;
-          },
-          borderRadius: 4,
-          color: 'black',
-          font: {
-            weight: 'bold'
-          },
-          padding: 6
-        }
-			}],
-		};
+  }
+// Verifica el rol del usuario y agrega los datos al conjunto de datos de la gráfica
+if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){ ?>
+<script>
+// Define variables para almacenar los datos de cada card
 
-		const config = {
-      plugins: [ChartDataLabels],
-			type: 'line',
-			data: data,
-			options: {
-				scales: {
-					x: {
-						grid: {
-							borderColor: 'red'
-						}
-					},
-					y: {
-						min: 0,
-        		max: 600,
-						ticks: {
-							stepSize: 100
-						}
-					}
-    		},
-				maintainAspectRatio: false
-			},
+
+let datosCard1, datosCard2, datosCard3, datosCard4;
+
+var promises = [];
+
+// Realiza la solicitud AJAX para obtener los datos del card 1
+var promise1 = $.ajax({
+  url: '<?php echo base_url('Estadistica/getRequisicionesProcesoPorMes'); ?>',
+  method: 'GET',
+  dataType: 'json',
+});
+
+// Realiza la solicitud AJAX para obtener los datos del card 2
+var promise2 = $.ajax({
+  url: '<?php echo base_url('Estadistica/getRequisicionesFinalizadasPorMes'); ?>',
+  method: 'GET',
+  dataType: 'json',
+});
+
+// Realiza la solicitud AJAX para obtener los datos del card 3
+var promise3 = $.ajax({
+  url: '<?php echo base_url('Estadistica/getRequisicionesCanceladasPorMes'); ?>',
+  method: 'GET',
+  dataType: 'json',
+});
+
+// Realiza la solicitud AJAX para obtener los datos del card 4
+var promise4 = $.ajax({
+  url: '<?php echo base_url('Estadistica/getAspirantesProcesoPorMes'); ?>',
+  method: 'GET',
+  dataType: 'json',
+});
+
+// Agrega las promesas al array
+promises.push(promise1, promise2, promise3, promise4);
+
+// Espera a que todas las promesas se resuelvan
+Promise.all(promises).then(function(responses) {
+  // Asigna los datos a las variables correspondientes
+  datosCard1 = responses[0];
+  datosCard2 = responses[1];
+  datosCard3 = responses[2];
+  datosCard4 = responses[3];
+
+  // Llama a la función para actualizar la gráfica
+  actualizarGrafica();
+}).catch(function(error) {
+  console.error('Error en las solicitudes AJAX:', error);
+});
+
+
+
+
+// Función para actualizar la gráfica una vez que se hayan obtenido todos los datos
+function actualizarGrafica() {
+  // Verifica si todos los datos están disponibles
+  if (datosCard1 !== undefined && datosCard2 !== undefined && datosCard3 !== undefined && datosCard4 !== undefined) {
+    console.log("Tipo de datos de datosCard1:", typeof datosCard1);
+    // Definir los meses y los nombres de los meses
+    const meses = Array.from({
+      length: 12
+    }, (_, i) => i); // Array de números del 0 al 11 (para representar los meses del año)
+    const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
+      'Octubre', 'Noviembre', 'Diciembre'
+    ];
+
+    // Obtener el mes actual y el mes anterior
+    const mesActual = new Date().getMonth();
+    const mesAnterior = (mesActual === 0 ? 11 : mesActual - 1);
+
+    // Obtener los datos de los meses actual y anterior para cada conjunto de datos
+    const datosMesActual = [datosCard1[mesActual], datosCard2[mesActual], datosCard3[mesActual], datosCard4[mesActual]];
+    const datosMesAnterior = [datosCard1[mesAnterior], datosCard2[mesAnterior], datosCard3[mesAnterior], datosCard4[
+      mesAnterior]];
+
+    // Rellenar los datos faltantes con ceros para que cada conjunto de datos tenga un valor para cada mes
+    const datosCard1Rellenados = datosCard1.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+      valor : 0);
+    const datosCard2Rellenados = datosCard2.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+      valor : 0);
+    const datosCard3Rellenados = datosCard3.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+      valor : 0);
+    const datosCard4Rellenados = datosCard4.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+      valor : 0);
+
+    // Definir los datos de la gráfica con los datos rellenados
+    const data = {
+      labels: nombresMeses,
+      datasets: [
+
+        {
+          label: 'Requisiciones Canceladas',
+          backgroundColor: 'rgba(255, 99, 132)', // Rojo para el fondo
+          borderColor: 'rgba(255, 99, 132, 1)', // Color del borde
+          borderWidth: 1, // Ancho del borde
+          pointBackgroundColor: 'rgba(255, 99, 132, 1)', // Punto del gráfico
+          pointRadius: 5,
+          fill: true,
+          data: datosCard3Rellenados,
       
-		};
+          datalabels: {
+            align: 'end',
+            anchor: 'end',
+            backgroundColor: function(context) {
+              return context.dataset.backgroundColor;
+            },
+            borderRadius: 4,
+            color: 'black',
+            font: {
+              weight: 'bold'
+            },
+            padding: 6
+          }
+        },
+        {
+          label: 'Requisiciones en Proceso',
+          backgroundColor: 'rgba(92, 184, 92, 0.5)', // Verde success para el fondo
+          borderColor: 'rgba(92, 184, 92, 1)', // Color del borde
+          borderWidth: 1, // Ancho del borde
+          pointBackgroundColor: 'rgba(92, 184, 92, 1)', // Punto del gráfico
+          pointRadius: 5,
+          fill: true,
+          data: datosCard1Rellenados,
+        
+          datalabels: {
+            align: 'end',
+            anchor: 'end',
+            backgroundColor: function(context) {
+              return context.dataset.backgroundColor;
+            },
+            borderRadius: 4,
+            color: 'black',
+            font: {
+              weight: 'bold'
+            },
+            padding: 6
+          }
+        },
+        {
+          label: 'Requisiciones Finalizadas',
+          backgroundColor: 'rgba(54, 162, 235, 0.8)', // Color de fondo
+          borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
+          borderWidth: 1, // Ancho del borde
+          pointBackgroundColor: 'rgba(54, 162, 235, 1)',  // Punto del gráfico
+          pointRadius: 5,
+          fill: true,
+          data: datosCard2Rellenados,
+       
+          datalabels: {
+            align: 'end',
+            anchor: 'end',
+            backgroundColor: function(context) {
+              return context.dataset.backgroundColor;
+            },
+            borderRadius: 4,
+            color: 'black',
+            font: {
+              weight: 'bold'
+            },
+            padding: 6
+          }
+        },
 
-		var myChart = new Chart($('#chartCandidatosFinalizados'),config);
-	</script>
-	<?php 
-	} 
-	if($this->session->userdata('idrol') == 2 || $this->session->userdata('idrol') == 9){ ?>
-	<script>
-		let datos = [];
-		$.ajax({
-			async: false,
-			url: '<?php echo base_url('Estadistica/getCandidatosFinalizadosPorMesesPorAnalista'); ?>',
-			method: "POST",
-			success: function(res) {
-				var data = JSON.parse(res);
-				for(var i = 0; i < data.length; i++){
-					datos.push(data[i]);
-				}
-			}
-		});
-		const labels = [
-			'Enero',
-			'Febrero',
-			'Marzo',
-			'Abril',
-			'Mayo',
-			'Junio',
-			'Julio',
-			'Agosto',
-			'Septiembre',
-			'Octubre',
-			'Noviembre',
-			'Diciembre'
-		];
-		const data = {
-			labels: labels,
-			datasets: [{
-				label: 'Cantidad Total del Mes',
-				backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
-    		borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-    		borderWidth: 1,// Ancho del borde
-				//borderColor: 'rgba(54, 162, 235, 1)', //Linea trazada
-				pointBackgroundColor: "#fff", // Punto del gráfico
-      	//pointBorderColor: "#000", // Circunferencia que bordean el punto del gráfico
-				pointRadius: 5,
-				//borderWidth: 5,
-				fill: true,
-				data: datos,
-			}]
-		};
+        {
+          label: 'Aspirantes en proceso de Reclutamiento',
+          backgroundColor: 'rgba(255, 206, 86, 0.5)', // Amarillo para el fondo
+          borderColor: 'rgba(255, 206, 86, 1)', // Color del borde
+          borderWidth: 1, // Ancho del borde
+          pointBackgroundColor: 'rgba(255, 206, 86, 1)', // Punto del gráfico
+          pointRadius: 5,
+          fill: true,
+          data: datosCard4Rellenados,
+    
+          datalabels: {
+            align: 'end',
+            anchor: 'end',
+            backgroundColor: function(context) {
+              return context.dataset.backgroundColor;
+            },
+            borderRadius: 4,
+            color: 'black',
+            font: {
+              weight: 'bold'
+            },
+            padding: 6
+          }
+        }
+      ]
+    };
 
-		const config = {
-			type: 'line',
-			data: data,
-			options: {
-				scales: {
-					x: {
-						grid: {
-							borderColor: 'red'
-						}
-					},
-					y: {
-						min: 0,
-        		max: 200,
-						ticks: {
-							stepSize: 10
-						}
-					}
-    		},
-				maintainAspectRatio: false
-			}
-		};
+    // Configurar la gráfica
+    const config = {
+  type: 'line',
+  data: data,
+  options: {
+    scales: {
+      xAxes: [{
+        grid: {
+          borderColor: 'red'
+        }
+      }],
+      yAxes: [{
+        ticks: {
+          min: 1,   // Establece el valor mínimo en el eje y
+          max: 50,  // Establece el valor máximo en el eje y
+          stepSize: 10 // Define el tamaño del paso entre cada punto de comparación
+        }
+      }]
+    },
+    maintainAspectRatio: false
+  }
+};
 
-		var myChart = new Chart(
-			$('#chartCandidatosPorAnalista'),
-			config
-		);
-		//Grafica de Estatus
-		let estatus_arreglo = [];
-		$.ajax({
-			async: false,
-			url: '<?php echo base_url('Estadistica/getEstatusCandidatosPorAnalista'); ?>',
-			method: "POST",
-			success: function(res) {
-				var data = JSON.parse(res);
-				for(var i = 0; i < data.length; i++){
-					estatus_arreglo.push(data[i]);
-				}
-			}
-		});
-		const data2 = {
-			labels: [
-				'Recomendable',
-				'No recomendable',
-				'A consideración'
-			],
-			datasets: [{
-				label: 'My First Dataset',
-				data: estatus_arreglo,
-				backgroundColor: [
-					'rgb(0, 204, 0)',
-					'rgb(255, 0, 0)',
-					'rgb(255, 205, 86)'
-				],
-			}]
-		};
+    // Crear una nueva instancia de la gráfica
+    var myChart = new Chart(
+      $('#chartCandidatosFinalizados'),
+      config
+    );
+  }
+}
 
-		const config2 = {
-			type: 'pie',
-			data: data2
-		};
+var ctx = document.getElementById("chartReclu");
 
-		var myChart = new Chart(
-			$('#chartEstatusCandidatosPorAnalista'),
-			config2,
-		);
-	</script>
-	<?php 
-	} ?>
+var myChart = new Chart(ctx, {
+  type: "bar",
+  data: {
+    labels: ['Reclutadora 1', 'Reclutadora 2', 'Reclutadora 3', 'Reclutadora 4', 'Reclutadora 5'],
+    datasets: [
+      {
+        label: 'Requisiciones recibidas',
+        data: [10, 9, 15, 11, 12],
+        backgroundColor: 'rgba(54, 162, 235, 1)'
+      },
+      {
+        label: 'Requisiciones cerradas',
+        data: [8, 7, 12, 11, 10],
+        backgroundColor: 'rgba(92, 184, 92, 1)',
+      },
+      {
+        label: 'Requisiciones canceladas',
+        data: [6, 5, 10, 13, 8],
+        backgroundColor: 'rgba(255, 99, 132, 1)',
+      },
+      {
+        label: 'SLA',
+        data: [3, 4, 9, 1, 7],
+        backgroundColor: 'rgba(255, 206, 86, 1)',
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Datos de reclutamiento',
+      fontSize: 30,
+      padding: 30,
+      fontColor: '#12619c',
+    },
+    legend: {
+      position: 'right',
+      labels: {
+        padding: 22,
+        boxWidth: 20,
+        fontSize: 15,
+      }
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        },
+        stacked: true
+      }],
+      xAxes: [{
+        stacked: true,
+        barThickness: 80, // Ancho de las barras
+        barPercentage: 0.8, // Porcentaje del espacio ocupado por las barras en el eje X
+        categoryPercentage: 0.8 // Porcentaje del espacio ocupado por cada conjunto de barras en el eje X
+      }]
+    }
+  }
+});
+</script>
+<?php } ?>

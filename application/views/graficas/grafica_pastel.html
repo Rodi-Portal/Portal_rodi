@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chart.js</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
+</head>
+
+<body>
+  <div>
+    <canvas id="myChart" width="400" height="400"></canvas>
+  </div>
+</body>
+<script>
+  var ctx = document.getElementById("myChart").getContext("2d");
+
+  var myChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ['Facebook', 'Indeed', 'Occ', 'Talenteca'], // Etiquetas de la leyenda
+      datasets: [
+        {
+          data: [10, 9, 15, 12], // Datos del gráfico
+          backgroundColor: [
+            'rgba(66, 134, 244)',
+            'rgba(74, 135, 72)',
+            'rgba(229, 89, 50)',
+            'rgba(255, 255, 0)'
+          ]
+        }
+      ]
+    },
+    options: {
+      title: {
+        display: true,
+        text: 'Datos de medios de captación de candidatos',
+        fontSize: 27,
+        padding: 30,
+        fontColor: '#12619c',
+      },
+      legend: {
+        display: true, 
+        position: 'right',
+        labels: {
+          padding: 22,
+          boxWidth: 20,
+          fontSize: 15,
+        }
+      }
+    }
+  });
+</script>
+
+</html>
+

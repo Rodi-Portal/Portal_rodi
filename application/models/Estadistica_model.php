@@ -7,9 +7,11 @@ class Estadistica_model extends CI_Model{
 	/* Estadisticas para altos cargos
 	/*----------------------------------------*/ 
       function countReqEnProceso(){
+         $id_portal = $this->session->userdata('idPortal');
         $this->db
         ->select("COUNT(R.id) as total")
         ->from('requisicion as R')
+        ->where('R.id_portal', $id_portal)
         ->where('R.status', 2)
         ->where('R.comentario_final IS NULL') // Corrección aquí
         ->where('R.eliminado', 0);
@@ -22,12 +24,14 @@ class Estadistica_model extends CI_Model{
 
 
     function countReqFinalizadas(){
+      $id_portal = $this->session->userdata('idPortal');
       $this->db
       ->select("COUNT(R.id) as total")
       ->from('requisicion as R')
       ->where('R.status', 3)
       ->where('R.comentario_final IS NOT NULL') // Corrección aquí
-      ->where('R.eliminado', 0);
+      ->where('R.eliminado', 0)
+      ->where('R.id_portal ', $id_portal);
     
       $consulta = $this->db->get();
       $resultado = $consulta->row();
@@ -48,12 +52,14 @@ class Estadistica_model extends CI_Model{
     }
 
     function countBolsaTrabajo(){
+      $id_portal = $this->session->userdata('idPortal');
       $this->db
-      ->select("COUNT(R.id) as total")
+      ->select("COUNT(B.id) as total")
       ->from('bolsa_trabajo as B')
-      ->where('B.status', 1)
+      ->where('B.status !=', 0)
+      ->where('B.id_portal ', $id_portal);
   // Corrección aquí
-      ->where('B.eliminado', 0);
+     
     
       $consulta = $this->db->get();
       $resultado = $consulta->row();
@@ -113,6 +119,65 @@ class Estadistica_model extends CI_Model{
       $query = $this->db->get();
       return $query->num_rows();
     }
+
+    function getRequisicionesFinalizadasPorMeses($year, $month){
+      $this->db
+      ->select("R.creacion")
+      ->from('requisicion as R')
+      ->where('R.status', 3)
+      ->where('R.comentario_final IS NOT NULL') 
+      ->where('R.eliminado', 0)
+      ->where('YEAR(R.edicion)', $year)
+      ->where('MONTH(R.edicion)', $month);
+
+      $query = $this->db->get();
+      return $query->num_rows();
+    }
+
+
+    
+    function getRequisicionesProcesoPorMes($year, $month){
+      $this->db
+      ->select("R.creacion")
+      ->from('requisicion as R')
+      ->where('R.status', 2)
+      ->where('R.comentario_final IS  NULL') 
+      ->where('R.eliminado', 0)
+      ->where('YEAR(R.edicion)', $year)
+      ->where('MONTH(R.edicion)', $month);
+
+      $query = $this->db->get();
+      return $query->num_rows();
+    }
+
+    function getAspirantesProcesoPorMes($year, $month){
+      $this->db
+      ->select("B.creacion")
+      ->from('requisicion_aspirante  as B')
+      
+      ->where('B.eliminado', 0)
+      ->where('B.status_final IS  NULL') 
+      ->where('YEAR(B.edicion)', $year)
+      ->where('MONTH(B.edicion)', $month);
+
+      $query = $this->db->get();
+      return $query->num_rows();
+    }
+
+    function getRequisicionesCanceladasPorMeses($year, $month){
+      $this->db
+      ->select("R.creacion")
+      ->from('requisicion as R')
+      ->where('R.status', 0)
+      ->where('R.comentario_final IS NOT NULL') 
+      ->where('R.eliminado', 0)
+      ->where('YEAR(R.edicion)', $year)
+      ->where('MONTH(R.edicion)', $month);
+
+      $query = $this->db->get();
+      return $query->num_rows();
+    }
+
     function getHistorialCandidatos(){
       $this->db
       ->select("c.fecha_alta, c.tiempo_proceso")
