@@ -199,7 +199,7 @@ class Estadistica_model extends CI_Model{
     $this->db->select('UP.id, DGR.nombre, DGR.paterno')
     ->from('usuarios_portal as UP')
     ->join('datos_generales as DGR', 'UP.id_datos_generales = DGR.id')
-    ->where_in('UP.id_rol', [4,11])
+    ->where_in('UP.id_rol', [4,11,6])
     ->where('UP.id_portal', $id_portal);
     $query = $this->db->get();
 
