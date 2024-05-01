@@ -372,7 +372,7 @@ function actualizarGrafica() {
     },
     maintainAspectRatio: false
   }
-};
+  };
 
     // Crear una nueva instancia de la gráfica
     var myChart = new Chart(
@@ -384,29 +384,76 @@ function actualizarGrafica() {
 
 var ctx = document.getElementById("chartReclu");
 
+// Declarar una función para cargar los datos mediante AJAX
+function cargarDatos() {
+  $.ajax({
+    url: '<?php echo base_url('Estadistica/getEstadisticaReclutadoras'); ?>',
+    method: 'GET',
+    success: function(res) {
+    // Obtener los datos desde la respuesta
+    console.log('Respuesta de la solicitud AJAX:', res);
+    
+    // Organizar los datos para el gráfico
+    var reclutadoras = [];
+    var requisicionesRecibidas = [];
+    var requisicionesCerradas = [];
+    var requisicionesCanceladas = [];
+    var sla = [];
+    
+    // Iterar sobre cada objeto en la respuesta
+    for (var i = 0; i < res.length; i++) {
+        reclutadoras.push(res[i].nombre + ' ' + res[i].paterno);
+        requisicionesRecibidas.push(parseInt(res[i].requicisionesAsignadas));
+        requisicionesCanceladas.push(parseInt(res[i].requicisionesCanceladas));
+        requisicionesCerradas.push(parseInt(res[i].requicisionesFinalizadas));
+        sla.push(parseInt(res[i].sla));
+    }
+    
+    // Actualizar los datos del gráfico con los datos obtenidos
+    myChart.data.labels = reclutadoras;
+    myChart.data.datasets[0].data = requisicionesRecibidas;
+    myChart.data.datasets[1].data = requisicionesCerradas;
+    myChart.data.datasets[2].data = requisicionesCanceladas;
+    myChart.data.datasets[3].data = sla;
+    
+    // Actualizar el gráfico
+    myChart.update();
+},
+    error: function(xhr, status, error) {
+      console.error('Error al cargar los datos:', error);
+    }
+  });
+}
+
+// Llamar a la función para cargar los datos al cargar la página
+$(document).ready(function() {
+  cargarDatos();
+});
+
+// Crear el gráfico inicialmente con etiquetas y datos vacíos
 var myChart = new Chart(ctx, {
   type: "bar",
   data: {
-    labels: ['Reclutadora 1', 'Reclutadora 2', 'Reclutadora 3', 'Reclutadora 4', 'Reclutadora 5'],
+    labels: [],
     datasets: [
       {
         label: 'Requisiciones recibidas',
-        data: [10, 9, 15, 11, 12],
+        data: [],
         backgroundColor: 'rgba(54, 162, 235, 1)'
       },
       {
         label: 'Requisiciones cerradas',
-        data: [8, 7, 12, 11, 10],
+        data: [],
         backgroundColor: 'rgba(92, 184, 92, 1)',
       },
       {
         label: 'Requisiciones canceladas',
-        data: [6, 5, 10, 13, 8],
+        data: [],
         backgroundColor: 'rgba(255, 99, 132, 1)',
       },
       {
         label: 'SLA',
-        data: [3, 4, 9, 1, 7],
+        data: [],
         backgroundColor: 'rgba(255, 206, 86, 1)',
       }
     ]

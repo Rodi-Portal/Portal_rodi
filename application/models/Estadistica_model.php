@@ -21,7 +21,7 @@ class Estadistica_model extends CI_Model{
         return $resultado;
     }
 
-
+    
 
     function countReqFinalizadas(){
       $id_portal = $this->session->userdata('idPortal');
@@ -190,6 +190,102 @@ class Estadistica_model extends CI_Model{
         return FALSE;
       }
     }
+  /*----------------------------------------*/
+	/* Estadisticas para Reclutadores
+	/*----------------------------------------*/
+  public function obtenerReclutadores() {
+    // Consulta para obtener los reclutadores
+    $id_portal = $this->session->userdata('idPortal');
+    $this->db->select('UP.id, DGR.nombre, DGR.paterno')
+    ->from('usuarios_portal as UP')
+    ->join('datos_generales as DGR', 'UP.id_datos_generales = DGR.id')
+    ->where_in('UP.id_rol', [4,11])
+    ->where('UP.id_portal', $id_portal);
+    $query = $this->db->get();
+
+    return $query->result();
+}
+
+public function obtenerRequisicionesPorUsuario($fechaInicio, $fechaFin, $id_usuario) {
+  // Contar las filas para el usuario especificado dentro del rango de fechas
+  $this->db->select('COUNT(RU.id_requisicion) as total_requisiciones')
+           ->from('requisicion_usuario as RU')
+           ->join('requisicion as R', 'R.id = RU.id_requisicion')
+           ->where('RU.id_usuario', $id_usuario)
+           ->where('RU.creacion >=', $fechaInicio)
+           ->where('R.edicion <=', $fechaFin);
+  $query = $this->db->get();
+  // Retornar el resultado como un objeto
+  $resultado = $query->row();
+  return $resultado->total_requisiciones;
+}
+
+public function obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin, $id_usuario) {
+  // Contar las filas para el usuario especificado dentro del rango de fechas
+  $this->db->select('COUNT(id) as total_canceladas')
+           ->from('requisicion')
+           ->where('id_usuario', $id_usuario)
+           ->where('comentario_final IS NOT NULL')
+           ->where('status', 0)
+           ->where('creacion >=', $fechaInicio)
+           ->where('edicion <=', $fechaFin);
+  $query = $this->db->get();
+  // Retornar el resultado como un objeto
+  $resultado = $query->row();
+  return $resultado->total_canceladas;
+}
+
+public function obtenerRequisicionesFinalizadasPorUsuario($fechaInicio, $fechaFin, $id_usuario) {
+  // Contar las filas para el usuario especificado dentro del rango de fechas
+  $this->db->select('COUNT(id) as total_finalizadas')
+           ->from('requisicion')
+           ->where('id_usuario', $id_usuario)
+           ->where('comentario_final IS NOT NULL')
+           ->where('status', 3)
+           ->where('creacion >=', $fechaInicio)
+           ->where('edicion <=', $fechaFin);
+  $query = $this->db->get();
+  // Retornar el resultado como un objeto
+  $resultado = $query->row();
+  return $resultado->total_finalizadas;
+}
+public function obtenerPromedioSLAPorUsuarioYFecha($fecha_inicio, $fecha_fin, $id_usuario) {
+  // Convertir las fechas a formato MySQL
+  $fecha_inicio = date('Y-m-d', strtotime($fecha_inicio));
+  $fecha_fin = date('Y-m-d', strtotime($fecha_fin));
+
+  // Consulta para obtener las requisiciones asignadas al usuario en el rango de fechas especificado
+  $this->db->select('R.creacion, R.edicion')
+      ->from('requisicion as R')
+      ->where('comentario_final IS NOT NULL')
+      ->where('R.id_usuario', $id_usuario)
+      ->where('R.status', 3)
+      ->where('R.eliminado', 0)
+      ->where('R.creacion >=', $fecha_inicio)
+      ->where('R.edicion <=', $fecha_fin);
+
+  $query = $this->db->get();
+  $requisiciones = $query->result();
+
+  // Calcular el SLA para cada requisición y sumarlos para obtener el total de días
+  $total_sla = 0;
+  foreach ($requisiciones as $requisicion) {
+      $creacion = new DateTime($requisicion->creacion);
+      $edicion = new DateTime($requisicion->edicion);
+      $sla = $edicion->diff($creacion)->days; // Calcular la diferencia en días entre las fechas
+      $total_sla += $sla; // Sumar el SLA de esta requisición al total
+  }
+
+  // Calcular el promedio de SLA en días
+  $num_requisiciones = count($requisiciones);
+  $promedio_sla = $num_requisiciones > 0 ? $total_sla / $num_requisiciones : 0;
+
+  return $promedio_sla;
+}
+
+
+
+
   /*----------------------------------------*/
 	/* Estadisticas para analistas
 	/*----------------------------------------*/

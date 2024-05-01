@@ -54,6 +54,64 @@ class Estadistica extends CI_Controller{
 
 
 
+function getEstadisticaReclutadoras(){
+  date_default_timezone_set('America/Mexico_City');
+  $year = date('Y');
+  $reclutadores = $this->estadistica_model->obtenerReclutadores();
+
+  // Agrega más datos a cada reclutador
+  foreach ($reclutadores as &$reclutador) {
+   
+      // Aquí puedes agregar más datos a cada reclutador
+      $fechaInicio = $this->input->post('fecha_inicio');
+        $fechaFin = $this->input->post('fecha_fin');
+        
+        // Si no se especificaron fechas, establecer un rango predeterminado
+        if (empty($fechaInicio) || empty($fechaFin)) {
+            // Establecer el rango predeterminado (por ejemplo, los últimos 30 días)
+            $fechaFin = date('Y-m-d'); // Fecha actual
+            $fechaInicio = date('Y-m-d', strtotime('-30 days', strtotime($fechaFin))); // Fecha hace 30 días
+        }
+         /*----------------------------------------*/
+        /* Requisiciones  Asignadas a  reclutador grafica
+        /*----------------------------------------*/
+        // Llamar al método del modelo con las fechas seleccionadas
+        $requisicionesPorUsuario = $this->estadistica_model->obtenerRequisicionesPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
+
+      $reclutador->requicisionesAsignadas = $requisicionesPorUsuario;
+
+     
+         /*----------------------------------------*/
+        /* Requisiciones  Finalizadas grafica
+        /*----------------------------------------*/
+        $requisicionFinalizadaPorUsuario = $this->estadistica_model->obtenerRequisicionesFinalizadasPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
+
+      $reclutador->requicisionesFinalizadas = $requisicionFinalizadaPorUsuario;
+
+   /*----------------------------------------*/
+        /* Requisiciones  canceladas grafica
+        /*----------------------------------------*/
+        $requisicionCanceladaPorUsuario = $this->estadistica_model->obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
+
+      $reclutador->requicisionesCanceladas = $requisicionCanceladaPorUsuario;
+
+
+      /*----------------------------------------*/
+        /* Requisiciones  SLA grafica
+        /*----------------------------------------*/
+        $slaPorUsuario = $this->estadistica_model->obtenerPromedioSLAPorUsuarioYFecha($fechaInicio, $fechaFin, $reclutador->id);
+
+      $reclutador->sla = $slaPorUsuario;
+     
+      // Agrega tantos datos como necesites
+  }
+
+  // Devuelve la respuesta como JSON
+  header('Content-Type: application/json');
+  echo json_encode($reclutadores);
+}
+
+
 function getRequisicionesProcesoPorMes(){
   date_default_timezone_set('America/Mexico_City');
   $year = date('Y');
