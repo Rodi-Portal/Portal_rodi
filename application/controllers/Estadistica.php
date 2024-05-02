@@ -72,6 +72,14 @@ function getEstadisticaReclutadoras(){
             $fechaFin = date('Y-m-d H:i:s'); // Fecha actual con horas, minutos y segundos
             $fechaInicio = date('Y-m-d H:i:s', strtotime('-30 days', strtotime($fechaFin)));
           }
+
+
+          /*----------------------------------------*/
+        /* Requisiciones  canceladas grafica
+        /*----------------------------------------*/
+        $requisicionCanceladaPorUsuario = $this->estadistica_model->obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
+
+        $reclutador->requisicionesCanceladas = $requisicionCanceladaPorUsuario;
          /*----------------------------------------*/
         /* Requisiciones  Asignadas a  reclutador grafica
         /*----------------------------------------*/
@@ -88,12 +96,7 @@ function getEstadisticaReclutadoras(){
 
       $reclutador->requisicionesFinalizadas = $requisicionFinalizadaPorUsuario;
 
-   /*----------------------------------------*/
-        /* Requisiciones  canceladas grafica
-        /*----------------------------------------*/
-        $requisicionCanceladaPorUsuario = $this->estadistica_model->obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
-
-      $reclutador->requisicionesCanceladas = $requisicionCanceladaPorUsuario;
+   
 
 
       /*----------------------------------------*/
