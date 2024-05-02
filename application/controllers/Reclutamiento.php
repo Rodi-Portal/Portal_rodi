@@ -1451,7 +1451,7 @@ class Reclutamiento extends CI_Controller{
     }
     function uploadCSV(){
       $id_portal = $this->session->userdata('idPortal');
-      $idRol = $this->session->userdata('idrol');
+      $idUsuario = $this->session->userdata('id');
 
       if(isset($_FILES["archivo"]["name"])) {
         $extensionArchivo = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
@@ -1517,7 +1517,7 @@ class Reclutamiento extends CI_Controller{
                                         'creacion' => $fecha,
                                         'edicion' => $fecha,
                                         'id_portal'=> $id_portal,
-                                        'id_usuario' => $idRol,
+                                        'id_usuario' => $idUsuario,
                                         'nombre' => strtoupper($r[2]),
                                         'paterno' => strtoupper($r[3]),
                                         'materno' => strtoupper($r[4]),

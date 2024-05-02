@@ -69,7 +69,7 @@
             <span class="icon text-white-50">
               <i class="far fa-file-alt"></i>
             </span>
-            <span class="text">Nueva requisición</span>
+            <span class="text">Nueva Requisición</span>
           </button>
           <?php 
         if($this->session->userdata('idrol') == 4){
