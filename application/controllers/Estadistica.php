@@ -69,9 +69,9 @@ function getEstadisticaReclutadoras(){
         // Si no se especificaron fechas, establecer un rango predeterminado
         if (empty($fechaInicio) || empty($fechaFin)) {
             // Establecer el rango predeterminado (por ejemplo, los últimos 30 días)
-            $fechaFin = date('Y-m-d'); // Fecha actual
-            $fechaInicio = date('Y-m-d', strtotime('-30 days', strtotime($fechaFin))); // Fecha hace 30 días
-        }
+            $fechaFin = date('Y-m-d H:i:s'); // Fecha actual con horas, minutos y segundos
+            $fechaInicio = date('Y-m-d H:i:s', strtotime('-30 days', strtotime($fechaFin)));
+          }
          /*----------------------------------------*/
         /* Requisiciones  Asignadas a  reclutador grafica
         /*----------------------------------------*/

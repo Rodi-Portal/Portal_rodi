@@ -253,8 +253,8 @@ function actualizarGrafica() {
 
         {
           label: 'Requisiciones Canceladas',
-          backgroundColor: 'rgba(255, 99, 132)', // Rojo para el fondo
-          borderColor: 'rgba(255, 99, 132, 1)', // Color del borde
+          backgroundColor: 'rgba(255, 99, 132, 0.7)', // Rojo para el fondo
+          borderColor: 'rgba(255, 99, 132)', // Color del borde
           borderWidth: 1, // Ancho del borde
           pointBackgroundColor: 'rgba(255, 99, 132, 1)', // Punto del gráfico
           pointRadius: 5,
@@ -326,7 +326,7 @@ function actualizarGrafica() {
 
         {
           label: 'Aspirantes en proceso de Reclutamiento',
-          backgroundColor: 'rgba(255, 206, 86, 0.5)', // Amarillo para el fondo
+          backgroundColor: 'rgba(255, 206, 86, 0.6)', // Amarillo para el fondo
           borderColor: 'rgba(255, 206, 86, 1)', // Color del borde
           borderWidth: 1, // Ancho del borde
           pointBackgroundColor: 'rgba(255, 206, 86, 1)', // Punto del gráfico
@@ -439,12 +439,12 @@ var myChart = new Chart(ctx, {
       {
         label: 'Requisiciones recibidas',
         data: [],
-        backgroundColor: 'rgba(54, 162, 235, 1)'
+        backgroundColor: 'rgba(92, 184, 92, 1)',
       },
       {
         label: 'Requisiciones cerradas',
         data: [],
-        backgroundColor: 'rgba(92, 184, 92, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 1)',
       },
       {
         label: 'Requisiciones canceladas',
