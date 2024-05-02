@@ -13,7 +13,7 @@
                     <span class="icon text-white-50">
                         <i class="far fa-file-alt"></i>
                     </span>
-                    <span class="text">Requisicion express</span>
+                    <span class="text">Requisicíon Exprés</span>
                 </button>
             </div>
         <?php 
@@ -99,13 +99,13 @@
           $fecha_registro = fechaTexto($r->creacion,'espanol');
 					$color_estatus = ''; $text_estatus = '';
 					if($r->status == 1){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequicision('.$r->id.',\''.$r->nombre.'\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
+						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
             $text_estatus = 'Estatus: <b>En espera</b>';
 						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
 						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Eliminar requisicion" onclick="openDeleteOrder('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-trash"></i></a>';
 					}
 					if($r->status == 2){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar'.$r->id.'"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequicision('.$r->id.',\''.$r->nombre.'\', \'detener\')"><i class="fas fa-stop"></i></a>';
+						$botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar'.$r->id.'"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'detener\')"><i class="fas fa-stop"></i></a>';
 						$color_estatus = 'req_activa';
             $text_estatus = 'Estatus: <b>En proceso de reclutamiento</b>';
 						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-file-alt"></i></a>';
@@ -1125,7 +1125,7 @@ function regresarListado() {
   location.reload();
 }
 
-function cambiarStatusRequicision(id, nombre, accion) {
+function cambiarStatusRequisicion(id, nombre, accion) {
   var titulo = '';
   var mensaje = '';
   var status ='';
@@ -1160,7 +1160,7 @@ function confirmarAccion(status) {
   //Colocar en privado o publico
   if (status == 1 || status == 2) {
     $.ajax({
-      url: '<?php echo base_url('Reclutamiento/cambiarStatusRequicision'); ?>',
+      url: '<?php echo base_url('Reclutamiento/cambiarStatusRequisicion'); ?>',
       type: 'post',
       data: {
         'id': idRequisicion,

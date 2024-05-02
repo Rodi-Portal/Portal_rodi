@@ -338,8 +338,8 @@ class Cliente extends CI_Controller{
 
 
 	function get_requisicion_details(){
-		$requicision_id = $this->input->post('requicision_id');
-		$requisicion['data'] = $this->cliente_model->get_requisicion_details($requicision_id);
+		$requisicion_id = $this->input->post('requisicion_id');
+		$requisicion['data'] = $this->cliente_model->get_requisicion_details($requisicion_id);
 		$this->output->set_output( json_encode( $requisicion ) );
 	}
 

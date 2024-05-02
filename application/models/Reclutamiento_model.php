@@ -275,7 +275,7 @@ class Reclutamiento_model extends CI_Model{
 	/*----------------------------------------*/
 	/*	Acciones
 	/*----------------------------------------*/
-	function cambiarStatusRequicision($id, $status){
+	function cambiarStatusrequisicion($id, $status){
     if (!$id || empty($status)) {
         // Verificar si se proporcionan los datos necesarios
         return "Error: Datos insuficientes para la actualización.";

@@ -418,7 +418,7 @@ class Reclutamiento extends CI_Controller{
 	/*----------------------------------------*/
   /*	Acciones
   /*----------------------------------------*/
-      function cambiarStatusRequicision(){
+      function cambiarStatusrequisicion(){
         $id = $this->input->post('id');
         $status = $this->input->post('status');
 
@@ -428,7 +428,7 @@ class Reclutamiento extends CI_Controller{
             'id_usuario'=> $id_usuario
         );
 
-        $resultado = $this->reclutamiento_model->cambiarStatusRequicision($id, $usuario);
+        $resultado = $this->reclutamiento_model->cambiarStatusrequisicion($id, $usuario);
 
         // Manejar los diferentes resultados retornados por el modelo
         if (strpos($resultado, 'Error') !== false) {
@@ -1855,7 +1855,7 @@ class Reclutamiento extends CI_Controller{
        
 			$id_requisicion = $_GET['id'];
 
-      // echo " aqui  el id  de la requicision ".$id_requisicion ;
+      // echo " aqui  el id  de la requisicion ".$id_requisicion ;
 			if($this->session->userdata('idrol') == 4){
 				$id_usuario = $this->session->userdata('id');
 				$condicion = 'A.id_usuario';

@@ -710,7 +710,7 @@
     //Colocar en privado o publico
     if (accion == 1) {
       $.ajax({
-        url: '<?php echo base_url('Reclutamiento/cambiarStatusRequicision'); ?>',
+        url: '<?php echo base_url('Reclutamiento/cambiarStatusRequisicion'); ?>',
         type: 'post',
         data: {
           'id': id

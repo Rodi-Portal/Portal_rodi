@@ -608,14 +608,14 @@
   }
 
 
-  function openDetails(requicision_id) {
+  function openDetails(requisicion_id) {
     $('.div-candidato').removeClass('card-proceso-active');
-    $('#div-candidato' + requicision_id).addClass('card-proceso-active');
+    $('#div-candidato' + requisicion_id).addClass('card-proceso-active');
     $.ajax({
       url: '<?php echo base_url('Cliente/get_requisicion_details'); ?>',
       method: 'POST',
       data: {
-        'requicision_id': requicision_id,
+        'requisicion_id': requisicion_id,
       },
       beforeSend: function() {
         $('.loader').css("display", "block");
@@ -675,14 +675,14 @@
 
 
 
-  function openDetailss(requicision_id) {
+  function openDetailss(requisicion_id) {
     $('.div-candidato').removeClass('card-proceso-active');
-    $('#div-candidato' + requicision_id).addClass('card-proceso-active');
+    $('#div-candidato' + requisicion_id).addClass('card-proceso-active');
     $.ajax({
       url: '<?php echo base_url('Cliente/get_requisicion_details'); ?>',
       method: 'POST',
       data: {
-        'requicision_id': requicision_id,
+        'requisicion_id': requisicion_id,
       },
       beforeSend: function() {
         $('.loader').css("display", "block");

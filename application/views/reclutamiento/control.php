@@ -8,7 +8,7 @@
       <span class="icon text-white-50">
         <i class="fas fa-user-plus"></i>
       </span>
-      <span class="text">Registrar aspirante a requisicion</span>
+      <span class="text">Registrar aspirante a Requisición</span>
     </a>
     <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#estatusRequisicionModal">
       <span class="icon text-white-50">

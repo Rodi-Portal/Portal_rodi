@@ -10,7 +10,7 @@
       <div class="modal-body">
         <form id="formAspirante">
           <div class="col-sm-12 ">
-            <label for="buscador">Selecciona una requicision :</label>
+            <label for="buscador">Selecciona una Requisición :</label>
             <select name="req_asignada" id="req_asignada" class="selectpicker form-control" data-live-search="true"
               data-style="btn-custom-selectpicker" title="Selecciona" data-live-search="true">
 

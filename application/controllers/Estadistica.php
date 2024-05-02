@@ -78,7 +78,7 @@ function getEstadisticaReclutadoras(){
         // Llamar al método del modelo con las fechas seleccionadas
         $requisicionesPorUsuario = $this->estadistica_model->obtenerRequisicionesPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
 
-      $reclutador->requicisionesAsignadas = $requisicionesPorUsuario;
+      $reclutador->requisicionesAsignadas = $requisicionesPorUsuario;
 
      
          /*----------------------------------------*/
@@ -86,14 +86,14 @@ function getEstadisticaReclutadoras(){
         /*----------------------------------------*/
         $requisicionFinalizadaPorUsuario = $this->estadistica_model->obtenerRequisicionesFinalizadasPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
 
-      $reclutador->requicisionesFinalizadas = $requisicionFinalizadaPorUsuario;
+      $reclutador->requisicionesFinalizadas = $requisicionFinalizadaPorUsuario;
 
    /*----------------------------------------*/
         /* Requisiciones  canceladas grafica
         /*----------------------------------------*/
         $requisicionCanceladaPorUsuario = $this->estadistica_model->obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin, $reclutador->id);
 
-      $reclutador->requicisionesCanceladas = $requisicionCanceladaPorUsuario;
+      $reclutador->requisicionesCanceladas = $requisicionCanceladaPorUsuario;
 
 
       /*----------------------------------------*/
