@@ -437,22 +437,23 @@ var myChart = new Chart(ctx, {
     labels: [],
     datasets: [
       {
-        label: 'Requisiciones recibidas',
-        data: [],
-        backgroundColor: 'rgba(92, 184, 92, 1)',
-      },
-      {
-        label: 'Requisiciones cerradas',
-        data: [],
-        backgroundColor: 'rgba(54, 162, 235, 1)',
-      },
-      {
-        label: 'Requisiciones canceladas',
+        label: 'Requisiciones Canceladas',
         data: [],
         backgroundColor: 'rgba(255, 99, 132, 1)',
       },
       {
-        label: 'SLA',
+        label: 'Requisiciones Asignadas',
+        data: [],
+        backgroundColor: 'rgba(92, 184, 92, 1)',
+      },
+      {
+        label: 'Requisiciones Finalizadas',
+        data: [],
+        backgroundColor: 'rgba(54, 162, 235, 1)',
+      },
+   
+      {
+        label: 'SLA Promedio en dias ',
         data: [],
         backgroundColor: 'rgba(255, 206, 86, 1)',
       }
