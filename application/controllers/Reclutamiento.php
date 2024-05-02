@@ -492,7 +492,7 @@ class Reclutamiento extends CI_Controller{
 				$correo = $this->input->post('correo');
 				$id_usuario = $this->session->userdata('id');
 				$id_aspirante = $this->input->post('id_aspirante');
-        
+        $idRol = $this->session->userdata('idrol');
      
 				$id_bolsa_trabajo = $this->input->post('id_bolsa_trabajo');
        
@@ -518,7 +518,7 @@ class Reclutamiento extends CI_Controller{
             $id_bolsa_trabajo = $this->reclutamiento_model->addJobPoolWithIdReturned($jobPool);
           }else{
             $bolsa = array(
-              'id_usuario' => $id_usuario,
+            
               'id_portal'=> $id_portal,
               'edicion' => $date,
               'nombre' => strtoupper($nombre),
@@ -530,6 +530,10 @@ class Reclutamiento extends CI_Controller{
               'domicilio' => $this->input->post('domicilio'),
               'status' => 2
             );
+
+            if ($idRol != 6) {
+              $bolsa['id_usuario'] = $id_usuario;
+          }
             $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
           }
           $datos = array(
@@ -559,7 +563,7 @@ class Reclutamiento extends CI_Controller{
             'correo'=> $correo,
           );
           $datos_bt = array (
-            'id_usuario' => $id_usuario,
+            
               'id_portal'=> $id_portal,
               'edicion' => $date,
               'nombre' => strtoupper($nombre),
@@ -570,6 +574,8 @@ class Reclutamiento extends CI_Controller{
               'area_interes' => $this->input->post('area_interes'),
               'domicilio' => $this->input->post('domicilio'),
           );
+       
+          
          $resultado =  $this->reclutamiento_model->editarDatosAspiranteBolsa($datos_bt, $id_bolsa_trabajo, $datos_rh, $id_aspirante);
 
         // Verificar si la función se ejecutó correctamente
@@ -618,6 +624,8 @@ class Reclutamiento extends CI_Controller{
 				$id_requisicion = $this->input->post('id_requisicion');
 				$accion = explode(':', $this->input->post('accion'));
         $aspirante = $this->reclutamiento_model->getAspiranteById($id_aspirante);
+        $idRol = $this->session->userdata('idrol');
+
 				//Acciones especiales
 				//Aspirante o Cliente cancela
 				if($accion[0] == 13 || $accion[0] == 15){
@@ -643,10 +651,12 @@ class Reclutamiento extends CI_Controller{
 				$this->reclutamiento_model->guardarAccionRequisicion($datos);
 				$data_aspirante = array(
 					'edicion' => $date,
-					'id_usuario' => $id_usuario,
 					'status' => $accion[1],
 					'status_final' => $estatus_final
 				);
+        if ($idRol != 6) {
+          $data_aspirante['id_usuario'] = $id_usuario;
+      }
 				$this->reclutamiento_model->editarAspirante($data_aspirante, $id_aspirante);
         switch($accion[0]){
           case 9:
@@ -700,6 +710,8 @@ class Reclutamiento extends CI_Controller{
 				$id_usuario = $this->session->userdata('id');
 				$estatus_final = $this->input->post('estatus');
 				$id_requisicion = $this->input->post('id_requisicion');
+        $idRol = $this->session->userdata('idrol');
+
         //Cancela Requisicion
         if($estatus_final == 0){
           $status = 'status';
@@ -722,6 +734,7 @@ class Reclutamiento extends CI_Controller{
             $status => $estatus_final,
             'comentario_final' => $comentario
           );
+
           $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
           $msj = array(
             'codigo' => 1,
@@ -746,10 +759,14 @@ class Reclutamiento extends CI_Controller{
           }
           $datos = array(
             'edicion' => $date,
-            'id_usuario' => $id_usuario,
+          
             $status => $estatus_final,
             'comentario_final' => $comentario
           );
+
+          if ($idRol != 6) {
+            $datos['id_usuario'] = $id_usuario;
+        }
           $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
           $msj = array(
             'codigo' => 1,
@@ -773,10 +790,12 @@ class Reclutamiento extends CI_Controller{
            
               $datos = array(
                 'edicion' => $date,
-                'id_usuario' => $id_usuario,
                 $status => $estatus_final,
                 'comentario_final' => $comentario
               );
+              if ($idRol != 6) {
+                $datos['id_usuario'] = $id_usuario;
+            }
               $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
               $msj = array(
                 'codigo' => 1,
@@ -824,6 +843,7 @@ class Reclutamiento extends CI_Controller{
       date_default_timezone_set('America/Mexico_City');
       $date = date('Y-m-d H:i:s');
       $id_usuario = $this->session->userdata('id');
+      $idRol = $this->session->userdata('idrol');
       $id_bolsa = $this->input->post('id_bolsa');
       $comentario = $this->input->post('comentario');
       $accion = $this->input->post('accion');
@@ -835,10 +855,12 @@ class Reclutamiento extends CI_Controller{
           if ($aspirante != NULL) {
               $aspirante_data = array(
                   'edicion' => $date,
-                  'id_usuario' => $id_usuario,
                   'status' => 'Bloqueado del proceso de reclutamiento',
                   'status_final' => 'BLOQUEADO',
               );
+              if ($idRol != 6) {
+                $datos['id_usuario'] = $id_usuario;
+            }
               $this->reclutamiento_model->editarAspirante($aspirante_data, $aspirante->id);
               $historial = array(
                   'creacion' => $date,
@@ -1429,6 +1451,8 @@ class Reclutamiento extends CI_Controller{
     }
     function uploadCSV(){
       $id_portal = $this->session->userdata('idPortal');
+      $idRol = $this->session->userdata('idrol');
+
       if(isset($_FILES["archivo"]["name"])) {
         $extensionArchivo = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
         if($extensionArchivo == 'csv'){
@@ -1493,7 +1517,7 @@ class Reclutamiento extends CI_Controller{
                                         'creacion' => $fecha,
                                         'edicion' => $fecha,
                                         'id_portal'=> $id_portal,
-                                        'id_usuario' => $r[0],
+                                        'id_usuario' => $idRol,
                                         'nombre' => strtoupper($r[2]),
                                         'paterno' => strtoupper($r[3]),
                                         'materno' => strtoupper($r[4]),
@@ -1636,11 +1660,13 @@ class Reclutamiento extends CI_Controller{
         );
       }
       else{
+        $idRol =  $this->session->userdata('idrol');
+
         if($section == 'personal'){
+
           $edad = calculaEdad($this->input->post('fecha_nacimiento_update'));
           $bolsa = array(
             'edicion' => date('Y-m-d H:i:s'),
-            'id_usuario' => $this->session->userdata('id'),
             'nombre' => $this->input->post('nombre_update'),
             'paterno' => $this->input->post('paterno_update'),
             'materno' => $this->input->post('materno_update'),
@@ -1653,12 +1679,18 @@ class Reclutamiento extends CI_Controller{
             'dependientes' => $this->input->post('dependientes_update'),
             'grado_estudios' => $this->input->post('escolaridad_update'),
           );
+         
+          if ($idRol != 6) {
+            $bolsa['id_usuario'] = $this->session->userdata('id');
+        }
           $sectionSuccessMessage = 'Datos personales actualizados correctamente';
           $aspirante = array(
             'edicion' => date('Y-m-d H:i:s'),
-            'id_usuario' => $this->session->userdata('id'),
            
           );
+          if ($idRol != 6) {
+            $aspirante['id_usuario'] = $this->session->userdata('id');
+        }
           $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($bolsa, $this->input->post('id_bolsa'));
         }
         if($section == 'salud'){
@@ -1690,9 +1722,12 @@ class Reclutamiento extends CI_Controller{
           $sectionSuccessMessage = 'Información de los intereses actualizada correctamente';
           $aspirante = array(
             'edicion' => date('Y-m-d H:i:s'),
-            'id_usuario' => $this->session->userdata('id'),
             'medio_contacto' => $this->input->post('medio_contacto_update'),
           );
+
+          if ($idRol != 6) {
+            $aspirante['id_usuario'] = $this->session->userdata('id');
+        }
           $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($aspirante, $this->input->post('id_bolsa'));
         }
         $this->reclutamiento_model->editBolsaTrabajo($bolsa, $this->input->post('id_bolsa'));
@@ -1722,19 +1757,24 @@ class Reclutamiento extends CI_Controller{
       }else{
         $aspirante = array(
           'edicion' => date('Y-m-d H:i:s'),
-          'id_usuario' => $this->session->userdata('id'),
           'sueldo_acordado' => $this->input->post('sueldo_acordado'),
           'fecha_ingreso' => $this->input->post('fecha_ingreso'),
           'pago' => $this->input->post('pago'),
         );
+        if ($this->session->userdata('id_rol')!= 6) {
+          $aspirante['id_usuario'] = $this->session->userdata('id');
+      }
         $this->reclutamiento_model->editarAspirante($aspirante, $this->input->post('id_aspirante'));
         if($this->input->post('garantia') != ''){
           $garantia = array(
             'creacion' => date('Y-m-d H:i:s'),
-            'id_usuario' => $this->session->userdata('id'),
             'id_aspirante' => $this->input->post('id_aspirante'),
             'descripcion' => $this->input->post('garantia'),
           );
+          if ($this->session->userdata('id_rol')!= 6) {
+            $garantia['id_usuario'] = $this->session->userdata('id');
+        }
+          
           $this->reclutamiento_model->addWarrantyApplicant($garantia);
         }
         $msj = array(
