@@ -411,9 +411,9 @@ function cargarDatos() {
     
     // Actualizar los datos del gráfico con los datos obtenidos
     myChart.data.labels = reclutadoras;
-    myChart.data.datasets[2].data = requisicionesCanceladas;
-    myChart.data.datasets[0].data = requisicionesRecibidas;
-    myChart.data.datasets[1].data = requisicionesCerradas;
+    myChart.data.datasets[0].data = requisicionesCanceladas;
+    myChart.data.datasets[1].data = requisicionesRecibidas;
+    myChart.data.datasets[2].data = requisicionesCerradas;
     myChart.data.datasets[3].data = sla;
     
     // Actualizar el gráfico
