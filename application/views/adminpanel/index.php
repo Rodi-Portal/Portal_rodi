@@ -403,8 +403,8 @@ function cargarDatos() {
     // Iterar sobre cada objeto en la respuesta
     for (var i = 0; i < res.length; i++) {
         reclutadoras.push(res[i].nombre + ' ' + res[i].paterno);
-        requisicionesRecibidas.push(parseInt(res[i].requisicionesAsignadas));
         requisicionesCanceladas.push(parseInt(res[i].requisicionesCanceladas));
+        requisicionesRecibidas.push(parseInt(res[i].requisicionesAsignadas));
         requisicionesCerradas.push(parseInt(res[i].requisicionesFinalizadas));
         sla.push(parseInt(res[i].sla));
     }
