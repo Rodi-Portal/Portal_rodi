@@ -89,6 +89,7 @@
 
 
 <script>
+var  idGerente ='<?php echo $this->session->userdata('id_rol'); ?>';
 var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
 
 $(document).ready(function() {
@@ -217,8 +218,12 @@ $(document).ready(function() {
             '<a href="javascript:void(0)" data-toggle="tooltip" title="Actualizar credenciales al candidato" onclick="enviarCredenciales(\'' +
             full.correo + '\', \'' + full.id_datos +
             '\')" class="fa-tooltip icono_datatable icono_amarillo"><i class="fas fa-sync-alt style="font-size: 16px;"></i></a> ';
-
-          return editar + accion + eliminar + credenciales;
+              if(full.nombre_rol === 'Gerente'){
+                return editar  + credenciales;
+              }else{
+                return editar + accion + eliminar + credenciales;
+              }
+          
         }
            
       }
@@ -240,7 +245,14 @@ $(document).ready(function() {
         $("#titulo_nuevo_modal").text("Editar Usuario");
         $("#nombre").val(data.nombre);
         $("#paterno").val(data.paterno);
-        $("#id_rol").val(data.id_rol);
+        if(data.id_rol == 6){
+          $("#id_rol").val(data.id_rol);
+          $("#id_rol").prop('disabled', true);
+
+        }else{
+          $("#id_rol").val(data.id_rol);
+
+        }
         $("#correo").val(data.correo);
         $("#telefono").val(data.telefono);
         // Se oculta el botón de Generar contraseña en modo de edición
