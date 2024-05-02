@@ -27,7 +27,7 @@
                     <span class="icon text-white-50">
                         <i class="fas fa-user-edit"></i>
                     </span>
-                    <span class="text">Asignar requisicion</span>
+                    <span class="text">Asignar Requisición</span>
                 </button>
             </div>
         </div>
