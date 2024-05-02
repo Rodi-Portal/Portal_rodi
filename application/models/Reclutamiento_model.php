@@ -303,13 +303,22 @@ class Reclutamiento_model extends CI_Model{
     }
 }
 		
+	
+
 		function reactivarRequisicion($id, $id_usuario){
-			$this->db
-			->set('id_usuario', $id_usuario)
-			->set('status', 1)
-			->where('id', $id)
-			->update('requisicion');
-		}
+			// Obtener los datos de la requisición con el ID proporcionado
+			$requisicion = $this->db->get_where('requisicion', array('id' => $id))->row_array();
+			
+			// Generar una copia de la requisición con un nuevo ID
+			unset($requisicion['id']); // Eliminar el ID para generar un nuevo ID automático
+			$requisicion['id_usuario'] = $id_usuario; // Establecer el nuevo ID de usuario
+			$requisicion['status'] = 1; // Establecer el estado activo
+			// Puedes establecer el comentario final aquí si lo necesitas
+			$requisicion['comentario_final'] = ''; // Por ejemplo, establecer un comentario vacío
+			
+			// Insertar la nueva requisición en la tabla
+			$this->db->insert('requisicion', $requisicion);
+	}
 		function editarAspirante($datos, $id){
 			$id_portal = $this->session->userdata('idPortal');
 			$this->db
@@ -735,8 +744,9 @@ class Reclutamiento_model extends CI_Model{
 		}
 		function getAspirantesPorRequisicionesFinalizadas($id_usuario, $condicion, $id) {
 			$id_portal = $this->session->userdata('idPortal');
-			$this->db->select("A.*, CONCAT(A.nombre,' ',A.paterno,' ',A.materno) as aspirante, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre as empresa, R.puesto, H.id as idHistorial, R.status as statusReq, R.comentario_final")
+			$this->db->select("A.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as aspirante, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre as empresa, R.puesto, H.id as idHistorial, R.status as statusReq, R.comentario_final")
 					->from('requisicion_aspirante as A')
+					->join('bolsa_trabajo as B', 'B.id = A.id_bolsa_trabajo')
 					->join('requisicion as R', 'R.id = A.id_requisicion')
 					->join('cliente as CL', 'CL.id = R.id_cliente')
 					->join('requisicion_historial as H', 'H.id_requisicion = R.id', 'left')

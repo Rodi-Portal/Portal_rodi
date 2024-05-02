@@ -453,7 +453,7 @@ class Reclutamiento extends CI_Controller{
 			$this->reclutamiento_model->reactivarRequisicion($id, $usuario);
 			$msj = array(
 				'codigo' => 1,
-				'msg' => 'La requisición #'.$id.' está en el listado de requisiciones'
+				'msg' => 'Se  a creado  una copia  de esta  Requisición para  que se  inicie el proceso '
 			);
 			echo json_encode($msj);
 		}

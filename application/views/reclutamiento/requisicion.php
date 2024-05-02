@@ -101,14 +101,15 @@
 					if($r->status == 1){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
             $text_estatus = 'Estatus: <b>En espera</b>';
-						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
+					/*	$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';*/
 						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Eliminar requisicion" onclick="openDeleteOrder('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-trash"></i></a>';
 					}
 					if($r->status == 2){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar'.$r->id.'"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'detener\')"><i class="fas fa-stop"></i></a>';
 						$color_estatus = 'req_activa';
             $text_estatus = 'Estatus: <b>En proceso de reclutamiento</b>';
-						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-file-alt"></i></a>';
+						/* $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-file-alt"></i></a>';
+            */
 						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Eliminar requisicion"><i class="fas fa-trash"></i></a>';
 					}
           $usuario = (empty($r->usuario))? 'Requisición sin cambios<br>' : 'Última modificación: <b>'.$r->usuario.'</b><br>';
@@ -163,9 +164,9 @@
                     title="Descargar requisición en PDF"><i class="fas fa-file-pdf"></i></button>
                 </form>
               </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <?php echo $botonResultados; ?>
-              </div>
+              <!--div class="col-sm-4 col-md-2 col-lg-2 mb-1">
+                < ?php echo $botonResultados; ?>
+              </div -->
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <?php echo $btnDelete; ?>
               </div>

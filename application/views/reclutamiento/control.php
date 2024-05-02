@@ -552,8 +552,13 @@ function subirCVReqAspirante() {
           icon: 'success',
           title: 'CV subido correctamente',
           showConfirmButton: false,
-          timer: 2500
-        });
+          timer: 2500}).
+          then(function() {
+      // Recargar la página después de 2500 milisegundos (2.5 segundos)
+      setTimeout(function() {
+        location.reload();
+      }, 1);
+    });
       } else {
         Swal.fire({
           icon: 'error',
@@ -843,7 +848,12 @@ function updateAdmission(section) {
           title: dato.msg,
           showConfirmButton: false,
           timer: 3000
-        })
+        }).then(function() {
+      // Recargar la página después de 2500 milisegundos (2.5 segundos)
+      setTimeout(function() {
+        location.reload();
+      }, 1);
+    });
       } else {
         Swal.fire({
           icon: 'error',
