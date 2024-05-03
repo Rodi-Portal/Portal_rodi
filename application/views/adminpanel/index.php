@@ -94,41 +94,41 @@
     </div>
   </div>
   <div class="row justify-content-center">
-  <div class="col-md-3">
-    <label for="fechaInicio">Fecha de Inicio:</label>
-    <input type="date" id="fechaInicio" name="fechaInicio" class="form-control">
-  </div>
-  <div class="col-md-3">
-    <label for="fechaFin">Fecha de Fin:</label>
-    <input type="date" id="fechaFin" name="fechaFin" class="form-control">
-  </div>
-  <div class="col-md-6 position-relative">
-    <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
-      <button class="btn btn-primary" onclick="cargarDatos()">Actualizar Gráficas</button>
+    <div class="col-md-3">
+      <label for="fechaInicio">Fecha de Inicio:</label>
+      <input type="date" id="fechaInicio" name="fechaInicio" class="form-control">
+    </div>
+    <div class="col-md-3">
+      <label for="fechaFin">Fecha de Fin:</label>
+      <input type="date" id="fechaFin" name="fechaFin" class="form-control">
+    </div>
+    <div class="col-md-6 position-relative">
+      <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
+        <button class="btn btn-primary" onclick="cargarDatos()">Actualizar Gráficas</button>
+      </div>
     </div>
   </div>
 </div>
-</div>
 
 
 
-  <div class="row">
-    <div class="col-12">
-      <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Estadisticas  por reclutadora  <?php echo date('Y'); ?>
-          </h6>
-        </div>
-        <div class="card-body">
-          <div class="chart-area">
-            <canvas id="chartReclu"></canvas>
-          </div>
+<div class="row">
+  <div class="col-12">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Estadisticas por reclutadora <?php echo date('Y'); ?>
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="chart-area">
+          <canvas id="chartReclu"></canvas>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="row justify-content-center">
+<div class="row justify-content-center">
   <div class="col-md-3">
     <label for="fechaInicio">Fecha de Inicio:</label>
     <input type="date" id="fechaInicioPastel" name="fechaInicio" class="form-control">
@@ -143,20 +143,22 @@
     </div>
   </div>
 </div>
-  <div class="row">
-    <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios  de contacto</h6>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-    <canvas id="chartPastel"></canvas>
-    <ul id="listaEtiquetas" style="list-style-type: none; padding: 0; margin: 0;"></ul>
-</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios de contacto</h6>
+      </div>
+      <div class="card-body">
+        <!-- Colocar el gráfico en el centro del contenedor -->
+        <div class="col-md-12" style="padding-top: 0;">
+          <canvas id="chartPastel" style="height: 400px;"></canvas>
         </div>
+      </div>
     </div>
+  </div>
 </div>
-  <!--ul>
+<!--ul>
 					<li>ID: < ?php echo $this->session->userdata('id'); ?></li>
 					<li>Nombre: < ?php echo $this->session->userdata('nombre'); ?></li>
 					<li>Apellido Paterno: < ?php echo $this->session->userdata('paterno'); ?></li>
@@ -307,7 +309,7 @@ function actualizarGrafica() {
           pointRadius: 5,
           fill: true,
           data: datosCard3Rellenados,
-      
+
           datalabels: {
             align: 'end',
             anchor: 'end',
@@ -331,7 +333,7 @@ function actualizarGrafica() {
           pointRadius: 5,
           fill: true,
           data: datosCard1Rellenados,
-        
+
           datalabels: {
             align: 'end',
             anchor: 'end',
@@ -351,11 +353,11 @@ function actualizarGrafica() {
           backgroundColor: 'rgba(54, 162, 235, 0.8)', // Color de fondo
           borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
           borderWidth: 1, // Ancho del borde
-          pointBackgroundColor: 'rgba(54, 162, 235, 1)',  // Punto del gráfico
+          pointBackgroundColor: 'rgba(54, 162, 235, 1)', // Punto del gráfico
           pointRadius: 5,
           fill: true,
           data: datosCard2Rellenados,
-       
+
           datalabels: {
             align: 'end',
             anchor: 'end',
@@ -380,7 +382,7 @@ function actualizarGrafica() {
           pointRadius: 5,
           fill: true,
           data: datosCard4Rellenados,
-    
+
           datalabels: {
             align: 'end',
             anchor: 'end',
@@ -400,26 +402,26 @@ function actualizarGrafica() {
 
     // Configurar la gráfica
     const config = {
-  type: 'line',
-  data: data,
-  options: {
-    scales: {
-      xAxes: [{
-        grid: {
-          borderColor: 'red'
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          min: 1,   // Establece el valor mínimo en el eje y
-          max: 50,  // Establece el valor máximo en el eje y
-          stepSize: 10 // Define el tamaño del paso entre cada punto de comparación
-        }
-      }]
-    },
-    maintainAspectRatio: false
-  }
-  };
+      type: 'line',
+      data: data,
+      options: {
+        scales: {
+          xAxes: [{
+            grid: {
+              borderColor: 'red'
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              min: 1, // Establece el valor mínimo en el eje y
+              max: 50, // Establece el valor máximo en el eje y
+              stepSize: 10 // Define el tamaño del paso entre cada punto de comparación
+            }
+          }]
+        },
+        maintainAspectRatio: false
+      }
+    };
 
     // Crear una nueva instancia de la gráfica
     var myChart = new Chart(
@@ -439,37 +441,40 @@ function cargarDatos() {
   $.ajax({
     url: '<?php echo base_url('Estadistica/getEstadisticaReclutadoras'); ?>',
     method: 'GET',
-     data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
+    data: {
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin
+    },
     success: function(res) {
-    // Obtener los datos desde la respuesta
-    console.log('Respuesta de la solicitud AJAX:', res);
-    
-    // Organizar los datos para el gráfico
-    var reclutadoras = [];
-    var requisicionesRecibidas = [];
-    var requisicionesCerradas = [];
-    var requisicionesCanceladas = [];
-    var sla = [];
-    
-    // Iterar sobre cada objeto en la respuesta
-    for (var i = 0; i < res.length; i++) {
+      // Obtener los datos desde la respuesta
+      console.log('Respuesta de la solicitud AJAX:', res);
+
+      // Organizar los datos para el gráfico
+      var reclutadoras = [];
+      var requisicionesRecibidas = [];
+      var requisicionesCerradas = [];
+      var requisicionesCanceladas = [];
+      var sla = [];
+
+      // Iterar sobre cada objeto en la respuesta
+      for (var i = 0; i < res.length; i++) {
         reclutadoras.push(res[i].nombre + ' ' + res[i].paterno);
         requisicionesCanceladas.push(parseInt(res[i].requisicionesCanceladas));
         requisicionesRecibidas.push(parseInt(res[i].requisicionesAsignadas));
         requisicionesCerradas.push(parseInt(res[i].requisicionesFinalizadas));
         sla.push(parseInt(res[i].sla));
-    }
-    
-    // Actualizar los datos del gráfico con los datos obtenidos
-    myChart.data.labels = reclutadoras;
-    myChart.data.datasets[0].data = requisicionesCanceladas;
-    myChart.data.datasets[1].data = requisicionesRecibidas;
-    myChart.data.datasets[2].data = requisicionesCerradas;
-    myChart.data.datasets[3].data = sla;
-    
-    // Actualizar el gráfico
-    myChart.update();
-},
+      }
+
+      // Actualizar los datos del gráfico con los datos obtenidos
+      myChart.data.labels = reclutadoras;
+      myChart.data.datasets[0].data = requisicionesCanceladas;
+      myChart.data.datasets[1].data = requisicionesRecibidas;
+      myChart.data.datasets[2].data = requisicionesCerradas;
+      myChart.data.datasets[3].data = sla;
+
+      // Actualizar el gráfico
+      myChart.update();
+    },
     error: function(xhr, status, error) {
       console.error('Error al cargar los datos:', error);
     }
@@ -484,27 +489,26 @@ var myChart = new Chart(ctx, {
   type: "bar",
   data: {
     labels: [],
-    datasets: [
-      {
+    datasets: [{
         label: 'Requisiciones Canceladas',
         data: [],
-        backgroundColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.6)'
       },
       {
         label: 'Requisiciones Asignadas',
         data: [],
-        backgroundColor: 'rgba(92, 184, 92, 1)',
+        backgroundColor: 'rgba(92, 184, 92, 0.6)', 
       },
       {
         label: 'Requisiciones Finalizadas',
         data: [],
-        backgroundColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
       },
-   
+
       {
         label: 'SLA Promedio en dias ',
         data: [],
-        backgroundColor: 'rgba(255, 206, 86, 1)',
+        backgroundColor:'rgba(255, 206, 86, 0.6)',
       }
     ]
   },
@@ -543,70 +547,96 @@ var myChart = new Chart(ctx, {
 
 
 function generarPaleta(numColores) {
-    var paleta = [];
-    for (var i = 0; i < numColores; i++) {
-        var color = 'hsl(' + (i * (360 / numColores) % 360) + ', 70%, 50%)';
-        paleta.push(color);
-    }
-    return paleta;
+  var paleta = [];
+  for (var i = 0; i < numColores; i++) {
+    var color = 'hsl(' + (i * (360 / numColores) % 360) + ', 70%, 50%, 0.6)';
+    paleta.push(color);
+  }
+  return paleta;
 }
 
 // Función para cargar datos en el gráfico de pastel
 function cargarDatosPastel() {
-    var fechaInicio = $('#fechaInicioPastel').val();
-    var fechaFin = $('#fechaFinPastel').val();
-    
-    // Realizar la solicitud AJAX para obtener los datos
-    $.ajax({
-        url: '<?php echo base_url('Estadistica/contarMediosContacto'); ?>',
-        method: 'GET',
-        data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
-        success: function(res) {
-            console.log('Respuesta de la solicitud AJAX:', res);
-            
-            // Verificar los datos antes de actualizar la gráfica
-            console.log('Tipo de datos de la respuesta:', typeof res);
-            
-            // Acceder a las propiedades de la respuesta
-            console.log('Etiquetas:', res.labels);
-            console.log('Datos:', res.data);
-            
-            // Actualizar los datos de la gráfica de pastel
-            if (res.labels && res.data) {
-                pastelChart.data.labels = res.labels;
-                pastelChart.data.datasets[0].data = res.data;
-                
-                // Generar una paleta de colores basada en el número de segmentos
-                var numColores = res.labels.length;
-                var paleta = generarPaleta(numColores);
-                pastelChart.data.datasets[0].backgroundColor = paleta;
-                
-                pastelChart.update();
-            } else {
-                console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error al cargar los datos:', error);
-        }
-    });
+  var fechaInicio = $('#fechaInicioPastel').val();
+  var fechaFin = $('#fechaFinPastel').val();
+
+  // Realizar la solicitud AJAX para obtener los datos
+  $.ajax({
+    url: '<?php echo base_url('Estadistica/contarMediosContacto'); ?>',
+    method: 'GET',
+    data: {
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin
+    },
+    success: function(res) {
+      // console.log('Respuesta de la solicitud AJAX:', res);
+
+      // Verificar los datos antes de actualizar la gráfica
+      //console.log('Tipo de datos de la respuesta:', typeof res);
+
+      // Acceder a las propiedades de la respuesta
+      //console.log('Etiquetas:', res.labels);
+      //console.log('Datos:', res.data);
+
+      // Actualizar los datos de la gráfica de pastel
+      if (res.labels && res.data) {
+        pastelChart.data.labels = res.labels;
+        pastelChart.data.datasets[0].data = res.data;
+
+        // Generar una paleta de colores basada en el número de segmentos
+        var numColores = res.labels.length;
+        var paleta = generarPaleta(numColores);
+        pastelChart.data.datasets[0].backgroundColor = paleta;
+
+        pastelChart.update();
+      } else {
+        console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
+      }
+    },
+    error: function(xhr, status, error) {
+      console.error('Error al cargar los datos:', error);
+    }
+  });
 }
 // Eliminar la variable datosPastel y configurar los datos directamente en la función cargarDatosPastel
 var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2d'), {
-    type: 'pie',
-    data: {
-        labels: [],
-        datasets: [{
-            data: []
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-            display: false
+  type: 'pie',
+  data: {
+    labels: [],
+    datasets: [{
+      data: []
+    }]
+  },
+  options: {
+    layout: {
+        padding: {
+            left: 50,
+            right: 50,
+            top: 0,
+            bottom: 50
         }
+    },
+    title: {
+      display: true,
+      text: 'Datos de medios de captación de candidatos',
+      fontSize: 27,
+      padding: 30,
+      fontColor: '#12619c',
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right',
+        labels: {
+          padding: 20,
+          boxWidth: 40,
+          font: {
+            size: 25
+          }
+        }
+      }
     }
+  }
 });
 
 $(document).ready(function() {
