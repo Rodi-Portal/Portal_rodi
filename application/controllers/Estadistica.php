@@ -114,6 +114,50 @@ function getEstadisticaReclutadoras(){
   echo json_encode($reclutadores);
 }
 
+public function contarMediosContacto() {
+  // Verificar si se han proporcionado fechas
+
+
+  // Si no se proporciona ninguna fecha, obtener todos los aspirante
+  $fechaInicio = $this->input->get('fechaInicio');
+  $fechaFin = $this->input->get('fechaFin');
+    
+    // Si no se especificaron fechas, establecer un rango predeterminado
+    if (empty($fechaInicio) || empty($fechaFin)) {
+        // Establecer el rango predeterminado (por ejemplo, los últimos 30 días)
+        $fechaFin = date('Y-m-d H:i:s'); // Fecha actual con horas, minutos y segundos
+        $fechaInicio = date('Y-m-d H:i:s', strtotime('-30 days', strtotime($fechaFin)));
+      }
+      $aspirantes = $this->estadistica_model->obtenerAspirantesPorRangoFecha($fechaInicio, $fechaFin);
+
+  // Inicializa un array para almacenar la frecuencia de cada medio de contacto
+  $frecuencia_medios = array();
+
+  // Itera sobre los aspirantes para contar la frecuencia de cada medio de contacto
+  foreach ($aspirantes as $aspirante) {
+      $medio_contacto = $aspirante->medio_contacto;
+      // Incrementa la frecuencia del medio de contacto
+      if (isset($frecuencia_medios[$medio_contacto])) {
+          $frecuencia_medios[$medio_contacto]++;
+      } else {
+          $frecuencia_medios[$medio_contacto] = 1;
+      }
+  }
+
+  // Prepara los datos para la gráfica
+  $labels = array_keys($frecuencia_medios);
+  $data = array_values($frecuencia_medios);
+
+  // Prepara la respuesta como un array asociativo
+  $response = array(
+      'labels' => $labels,
+      'data' => $data
+  );
+
+  // Envía la respuesta como JSON
+  header('Content-Type: application/json');
+  echo json_encode($response);
+}
 
 function getRequisicionesProcesoPorMes(){
   date_default_timezone_set('America/Mexico_City');

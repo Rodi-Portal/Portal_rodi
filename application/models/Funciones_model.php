@@ -488,6 +488,30 @@ class Funciones_model extends CI_Model{
     $consulta = $this->db->get();
     return $consulta->row();
   }
+
+
+  function insertarMedioContacto($nombre){
+    $fecha = date('Y-m-d H:i:s');
+    $nombre = trim($nombre);
+    $nombre = ucfirst($nombre);
+
+    $id_usuario = $this->session->userdata('id');
+    $data = array(
+      'creacion'=>$fecha,
+        'id_usuario'=> $id_usuario,
+        'nombre' => $nombre
+        // Agrega aquí otros campos y sus valores si es necesario
+    );
+
+    $this->db->insert('cat_medio_contacto', $data);
+
+    // Verifica si se insertó correctamente
+    if($this->db->affected_rows() > 0){
+        return true; // Se insertó correctamente
+    } else {
+        return false; // Hubo un error al insertar
+    }
+}
   function getMediosTransporte(){
     $this->db 
     ->select('*')

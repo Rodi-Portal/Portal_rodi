@@ -1507,6 +1507,11 @@ class Reclutamiento extends CI_Controller{
                                 if(strlen($r[6]) > 0 && strlen($r[6]) <= 128){//Area de interes con limite 
                                   if(strlen($r[7]) > 0 && strlen($r[7]) <= 30){//Localizacion del aspirante
                                     $existContact = $this->funciones_model->getMediosContactoByName($r[8]);
+                                    
+                                    if( isset($existContact)){
+                                      $this->funciones_model->insertarMedioContacto($r[8]);
+                                      $existContact = $this->funciones_model->getMediosContactoByName($r[8]);
+                                    }
                                     if($r[8] != '' && $existContact !== null){//Medio por el cual se contacto el aspirante
                                       $fecha = validar_fecha_espanol($r[1]);
                                       if($fecha)
@@ -1529,7 +1534,7 @@ class Reclutamiento extends CI_Controller{
                                       $this->reclutamiento_model->addBolsaTrabajo($data);
                                       $successMessages .= ($i+2).','; $i++; $rowsAdded++;
                                     }else{
-                                      $errorMessages .= 'Medio de contacto vacío o no existe en el catalogo en la fila '.($i+2).'<br>'; $i++; continue;
+                                      $errorMessages .= 'Medio de contacto vacío o no existe en el catalogo en la fila '.($i+2).'<br>'.$$r[8]."aqui el medio "; $i++; continue;
                                     }
                                   }else{
                                     $errorMessages .= 'Localización vacía o demasiado extensa (limitado a 30 caracteres) en la fila '.($i+2).'<br>'; $i++; continue;

@@ -282,8 +282,14 @@ public function obtenerPromedioSLAPorUsuarioYFecha($fecha_inicio, $fecha_fin, $i
 
   return $promedio_sla;
 }
-
-
+public function obtenerAspirantesPorRangoFecha($fechaInicio, $fechaFin) {
+  // Active Record
+  return $this->db
+      ->where('creacion >=', $fechaInicio)
+      ->where('creacion <=', $fechaFin)
+      ->get('bolsa_trabajo')
+      ->result();
+}
 
 
   /*----------------------------------------*/

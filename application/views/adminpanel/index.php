@@ -128,6 +128,34 @@
     </div>
   </div>
 
+  <div class="row justify-content-center">
+  <div class="col-md-3">
+    <label for="fechaInicio">Fecha de Inicio:</label>
+    <input type="date" id="fechaInicioPastel" name="fechaInicio" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label for="fechaFin">Fecha de Fin:</label>
+    <input type="date" id="fechaFinPastel" name="fechaFin" class="form-control">
+  </div>
+  <div class="col-md-6 position-relative">
+    <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
+      <button class="btn btn-primary" onclick="cargarDatosPastel()">Actualizar Gráficas</button>
+    </div>
+  </div>
+</div>
+  <div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios  de contacto</h6>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+    <canvas id="chartPastel"></canvas>
+    <ul id="listaEtiquetas" style="list-style-type: none; padding: 0; margin: 0;"></ul>
+</div>
+        </div>
+    </div>
+</div>
   <!--ul>
 					<li>ID: < ?php echo $this->session->userdata('id'); ?></li>
 					<li>Nombre: < ?php echo $this->session->userdata('nombre'); ?></li>
@@ -449,9 +477,7 @@ function cargarDatos() {
 }
 
 // Llamar a la función para cargar los datos al cargar la página
-$(document).ready(function() {
-  cargarDatos();
-});
+
 
 // Crear el gráfico inicialmente con etiquetas y datos vacíos
 var myChart = new Chart(ctx, {
@@ -513,6 +539,79 @@ var myChart = new Chart(ctx, {
       }]
     }
   }
+});
+
+
+function generarPaleta(numColores) {
+    var paleta = [];
+    for (var i = 0; i < numColores; i++) {
+        var color = 'hsl(' + (i * (360 / numColores) % 360) + ', 70%, 50%)';
+        paleta.push(color);
+    }
+    return paleta;
+}
+
+// Función para cargar datos en el gráfico de pastel
+function cargarDatosPastel() {
+    var fechaInicio = $('#fechaInicioPastel').val();
+    var fechaFin = $('#fechaFinPastel').val();
+    
+    // Realizar la solicitud AJAX para obtener los datos
+    $.ajax({
+        url: '<?php echo base_url('Estadistica/contarMediosContacto'); ?>',
+        method: 'GET',
+        data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
+        success: function(res) {
+            console.log('Respuesta de la solicitud AJAX:', res);
+            
+            // Verificar los datos antes de actualizar la gráfica
+            console.log('Tipo de datos de la respuesta:', typeof res);
+            
+            // Acceder a las propiedades de la respuesta
+            console.log('Etiquetas:', res.labels);
+            console.log('Datos:', res.data);
+            
+            // Actualizar los datos de la gráfica de pastel
+            if (res.labels && res.data) {
+                pastelChart.data.labels = res.labels;
+                pastelChart.data.datasets[0].data = res.data;
+                
+                // Generar una paleta de colores basada en el número de segmentos
+                var numColores = res.labels.length;
+                var paleta = generarPaleta(numColores);
+                pastelChart.data.datasets[0].backgroundColor = paleta;
+                
+                pastelChart.update();
+            } else {
+                console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al cargar los datos:', error);
+        }
+    });
+}
+// Eliminar la variable datosPastel y configurar los datos directamente en la función cargarDatosPastel
+var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2d'), {
+    type: 'pie',
+    data: {
+        labels: [],
+        datasets: [{
+            data: []
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+            display: false
+        }
+    }
+});
+
+$(document).ready(function() {
+  cargarDatos();
+  cargarDatosPastel();
 });
 </script>
 <?php } ?>
