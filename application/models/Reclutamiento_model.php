@@ -328,6 +328,19 @@ class Reclutamiento_model extends CI_Model{
 		function addApplicant($datos){
 				$this->db->insert('requisicion_aspirante', $datos);
 		}
+
+
+
+		public function existeRegistro($id_bolsa_trabajo, $id_requisicion) {
+			// Construye la consulta para verificar si ya existe un registro con los mismos ids
+			$this->db->where('id_bolsa_trabajo', $id_bolsa_trabajo);
+			$this->db->where('id_requisicion', $id_requisicion);
+			$query = $this->db->get('requisicion_aspirante');
+
+			// Retorna true si existe al menos un registro, false en caso contrario
+			return $query->num_rows() > 0;
+	}
+
 		function editarRequisicion($datos, $id){
 				$this->db
 				->where('id', $id)

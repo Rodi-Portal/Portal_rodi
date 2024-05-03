@@ -536,17 +536,30 @@ class Reclutamiento extends CI_Controller{
           }
             $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
           }
-          $datos = array(
-            'creacion' => $date,
-            'edicion' => $date,
-            'id_usuario' => $id_usuario,
-            'id_bolsa_trabajo' => $id_bolsa_trabajo,
-            'id_requisicion' => $req,
-            'correo' => $correo,
-            'cv' => $nombre_archivo,
-            'status' => 'Registrado'
-          );
-          $this->reclutamiento_model->addApplicant($datos);
+          if ($this->reclutamiento_model->existeRegistro($id_bolsa_trabajo, $req)) {
+            // Ya existe un registro, puedes manejarlo según tu lógica de negocio
+            // Por ejemplo, podrías mostrar un mensaje de error o hacer alguna otra acción
+
+            $msj = array(
+              'codigo' => 0,
+              'msg' =>  "Ya  esta  Registrado elaspirante  para  esta  requicisión "
+            );
+         
+        } else {
+            // No existe un registro, procedemos a agregar el nuevo registro
+            $datos = array(
+                'creacion' => $date,
+                'edicion' => $date,
+                'id_usuario' => $id_usuario,
+                'id_bolsa_trabajo' => $id_bolsa_trabajo,
+                'id_requisicion' => $req,
+                'correo' => $correo,
+                'cv' => $nombre_archivo,
+                'status' => 'Registrado'
+            );
+            $this->reclutamiento_model->addApplicant($datos);
+          
+          
           if($id_bolsa_trabajo != 0){
             $bolsa = array(
               'status' => 2
@@ -557,6 +570,7 @@ class Reclutamiento extends CI_Controller{
             'codigo' => 1,
             'msg' => 'El aspirante fue guardado correctamente'
           );
+        }
 				}elseif($id_aspirante > 0){
           $datos_rh = array (
             'id_requisicion'=> $req,
@@ -595,6 +609,7 @@ class Reclutamiento extends CI_Controller{
            
 
         }
+      
 				
 			}
 			echo json_encode($msj);
