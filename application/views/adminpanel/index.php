@@ -93,6 +93,25 @@
       </div>
     </div>
   </div>
+  <div class="row justify-content-center">
+  <div class="col-md-3">
+    <label for="fechaInicio">Fecha de Inicio:</label>
+    <input type="date" id="fechaInicio" name="fechaInicio" class="form-control">
+  </div>
+  <div class="col-md-3">
+    <label for="fechaFin">Fecha de Fin:</label>
+    <input type="date" id="fechaFin" name="fechaFin" class="form-control">
+  </div>
+  <div class="col-md-6 position-relative">
+    <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
+      <button class="btn btn-primary" onclick="cargarDatos()">Actualizar Gráficas</button>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
   <div class="row">
     <div class="col-12">
       <div class="card shadow mb-4">
@@ -386,9 +405,13 @@ var ctx = document.getElementById("chartReclu");
 
 // Declarar una función para cargar los datos mediante AJAX
 function cargarDatos() {
+
+  var fechaInicio = $('#fechaInicio').val();
+  var fechaFin = $('#fechaFin').val();
   $.ajax({
     url: '<?php echo base_url('Estadistica/getEstadisticaReclutadoras'); ?>',
     method: 'GET',
+     data: { fechaInicio: fechaInicio, fechaFin: fechaFin },
     success: function(res) {
     // Obtener los datos desde la respuesta
     console.log('Respuesta de la solicitud AJAX:', res);

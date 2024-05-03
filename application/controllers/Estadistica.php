@@ -63,8 +63,8 @@ function getEstadisticaReclutadoras(){
   foreach ($reclutadores as &$reclutador) {
    
       // Aquí puedes agregar más datos a cada reclutador
-      $fechaInicio = $this->input->post('fecha_inicio');
-        $fechaFin = $this->input->post('fecha_fin');
+      $fechaInicio = $this->input->get('fechaInicio');
+      $fechaFin = $this->input->get('fechaFin');
         
         // Si no se especificaron fechas, establecer un rango predeterminado
         if (empty($fechaInicio) || empty($fechaFin)) {
