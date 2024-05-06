@@ -57,7 +57,7 @@
         
        
       </a>
-      <h2 class="text-white text-center font-weight-bold">Talent Safe</h2>      <!-- Divider -->
+      <h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2>      <!-- Divider -->
       <hr class="sidebar-divider my-0">
 
       <!-- Dashboard -->

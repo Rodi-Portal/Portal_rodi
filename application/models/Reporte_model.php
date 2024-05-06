@@ -277,19 +277,19 @@ class Reporte_model extends CI_Model{
         
     }
     function reporteListadoDopingClientes($cliente){
+        $id_portal = $this->session->userdata('idPortal');
 			$filtros = "";
 			//$filtros .= ($f_inicio != "" && $f_inicio != null) ? "c.fecha_alta >= '$f_inicio 00:00:00' " : "";
 			//$filtros .= ($f_fin != "" && $f_fin != null) ? " AND c.fecha_alta <= '$f_fin 23:59:59' " : "";
 			$filtros .= ($cliente == "" || $cliente == 0)? "":" AND C.id = ".$cliente;
-
-			$query = $this->db
-			->query("SELECT C.*,F.razon_social , S.nombre_subcliente as subcliente, S.clave_subcliente as claveSubcliente
-							FROM cliente as C 
-							LEFT JOIN subclientes as S ON S.id_cliente = C.id AND S.eliminado = 0
-                            LEFT JOIN datos_generales as D ON S.id_datos_generales = D.id
-                            LEFT JOIN datos_facturacion as F ON C.id_datos_facturacion = F.id
-							WHERE C.eliminado = 0 ".$filtros."
-							ORDER BY C.id DESC");
+            $query = $this->db
+            ->query("SELECT C.*, F.razon_social, S.nombre_subcliente as subcliente, S.clave_subcliente as claveSubcliente
+                     FROM cliente as C 
+                     LEFT JOIN subclientes as S ON S.id_cliente = C.id AND S.eliminado = 0
+                     LEFT JOIN datos_generales as D ON S.id_datos_generales = D.id
+                     LEFT JOIN datos_facturacion as F ON C.id_datos_facturacion = F.id
+                     WHERE C.eliminado = 0 ".$filtros." AND C.id_portal = ".$id_portal."
+                     ORDER BY C.id DESC");
 			if($query->num_rows() > 0){
 				return $query->result();
 			}
