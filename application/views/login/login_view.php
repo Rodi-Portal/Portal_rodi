@@ -44,7 +44,7 @@
               <div class="col-lg-6">
                 <div class="p-5">
                   <div class="text-center">
-                    <h1 class="h4 text-gray-900 mb-4">WELCOME!</h1>
+                    <h1 class="h4 text-gray-900 mb-4">WELCOME!!</h1>
                   </div>
                   <form class="user" action="<?php echo base_url('Login/verifying_account'); ?>" method="POST">
                     <div class="form-group">
