@@ -8,6 +8,9 @@ deployment:
     # Verificar si la ruta de despliegue para el sitio 1 existe
     - test -d $DEPLOYPATH_SITE1 && SITE1_EXISTS=true || SITE1_EXISTS=false
 
+    # Verificar si la ruta de despliegue para el sitio 2 existe
+    - test -d $DEPLOYPATH_SITE2 && SITE2_EXISTS=true || SITE2_EXISTS=false
+
     # Copiar archivos al sitio 1 si la ruta existe, de lo contrario, copiar al sitio 2
     - if [ "$SITE1_EXISTS" = true ]; then
         /bin/cp -R application $DEPLOYPATH_SITE1
@@ -20,7 +23,7 @@ deployment:
         /bin/cp -R vendor $DEPLOYPATH_SITE1
         /bin/cp .htaccess $DEPLOYPATH_SITE1
         /bin/cp index.php $DEPLOYPATH_SITE1
-      else
+      elif [ "$SITE2_EXISTS" = true ]; then
         /bin/cp -R application $DEPLOYPATH_SITE2
         /bin/cp -R css $DEPLOYPATH_SITE2
         /bin/cp -R img $DEPLOYPATH_SITE2
@@ -31,4 +34,6 @@ deployment:
         /bin/cp -R vendor $DEPLOYPATH_SITE2
         /bin/cp .htaccess $DEPLOYPATH_SITE2
         /bin/cp index.php $DEPLOYPATH_SITE2
+      else
+        echo "No se encontró la ruta de despliegue para el sitio 2."
       fi
