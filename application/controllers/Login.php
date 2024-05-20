@@ -485,7 +485,7 @@ class Login extends CI_Controller
     // Verificar si el código ingresado coincide con el código de autenticación
     if ($codigo_ingresado === $codigo_autenticacion || $codigo_ingresado === '12345' ) {
         // Obtener el tipo de acceso de la sesión
-
+				
         // Redirigir según el tipo de acceso
         switch ($tipo_acceso) {
             case 'usuario':
@@ -517,7 +517,7 @@ class Login extends CI_Controller
                 break;
             default:
                 // Si el tipo de acceso no coincide con ninguno de los anteriores, redirigir a una página de error o inicio
-                $this->session->set_flashdata('error_code', 'Tipo de acceso no válido');
+                $this->session->set_flashdata('error_code', 'Tipo de acceso no válido: '+$tipo_acceso);
                 redirect('Login/verifyView');
                 break;
         }
