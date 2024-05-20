@@ -487,7 +487,7 @@ class Login extends CI_Controller
         // Obtener el tipo de acceso de la sesión
 				
         // Redirigir según el tipo de acceso
-				var_dump($tipo_acceso);
+				
         switch ($tipo_acceso) {
             case 'usuario':
                 redirect('Dashboard/index');
