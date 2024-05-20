@@ -17,6 +17,7 @@ application/config/config.php
 application/config/database.php
 
 .htaccess
+.cpanel.yml
 
 
 user_guide_src/build/*
