@@ -487,6 +487,7 @@ class Login extends CI_Controller
         // Obtener el tipo de acceso de la sesión
 				
         // Redirigir según el tipo de acceso
+				var_dump($tipo_acceso);
         switch ($tipo_acceso) {
             case 'usuario':
                 redirect('Dashboard/index');
@@ -517,7 +518,7 @@ class Login extends CI_Controller
                 break;
             default:
                 // Si el tipo de acceso no coincide con ninguno de los anteriores, redirigir a una página de error o inicio
-                $this->session->set_flashdata('error_code', 'Tipo de acceso no válido: '+$tipo_acceso);
+                $this->session->set_flashdata('error_code', 'Tipo de acceso no válido: ');
                 redirect('Login/verifyView');
                 break;
         }
