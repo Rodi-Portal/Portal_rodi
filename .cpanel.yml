@@ -1,26 +1,34 @@
 ---
 deployment:
   tasks:
+    # Definir las rutas de despliegue para cada servidor
     - export DEPLOYPATH_SITE1=/home/rodicomm/public_html/portal.rodi.com.mx/
     - export DEPLOYPATH_SITE2=/home/rodicontrol/talentsafe.rodi-control.com/
-    - /bin/cp -R application $DEPLOYPATH_SITE1
-    - /bin/cp -R css $DEPLOYPATH_SITE1
-    - /bin/cp -R img $DEPLOYPATH_SITE1
-    - /bin/cp -R js $DEPLOYPATH_SITE1
-    - /bin/cp -R privacy_notice $DEPLOYPATH_SITE1
-    - /bin/cp -R scss $DEPLOYPATH_SITE1
-    - /bin/cp -R system $DEPLOYPATH_SITE1
-    - /bin/cp -R vendor $DEPLOYPATH_SITE1
-    - /bin/cp .htaccess $DEPLOYPATH_SITE1
-    - /bin/cp index.php $DEPLOYPATH_SITE1
-    # Copiar los mismos archivos al sitio 2
-    - /bin/cp -R application $DEPLOYPATH_SITE2
-    - /bin/cp -R css $DEPLOYPATH_SITE2
-    - /bin/cp -R img $DEPLOYPATH_SITE2
-    - /bin/cp -R js $DEPLOYPATH_SITE2
-    - /bin/cp -R privacy_notice $DEPLOYPATH_SITE2
-    - /bin/cp -R scss $DEPLOYPATH_SITE2
-    - /bin/cp -R system $DEPLOYPATH_SITE2
-    - /bin/cp -R vendor $DEPLOYPATH_SITE2
-    - /bin/cp .htaccess $DEPLOYPATH_SITE2
-    - /bin/cp index.php $DEPLOYPATH_SITE2
+    
+    # Verificar si la ruta de despliegue para el sitio 1 existe
+    - test -d $DEPLOYPATH_SITE1 && SITE1_EXISTS=true || SITE1_EXISTS=false
+
+    # Copiar archivos al sitio 1 si la ruta existe, de lo contrario, copiar al sitio 2
+    - if [ "$SITE1_EXISTS" = true ]; then
+        /bin/cp -R application $DEPLOYPATH_SITE1
+        /bin/cp -R css $DEPLOYPATH_SITE1
+        /bin/cp -R img $DEPLOYPATH_SITE1
+        /bin/cp -R js $DEPLOYPATH_SITE1
+        /bin/cp -R privacy_notice $DEPLOYPATH_SITE1
+        /bin/cp -R scss $DEPLOYPATH_SITE1
+        /bin/cp -R system $DEPLOYPATH_SITE1
+        /bin/cp -R vendor $DEPLOYPATH_SITE1
+        /bin/cp .htaccess $DEPLOYPATH_SITE1
+        /bin/cp index.php $DEPLOYPATH_SITE1
+      else
+        /bin/cp -R application $DEPLOYPATH_SITE2
+        /bin/cp -R css $DEPLOYPATH_SITE2
+        /bin/cp -R img $DEPLOYPATH_SITE2
+        /bin/cp -R js $DEPLOYPATH_SITE2
+        /bin/cp -R privacy_notice $DEPLOYPATH_SITE2
+        /bin/cp -R scss $DEPLOYPATH_SITE2
+        /bin/cp -R system $DEPLOYPATH_SITE2
+        /bin/cp -R vendor $DEPLOYPATH_SITE2
+        /bin/cp .htaccess $DEPLOYPATH_SITE2
+        /bin/cp index.php $DEPLOYPATH_SITE2
+      fi
