@@ -7,6 +7,7 @@
     <h1 id="msg_push"></h1>
     <!--a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</!--a-->
   </div>
+
   <?php 
 
 
@@ -26,7 +27,8 @@
               <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
             </div>
             <div class="col-auto">
-              <i class="fas fa-spinner fa-pulse fa-2x text-success"></i>
+              <i class="fas fa-check-circle fa-2x text-success"></i>
+
             </div>
           </div>
         </div>
@@ -78,6 +80,13 @@
       </div>
     </div>
   </div>
+
+
+
+
+
+
+
   <div class="row">
     <div class="col-12">
       <div class="card shadow mb-4">
@@ -128,31 +137,63 @@
   </div>
 </div>
 
+<!-- Miniatura para abrir el modal -->
 <div class="row justify-content-center">
-  <div class="col-md-3">
-    <label for="fechaInicio">Fecha de Inicio:</label>
-    <input type="date" id="fechaInicioPastel" name="fechaInicio" class="form-control">
-  </div>
-  <div class="col-md-3">
-    <label for="fechaFin">Fecha de Fin:</label>
-    <input type="date" id="fechaFinPastel" name="fechaFin" class="form-control">
-  </div>
-  <div class="col-md-6 position-relative">
-    <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
-      <button class="btn btn-primary" onclick="cargarDatosPastel()">Actualizar Gráficas</button>
+  <div class="col-md-">
+    <!-- Cambia el número de columnas para ajustar el tamaño de la tarjeta -->
+    <div class="card shadow mb-6">
+      <div class="card-header">
+        <h6 class="card-title text-center">Estadistica Medios de contacto</h6> <!-- Agrega el título -->
+      </div>
+      <div class="card-body">
+        <!-- Miniatura de la gráfica -->
+        <div class="col-md-12" style="padding-top: 0;">
+          <canvas id="chartPastelMini" style="width: 100%; height: auto; cursor: pointer;" data-toggle="modal"
+            data-target="#graficaModal"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="card shadow mb-4">
-      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios de contacto</h6>
+
+<!-- Modal -->
+<div class="modal fade" id="graficaModal" tabindex="-1" role="dialog" aria-labelledby="graficaModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="graficaModalLabel">Estadistica Medios de contacto</h5>
+
       </div>
-      <div class="card-body">
-        <!-- Colocar el gráfico en el centro del contenedor -->
-        <div class="col-md-12" style="padding-top: 0;">
-          <canvas id="chartPastel" style="height: 400px;"></canvas>
+      <div class="modal-body">
+        <!-- Contenido del modal -->
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+            <label for="fechaInicio">Fecha de Inicio:</label>
+            <input type="date" id="fechaInicioPastel" name="fechaInicio" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label for="fechaFin">Fecha de Fin:</label>
+            <input type="date" id="fechaFinPastel" name="fechaFin" class="form-control">
+          </div>
+          <div class="col-md-6 position-relative">
+            <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
+              <button class="btn btn-primary" onclick="cargarDatosPastel()">Actualizar Gráficas</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card shadow mb-4">
+
+              <div class="card-body">
+                <!-- Colocar el gráfico en el centro del contenedor -->
+                <div class="col-md-12" style="padding-top: 0;">
+                  <canvas id="chartPastel" style="height: 400px;"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -211,223 +252,208 @@ if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') =
 // Define variables para almacenar los datos de cada card
 
 
-let datosCard1, datosCard2, datosCard3, datosCard4;
+function cargarGrafica() {
+  let datosCard1, datosCard2, datosCard3, datosCard4;
 
-var promises = [];
+  // Realiza la solicitud AJAX para obtener todos los datos necesarios
+  $.ajax({
+    url: '<?php echo base_url('Estadistica/obtenerDatosPorMeses'); ?>',
+    method: 'GET',
+    dataType: 'json',
+  }).then(function(response) {
+    console.log("🚀 ~ cargarGrafica ~ response:", response)
+    // Asigna los datos a las variables correspondientes
+    datosCard1 = Object.values(response).map(mes => mes.requisiciones_en_proceso);
+    datosCard2 = Object.values(response).map(mes => mes.requisiciones_finalizadas);
+    datosCard3 = Object.values(response).map(mes => mes.requisiciones_canceladas);
+    datosCard4 = Object.values(response).map(mes => mes.aspirantes_proceso);
 
-// Realiza la solicitud AJAX para obtener los datos del card 1
-var promise1 = $.ajax({
-  url: '<?php echo base_url('Estadistica/getRequisicionesProcesoPorMes'); ?>',
-  method: 'GET',
-  dataType: 'json',
-});
+    // Llama a la función para actualizar la gráfica
+    actualizarGrafica('#chartCandidatosFinalizados'); // Para la gráfica original
+    // Para la gráfica en el modal
+  }).catch(function(error) {
+    console.error('Error en la solicitud AJAX:', error);
+  });
 
-// Realiza la solicitud AJAX para obtener los datos del card 2
-var promise2 = $.ajax({
-  url: '<?php echo base_url('Estadistica/getRequisicionesFinalizadasPorMes'); ?>',
-  method: 'GET',
-  dataType: 'json',
-});
+  // Función para actualizar la gráfica una vez que se hayan obtenido todos los datos
+  function actualizarGrafica(canvasID) {
+    // Verifica si todos los datos están disponibles
+    if (datosCard1 !== undefined && datosCard2 !== undefined && datosCard3 !== undefined && datosCard4 !== undefined) {
+      console.log("Tipo de datos de datosCard1:", typeof datosCard1);
+      // Definir los meses y los nombres de los meses
+      const meses = Array.from({
+        length: 12
+      }, (_, i) => i); // Array de números del 0 al 11 (para representar los meses del año)
+      const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
+        'Octubre', 'Noviembre', 'Diciembre'
+      ];
 
-// Realiza la solicitud AJAX para obtener los datos del card 3
-var promise3 = $.ajax({
-  url: '<?php echo base_url('Estadistica/getRequisicionesCanceladasPorMes'); ?>',
-  method: 'GET',
-  dataType: 'json',
-});
+      // Obtener el mes actual y el mes anterior
+      const mesActual = new Date().getMonth();
+      const mesAnterior = (mesActual === 0 ? 11 : mesActual - 1);
 
-// Realiza la solicitud AJAX para obtener los datos del card 4
-var promise4 = $.ajax({
-  url: '<?php echo base_url('Estadistica/getAspirantesProcesoPorMes'); ?>',
-  method: 'GET',
-  dataType: 'json',
-});
+      // Obtener los datos de los meses actual y anterior para cada conjunto de datos
+      const datosMesActual = [datosCard1[mesActual], datosCard2[mesActual], datosCard3[mesActual], datosCard4[
+        mesActual]];
+      const datosMesAnterior = [datosCard1[mesAnterior], datosCard2[mesAnterior], datosCard3[mesAnterior], datosCard4[
+        mesAnterior
+      ]];
 
-// Agrega las promesas al array
-promises.push(promise1, promise2, promise3, promise4);
+      // Rellenar los datos faltantes con ceros para que cada conjunto de datos tenga un valor para cada mes
+      const datosCard1Rellenados = datosCard1.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+        valor : 0);
+      const datosCard2Rellenados = datosCard2.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+        valor : 0);
+      const datosCard3Rellenados = datosCard3.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+        valor : 0);
+      const datosCard4Rellenados = datosCard4.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
+        valor : 0);
 
-// Espera a que todas las promesas se resuelvan
-Promise.all(promises).then(function(responses) {
-  // Asigna los datos a las variables correspondientes
-  datosCard1 = responses[0];
-  datosCard2 = responses[1];
-  datosCard3 = responses[2];
-  datosCard4 = responses[3];
-
-  // Llama a la función para actualizar la gráfica
-  actualizarGrafica();
-}).catch(function(error) {
-  console.error('Error en las solicitudes AJAX:', error);
-});
-
-
-
-
-// Función para actualizar la gráfica una vez que se hayan obtenido todos los datos
-function actualizarGrafica() {
-  // Verifica si todos los datos están disponibles
-  if (datosCard1 !== undefined && datosCard2 !== undefined && datosCard3 !== undefined && datosCard4 !== undefined) {
-    console.log("Tipo de datos de datosCard1:", typeof datosCard1);
-    // Definir los meses y los nombres de los meses
-    const meses = Array.from({
-      length: 12
-    }, (_, i) => i); // Array de números del 0 al 11 (para representar los meses del año)
-    const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-      'Octubre', 'Noviembre', 'Diciembre'
-    ];
-
-    // Obtener el mes actual y el mes anterior
-    const mesActual = new Date().getMonth();
-    const mesAnterior = (mesActual === 0 ? 11 : mesActual - 1);
-
-    // Obtener los datos de los meses actual y anterior para cada conjunto de datos
-    const datosMesActual = [datosCard1[mesActual], datosCard2[mesActual], datosCard3[mesActual], datosCard4[mesActual]];
-    const datosMesAnterior = [datosCard1[mesAnterior], datosCard2[mesAnterior], datosCard3[mesAnterior], datosCard4[
-      mesAnterior]];
-
-    // Rellenar los datos faltantes con ceros para que cada conjunto de datos tenga un valor para cada mes
-    const datosCard1Rellenados = datosCard1.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-      valor : 0);
-    const datosCard2Rellenados = datosCard2.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-      valor : 0);
-    const datosCard3Rellenados = datosCard3.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-      valor : 0);
-    const datosCard4Rellenados = datosCard4.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-      valor : 0);
-
-    // Definir los datos de la gráfica con los datos rellenados
-    const data = {
-      labels: nombresMeses,
-      datasets: [
-
-        {
-          label: 'Requisiciones Canceladas',
-          backgroundColor: 'rgba(255, 99, 132, 0.7)', // Rojo para el fondo
-          borderColor: 'rgba(255, 99, 132)', // Color del borde
-          borderWidth: 1, // Ancho del borde
-          pointBackgroundColor: 'rgba(255, 99, 132, 1)', // Punto del gráfico
-          pointRadius: 5,
-          fill: true,
-          data: datosCard3Rellenados,
-
-          datalabels: {
-            align: 'end',
-            anchor: 'end',
-            backgroundColor: function(context) {
-              return context.dataset.backgroundColor;
-            },
-            borderRadius: 4,
-            color: 'black',
-            font: {
-              weight: 'bold'
-            },
-            padding: 6
+      // Definir los datos de la gráfica con los datos rellenados
+      const data = {
+        plugins: [ChartDataLabels],
+        labels: nombresMeses,
+        datasets: [{
+            label: 'Requisiciones Canceladas',
+            backgroundColor: 'rgba(255, 99, 132, 0.7)', // Rojo para el fondo
+            borderColor: 'rgba(255, 99, 132)', // Color del borde
+            borderWidth: 1, // Ancho del borde
+            pointBackgroundColor: 'rgba(255, 99, 132, 1)', // Punto del gráfico
+            pointRadius: 5,
+            fill: true,
+            data: datosCard3Rellenados,
+            datalabels: {
+              align: 'end',
+              anchor: 'end',
+              backgroundColor: function(context) {
+                return context.dataset.backgroundColor;
+              },
+              borderRadius: 4,
+              color: 'black',
+              font: {
+                weight: 'bold'
+              },
+              padding: 6
+            }
+          },
+          {
+            label: 'Requisiciones en Proceso',
+            backgroundColor: 'rgba(92, 184, 92, 0.5)', // Verde success para el fondo
+            borderColor: 'rgba(92, 184, 92, 1)', // Color del borde
+            borderWidth: 1, // Ancho del borde
+            pointBackgroundColor: 'rgba(92, 184, 92, 1)', // Punto del gráfico
+            pointRadius: 5,
+            fill: true,
+            data: datosCard1Rellenados,
+            datalabels: {
+              align: 'end',
+              anchor: 'end',
+              backgroundColor: function(context) {
+                return context.dataset.backgroundColor;
+              },
+              borderRadius: 4,
+              color: 'black',
+              font: {
+                weight: 'bold'
+              },
+              padding: 6
+            }
+          },
+          {
+            label: 'Requisiciones Finalizadas',
+            backgroundColor: 'rgba(54, 162, 235, 0.8)', // Color de fondo
+            borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
+            borderWidth: 1, // Ancho del borde
+            pointBackgroundColor: 'rgba(54, 162, 235, 1)', // Punto del gráfico
+            pointRadius: 5,
+            fill: true,
+            data: datosCard2Rellenados,
+            datalabels: {
+              align: 'end',
+              anchor: 'end',
+              backgroundColor: function(context) {
+                return context.dataset.backgroundColor;
+              },
+              borderRadius: 4,
+              color: 'black',
+              font: {
+                weight: 'bold'
+              },
+              padding: 6
+            }
+          },
+          {
+            label: 'Aspirantes en proceso de Reclutamiento',
+            backgroundColor: 'rgba(255, 206, 86, 0.6)', // Amarillo para el fondo
+            borderColor: 'rgba(255, 206, 86, 1)', // Color del borde
+            borderWidth: 1, // Ancho del borde
+            pointBackgroundColor: 'rgba(255, 206, 86, 1)', // Punto del gráfico
+            pointRadius: 5,
+            fill: true,
+            data: datosCard4Rellenados,
+            datalabels: {
+              align: 'end',
+              anchor: 'end',
+              backgroundColor: function(context) {
+                return context.dataset.backgroundColor;
+              },
+              borderRadius: 4,
+              color: 'black',
+              font: {
+                weight: 'bold'
+              },
+              padding: 6
+            }
           }
-        },
-        {
-          label: 'Requisiciones en Proceso',
-          backgroundColor: 'rgba(92, 184, 92, 0.5)', // Verde success para el fondo
-          borderColor: 'rgba(92, 184, 92, 1)', // Color del borde
-          borderWidth: 1, // Ancho del borde
-          pointBackgroundColor: 'rgba(92, 184, 92, 1)', // Punto del gráfico
-          pointRadius: 5,
-          fill: true,
-          data: datosCard1Rellenados,
+        ]
+      };
 
-          datalabels: {
-            align: 'end',
-            anchor: 'end',
-            backgroundColor: function(context) {
-              return context.dataset.backgroundColor;
-            },
-            borderRadius: 4,
-            color: 'black',
-            font: {
-              weight: 'bold'
-            },
-            padding: 6
-          }
-        },
-        {
-          label: 'Requisiciones Finalizadas',
-          backgroundColor: 'rgba(54, 162, 235, 0.8)', // Color de fondo
-          borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-          borderWidth: 1, // Ancho del borde
-          pointBackgroundColor: 'rgba(54, 162, 235, 1)', // Punto del gráfico
-          pointRadius: 5,
-          fill: true,
-          data: datosCard2Rellenados,
+      // Configurar la gráfica
+      const config = {
+        plugins: [ChartDataLabels],
 
-          datalabels: {
-            align: 'end',
-            anchor: 'end',
-            backgroundColor: function(context) {
-              return context.dataset.backgroundColor;
-            },
-            borderRadius: 4,
-            color: 'black',
-            font: {
-              weight: 'bold'
-            },
-            padding: 6
-          }
-        },
-
-        {
-          label: 'Aspirantes en proceso de Reclutamiento',
-          backgroundColor: 'rgba(255, 206, 86, 0.6)', // Amarillo para el fondo
-          borderColor: 'rgba(255, 206, 86, 1)', // Color del borde
-          borderWidth: 1, // Ancho del borde
-          pointBackgroundColor: 'rgba(255, 206, 86, 1)', // Punto del gráfico
-          pointRadius: 5,
-          fill: true,
-          data: datosCard4Rellenados,
-
-          datalabels: {
-            align: 'end',
-            anchor: 'end',
-            backgroundColor: function(context) {
-              return context.dataset.backgroundColor;
-            },
-            borderRadius: 4,
-            color: 'black',
-            font: {
-              weight: 'bold'
-            },
-            padding: 6
+        type: 'line',
+        data: data,
+        options: {
+          plugins: {
+    datalabels: {
+      align: 'start',
+      offset: 4,
+      color: 'black',
+      font: {
+        weight: 'bold'
+      }
+    }
+  },
+          scales: {
+            xAxes: [{
+              grid: {
+                borderColor: 'red'
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                min: 1, // Establece el valor mínimo en el eje y
+                max: 1000, // Establece el valor máximo en el eje y
+                stepSize: 10 // Define el tamaño del paso entre cada punto de comparación
+              }
+            }]
+          },
+          maintainAspectRatio: false,
+   
+          elements: {
+            line: {
+              tension: 0.4, // Ajusta la tensión de la curva
+              borderCapStyle: 'round' // Configura los extremos de la línea como redondos
+            }
           }
         }
-      ]
-    };
+      };
 
-    // Configurar la gráfica
-    const config = {
-      type: 'line',
-      data: data,
-      options: {
-        scales: {
-          xAxes: [{
-            grid: {
-              borderColor: 'red'
-            }
-          }],
-          yAxes: [{
-            ticks: {
-              min: 1, // Establece el valor mínimo en el eje y
-              max: 50, // Establece el valor máximo en el eje y
-              stepSize: 10 // Define el tamaño del paso entre cada punto de comparación
-            }
-          }]
-        },
-        maintainAspectRatio: false
-      }
-    };
-
-    // Crear una nueva instancia de la gráfica
-    var myChart = new Chart(
-      $('#chartCandidatosFinalizados'),
-      config
-    );
+      // Crear una nueva instancia de la gráfica
+      var canvas = document.querySelector(canvasID);
+      var myChart = new Chart(canvas, config);
+    }
   }
 }
 
@@ -497,7 +523,7 @@ var myChart = new Chart(ctx, {
       {
         label: 'Requisiciones Asignadas',
         data: [],
-        backgroundColor: 'rgba(92, 184, 92, 0.6)', 
+        backgroundColor: 'rgba(92, 184, 92, 0.6)',
       },
       {
         label: 'Requisiciones Finalizadas',
@@ -508,7 +534,7 @@ var myChart = new Chart(ctx, {
       {
         label: 'SLA Promedio en dias ',
         data: [],
-        backgroundColor:'rgba(255, 206, 86, 0.6)',
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
       }
     ]
   },
@@ -549,12 +575,11 @@ var myChart = new Chart(ctx, {
 function generarPaleta(numColores) {
   var paleta = [];
   for (var i = 0; i < numColores; i++) {
-    var color = 'hsl(' + (i * (360 / numColores) % 360) + ', 70%, 50%, 0.6)';
+    var color = 'hsl(' + (i * (360 / numColores) % 360) + ', 70%, 50%, 0.4)';
     paleta.push(color);
   }
   return paleta;
 }
-
 // Función para cargar datos en el gráfico de pastel
 function cargarDatosPastel() {
   var fechaInicio = $('#fechaInicioPastel').val();
@@ -577,29 +602,58 @@ function cargarDatosPastel() {
       // Acceder a las propiedades de la respuesta
       //console.log('Etiquetas:', res.labels);
       //console.log('Datos:', res.data);
+      actualizarGraficaPastelMiniatura(res);
 
+      // Llama a la función para actualizar la gráfica extendida en el modal
+      actualizarGraficaPastelModal(res);
       // Actualizar los datos de la gráfica de pastel
-      if (res.labels && res.data) {
-        pastelChart.data.labels = res.labels;
-        pastelChart.data.datasets[0].data = res.data;
 
-        // Generar una paleta de colores basada en el número de segmentos
-        var numColores = res.labels.length;
-        var paleta = generarPaleta(numColores);
-        pastelChart.data.datasets[0].backgroundColor = paleta;
-
-        pastelChart.update();
-      } else {
-        console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
-      }
     },
     error: function(xhr, status, error) {
       console.error('Error al cargar los datos:', error);
     }
   });
 }
+
+function actualizarGraficaPastelMiniatura(res) {
+  if (res.labels && res.data) {
+    pastelChartMini.data.labels = res.labels;
+    pastelChartMini.data.datasets[0].data = res.data;
+
+    // Generar una paleta de colores basada en el número de segmentos
+    var numColores = res.labels.length;
+    var paleta = generarPaleta(numColores);
+    pastelChartMini.data.datasets[0].backgroundColor = paleta;
+
+    pastelChartMini.update();
+  } else {
+    console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
+  }
+  // Aquí puedes utilizar los datos recibidos para actualizar la miniatura
+}
+
+// Función para actualizar la gráfica extendida en el modal
+function actualizarGraficaPastelModal(res) {
+
+  if (res.labels && res.data) {
+    pastelChart.data.labels = res.labels;
+    pastelChart.data.datasets[0].data = res.data;
+
+    // Generar una paleta de colores basada en el número de segmentos
+    var numColores = res.labels.length;
+    var paleta = generarPaleta(numColores);
+    pastelChart.data.datasets[0].backgroundColor = paleta;
+
+    pastelChart.update();
+  } else {
+    console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
+  }
+  // Aquí puedes utilizar los datos recibidos para actualizar la gráfica en el modal
+}
 // Eliminar la variable datosPastel y configurar los datos directamente en la función cargarDatosPastel
-var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2d'), {
+
+var pastelChartMini = new Chart(document.getElementById('chartPastelMini').getContext('2d'), {
+  plugins: [ChartDataLabels],
   type: 'pie',
   data: {
     labels: [],
@@ -608,24 +662,9 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
     }]
   },
   options: {
-    layout: {
-        padding: {
-            left: 50,
-            right: 50,
-            top: 0,
-            bottom: 50
-        }
-    },
-    title: {
-      display: true,
-      text: 'Datos de medios de captación de candidatos',
-      fontSize: 27,
-      padding: 30,
-      fontColor: '#12619c',
-    },
     plugins: {
       legend: {
-        display: true,
+        display: false,
         position: 'right',
         labels: {
           padding: 20,
@@ -634,12 +673,73 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
             size: 25
           }
         }
+      },
+      tooltip: {
+        enabled: true // Asegúrate de que las sugerencias emergentes estén habilitadas
+      },
+      datalabels: {
+        formatter: (value, ctx) => {
+          let sum = 0;
+          let dataArr = ctx.chart.data.datasets[0].data;
+          dataArr.map(data => {
+            sum += data;
+          });
+          let percentage = ((value * 100) / sum).toFixed(2) + "%";
+          return percentage;
+        },
+        color: '#fff',
       }
     }
   }
 });
 
+
+var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2d'), {
+  plugins: [ChartDataLabels],
+  type: 'pie',
+  data: {
+    labels: [],
+    datasets: [{
+      data: []
+    }]
+  },
+  options: {
+    plugins: {
+      legend: {
+        display: true,
+        position: 'right',
+        labels: {
+          padding: 20,
+          boxWidth: 40,
+          font: {
+            size: 15
+          }
+        }
+      },
+      tooltip: {
+        enabled: true // Asegúrate de que las sugerencias emergentes estén habilitadas
+      },
+      datalabels: {
+        formatter: (value, ctx) => {
+          let sum = 0;
+          let dataArr = ctx.chart.data.datasets[0].data;
+          dataArr.map(data => {
+            sum += data;
+          });
+          let percentage = ((value * 100) / sum).toFixed(2) + "%";
+          return percentage;
+        },
+        color: '#fff',
+      }
+    }
+  }
+});
+
+
+
+
 $(document).ready(function() {
+  cargarGrafica();
   cargarDatos();
   cargarDatosPastel();
 });

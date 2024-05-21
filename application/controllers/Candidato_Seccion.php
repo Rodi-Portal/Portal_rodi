@@ -71,18 +71,18 @@ class Candidato_Seccion extends CI_Controller{
     // }
     $previos = $this->candidato_seccion_model->getHistorialProyectosByCliente($this->input->post('id_cliente'));
     if(!empty($previos)){
-      $salida = "<option value='0'>Select</option>";
+      $salida = "<option value='0'>Selecto</option>";
       foreach($previos as $prev){
         $salida .= '<option value="'.$prev->id.'">'.$prev->proyecto.'</option>';
       }
     }
     else{
       $salida = "<option value='0'>N/A</option>";
-     // $previos = $this->candidato_seccion_model->getHistorialProyectosByCliente(0);
-     // $salida = "<option value='0'>Select</option>";
-      //foreach($previos as $prev){
-        //$salida .= '<option value="'.$prev->id.'">'.$prev->proyecto.'</option>';
-      //}
+      $previos = $this->candidato_seccion_model->getHistorialProyectosByCliente(0);
+      $salida = "<option value='1'>Selecto</option>";
+      foreach($previos as $prev){
+        $salida .= '<option value="'.$prev->id.'">'.$prev->proyecto.'</option>';
+      }
     }
     echo $salida;
   }

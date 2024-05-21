@@ -562,6 +562,8 @@ class Cliente_General extends Custom_Controller{
           $id_cliente = $this->input->post('id_cliente');
         }
         $cliente = $this->cat_cliente_model->getById($id_cliente);
+        
+
 
         $seccion = $this->candidato_seccion_model->getProyectoHistorialByIdProyecto($this->input->post('previo'));
         $control = $this->cliente_control_model->get_by_cliente_proyecto($id_cliente, $this->input->post('previo'));

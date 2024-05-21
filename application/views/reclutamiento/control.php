@@ -143,12 +143,12 @@ function changeDataTable(url) {
         "width": "10%",
         mRender: function(data, type, full) {
           var correo = (full.correo != '') ? full.correo : 'No registrado';
-    
+
           return '<b>Teléfono: </b>' + data + '<br><b>Correo: </b>' + correo + '<br><b>Medio: </b>' + full
             .medio_contacto;
         }
       },
-    
+
       {
         title: 'Acciones',
         data: 'id',
@@ -164,13 +164,15 @@ function changeDataTable(url) {
             ')" data-toggle="tooltip" title="Cargar CV/Solicitud"><i class="fas fa-upload"></i> Cargar CV/Solicitud</a>';
 
 
-            var comentarios = '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id + ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
+          var comentarios =
+            '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id +
+            ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
 
 
           var historial =
             '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
-          //var iniciar_socio =
-            //'<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Iniciar ESE"><i class="fas fa-play-circle"></i> Iniciar ESE</a>';
+          var iniciar_socio =
+            '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Iniciar ESE"><i class="fas fa-play-circle"></i> Iniciar ESE</a>';
           let ingreso =
             '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>';
 
@@ -183,7 +185,9 @@ function changeDataTable(url) {
             if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
               if (full.idCandidato != null && full.idCandidato != '') {
                 acciones = '<b>ESE finalizado</b>';
-              } //else {                acciones = iniciar_socio;              }
+              } else {
+                acciones = iniciar_socio;
+              }
             } else {
               if (full.status_final != 'CANCELADO') {
                 acciones = ingreso;
@@ -195,18 +199,18 @@ function changeDataTable(url) {
             '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
             '<div class="dropdown-menu">' +
             acciones +
-            historial+
-            comentarios+
+            historial +
+            comentarios +
             cvLink +
-            
+
             ingreso +
-           
+
 
             '</div>' +
             '</div>';
         }
       },
-       
+
 
       {
         title: 'Estatus actual',
@@ -254,7 +258,7 @@ function changeDataTable(url) {
         }
       }
       $("a#editar_aspirante", row).bind('click', () => {
-      
+
         $("#idAspirante").val(data.id);
         $("#idBolsa").val(data.id_bolsa_trabajo);
 
@@ -324,13 +328,20 @@ function changeDataTable(url) {
         });
       });
       $('a#iniciar_socio', row).bind('click', () => {
+        console.log("🚀 ~ $ ~ row:", data)
+        var nombreCompleto = data.aspirante.trim();
+
+        // Dividir el nombre completo en nombre y apellido
+        var partesNombre = nombreCompleto.split(" ");
+        var nombreAspirante = partesNombre[0];
+        var apellidoAspirante = partesNombre.slice(1).join(" ");
         var id_cliente = 0;
         let id_position = 0;
         $("#idAspirante").val(data.id);
         $("#idRequisicion").val(data.id_requisicion);
         $("#idBolsaTrabajo").val(data.id_bolsa_trabajo);
-        $('#nombre_registro').val(data.nombre)
-        $('#paterno_registro').val(data.paterno)
+        $('#nombre_registro').val(nombreAspirante)
+        $('#paterno_registro').val(apellidoAspirante)
         $('#materno_registro').val(data.materno)
         $('#celular_registro').val(data.telefono)
         $('#correo_registro').val(data.correo)
@@ -478,51 +489,52 @@ function addApplicant() {
     }
   });
 }
+
 function guardarComentario(id_bolsa) {
- 
-    let comentario = $('#comentario_bolsa').val();
-    $.ajax({
-      url: '<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>',
-      type: 'post',
-      data: {
-        'id_bolsa': id_bolsa,
-        'comentario': comentario
-      },
-      beforeSend: function() {
-        $('.loader').css("display", "block");
-      },
-      success: function(res) {
-        setTimeout(function() {
-          $('.loader').fadeOut();
-        }, 200);
-        var data = JSON.parse(res);
-        if (data.codigo === 1) {
-          $("#historialComentariosModal").modal('hide');
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: data.msg,
-            showConfirmButton: false,
-            timer: 3000
-          })
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Hubo un problema',
-            html: data.msg,
-            width: '50em',
-            confirmButtonText: 'Cerrar'
-          })
-        }
+
+  let comentario = $('#comentario_bolsa').val();
+  $.ajax({
+    url: '<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>',
+    type: 'post',
+    data: {
+      'id_bolsa': id_bolsa,
+      'comentario': comentario
+    },
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      var data = JSON.parse(res);
+      if (data.codigo === 1) {
+        $("#historialComentariosModal").modal('hide');
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: data.msg,
+          showConfirmButton: false,
+          timer: 3000
+        })
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Hubo un problema',
+          html: data.msg,
+          width: '50em',
+          confirmButtonText: 'Cerrar'
+        })
       }
-    });
-  }
+    }
+  });
+}
 
 function subirCVReqAspirante() {
   var idAspirante = $('#id_aspirante').val();
- // console.log("🚀 ~ subirCVReqAspirante ~ idAspirante:", idAspirante);
+  // console.log("🚀 ~ subirCVReqAspirante ~ idAspirante:", idAspirante);
   var idCV = $('#id_cv').val();
- // console.log("🚀 ~ subirCVReqAspirante ~ idCV:", idCV);
+  // console.log("🚀 ~ subirCVReqAspirante ~ idCV:", idCV);
 
 
 
@@ -552,13 +564,14 @@ function subirCVReqAspirante() {
           icon: 'success',
           title: 'CV subido correctamente',
           showConfirmButton: false,
-          timer: 2500}).
-          then(function() {
-      // Recargar la página después de 2500 milisegundos (2.5 segundos)
-      setTimeout(function() {
-        location.reload();
-      }, 1);
-    });
+          timer: 2500
+        }).
+        then(function() {
+          // Recargar la página después de 2500 milisegundos (2.5 segundos)
+          setTimeout(function() {
+            location.reload();
+          }, 1);
+        });
       } else {
         Swal.fire({
           icon: 'error',
@@ -665,10 +678,8 @@ function guardarEstatusRequisicion() {
 }
 
 function registrarCandidato() {
-  var id_cliente = 87;
   var datos = new FormData();
-  var curp = $('#curp_registro').val();
-  var nss = $('#nss_registro').val();
+
   datos.append('nombre', $("#nombre_registro").val());
   datos.append('paterno', $("#paterno_registro").val());
   datos.append('materno', $("#materno_registro").val());
@@ -684,8 +695,8 @@ function registrarCandidato() {
   datos.append('psicometrico', $("#examen_psicometrico").val());
   datos.append('correo', $("#correo_registro").val());
   datos.append('centro_costo', 'NA');
-  datos.append('curp', curp);
-  datos.append('nss', nss);
+  datos.append('curp', $('#curp_registro').val());
+  datos.append('nss', $('#nss_registro').val());
   datos.append('usuario', 1);
   datos.append('id_aspirante', $("#idAspirante").val());
   datos.append('id_requisicion', $("#idRequisicion").val());
@@ -782,47 +793,48 @@ function getIngresoCandidato(id) {
   });
   $('#ingresoCandidatoModal').modal('show');
 }
+
 function verHistorialBolsaTrabajo(id, nombreCompleto) {
-    $(".nombreRegistro").text(nombreCompleto);
-    $('#div_historial_comentario').empty();
-    $('#btnComentario').attr('onclick', 'guardarComentario(' + id + ')');
-    $.ajax({
-      url: '<?php echo base_url('Reclutamiento/getHistorialBolsaTrabajo'); ?>',
-      type: 'post',
-      data: {
-        'id': id,
-        'tipo_id': 'bolsa'
-      },
-      success: function(res) {
-        var salida = '<table class="table table-striped" style="font-size: 14px">';
-        salida += '<tr style="background: gray;color:white;">';
-        salida += '<th>Fecha</th>';
-        salida += '<th>Usuario</th>';
-        salida += '<th>Comentario / Estatus</th>';
-        salida += '</tr>';
-        if (res != 0) {
-          var dato = JSON.parse(res);
-          for (var i = 0; i < dato.length; i++) {
-            var aux = dato[i]['creacion'].split(' ');
-            var f = aux[0].split('-');
-            var fecha = f[2] + '/' + f[1] + '/' + f[0];
-            salida += "<tr>";
-            salida += '<td>' + fecha + '</td>';
-            salida += '<td>' + dato[i]['usuario'] + '</td>';
-            salida += '<td>' + dato[i]['comentario'] + '</td>';
-            salida += "</tr>";
-          }
-        } else {
+  $(".nombreRegistro").text(nombreCompleto);
+  $('#div_historial_comentario').empty();
+  $('#btnComentario').attr('onclick', 'guardarComentario(' + id + ')');
+  $.ajax({
+    url: '<?php echo base_url('Reclutamiento/getHistorialBolsaTrabajo'); ?>',
+    type: 'post',
+    data: {
+      'id': id,
+      'tipo_id': 'bolsa'
+    },
+    success: function(res) {
+      var salida = '<table class="table table-striped" style="font-size: 14px">';
+      salida += '<tr style="background: gray;color:white;">';
+      salida += '<th>Fecha</th>';
+      salida += '<th>Usuario</th>';
+      salida += '<th>Comentario / Estatus</th>';
+      salida += '</tr>';
+      if (res != 0) {
+        var dato = JSON.parse(res);
+        for (var i = 0; i < dato.length; i++) {
+          var aux = dato[i]['creacion'].split(' ');
+          var f = aux[0].split('-');
+          var fecha = f[2] + '/' + f[1] + '/' + f[0];
           salida += "<tr>";
-          salida += '<td colspan="4" class="text-center"><h5>Sin comentarios</h5></td>';
+          salida += '<td>' + fecha + '</td>';
+          salida += '<td>' + dato[i]['usuario'] + '</td>';
+          salida += '<td>' + dato[i]['comentario'] + '</td>';
           salida += "</tr>";
         }
-        salida += "</table>";
-        $('#div_historial_comentario').html(salida);
-        $("#historialComentariosModal").modal('show');
+      } else {
+        salida += "<tr>";
+        salida += '<td colspan="4" class="text-center"><h5>Sin comentarios</h5></td>';
+        salida += "</tr>";
       }
-    });
-  }
+      salida += "</table>";
+      $('#div_historial_comentario').html(salida);
+      $("#historialComentariosModal").modal('show');
+    }
+  });
+}
 
 function updateAdmission(section) {
   let id_aspirante = $('#idAspirante').val()
@@ -849,11 +861,11 @@ function updateAdmission(section) {
           showConfirmButton: false,
           timer: 3000
         }).then(function() {
-      // Recargar la página después de 2500 milisegundos (2.5 segundos)
-      setTimeout(function() {
-        location.reload();
-      }, 1);
-    });
+          // Recargar la página después de 2500 milisegundos (2.5 segundos)
+          setTimeout(function() {
+            location.reload();
+          }, 1);
+        });
       } else {
         Swal.fire({
           icon: 'error',

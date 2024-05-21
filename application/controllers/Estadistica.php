@@ -159,44 +159,36 @@ public function contarMediosContacto() {
   echo json_encode($response);
 }
 
-function getRequisicionesProcesoPorMes(){
-  date_default_timezone_set('America/Mexico_City');
-  $year = date('Y');
-  $cantidades = array(); // Array para almacenar la cantidad de requisiciones por mes
+public function obtenerDatosPorMeses()
+{
+    date_default_timezone_set('America/Mexico_City');
+    $year = date('Y');
+    $datos = array(); // Array para almacenar los datos por mes
 
-  for($i = 1; $i <= 12; $i++){
-      $cantidad = $this->estadistica_model->getRequisicionesProcesoPorMes($year, $i);
-      $cantidades[] = $cantidad; // Almacena la cantidad de requisiciones finalizadas para el mes $i
-  }
+    for ($i = 1; $i <= 12; $i++) {
+        // Obtener la cantidad de aspirantes en proceso para el mes $i
+        $aspirantesProceso = $this->estadistica_model->getAspirantesProcesoPorMes($year, $i);
 
-  echo json_encode($cantidades); // Devuelve el array en formato JSON
-}
+        // Obtener la cantidad de requisiciones canceladas para el mes $i
+        $requisicionesCanceladas = $this->estadistica_model->getRequisicionesCanceladasPorMeses($year, $i);
 
-function getAspirantesProcesoPorMes(){
-  date_default_timezone_set('America/Mexico_City');
-  $year = date('Y');
-  $cantidades = array(); // Array para almacenar la cantidad de requisiciones por mes
+        // Obtener la cantidad de requisiciones en proceso para el mes $i
+        $requisiciones_finalizadas = $this->estadistica_model->getRequisicionesFinalizadasPorMeses($year, $i);
 
-  for($i = 1; $i <= 12; $i++){
-      $cantidad = $this->estadistica_model->getAspirantesProcesoPorMes($year, $i);
-      $cantidades[] = $cantidad; // Almacena la cantidad de requisiciones finalizadas para el mes $i
-  }
+        // Obtener la cantidad de requisiciones en proceso para el mes $i
+        $requisicionesEnProceso = $this->estadistica_model->getRequisicionesProcesoPorMes($year, $i);
 
-  echo json_encode($cantidades); // Devuelve el array en formato JSON
-}
+        // Almacenar los datos en un arreglo asociativo por mes
+        $datos[$i] = array(
+            'aspirantes_proceso' => $aspirantesProceso,
+            'requisiciones_canceladas' => $requisicionesCanceladas,
+            'requisiciones_finalizadas' => $requisiciones_finalizadas,
+            'requisiciones_en_proceso' => $requisicionesEnProceso
+        );
+    }
 
-
-function getRequisicionesCanceladasPorMes(){
-  date_default_timezone_set('America/Mexico_City');
-  $year = date('Y');
-  $cantidades = array(); // Array para almacenar la cantidad de requisiciones por mes
-
-  for($i = 1; $i <= 12; $i++){
-      $cantidad = $this->estadistica_model->getRequisicionesCanceladasPorMeses($year, $i);
-      $cantidades[] = $cantidad; // Almacena la cantidad de requisiciones finalizadas para el mes $i
-  }
-
-  echo json_encode($cantidades); // Devuelve el array en formato JSON
+    // Devolver los datos como respuesta JSON
+    echo json_encode($datos);
 }
 
 

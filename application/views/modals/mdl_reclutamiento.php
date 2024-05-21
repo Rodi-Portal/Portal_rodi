@@ -368,6 +368,8 @@
               <label>Teléfono *</label>
               <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro"
                 maxlength="16">
+                <input type="number" class="form-control obligado" name="id_cliente_portal" id="id_cliente_portal"
+               >
               <br>
             </div>
           </div>

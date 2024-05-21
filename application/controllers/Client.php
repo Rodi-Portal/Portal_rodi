@@ -472,7 +472,7 @@ class Client extends Custom_Controller{
   /*  Proceso 
   /*----------------------------------------*/
 		function registrar(){
-			$this->form_validation->set_rules('opcion', 'Choose an option', 'required');
+			$this->form_validation->set_rules('opcion', 'Choose an option', );
 			if ($this->form_validation->run() == FALSE) {
 				$msj = array(
 					'codigo' => 0,
@@ -480,7 +480,8 @@ class Client extends Custom_Controller{
 				);
 			}
 			else{
-				if($this->input->post('opcion') == 1){
+				
+				if($this->input->post('nombre')!= null ){
 					$this->form_validation->set_rules('nombre', 'Name', 'required|trim');
 					$this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
 					$this->form_validation->set_rules('materno', 'Second lastname', 'trim');
@@ -488,7 +489,7 @@ class Client extends Custom_Controller{
 					$this->form_validation->set_rules('celular', 'Cellphone number', 'required|trim|max_length[16]');
 					$this->form_validation->set_rules('region', 'Location', 'required');
 					$this->form_validation->set_rules('pais', 'Country', 'required|trim');
-					$this->form_validation->set_rules('proyecto', 'Project name', 'required|trim');
+					$this->form_validation->set_rules('proyecto', 'Project name', 'trim');
 					$this->form_validation->set_rules('examen', 'Examen antidoping', 'required');
 					$this->form_validation->set_rules('medico', 'Examen Médico', 'required');
 
@@ -531,10 +532,12 @@ class Client extends Custom_Controller{
 								break;
 						}
 						$id_usuario = $this->session->userdata('id');
-						$last = $this->candidato_model->lastIdCandidato();
-						$last = ($last == null || $last == "")? 0 : $last;
+					
+					
+						$url = 'http://127.0.0.1:8000/api/candidatos'; // Reemplaza con la URL de tu API
 
 						$data = array(
+						// datos  para  tabla  candidato
 							'creacion' => $date,
 							'edicion' => $date,
 							$tipo_usuario => $id_usuario,
@@ -547,27 +550,60 @@ class Client extends Custom_Controller{
 							'id_cliente' => $id_cliente,
 							'celular' => $cel,
 							'subproyecto' => $proyecto.' '.$pais,
-							'pais' => $pais
-						);
-						$id_candidato = $this->candidato_model->registrarRetornaCandidato($data);
+							'pais' => $pais,
 
-						$pruebas = array(
-							'creacion' => $date,
-							'edicion' => $date,
-							$tipo_usuario => $id_usuario,
-							'id_candidato' => $id_candidato,
-							'id_cliente' => $id_cliente,
+							// datos  para  tabla  pruebas
+				
+						
 							'socioeconomico' => 0,
 							'tipo_antidoping' => $tipo_antidoping,
 							'antidoping' => $antidoping,
 							'medico' => $medico
 						);
-						$this->candidato_model->crearPruebas($pruebas);
 
-						$msj = array(
-							'codigo' => 1,
-							'msg' => 'Success'
-						);
+						print_r($data);
+						die();
+
+
+						$ch = curl_init($url);
+						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+						curl_setopt($ch, CURLOPT_POST, true);
+						curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+						$response = curl_exec($ch);
+						curl_close($ch);
+
+						// Maneja la respuesta de tu API como desees
+						echo $response;
+					
+
+						
+			
+						if ($response !== false) {
+							// La solicitud se procesó correctamente
+							// Analiza la respuesta JSON
+							$responseData = json_decode($response, true);
+							if (isset($responseData['message']) && $responseData['message'] === 'Datos guardados correctamente') {
+									// Manejar la respuesta exitosa
+									$msj = array(
+											'codigo' => 1,
+											'msg' => 'Success'
+									);
+							} else {
+									// Manejar caso de respuesta inesperada o error
+									$msj = array(
+											'codigo' => 0,
+											'msg' => 'Error'
+									);
+							}
+					} else {
+							// Hubo un error al procesar la solicitud cURL
+							$msj = array(
+									'codigo' => 0,
+									'msg' => 'Error'
+							);
+					}
+					
 						//* Envio de notificacion
 						if($usuario == 2 || $usuario == 3){
 							$cliente = $this->cat_cliente_model->getById($id_cliente);

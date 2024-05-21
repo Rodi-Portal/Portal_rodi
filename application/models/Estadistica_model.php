@@ -121,12 +121,14 @@ class Estadistica_model extends CI_Model{
     }
 
     function getRequisicionesFinalizadasPorMeses($year, $month){
+      $id_portal = $this->session->userdata('idPortal');
       $this->db
       ->select("R.creacion")
       ->from('requisicion as R')
       ->where('R.status', 3)
       ->where('R.comentario_final IS NOT NULL') 
       ->where('R.eliminado', 0)
+      ->where('R.id_portal', $id_portal)
       ->where('YEAR(R.edicion)', $year)
       ->where('MONTH(R.edicion)', $month);
 
@@ -137,12 +139,14 @@ class Estadistica_model extends CI_Model{
 
     
     function getRequisicionesProcesoPorMes($year, $month){
+      $id_portal = $this->session->userdata('idPortal');
       $this->db
       ->select("R.creacion")
       ->from('requisicion as R')
       ->where('R.status', 2)
       ->where('R.comentario_final IS  NULL') 
       ->where('R.eliminado', 0)
+      ->where('R.id_portal', $id_portal)
       ->where('YEAR(R.edicion)', $year)
       ->where('MONTH(R.edicion)', $month);
 
@@ -151,11 +155,13 @@ class Estadistica_model extends CI_Model{
     }
 
     function getAspirantesProcesoPorMes($year, $month){
+      $id_portal = $this->session->userdata('idPortal');
       $this->db
       ->select("B.creacion")
       ->from('requisicion_aspirante  as B')
-      
+      ->join('requsicion as R','R.is = B.id_requicision')
       ->where('B.eliminado', 0)
+      ->where('R.id_portal', $id_portal)
       ->where('B.status_final IS  NULL') 
       ->where('YEAR(B.edicion)', $year)
       ->where('MONTH(B.edicion)', $month);
@@ -165,10 +171,13 @@ class Estadistica_model extends CI_Model{
     }
 
     function getRequisicionesCanceladasPorMeses($year, $month){
+      $id_portal = $this->session->userdata('idPortal');
+
       $this->db
       ->select("R.creacion")
       ->from('requisicion as R')
       ->where('R.status', 0)
+      ->where('R.id_portal', $id_portal)
       ->where('R.comentario_final IS NOT NULL') 
       ->where('R.eliminado', 0)
       ->where('YEAR(R.edicion)', $year)
