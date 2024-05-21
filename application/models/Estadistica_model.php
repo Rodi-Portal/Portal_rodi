@@ -304,10 +304,13 @@ public function obtenerPromedioSLAPorUsuarioYFecha($fecha_inicio, $fecha_fin, $i
   return $promedio_sla;
 }
 public function obtenerAspirantesPorRangoFecha($fechaInicio, $fechaFin) {
+  $id_portal = $this->session->userdata('idPortal');
+
   // Active Record
   return $this->db
       ->where('creacion >=', $fechaInicio)
       ->where('creacion <=', $fechaFin)
+      ->where('id_portal', $id_portal)
       ->get('bolsa_trabajo')
       ->result();
 }
