@@ -159,7 +159,7 @@ class Estadistica_model extends CI_Model{
       $this->db
       ->select("B.creacion")
       ->from('requisicion_aspirante  as B')
-      ->join('requsicion as R','R.is = B.id_requicision')
+      ->join('requisicion as R','R.id = B.id_requisicion')
       ->where('B.eliminado', 0)
       ->where('R.id_portal', $id_portal)
       ->where('B.status_final IS  NULL') 
@@ -240,7 +240,7 @@ public function obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin
            ->from('requisicion')
            ->where('id_usuario', $id_usuario)
            ->where('comentario_final IS NOT NULL')
-           ->where('R.id_portal', $id_portal)
+           ->where('id_portal', $id_portal)
            ->where('status', 0)
            ->where('creacion >=', $fechaInicio)
            ->where('edicion <=', $fechaFin);
@@ -258,7 +258,7 @@ public function obtenerRequisicionesFinalizadasPorUsuario($fechaInicio, $fechaFi
            ->from('requisicion')
            ->where('id_usuario', $id_usuario)
            ->where('comentario_final IS NOT NULL')
-           ->where('R.id_portal', $id_portal)
+           ->where('id_portal', $id_portal)
            ->where('status', 3)
            ->where('creacion >=', $fechaInicio)
            ->where('edicion <=', $fechaFin);
