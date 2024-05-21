@@ -216,10 +216,13 @@ class Estadistica_model extends CI_Model{
 }
 
 public function obtenerRequisicionesPorUsuario($fechaInicio, $fechaFin, $id_usuario) {
+  $id_portal = $this->session->userdata('idPortal');
+
   // Contar las filas para el usuario especificado dentro del rango de fechas
   $this->db->select('COUNT(RU.id_requisicion) as total_requisiciones')
            ->from('requisicion_usuario as RU')
            ->join('requisicion as R', 'R.id = RU.id_requisicion')
+           ->where('R.id_portal', $id_portal)
            ->where('RU.id_usuario', $id_usuario)
            ->where('RU.creacion >=', $fechaInicio)
            ->where('R.edicion <=', $fechaFin);
@@ -230,11 +233,14 @@ public function obtenerRequisicionesPorUsuario($fechaInicio, $fechaFin, $id_usua
 }
 
 public function obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin, $id_usuario) {
+ $id_portal = $this->session->userdata('idPortal');
+
   // Contar las filas para el usuario especificado dentro del rango de fechas
   $this->db->select('COUNT(id) as total_canceladas')
            ->from('requisicion')
            ->where('id_usuario', $id_usuario)
            ->where('comentario_final IS NOT NULL')
+           ->where('R.id_portal', $id_portal)
            ->where('status', 0)
            ->where('creacion >=', $fechaInicio)
            ->where('edicion <=', $fechaFin);
@@ -245,11 +251,14 @@ public function obtenerRequisicionesCanceladasPorUsuario($fechaInicio, $fechaFin
 }
 
 public function obtenerRequisicionesFinalizadasPorUsuario($fechaInicio, $fechaFin, $id_usuario) {
+  $id_portal = $this->session->userdata('idPortal');
+
   // Contar las filas para el usuario especificado dentro del rango de fechas
   $this->db->select('COUNT(id) as total_finalizadas')
            ->from('requisicion')
            ->where('id_usuario', $id_usuario)
            ->where('comentario_final IS NOT NULL')
+           ->where('R.id_portal', $id_portal)
            ->where('status', 3)
            ->where('creacion >=', $fechaInicio)
            ->where('edicion <=', $fechaFin);
