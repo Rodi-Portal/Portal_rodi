@@ -231,7 +231,7 @@
             <?php
 							} ?>
             
-           /*   <!-- ?php 
+            <!-- ?php 
 							if(in_array(8, $submenus)){ ?>
             <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
             < ?php
