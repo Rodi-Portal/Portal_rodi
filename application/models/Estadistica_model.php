@@ -39,10 +39,13 @@ class Estadistica_model extends CI_Model{
     }
 
     function countReqCanceladas(){
+      $id_portal = $this->session->userdata('idPortal');
+
       $this->db
       ->select("COUNT(R.id) as total")
       ->from('requisicion as R')
       ->where('R.status', 0)
+      ->where('R.id_portal ', $id_portal)
       ->where('R.comentario_final IS NOT NULL') // Corrección aquí
       ->where('R.eliminado', 0);
     
