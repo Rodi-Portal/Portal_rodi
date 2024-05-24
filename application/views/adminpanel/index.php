@@ -82,35 +82,37 @@
   </div>
 
 
+
+
+
+
   <div class="row">
-    <div class="col-12">
-      <div class="card shadow mb-4">
+    <!-- Miniatura- General -->
+
+    <div class="col-md-6 d-flex align-items-stretch">
+      <div class="card shadow mb-4 w-100" id="miniChartCard">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Estadistica General <?php echo date('Y'); ?>
-          </h6>
+          <h6 class="m-0 font-weight-bold text-primary">Estadística General Area de Reclutamiento
+            <?php echo date('Y'); ?></h6>
         </div>
         <div class="card-body">
-          <div class="chart-area">
-            <canvas id="chartCandidatosFinalizados"></canvas>
+          <div class="chart-area" style="position: relative; height: 200px;">
+            <canvas id="chartCandidatosMiniaturaGeneral" style="cursor: pointer;" data-toggle="modal"
+              data-target="#graficaModalGeneral"></canvas>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-
-
-
-  <div class="row">
     <!-- Miniatura- reclutadores -->
     <div class="col-md-6 d-flex align-items-stretch">
-      <div class="card shadow mb-4 w-100" id="miniChartCard">
+    <div class="card shadow mb-4 w-100" id="miniChartCard">
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Miniatura de Estadísticas <?php echo date('Y'); ?></h6>
+          <h6 class="m-0 font-weight-bold text-primary">Estadísticas de Reclutamiento <?php echo date('Y'); ?></h6>
         </div>
         <div class="card-body">
           <div class="chart-area">
-            <canvas id="miniChartReclu"></canvas>
+            <canvas id="miniChartReclu"style="cursor: pointer;" data-toggle="modal"
+              data-target="#chartModalReclu"></canvas>
           </div>
         </div>
       </div>
@@ -123,9 +125,9 @@
         </div>
         <div class="card-body d-flex justify-content-center align-items-center">
           <!-- Miniatura de la gráfica -->
-          <div >
-            <canvas id="chartPastelMini" style="width: 100%; height: auto; cursor: pointer;" data-toggle="modal"
-              data-target="#graficaModal"></canvas>
+          <div>
+            <canvas id="chartPastelMini" style=cursor: pointer;" data-toggle="modal"
+              data-target="#graficaModalPastel"></canvas>
           </div>
         </div>
       </div>
@@ -134,10 +136,46 @@
   </div>
 </div>
 </div>
-
+<!-- Modal- General -->
+<div class="modal fade" id="graficaModalGeneral" tabindex="-1" aria-labelledby="graficaModalLabelGeneral"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="graficaModalLabelGeneral">Estadística General Detallada</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="filtroMesGeneral">Selecciona el Mes:</label>
+          <select id="filtroMesGeneral" class="form-control">
+            <option value="all">Todo el Año</option>
+            <option value="0">Enero</option>
+            <option value="1">Febrero</option>
+            <option value="2">Marzo</option>
+            <option value="3">Abril</option>
+            <option value="4">Mayo</option>
+            <option value="5">Junio</option>
+            <option value="6">Julio</option>
+            <option value="7">Agosto</option>
+            <option value="8">Septiembre</option>
+            <option value="9">Octubre</option>
+            <option value="10">Noviembre</option>
+            <option value="11">Diciembre</option>
+          </select>
+        </div>
+        <div class="chart-area">
+          <canvas id="chartCandidatosModalGeneral"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal- reclutadores -->
-<div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel"
+<div class="modal fade" id="chartModalReclu" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -183,21 +221,20 @@
   </div>
 </div>
 
-<!-- Miniatura para abrir el modal Pastel-->
 
 </div>
 
 <!-- Modal Grafica Pastel -->
-<div class="modal fade" id="graficaModal" tabindex="-1" role="dialog" aria-labelledby="graficaModalLabel"
+<div class="modal fade" id="graficaModalPastel" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+     
       <div class="modal-header">
         <h5 class="modal-title" id="graficaModalLabel">Estadistica Medios de contacto</h5>
 
       </div>
       <div class="modal-body">
-
         <div class="row justify-content-center">
           <div class="col-md-3">
             <label for="fechaInicio">Fecha de Inicio:</label>
@@ -219,8 +256,8 @@
 
               <div class="card-body">
                 <!-- Colocar el gráfico en el centro del contenedor -->
-                <div class="col-md-12" style="padding-top: 0;">
-                  <canvas id="chartPastel" style="height: 400px;"></canvas>
+                <div class="chart-area">
+                  <canvas id="chartPastel" ></canvas>
                 </div>
               </div>
             </div>
@@ -282,211 +319,141 @@ if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') =
 <script>
 // Grafica  estadisticas   General --------------------------->
 
+  function cargarGraficaGeneral() {
+    $.ajax({
+      url: '<?php echo base_url('Estadistica/obtenerDatosPorMeses'); ?>',
+      method: 'GET',
+      dataType: 'json',
+    }).then(function(response) {
+      const datos = Object.values(response);
 
-function cargarGraficaGeneral() {
-  let datosCard1, datosCard2, datosCard3, datosCard4;
+      const datosCard1 = datos.map(mes => mes.requisiciones_en_proceso);
+      const datosCard2 = datos.map(mes => mes.requisiciones_finalizadas);
+      const datosCard3 = datos.map(mes => mes.requisiciones_canceladas);
+      const datosCard4 = datos.map(mes => mes.aspirantes_proceso);
 
-  // Realiza la solicitud AJAX para obtener todos los datos necesarios
-  $.ajax({
-    url: '<?php echo base_url('Estadistica/obtenerDatosPorMeses'); ?>',
-    method: 'GET',
-    dataType: 'json',
-  }).then(function(response) {
-    console.log("🚀 ~ cargarGrafica ~ response:", response)
-    // Asigna los datos a las variables correspondientes
-    datosCard1 = Object.values(response).map(mes => mes.requisiciones_en_proceso);
-    datosCard2 = Object.values(response).map(mes => mes.requisiciones_finalizadas);
-    datosCard3 = Object.values(response).map(mes => mes.requisiciones_canceladas);
-    datosCard4 = Object.values(response).map(mes => mes.aspirantes_proceso);
+      actualizarGraficaGeneral('#chartCandidatosFinalizadosGeneral', datosCard1, datosCard2, datosCard3, datosCard4,
+        false);
+      actualizarGraficaGeneral('#chartCandidatosMiniaturaGeneral', datosCard1, datosCard2, datosCard3, datosCard4,
+        true);
 
-    // Llama a la función para actualizar la gráfica
-    actualizarGraficaGeneral('#chartCandidatosFinalizados'); // Para la gráfica original
-    // Para la gráfica en el modal
-  }).catch(function(error) {
-    console.error('Error en la solicitud AJAX:', error);
+      $('#chartCandidatosMiniaturaGeneral').on('click', function() {
+        $('#graficaModalGeneral').modal('show');
+        actualizarGraficaGeneral('#chartCandidatosModalGeneral', datosCard1, datosCard2, datosCard3, datosCard4,
+          false, $('#filtroMesGeneral').val());
+      });
+
+      $('#filtroMesGeneral').on('change', function() {
+        actualizarGraficaGeneral('#chartCandidatosModalGeneral', datosCard1, datosCard2, datosCard3, datosCard4,
+          false, $(this).val());
+      });
+    }).catch(function(error) {
+      console.error('Error en la solicitud AJAX:', error);
   });
 
-  // Función para actualizar la gráfica una vez que se hayan obtenido todos los datos
-  function actualizarGraficaGeneral(canvasID) {
-    // Verifica si todos los datos están disponibles
-    if (datosCard1 !== undefined && datosCard2 !== undefined && datosCard3 !== undefined && datosCard4 !== undefined) {
-      console.log("Tipo de datos de datosCard1:", typeof datosCard1);
-      // Definir los meses y los nombres de los meses
-      const meses = Array.from({
-        length: 12
-      }, (_, i) => i); // Array de números del 0 al 11 (para representar los meses del año)
-      const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-        'Octubre', 'Noviembre', 'Diciembre'
-      ];
+  function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, datosCard4, esMiniatura, filtroMes = 'all') {
+    const nombresMeses = esMiniatura ? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'] : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-      // Obtener el mes actual y el mes anterior
-      const mesActual = new Date().getMonth();
-      const mesAnterior = (mesActual === 0 ? 11 : mesActual - 1);
+    let labels, dataCard1Filtered, dataCard2Filtered, dataCard3Filtered, dataCard4Filtered;
 
-      // Obtener los datos de los meses actual y anterior para cada conjunto de datos
-      const datosMesActual = [datosCard1[mesActual], datosCard2[mesActual], datosCard3[mesActual], datosCard4[
-        mesActual]];
-      const datosMesAnterior = [datosCard1[mesAnterior], datosCard2[mesAnterior], datosCard3[mesAnterior], datosCard4[
-        mesAnterior
-      ]];
+    if (filtroMes === 'all') {
+        labels = nombresMeses;
+        dataCard1Filtered = datosCard1;
+        dataCard2Filtered = datosCard2;
+        dataCard3Filtered = datosCard3;
+        dataCard4Filtered = datosCard4;
+    } else {
+        const mesIndex = parseInt(filtroMes) - 1; // Restamos 1 para obtener el índice correcto del mes
+        labels = [nombresMeses[mesIndex]];
+        dataCard1Filtered = [datosCard1[mesIndex]];
+        dataCard2Filtered = [datosCard2[mesIndex]];
+        dataCard3Filtered = [datosCard3[mesIndex]];
+        dataCard4Filtered = [datosCard4[mesIndex]];
+    }
 
-      // Rellenar los datos faltantes con ceros para que cada conjunto de datos tenga un valor para cada mes
-      const datosCard1Rellenados = datosCard1.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-        valor : 0);
-      const datosCard2Rellenados = datosCard2.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-        valor : 0);
-      const datosCard3Rellenados = datosCard3.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-        valor : 0);
-      const datosCard4Rellenados = datosCard4.map((valor, indice) => (indice === mesActual || indice === mesAnterior) ?
-        valor : 0);
+    const maxDataValue = Math.max(...dataCard1Filtered, ...dataCard2Filtered, ...dataCard3Filtered, ...dataCard4Filtered);
+    const maxYValue = maxDataValue + 50;
 
-      // Definir los datos de la gráfica con los datos rellenados
-      const data = {
-        plugins: [ChartDataLabels],
-        labels: nombresMeses,
+    const data = {
+        labels: labels,
         datasets: [{
-            label: 'Requisiciones Canceladas',
-            backgroundColor: 'rgba(255, 99, 132, 0.7)', // Rojo para el fondo
-            borderColor: 'rgba(255, 99, 132)', // Color del borde
-            borderWidth: 1, // Ancho del borde
-            pointBackgroundColor: 'rgba(255, 99, 132, 1)', // Punto del gráfico
-            pointRadius: 5,
-            fill: true,
-            data: datosCard3Rellenados,
-            datalabels: {
-              align: 'end',
-              anchor: 'end',
-              backgroundColor: function(context) {
-                return context.dataset.backgroundColor;
-              },
-              borderRadius: 4,
-              color: 'black',
-              font: {
-                weight: 'bold'
-              },
-              padding: 6
+                label: 'Requisiciones Canceladas',
+                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                borderColor: 'rgba(255, 99, 132)',
+                borderWidth: 1,
+                fill: true,
+                data: dataCard3Filtered,
+            },
+            {
+                label: 'Requisiciones en Proceso',
+                backgroundColor: 'rgba(92, 184, 92, 0.5)',
+                borderColor: 'rgba(92, 184, 92, 1)',
+                borderWidth: 1,
+                fill: true,
+                data: dataCard1Filtered,
+            },
+            {
+                label: 'Requisiciones Finalizadas',
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                fill: true,
+                data: dataCard2Filtered,
+            },
+            {
+                label: 'Aspirantes en proceso de Reclutamiento',
+                backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 1,
+                fill: true,
+                data: dataCard4Filtered,
             }
-          },
-          {
-            label: 'Requisiciones en Proceso',
-            backgroundColor: 'rgba(92, 184, 92, 0.5)', // Verde success para el fondo
-            borderColor: 'rgba(92, 184, 92, 1)', // Color del borde
-            borderWidth: 1, // Ancho del borde
-            pointBackgroundColor: 'rgba(92, 184, 92, 1)', // Punto del gráfico
-            pointRadius: 5,
-            fill: true,
-            data: datosCard1Rellenados,
-            datalabels: {
-              align: 'end',
-              anchor: 'end',
-              backgroundColor: function(context) {
-                return context.dataset.backgroundColor;
-              },
-              borderRadius: 4,
-              color: 'black',
-              font: {
-                weight: 'bold'
-              },
-              padding: 6
-            }
-          },
-          {
-            label: 'Requisiciones Finalizadas',
-            backgroundColor: 'rgba(54, 162, 235, 0.8)', // Color de fondo
-            borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
-            borderWidth: 1, // Ancho del borde
-            pointBackgroundColor: 'rgba(54, 162, 235, 1)', // Punto del gráfico
-            pointRadius: 5,
-            fill: true,
-            data: datosCard2Rellenados,
-            datalabels: {
-              align: 'end',
-              anchor: 'end',
-              backgroundColor: function(context) {
-                return context.dataset.backgroundColor;
-              },
-              borderRadius: 4,
-              color: 'black',
-              font: {
-                weight: 'bold'
-              },
-              padding: 6
-            }
-          },
-          {
-            label: 'Aspirantes en proceso de Reclutamiento',
-            backgroundColor: 'rgba(255, 206, 86, 0.6)', // Amarillo para el fondo
-            borderColor: 'rgba(255, 206, 86, 1)', // Color del borde
-            borderWidth: 1, // Ancho del borde
-            pointBackgroundColor: 'rgba(255, 206, 86, 1)', // Punto del gráfico
-            pointRadius: 5,
-            fill: true,
-            data: datosCard4Rellenados,
-            datalabels: {
-              align: 'end',
-              anchor: 'end',
-              backgroundColor: function(context) {
-                return context.dataset.backgroundColor;
-              },
-              borderRadius: 4,
-              color: 'black',
-              font: {
-                weight: 'bold'
-              },
-              padding: 6
-            }
-          }
         ]
-      };
+    };
 
-      // Configurar la gráfica
-      const config = {
+    const config = {
         plugins: [ChartDataLabels],
-
-        type: 'line',
+        type: filtroMes === 'all' ? 'line' : 'bar', // Cambiar el tipo de gráfico a barras si se selecciona un solo mes
         data: data,
         options: {
-          plugins: {
-            datalabels: {
-              align: 'start',
-              offset: 4,
-              color: 'black',
-              font: {
-                weight: 'bold'
-              }
-            }
-          },
-          scales: {
-            xAxes: [{
-              grid: {
-                borderColor: 'red'
-              }
-            }],
-            yAxes: [{
-              ticks: {
-                min: 1, // Establece el valor mínimo en el eje y
-                max: 1000, // Establece el valor máximo en el eje y
-                stepSize: 10 // Define el tamaño del paso entre cada punto de comparación
-              }
-            }]
-          },
-          maintainAspectRatio: false,
-
-          elements: {
-            line: {
-              tension: 0.4, // Ajusta la tensión de la curva
-              borderCapStyle: 'round' // Configura los extremos de la línea como redondos
-            }
-          }
+            plugins: {
+                datalabels: {
+                    align: 'end',
+                    anchor: 'end',
+                    backgroundColor: (context) => context.dataset.backgroundColor,
+                    borderRadius: 4,
+                    color: 'black',
+                    font: {
+                        weight: 'bold'
+                    },
+                    padding: 6
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        borderColor: 'red'
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: maxYValue,
+                    ticks: {
+                        stepSize: 50
+                    }
+                }
+            },
+            maintainAspectRatio: false,
+            responsive: true
         }
-      };
+    };
 
-      // Crear una nueva instancia de la gráfica
-      var canvas = document.querySelector(canvasID);
-      var myChart = new Chart(canvas, config);
-    }
-  }
+    const canvas = document.querySelector(canvasID);
+    new Chart(canvas, config);
 }
+  }
+
+
 
 //Fin Grafica  Estadisticas General ---------------------------->
 
@@ -524,13 +491,9 @@ function cargarDatosReclutamiento() {
 
       miniChart.data.labels = reclutadoras;
       miniChart.data.datasets[0].data = requisicionesCanceladas;
-      console.log("🚀 ~ cargarDatosReclutamiento ~ requisicionesCanceladas:", requisicionesCanceladas)
       miniChart.data.datasets[1].data = requisicionesRecibidas;
-      console.log("🚀 ~ cargarDatosReclutamiento ~ requisicionesRecibidas:", requisicionesRecibidas)
       miniChart.data.datasets[2].data = requisicionesCerradas;
-      console.log("🚀 ~ cargarDatosReclutamiento ~ requisicionesCerradas:", requisicionesCerradas)
       miniChart.data.datasets[3].data = sla;
-      console.log("🚀 ~ cargarDatosReclutamiento ~ sla:", sla)
 
       // Actualizar el gráfico
       miniChart.update();
@@ -552,11 +515,11 @@ function cargarDatosReclutamiento() {
 
 // Grafica  Mini reclutadores-->
 var ctxMini = document.getElementById('miniChartReclu').getContext('2d');
-var miniChart = new Chart(ctxMini, {
-  type: 'bar', // o el tipo que prefieras
-  data: {
-    labels: [],
-    datasets: [{
+  var miniChart = new Chart(ctxMini, {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
         label: 'Requisiciones Canceladas',
         data: [],
         backgroundColor: 'rgba(255, 99, 132, 0.6)'
@@ -617,12 +580,11 @@ var miniChart = new Chart(ctxMini, {
 });
 
 // Inicializar la gráfica del modal
-var ctxFull = document.getElementById('chartReclu').getContext('2d');
-var fullChart;
+
 
 // Función para abrir el modal y cargar la gráfica en tamaño completo
 document.getElementById('miniChartCard').addEventListener('click', function() {
-  $('#chartModal').modal('show');
+ 
 
   // Si la gráfica ya está creada, destrúyela antes de volver a crearla
   if (fullChart) {
@@ -642,16 +604,7 @@ document.getElementById('miniChartCard').addEventListener('click', function() {
 // Fin Grafica  Mini reclutadores-->
 
 // Grafica  Grande reclutadores-->
-
 var ctx = document.getElementById("chartReclu");
-
-// Declarar una función para cargar los datos mediante AJAX
-
-
-// Llamar a la función para cargar los datos al cargar la página
-
-
-// Crear el gráfico inicialmente con etiquetas y datos vacíos
 var myChart = new Chart(ctx, {
   type: "bar",
   data: {
@@ -747,8 +700,6 @@ function cargarDatosPastel() {
   });
 }
 
-
-
 // Función para actualizar la gráfica extendida en el modal
 function actualizarGraficaPastelModal(res) {
 
@@ -800,7 +751,7 @@ var pastelChartMini = new Chart(document.getElementById('chartPastelMini').getCo
         enabled: true,
         padding: 10, // Reducir el espaciado dentro del tooltip
         bodyFont: {
-          size: 20// Reducir el tamaño de la fuente dentro del tooltip
+          size: 20 // Reducir el tamaño de la fuente dentro del tooltip
         }
       },
 
@@ -833,7 +784,6 @@ var pastelChartMini = new Chart(document.getElementById('chartPastelMini').getCo
     }
   }
 });
-
 
 var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2d'), {
   plugins: [ChartDataLabels],
