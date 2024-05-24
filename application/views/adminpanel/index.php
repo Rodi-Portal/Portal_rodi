@@ -82,11 +82,6 @@
   </div>
 
 
-
-
-
-
-
   <div class="row">
     <div class="col-12">
       <div class="card shadow mb-4">
@@ -102,61 +97,97 @@
       </div>
     </div>
   </div>
-  <div class="row justify-content-center">
-    <div class="col-md-3">
-      <label for="fechaInicio">Fecha de Inicio:</label>
-      <input type="date" id="fechaInicio" name="fechaInicio" class="form-control">
-    </div>
-    <div class="col-md-3">
-      <label for="fechaFin">Fecha de Fin:</label>
-      <input type="date" id="fechaFin" name="fechaFin" class="form-control">
-    </div>
-    <div class="col-md-6 position-relative">
-      <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
-        <button class="btn btn-primary" onclick="cargarDatos()">Actualizar Gráficas</button>
+
+
+
+
+  <div class="row">
+    <!-- Miniatura- reclutadores -->
+    <div class="col-md-6 d-flex align-items-stretch">
+      <div class="card shadow mb-4 w-100" id="miniChartCard">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">Miniatura de Estadísticas <?php echo date('Y'); ?></h6>
+        </div>
+        <div class="card-body">
+          <div class="chart-area">
+            <canvas id="miniChartReclu"></canvas>
+          </div>
+        </div>
       </div>
     </div>
+    <!-- Miniatura para abrir el modal Pastel-->
+    <div class="col-md-6 d-flex align-items-stretch">
+      <div class="card shadow mb-4 w-100" id="miniChartCard">
+        <div class="card-header py- d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios de contacto <?php echo date('Y'); ?></h6>
+        </div>
+        <div class="card-body d-flex justify-content-center align-items-center">
+          <!-- Miniatura de la gráfica -->
+          <div >
+            <canvas id="chartPastelMini" style="width: 100%; height: auto; cursor: pointer;" data-toggle="modal"
+              data-target="#graficaModal"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+</div>
 </div>
 
 
-
-<div class="row">
-  <div class="col-12">
-    <div class="card shadow mb-4">
-      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Estadisticas por reclutadora <?php echo date('Y'); ?>
-        </h6>
+<!-- Modal- reclutadores -->
+<div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chartModalLabel">Estadísticas <?php echo date('Y'); ?></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <div class="card-body">
-        <div class="chart-area">
-          <canvas id="chartReclu"></canvas>
+      <div class="modal-body">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+            <label for="fechaInicio">Fecha de Inicio:</label>
+            <input type="date" id="fechaInicio" name="fechaInicio" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label for="fechaFin">Fecha de Fin:</label>
+            <input type="date" id="fechaFin" name="fechaFin" class="form-control">
+          </div>
+          <div class="col-md-6 position-relative">
+            <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
+              <button class="btn btn-primary" onclick="cargarDatosReclutamiento()">Actualizar Gráficas</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="card shadow mb-4">
+              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Estadísticas por reclutadora <?php echo date('Y'); ?>
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="chart-area">
+                  <canvas id="chartReclu"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Miniatura para abrir el modal -->
-<div class="row justify-content-center">
-  <div class="col-md-">
-    <!-- Cambia el número de columnas para ajustar el tamaño de la tarjeta -->
-    <div class="card shadow mb-6">
-      <div class="card-header">
-        <h6 class="card-title text-center">Estadistica Medios de contacto</h6> <!-- Agrega el título -->
-      </div>
-      <div class="card-body">
-        <!-- Miniatura de la gráfica -->
-        <div class="col-md-12" style="padding-top: 0;">
-          <canvas id="chartPastelMini" style="width: 100%; height: auto; cursor: pointer;" data-toggle="modal"
-            data-target="#graficaModal"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Miniatura para abrir el modal Pastel-->
+
 </div>
 
-<!-- Modal -->
+<!-- Modal Grafica Pastel -->
 <div class="modal fade" id="graficaModal" tabindex="-1" role="dialog" aria-labelledby="graficaModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -166,7 +197,7 @@
 
       </div>
       <div class="modal-body">
-        <!-- Contenido del modal -->
+
         <div class="row justify-content-center">
           <div class="col-md-3">
             <label for="fechaInicio">Fecha de Inicio:</label>
@@ -249,10 +280,10 @@
 // Verifica el rol del usuario y agrega los datos al conjunto de datos de la gráfica
 if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){ ?>
 <script>
-// Define variables para almacenar los datos de cada card
+// Grafica  estadisticas   General --------------------------->
 
 
-function cargarGrafica() {
+function cargarGraficaGeneral() {
   let datosCard1, datosCard2, datosCard3, datosCard4;
 
   // Realiza la solicitud AJAX para obtener todos los datos necesarios
@@ -269,14 +300,14 @@ function cargarGrafica() {
     datosCard4 = Object.values(response).map(mes => mes.aspirantes_proceso);
 
     // Llama a la función para actualizar la gráfica
-    actualizarGrafica('#chartCandidatosFinalizados'); // Para la gráfica original
+    actualizarGraficaGeneral('#chartCandidatosFinalizados'); // Para la gráfica original
     // Para la gráfica en el modal
   }).catch(function(error) {
     console.error('Error en la solicitud AJAX:', error);
   });
 
   // Función para actualizar la gráfica una vez que se hayan obtenido todos los datos
-  function actualizarGrafica(canvasID) {
+  function actualizarGraficaGeneral(canvasID) {
     // Verifica si todos los datos están disponibles
     if (datosCard1 !== undefined && datosCard2 !== undefined && datosCard3 !== undefined && datosCard4 !== undefined) {
       console.log("Tipo de datos de datosCard1:", typeof datosCard1);
@@ -416,15 +447,15 @@ function cargarGrafica() {
         data: data,
         options: {
           plugins: {
-    datalabels: {
-      align: 'start',
-      offset: 4,
-      color: 'black',
-      font: {
-        weight: 'bold'
-      }
-    }
-  },
+            datalabels: {
+              align: 'start',
+              offset: 4,
+              color: 'black',
+              font: {
+                weight: 'bold'
+              }
+            }
+          },
           scales: {
             xAxes: [{
               grid: {
@@ -440,7 +471,7 @@ function cargarGrafica() {
             }]
           },
           maintainAspectRatio: false,
-   
+
           elements: {
             line: {
               tension: 0.4, // Ajusta la tensión de la curva
@@ -457,10 +488,10 @@ function cargarGrafica() {
   }
 }
 
-var ctx = document.getElementById("chartReclu");
+//Fin Grafica  Estadisticas General ---------------------------->
 
-// Declarar una función para cargar los datos mediante AJAX
-function cargarDatos() {
+// Grafica   Reclutadores ---------------------------->
+function cargarDatosReclutamiento() {
 
   var fechaInicio = $('#fechaInicio').val();
   var fechaFin = $('#fechaFin').val();
@@ -491,6 +522,18 @@ function cargarDatos() {
         sla.push(parseInt(res[i].sla));
       }
 
+      miniChart.data.labels = reclutadoras;
+      miniChart.data.datasets[0].data = requisicionesCanceladas;
+      console.log("🚀 ~ cargarDatosReclutamiento ~ requisicionesCanceladas:", requisicionesCanceladas)
+      miniChart.data.datasets[1].data = requisicionesRecibidas;
+      console.log("🚀 ~ cargarDatosReclutamiento ~ requisicionesRecibidas:", requisicionesRecibidas)
+      miniChart.data.datasets[2].data = requisicionesCerradas;
+      console.log("🚀 ~ cargarDatosReclutamiento ~ requisicionesCerradas:", requisicionesCerradas)
+      miniChart.data.datasets[3].data = sla;
+      console.log("🚀 ~ cargarDatosReclutamiento ~ sla:", sla)
+
+      // Actualizar el gráfico
+      miniChart.update();
       // Actualizar los datos del gráfico con los datos obtenidos
       myChart.data.labels = reclutadoras;
       myChart.data.datasets[0].data = requisicionesCanceladas;
@@ -506,6 +549,104 @@ function cargarDatos() {
     }
   });
 }
+
+// Grafica  Mini reclutadores-->
+var ctxMini = document.getElementById('miniChartReclu').getContext('2d');
+var miniChart = new Chart(ctxMini, {
+  type: 'bar', // o el tipo que prefieras
+  data: {
+    labels: [],
+    datasets: [{
+        label: 'Requisiciones Canceladas',
+        data: [],
+        backgroundColor: 'rgba(255, 99, 132, 0.6)'
+      },
+      {
+        label: 'Requisiciones Asignadas',
+        data: [],
+        backgroundColor: 'rgba(92, 184, 92, 0.6)',
+      },
+      {
+        label: 'Requisiciones Finalizadas',
+        data: [],
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+      },
+
+      {
+        label: 'SLA Promedio en dias ',
+        data: [],
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Datos de reclutamiento',
+      fontSize: 16, // Tamaño del texto del título
+      padding: 10, // Espacio alrededor del título
+      fontColor: '#12619c',
+    },
+    legend: {
+      position: 'right',
+      labels: {
+        padding: 10, // Espacio entre los elementos de la leyenda
+        boxWidth: 10, // Ancho del cuadro de color en la leyenda
+        fontSize: 10, // Tamaño del texto de la leyenda
+      }
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true,
+          fontSize: 10, // Tamaño del texto en el eje Y
+        },
+        stacked: true,
+      }],
+      xAxes: [{
+        stacked: true,
+        barThickness: 30, // Ancho de las barras
+        barPercentage: 0.5, // Porcentaje del espacio ocupado por las barras en el eje X
+        categoryPercentage: 0.5, // Porcentaje del espacio ocupado por cada conjunto de barras en el eje X
+        ticks: {
+          fontSize: 10, // Tamaño del texto en el eje X
+        },
+      }]
+    }
+  }
+});
+
+// Inicializar la gráfica del modal
+var ctxFull = document.getElementById('chartReclu').getContext('2d');
+var fullChart;
+
+// Función para abrir el modal y cargar la gráfica en tamaño completo
+document.getElementById('miniChartCard').addEventListener('click', function() {
+  $('#chartModal').modal('show');
+
+  // Si la gráfica ya está creada, destrúyela antes de volver a crearla
+  if (fullChart) {
+    fullChart.destroy();
+  }
+
+  // Crear la gráfica en el modal
+  fullChart = new Chart(ctxFull, {
+    type: 'bar', // o el tipo que prefieras
+    data: miniChart.data, // Reutilizar los datos de la miniatura
+    options: {
+      responsive: false,
+      maintainAspectRatio: false
+    }
+  });
+});
+// Fin Grafica  Mini reclutadores-->
+
+// Grafica  Grande reclutadores-->
+
+var ctx = document.getElementById("chartReclu");
+
+// Declarar una función para cargar los datos mediante AJAX
+
 
 // Llamar a la función para cargar los datos al cargar la página
 
@@ -571,6 +712,8 @@ var myChart = new Chart(ctx, {
   }
 });
 
+// Fin Grafica  Grande reclutadores-->
+
 
 function generarPaleta(numColores) {
   var paleta = [];
@@ -594,19 +737,8 @@ function cargarDatosPastel() {
       fechaFin: fechaFin
     },
     success: function(res) {
-      // console.log('Respuesta de la solicitud AJAX:', res);
 
-      // Verificar los datos antes de actualizar la gráfica
-      //console.log('Tipo de datos de la respuesta:', typeof res);
-
-      // Acceder a las propiedades de la respuesta
-      //console.log('Etiquetas:', res.labels);
-      //console.log('Datos:', res.data);
-      actualizarGraficaPastelMiniatura(res);
-
-      // Llama a la función para actualizar la gráfica extendida en el modal
       actualizarGraficaPastelModal(res);
-      // Actualizar los datos de la gráfica de pastel
 
     },
     error: function(xhr, status, error) {
@@ -615,22 +747,7 @@ function cargarDatosPastel() {
   });
 }
 
-function actualizarGraficaPastelMiniatura(res) {
-  if (res.labels && res.data) {
-    pastelChartMini.data.labels = res.labels;
-    pastelChartMini.data.datasets[0].data = res.data;
 
-    // Generar una paleta de colores basada en el número de segmentos
-    var numColores = res.labels.length;
-    var paleta = generarPaleta(numColores);
-    pastelChartMini.data.datasets[0].backgroundColor = paleta;
-
-    pastelChartMini.update();
-  } else {
-    console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
-  }
-  // Aquí puedes utilizar los datos recibidos para actualizar la miniatura
-}
 
 // Función para actualizar la gráfica extendida en el modal
 function actualizarGraficaPastelModal(res) {
@@ -639,12 +756,17 @@ function actualizarGraficaPastelModal(res) {
     pastelChart.data.labels = res.labels;
     pastelChart.data.datasets[0].data = res.data;
 
+    pastelChartMini.data.labels = res.labels;
+    pastelChartMini.data.datasets[0].data = res.data;
     // Generar una paleta de colores basada en el número de segmentos
     var numColores = res.labels.length;
     var paleta = generarPaleta(numColores);
     pastelChart.data.datasets[0].backgroundColor = paleta;
 
     pastelChart.update();
+    pastelChartMini.data.datasets[0].backgroundColor = paleta;
+
+    pastelChartMini.update();
   } else {
     console.error('Error: No se pudieron encontrar etiquetas o datos en la respuesta.');
   }
@@ -664,19 +786,24 @@ var pastelChartMini = new Chart(document.getElementById('chartPastelMini').getCo
   options: {
     plugins: {
       legend: {
-        display: false,
-        position: 'right',
+        display: true,
+        position: 'top',
         labels: {
-          padding: 20,
-          boxWidth: 40,
+          padding: 10, // Reducir el espaciado entre las etiquetas de la leyenda
+          boxWidth: 15, // Reducir el ancho del cuadro de la leyenda
           font: {
-            size: 25
+            size: 12 // Reducir el tamaño de la fuente de la leyenda
           }
         }
       },
       tooltip: {
-        enabled: true // Asegúrate de que las sugerencias emergentes estén habilitadas
+        enabled: true,
+        padding: 10, // Reducir el espaciado dentro del tooltip
+        bodyFont: {
+          size: 20// Reducir el tamaño de la fuente dentro del tooltip
+        }
       },
+
       datalabels: {
         formatter: (value, ctx) => {
           let sum = 0;
@@ -688,6 +815,20 @@ var pastelChartMini = new Chart(document.getElementById('chartPastelMini').getCo
           return percentage;
         },
         color: '#fff',
+        font: {
+          size: 12 // Reducir el tamaño de la fuente de los valores en la gráfica
+        }
+      }
+    },
+    // Ajustes de tamaño de la gráfica
+
+    // Ajustes de tamaño de la fuente
+    elements: {
+      arc: {
+        borderWidth: 1, // Eliminar el borde del círculo
+        borderColor: '#fff', // Color del borde del círculo
+        borderAlign: 'inner', // Alinear el borde del círculo dentro del gráfico
+        borderRadius: 0, // Radio del borde del círculo
       }
     }
   }
@@ -739,8 +880,8 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
 
 
 $(document).ready(function() {
-  cargarGrafica();
-  cargarDatos();
+  cargarGraficaGeneral();
+  cargarDatosReclutamiento();
   cargarDatosPastel();
 });
 </script>
