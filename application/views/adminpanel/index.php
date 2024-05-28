@@ -1,3 +1,30 @@
+<style>
+    .modal-dialog {
+      max-width: 90vw; /* Limitar el ancho máximo al 90% de la ventana */
+      max-height: 90vh; /* Limitar la altura máxima al 90% de la ventana */
+    }
+    .modal-content {
+      max-height: 90vh; /* Limitar la altura máxima al 90% de la ventana */
+      overflow-y: auto; /* Permitir desplazamiento vertical */
+    }
+    .chart-area {
+      height: auto;
+      max-width: 100%; /* Asegurar que el canvas no exceda el ancho del modal */
+    }
+    #chartReclu {
+      max-height: 90vh; /* Establecer un tamaño máximo para el canvas */
+      max-width: 75%;
+    }
+    #chartReclu {
+      max-height: 90vh; /* Establecer un tamaño máximo para el canvas */
+      max-width: 75%;
+    }
+
+    #chartPastel {
+      max-height: 90vh; /* Establecer un tamaño máximo para el canvas */
+      max-width: 75%;
+    }
+  </style>
 <!-- Begin Page Content -->
 <div class="container-fluid" id="content-container">
 
@@ -15,6 +42,7 @@
 
 	//TODO: revisar esta  parte 
   if($this->session->userdata('idrol') == 6 || $this->session->userdata('idrol') == 1){ 
+    $today = date('Y-m-d');
     ?>
   <div class="row">
     <div class="col-xl-3 col-md-6 mb-4">
@@ -28,7 +56,6 @@
             </div>
             <div class="col-auto">
               <i class="fas fa-check-circle fa-2x text-success"></i>
-
             </div>
           </div>
         </div>
@@ -90,35 +117,35 @@
     <!-- Miniatura- General -->
 
     <div class="col-md-6 d-flex align-items-stretch">
-      <div class="card shadow mb-4 w-100" id="miniChartCard">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Estadística General Area de Reclutamiento
-            <?php echo date('Y'); ?></h6>
-        </div>
-        <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
-          <div class="chart-area" style="position: relative; height: 100%; width: 100%;">
-            <canvas id="chartCandidatosMiniaturaGeneral" style="cursor: pointer; height: 80%; width: 80%;"
-              data-toggle="modal" data-target="#graficaModalGeneral"></canvas>
-          </div>
-        </div>
+  <div class="card shadow mb-4 w-100" id="miniChartCard">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Estadística General Area de Reclutamiento
+        <?php echo date('Y'); ?></h6>
+    </div>
+    <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
+      <div class="chart-area" style="position: relative; height: 100%; width: 100%;">
+        <canvas id="chartCandidatosMiniaturaGeneral" style="cursor: pointer; width: 100%;" data-toggle="modal"
+          data-target="#graficaModalGeneral"></canvas>
       </div>
     </div>
+  </div>
+</div>
     <!-- Miniatura- reclutadores -->
     <div class="col-md-6 d-flex align-items-stretch">
       <div class="card shadow mb-4 w-100" id="miniChartCard">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
           <h6 class="m-0 font-weight-bold text-primary">Estadísticas de Reclutamiento <?php echo date('Y'); ?></h6>
         </div>
         <div class="card-body">
           <div class="chart-area">
-            <canvas id="miniChartReclu" style="cursor: pointer;" data-toggle="modal"
+            <canvas id="miniChartReclu" style="cursor: pointer; width: 100%;" data-toggle="modal"
               data-target="#chartModalReclu"></canvas>
           </div>
         </div>
       </div>
     </div>
     <!-- Miniatura para abrir el modal Pastel-->
-    <div class="col-md-6 d-flex align-items-stretch">
+    <div class="col-md-5 d-flex align-items-stretch">
       <div class="card shadow mb-4 w-100" id="miniChartCard">
         <div class="card-header py- d-flex flex-row align-items-center justify-content-between">
           <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios de contacto <?php echo date('Y'); ?></h6>
@@ -128,6 +155,22 @@
           <div>
             <canvas id="chartPastelMini" style=cursor: pointer;" data-toggle="modal"
               data-target="#graficaModalPastel"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <!-- Miniatura para abrir el modal ESE-->
+     <div class="col-md-7 d-flex align-items-stretch">
+  <div class="card shadow mb-4 w-100" id="miniChartCard">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Estadística General Area de Reclutamiento
+        <?php echo date('Y'); ?></h6>
+    </div>
+    <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
+      <div class="chart-area" style="position: relative; height: 100%; width: 100%;">
+            <canvas id="chartESEMini" style="cursor: pointer; width: 100%;" data-toggle="modal"
+          data-target="#graficaModalESE"></canvas>
           </div>
         </div>
       </div>
@@ -165,8 +208,8 @@
             <option value="12">Diciembre</option>
           </select>
         </div>
-        <div class="chart-area" style="height: 500px;">
-          <canvas id="chartCandidatosModalGeneral" style="height: 80%; width: 70%;"></canvas>
+        <div class="chart-area" >
+          <canvas id="chartCandidatosModalGeneral" style="width: 80%;"></canvas>
         </div>
       </div>
     </div>
@@ -192,7 +235,7 @@
           </div>
           <div class="col-md-3">
             <label for="fechaFin">Fecha de Fin:</label>
-            <input type="date" id="fechaFin" name="fechaFin" class="form-control">
+            <input type="date" id="fechaFin" name="fechaFin" class="form-control"  value="<?php echo $today; ?>">
           </div>
           <div class="col-md-6 position-relative">
             <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
@@ -200,16 +243,12 @@
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12">
+        <div class="row mt-4" >
+          <div class="col-md-12">
             <div class="card shadow mb-4">
-              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Estadísticas por reclutadora <?php echo date('Y'); ?>
-                </h6>
-              </div>
               <div class="card-body">
                 <div class="chart-area">
-                  <canvas id="chartReclu"></canvas>
+                  <canvas id="chartReclu" style="width: 80%;"></canvas>
                 </div>
               </div>
             </div>
@@ -223,10 +262,9 @@
 
 </div>
 
-<!-- Modal Grafica Pastel -->
-<div class="modal fade" id="graficaModalPastel" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+ <!-- Modal Grafica Pastel -->
+<div class="modal fade" id="graficaModalPastel" tabindex="-1"  aria-labelledby="chartModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -235,16 +273,16 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-
+      
       <div class="modal-body">
-        <div class="row">
+        <div class="row justify-content-center">
           <div class="col-md-3">
             <label for="fechaInicio">Fecha de Inicio:</label>
             <input type="date" id="fechaInicioPastel" name="fechaInicio" class="form-control">
           </div>
           <div class="col-md-3">
             <label for="fechaFin">Fecha de Fin:</label>
-            <input type="date" id="fechaFinPastel" name="fechaFin" class="form-control">
+            <input type="date" id="fechaFinPastel" name="fechaFin" class="form-control"  value="<?php echo $today; ?>">
           </div>
           <div class="col-md-6 text-center d-flex align-items-end">
             <button class="btn btn-primary w-100" onclick="cargarDatosPastel()">Actualizar Gráficas</button>
@@ -252,11 +290,11 @@
         </div>
         <div class="row mt-4">
           <div class="col-md-12">
-            <div class="card shadow ">
+            <div class="card shadow mb-4">
               <div class="card-body">
-
-                <canvas id="chartPastel" style="width: auto; height: auto;"></canvas>
-
+                <div class="chart-area">
+                  <canvas id="chartPastel"></canvas>
+                </div>
               </div>
             </div>
           </div>
@@ -267,26 +305,45 @@
   </div>
 </div>
 
-<style>
-.modal-content {
-  width: 90%;
-  /* Ajusta el ancho del modal al 90% */
-  max-width: none;
-  /* Elimina el límite máximo de ancho */
-  margin: auto;
-  /* Centra horizontalmente el modal */
-}
 
-.modal-body {
-  padding: 15px;
-  /* Ajusta el padding del modal body */
-}
+ <!-- Modal Grafica ESE -->
+ <div class="modal fade" id="graficaModalESE" tabindex="-1"  aria-labelledby="chartModalLabel" aria-hidden="true">
+ <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="graficaModalLabelGeneral">Estadística ESE & DT</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="filtroMesGeneral1">Selecciona el Mes:</label>
+          <select id="filtroMesGeneral1" class="form-control">
+            <option value="all">Todo el Año</option>
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+            </select>
+        </div>
+        <div class="chart-area" >
+          <canvas id="chartESE" style="width: 80%;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-.chart-area {
-  overflow: hidden;
-  /* Evita que el canvas exceda el tamaño del modal */
-}
-</style>
+
 
 </div>
 <?php 
@@ -327,14 +384,15 @@
 if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){ ?>
 <script>
 // Grafica  estadisticas   General --------------------------->
+
 $(document).ready(function() {
   cargarGraficaGeneral();
+  cargarGraficaESE();
   cargarDatosReclutamiento();
   cargarDatosPastel();
 });
-
 // Variables globales para almacenar datos
-let datosCard1, datosCard2, datosCard3, datosCard4;
+let datosCard1, datosCard2, datosCard3, datosCard4, datosCard5, datosCard6;
 
 // Función para cargar la gráfica general
 function cargarGraficaGeneral() {
@@ -350,7 +408,7 @@ function cargarGraficaGeneral() {
     datosCard3 = datos.map(mes => mes.requisiciones_canceladas);
     datosCard4 = datos.map(mes => mes.aspirantes_proceso);
 
-
+    
     actualizarGraficaGeneral('#chartCandidatosMiniaturaGeneral', datosCard1, datosCard2, datosCard3, datosCard4,
       true);
 
@@ -375,8 +433,7 @@ function cargarGraficaGeneral() {
 function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, datosCard4, esMiniatura, filtroMes =
   'all') {
   const nombresMeses = esMiniatura ? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov',
-    'Dic'
-  ] : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+    'Dic'] : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
     'Noviembre', 'Diciembre'
   ];
 
@@ -398,7 +455,7 @@ function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, 
   }
 
   const maxDataValue = Math.max(...dataCard1Filtered, ...dataCard2Filtered, ...dataCard3Filtered, ...dataCard4Filtered);
-  const maxYValue = maxDataValue + maxDataValue;
+  const maxYValue = maxDataValue + 25;
 
   const data = {
     labels: labels,
@@ -466,7 +523,21 @@ function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, 
         }
       },
       maintainAspectRatio: false,
-      responsive: true
+      responsive: true,
+      elements: {
+      line: {
+        tension: 0.4, // Ajusta la tensión para redondear las líneas. Valores entre 0 y 1.
+        borderCapStyle: 'round', // Redondea los extremos de las líneas.
+        borderJoinStyle: 'round' // Redondea las uniones de las líneas.
+      },
+      point: {
+        radius: 5, // Ajusta el radio de los puntos en la línea.
+        borderColor: 'white', // Color del borde de los puntos.
+        backgroundColor: (context) => context.dataset.borderColor, // Color de fondo de los puntos.
+        borderWidth: 2, // Ancho del borde de los puntos.
+        hoverRadius: 7 // Radio de los puntos al pasar el mouse.
+      }
+    }
     }
   };
 
@@ -486,8 +557,6 @@ function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, 
     console.error(`No se encontró ningún elemento canvas con el ID ${canvasID}`);
   }
 }
-
-
 
 //Fin Grafica  Estadisticas General ---------------------------->
 
@@ -619,10 +688,7 @@ var miniChart = new Chart(ctxMini, {
 // Función para abrir el modal y cargar la gráfica en tamaño completo
 document.getElementById('miniChartCard').addEventListener('click', function() {
 
-
   // Si la gráfica ya está creada, destrúyela antes de volver a crearla
-
-
   // Crear la gráfica en el modal
   fullChart = new Chart(ctx, {
     type: 'bar', // o el tipo que prefieras
@@ -665,6 +731,9 @@ var myChart = new Chart(ctx, {
     ]
   },
   options: {
+    responsive: true ,
+    maintainAspectRatio: false,
+
     title: {
       display: true,
       text: 'Datos de reclutamiento',
@@ -698,16 +767,6 @@ var myChart = new Chart(ctx, {
 });
 
 // Fin Grafica  Grande reclutadores-->
-
-
-function generarPaleta(numColores) {
-  var paleta = [];
-  for (var i = 0; i < numColores; i++) {
-    var color = 'hsl(' + (i * (360 / numColores) % 360) + ', 70%, 50%, 0.4)';
-    paleta.push(color);
-  }
-  return paleta;
-}
 // Función para cargar datos en el gráfico de pastel
 function cargarDatosPastel() {
   var fechaInicio = $('#fechaInicioPastel').val();
@@ -767,6 +826,7 @@ var pastelChartMini = new Chart(document.getElementById('chartPastelMini').getCo
     }]
   },
   options: {
+    responsive: true,
     plugins: {
       legend: {
         display: true,
@@ -827,15 +887,17 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
     }]
   },
   options: {
+    responsive: true,
+    maintainAspectRatio: false, 
     plugins: {
       legend: {
         display: true,
         position: 'right',
         labels: {
           padding: 20,
-          boxWidth: 40,
+          boxWidth: 50,
           font: {
-            size: 15
+            size: 20
           }
         }
       },
@@ -852,19 +914,197 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
           let percentage = ((value * 100) / sum).toFixed(2) + "%";
           return percentage;
         },
+        font: {
+            size: 15
+          },
         color: '#fff',
       }
     }
   }
 });
+//  inicia  la carga de graficas  ese  y doping
+
+// esta  funcion es para  carga  datos  falsos  a  las   graficas de ese y doping
+function generarDatosFalsos() {
+  var datosCard5 = [];
+  var datosCard6 = [];
+  
+  // Generar datos falsos para cada mes del año (enero a diciembre)
+  for (var i = 0; i < 12; i++) {
+    datosCard5.push(Math.floor(Math.random() * 100)); // Valores aleatorios entre 0 y 100
+    datosCard6.push(Math.floor(Math.random() * 100)); // Valores aleatorios entre 0 y 100
+  }
+  
+  return { datosCard5, datosCard6 };
+}
+
+function cargarGraficaESE() {
+  var datosGenerados = generarDatosFalsos();
+  var datosCard5 = datosGenerados.datosCard5;
+  var datosCard6 = datosGenerados.datosCard6;
+
+  actualizarGraficaESE('#chartESEMini', datosCard5, datosCard6, true);
+
+  $('#chartESEMini').on('click', function() {
+    $('#graficaModalESE').modal('show');
+    setTimeout(function() { // Asegura que el modal esté completamente visible antes de renderizar la gráfica
+      actualizarGraficaESE('#chartESE', datosCard5, datosCard6, false, $('#filtroMesGeneral1').val());
+    }, 500);
+  });
+
+  $('#filtroMesGeneral1').on('change', function() {
+    actualizarGraficaESE('#chartESE', datosCard5, datosCard6, false, $(this).val());
+  });
+}
+
+function actualizarGraficaESE(canvasID, datosCard5, datosCard6, responsive) {
+  const ctx = document.querySelector(canvasID).getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+      datasets: [
+        {
+          label: 'Requisiciones en Proceso',
+          data: datosCard5,
+          backgroundColor: 'rgba(255, 99, 132, 0.6)'
+          
+        },
+        {
+          label: 'Requisiciones Finalizadas',
+          data: datosCard6,
+          backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }
+      ]
+    },
+    options: {
+      responsive: responsive,
+      maintainAspectRatio: responsive
+    }
+  });
+}
+
+function actualizarGraficaESE(canvasID, datosCard5, datosCard6, esMiniatura, filtroMes = 'all') {
+  const nombresMeses = esMiniatura ? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'] : 
+  ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+  let labels, dataCard5Filtered, dataCard6Filtered;
+
+  if (filtroMes === 'all') {
+    labels = nombresMeses;
+    dataCard5Filtered = datosCard5;
+    dataCard6Filtered = datosCard6;
+  } else {
+    const mesIndex = parseInt(filtroMes) - 1;
+    labels = [nombresMeses[mesIndex]];
+    dataCard5Filtered = [datosCard5[mesIndex]];
+    dataCard6Filtered = [datosCard6[mesIndex]];
+  }
+
+  const maxDataValue = Math.max(...dataCard5Filtered, ...dataCard6Filtered);
+  const maxYValue = maxDataValue + 25;
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'Socioeconómicos  ',
+      
+      borderColor: 'rgba(92, 184, 92, 1)',
+      backgroundColor: 'rgba(92, 184, 92, 0.5)',
+      borderWidth: 2,
+    
+      data: dataCard5Filtered,
+    }, {
+      label: 'Drug Test',
+    
+      borderColor: 'rgba(54, 162, 235, 1)',
+      backgroundColor: 'rgba(54, 162, 235, 0.6)',
+      borderWidth: 3,
+     
+      data: dataCard6Filtered,
+    }]
+  };
+
+  const config = {
+  plugins: [ChartDataLabels],
+  type: filtroMes === 'all' ? 'line' : 'bar',
+  data: data,
+  options: {
+    plugins: {
+      datalabels: {
+        align: 'end',
+        anchor: 'end',
+        backgroundColor: (context) => context.dataset.borderColor,
+        borderRadius: 4,
+        color: 'black',
+        font: {
+          weight: 'bold'
+        },
+        padding: 3
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          borderColor: 'red'
+        }
+      },
+      y: {
+        min: 0,
+        max: maxYValue,
+        ticks: {
+          stepSize: 50
+        }
+      }
+    },
+    maintainAspectRatio: false,
+    responsive: true,
+    elements: {
+      line: {
+        tension: 0.4, // Ajusta la tensión para redondear las líneas. Valores entre 0 y 1.
+        borderCapStyle: 'round', // Redondea los extremos de las líneas.
+        borderJoinStyle: 'round' // Redondea las uniones de las líneas.
+      },
+      point: {
+        radius: 5, // Ajusta el radio de los puntos en la línea.
+        borderColor: 'white', // Color del borde de los puntos.
+        backgroundColor: (context) => context.dataset.borderColor, // Color de fondo de los puntos.
+        borderWidth: 2, // Ancho del borde de los puntos.
+        hoverRadius: 7 // Radio de los puntos al pasar el mouse.
+      }
+    }
+  }
+};
+
+  const canvas = document.querySelector(canvasID);
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      // Destruir cualquier instancia previa del gráfico en el canvas
+      if (canvas.chart) {
+        canvas.chart.destroy();
+      }
+      canvas.chart = new Chart(ctx, config);
+    } else {
+      console.error(`No se pudo obtener el contexto 2D para el canvas con ID ${canvasID}`);
+    }
+  } else {
+    console.error(`No se encontró ningún elemento canvas con el ID ${canvasID}`);
+  }
+}
+
+// Llamar a la función para cargar la gráfica cuando sea necesario
 
 
 
+function generarPaleta(numColores) {
+  var paleta = [];
+  for (var i = 0; i < numColores; i++) {
+    var color = 'hsl(' + (i * (360 / numColores) % 360) + ', 70%, 50%, 0.4)';
+    paleta.push(color);
+  }
+  return paleta;
+}
 
-$(document).ready(function() {
-  cargarGraficaGeneral();
-  cargarDatosReclutamiento();
-  cargarDatosPastel();
-});
 </script>
 <?php } ?>
