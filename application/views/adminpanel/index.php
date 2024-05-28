@@ -164,7 +164,7 @@
      <div class="col-md-7 d-flex align-items-stretch">
   <div class="card shadow mb-4 w-100" id="miniChartCard">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Estadística General Area de Reclutamiento
+      <h6 class="m-0 font-weight-bold text-primary">Estadística ESE & DT
         <?php echo date('Y'); ?></h6>
     </div>
     <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
