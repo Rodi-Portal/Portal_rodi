@@ -95,7 +95,8 @@
   </div>
 </div>
 <!-- Modal para cargar CV -->
-<div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel" aria-hidden="true">
+<div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -107,13 +108,13 @@
       <div class="modal-body">
         <!-- Aquí coloca el formulario para cargar el CV -->
         <form id="formularioCargaCV" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="cv">Selecciona tu CV/Solicitud:</label>
-                <input type="file" class="form-control-file" id="id_cv" name="id_cv" required>
-                <input type="hidden" class="form-control-file" id="id_aspirante" name="id_aspirante" required>
-            </div>
-            <!-- Agrega el atributo onclick para llamar a la función -->
-            <button type="button" class="btn btn-primary" onclick="subirCVReqAspirante()">Cargar</button>
+          <div class="form-group">
+            <label for="cv">Selecciona tu CV/Solicitud:</label>
+            <input type="file" class="form-control-file" id="id_cv" name="id_cv" required>
+            <input type="hidden" class="form-control-file" id="id_aspirante" name="id_aspirante" required>
+          </div>
+          <!-- Agrega el atributo onclick para llamar a la función -->
+          <button type="button" class="btn btn-primary" onclick="subirCVReqAspirante()">Cargar</button>
         </form>
       </div>
     </div>
@@ -307,16 +308,23 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Registrar candidato</h4>
+        <h4 class="modal-title"><?php echo $this->lang->line('register_candidate'); ?></h4>
+        
+        <div id="language-switch">
+          <label for="language-select">Language:</label>
+          <select id="language-select" onchange="switchLanguage(this.value);">
+            <option value="english">English</option>
+            <option value="spanish">Español</option>
+          </select>
+        </div>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
+        
       </div>
+     
       <div class="modal-body">
-        <div class="alert alert-warning text-center">
-          <h5>El aspirante será registrado como candidato para RODI RECLUTAMIENTO</h5>
-        </div>
-        <div class="alert alert-info text-center">Datos Generales</div>
+        <div class="alert alert-info text-center"><?php echo $this->lang->line('general_data'); ?></div>
         <form id="nuevoRegistroForm">
           <div class="row">
             <div class="col-4">
@@ -368,8 +376,7 @@
               <label>Teléfono *</label>
               <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro"
                 maxlength="16">
-                <input type="number" class="form-control obligado" name="id_cliente_portal" id="id_cliente_portal"
-               >
+              <input type="hidden" class="form-control obligado" name="id_cliente_portal" id="id_cliente_portal">
               <br>
             </div>
           </div>
@@ -405,62 +412,260 @@
             <div class="col-4">
               <label>Numero de Seguro Social (NSS)</label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
+            </div>
+          </div>
+          <br><br>
+          <div class="alert alert-warning text-center">Choose a previous project or create another one. <br>Notes: <br>
+            <ul class="text-left">
+              <li>If you select a previous project, this will have a higher priority for your new register.</li>
+              <li>The complementary tests are optional.</li>
+            </ul>
+          </div>
+          <div class="alert alert-info text-center">
+            Choose what you want to do
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <select name="opcion_registro" id="opcion_registro" class="form-control registro_obligado">
+                <option value="">Select</option>
+                <option value="0">Select a previous project or create a new one</option>
+                <option value="1">Register the candidate with only a Drug Test and/or Medical Test</option>
+              </select>
               <br>
             </div>
           </div>
-          <div class="alert alert-info text-center">Selecciona un proceso</div>
-          <div class="row">
-            <div class="col-12">
-              <label>Proceso</label>
+          <div class="alert alert-info text-center div_info_previo">Select a Previous Project</div>
+          <div class="row div_previo">
+            <div class="col-md-9">
+              <label>Previous projects</label>
               <select class="form-control" name="previos" id="previos"></select><br>
+            </div>
+            <div class="col-md-3">
+              <label>Country</label>
+              <select class="form-control" name="pais_previo" id="pais_previo" disabled></select><br>
             </div>
           </div>
           <div id="detalles_previo"></div>
-          <div class="alert alert-danger text-center">Exámenes complementarios</div>
-          <div class="row">
-            <div class="col-4">
-              <label>Examen antidoping *</label>
-              <select name="examen_registro" id="examen_registro" class="form-control registro_obligado">
-                <option value="">Selecciona</option>
-                <option value="0" selected>N/A</option>
-                <?php
-                if($paquetes_antidoping != null){
-                foreach ($paquetes_antidoping as $paq) { ?>
-                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>
-                <?php
-                } }?>
+          <div class="alert alert-info text-center div_info_project">Select a New Project</div>
+          <div class="row div_project">
+            <div class="col-md-4">
+              <label>Location *</label>
+              <select name="region" id="region" class="form-control registro_obligado">
+                <option value="">Select</option>
+                <option value="Mexico">Mexico</option>
+                <option value="International">International</option>
               </select>
               <br>
             </div>
-            <div class="col-4">
-              <label>Examen médico *</label>
-              <select name="examen_medico" id="examen_medico" class="form-control registro_obligado">
-                <option value="0">N/A</option>
-                <option value="1">Aplicar</option>
+            <div class="col-md-4">
+              <label>Country</label>
+              <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
+                <option value="">Select</option>
+                <?php
+                foreach ($paises_estudio as $pe) { ?>
+                <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
+                <?php
+                } ?>
               </select>
               <br>
             </div>
-            <div class="col-4">
-              <label>Psicometría *</label>
-              <select name="examen_psicometrico" id="examen_psicometrico" class="form-control registro_obligado">
-                <option value="0">N/A</option>
-                <option value="1">Aplicar</option>
+            <div class="col-md-4">
+              <label>Project name *</label>
+              <input type="text" class="form-control" name="proyecto_registro" id="proyecto_registro" disabled>
+              <br>
+            </div>
+          </div>
+          <div class="alert alert-info text-center div_info_check">
+            Required Information for the New Project<br>Note:<br>
+            <ul class="text-left">
+              <li>The required documents will add automatically depending of the selected options . The extra documents
+                are optional, select them before the complementary tests.</li>
+            </ul>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Employment history *</label>
+              <select name="empleos_registro" id="empleos_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Time required</label>
+              <select name="empleos_tiempo_registro" id="empleos_tiempo_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Criminal check *</label>
+              <select name="criminal_registro" id="criminal_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Time required</label>
+              <select name="criminal_tiempo_registro" id="criminal_tiempo_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Address history *</label>
+              <select name="domicilios_registro" id="domicilios_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Time required</label>
+              <select name="domicilios_tiempo_registro" id="domicilios_tiempo_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Education check *</label>
+              <select name="estudios_registro" id="estudios_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Global data searches *</label>
+              <select name="global_registro" id="global_registro" class="form-control valor_dinamico registro_obligado"
+                disabled></select>
+              <br>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Credit check *</label>
+              <select name="credito_registro" id="credito_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Time required</label>
+              <select name="credito_tiempo_registro" id="credito_tiempo_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Professional References (quantity)</label>
+              <input type="number" class="form-control valor_dinamico" id="ref_profesionales_registro"
+                name="ref_profesionales_registro" value="0" disabled>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Personal References (quantity)</label>
+              <input type="number" class="form-control valor_dinamico" id="ref_personales_registro"
+                name="ref_personales_registro" value="0" disabled>
+              <br>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Identity check *</label>
+              <select name="identidad_registro" id="identidad_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Migratory form (FM, FM2 or FM3) check *</label>
+              <select name="migracion_registro" id="migracion_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Prohibited parties list check *</label>
+              <select name="prohibited_registro" id="prohibited_registro"
+                class="form-control valor_dinamico registro_obligado" disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>Academic References (quantity)</label>
+              <input type="number" class="form-control valor_dinamico" id="ref_academicas_registro"
+                name="ref_academicas_registro" value="0" disabled>
+              <br>
+            </div>
+          </div>
+          <div class="row div_check">
+            <div class="col-md-6">
+              <label>Motor Vehicle Records (only in some Mexico cities) *</label>
+              <select name="mvr_registro" id="mvr_registro" class="form-control valor_dinamico registro_obligado"
+                disabled></select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label>CURP check *</label>
+              <select name="curp_registro" id="curp_registro" class="form-control valor_dinamico registro_obligado"
+                disabled></select>
+              <br>
+            </div>
+          </div>
+          <div class="alert alert-danger text-center div_info_extra">Extra documents</div>
+          <div class="row div_extra">
+            <div class="col-12">
+              <label>Select the extra documents *</label>
+              <select name="extra_registro" id="extra_registro" class="form-control registro_obligado">
+                <option value="">Select</option>
+                <option value="15">Military document</option>
+                <option value="14">Passport</option>
+                <option value="10">Professional licence</option>
+                <option value="48">Academic / Professional Credential</option>
+                <option value="16">Resume</option>
+                <option value="42">Sex offender registry</option>
+                <option value="6">Social Security Number</option>
               </select>
               <br>
             </div>
           </div>
           <div class="row">
-            <div class="col-12">
-              <label>Cargar CV o solicitud de empleo del candidato</label>
-              <input type="file" id="cv" name="cv" class="form-control" accept=".pdf, .jpg, .jpeg, .png" multiple><br>
+            <div id="div_docs_extras" class="col-12 d-flex flex-column mb-3">
+            </div>
+          </div>
+          <div class="alert alert-danger text-center div_info_test">Complementary Tests</div>
+          <div class="row div_test">
+            <div class="col-md-4">
+              <label>Drug test *</label>
+              <select name="examen_registro" id="examen_registro" class="form-control registro_obligado">
+                <option value="">Select</option>
+                <option value="0" selected>N/A</option>
+                <?php
+                foreach ($paquetes_antidoping as $paq) { ?>
+                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>
+                <?php
+                } ?>
+              </select>
+              <br>
+            </div>
+            <div class="col-md-4">
+              <label>Medical test *</label>
+              <select name="examen_medico" id="examen_medico" class="form-control registro_obligado">
+                <option value="0">N/A</option>
+                <option value="1">Apply</option>
+              </select>
+              <br>
+            </div>
+            <div class="col-md-4">
+              <label>Psicométric *</label>
+              <select name="examen_medico" id="examen_medico" class="form-control registro_obligado">
+                <option value="0">N/A</option>
+                <option value="1">Apply</option>
+              </select>
+              <br>
             </div>
           </div>
         </form>
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="registrarCandidato()">Registrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" onclick="registrar()">Save</button>
       </div>
     </div>
   </div>
@@ -1207,7 +1412,9 @@
                 <?php 
                 if(!empty($registros_asignacion)){
                   foreach($registros_asignacion as $fila){ ?>
-                <option value="<?php echo $fila->id ?>"><?php echo '#'.$fila->id.'  '.$fila->nombreCompleto. (!empty($fila->puesto) ? ' Puesto: '.$fila->puesto : ''); ?></option>
+                <option value="<?php echo $fila->id ?>">
+                  <?php echo '#'.$fila->id.'  '.$fila->nombreCompleto. (!empty($fila->puesto) ? ' Puesto: '.$fila->puesto : ''); ?>
+                </option>
                 <?php 
                   }
                 }else{ ?>
@@ -1392,6 +1599,59 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 
 <script>
 var pag = 1;
+$('.div_info_project, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
+  .css('display', 'none');
+$('#registroCandidatoModal').on('hidden.bs.modal', function(e) {
+  $("#registroCandidatoModal #msj_error").css('display', 'none');
+  $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
+  $('.valor_dinamico').val(0);
+  $('.valor_dinamico, #detalles_previo, #pais_previo').empty();
+  $('#pais_registro, #pais_previo').prop('disabled', true);
+  //$('#pais_registro').val(-1);
+  $('#proyecto_registro').prop('disabled', true);
+  $('#proyecto_registro').val('');
+  $('.valor_dinamico').prop('disabled', true);
+  $('#ref_profesionales_registro').val(0);
+  $('#ref_personales_registro').val(0);
+  $('#examen_registro, #examen_medico, #previo').val(0);
+  $('#opcion_registro').val('').trigger('change');
+  $('#div_docs_extras').empty();
+  extras = [];
+});
+$("#opcion_registro").change(function() {
+  var opcion = $(this).val();
+  $('.div_info_project').css('display', 'block');
+  $('.div_project').css('display', 'flex');
+  $('.div_info_test').css('display', 'block');
+  $('.div_test').css('display', 'flex');
+  $("#registroCandidatoModal #msj_error").css('display', 'none');
+  if (opcion == 1) {
+    $('.div_check').css('display', 'none');
+    $('.div_info_check').css('display', 'none');
+    $('.div_info_extra').css('display', 'none');
+    $('.div_extra').css('display', 'none');
+  }
+  if (opcion == 0) {
+    $('.div_previo').css('display', 'flex');
+    $('.div_info_previo').css('display', 'block');
+    $('.div_check').css('display', 'flex');
+    $('.div_info_check').css('display', 'block');
+    $('.div_info_extra').css('display', 'block');
+    $('.div_extra').css('display', 'flex');
+  }
+  if (opcion == '') {
+    $('.div_previo').css('display', 'none');
+    $('.div_info_previo').css('display', 'none');
+    $('.div_check').css('display', 'none');
+    $('.div_info_check').css('display', 'none');
+    $('.div_info_project').css('display', 'none');
+    $('.div_project').css('display', 'none');
+    $('.div_info_test').css('display', 'none');
+    $('.div_test').css('display', 'none');
+    $('.div_info_extra').css('display', 'none');
+    $('.div_extra').css('display', 'none');
+  }
+});
 $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
   cargarClientesActivos(urltraerClientes);
   $("#nuevaRequisicionModal #titulo_paso").text('Datos  ');
@@ -1555,6 +1815,171 @@ $("#registroCandidatoModal").on("hidden.bs.modal", function() {
   $("#registroCandidatoModal .selectpicker").val('').selectpicker('refresh');
 
 })
+
+$("#region").change(function() {
+  var region = $(this).val();
+  if (region != '') {
+    $.ajax({
+      url: '<?php echo base_url('Candidato/getSeccionesRegion'); ?>',
+      method: 'POST',
+      data: {
+        'region': region
+      },
+      success: function(res) {
+        var secciones = JSON.parse(res);
+        $('.valor_dinamico').val('');
+        $('.valor_dinamico').empty();
+        //$('.valor_dinamico').append($('<option selected></option>').attr('value','').text('Select'));
+        $('.valor_dinamico').prop('disabled', false);
+        $('#ref_profesionales_registro').val(0);
+        $('#ref_personales_registro').val(0);
+        $('#ref_academicas_registro').val(0);
+        //Distribuye las secciones en su correspondiente select
+        for (var i = 0; i < secciones.length; i++) {
+          if (secciones[i]['tipo_seccion'] == 'Global Search') {
+            $('#global_registro').append($('<option></option>').attr('value', secciones[i]['id']).text(
+              secciones[i]['descripcion_ingles']));
+          }
+          /*if(secciones[i]['tipo_seccion'] == 'Verificacion Documentos'){
+          	$('#identidad_registro').append($('<option></option>').attr('value',secciones[i]['id']).text(secciones[i]['descripcion_ingles']));
+          }*/
+          //if(secciones[i]['tipo_seccion'] == 'Referencias Laborales'){
+          if (secciones[i]['id'] == 16) {
+            $('#empleos_registro').append($('<option></option>').attr('value', secciones[i]['id']).text(
+              secciones[i]['descripcion_ingles']));
+          }
+          //if(secciones[i]['tipo_seccion'] == 'Estudios'){
+          if (secciones[i]['id'] == 3) {
+            $('#estudios_registro').append($('<option></option>').attr('value', secciones[i]['id']).text(
+              secciones[i]['descripcion_ingles']));
+          }
+          if (secciones[i]['tipo_seccion'] == 'Domicilios') {
+            $('#domicilios_registro').append($('<option></option>').attr('value', secciones[i]['id']).text(
+              secciones[i]['descripcion_ingles']));
+          }
+          if (secciones[i]['tipo_seccion'] == 'Credito') {
+            $('#credito_registro').append($('<option></option>').attr('value', secciones[i]['id']).text(
+              secciones[i]['descripcion_ingles']));
+          }
+        }
+        //Empleos
+        $('#empleos_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        $('#empleos_tiempo_registro').append($('<option></option>').attr('value', '3 years').text('3 years'));
+        $('#empleos_tiempo_registro').append($('<option></option>').attr('value', '5 years').text('5 years'));
+        $('#empleos_tiempo_registro').append($('<option></option>').attr('value', '7 years').text('7 years'));
+        $('#empleos_tiempo_registro').append($('<option></option>').attr('value', '10 years').text(
+          '10 years'));
+        $('#empleos_tiempo_registro').append($('<option></option>').attr('value', 'All').text('All'));
+        $('#empleos_tiempo_registro').append($('<option></option>').attr('value', '0').attr("selected",
+          "selected").text('N/A'));
+        //Criminales
+        $('#criminal_registro').append($('<option></option>').attr('value', 1).text('Apply'));
+        $('#criminal_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        $('#criminal_tiempo_registro').append($('<option></option>').attr('value', '3 years').text(
+          '3 years'));
+        $('#criminal_tiempo_registro').append($('<option></option>').attr('value', '5 years').text(
+          '5 years'));
+        $('#criminal_tiempo_registro').append($('<option></option>').attr('value', '7 years').text(
+          '7 years'));
+        $('#criminal_tiempo_registro').append($('<option></option>').attr('value', '10 years').text(
+          '10 years'));
+        $('#criminal_tiempo_registro').append($('<option></option>').attr('value', '0').attr("selected",
+          "selected").text('N/A'));
+        //Domicilios
+        $('#domicilios_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        $('#domicilios_tiempo_registro').append($('<option></option>').attr('value', '3 years').text(
+          '3 years'));
+        $('#domicilios_tiempo_registro').append($('<option></option>').attr('value', '5 years').text(
+          '5 years'));
+        $('#domicilios_tiempo_registro').append($('<option></option>').attr('value', '7 years').text(
+          '7 years'));
+        $('#domicilios_tiempo_registro').append($('<option></option>').attr('value', '10 years').text(
+          '10 years'));
+        $('#domicilios_tiempo_registro').append($('<option></option>').attr('value', '0').attr("selected",
+          "selected").text('N/A'));
+        //Credito
+        $('#credito_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        $('#credito_tiempo_registro').append($('<option></option>').attr('value', '3 years').text('3 years'));
+        $('#credito_tiempo_registro').append($('<option></option>').attr('value', '5 years').text('5 years'));
+        $('#credito_tiempo_registro').append($('<option></option>').attr('value', '7 years').text('7 years'));
+        $('#credito_tiempo_registro').append($('<option></option>').attr('value', '10 years').text(
+          '10 years'));
+        $('#credito_tiempo_registro').append($('<option></option>').attr('value', '0').attr("selected",
+          "selected").text('N/A'));
+        //Estudios
+        $('#estudios_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        //Identidad
+        $('#identidad_registro').append($('<option></option>').attr('value', 1).text('Apply'));
+        $('#identidad_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        //Globales
+        $('#global_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        //Migracion
+        $('#migracion_registro').append($('<option></option>').attr('value', 1).text('Apply'));
+        $('#migracion_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        //Prohibited parties list
+        $('#prohibited_registro').append($('<option></option>').attr('value', 1).text('Apply'));
+        $('#prohibited_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected")
+          .text('N/A'));
+        //Age check
+        $('#edad_registro').append($('<option></option>').attr('value', 1).text('Apply'));
+        $('#edad_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected").text(
+          'N/A'));
+        //Motor vehicle records
+        $('#mvr_registro').append($('<option></option>').attr('value', 1).text('Apply'));
+        $('#mvr_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected").text(
+          'N/A'));
+        //CURP
+        $('#curp_registro').append($('<option></option>').attr('value', 1).text('Apply'));
+        $('#curp_registro').append($('<option></option>').attr('value', 0).attr("selected", "selected").text(
+          'N/A'));
+      }
+    });
+    if (region == 'International') {
+      $('#pais_registro').prop('disabled', false);
+      $('#pais_registro').val('');
+      $('#mvr_registro').val(0);
+    } else {
+      $('#pais_registro').prop('disabled', true);
+      //$('#pais_registro').val('México');
+      $('#pais_registro').append($('<option></option>').attr('value', 'México').attr("selected", "selected").text(
+        'Mexico'));
+    }
+    $('#proyecto_registro').prop('disabled', false);
+  } else {
+    $('#pais_registro').prop('disabled', true);
+    $('#pais_registro').val('');
+    $('#proyecto_registro').prop('disabled', true);
+    $('#proyecto_registro').val('');
+    $('.valor_dinamico').val('');
+    $('.valor_dinamico').empty();
+    $('.valor_dinamico').prop('disabled', true);
+    $('#ref_profesionales_registro').val(0);
+    $('#ref_personales_registro').val(0);
+    $('#ref_academicas_registro').val(0);
+  }
+});
+$('#extra_registro').change(function() {
+  var id = $(this).val();
+  if (id != '') {
+    if (!extras.includes(id)) {
+      var txt = $("#extra_registro option:selected").text();
+      extras.push(id);
+      //$("#extra_registro option[value='"+id+"']").remove();
+      $('#div_docs_extras').append($('<div id="div_extra' + id +
+        '" class="extra_agregado mb-1 d-flex justify-content-start"><h5 class="mr-5">Document added: <b>' +
+        txt + '</b></h5><button type="button" class="btn btn-danger btn-sm" onclick="eliminarExtra(' + id +
+        ',\'' + txt + '\')">X</button></div>'));
+    }
+  }
+})
 $('#mensajeModal').on('hidden.bs.modal', function(e) {
   $("#mensajeModal #titulo_mensaje, #mensajeModal #mensaje").text('');
   $("#mensajeModal #campos_mensaje").empty();
@@ -1589,4 +2014,37 @@ $('#subirCSVModal').on('hidden.bs.modal', function(e) {
 $('#ingresoCandidatoModal').on('hidden.bs.modal', function(e) {
   $("#ingresoCandidatoModal input, #ingresoCandidatoModal textarea").val('');
 });
+function switchLanguage(language) {
+    // Hacer una solicitud AJAX para cambiar el idioma
+    $.ajax({
+        type: 'POST',
+        url: '<?php echo site_url('language/switch'); ?>',
+        data: { language: language },
+        success: function(response) {
+            // Después de cambiar el idioma, actualizar el contenido del modal
+            // Simplemente mostrar el modal de nuevo para que se vuelva a cargar con el contenido en el nuevo idioma
+            $('#registroCandidatoModal').modal('show');
+        }
+    });
+}
+
+function nuevoRegistro() {
+  $.ajax({
+    url: '<?php echo base_url('Candidato/getSeccionesPrevias'); ?>',
+    type: 'POST',
+    data: {
+      'id_cliente': id_cliente
+    },
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      $('#previos').html(res);
+    }
+  });
+  $('#newModal').modal('show');
+}
 </script>

@@ -39,6 +39,7 @@
               <br>
             </div>
           </div>
+          <br>
           <div class="alert alert-warning text-center">Choose a previous project or create another one. <br>Notes: <br>
             <ul class="text-left">
               <li>If you select a previous project, this will have a higher priority for your new register.</li>

@@ -120,7 +120,7 @@ function changeDataTable(url) {
       },
       {
         title: 'Nombre o Razón Social',
-        data: 'empresa',
+        data: 'nombre_cliente',
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {

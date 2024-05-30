@@ -7,10 +7,20 @@ class Reclutamiento extends CI_Controller{
 		parent::__construct();
     if(!$this->session->userdata('id')){
       redirect('Login/index');
+      $this->load->helper('language');
+
     }
+    $this->load->helper('language');
+    $this->lang->load('registro_candidatos', 'english'); 
 		$this->load->library('usuario_sesion');
 		$this->usuario_sesion->checkStatusBD();
+   
+
 	}
+  public function index() {
+    // Llama a la vista y pasa los datos necesarios
+    $this->load->view('modals/mdl_reclutamiento');
+}
 
 	/*----------------------------------------*/
   /*  Submenus 
