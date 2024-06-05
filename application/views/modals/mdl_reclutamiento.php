@@ -1,3 +1,6 @@
+<?php
+header('Content-Type: text/html; charset=utf-8');
+?>
 <div class="modal fade" id="nuevoAspiranteModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -26,7 +29,6 @@
               <option value="">Sin requisiones registradas</option>
               <?php } ?>
             </select>
-
           </div>
           <br>
           <div class="row mb-3">
@@ -78,7 +80,7 @@
           </div>
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
-              <label>Correo</label>
+              <label>Correo*</label>
               <input type="text" id="correo" name="correo" class="form-control">
               <input type="hidden" id="idAspirante" name="idAspirante">
               <input type="hidden" id="idBolsa" name="idBolsa">
@@ -308,6 +310,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
+      <meta charset="UTF-8">
         <h4 class="modal-title"><?php echo $this->lang->line('register_candidate'); ?></h4>
         
         <div id="language-switch">
@@ -396,7 +399,7 @@
               <br>
             </div>
             <div class="col-4">
-              <label>Correo </label>
+              <label>Correo* </label>
               <input type="text" class="form-control obligado" name="correo_registro" id="correo_registro">
               <br>
             </div>
@@ -412,6 +415,10 @@
             <div class="col-4">
               <label>Numero de Seguro Social (NSS)</label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="id_cliente" id="id_cliente" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="clave" id="clave" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="cliente" id="cliente" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq" maxlength="11">
             </div>
           </div>
           <br><br>
@@ -439,6 +446,7 @@
             <div class="col-md-9">
               <label>Previous projects</label>
               <select class="form-control" name="previos" id="previos"></select><br>
+              <option value="">N/A</option>
             </div>
             <div class="col-md-3">
               <label>Country</label>
@@ -452,7 +460,7 @@
               <label>Location *</label>
               <select name="region" id="region" class="form-control registro_obligado">
                 <option value="">Select</option>
-                <option value="Mexico">Mexico</option>
+                <option value="Mxico">Mexico</option>
                 <option value="International">International</option>
               </select>
               <br>
@@ -653,7 +661,7 @@
             </div>
             <div class="col-md-4">
               <label>Psicométric *</label>
-              <select name="examen_medico" id="examen_medico" class="form-control registro_obligado">
+              <select name="examen_psicometrico" id="examen_psicometrico" class="form-control registro_obligado">
                 <option value="0">N/A</option>
                 <option value="1">Apply</option>
               </select>
@@ -665,7 +673,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-success" onclick="registrar()">Save</button>
+        <button type="button" class="btn btn-success" onclick="registrarCandidato()">Save</button>
       </div>
     </div>
   </div>
@@ -2014,6 +2022,7 @@ $('#subirCSVModal').on('hidden.bs.modal', function(e) {
 $('#ingresoCandidatoModal').on('hidden.bs.modal', function(e) {
   $("#ingresoCandidatoModal input, #ingresoCandidatoModal textarea").val('');
 });
+
 function switchLanguage(language) {
     // Hacer una solicitud AJAX para cambiar el idioma
     $.ajax({
@@ -2030,7 +2039,7 @@ function switchLanguage(language) {
 
 function nuevoRegistro() {
   $.ajax({
-    url: '<?php echo base_url('Candidato/getSeccionesPrevias'); ?>',
+    url: '<?php echo base_url('Candidato_Seccion/getHistorialProyectosByCliente'); ?>',
     type: 'POST',
     data: {
       'id_cliente': id_cliente

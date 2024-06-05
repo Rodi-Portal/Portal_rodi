@@ -23,52 +23,7 @@ class Candidato_Seccion extends CI_Controller{
     }
   }
   function getHistorialProyectosByCliente(){
-    // //TODO: Cambiar la restriccion de los procesos previos para el registro de candidatos con respecto al id_cliente
-    // if($this->input->post('id_cliente') == 16){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 159){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 172){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 5){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 178){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 51){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 201){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 205){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 33){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 211){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 221){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 229){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 232){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') == 96){
-    //   $id_cliente = $this->input->post('id_cliente');
-    // }
-    // if($this->input->post('id_cliente') != 16 && $this->input->post('id_cliente') != 159 && $this->input->post('id_cliente') != 172 && $this->input->post('id_cliente') != 5 && $this->input->post('id_cliente') != 178 && $this->input->post('id_cliente') != 51 && $this->input->post('id_cliente') != 201 && $this->input->post('id_cliente') != 205 && $this->input->post('id_cliente') != 33 && $this->input->post('id_cliente') != 211 && $this->input->post('id_cliente') != 221 && $this->input->post('id_cliente') != 229 && $this->input->post('id_cliente') != 232 && $this->input->post('id_cliente') != 96){
-    //   $id_cliente = 0;
-    // }
+   
     $previos = $this->candidato_seccion_model->getHistorialProyectosByCliente($this->input->post('id_cliente'));
     if(!empty($previos)){
       $salida = "<option value='0'>Selecto</option>";
