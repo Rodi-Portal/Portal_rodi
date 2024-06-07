@@ -18,16 +18,15 @@ header('Content-Type: text/html; charset=utf-8');
               data-style="btn-custom-selectpicker" title="Selecciona" data-live-search="true">
 
               <?php
-                if ($reqs) {
-                  foreach ($reqs as $req) { ?>
+if ($reqs) {
+    foreach ($reqs as $req) {?>
               <option value="<?php echo $req->id; ?>">
-                <?php echo '# '.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?>
+                <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
               </option>
-              <?php 
-          }
-        }else{ ?>
+              <?php }
+} else {?>
               <option value="">Sin requisiones registradas</option>
-              <?php } ?>
+              <?php }?>
             </select>
           </div>
           <br>
@@ -65,11 +64,11 @@ header('Content-Type: text/html; charset=utf-8');
 
                 <option value="">Selecciona</option>
                 <?php
-              if($medios != null){
-                foreach ($medios as $m) { ?>
+if ($medios != null) {
+    foreach ($medios as $m) {?>
                 <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
-                <?php  
-                } }?>
+                <?php }
+}?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -139,11 +138,11 @@ header('Content-Type: text/html; charset=utf-8');
               <label>Acción a aplicar *</label>
               <select name="accion_aspirante" id="accion_aspirante" class="form-control obligado">
                 <option value="">Selecciona</option>
-                <?php if($acciones != null){
-                foreach ($acciones as $a) { ?>
-                <option value="<?php echo $a->id.':'.$a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
-                <?php   
-                } }?>
+                <?php if ($acciones != null) {
+    foreach ($acciones as $a) {?>
+                <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
+                <?php }
+}?>
               </select>
               <br>
             </div>
@@ -204,14 +203,13 @@ header('Content-Type: text/html; charset=utf-8');
                 data-style="btn-custom-selectpicker" data-live-search="true">
                 <option value="">Selecciona</option>
                 <?php
-                if ($reqs) {
-                  foreach ($reqs as $req) { ?>
+if ($reqs) {
+    foreach ($reqs as $req) {?>
                 <option value="<?php echo $req->id; ?>">
-                  <?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?>
+                  <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
                 </option>
-                <?php   
-                  }
-                } ?>
+                <?php }
+}?>
               </select>
               <br>
             </div>
@@ -263,14 +261,13 @@ header('Content-Type: text/html; charset=utf-8');
             <select name="reactivar_req" id="reactivar_req" class="form-control obligado">
               <option value="">Selecciona</option>
               <?php
-              if ($reqs) {
-                foreach ($reqs as $req) { ?>
+if ($reqs) {
+    foreach ($reqs as $req) {?>
               <option value="<?php echo $req->id; ?>">
-                <?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?>
+                <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
               </option>
-              <?php   
-                }
-              } ?>
+              <?php }
+}?>
             </select>
             <br>
           </div>
@@ -310,9 +307,9 @@ header('Content-Type: text/html; charset=utf-8');
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-      <meta charset="UTF-8">
+        <meta charset="UTF-8">
         <h4 class="modal-title"><?php echo $this->lang->line('register_candidate'); ?></h4>
-        
+
         <div id="language-switch">
           <label for="language-select">Language:</label>
           <select id="language-select" onchange="switchLanguage(this.value);">
@@ -323,9 +320,9 @@ header('Content-Type: text/html; charset=utf-8');
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
-        
+
       </div>
-     
+
       <div class="modal-body">
         <div class="alert alert-info text-center"><?php echo $this->lang->line('general_data'); ?></div>
         <form id="nuevoRegistroForm">
@@ -357,24 +354,22 @@ header('Content-Type: text/html; charset=utf-8');
               </select>
               <br>
             </div>
-            <?php 
-            $id_cliente = $this->uri->segment(3);
-            if($id_cliente != 172){ ?>
+            <?php
+$id_cliente = $this->uri->segment(3);
+if ($id_cliente != 172) {?>
             <div class="col-4">
               <label>Puesto *</label>
               <select name="puesto" id="puesto" class="form-control"></select>
               <br>
             </div>
-            <?php 
-            }
-            else{ ?>
+            <?php } else {?>
             <div class="col-4">
               <label>Puesto *</label>
               <input type="text" class="form-control obligado" name="puesto" id="puesto">
               <br>
             </div>
             <?php
-            } ?>
+}?>
             <div class="col-4">
               <label>Teléfono *</label>
               <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro"
@@ -388,13 +383,14 @@ header('Content-Type: text/html; charset=utf-8');
               <label>País donde reside *</label>
               <select class="form-control" id="pais" name="pais">
                 <?php
-                  if($paises != null){
-                  foreach ($paises as $p) {
-                    $default = ($p->nombre == 'México')? 'selected' : ''; ?>
+if ($paises != null) {
+    foreach ($paises as $p) {
+        $default = ($p->nombre == 'México') ? 'selected' : '';?>
                 <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
-                  } }
-                ?>
+}
+}
+?>
               </select>
               <br>
             </div>
@@ -418,16 +414,18 @@ header('Content-Type: text/html; charset=utf-8');
               <input type="hidden" class="form-control obligado" name="id_cliente" id="id_cliente" maxlength="11">
               <input type="hidden" class="form-control obligado" name="clave" id="clave" maxlength="11">
               <input type="hidden" class="form-control obligado" name="cliente" id="cliente" maxlength="11">
-              <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq"
+                maxlength="11">
             </div>
           </div>
           <br><br>
-          <div class="alert alert-warning text-center">Choose a previous project or create another one. <br>Notes: <br>
+          <!-- /TODO: regresar  cuando se permita crear proyectos -->
+          <!--div class="alert alert-warning text-center">Choose a previous project or create another one. <br>Notes: <br>
             <ul class="text-left">
               <li>If you select a previous project, this will have a higher priority for your new register.</li>
               <li>The complementary tests are optional.</li>
             </ul>
-          </div>
+          </div -->
           <div class="alert alert-info text-center">
             Choose what you want to do
           </div>
@@ -443,197 +441,200 @@ header('Content-Type: text/html; charset=utf-8');
           </div>
           <div class="alert alert-info text-center div_info_previo">Select a Previous Project</div>
           <div class="row div_previo">
-            <div class="col-md-9">
+            <div class="col-md-12">
               <label>Previous projects</label>
               <select class="form-control" name="previos" id="previos"></select><br>
-              <option value="">N/A</option>
+
             </div>
-            <div class="col-md-3">
+            <!-- /TODO: verificar    si se usa  este campo -->
+            <!-- div class="col-md-3">
               <label>Country</label>
               <select class="form-control" name="pais_previo" id="pais_previo" disabled></select><br>
-            </div>
+            </div -->
           </div>
           <div id="detalles_previo"></div>
-          <div class="alert alert-info text-center div_info_project">Select a New Project</div>
-          <div class="row div_project">
-            <div class="col-md-4">
-              <label>Location *</label>
-              <select name="region" id="region" class="form-control registro_obligado">
-                <option value="">Select</option>
-                <option value="Mxico">Mexico</option>
-                <option value="International">International</option>
-              </select>
-              <br>
+          <div class="nuevo_proyecto">
+            <div class="alert alert-info text-center div_info_projectt">Select a New Project</div>
+            <div class="row div_project">
+              <div class="col-md-4">
+                <label>Location *</label>
+                <select name="region" id="region" class="form-control registro_obligado">
+                  <option value="">Select</option>
+                  <option value="Mxico">Mexico</option>
+                  <option value="International">International</option>
+                </select>
+                <br>
+              </div>
+              <div class="col-md-4">
+                <label>Country</label>
+                <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
+                  <option value="">Select</option>
+                  <?php  foreach ($paises_estudio as $pe) {?>
+                  <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
+                  <?php } ?>
+                </select>
+                <br>
+              </div>
+              <div class="col-md-4">
+                <label>Project name *</label>
+                <input type="text" class="form-control" name="proyecto_registro" id="proyecto_registro" disabled>
+                <br>
+              </div>
             </div>
-            <div class="col-md-4">
-              <label>Country</label>
-              <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
-                <option value="">Select</option>
-                <?php
-                foreach ($paises_estudio as $pe) { ?>
-                <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
-                <?php
-                } ?>
-              </select>
-              <br>
+            <div class="alert alert-info text-center div_info_check">
+              Required Information for the New Project<br>Note:<br>
+              <ul class="text-left">
+                <li>The required documents will add automatically depending of the selected options . The extra
+                  documents
+                  are optional, select them before the complementary tests.</li>
+              </ul>
             </div>
-            <div class="col-md-4">
-              <label>Project name *</label>
-              <input type="text" class="form-control" name="proyecto_registro" id="proyecto_registro" disabled>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Employment history *</label>
+                <select name="empleos_registro" id="empleos_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Time required</label>
+                <select name="empleos_tiempo_registro" id="empleos_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
             </div>
-          </div>
-          <div class="alert alert-info text-center div_info_check">
-            Required Information for the New Project<br>Note:<br>
-            <ul class="text-left">
-              <li>The required documents will add automatically depending of the selected options . The extra documents
-                are optional, select them before the complementary tests.</li>
-            </ul>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Employment history *</label>
-              <select name="empleos_registro" id="empleos_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Criminal check *</label>
+                <select name="criminal_registro" id="criminal_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Time required</label>
+                <select name="criminal_tiempo_registro" id="criminal_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
             </div>
-            <div class="col-md-6">
-              <label>Time required</label>
-              <select name="empleos_tiempo_registro" id="empleos_tiempo_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Address history *</label>
+                <select name="domicilios_registro" id="domicilios_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Time required</label>
+                <select name="domicilios_tiempo_registro" id="domicilios_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
             </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Criminal check *</label>
-              <select name="criminal_registro" id="criminal_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Education check *</label>
+                <select name="estudios_registro" id="estudios_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Global data searches *</label>
+                <select name="global_registro" id="global_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
             </div>
-            <div class="col-md-6">
-              <label>Time required</label>
-              <select name="criminal_tiempo_registro" id="criminal_tiempo_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Credit check *</label>
+                <select name="credito_registro" id="credito_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Time required</label>
+                <select name="credito_tiempo_registro" id="credito_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
             </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Address history *</label>
-              <select name="domicilios_registro" id="domicilios_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Professional References (quantity)</label>
+                <input type="number" class="form-control valor_dinamico" id="ref_profesionales_registro"
+                  name="ref_profesionales_registro" value="0" disabled>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Personal References (quantity)</label>
+                <input type="number" class="form-control valor_dinamico" id="ref_personales_registro"
+                  name="ref_personales_registro" value="0" disabled>
+                <br>
+              </div>
             </div>
-            <div class="col-md-6">
-              <label>Time required</label>
-              <select name="domicilios_tiempo_registro" id="domicilios_tiempo_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Identity check *</label>
+                <select name="identidad_registro" id="identidad_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Migratory form (FM, FM2 or FM3) check *</label>
+                <select name="migracion_registro" id="migracion_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+              </div>
             </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Education check *</label>
-              <select name="estudios_registro" id="estudios_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Prohibited parties list check *</label>
+                <select name="prohibited_registro" id="prohibited_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>Academic References (quantity)</label>
+                <input type="number" class="form-control valor_dinamico" id="ref_academicas_registro"
+                  name="ref_academicas_registro" value="0" disabled>
+                <br>
+              </div>
             </div>
-            <div class="col-md-6">
-              <label>Global data searches *</label>
-              <select name="global_registro" id="global_registro" class="form-control valor_dinamico registro_obligado"
-                disabled></select>
-              <br>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label>Motor Vehicle Records (only in some Mexico cities) *</label>
+                <select name="mvr_registro" id="mvr_registro" class="form-control valor_dinamico registro_obligado"
+                  disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label>CURP check *</label>
+                <select name="curp_registro" id="curp_registro" class="form-control valor_dinamico registro_obligado"
+                  disabled></select>
+                <br>
+              </div>
             </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Credit check *</label>
-              <select name="credito_registro" id="credito_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
+
+            <div class="alert alert-danger text-center div_info_extra">Extra documents</div>
+            <div class="row div_extra">
+              <div class="col-12">
+                <label>Select the extra documents *</label>
+                <select name="extra_registro" id="extra_registro" class="form-control registro_obligado">
+                  <option value="">Select</option>
+                  <option value="15">Military document</option>
+                  <option value="14">Passport</option>
+                  <option value="10">Professional licence</option>
+                  <option value="48">Academic / Professional Credential</option>
+                  <option value="16">Resume</option>
+                  <option value="42">Sex offender registry</option>
+                  <option value="6">Social Security Number</option>
+                </select>
+                <br>
+              </div>
             </div>
-            <div class="col-md-6">
-              <label>Time required</label>
-              <select name="credito_tiempo_registro" id="credito_tiempo_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
-            </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Professional References (quantity)</label>
-              <input type="number" class="form-control valor_dinamico" id="ref_profesionales_registro"
-                name="ref_profesionales_registro" value="0" disabled>
-              <br>
-            </div>
-            <div class="col-md-6">
-              <label>Personal References (quantity)</label>
-              <input type="number" class="form-control valor_dinamico" id="ref_personales_registro"
-                name="ref_personales_registro" value="0" disabled>
-              <br>
-            </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Identity check *</label>
-              <select name="identidad_registro" id="identidad_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
-            </div>
-            <div class="col-md-6">
-              <label>Migratory form (FM, FM2 or FM3) check *</label>
-              <select name="migracion_registro" id="migracion_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-            </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Prohibited parties list check *</label>
-              <select name="prohibited_registro" id="prohibited_registro"
-                class="form-control valor_dinamico registro_obligado" disabled></select>
-              <br>
-            </div>
-            <div class="col-md-6">
-              <label>Academic References (quantity)</label>
-              <input type="number" class="form-control valor_dinamico" id="ref_academicas_registro"
-                name="ref_academicas_registro" value="0" disabled>
-              <br>
-            </div>
-          </div>
-          <div class="row div_check">
-            <div class="col-md-6">
-              <label>Motor Vehicle Records (only in some Mexico cities) *</label>
-              <select name="mvr_registro" id="mvr_registro" class="form-control valor_dinamico registro_obligado"
-                disabled></select>
-              <br>
-            </div>
-            <div class="col-md-6">
-              <label>CURP check *</label>
-              <select name="curp_registro" id="curp_registro" class="form-control valor_dinamico registro_obligado"
-                disabled></select>
-              <br>
-            </div>
-          </div>
-          <div class="alert alert-danger text-center div_info_extra">Extra documents</div>
-          <div class="row div_extra">
-            <div class="col-12">
-              <label>Select the extra documents *</label>
-              <select name="extra_registro" id="extra_registro" class="form-control registro_obligado">
-                <option value="">Select</option>
-                <option value="15">Military document</option>
-                <option value="14">Passport</option>
-                <option value="10">Professional licence</option>
-                <option value="48">Academic / Professional Credential</option>
-                <option value="16">Resume</option>
-                <option value="42">Sex offender registry</option>
-                <option value="6">Social Security Number</option>
-              </select>
-              <br>
-            </div>
-          </div>
-          <div class="row">
-            <div id="div_docs_extras" class="col-12 d-flex flex-column mb-3">
+            <div class="row">
+              <div id="div_docs_extras" class="col-12 d-flex flex-column mb-3">
+              </div>
             </div>
           </div>
           <div class="alert alert-danger text-center div_info_test">Complementary Tests</div>
@@ -644,10 +645,11 @@ header('Content-Type: text/html; charset=utf-8');
                 <option value="">Select</option>
                 <option value="0" selected>N/A</option>
                 <?php
-                foreach ($paquetes_antidoping as $paq) { ?>
-                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>
+foreach ($paquetes_antidoping as $paq) {?>
+                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
+                </option>
                 <?php
-                } ?>
+}?>
               </select>
               <br>
             </div>
@@ -1399,16 +1401,14 @@ header('Content-Type: text/html; charset=utf-8');
               <select id="asignar_usuario" class="form-control selectpicker dropup" data-dropup-auto="false"
                 data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona"
                 data-selected-text-format="count > 4" multiple>
-                <?php 
-                if(!empty($usuarios_asignacion)){
-                  foreach($usuarios_asignacion as $row){ ?>
+                <?php
+if (!empty($usuarios_asignacion)) {
+    foreach ($usuarios_asignacion as $row) {?>
                 <option value="<?php echo $row->id ?>"><?php echo $row->usuario ?></option>
-                <?php 
-                  }
-                }else{ ?>
+                <?php }
+} else {?>
                 <option value="">No hay usuarios correspondientes</option>
-                <?php 
-                } ?>
+                <?php }?>
               </select>
             </div>
           </div>
@@ -1417,18 +1417,16 @@ header('Content-Type: text/html; charset=utf-8');
               <label for="asignar_registro"></label>
               <select name="asignar_registro" id="asignar_registro" class="form-control selectpicker"
                 data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona" data-size="10">
-                <?php 
-                if(!empty($registros_asignacion)){
-                  foreach($registros_asignacion as $fila){ ?>
+                <?php
+if (!empty($registros_asignacion)) {
+    foreach ($registros_asignacion as $fila) {?>
                 <option value="<?php echo $fila->id ?>">
-                  <?php echo '#'.$fila->id.'  '.$fila->nombreCompleto. (!empty($fila->puesto) ? ' Puesto: '.$fila->puesto : ''); ?>
+                  <?php echo '#' . $fila->id . '  ' . $fila->nombreCompleto . (!empty($fila->puesto) ? ' Puesto: ' . $fila->puesto : ''); ?>
                 </option>
-                <?php 
-                  }
-                }else{ ?>
+                <?php }
+} else {?>
                 <option value="">No hay registros para asignar</option>
-                <?php 
-                } ?>
+                <?php }?>
               </select>
             </div>
           </div>
@@ -1634,12 +1632,16 @@ $("#opcion_registro").change(function() {
   $('.div_test').css('display', 'flex');
   $("#registroCandidatoModal #msj_error").css('display', 'none');
   if (opcion == 1) {
+    $('.nuevo_proyecto').css('display', 'none');
+
     $('.div_check').css('display', 'none');
     $('.div_info_check').css('display', 'none');
     $('.div_info_extra').css('display', 'none');
     $('.div_extra').css('display', 'none');
   }
   if (opcion == 0) {
+    $('.nuevo_proyecto').css('display', 'none');
+
     $('.div_previo').css('display', 'flex');
     $('.div_info_previo').css('display', 'block');
     $('.div_check').css('display', 'flex');
@@ -1648,6 +1650,8 @@ $("#opcion_registro").change(function() {
     $('.div_extra').css('display', 'flex');
   }
   if (opcion == '') {
+    $('.nuevo_proyecto').css('display', 'none');
+
     $('.div_previo').css('display', 'none');
     $('.div_info_previo').css('display', 'none');
     $('.div_check').css('display', 'none');
@@ -1809,12 +1813,13 @@ $("#registroCandidatoModal").on("hidden.bs.modal", function() {
   $("#examen_registro").empty();
   $("#examen_registro").append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
   <?php
-  if($paquetes_antidoping != null){ 
-    foreach ($paquetes_antidoping as $paq) { ?>
+if ($paquetes_antidoping != null) {
+    foreach ($paquetes_antidoping as $paq) {?>
   $("#examen_registro").append(
-    '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre.' ('.$paq->conjunto.')'; ?></option>');
+    '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
   <?php
-    }} ?>
+}
+}?>
   $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
   $("#examen_registro,#examen_medico,#examen_psicometrico").val(0);
   $('#pais').val('México')
@@ -2022,19 +2027,53 @@ $('#subirCSVModal').on('hidden.bs.modal', function(e) {
 $('#ingresoCandidatoModal').on('hidden.bs.modal', function(e) {
   $("#ingresoCandidatoModal input, #ingresoCandidatoModal textarea").val('');
 });
+$(document).ready(function() {
+  $("#previos").change(function() {
+    var previo = $(this).val();
+    if (previo != 0) {
+      $('.div_check').css('display', 'none');
+      $('.div_info_check').css('display', 'none');
+      $.ajax({
+        url: '<?php echo base_url('Candidato/getDetallesProyectoPrevio2'); ?>',
+        method: 'POST',
+        data: {
+          'id_previo': previo
+        },
+        success: function(res)
+
+
+        {
+          console.log("🚀 ~ $ ~ res:", res);
+          $('#detalles_previo').empty();
+          $('#detalles_previo').html(res);
+          $('.nuevo_proyecto').css('display', 'none');
+        }
+      });
+
+    } else {
+      $('.div_check').css('display', 'flex');
+
+      $('.div_info_check').css('display', 'block');
+      $('.nuevo_proyecto').css('display', 'none');
+      $('#detalles_previo').empty();
+    }
+  });
+});
 
 function switchLanguage(language) {
-    // Hacer una solicitud AJAX para cambiar el idioma
-    $.ajax({
-        type: 'POST',
-        url: '<?php echo site_url('language/switch'); ?>',
-        data: { language: language },
-        success: function(response) {
-            // Después de cambiar el idioma, actualizar el contenido del modal
-            // Simplemente mostrar el modal de nuevo para que se vuelva a cargar con el contenido en el nuevo idioma
-            $('#registroCandidatoModal').modal('show');
-        }
-    });
+  // Hacer una solicitud AJAX para cambiar el idioma
+  $.ajax({
+    type: 'POST',
+    url: '<?php echo site_url('language/switch'); ?>',
+    data: {
+      language: language
+    },
+    success: function(response) {
+      // Después de cambiar el idioma, actualizar el contenido del modal
+      // Simplemente mostrar el modal de nuevo para que se vuelva a cargar con el contenido en el nuevo idioma
+      $('#registroCandidatoModal').modal('show');
+    }
+  });
 }
 
 function nuevoRegistro() {
