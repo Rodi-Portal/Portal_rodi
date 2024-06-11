@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Cliente_general_model extends CI_Model{
 
-  function getSubclientes($id_cliente){
+  /*function getSubclientes($id_cliente){
     $data['subclientes'] = $this->getSubclientesOmitidos($id_cliente);
     $subclientes[] = -1;
     if($data['subclientes']){
@@ -26,7 +26,7 @@ class Cliente_general_model extends CI_Model{
     }else{
       return FALSE;
     }
-  }
+  } */
   function getDatosCliente($id_cliente){
     $this->db
     ->select('cl.*')

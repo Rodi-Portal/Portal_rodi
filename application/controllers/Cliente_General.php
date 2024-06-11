@@ -33,7 +33,7 @@ class Cliente_General extends Custom_Controller{
       //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
       //$info['estados'] = $this->funciones_model->getEstados();
       $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-      $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
+     // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
       $info['puestos'] = $this->funciones_model->getPuestos();
       $info['grados'] = $this->funciones_model->getGradosEstudio();
       $info['drogas'] = $this->funciones_model->getPaquetesAntidoping();

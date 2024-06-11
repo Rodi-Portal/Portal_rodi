@@ -332,18 +332,14 @@ function changeDataTable(url) {
 
 
         var nombreCompleto = data.aspirante.trim();
-        console.log("🚀 ~ $ ~ nombreCompleto:", nombreCompleto)
 
 
         // Dividir el nombre completo en partes
         var partesNombre = nombreCompleto.split(" ");
 
         var nombreAspirante = partesNombre[0]; // Primer nombre
-        console.log("🚀 ~ $ ~ nombreAspirante:", nombreAspirante)
         var apellidoPaterno = partesNombre.length > 1 ? partesNombre[1] : ""; // Primer apellido
-        console.log("🚀 ~ $ ~ apellidoPaterno:", apellidoPaterno)
         var apellidoMaterno = partesNombre.length > 2 ? partesNombre[2] : "";
-        console.log("🚀 ~ $ ~ apellidoMaterno:", apellidoMaterno)
         var id_cliente = data.id_cliente;
         let id_position = 0;
         $("#id_cliente").val(data.id_cliente);
