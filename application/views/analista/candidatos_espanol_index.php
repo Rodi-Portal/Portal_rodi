@@ -7,7 +7,7 @@
         <?php 
     if($this->uri->segment(3) != 2 && $this->uri->segment(3) != 205 && $this->uri->segment(3) != 233 && $this->uri->segment(3) != 250){
     ?>
-        <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="nuevoRegistro()">
+        <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">
             <span class="icon text-white-50">
                 <i class="fas fa-user-plus"></i>
             </span>
@@ -132,16 +132,160 @@
 
 <script>
 var id = '<?php echo $this->uri->segment(3) ?>';
+var nombre_cliente = '<?php echo $cliente; ?>';
+var id_cliente =  id;
 var url = '';
 var psico = '<?php echo base_url(); ?>_psicometria/';
 var beca_url = '<?php echo base_url(); ?>_beca/';
 let url_form = '<?php echo base_url()."Form/external?fid="; ?>';
-var parentescos_php =
-    '<?php foreach($parentescos as $p){ echo '<option value="'.$p->id.'">'.$p->nombre.'</option>';} ?>';
+//var parentescos_php ='< ?php foreach($parentescos as $p){ echo '<option value="'.$p->id.'">'.$p->nombre.'</option>';} ?>';
 var civiles_php = '<?php foreach($civiles as $c){ echo '<option value="'.$c->nombre.'">'.$c->nombre.'</option>';} ?>';
-var escolaridades_php =
-    '<?php foreach($escolaridades as $e){ echo '<option value="'.$e->id.'">'.$e->nombre.'</option>';} ?>';
+//var escolaridades_php ='< ?php foreach($escolaridades as $e){ echo '<option value="'.$e->id.'">'.$e->nombre.'</option>';} ?>';
 var extras = [];
+function modalRegistrarCandidato(){
+    let id_cliente = id;
+    $('#registroCandidatoModal').modal('show');
+
+    $.ajax({
+          async: false,
+          url: '<?php echo base_url('Cat_Puestos/getAllPositions'); ?>',
+          type: 'GET',
+          data: {
+           
+          },
+          success: function(res) {
+            id_position = res;
+          }
+        });
+        $.ajax({
+          async: false,
+          url: '<?php echo base_url('Candidato_Seccion/getHistorialProyectosByCliente'); ?>',
+          type: 'POST',
+          data: {
+            'id_cliente': id_cliente
+          },
+          success: function(res) {
+            $('#previos').html(res);
+          }
+        });
+        setTimeout(() => {
+          $.ajax({
+            async: false,
+            url: '<?php echo base_url('Cat_Puestos/getAllPositions'); ?>',
+            type: 'POST',
+            success: function(res) {
+              if (res != 0) {
+                let data = JSON.parse(res);
+                $('#puesto').append('<option value="">Selecciona</option>');
+                for (let i = 0; i < data.length; i++) {
+                  $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] +
+                    '</option>');
+                }
+                $('#puesto').selectpicker({
+                  liveSearch: true
+                })
+              } else {
+                $('#puesto').append('<option value="">No hay puestos registrados</option>');
+              }
+            }
+          });
+        }, 200);
+        setTimeout(function() {
+          $('#puesto').selectpicker('val', id_position)
+          $('.loader').fadeOut();
+        }, 250);
+       
+
+}
+
+function registrarCandidato() {
+  var datos = new FormData();
+  console.log("🚀 ~ registrarCandidato ~ id_cliente:", id_cliente)
+  console.log("🚀 ~ registrarCandidato ~ nombre del cliente:", nombre_cliente)
+
+
+  datos.append('nombre', $("#nombre_registro").val());
+  datos.append('paterno', $("#paterno_registro").val());
+  datos.append('materno', $("#materno_registro").val());
+  datos.append('celular', $("#celular_registro").val());
+  datos.append('subcliente', $("#subcliente").val());
+  datos.append('opcion', $('#opcion_registro').val());
+  datos.append('puesto', $('#puesto').selectpicker('val'));
+  datos.append('pais', $("#pais").val());
+  datos.append('region', $("#region").val());
+
+  datos.append('previo', $("#previos").val());
+  datos.append('proyecto', $("#proyecto_registro").val());
+  datos.append('id_cliente', id_cliente);
+  datos.append('examen', $("#examen_registro").val());
+  datos.append('medico', $("#examen_medico").val());
+
+
+  datos.append('clave', $("#clave").val());
+  datos.append('cliente', nombre_cliente);
+  datos.append('idAspiranteReq', $("#idAspiranteReq").val());
+  datos.append('psicometrico', $("#examen_psicometrico").val());
+  datos.append('correo', $("#correo_registro").val());
+  datos.append('centro_costo', 'NA');
+  datos.append('curp', $('#curp_registro').val());
+  datos.append('nss', $('#nss_registro').val());
+  datos.append('usuario', 1);
+  datos.append('id_requisicion', $("#idRequisicion").val());
+  datos.append('id_bolsa_trabajo', $("#idBolsaTrabajo").val());
+  
+  $.ajax({
+    url: '<?php echo base_url('Client/registrar'); ?>',
+    type: 'POST',
+    data: datos,
+    contentType: false,
+    cache: false,
+    processData: false,
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+
+      var data = JSON.parse(res);
+      if (data.codigo === 1) {
+        recargarTable();
+        $("#registroCandidatoModal").modal('hide');
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: data.msg,
+          showConfirmButton: false,
+          timer: 3500
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Hubo un problema',
+          html: data.msg,
+          width: '50em',
+          confirmButtonText: 'Cerrar'
+        });
+      }
+
+    },
+    error: function(xhr, status, error) {
+      console.error("Error en la solicitud AJAX:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en la solicitud AJAX',
+        text: 'Hubo un problema al comunicarse con el servidor',
+        confirmButtonText: 'Cerrar'
+      });
+    }
+  });
+}
+  
+
+
+
+
 
 $(document).ready(function() {
     //inputmask
@@ -666,6 +810,7 @@ $(document).ready(function() {
         }
     })
 });
+
 
 function changeDatatable(url) {
     $('#tabla').DataTable({

@@ -917,7 +917,7 @@ class Reclutamiento extends CI_Controller{
       }
   
       echo json_encode($msj);
-  }
+    }
 
     function guardarHistorialBolsaTrabajo(){
 			$this->form_validation->set_rules('comentario', 'Comentario / Estatus', 'required|trim');
@@ -1027,19 +1027,19 @@ class Reclutamiento extends CI_Controller{
       $this->form_validation->set_message('numeric','El campo {field} debe ser numérico');
      
 
-    if ($this->form_validation->run() == FALSE) {
-      $msj = array(
-        'codigo' => 0,
-        'msg' => validation_errors()
-      );
-    }
-
-      $msj = array();
       if ($this->form_validation->run() == FALSE) {
         $msj = array(
           'codigo' => 0,
           'msg' => validation_errors()
         );
+      }
+
+        $msj = array();
+        if ($this->form_validation->run() == FALSE) {
+          $msj = array(
+            'codigo' => 0,
+            'msg' => validation_errors()
+          );
       }else{
 
         $cadena_competencias = $this->input->post('competencias');
@@ -1915,11 +1915,8 @@ class Reclutamiento extends CI_Controller{
       }
   
       echo json_encode($msj);
-  }
+    }
   
-  
-  
-
 
 		function getAspirantesPorRequisicion(){
        
@@ -1973,6 +1970,7 @@ class Reclutamiento extends CI_Controller{
 			$req['data'] = $this->reclutamiento_model->getAspirantesRequisicionesFinalizadas($id_usuario, $condicion);
 			$this->output->set_output( json_encode( $req ) );
 		}
+
 		function getAspirantesPorRequisicionesFinalizadas(){
 			$id_requisicion = $_GET['id'];
 			if($this->session->userdata('idrol') == 4){
@@ -1993,6 +1991,7 @@ class Reclutamiento extends CI_Controller{
 			$res = $this->reclutamiento_model->getBolsaTrabajoById($id);
 			echo json_encode($res);
 		}
+
     function getEmpleosByIdBolsaTrabajo(){
 			$id = $this->input->post('id');
 			$data['empleos'] = $this->reclutamiento_model->getEmpleosByIdBolsaTrabajo($id);
@@ -2003,6 +2002,7 @@ class Reclutamiento extends CI_Controller{
 				echo $resp = 0;
 			}
 		}
+
     function getHistorialBolsaTrabajo(){
 			$id = $this->input->post('id');
 			$data['registros'] = $this->reclutamiento_model->getHistorialBolsaTrabajo($id);
@@ -2013,6 +2013,7 @@ class Reclutamiento extends CI_Controller{
 				echo $resp = 0;
 			}
 		}
+
     function getRequisicionesActivas(){
 			$res = $this->reclutamiento_model->getRequisicionesActivas();
       if($res != null)
@@ -2020,6 +2021,7 @@ class Reclutamiento extends CI_Controller{
       else 
         echo $res = 0;
 		}
+
     function getTestsByOrder(){
 			$id = $this->input->post('id');
 			$data['registros'] = $this->reclutamiento_model->getTestsByOrder($id);
@@ -2030,6 +2032,7 @@ class Reclutamiento extends CI_Controller{
 				echo $resp = 0;
 			}
 		}
+
     function getOrdersInProcess(){
 			//Dependiendo el rol del usuario se veran todas o sus propias requisiciones
 			if($this->session->userdata('idrol') == 4){
@@ -2041,11 +2044,13 @@ class Reclutamiento extends CI_Controller{
       }
 			echo json_encode($res);
 		}
+
     function getDetailsApplicantById(){
 			$id = $this->input->post('id');
 			$res = $this->reclutamiento_model->getBolsaTrabajoById($id);
 			echo json_encode($res);
 		}
+
     function getWarrantyApplicant(){
 			$id = $this->input->post('id');
 			$res = $this->reclutamiento_model->getWarrantyApplicant($id);
@@ -2054,12 +2059,13 @@ class Reclutamiento extends CI_Controller{
       else
         echo $res = 0;
 		}
-	function matchCliente(){
-		if(isset($_GET['term'])){
-	      	//$term = strtoupper($_GET['term']);
-	      	$term = $_GET['term'];
-	      	//echo $id;
-	      	echo json_encode($this->reclutamiento_model->matchCliente($term));
-	    }
-	}
+
+    function matchCliente(){
+      if(isset($_GET['term'])){
+            //$term = strtoupper($_GET['term']);
+            $term = $_GET['term'];
+            //echo $id;
+            echo json_encode($this->reclutamiento_model->matchCliente($term));
+        }
+    }
 }

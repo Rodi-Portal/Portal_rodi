@@ -18,57 +18,57 @@ header('Content-Type: text/html; charset=utf-8');
               data-style="btn-custom-selectpicker" title="Selecciona" data-live-search="true">
 
               <?php
-if ($reqs) {
-    foreach ($reqs as $req) {?>
-              <option value="<?php echo $req->id; ?>">
-                <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-              </option>
-              <?php }
-} else {?>
-              <option value="">Sin requisiones registradas</option>
-              <?php }?>
-            </select>
-          </div>
-          <br>
-          <div class="row mb-3">
-            <div class="col-sm-12 col-md-4">
-              <label>Nombre(s) *</label>
-              <input type="text" class="form-control obligado" name="nombre" id="nombre"
-                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-            </div>
-            <div class="col-sm-12 col-md-4">
-              <label>Primer apellido *</label>
-              <input type="text" class="form-control obligado" name="paterno" id="paterno"
-                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-            </div>
-            <div class="col-sm-12 col-md-4">
-              <label>Segundo apellido</label>
-              <input type="text" class="form-control" name="materno" id="materno"
-                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-12">
-              <label>Localización o domicilio *</label>
-              <textarea class="form-control" name="domicilio" id="domicilio" rows="2"></textarea>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-sm-12 col-md-4">
-              <label>Área de interés *</label>
-              <input type="text" id="area_interes" name="area_interes" class="form-control">
-            </div>
-            <div class="col-sm-12 col-md-4">
-              <label>Medio de contacto *</label>
-              <select name="medio" id="medio" class="form-control obligado">
-
-                <option value="">Selecciona</option>
-                <?php
-if ($medios != null) {
-    foreach ($medios as $m) {?>
-                <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
+  if ($reqs) {
+      foreach ($reqs as $req) {?>
+                <option value="<?php echo $req->id; ?>">
+                  <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                </option>
                 <?php }
-}?>
+  } else {?>
+                <option value="">Sin requisiones registradas</option>
+                <?php }?>
+              </select>
+            </div>
+            <br>
+            <div class="row mb-3">
+              <div class="col-sm-12 col-md-4">
+                <label>Nombre(s) *</label>
+                <input type="text" class="form-control obligado" name="nombre" id="nombre"
+                  onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              </div>
+              <div class="col-sm-12 col-md-4">
+                <label>Primer apellido *</label>
+                <input type="text" class="form-control obligado" name="paterno" id="paterno"
+                  onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              </div>
+              <div class="col-sm-12 col-md-4">
+                <label>Segundo apellido</label>
+                <input type="text" class="form-control" name="materno" id="materno"
+                  onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12">
+                <label>Localización o domicilio *</label>
+                <textarea class="form-control" name="domicilio" id="domicilio" rows="2"></textarea>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-sm-12 col-md-4">
+                <label>Área de interés *</label>
+                <input type="text" id="area_interes" name="area_interes" class="form-control">
+              </div>
+              <div class="col-sm-12 col-md-4">
+                <label>Medio de contacto *</label>
+                <select name="medio" id="medio" class="form-control obligado">
+
+                  <option value="">Selecciona</option>
+                  <?php
+  if ($medios != null) {
+      foreach ($medios as $m) {?>
+                  <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
+                  <?php }
+  }?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -95,6 +95,7 @@ if ($medios != null) {
     </div>
   </div>
 </div>
+
 <!-- Modal para cargar CV -->
 <div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel"
   aria-hidden="true">
@@ -139,10 +140,10 @@ if ($medios != null) {
               <select name="accion_aspirante" id="accion_aspirante" class="form-control obligado">
                 <option value="">Selecciona</option>
                 <?php if ($acciones != null) {
-    foreach ($acciones as $a) {?>
-                <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
-                <?php }
-}?>
+      foreach ($acciones as $a) {?>
+                  <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
+                  <?php }
+  }?>
               </select>
               <br>
             </div>
@@ -203,13 +204,13 @@ if ($medios != null) {
                 data-style="btn-custom-selectpicker" data-live-search="true">
                 <option value="">Selecciona</option>
                 <?php
-if ($reqs) {
-    foreach ($reqs as $req) {?>
-                <option value="<?php echo $req->id; ?>">
-                  <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-                </option>
-                <?php }
-}?>
+  if ($reqs) {
+      foreach ($reqs as $req) {?>
+                  <option value="<?php echo $req->id; ?>">
+                    <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                  </option>
+                  <?php }
+  }?>
               </select>
               <br>
             </div>
@@ -261,13 +262,13 @@ if ($reqs) {
             <select name="reactivar_req" id="reactivar_req" class="form-control obligado">
               <option value="">Selecciona</option>
               <?php
-if ($reqs) {
-    foreach ($reqs as $req) {?>
-              <option value="<?php echo $req->id; ?>">
-                <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-              </option>
-              <?php }
-}?>
+  if ($reqs) {
+      foreach ($reqs as $req) {?>
+                <option value="<?php echo $req->id; ?>">
+                  <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                </option>
+                <?php }
+  }?>
             </select>
             <br>
           </div>
@@ -308,15 +309,15 @@ if ($reqs) {
     <div class="modal-content">
       <div class="modal-header">
         <meta charset="UTF-8">
-        <h4 class="modal-title"><?php echo $this->lang->line('register_candidate'); ?></h4>
+        <h4 class="modal-title">Register Candidate</h4>
 
-        <div id="language-switch">
+        <!-- div id="language-switch">
           <label for="language-select">Language:</label>
           <select id="language-select" onchange="switchLanguage(this.value);">
             <option value="english">English</option>
             <option value="spanish">Español</option>
           </select>
-        </div>
+        </div -->
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -324,23 +325,23 @@ if ($reqs) {
       </div>
 
       <div class="modal-body">
-        <div class="alert alert-info text-center"><?php echo $this->lang->line('general_data'); ?></div>
+        <div class="alert alert-info text-center">General Data</div>
         <form id="nuevoRegistroForm">
           <div class="row">
             <div class="col-4">
-              <label>Nombre(s) *</label>
+              <label>First Name (s) *</label>
               <input type="text" class="form-control obligado" name="nombre_registro" id="nombre_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
-              <label>Apellido paterno *</label>
+              <label>Last Name*</label>
               <input type="text" class="form-control obligado" name="paterno_registro" id="paterno_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
-              <label>Apellido materno</label>
+              <label>Second Last Name</label>
               <input type="text" class="form-control" name="materno_registro" id="materno_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
@@ -348,30 +349,28 @@ if ($reqs) {
           </div>
           <div class="row">
             <div class="col-4">
-              <label>Subcliente (Proveedor) *</label>
+              <label>Subclient (Supplier)*</label>
               <select name="subcliente" id="subcliente" class="form-control obligado">
                 <option value="0">N/A</option>
               </select>
               <br>
             </div>
-            <?php
-$id_cliente = $this->uri->segment(3);
-if ($id_cliente != 172) {?>
+         
+
+
             <div class="col-4">
-              <label>Puesto *</label>
-              <select name="puesto" id="puesto" class="form-control"></select>
+              <label>Position*</label>
+              <select name="puesto" id="puesto" class="form-control">
+              <option value="0">N/A</option>
+              </select>
+              
               <br>
             </div>
-            <?php } else {?>
+           
+           
+
             <div class="col-4">
-              <label>Puesto *</label>
-              <input type="text" class="form-control obligado" name="puesto" id="puesto">
-              <br>
-            </div>
-            <?php
-}?>
-            <div class="col-4">
-              <label>Teléfono *</label>
+              <label>Phone *</label>
               <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro"
                 maxlength="16">
               <input type="hidden" class="form-control obligado" name="id_cliente_portal" id="id_cliente_portal">
@@ -380,22 +379,22 @@ if ($id_cliente != 172) {?>
           </div>
           <div class="row">
             <div class="col-4">
-              <label>País donde reside *</label>
+              <label>Country of Residence *</label>
               <select class="form-control" id="pais" name="pais">
                 <?php
-if ($paises != null) {
-    foreach ($paises as $p) {
-        $default = ($p->nombre == 'México') ? 'selected' : '';?>
-                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
-                <?php
-}
-}
-?>
+                    if ($paises != null) {
+                        foreach ($paises as $p) {
+                            $default = ($p->nombre == 'México') ? 'selected' : '';?>
+                                    <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                                    <?php
+                    }
+                    }
+                    ?>
               </select>
               <br>
             </div>
             <div class="col-4">
-              <label>Correo* </label>
+              <label>Email* </label>
               <input type="text" class="form-control obligado" name="correo_registro" id="correo_registro">
               <br>
             </div>
@@ -409,7 +408,7 @@ if ($paises != null) {
           </div>
           <div class="row">
             <div class="col-4">
-              <label>Numero de Seguro Social (NSS)</label>
+              <label>Social Security Number (SSN)</label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
               <input type="hidden" class="form-control obligado" name="id_cliente" id="id_cliente" maxlength="11">
               <input type="hidden" class="form-control obligado" name="clave" id="clave" maxlength="11">
@@ -469,9 +468,9 @@ if ($paises != null) {
                 <label>Country</label>
                 <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
                   <option value="">Select</option>
-                  <?php  foreach ($paises_estudio as $pe) {?>
+                  <?php foreach ($paises_estudio as $pe) {?>
                   <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
-                  <?php } ?>
+                  <?php }?>
                 </select>
                 <br>
               </div>

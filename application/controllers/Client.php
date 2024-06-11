@@ -558,7 +558,7 @@ class Client extends Custom_Controller
                     'medico' => $medico,
                     'psicometrico' => $psicometrico,
 
-                    'clave' => $clave,
+               
 
                     // datos  para  tabla  Candidato_sync
                     'id_usuario_talent' => $id_usuario,
@@ -567,14 +567,14 @@ class Client extends Custom_Controller
                     'nombre_cliente_talent' => $nombre_cliente,
                     'id_cliente_talent' => $id_cliente,
                     'id_portal' => $id_portal,
-										'id_puesto_talent' => $puesto,
+					'id_puesto_talent' => $puesto,
 
 
                 );
-               /* echo "<br>";
+               /*echo "<br>";
                 print_r($data);
                 echo "<br>";
-                die();*/
+                die(); */
                 $url = 'http://127.0.0.1:8000/api/candidatos';
 
                 $ch = curl_init($url);

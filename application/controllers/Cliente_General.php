@@ -101,6 +101,7 @@ class Cliente_General extends Custom_Controller{
       $this->load
       ->view('adminpanel/header', $data)
       ->view('adminpanel/scripts',$modales)
+      ->view('modals/mdl_reclutamiento')
       ->view('analista/candidatos_espanol_index', $vista)
       ->view('adminpanel/footer');
     }

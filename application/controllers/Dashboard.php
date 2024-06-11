@@ -64,7 +64,7 @@ class Dashboard extends CI_Controller{
 
 			//Modals
 			$modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
-
+	
 			$this->load
 			->view('adminpanel/header',$data)
 			->view('adminpanel/index')
@@ -80,6 +80,7 @@ class Dashboard extends CI_Controller{
 		$this->load
     ->view('manual_usuario/manual');
 	}
+
 	public function ustglobal_panel(){
 		if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2){
 			$this->load->view('clientes/ust_cliente');
@@ -124,6 +125,7 @@ class Dashboard extends CI_Controller{
 			redirect('Login/index');
 		}
 	}
+
   public function client_panel(){
 		$data['paises'] = $this->funciones_model->getPaises();
 		$data['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
@@ -169,6 +171,7 @@ class Dashboard extends CI_Controller{
 		$this->load->view('candidato/formulario',$data);
 	}
 
+
 	function clientes_panel(){
     $id_cliente = $this->session->userdata('idcliente');
 		$data['subclientes'] = $this->cliente_general_model->getSubclientesPanel($id_cliente);
@@ -185,7 +188,7 @@ class Dashboard extends CI_Controller{
 	/*----------------------------------------*/
 	/* Visitador
 	/*----------------------------------------*/ 
-		function visitador_panel(){
+	function visitador_panel(){
 			if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1 && $this->session->userdata('idrol') == 3){
 				$data['parentescos'] = $this->funciones_model->getParentescos();
 				$data['civiles'] = $this->funciones_model->getEstadosCiviles();
@@ -204,7 +207,7 @@ class Dashboard extends CI_Controller{
 	/*----------------------------------------*/
 	/* Panel Subclientes Espanol General
 	/*----------------------------------------*/ 
-		function subclientes_general_panel(){
+	function subclientes_general_panel(){
 			$data['puestos'] = $this->funciones_model->getPuestos();
 			$data['drogas'] = $this->funciones_model->getPaquetesAntidoping();
 			$data['candidatos'] = $this->subcliente_model->getCandidatos($this->session->userdata('idsubcliente'));
@@ -217,19 +220,19 @@ class Dashboard extends CI_Controller{
 	/*----------------------------------------*/
 	/* Panel Subclientes Ingles REMOTE TEAM
 	/*----------------------------------------*/ 
-		function subclientes_ingles_panel(){
-      if($this->session->userdata('id')){
-        $id_cliente = $this->session->userdata('idcliente');
-        $data['puestos'] = $this->funciones_model->getPuestos();
-        $data['drogas'] = $this->funciones_model->getPaquetesAntidoping();
-        $data['candidatos'] = $this->subcliente_model->getCandidatos($id_cliente);
-        $data['paises'] = $this->funciones_model->getPaises();
-        $data['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
-        $data['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
-        $this->load->view('subclientes/subclientes_ingles_index',$data);
-      }
-      else{
-        redirect('Login/index');
-      }
-    }
+	function subclientes_ingles_panel(){
+		if($this->session->userdata('id')){
+			$id_cliente = $this->session->userdata('idcliente');
+			$data['puestos'] = $this->funciones_model->getPuestos();
+			$data['drogas'] = $this->funciones_model->getPaquetesAntidoping();
+			$data['candidatos'] = $this->subcliente_model->getCandidatos($id_cliente);
+			$data['paises'] = $this->funciones_model->getPaises();
+			$data['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
+			$data['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
+			$this->load->view('subclientes/subclientes_ingles_index',$data);
+		}
+		else{
+			redirect('Login/index');
+		}
+	}
 }
