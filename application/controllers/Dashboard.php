@@ -25,6 +25,7 @@ class Dashboard extends CI_Controller{
 				$ReqProceso = $this->estadistica_model->countReqEnProceso();
 				$data['titulo_dato1'] = 'Total de Requisiciones en Proceso';
 				$data['dato1'] = $ReqProceso->total;
+				
 				$ReqFinalizadas = $this->estadistica_model->countReqFinalizadas();
 				$data['titulo_dato2'] = 'Total de Requisiciones Finalizadas';
 				$data['dato2'] = $ReqFinalizadas->total;

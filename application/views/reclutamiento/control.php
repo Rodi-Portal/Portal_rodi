@@ -329,14 +329,21 @@ function changeDataTable(url) {
         });
       });
       $('a#iniciar_socio', row).bind('click', () => {
-      console.log("🚀 ~ $ ~ row:mmmm", data);
-      
-        var nombreCompleto = data.aspirante.trim();
 
-        // Dividir el nombre completo en nombre y apellido
+
+        var nombreCompleto = data.aspirante.trim();
+        console.log("🚀 ~ $ ~ nombreCompleto:", nombreCompleto)
+
+
+        // Dividir el nombre completo en partes
         var partesNombre = nombreCompleto.split(" ");
-        var nombreAspirante = partesNombre[0];
-        var apellidoAspirante = partesNombre.slice(1).join(" ");
+
+        var nombreAspirante = partesNombre[0]; // Primer nombre
+        console.log("🚀 ~ $ ~ nombreAspirante:", nombreAspirante)
+        var apellidoPaterno = partesNombre.length > 1 ? partesNombre[1] : ""; // Primer apellido
+        console.log("🚀 ~ $ ~ apellidoPaterno:", apellidoPaterno)
+        var apellidoMaterno = partesNombre.length > 2 ? partesNombre[2] : "";
+        console.log("🚀 ~ $ ~ apellidoMaterno:", apellidoMaterno)
         var id_cliente = data.id_cliente;
         let id_position = 0;
         $("#id_cliente").val(data.id_cliente);
@@ -346,8 +353,8 @@ function changeDataTable(url) {
         $("#idRequisicion").val(data.id_requisicion);
         $("#idBolsaTrabajo").val(data.id_bolsa_trabajo);
         $('#nombre_registro').val(nombreAspirante)
-        $('#paterno_registro').val(apellidoAspirante)
-        $('#materno_registro').val(data.materno)
+        $('#paterno_registro').val(apellidoPaterno)
+        $('#materno_registro').val(apellidoMaterno)
         $('#celular_registro').val(data.telefono)
         $('#correo_registro').val(data.correo)
         $('.loader').css("display", "block");
@@ -684,6 +691,7 @@ function guardarEstatusRequisicion() {
 
 function registrarCandidato() {
   var datos = new FormData();
+  
 
   datos.append('nombre', $("#nombre_registro").val());
   datos.append('paterno', $("#paterno_registro").val());
@@ -700,7 +708,7 @@ function registrarCandidato() {
   datos.append('id_cliente', id_cliente);
   datos.append('examen', $("#examen_registro").val());
   datos.append('medico', $("#examen_medico").val());
-  
+
   datos.append('id_cliente', $('#id_cliente').val());
   datos.append('clave', $("#clave").val());
   datos.append('cliente', $("#cliente").val());
@@ -713,7 +721,7 @@ function registrarCandidato() {
   datos.append('usuario', 1);
   datos.append('id_requisicion', $("#idRequisicion").val());
   datos.append('id_bolsa_trabajo', $("#idBolsaTrabajo").val());
-
+  
   $.ajax({
     url: '<?php echo base_url('Client/registrar'); ?>',
     type: 'POST',
@@ -722,46 +730,45 @@ function registrarCandidato() {
     cache: false,
     processData: false,
     beforeSend: function() {
-        $('.loader').css("display", "block");
+      $('.loader').css("display", "block");
     },
     success: function(res) {
-        setTimeout(function() {
-            $('.loader').fadeOut();
-        }, 200);
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
 
-            var data = JSON.parse(res);
-            console.log("🚀 ~ registrarCandidato ~ res:", res)
-            if (data.codigo === 1) {
-                recargarTable();
-                $("#registroCandidatoModal").modal('hide');
-                Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: data.msg,
-                    showConfirmButton: false,
-                    timer: 3500
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Hubo un problema',
-                    html: data.msg,
-                    width: '50em',
-                    confirmButtonText: 'Cerrar'
-                });
-            }
-      
+      var data = JSON.parse(res);
+      if (data.codigo === 1) {
+        recargarTable();
+        $("#registroCandidatoModal").modal('hide');
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: data.msg,
+          showConfirmButton: false,
+          timer: 3500
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Hubo un problema',
+          html: data.msg,
+          width: '50em',
+          confirmButtonText: 'Cerrar'
+        });
+      }
+
     },
     error: function(xhr, status, error) {
-        console.error("Error en la solicitud AJAX:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error en la solicitud AJAX',
-            text: 'Hubo un problema al comunicarse con el servidor',
-            confirmButtonText: 'Cerrar'
-        });
+      console.error("Error en la solicitud AJAX:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en la solicitud AJAX',
+        text: 'Hubo un problema al comunicarse con el servidor',
+        confirmButtonText: 'Cerrar'
+      });
     }
-});
+  });
 }
 
 function getIngresoCandidato(id) {

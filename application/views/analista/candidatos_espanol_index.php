@@ -24,29 +24,29 @@
         </a>
         <?php 
     } ?>
-        <a href="#" class="btn btn-info btn-icon-split" data-toggle="modal" data-target="#subirVisitaModal">
+        <!-- a href="#" class="btn btn-info btn-icon-split" data-toggle="modal" data-target="#subirVisitaModal">
             <span class="icon text-white-50">
                 <i class="fas fa-upload"></i>
             </span>
             <span class="text">Verificar datos de visita</span>
-        </a>
+        </a -->
         <?php 
 		if($this->uri->segment(3) == 33){ ?>
-        <a href="#" class="btn btn-info btn-icon-split" data-toggle="modal" data-target="#registroCandidatoBecaModal">
+        <!--a href="#" class="btn btn-info btn-icon-split" data-toggle="modal" data-target="#registroCandidatoBecaModal">
             <span class="icon text-white-50">
                 <i class="fas fa-user-plus"></i>
             </span>
             <span class="text">Registrar candidato para solicitud de Beca</span>
-        </a>
+        </a -->
         <?php 
 		}  
 		//if($this->session->userdata('idrol') != 2){ ?>
-        <a href="#" class="btn btn-primary btn-icon-split" id="btn_asignacion" onclick="asignarCandidatoAnalista()">
+        <!--a href="#" class="btn btn-primary btn-icon-split" id="btn_asignacion" onclick="asignarCandidatoAnalista()">
             <span class="icon text-white-50">
                 <i class="fas fa-people-arrows"></i>
             </span>
-            <span class="text">Reasignacion de candidato</span>
-        </a>
+            <span class="text">Reasignacion de candidato</span >
+        </a -->
         <?php 
 		//} ?>
         <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
@@ -204,6 +204,7 @@ $(document).ready(function() {
                 '&enproceso=' + 0;
             changeDatatable(urlFiltrada);
         }
+            console.log("🚀 ~ $ ~ urlFiltrada:", urlFiltrada)
     });
     $("#subcliente").change(function() {
         var subcliente = $(this).val();

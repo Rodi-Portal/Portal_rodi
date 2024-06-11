@@ -484,6 +484,7 @@ class Client extends Custom_Controller
         $nombre = strtoupper($this->input->post('nombre'));
         $paterno = strtoupper($this->input->post('paterno'));
         $materno = strtoupper($this->input->post('materno'));
+				$puesto = $this->input->post('puesto');
         $cel = $this->input->post('celular');
         $correo = strtolower($this->input->post('correo'));
         $proyecto = $this->input->post('proyecto');
@@ -510,9 +511,23 @@ class Client extends Custom_Controller
                 'msg' => validation_errors(),
             );
         } else {
+					$privacidad_usuario = 0;
+					switch ($usuario) {
+							case 1:
+									$tipo_usuario = "id_usuario";
+									break;
+							case 2:
+									$tipo_usuario = "id_usuario_cliente";
+									$privacidad_usuario = $this->session->userdata('privacidad');
+									break;
+							case 3:
+									$tipo_usuario = "id_usuario_subcliente";
+									break;
+					}
            
             if ($opcion != 0) {
-
+									
+					
                 $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
 
                 // Reemplaza con la URL de tu API
@@ -522,7 +537,7 @@ class Client extends Custom_Controller
                     'creacion' => $date,
                     'edicion' => $date,
                     'tipo_usuario' => $usuario,
-                    'usuario' => $id_usuario,
+                    'id_usuario'=> 1,
                     'fecha_alta' => $date,
                     'tipo_formulario' => 0,
                     'nombre' => $nombre,
@@ -533,6 +548,7 @@ class Client extends Custom_Controller
                     'celular' => $cel,
                     'subproyecto' => $proyecto . ' ' . $pais,
                     'pais' => $pais,
+					'privacidad'=> $privacidad_usuario,
 
                     // datos  para  tabla  pruebas
 
@@ -545,13 +561,17 @@ class Client extends Custom_Controller
                     'clave' => $clave,
 
                     // datos  para  tabla  Candidato_sync
+                    'id_usuario_talent' => $id_usuario,
                     'id_cliente_talent' => $id_cliente,
                     'id_aspirante_talent' => $idAspiranteReq,
                     'nombre_cliente_talent' => $nombre_cliente,
                     'id_cliente_talent' => $id_cliente,
                     'id_portal' => $id_portal,
+										'id_puesto_talent' => $puesto,
+
+
                 );
-                /*echo "<br>";
+               /* echo "<br>";
                 print_r($data);
                 echo "<br>";
                 die();*/
@@ -615,20 +635,8 @@ class Client extends Custom_Controller
             } else {
 //TODO:  aqui comienza   a trabajar 
 							//----- aqui comienza   el registro del  candidaton  con un proyecto previo 
-                if ($this->input->post('previo') != 0) {
-                    $privacidad_usuario = 0;
-                    switch ($usuario) {
-                        case 1:
-                            $tipo_usuario = "id_usuario";
-                            break;
-                        case 2:
-                            $tipo_usuario = "id_usuario_cliente";
-                            $privacidad_usuario = $this->session->userdata('privacidad');
-                            break;
-                        case 3:
-                            $tipo_usuario = "id_usuario_subcliente";
-                            break;
-                    }
+              if ($this->input->post('previo') != 0) {
+                 
                     $id_proyecto_previo = $this->input->post('previo');
                     $subproyecto_previo = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
                     $pais_previo = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
@@ -714,7 +722,7 @@ class Client extends Custom_Controller
 
                     $docs_requeridos = []; // Inicializa el arreglo de documentos requeridos
 
-								for ($i = 0; $i < count($documentosSolicitados); $i++) {
+									for ($i = 0; $i < count($documentosSolicitados); $i++) {
 										$row = $this->documentacion_model->getDocumentoRequerido($documentosSolicitados[$i]);
 										$solicitado = $row->solicitado;
 										
@@ -764,7 +772,7 @@ class Client extends Custom_Controller
 									// Imprimir el JSON
 							
 
-                    $this->candidato_seccion_model->store_secciones_candidato($candidato_secciones);
+                    //$this->candidato_seccion_model->store_secciones_candidato($candidato_secciones);
 
                    
 										$data = array(
@@ -811,8 +819,7 @@ class Client extends Custom_Controller
 
 									);
 
-							
-
+								
 
 									$url = 'http://127.0.0.1:8000/api/candidatoconprevio';
 

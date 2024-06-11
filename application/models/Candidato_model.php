@@ -1668,8 +1668,9 @@ class Candidato_model extends CI_Model{
         }
         function getUsuariosCliente($id_cliente){
             $this->db
-            ->select('id, nombre, paterno')
-            ->from('usuario_cliente')
+            ->select('UC.id, DAT.nombre, DAT.paterno')
+            ->from('usuarios_clientes as UC')
+            ->join('datos_generales as DAT','UC.id_datos_generales = DAT.id' )
             ->where('id_cliente',$id_cliente)
             ->order_by('nombre','ASC');
     
