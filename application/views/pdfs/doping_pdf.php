@@ -296,7 +296,7 @@ p {
 
 
 		 // Primera solicitud cURL
-		 $url_doping = 'http://localhost:8000/api/doping-detalles/' . $doping->id;
+		 $url_doping = API_URL.'doping-detalles/' . $doping->id;
 		 $ch_doping = curl_init($url_doping);
 		 curl_setopt($ch_doping, CURLOPT_RETURNTRANSFER, true);
 		 $response_doping = curl_exec($ch_doping);

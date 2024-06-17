@@ -121,22 +121,22 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <?php 
 							if(in_array(15, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/requisicion') ?>">Requisiciones</a>
+            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/requisicion') ?>">Mi escritorio</a>
             <?php
 							}
-              if(in_array(28, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/bolsa') ?>">Bolsa de Trabajo</a>
-            <?php
-							}
+          
 							if(in_array(18, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/control') ?>">En proceso</a>
+            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/control') ?>">Requisiciones en proceso</a>
             <?php
 							}  
 							if(in_array(19, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/finalizados') ?>">Finalizados</a>
+            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/finalizados') ?>">Requisiciones Finalizadas</a>
             <?php
 							}
-               ?>
+               if(in_array(28, $submenus)){ ?>
+            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/bolsa') ?>"><?php echo API_URL ?>Aspirantes</a>
+            <?php
+							} ?>
           </div>
         </div>
       </li>

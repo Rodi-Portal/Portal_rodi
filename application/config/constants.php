@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+
+
+define('API_URL', 'http://localhost:8000/api/');
 /*
 |--------------------------------------------------------------------------
 | Display Debug backtrace

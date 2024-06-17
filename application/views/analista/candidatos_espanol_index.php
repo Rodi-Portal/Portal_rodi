@@ -133,7 +133,7 @@ echo $mdl_candidato; ?>
 var id = '<?php echo $this->uri->segment(3) ?>';
 var nombre_cliente = '<?php echo $cliente; ?>';
 var id_cliente = id;
-var url = 'http://localhost:8000/api/candidato-sync/' + id;
+var url = '<?php echo API_URL?>candidato-sync/' + id;
 var psico = '<?php echo base_url(); ?>_psicometria/';
 var beca_url = '<?php echo base_url(); ?>_beca/';
 let url_form = '<?php echo base_url() . "Form/external?fid="; ?>';
@@ -323,28 +323,28 @@ $(document).ready(function() {
     let urlFiltrada = ''
     if (opcion == 1) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = 'http://localhost:8000/api/candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
 
       changeDatatable(urlFiltrada);
     }
     if (opcion == 2) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = 'http://localhost:8000/api/candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     if (opcion == 3) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = 'http://localhost:8000/api/candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     if (opcion == 4) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = 'http://localhost:8000/api/candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     if (opcion == 5) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = 'http://localhost:8000/api/candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     console.log("🚀 ~ $ ~ urlFiltrada:", urlFiltrada + " " + id)
@@ -841,7 +841,7 @@ function changeDatatable(url) {
         "data": formattedData, // Usar los datos formateados
         "columns": [
           {
-            title: 'Candidato',
+            title: 'Candidate',
             data: 'candidato',
             "width": "15%",
             mRender: function(data, type, full) {
@@ -860,7 +860,7 @@ function changeDatatable(url) {
             }
           },
           {
-            title: 'Fechas',
+            title: 'Dates',
             data: 'fecha_alta',
             bSortable: false,
             "width": "15%",

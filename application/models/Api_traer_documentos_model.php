@@ -8,7 +8,7 @@ class Api_traer_documentos_model extends CI_Model{
     public function obtenerImagenExterna($directorio, $nombreArchivo)
     {
         // URL base de la plataforma externa
-        $baseUrl = 'http://localhost:8000/api/file/';
+        $baseUrl =  API_URL.'file/';
 
         // Concatenar el directorio y el nombre del archivo para formar la URL completa
         $url = rtrim($baseUrl, '/') . '/' . ltrim($directorio . '/' . $nombreArchivo, '/');

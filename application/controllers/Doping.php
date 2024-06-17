@@ -1289,7 +1289,7 @@ class Doping extends CI_Controller
         }
 
         // Primera solicitud cURL
-        $url_doping = 'http://localhost:8000/api/doping/' . $id_doping;
+        $url_doping = API_URL.'doping/' . $id_doping;
         $ch_doping = curl_init($url_doping);
         curl_setopt($ch_doping, CURLOPT_RETURNTRANSFER, true);
         $response_doping = curl_exec($ch_doping);
@@ -1336,9 +1336,9 @@ class Doping extends CI_Controller
 				$urlArea = '';
 				if ($doping->foraneo == 'SI') {
 						$nombre = "DOPING FORANEO";
-						$urlArea = 'http://localhost:8000/api/area/' . urlencode($nombre);
+						$urlArea = API_URL.'area/' . urlencode($nombre);
 				} else {
-						$urlArea = 'http://localhost:8000/api/area/' . urlencode($doping->id_area);
+						$urlArea = API_URL.'area/' . urlencode($doping->id_area);
 				}
 
 				$chArea = curl_init($urlArea);
