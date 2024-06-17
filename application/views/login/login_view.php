@@ -39,7 +39,7 @@
           <div class="card-body p-0">
             <div class="row">
               <div class="col-lg-6 d-none d-lg-block bg-login-image">
-                <img src="<?php echo base_url() ?>img/logoconNombre.jpg" alt="Talentsafe Control">
+                <img src="<?php echo base_url() ?>img/logoconNombre2.png" alt="Talentsafe Control">
               </div>
               <div class="col-lg-6">
                 <div class="p-5">

@@ -80,7 +80,7 @@
 /*  Login
 /*----------------------------------------*/
 .bg-login-image {
-  background-color: rgba(21, 61, 141, 0.97); /* Color de fondo azul marino */
+  background-color: rgba(0,46,130,255); /* Color de fondo azul marino */
   position: relative; /* Posición relativa para el contenedor */
 }
 

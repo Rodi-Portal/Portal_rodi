@@ -626,7 +626,7 @@ class Doping_model extends CI_Model{
         ->join('candidato as c','c.id = dop.id_candidato')
         ->join('antidoping_paquete as paq','paq.id = dop.id_antidoping_paquete')
         ->join('cliente as cl','cl.id = dop.id_cliente')
-        ->join('subclientes as sub','sub.id = dop.id_subcliente','left')
+        //->join('subclientes as sub','sub.id = dop.id_subcliente','left')
 				->join('datos_generales as DATSUB','sub.id_datos_generales = DATSUB.id',"left")
         ->join('proyecto as pro','pro.id = dop.id_proyecto','left')
         ->join('tipo_identificacion as ide','ide.id = dop.id_tipo_identificacion','left')
