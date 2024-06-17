@@ -1481,7 +1481,7 @@ class Client extends Custom_Controller
         $mail->Port = 465;
         $mail->addCC('rodicontrol@rodicontrol.com');
 
-        $mail->setFrom('rodicontrol@rodicontrol.com', 'Register form on RODICONTROL platform');
+        $mail->setFrom('rodicontrol@rodicontrol.com', 'Register form on TALENTSAFE CONTROL platform');
         $mail->addAddress($to);
         $mail->Subject = $subject;
         $mail->isHTML(true);

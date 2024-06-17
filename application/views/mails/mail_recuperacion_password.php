@@ -23,7 +23,7 @@
             <br>
 
             <div class="body-text" style="font-family:Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;text-align:left;color:black;">
-              This mail has been sent from RODICONTROL to recover your password.
+              This mail has been sent from TALENTSAFE CONTROL to recover your password.
               <br><br>
               Your access credentials are: <br>
               New password: <strong><?php echo $password; ?></strong><br>
