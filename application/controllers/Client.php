@@ -575,7 +575,7 @@ class Client extends Custom_Controller
                 print_r($data);
                 echo "<br>";
                 die(); */
-                $url = 'http://127.0.0.1:8000/api/candidatos';
+                $url =  API_URL.'candidatos';
 
                 $ch = curl_init($url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -821,7 +821,7 @@ class Client extends Custom_Controller
 
 								
 
-									$url = 'http://127.0.0.1:8000/api/candidatoconprevio';
+									$url = API_URL.'candidatoconprevio';
 
 
                 $ch = curl_init($url);

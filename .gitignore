@@ -12,7 +12,7 @@ application/session/*
 application/ci_sessions/*
 
 composer.lock
-
+application/config/constants.php
 application/config/config.php
 application/config/database.php
 
