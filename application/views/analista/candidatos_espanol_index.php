@@ -809,11 +809,33 @@ $(document).ready(function() {
     }
   })
 });
+function obtenerToken(url) {
+  $.ajax({
+    url: '<?php echo API_URL?>login', // Ajusta la URL según tu endpoint de login
+    type: 'POST',
+    dataType: 'json',
+    data: {
+      email: 'john.doe@example.com', // Aquí deberías pasar los datos de login
+      password: 'password123' // Y la contraseña correspondiente
+    },
+    success: function(response) {
+      var token = response.token; // Suponiendo que la respuesta devuelve el token de acceso
+      console.log('Token de acceso obtenido:', token);
+      // Llamar a la función para cargar los datos protegidos
+      changeDatatable(url, token);
+    },
+    error: function(xhr, status, error) {
+      console.error('Error al obtener el token:', error);
+      // Manejo de errores aquí
+    }
+  });
+}
 
-function changeDatatable(url) {
+function changeDatatable(url ) {
   $.ajax({
     url: url,
     dataType: 'json',
+   
     success: function(data) {
       // Normalizar los datos devueltos para que cada entrada tenga la misma estructura de objeto
       var formattedData = data.map(function(item) {
@@ -841,7 +863,7 @@ function changeDatatable(url) {
         "data": formattedData, // Usar los datos formateados
         "columns": [
           {
-            title: 'Candidate',
+            title: 'Candidato',
             data: 'candidato',
             "width": "15%",
             mRender: function(data, type, full) {
@@ -860,7 +882,7 @@ function changeDatatable(url) {
             }
           },
           {
-            title: 'Dates',
+            title: 'Fechas',
             data: 'fecha_alta',
             bSortable: false,
             "width": "15%",
