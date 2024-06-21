@@ -831,10 +831,10 @@ function obtenerToken(url) {
   });
 }
 
-function changeDatatable(url ) {
+function changeDatatable(url1) {
   console.log("🚀 ~ changeDatatable ~ url:", url)
   $.ajax({
-    url: url,
+    url: url1,
     dataType: 'json',
    
     success: function(data) {
