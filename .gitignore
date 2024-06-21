@@ -12,13 +12,12 @@ application/session/*
 application/ci_sessions/*
 
 composer.lock
-application/config/constants.php
+application/config/constants.php 
 application/config/config.php
 application/config/database.php
 
 .htaccess
 cpanel.yml
-
 
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
