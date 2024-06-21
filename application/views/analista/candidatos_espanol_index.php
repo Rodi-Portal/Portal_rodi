@@ -958,7 +958,7 @@ function changeDatatable(url ) {
           },
           {
             title: 'Exámenes',
-            data: 'id',
+            data: null,
             bSortable: false,
             "width": "15%",
             mRender: function(data, type, full) {
@@ -1001,25 +1001,26 @@ function changeDatatable(url ) {
                 if (full.medico == 1) {
 
                   if (full.idMedico != null) {
-                    if (full.conclusion != null && full.descripcion != null) {
+                   if (full.conclusion != null && full.descripcion != null) {
                       salida +=
                         '<b>Médico:</b> <div style="display: inline-flex;"><form id="formMedico' +
                         full.idMedico +
                         '" action="<?php echo base_url('Medico/crearPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar documento final" id="pdfMedico" class="icono_datatable icono_medico"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idMedico" id="idMedico' +
                         full.idMedico + '" value="' + full.idMedico +
-                        '"></form></div>';
+                        '"></form></div><hr>';
                     } else {
                       salida += "<b>Médico: En proceso</b>";
                     }
+                   
                   } else {
-                    salida += "<b>Médico: Pendiente</b>";
+                    salida += '<b>Médico: Pendiente</b><div style="display: inline-block;margin-left:3px;"> <br>';
                   }
 
 
 
-                  if (full.archivo_examen_medico != null && full.archivo_examen_medico !=
+                  /*if (full.archivo_examen_medico != null && full.archivo_examen_medico !=
                     "") {
-                    var carpeta_clinico = '<?php echo base_url(); ?>_clinico/';
+                    var carpeta_clinico = '< ?php echo base_url(); ?>_clinico/';
                     salida +=
                       '<b>Médico: </b> <a href="javascript:void(0)" data-toggle="tooltip" title="Subir examen medico" id="examen_medico" class="icono_datatable icono_medico"><i class="fas fa-upload"></i></a> <a href="' +
                       carpeta_clinico + full.archivo_examen_medico +
@@ -1030,7 +1031,7 @@ function changeDatatable(url ) {
                   }
                   if (full.psicometrico == 1) {
                     salida += '<hr>';
-                  }
+                  }*/
 
                 }
                 /*else {
@@ -1061,6 +1062,7 @@ function changeDatatable(url ) {
               return salida;
             }
           },
+          
           {
             title: 'Resultado',
             data: 'id',
@@ -1084,7 +1086,15 @@ function changeDatatable(url ) {
                       return '<a href="javascript:void(0)" data-toggle="tooltip" title="Finalizar proceso del candidato" id="final" class="fa-tooltip icono_datatable icono_finalizar"><i class="fas fa-user-check"></i></a> ' +
                         previo;
                     } else {
-                      if (full.tipo_conclusion > 0) {
+
+                      return '<div style="display: inline-block;"><form id="reporteForm' +
+                          data +
+                          '" action="" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
+                          icono_resultado +
+                          '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDFF" id="idCandidatoPDFF' +
+                          data + '" value="' + data + '"></form></div>' + previo;
+                          /* esto va dentro de action < ?php echo base_url('Candidato_Conclusion/createPDF'); ?>*/
+                     /* if (full.tipo_conclusion > 0) {
                         switch (full.status_bgc) {
                           case '1':
                           case '4':
@@ -1100,11 +1110,11 @@ function changeDatatable(url ) {
                         }
                         return '<div style="display: inline-block;"><form id="reporteForm' +
                           data +
-                          '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
+                          '" action="< ?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
                           icono_resultado +
                           '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
                           data + '" value="' + data + '"></form></div>' + previo;
-                      }
+                      }*/
                     }
                   }
                   if (full.id_cliente == 96) {
