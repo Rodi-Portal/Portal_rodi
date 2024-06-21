@@ -590,7 +590,7 @@ class Client extends Custom_Controller
                 $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
 
-								if ($response === false) {
+						if ($response === false) {
 									echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
 									return;
 							}

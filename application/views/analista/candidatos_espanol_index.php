@@ -1295,10 +1295,7 @@ function changeDatatable(url ) {
           timer: 2500
         })
       });
-      $('a[id^=pdfMedico]', row).bind('click', () => {
-        var id = data.idMedico;
-        $('#formMedico' + id).submit();
-      });
+     
       $("a#psicometria", row).bind('click', () => {
         $('#subirArchivoModal #titulo_modal').html(
           'Carga de archivo de psicometría del candidato: <br>' + data.candidato);

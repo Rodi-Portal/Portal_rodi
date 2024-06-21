@@ -134,7 +134,7 @@
             <?php
 							}
                if(in_array(28, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/bolsa') ?>"><?php echo API_URL ?>Aspirantes</a>
+            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/bolsa') ?>">Aspirantes</a>
             <?php
 							} ?>
           </div>
