@@ -5,7 +5,7 @@
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Cliente: <small><?php echo $cliente; ?></small></h1><br>
     <?php
-if ($this->uri->segment(3) != 2 && $this->uri->segment(3) != 205 && $this->uri->segment(3) != 233 && $this->uri->segment(3) != 250) {
+if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri->segment(3) != 233 && $this->uri->segment(3) != 250) {
     ?>
     <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">
       <span class="icon text-white-50">
@@ -832,6 +832,7 @@ function obtenerToken(url) {
 }
 
 function changeDatatable(url ) {
+  console.log("🚀 ~ changeDatatable ~ url:", url)
   $.ajax({
     url: url,
     dataType: 'json',
