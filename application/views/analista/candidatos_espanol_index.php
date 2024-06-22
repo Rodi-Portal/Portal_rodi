@@ -201,8 +201,7 @@ function modalRegistrarCandidato() {
 
 function registrarCandidato() {
   var datos = new FormData();
-  console.log("🚀 ~ registrarCandidato ~ id_cliente:", id_cliente)
-  console.log("🚀 ~ registrarCandidato ~ nombre del cliente:", nombre_cliente)
+
 
 
   datos.append('nombre', $("#nombre_registro").val());
@@ -251,7 +250,7 @@ function registrarCandidato() {
 
       var data = JSON.parse(res);
       if (data.codigo === 1) {
-        recargarTable();
+    
         $("#registroCandidatoModal").modal('hide');
         Swal.fire({
           position: 'center',
@@ -260,6 +259,7 @@ function registrarCandidato() {
           showConfirmButton: false,
           timer: 3500
         });
+        window.location.reload();
       } else {
         Swal.fire({
           icon: 'error',
@@ -320,7 +320,7 @@ $(document).ready(function() {
   $("#filtroListado").change(function() {
     var opcion = $(this).val();
 
-    let urlFiltrada = ''
+    let urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
     if (opcion == 1) {
       $('#tabla').DataTable().destroy();
       urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
