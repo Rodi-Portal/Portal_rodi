@@ -772,9 +772,16 @@ class Medico extends CI_Controller{
                 $id_medico = $this->input->get('id');
             }
             $datos = $this->medico_model->getDatosMedico($id_medico);
-            $data['fecha_medico'] = $this->formatoFecha($datos->edicion);
+
+            /*echo  '<pre>  aqui datos';
+            print_r($datos);
+            echo '</pre>';*/
+           
+            $data['fecha_medico'] = $this->formatoFecha($datos['edicion']);
             $data['info'] = $datos;
             $data['area'] = $this->area_model->getArea('MEDICO');
+
+        
             $html = $this->load->view('pdfs/analisis_medico_pdf',$data,TRUE);
             $mpdf->setAutoTopMargin = 'stretch';
             //$mpdf->AddPage();

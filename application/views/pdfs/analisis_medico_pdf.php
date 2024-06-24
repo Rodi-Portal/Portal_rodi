@@ -49,21 +49,21 @@
 
     <p>A quien corresponda:</p>
 
-    <p class="centrado">El que suscribe <?php echo $area->responsable ?> acreditado para ejercer la profesión<br> con cédula profesional número 664579.</p><br>
+    <p class="centrado">El que suscribe <?php echo $area['responsable'] ?> acreditado para ejercer la profesión<br> con cédula profesional número 664579.</p><br>
 
     <p class="centrado"><b>CERTIFICA A:</b></p>
 
-    <p class="centrado"><b><?php echo strtoupper($info->candidato) ?></b></p>
+    <p class="centrado"><b><?php echo strtoupper($info['candidato']) ?></b></p>
 
-    <p class="centrado"><?php echo $info->genero ?> de <b><?php echo $info->edad ?></b> años como persona que <?php echo $info->descripcion ?>.</p><br>
+    <p class="centrado"><?php echo $info['genero'] ?> de <b><?php echo $info['edad']?></b> años como persona que <?php echo $info['descripcion'] ?>.</p><br>
 
     <p class="centrado subrayado"><b>Conclusión</b></p>
-    <p class="centrado"><b><?php echo $info->conclusion ?>.</b></p>
+    <p class="centrado"><b><?php echo $info['conclusion']?>.</b></p>
 
     <p class="centrado">Agradeciendo de antemano la atención, se extiende el presente certificado para los fines que convengan al interesado.</p><br>
 
     <?php 
-    $firma = base_url().'img/'.$area->firma;
+    $firma = base_url().'img/'.$area['firma'];
      ?>
 
     <div class="centrado">
@@ -72,8 +72,8 @@
     </div> 
 
     <p class="centrado"><b>Atentamente</b></p>
-    <p class="centrado"><?php echo $area->responsable ?></p>
-    <p class="centrado">Cédula profesional número <?php echo $area->cedula ?></p>
+    <p class="centrado"><?php echo $area['responsable']?></p>
+    <p class="centrado">Cédula profesional número <?php echo $area['cedula'] ?></p>
 
 
 
@@ -88,35 +88,35 @@
             <table class="table">
               <tr>
                 <td colspan="2">
-                    <p>Nombre: <b><?php echo strtoupper($info->candidato) ?></b></p>
+                    <p>Nombre: <b><?php echo strtoupper($info['candidato']) ?></b></p>
                 </td>
                 <td>
-                    <p>Edad: <b><?php echo $info->edad?></b></p>
+                    <p>Edad: <b><?php echo $info['edad']?></b></p>
                 </td>
                 <td>
-                    <p>Género: <b><?php echo $info->genero ?></b></p>
+                    <p>Género: <b><?php echo $info['genero']?></b></p>
                 </td>
               </tr>
               <tr>
                 <td colspan="2">
-                    <p>Fecha de nacimiento: <b><?php echo $info->fecha_nacimiento ?></b></p>
+                    <p>Fecha de nacimiento: <b><?php echo $info['fecha_nacimiento']?></b></p>
                 </td>
                 <td colspan="2">
-                    <p>Telefono de emergencia: <b><?php echo $info->telefono_emergencia ?></b></p>
+                    <p>Telefono de emergencia: <b><?php echo $info['telefono_emergencia'] ?></b></p>
                 </td>
               </tr>
               <tr>
                   <td colspan="2">
-                      <p> Avisar a: <b><?php echo $info->avisar_a ?></b></p>
+                      <p> Avisar a: <b><?php echo $info['avisar_a'] ?></b></p>
                   </td>
                   <td>
-                      <p> Estado civil: <b><?php echo $info->estado_civil; ?></b></p>
+                      <p> Estado civil: <b><?php echo $info['estado_civil']; ?></b></p>
                   </td>
                   <td>
                       <p> Escolaridad: <b>
                         <?php
 
-                        switch($info->id_grado_estudio) {
+                        switch($info['id_grado_estudio']) {
                                 case 1:
                                 echo 'Primaria';
                                 break;
@@ -162,35 +162,35 @@
             <table class="table">
                 <tr>
                     <td>
-                       <p>Diabetes: <b><?php echo $info->diabetes ?></b></p>
+                       <p>Diabetes: <b><?php echo $info['diabetes']?></b></p>
                     </td>
                     <td>
-                       <p>Hipertensión: <b><?php echo $info->hipertension ?></b></p>
+                       <p>Hipertensión: <b><?php echo $info['hipertension'] ?></b></p>
                     </td>
                     <td>
-                        <p>Cáncer: <b><?php echo $info->cancer ?></b></p>
+                        <p>Cáncer: <b><?php echo $info['cancer'] ?></b></p>
                     </td>
                     <td>
-                        <p>Cardiopatias: <b><?php echo $info->cardiopatias ?></b></p>
+                        <p>Cardiopatias: <b><?php echo $info['cardiopatias'] ?></b></p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p>Enfermedades pulmonares: <b><?php echo $info->pulmonares ?></b></p>
+                        <p>Enfermedades pulmonares: <b><?php echo $info['pulmonares'] ?></b></p>
                     </td>
                     <td>
-                        <p>Enfermedades Renales: <b><?php echo $info->renales ?></b></p>
+                        <p>Enfermedades Renales: <b><?php echo $info['renales'] ?></b></p>
                     </td>
                     <td colspan="2">
-                        <p>Enfermades psiquiátricas: <b><?php echo $info->psiquiatricas ?></b></p>
+                        <p>Enfermades psiquiátricas: <b><?php echo $info['psiquiatricas'] ?></b></p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p>Tipo de sangre: <b><?php echo $info->tipo_sangre ?></b></p>
+                        <p>Tipo de sangre: <b><?php echo $info['tipo_sangre']?></b></p>
                     </td>
                     <td colspan="3">
-                        <p>Enfermades: <b><?php echo $info->cuales_antecedentes_familiares ?></b></p>
+                        <p>Enfermades: <b><?php echo $info['cuales_antecedentes_familiares'] ?></b></p>
                     </td>
                 </tr>
             </table>
@@ -202,15 +202,15 @@
             <table class="table">
                 <tr>
                    <td colspan="2">
-                       <p>Tabaco: <b><?php echo $info->tabaco ?></b></p>
+                       <p>Tabaco: <b><?php echo $info['tabaco'] ?></b></p>
                    </td>
                    <td colspan="2">
                        <p>Exposición al tabaco: <b>
                         <?php
-                        if($info->tabaco_frecuencia != 'N/A'){
+                        if($info['tabaco_frecuencia'] != 'N/A'){
                             $unidad;
-                            $info->tabaco_cantidad > 1? $unidad = 'unidades':$unidad = 'unidad';
-                            $resultadoStr = $info->tabaco_cantidad . " " . $unidad . " " . strtolower ($info->tabaco_frecuencia);
+                            $info['tabaco_cantidad'] > 1? $unidad = 'unidades':$unidad = 'unidad';
+                            $resultadoStr = $info['tabaco_cantidad'] . " " . $unidad . " " . strtolower ($info['tabaco_frecuencia']);
                             echo $resultadoStr;
                         }else
                             echo 'N/A';
@@ -220,15 +220,15 @@
                 </tr>
                 <tr>
                    <td colspan="2">
-                       <p>Alcohol: <b><?php echo $info->alcohol ?></b></p>
+                       <p>Alcohol: <b><?php echo $info['alcohol'] ?></b></p>
                    </td>
                    <td colspan="2">
                        <p>Exposición al alcohol: <b>
                         <?php
-                        if($info->alcohol_frecuencia != 'N/A'){
+                        if($info['alcohol_frecuencia'] != 'N/A'){
                             $unidad;
-                            $info->alcohol_cantidad > 1? $unidad = 'unidades':$unidad = 'unidad';
-                            $resultadoStr = $info->alcohol_cantidad . " " . $unidad . " " . strtolower ($info->alcohol_frecuencia);
+                            $info['alcohol_cantidad'] > 1? $unidad = 'unidades':$unidad = 'unidad';
+                            $resultadoStr = $info['alcohol_cantidad']. " " . $unidad . " " . strtolower ($info['alcohol_frecuencia']);
                             echo $resultadoStr;
                         }else
                             echo 'N/A';
@@ -238,21 +238,21 @@
                 </tr>
                 <tr>
                     <td>
-                        <p>Dogras: <b><?php echo $info->droga ?></b></p>
+                        <p>Dogras: <b><?php echo $info['droga'] ?></b></p>
                     </td>
                     <td>
-                        <p>Tipo de droga: <b><?php echo $info->droga_tipo ?></b></p>
+                        <p>Tipo de droga: <b><?php echo $info['droga_tipo'] ?></b></p>
                     </td>
                     <td>
-                        <p>Deporte: <b><?php echo $info->deporte ?></b></p>
+                        <p>Deporte: <b><?php echo $info['deporte'] ?></b></p>
                     </td>
                     <td>
-                        <p>Cuál: <b><?php echo $info->deporte_cual ?></b></p>
+                        <p>Cuál: <b><?php echo $info['deporte_cual'] ?></b></p>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <p>Alimentacion: <b><?php echo $info->alimentacion ?></b></p>
+                        <p>Alimentacion: <b><?php echo $info['alimentacion'] ?></b></p>
                     </td>
                 </tr>
             </table>
@@ -264,65 +264,65 @@
             <table class="table">
                 <tr>
                     <td>
-                        <p>Quirúrgicos: <b><?php echo $info->quirurgicos ?></b></p>
+                        <p>Quirúrgicos: <b><?php echo $info['quirurgicos'] ?></b></p>
                     </td>
                     <td>
-                        <p>¿Hace cuánto?: <b><?php echo $info->quirurgicos_hace_cuanto ?></b></p>
+                        <p>¿Hace cuánto?: <b><?php echo $info['quirurgicos_hace_cuanto']?></b></p>
                     </td>
                     <td>
-                        <p>Descripción: <b><?php echo $info->quirurgicos_cual ?></b></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>Internamientos: <b><?php echo $info->internamientos ?></b></p>
-                    </td>
-                    <td>
-                        <p>¿Hace cuánto?: <b><?php echo $info->internamientos_hace_cuanto ?></b></p>
-                    </td>
-                    <td>
-                        <p>Descripción: <b><?php echo $info->internamientos_porque ?></b></p>
+                        <p>Descripción: <b><?php echo $info['quirurgicos_cual']?></b></p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p>Transfuciones: <b><?php echo $info->transfusiones ?></b></p>
+                        <p>Internamientos: <b><?php echo $info['internamientos'] ?></b></p>
                     </td>
                     <td>
-                        <p>¿Hace cuánto?: <b><?php echo $info->transfusiones_hace_cuanto ?></b></p>
+                        <p>¿Hace cuánto?: <b><?php echo $info['internamientos_hace_cuanto'] ?></b></p>
                     </td>
                     <td>
-                        <p>Descripción: <b><?php echo $info->transfusiones_porque ?></b></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>Fracturas: <b><?php echo $info->fracturas ?></b></p>
-                    </td>
-                    <td>
-                        <p>Luxaciones: <b><?php echo $info->luxaciones ?></b></p>
-                    </td>
-                    <td>
-                        <p>Esguinces: <b><?php echo $info->esguinces ?></b></p>
+                        <p>Descripción: <b><?php echo $info['internamientos_porque'] ?></b></p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p>Traumatismo: <b><?php echo $info->traumatismo ?></b></p>
+                        <p>Transfuciones: <b><?php echo $info['transfusiones'] ?></b></p>
                     </td>
                     <td>
-                        <p>Hernias: <b><?php echo $info->hernia ?></b></p>
+                        <p>¿Hace cuánto?: <b><?php echo $info['transfusiones_hace_cuanto'] ?></b></p>
                     </td>
                     <td>
-                        <p>Lesiones en columna: <b><?php echo $info->lesiones_columna ?></b></p>
+                        <p>Descripción: <b><?php echo $info['transfusiones_porque']?></b></p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p>Alergias: <b><?php echo $info->alergias ?></b></p>
+                        <p>Fracturas: <b><?php echo $info['fracturas'] ?></b></p>
+                    </td>
+                    <td>
+                        <p>Luxaciones: <b><?php echo $info['luxaciones']?></b></p>
+                    </td>
+                    <td>
+                        <p>Esguinces: <b><?php echo $info['esguinces']?></b></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Traumatismo: <b><?php echo $info['traumatismo'] ?></b></p>
+                    </td>
+                    <td>
+                        <p>Hernias: <b><?php echo $info['hernia'] ?></b></p>
+                    </td>
+                    <td>
+                        <p>Lesiones en columna: <b><?php echo $info['lesiones_columna'] ?></b></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>Alergias: <b><?php echo $info['alergias']?></b></p>
                     </td>
                     <td colspan="2">
-                        <p>Alergias a que: <b><?php echo $info->alergias_cual ?></b></p>
+                        <p>Alergias a que: <b><?php echo $info['alergias_cual']?></b></p>
                     </td>
                 </tr>
             </table>
@@ -334,41 +334,41 @@
             <table class="table">
                 <tr>
                    <td>
-                       <p>Estatura: <b><?php echo $info->estatura ?> mts.</b></p>
+                       <p>Estatura: <b><?php echo $info['estatura'] ?> mts.</b></p>
                    </td>
                    <td>
-                       <p>Peso: <b><?php echo $info->peso ?> kg.</b></p>
+                       <p>Peso: <b><?php echo $info['peso'] ?> kg.</b></p>
                    </td>
                    <td>
-                       <p>IMC: <b><?php echo $info->imc ?> %</b></p>
+                       <p>IMC: <b><?php echo $info['imc'] ?> %</b></p>
                    </td>
                    <td>
-                       <p>Grasa Muscular: <b><?php echo $info->grasa ?> %</b></p>
+                       <p>Grasa Muscular: <b><?php echo $info['grasa'] ?> %</b></p>
                    </td>
                 </tr>
                 <tr>   
                    <td>
-                       <p>Musculo: <b><?php echo $info->musculo ?> %</b></p>
+                       <p>Musculo: <b><?php echo $info['musculo'] ?> %</b></p>
                    </td>
                    <td>
-                       <p>Calorias: <b><?php echo $info->calorias ?> cal.</b></p>
+                       <p>Calorias: <b><?php echo $info['calorias'] ?> cal.</b></p>
                    </td>
                    <td>
-                       <p>Edad Met: <b><?php echo $info->edad_metabolica ?></b></p>
+                       <p>Edad Met: <b><?php echo $info['edad_metabolica'] ?></b></p>
                    </td>
                    <td>
-                       <p>Grasa Viceral: <b><?php echo $info->grasa_visceral ?> %</b></p>
+                       <p>Grasa Viceral: <b><?php echo $info['grasa_visceral'] ?> %</b></p>
                    </td>
                 </tr>
                 <tr>
                    <td>
-                       <p>Presion: <b><?php echo $info->presion ?> mm/Hg</b></p>
+                       <p>Presion: <b><?php echo $info['presion'] ?> mm/Hg</b></p>
                    </td>
                    <td>
-                       <p>F.C.: <b><?php echo $info->frecuencia_cardiaca ?></b></p>
+                       <p>F.C.: <b><?php echo $info['frecuencia_cardiaca'] ?></b></p>
                    </td>
                    <td>
-                       <p>Glucosa: <b><?php echo $glucosa = ($info->glucosa != 0)? $info->glucosa.' mg/dl' : 'Desconocida'; ?> </b></p>
+                       <p>Glucosa: <b><?php echo $glucosa = ($info['glucosa']!= 0)? $info['glucosa'].' mg/dl' : 'Desconocida'; ?> </b></p>
                    </td>
                 </tr>
             </table>
@@ -380,16 +380,16 @@
             <table class="table">
                 <tr>
                    <td>
-                       <p>Ojo derecho: <b><?php echo $info->vision_derecha ?></b></p>
+                       <p>Ojo derecho: <b><?php echo $info['vision_derecha'] ?></b></p>
                    </td>
                    <td>
-                       <p>Ojo izquierdo: <b><?php echo $info->vision_izquierda ?></b></p>
+                       <p>Ojo izquierdo: <b><?php echo $info['vision_izquierda']?></b></p>
                    </td>
                    <td>
-                       <p>Colores: <b><?php echo $info->vision_color ?></b></p>
+                       <p>Colores: <b><?php echo $info['vision_color'] ?></b></p>
                    </td>
                    <td>
-                       <p>Usa lentes: <b><?php echo $info->lentes ?></b></p>
+                       <p>Usa lentes: <b><?php echo $info['lentes'] ?></b></p>
                    </td>
                 </tr>
             </table>

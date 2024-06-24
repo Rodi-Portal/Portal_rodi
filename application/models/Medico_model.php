@@ -63,15 +63,51 @@ class Medico_model extends CI_Model{
         }
     }
     function getDatosMedico($id_medico){
-        $this->db
-        ->select("m.*, m.imagen_historia_clinica as imagen, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, c.edad, c.genero, c.fecha_nacimiento, c.estado_civil, id_grado_estudio")
-        ->from('medico as m')
-        ->join("candidato as c","m.id_candidato = c.id")
-        ->where('m.id', $id_medico);
+      
+        // URL de la API de Laravel
+        $url = API_URL.'medico/' . $id_medico;
+         
+    
 
-        $consulta = $this->db->get();
-        $resultado = $consulta->row();
-        return $resultado;
+        // Inicializar cURL
+        $ch = curl_init($url);
+
+        // Configurar opciones de cURL
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ]);
+
+        // Ejecutar la solicitud cURL
+        $response = curl_exec($ch);
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        // Verificar errores
+        if ($response === false) {
+            $error = curl_error($ch);
+            echo "Error en la solicitud cURL: " . $error;
+        }
+
+        // Cerrar cURL
+        curl_close($ch);
+
+        // Procesar la respuesta
+        if ($http_status == 200) {
+            // La solicitud fue exitosa, procesa la respuesta
+            $datosMedico = json_decode($response, true);
+            // Hacer algo con $datosMedico
+        
+          return $datosMedico;
+        
+            
+        } else {
+            // Manejar otros códigos de estado HTTP
+            echo "Error en la solicitud HTTP: Código " . $http_status;
+            return[];
+
+        }
+       
     }
     function checkExamenMedico($id_candidato){
         $this->db
