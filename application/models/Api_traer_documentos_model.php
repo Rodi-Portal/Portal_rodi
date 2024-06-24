@@ -13,8 +13,7 @@ class Api_traer_documentos_model extends CI_Model{
         // Concatenar el directorio y el nombre del archivo para formar la URL completa
         $url = rtrim($baseUrl, '/') . '/' . ltrim($directorio . '/' . $nombreArchivo, '/');
 
-         echo $url;
-         die();
+         
         // Iniciar sesión cURL
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -22,6 +21,7 @@ class Api_traer_documentos_model extends CI_Model{
         // Ejecutar la solicitud y obtener la respuesta
         $response = curl_exec($ch);
 
+     
         // Verificar si ocurrió un error durante la ejecución de cURL
         if ($response === false) {
             $error = curl_error($ch);
