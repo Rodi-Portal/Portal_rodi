@@ -1332,7 +1332,7 @@ class Doping extends CI_Controller
 		  $resultado2 =	$this->api_traer_documentos_model->guardarImagen($resultado,$nombreArchivo,$directorio);
 
 				
-// Segunda solicitud cURL para obtener los datos del área
+         // Segunda solicitud cURL para obtener los datos del área
 				$urlArea = '';
 				if ($doping->foraneo == 'SI') {
 						$nombre = "DOPING FORANEO";
@@ -1405,6 +1405,10 @@ class Doping extends CI_Controller
 
         $mpdf->Output('doping_' . $doping->codigo_prueba . '_' . $doping->nombre . '_' . $doping->paterno . '.pdf', 'D'); // opens in browser
     }
+
+
+
+    
     public function crearPDFIngles()
     {
         $mpdf = new \Mpdf\Mpdf();
