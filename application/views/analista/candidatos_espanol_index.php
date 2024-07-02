@@ -1097,12 +1097,12 @@ function changeDatatable(url1) {
 
                       return '<div style="display: inline-block;"><form id="reporteForm' +
                         data +
-                        '" action="" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
+                        '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
                         icono_resultado +
-                        '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDFF" id="idCandidatoPDFF' +
+                        '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
                         data + '" value="' + data + '"></form></div>' + previo;
                       /* esto va dentro de action < ?php echo base_url('Candidato_Conclusion/createPDF'); ?>*/
-                      /* if (full.tipo_conclusion > 0) {
+                      if (full.tipo_conclusion > 0) {
                          switch (full.status_bgc) {
                            case '1':
                            case '4':
@@ -1118,11 +1118,11 @@ function changeDatatable(url1) {
                          }
                          return '<div style="display: inline-block;"><form id="reporteForm' +
                            data +
-                           '" action="< ?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
+                           '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
                            icono_resultado +
                            '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
                            data + '" value="' + data + '"></form></div>' + previo;
-                       }*/
+                       }
                     }
                   }
                   if (full.id_cliente == 96) {

@@ -1,5 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+function handleNull($value) {
+  return isset($value) ? $value : '';
+}
 
 class Candidato_Conclusion extends CI_Controller{
 
@@ -516,6 +519,9 @@ class Candidato_Conclusion extends CI_Controller{
     );
     echo json_encode($msj);
   }
+
+
+ 
   function createPDF(){
     //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
     $mpdf = new \Mpdf\Mpdf();
@@ -524,62 +530,93 @@ class Candidato_Conclusion extends CI_Controller{
     $id_usuario = $this->session->userdata('id');
     $id_candidato = $_POST['idCandidatoPDF'];
 
+  
+
+    
+    $url = API_URL."report/{$id_candidato}";
+    
+    $options = [
+        "http" => [
+            "method" => "GET",
+            "header" => "Content-Type: application/json\r\n"
+        ]
+    ];
+    
+    $context = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+    
+    // Decodifica la respuesta JSON
+  
+   $data1 = json_decode($response, true);
+    
+   // Accede a los datos específicos
+  
+   // Utiliza los datos como necesites
+
+   $data = $data1 ;
+
+ 
+   /*
+   
+
     //* Detalles del candidato en tabla candidato
-    $data['info'] = $this->candidato_model->getDetalles($id_candidato);
+    $data['info'] = $this->candidato_model->getDetalles($id_candidato);//
     //* Se obtienen los registros de los archivos asignado al candidato
     $data['docs'] = $this->candidato_model->getDocumentacion($id_candidato);
     //* Se obtienen las secciones registradas del candidato de acuerdo al estudio/proceso/proyecto asignado
-    $data['secciones'] = $this->candidato_seccion_model->getSecciones($id_candidato);
+    $data['secciones'] = $this->candidato_seccion_model->getSecciones($id_candidato);//
     //* Examenes asignados al candidato
-    $data['pruebas'] = $this->candidato_model->getExamenes($id_candidato);
+    $data['pruebas'] = $this->candidato_model->getExamenes($id_candidato);//
     //* Se obtiene la informacion de doping en caso de asignacion al candidato
-    $data['doping'] = $this->candidato_model->getDoping($id_candidato);
+    $data['doping'] = $this->candidato_model->getDoping($id_candidato);//
     //* Se obtiene la verificación de documentos de la tabla verificacion_documento
-    $data['verDoc'] = $this->candidato_documentacion_model->getById($id_candidato);
+    $data['verDoc'] = $this->candidato_documentacion_model->getById($id_candidato);//
     //* Se obtiene la experiencia academica
-    $data['academico'] = $this->candidato_estudio_model->getHistorialById($id_candidato);
-    $data['verMayoresEstudios'] = $this->candidato_estudio_model->getMayorById($id_candidato);
-    $data['verificacionEstudios'] = $this->candidato_estudio_model->getVerificacion($id_candidato);
-    $data['verificacionDetallesEstudios'] = $this->candidato_estudio_model->getDetalleVerificacion($id_candidato);
+    $data['academico'] = $this->candidato_estudio_model->getHistorialById($id_candidato);//
+    $data['verMayoresEstudios'] = $this->candidato_estudio_model->getMayorById($id_candidato);//
+    $data['verificacionEstudios'] = $this->candidato_estudio_model->getVerificacion($id_candidato);//
+    $data['verificacionDetallesEstudios'] = $this->candidato_estudio_model->getDetalleVerificacion($id_candidato);//
     //* Se obtienen los datos sociales
-    $data['sociales'] = $this->candidato_social_model->getById($id_candidato);
+    $data['sociales'] = $this->candidato_social_model->getById($id_candidato);//
     //* Se obtiene la información familiar 
-    $data['familia'] = $this->candidato_familiar_model->getById($id_candidato);
+    $data['familia'] = $this->candidato_familiar_model->getById($id_candidato);//
     //* Se obtienen los contactos del candidato que laboran en el mismo lugar
-    $data['contacto_trabajo'] = $this->candidato_laboral_model->getContactosMismoTrabajo($id_candidato);
+    $data['contacto_trabajo'] = $this->candidato_laboral_model->getContactosMismoTrabajo($id_candidato);//
     //* Se obtienen los datos financieros
-    $data['finanzas'] = $this->candidato_finanzas_model->getById($id_candidato);
+    $data['finanzas'] = $this->candidato_finanzas_model->getById($id_candidato);//
     //* Se obtiene el historial de empleos
-    $data['empleos'] = $this->candidato_laboral_model->getHistorialLaboralById($id_candidato);
-    $data['nom'] = $this->candidato_laboral_model->getNoMencionadosById($id_candidato);
-    $data['laborales'] = $this->candidato_laboral_model->getAntecedentesLaboralesById($id_candidato);
-    $data['contactos'] = $this->candidato_laboral_model->getObservacionesContactoById($id_candidato);
-    $data['verificacionEmpleos'] = $this->candidato_laboral_model->getVerificacion($id_candidato);
-    $data['verificacionDetallesEmpleos'] = $this->candidato_laboral_model->getDetalleVerificacion($id_candidato);
+    $data['empleos'] = $this->candidato_laboral_model->getHistorialLaboralById($id_candidato);//
+    $data['nom'] = $this->candidato_laboral_model->getNoMencionadosById($id_candidato);//
+    $data['laborales'] = $this->candidato_laboral_model->getAntecedentesLaboralesById($id_candidato);//
+
+    $data['contactos'] = $this->candidato_laboral_model->getObservacionesContactoById($id_candidato);//
+
+    $data['verificacionEmpleos'] = $this->candidato_laboral_model->getVerificacion($id_candidato);//
+    $data['verificacionDetallesEmpleos'] = $this->candidato_laboral_model->getDetalleVerificacion($id_candidato);//
     //* GAPS o periodos inactivos laborales
-    $data['gaps'] = $this->candidato_model->getGAPS($id_candidato);
+    $data['gaps'] = $this->candidato_model->getGAPS($id_candidato);//
     //* Referencias personales
-    $data['refPersonal'] = $this->candidato_ref_personal_model->getById($id_candidato);
+    $data['refPersonal'] = $this->candidato_ref_personal_model->getById($id_candidato);//
     //* Conclusiones de la tabla candidato_finalizado
-    $data['finalizado'] = $this->candidato_conclusion_model->getFinalizadoById($id_candidato);
-    $data['conclusion'] = $this->candidato_conclusion_model->getBGCById($id_candidato);
+    $data['finalizado'] = $this->candidato_conclusion_model->getFinalizadoById($id_candidato);//
+    $data['conclusion'] = $this->candidato_conclusion_model->getBGCById($id_candidato); //
     //* Informacion de vivienda
-    $data['vivienda'] = $this->candidato_vivienda_model->getById($id_candidato);
+    $data['vivienda'] = $this->candidato_vivienda_model->getById($id_candidato);//
     //* Referencias vecinales
-    $data['refVecinal'] = $this->candidato_ref_vecinal_model->getById($id_candidato);
+    $data['refVecinal'] = $this->candidato_ref_vecinal_model->getById($id_candidato);//
     //* Información de la investigación legal
-    $data['legal'] = $this->candidato_model->getInvestigacionLegal($id_candidato);
+    $data['legal'] = $this->candidato_model->getInvestigacionLegal($id_candidato);//
     //* Información del estado de salud
-    $data['salud'] = $this->candidato_salud_model->getById($id_candidato);
+    $data['salud'] = $this->candidato_salud_model->getById($id_candidato);//
     //* Información de servicios públicos
     $data['servicios'] = $this->candidato_servicio_model->getById($id_candidato);
     //* Información de historial crediticio
-    $data['credito'] = $this->candidato_model->checkCredito($id_candidato);
+    $data['credito'] = $this->candidato_model->checkCredito($id_candidato);//
     //* Busquedas globales con Refinitiv World check
-    $data['global_searches'] = $this->candidato_global_model->getById($id_candidato);
+    $data['global_searches'] = $this->candidato_global_model->getById($id_candidato);//
     //* Verificacion criminal
-    $data['verificacionCriminal'] = $this->criminal_model->getVerificacion($id_candidato);
-    $data['verificacionDetallesCriminal'] = $this->criminal_model->getDetalleVerificacion($id_candidato);
+    $data['verificacionCriminal'] = $this->criminal_model->getVerificacion($id_candidato);//
+    $data['verificacionDetallesCriminal'] = $this->criminal_model->getDetalleVerificacion($id_candidato);//
     //* Referencias de clientes
     $data['refClientes'] = $this->referencia_cliente_model->getById($id_candidato);
     //* Empresa de candidato
@@ -587,29 +624,48 @@ class Candidato_Conclusion extends CI_Controller{
     //* Referencias academicas
     $data['refAcademicas'] = $this->candidato_ref_academica_model->getById($id_candidato);
 		//* Referencias profesionales
-    $data['refProfesionales'] = $this->referencia_profesional_model->getById($id_candidato);
+    $data['refProfesionales'] = $this->referencia_profesional_model->getById($id_candidato);*/
 
-    //* Se checa si el cliente en cuestion es en ingles o espanol
-    $idioma = ($data['info']->ingles == 0)? 'espanol' : 'ingles';
-    $data['idioma'] = $idioma;
-    //? Revisar si $info->fecha_fin es la fecha edicion en lugar de la creacion de la finalizacion del candidato 
-    if($data['info']->fecha_fin != null){
-      $data['fecha_finalizado'] = fechaTexto($data['info']->fecha_fin,$idioma);
-    }
-    if($data['info']->fecha_bgc != null){
-      $data['fecha_finalizado'] = fechaTexto($data['info']->fecha_bgc,$idioma);
-    }
-    //* Extracción de detalles del candidato
-    if($data['info']->fecha_fin != null){
-      $fecha_fin = formatoFechaEspanol($data['info']->fecha_fin);
-    }
-    if($data['info']->fecha_bgc != null){
-      $fecha_fin = formatoFechaEspanol($data['info']->fecha_bgc);
-    }
-    $f_alta = formatoFechaEspanol($data['info']->fecha_alta);
+
+    foreach ($data as $key => $value) {
+      if (is_array($value)) {
+          foreach ($value as $subKey => $subValue) {
+              $data[$key][$subKey] = handleNull($subValue);
+          }
+      } else {
+          $data[$key] = handleNull($value);
+      }
+  }
+ /* echo'<pre>';
+  //echo $data['sociales']['sindical'];
+  print_r($data);
+  echo'</pre>';
+  die();*/
+  // Checar si el cliente en cuestión es en inglés o español
+  $idioma = (isset($data['info']['ingles']) && $data['info']['ingles'] == 0) ? 'espanol' : 'ingles';
+  $data['idioma'] = $idioma;
+
+  // Revisar si $info->fecha_fin es la fecha edición en lugar de la creación de la finalización del candidato
+  if (isset($data['info']['fecha_fin']) && $data['info']['fecha_fin'] != null) {
+      $data['fecha_finalizado'] = fechaTexto($data['info']['fecha_fin'], $idioma);
+  }
+  if (isset($data['info']['fecha_bgc']) && $data['info']['fecha_bgc'] != null) {
+      $data['fecha_finalizado'] = fechaTexto($data['info']['fecha_bgc'], $idioma);
+  }
+
+  // Extracción de detalles del candidato
+  if (isset($data['info']['fecha_fin']) && $data['info']['fecha_fin'] != null) {
+      $fecha_fin = formatoFechaEspanol($data['info']['fecha_fin']);
+  }
+  if (isset($data['info']['fecha_bgc']) && $data['info']['fecha_bgc'] != null) {
+      $fecha_fin = formatoFechaEspanol($data['info']['fecha_bgc']);
+  }
+  if (isset($data['info']['fecha_alta'])) {
+      $f_alta = formatoFechaEspanol($data['info']['fecha_alta']);
+  }
 
     //* Filtro de usuario
-    $tipo_usuario = $this->session->userdata('tipo');
+   /* $tipo_usuario = $this->session->userdata('tipo');
     if($tipo_usuario == 1){
       $usuario = $this->usuario_model->getDatosUsuarioInterno($id_usuario);
     }
@@ -619,46 +675,21 @@ class Candidato_Conclusion extends CI_Controller{
     if($tipo_usuario == 4){
       $usuario = $this->usuario_model->getDatosUsuarioSubcliente($id_usuario);
     }
-
+    */
+   
     //* Vista PDF del reporte
     $html = $this->load->view('pdfs/reporte_espanol_pdf',$data,TRUE);
-    if($data['info']->status_bgc != 0){
+    /*echo $html;
+    exit;*/
+    if($data['info']['status_bgc'] != 0){
       //* Configuraciones del mPDF
       $mpdf->setAutoTopMargin = 'stretch';
       $mpdf->AddPage();
       //TODO: Organizar encabezados y pies de pagina de acuerdo al cliente mediante BD
-      if($data['info']->id_cliente == 39){
-        $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="'.base_url().'img/logo_talink.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-      }
-      if($data['info']->id_cliente == 7){
-        $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="'.base_url().'img/logo_gentex.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-      }
-      if($data['info']->id_cliente == 16){
+     
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
-      }
-      if($data['info']->id_cliente == 159){
-        $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:100px;" src="'.base_url().'img/logo_pisa.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">PISA FARMACÉUTICA</p></div><div style="position: absolute; right: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Av. España No. 1840 Colonia Moderna C.P. 44190 Guadalajara, Jalisco. Tel. 33 3678 Fax: 33 3810 Lada sin costo: 800 627</p></div>');
-      } 
-      if($data['info']->id_cliente == 172){
-        $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Request Date: '.$f_alta.'<br>Release Date: '.$fecha_fin.'</div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
-      }  
-      if($data['info']->id_cliente == 190){
-        $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="'.base_url().'img/logo_gesthion.jpg"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-      } 
-      if($data['info']->id_cliente == 209){
-        $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="'.base_url().'img/logo_velazquez.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-      } 
-      if($data['info']->id_cliente != 7 && $data['info']->id_cliente != 16 && $data['info']->id_cliente != 39 && $data['info']->id_cliente != 159 && $data['info']->id_cliente != 172 && $data['info']->id_cliente != 190 && $data['info']->id_cliente != 209){
-        $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
-      }  
+        
     }
     //*Cifrar pdf
     $nombreArchivo = substr( md5(microtime()), 1, 12);
@@ -697,7 +728,9 @@ class Candidato_Conclusion extends CI_Controller{
     //   );
     //   $this->candidato_conclusion_model->addReporte($archivo);
     // } 
+  
   }
+  
   function recreatePDF(){
     //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
     $mpdf = new \Mpdf\Mpdf();
@@ -808,35 +841,35 @@ class Candidato_Conclusion extends CI_Controller{
       $mpdf->setAutoTopMargin = 'stretch';
       $mpdf->AddPage();
       //TODO: Organizar encabezados y pies de pagina de acuerdo al cliente mediante BD
-      if($data['info']->id_cliente == 39){
+      if($data['info']['id_cliente'] == 39){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="'.base_url().'img/logo_talink.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       }
-      if($data['info']->id_cliente == 7){
+      if($data['info']['id_cliente'] == 7){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="'.base_url().'img/logo_gentex.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       }
-      if($data['info']->id_cliente == 16){
+      if($data['info']['id_cliente'] == 16){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
       }
-      if($data['info']->id_cliente == 159){
+      if($data['info']['id_cliente'] == 159){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:100px;" src="'.base_url().'img/logo_pisa.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">PISA FARMACÉUTICA</p></div><div style="position: absolute; right: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Av. España No. 1840 Colonia Moderna C.P. 44190 Guadalajara, Jalisco. Tel. 33 3678 Fax: 33 3810 Lada sin costo: 800 627</p></div>');
       }  
-      if($data['info']->id_cliente == 172){
+      if($data['info']['id_cliente'] == 172){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Request Date: '.$f_alta.'<br>Release Date: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
       } 
-      if($data['info']->id_cliente == 190){
+      if($data['info']['id_cliente'] == 190){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="'.base_url().'img/logo_gesthion.jpg"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       } 
-      if($data['info']->id_cliente == 209){
+      if($data['info']['id_cliente'] == 209){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="'.base_url().'img/logo_velazquez.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       } 
-      if($data['info']->id_cliente != 7 && $data['info']->id_cliente != 16 && $data['info']->id_cliente != 39 && $data['info']->id_cliente != 159 && $data['info']->id_cliente != 172 && $data['info']->id_cliente != 190 && $data['info']->id_cliente != 209){
+      if($data['info']['id_cliente'] != 7 && $data['info']['id_cliente'] != 16 && $data['info']['id_cliente'] != 39 && $data['info']['id_cliente'] != 159 && $data['info']['id_cliente'] != 172 && $data['info']['id_cliente'] != 190 && $data['info']['id_cliente'] != 209){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
       }         
@@ -989,35 +1022,35 @@ class Candidato_Conclusion extends CI_Controller{
       $mpdf->setAutoTopMargin = 'stretch';
       $mpdf->AddPage();
       //TODO: Organizar encabezados y pies de pagina de acuerdo al cliente mediante BD
-      if($data['info']->id_cliente == 39){
+      if($data['info']['id_cliente'] == 39){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="'.base_url().'img/logo_talink.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       }
-      if($data['info']->id_cliente == 7){
+      if($data['info']['id_cliente'] == 7){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="'.base_url().'img/logo_gentex.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       }
-      if($data['info']->id_cliente == 16){
+      if($data['info']['id_cliente'] == 16){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
       }
-      if($data['info']->id_cliente == 159){
+      if($data['info']['id_cliente'] == 159){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:100px;" src="'.base_url().'img/logo_pisa.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">PISA FARMACÉUTICA</p></div><div style="position: absolute; right: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Av. España No. 1840 Colonia Moderna C.P. 44190 Guadalajara, Jalisco. Tel. 33 3678 Fax: 33 3810 Lada sin costo: 800 627</p></div>');
       }  
-      if($data['info']->id_cliente == 172){
+      if($data['info']['id_cliente'] == 172){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Request Date: '.$f_alta.'<br>Release Date: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
       } 
-      if($data['info']->id_cliente == 190){
+      if($data['info']['id_cliente'] == 190){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="'.base_url().'img/logo_gesthion.jpg"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       } 
-      if($data['info']->id_cliente == 209){
+      if($data['info']['id_cliente'] == 209){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="'.base_url().'img/logo_velazquez.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
       } 
-      if($data['info']->id_cliente != 7 && $data['info']->id_cliente != 16 && $data['info']->id_cliente != 39 && $data['info']->id_cliente != 159 && $data['info']->id_cliente != 172 && $data['info']->id_cliente != 190 && $data['info']->id_cliente != 209){
+      if($data['info']['id_cliente'] != 7 && $data['info']['id_cliente'] != 16 && $data['info']['id_cliente'] != 39 && $data['info']['id_cliente'] != 159 && $data['info']['id_cliente'] != 172 && $data['info']['id_cliente'] != 190 && $data['info']['id_cliente'] != 209){
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
       }          
