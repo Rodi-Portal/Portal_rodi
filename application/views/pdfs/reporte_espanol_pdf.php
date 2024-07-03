@@ -248,21 +248,9 @@ if ($info['ingles'] == 1) {
 	}
 }
 
-$e = new DateTime($info['fecha_nacimiento']);
-if($info['ingles'] == 0){
-  $fecha_nacimiento = $e->format('d/m/Y');
-}
-if($info['ingles'] == 1){
-  $fecha_nacimiento = $e->format('m/d/Y');
-}
+$fecha_nacimiento = isset($info['fecha_nacimiento']) && $info['fecha_nacimiento'] ? (new DateTime($info['fecha_nacimiento']))->format($info['ingles'] == 0 ? 'd/m/Y' : 'm/d/Y') : 'Fecha no proporcionada';
 
-$e = new DateTime($info['fecha_alta']);
-if($info['ingles'] == 0){
-  $fecha_alta = $e->format('d/m/Y');
-}
-if($info['ingles'] == 1){
-  $fecha_alta = $e->format('m/d/Y');
-}
+$fecha_alta = isset($info['fecha_alta']) && $info['fecha_alta'] ? (new DateTime($info['fecha_alta']))->format($info['ingles'] == 0 ? 'd/m/Y' : 'm/d/Y') : 'Fecha no proporcionada';
 
 function fechaPorIdioma($fecha, $idioma){
   if($idioma == 'espanol'){
@@ -277,21 +265,16 @@ function fechaPorIdioma($fecha, $idioma){
 }
 
 
-$e = new DateTime($info['fecha_acta']);
-$fecha_acta = $e->format('d/m/Y');
+$fecha_acta = isset($info['fecha_acta']) && $info['fecha_acta'] ? (new DateTime($info['fecha_acta']))->format('d/m/Y') : 'Fecha no proporcionada';
 
-$e = new DateTime($info['fecha_domicilio']);
-$fecha_domicilio = $e->format('d/m/Y');
+$fecha_domicilio = isset($info['fecha_domicilio']) && $info['fecha_domicilio'] ? (new DateTime($info['fecha_domicilio']))->format('d/m/Y') : 'Fecha no proporcionada';
 
-$e = new DateTime($info['emision_curp']);
-$emision_curp = $e->format('d/m/Y');
+$emision_curp = isset($info['emision_curp']) && $info['emision_curp'] ? (new DateTime($info['emision_curp']))->format('d/m/Y') : 'Fecha no proporcionada';
 
-if($info['emision_nss'] != "0000-00-00" && $info['emision_nss'] != NULL){
-	$e = new DateTime($info['emision_nss']);
-	$emision_nss = $e->format('d/m/Y');
-}
-else{
-	$emision_nss = "No proporciona";
+if (isset($info['emision_nss']) && $info['emision_nss'] != "0000-00-00" && $info['emision_nss'] != NULL) {
+    $emision_nss = (new DateTime($info['emision_nss']))->format('d/m/Y');
+} else {
+    $emision_nss = "No proporciona";
 }
 
 if($info['fecha_retencion_impuestos'] != "0000-00-00" && $info['fecha_retencion_impuestos'] != NULL){
@@ -302,31 +285,24 @@ else{
 	$fecha_retencion_impuestos = "No proporciona";
 }
 
-$e = new DateTime($info['emision_rfc']);
-$emision_rfc = $e->format('d/m/Y');
+$emision_rfc = isset($info['emision_rfc']) && $info['emision_rfc'] ? (new DateTime($info['emision_rfc']))->format('d/m/Y') : 'Fecha no proporcionada';
 
-if($info['fecha_licencia'] != "0000-00-00"){
-	$e = new DateTime($info['fecha_licencia']);
-	$fecha_licencia = $e->format('d/m/Y');
-}
-else{
-	$fecha_licencia = "No proporciona";
+if (isset($info['fecha_licencia']) && $info['fecha_licencia'] != "0000-00-00" && $info['fecha_licencia'] != null) {
+    $fecha_licencia = (new DateTime($info['fecha_licencia']))->format('d/m/Y');
+} else {
+    $fecha_licencia = "No proporciona";
 }
 
-if($info['vigencia_migratoria'] != "0000-00-00" && $info['vigencia_migratoria'] != NULL){
-	$e = new DateTime($info['vigencia_migratoria']);
-	$vigencia_migratoria = $e->format('d/m/Y');
-}
-else{
-	$vigencia_migratoria = "No proporciona";
+if (isset($info['vigencia_migratoria']) && $info['vigencia_migratoria'] != "0000-00-00" && $info['vigencia_migratoria'] != null) {
+    $vigencia_migratoria = (new DateTime($info['vigencia_migratoria']))->format('d/m/Y');
+} else {
+    $vigencia_migratoria = "No proporciona";
 }
 
-if($info['fecha_visa'] != "0000-00-00" && $info['fecha_visa'] != NULL){
-	$e = new DateTime($info['fecha_visa']);
-	$fecha_visa = $e->format('d/m/Y');
-}
-else{
-	$fecha_visa = "No proporciona";
+if (isset($info['fecha_visa']) && $info['fecha_visa'] != "0000-00-00" && $info['fecha_visa'] != null) {
+    $fecha_visa = (new DateTime($info['fecha_visa']))->format('d/m/Y');
+} else {
+    $fecha_visa = "No proporciona";
 }
 
 //* Conversiones de texto a ingles (provenientes de option de select)

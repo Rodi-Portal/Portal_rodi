@@ -177,7 +177,13 @@
   color: white;
   background: salmon;
 }
-.icono_doping_aprobado,.icono_resultado_aprobado{
+
+.icono_resultado_espera {
+  color: white;
+  background: #ea7209;
+}
+
+.icono_doping_aprobado,.icono_resultado_aprobado {
   color: white;
   background: #3dd84f;
 }

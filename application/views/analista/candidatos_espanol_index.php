@@ -133,7 +133,7 @@ echo $mdl_candidato; ?>
 var id = '<?php echo $this->uri->segment(3) ?>';
 var nombre_cliente = '<?php echo $cliente; ?>';
 var id_cliente = id;
-var url = '<?php echo API_URL?>candidato-sync/' + id;
+var url = '<?php echo API_URL ?>candidato-sync/' + id;
 var psico = '<?php echo base_url(); ?>_psicometria/';
 var beca_url = '<?php echo base_url(); ?>_beca/';
 let url_form = '<?php echo base_url() . "Form/external?fid="; ?>';
@@ -320,31 +320,31 @@ $(document).ready(function() {
   $("#filtroListado").change(function() {
     var opcion = $(this).val();
 
-    let urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
+    let urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
     if (opcion == 1) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
 
       changeDatatable(urlFiltrada);
     }
     if (opcion == 2) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     if (opcion == 3) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     if (opcion == 4) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     if (opcion == 5) {
       $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL?>candidato-sync/' + id;
+      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
     console.log("🚀 ~ $ ~ urlFiltrada:", urlFiltrada + " " + id)
@@ -812,7 +812,7 @@ $(document).ready(function() {
 
 function obtenerToken(url) {
   $.ajax({
-    url: '<?php echo API_URL?>login', // Ajusta la URL según tu endpoint de login
+    url: '<?php echo API_URL ?>login', // Ajusta la URL según tu endpoint de login
     type: 'POST',
     dataType: 'json',
     data: {
@@ -833,7 +833,6 @@ function obtenerToken(url) {
 }
 
 function changeDatatable(url1) {
-  console.log("🚀 ~ changeDatatable ~ url:", url)
   $.ajax({
     url: url1,
     dataType: 'json',
@@ -852,7 +851,6 @@ function changeDatatable(url1) {
         }
         return item;
       });
-      console.log("🚀 ~ formattedData ~ formattedData:", formattedData);
 
 
       // Inicializar DataTable con los datos formateados
@@ -868,6 +866,8 @@ function changeDatatable(url1) {
             data: 'candidato',
             "width": "15%",
             mRender: function(data, type, full) {
+              console.log("🚀 ~ changeDatatable ~ full:", full)
+
               var subcliente = (full.subcliente === null || full.subcliente === "") ? 'Sin Subcliente' :
                 '<span class="badge badge-pill badge-primary">Subcliente: ' + full.subcliente +
                 '</span><br>';
@@ -1041,10 +1041,10 @@ function changeDatatable(url1) {
                 }*/
                 //* Psicometria
                 if (full.psicometrico == 1) {
-                
+
                   if (full.archivo != null && full.archivo != "") {
 
-                  
+
                     salida +=
                       '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a> ' +
                       '<a href="' + psico + full.archivo +
@@ -1077,205 +1077,58 @@ function changeDatatable(url1) {
             bSortable: false,
             "width": "12%",
             mRender: function(data, type, full) {
+
+
               if (full.cancelado == 0) {
                 if (full.socioeconomico == 1) {
                   let icono_resultado = '';
                   let previo = '';
-                  if (full.id_cliente != 33 && full.id_cliente != 96 && full.id_cliente !=
-                    1 && full.id_cliente != 2 && full.id_cliente != 205 && full
-                    .id_cliente != 233 && full.id_cliente != 250) {
-                    if (full.status_bgc == 0) {
-                      previo = (full.fecha_nacimiento != null && full.fecha_nacimiento !=
-                          '0000-00-00') ?
-                        ' <div style="display: inline-flex;"><form id="reportePrevioForm' +
-                        data +
-                        '" action="<?php echo base_url('Candidato_Conclusion/createPrevioPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="fa-tooltip icono_datatable icono_previo"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idPDF" id="idPDF' +
-                        data + '" value="' + data + '"></form></div>' : '';
-                      return '<a href="javascript:void(0)" data-toggle="tooltip" title="Finalizar proceso del candidato" id="final" class="fa-tooltip icono_datatable icono_finalizar"><i class="fas fa-user-check"></i></a> ' +
-                        previo;
-                    } else {
-
-                      return '<div style="display: inline-block;"><form id="reporteForm' +
-                        data +
-                        '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
-                        icono_resultado +
-                        '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
-                        data + '" value="' + data + '"></form></div>' + previo;
-                      /* esto va dentro de action < ?php echo base_url('Candidato_Conclusion/createPDF'); ?>*/
-                      if (full.tipo_conclusion > 0) {
-                         switch (full.status_bgc) {
-                           case '1':
-                           case '4':
-                             icono_resultado = 'icono_resultado_aprobado';
-                             break;
-                           case '2':
-                             icono_resultado = 'icono_resultado_reprobado';
-                             break;
-                           case '3':
-                           case '5':
-                             icono_resultado = 'icono_resultado_revision';
-                             break;
-                         }
-                         return '<div style="display: inline-block;"><form id="reporteForm' +
-                           data +
-                           '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="icono_datatable ' +
-                           icono_resultado +
-                           '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
-                           data + '" value="' + data + '"></form></div>' + previo;
-                       }
-                    }
-                  }
-                  if (full.id_cliente == 96) {
-                    let pdfCompleto = '';
-                    let pdfSimple = '';
-                    if (full.status == 0) {
-                      return '<a href="javascript:void(0)" data-toggle="tooltip" title="Finalizar proceso del candidato" id="final" class="icono_datatable icono_finalizar"><i class="fas fa-user-check"></i></a> ';
-                    }
-                    if (full.status == 1 || full.status == 2) {
-                      if (full.idBGC === null) {
-                        return '<a href="javascript:void(0)" data-toggle="tooltip" title="Finalizar proceso del candidato" id="final" class="icono_datatable icono_finalizar"><i class="fas fa-user-check"></i></a> ';
-                      } else {
-                        switch (full.status_bgc) {
-                          case '1':
-                          case '4':
-                            icono_resultado = 'icono_resultado_aprobado';
-                            break;
-                          case '2':
-                            icono_resultado = 'icono_resultado_reprobado';
-                            break;
-                          case '3':
-                          case '5':
-                            icono_resultado = 'icono_resultado_revision';
-                            break;
-                        }
-
-                        pdfSimple =
-                          '<div style="display: inline-block;"><form id="reporteFormSimple' +
-                          data +
-                          '" action="<?php echo base_url('Subcliente_RTS/crearPDFSimple'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar documento final simple" id="simplePDF" class="icono_datatable ' +
-                          icono_resultado +
-                          '"><i class="far fa-file-pdf"></i></a><input type="hidden" name="idCandidatoSimple" id="idCandidatoSimple' +
-                          data + '" value="' + data + '"></form></div>';
-                        pdfCompleto =
-                          '<div style="display: inline-block;"><form id="reporteFormCompleto' +
-                          data +
-                          '" action="<?php echo base_url('Subcliente_RTS/crearPDFCompleto'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar documento final completo" id="completoPDF" class="icono_datatable ' +
-                          icono_resultado +
-                          '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoCompleto" id="idCandidatoCompleto' +
-                          data + '" value="' + data + '"></form></div>';
-
-                        return pdfSimple + ' ' + pdfCompleto;
-                      }
-                    }
-                  }
-                  if (full.id_cliente == 1) {
-                    if (full.status_bgc == 0) {
-                      let previo = '';
-                      let iconoChecks = '';
-                      if (full.proyectoCandidato != 'FACIS' && full.proyectoCandidato !=
-                        'BPO') {
-                        iconoChecks =
-                          '<a href="javascript:void(0)" data-toggle="tooltip" title="Checklist del candidato" id="actualizar_checks" class="btn btn-info"><i class="fas fa-tasks"></i>';
-
-                        previo = ' <form id="reportePrevioForm' + data +
-                          '" action="<?php echo base_url('Cliente_Ust/crearPrevio'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="btn btn-secondary"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idCandidatoESE" id="idCandidatoESE' +
-                          data + '" value="' + data + '"></form>';
-                      }
-
-                      return '<div style="">' + iconoChecks +
-                        '<a href="javascript:void(0)" data-toggle="tooltip" title="Finalizar proceso del candidato" id="final" class="icono_datatable icono_finalizar"><i class="fas fa-user-check"></i></a> ' +
-                        previo + '</div>';
-                    } else {
-                      switch (full.status_bgc) {
-                        case '1':
-                        case '4':
-                          icono_resultado = 'icono_resultado_aprobado';
-                          break;
-                        case '2':
-                          icono_resultado = 'icono_resultado_reprobado';
-                          break;
-                        case '3':
-                        case '5':
-                          icono_resultado = 'icono_resultado_revision';
-                          break;
-                      }
-                      if (full.proyectoCandidato == 'FACIS') {
-                        return '<div><form id="reporteFormFACIS' + data +
-                          '" action="<?php echo base_url('Cliente_Ust/crearPDFProcesoFACIS'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte" id="facisPDF" class="btn btn-primary ' +
-                          icono_resultado +
-                          '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoFACIS" id="idCandidatoFACIS' +
-                          data + '" value="' + data + '"></form></div>';
-                      }
-                      if (full.proyectoCandidato == 'BPO') {
-                        return '<div style="display: inline-block;"><form id="reporteForm' +
-                          data +
-                          '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="btn btn-primary ' +
-                          icono_resultado +
-                          '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
-                          data + '" value="' + data + '"></form></div>' + previo;
-                      } else {
-                        return '<div><form id="reporteFormESE' + data +
-                          '" action="<?php echo base_url('Cliente_Ust/crearPDFProcesoESE'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte" id="esePDF" class="btn btn-primary ' +
-                          icono_resultado +
-                          '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoESE" id="idCandidatoESE' +
-                          data + '" value="' + data + '"></form></div>';
-                      }
-                    }
-                  }
-                  if (full.id_cliente == 2 || full.id_cliente == 205 || full.id_cliente ==
-                    233 || full.id_cliente == 250) {
-                    let iconoChecks =
-                      '<a href="javascript:void(0)" data-toggle="tooltip" title="Actualizacion del checklist del candidato" id="actualizar_checks" class="icono_datatable icono_finalizar"><i class="fas fa-tasks"></i></a> ';
-                    let pdfPrevio =
-                      '<div style="display: inline-block;"><form id="reportePrevioForm' +
+                  if (full.liberado == 0) {
+                    previo = 
+                      ' <div style="display: inline-flex;"><form id="reportePrevioForm' +
                       data +
-                      '" action="<?php echo base_url('Client/crearReportePDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar BGV parcial" id="reportePrevioPDF" class="icono_datatable icono_finalizar"><i class="fas fa-file-powerpoint"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
-                      data + '" value="' + data + '"></form></div>';
-                    if (full.status_bgc == 0) {
-                      if (full.id_cliente != 233) {
-                        return '<a href="javascript:void(0)" data-toggle="tooltip" title="Finalizar proceso del candidato" id="final" class="icono_datatable icono_finalizar"><i class="fas fa-user-check"></i></a> <div style="display: inline-block;"><form id="reportePrevioForm' +
-                          data +
-                          '" action="<?php echo base_url('Client/crearReporteParcialPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar BGV parcial" id="reportePrevioPDF" class="icono_datatable icono_finalizar"><i class="fas fa-file-powerpoint"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
-                          data + '" value="' + data + '"></form></div>';
-                      } else {
-                        return '<a href="javascript:void(0)" data-toggle="tooltip" title="Finalizar proceso del candidato" id="final" class="icono_datatable icono_finalizar"><i class="fas fa-user-check"></i></a> ' +
-                          iconoChecks + pdfPrevio;
-                      }
-                    } else {
+                      '" action="<?php echo base_url('Candidato_Conclusion/createPrevioPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="fa-tooltip icono_datatable icono_previo"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idPDF" id="idPDF' +
+                      data + '" value="' + data + '"></form></div>' ;
+                    return previo;
+                  } else {
+                   
                       switch (full.status_bgc) {
-                        case '1':
-                        case '4':
+                        case 1:
+                          icono_resultado = 'icono_resultado_aprobado';
+
+                          break;
+                        case 4:
                           icono_resultado = 'icono_resultado_aprobado';
                           break;
-                        case '2':
+                        case 2:
                           icono_resultado = 'icono_resultado_reprobado';
                           break;
-                        case '3':
-                        case '5':
+                      
+                        case 5:
                           icono_resultado = 'icono_resultado_revision';
                           break;
+                          default:
+                         
+                          icono_resultado = 'icono_resultado_espera';
+                          break;
+                       
+                    break;
                       }
-                      if (full.id_cliente != 233) {
-                        var pdf =
-                          '<div style="display: inline-block;"><form id="reporteForm' +
-                          data +
-                          '" action="<?php echo base_url('Client/crearReportePDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar BGV final" id="reportePDF" class="icono_datatable ' +
-                          icono_resultado +
-                          '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
-                          data + '" value="' + data + '"></form></div>';
-                        return pdf;
-                      }
-                      if (full.id_cliente == 233) {
-                        var pdf =
-                          '<div style="display: inline-block;"><form id="reporteForm' +
-                          data +
-                          '" action="<?php echo base_url('Client/crearReportePDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar BGV final" id="reportePDF" class="icono_datatable ' +
-                          icono_resultado +
-                          '"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' +
-                          data + '" value="' + data + '"></form></div>';
-                        return pdf + iconoChecks;
-                      }
-                    }
+                      console.log("🚀 ~ changeDatatable ~ status_bgc:", full.status_bgc )
+
+                      console.log("🚀 ~ changeDatatable ~ icono_resultado:", icono_resultado)
+
+                      return '<div style="display: inline-block;">' +
+                        '<form id="reporteForm' + data +
+                        '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST">' +
+                        '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="fa-tooltip icono_datatable '+icono_resultado+'">' +
+                        '<i class="fas fa-file-pdf"></i>' +
+                        '</a>' +
+                        '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
+                        '" value="' + data + '">' +
+                        '</form>' +
+                        '</div>' + previo;
+                    
                   }
 
                 } else {
