@@ -1093,18 +1093,18 @@ function changeDatatable(url1) {
                   } else {
                    
                       switch (full.status_bgc) {
-                        case 1:
+                        case '1':
                           icono_resultado = 'icono_resultado_aprobado';
 
                           break;
-                        case 4:
+                        case '4':
                           icono_resultado = 'icono_resultado_aprobado';
                           break;
-                        case 2:
+                        case '2':
                           icono_resultado = 'icono_resultado_reprobado';
                           break;
                       
-                        case 5:
+                        case '5':
                           icono_resultado = 'icono_resultado_revision';
                           break;
                           default:
