@@ -347,7 +347,6 @@ $(document).ready(function() {
       urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
       changeDatatable(urlFiltrada);
     }
-    console.log("🚀 ~ $ ~ urlFiltrada:", urlFiltrada + " " + id)
   });
   $("#subcliente").change(function() {
     var subcliente = $(this).val();
@@ -866,7 +865,6 @@ function changeDatatable(url1) {
             data: 'candidato',
             "width": "15%",
             mRender: function(data, type, full) {
-              console.log("🚀 ~ changeDatatable ~ full:", full)
 
               var subcliente = (full.subcliente === null || full.subcliente === "") ? 'Sin Subcliente' :
                 '<span class="badge badge-pill badge-primary">Subcliente: ' + full.subcliente +
@@ -1104,7 +1102,7 @@ function changeDatatable(url1) {
                           icono_resultado = 'icono_resultado_reprobado';
                           break;
                       
-                        case 5:
+                        case 3:
                           icono_resultado = 'icono_resultado_revision';
                           break;
                           default:
@@ -1114,9 +1112,7 @@ function changeDatatable(url1) {
                        
                     break;
                       }
-                      console.log("🚀 ~ changeDatatable ~ status_bgc:", full.status_bgc )
 
-                      console.log("🚀 ~ changeDatatable ~ icono_resultado:", icono_resultado)
 
                       return '<div style="display: inline-block;">' +
                         '<form id="reporteForm' + data +
@@ -2019,7 +2015,6 @@ function changeDatatable111(url) {
       "dataSrc": "",
       "dataType": 'json',
       "success": function(data) {
-        console.log(data); // Para verificar la estructura de los datos
       },
       "error": function(xhr, error, thrown) {
         console.error("Error al cargar los datos:", error, thrown);
