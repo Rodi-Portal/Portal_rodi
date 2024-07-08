@@ -14611,7 +14611,12 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 	}
 
 		if ($overflow != 'hidden' && $overflow != 'visible') {
-			$target = $h / $w;
+				if ($w != 0) {
+					$target = $h / $w;
+			} else {
+					// Manejo del caso en el que $w es cero
+					$target = 0; // O cualquier valor por defecto que tenga sentido en tu contexto
+			}
 			if ($target > 0) {
 				if (($ratio / $target) > 1) {
 					$nl = ceil($actual_h / $this->lineheight);
