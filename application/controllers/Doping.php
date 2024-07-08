@@ -1390,12 +1390,12 @@ class Doping extends CI_Controller
 
 
         //
-        $data['doping'] = $doping;
+       /* $data['doping'] = $doping;
 
         		echo "<pre>";
 						print_r($doping->paterno);
 						echo "<pre>";
-        die();
+        die();/*
 
 				
         $html = $this->load->view('pdfs/doping_pdf', $data, true);
@@ -1403,8 +1403,11 @@ class Doping extends CI_Controller
         $mpdf->SetHTMLHeader('<div style="width: 100%; float: left;"><img style="height: 150px;" src="' . base_url() . 'img/Encabezado.png"></div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 12px;"><div style="border-bottom:1px solid gray;"><b>Teléfono:</b> (33) 2301-8599 | <b>Correo:</b> hola@rodi.com.mx | <b>Sitio web:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br><br>FOP-07 Rev. 00 <br>Fecha de Rev. 18/11/2021</p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
         $mpdf->WriteHTML($html);
-
-        $mpdf->Output('doping_' . $doping->codigo_prueba . '_' . $doping->nombre . '_' . $doping->paterno . '.pdf', 'D'); // opens in browser
+        try {
+            $mpdf->Output('doping_' . $doping->codigo_prueba . '_' . $doping->nombre . '_' . $doping->paterno . '.pdf', 'D');
+        } catch (\Mpdf\MpdfException $e) {
+            echo 'Error generating PDF: ' . $e->getMessage();
+        }
     }
 
 
