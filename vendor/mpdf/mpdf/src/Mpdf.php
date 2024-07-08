@@ -14603,7 +14603,12 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 		$actual_h = $this->y - $y;
 		$use_w = $w;
 		$use_h = $h;
-		$ratio = $actual_h / $use_w;
+		if ($use_w != 0) {
+			$ratio = $actual_h / $use_w;
+	} else {
+			
+			 $ratio = 0; // O cualquier otro valor predeterminado según sea necesario.
+	}
 
 		if ($overflow != 'hidden' && $overflow != 'visible') {
 			$target = $h / $w;
