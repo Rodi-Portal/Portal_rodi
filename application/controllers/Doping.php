@@ -1395,9 +1395,7 @@ class Doping extends CI_Controller
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 12px;"><div style="border-bottom:1px solid gray;"><b>Teléfono:</b> (33) 2301-8599 | <b>Correo:</b> hola@rodi.com.mx | <b>Sitio web:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br><br>FOP-07 Rev. 00 <br>Fecha de Rev. 18/11/2021</p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
         $mpdf->WriteHTML($html);
 
-        echo 'codigo_prueba: ' . $doping->codigo_prueba . '<br>';
-        echo 'nombre: ' . $doping->nombre . '<br>';
-        echo 'paterno: ' . $doping->paterno . '<br>';
+   
 
         try {
             $mpdf->Output('doping_' . $doping->codigo_prueba . '_' . $doping->nombre . '_' . $doping->paterno . '.pdf', 'D');
