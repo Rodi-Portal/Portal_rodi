@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Laminas\Diactoros;
 
+use Stringable;
+
 use function stream_get_contents;
 
 /**
  * Caching version of php://input
  */
-class PhpInputStream extends Stream
+class PhpInputStream extends Stream implements Stringable
 {
-    /** @var string */
-    private $cache = '';
+    private string $cache = '';
 
-    /** @var bool */
-    private $reachedEof = false;
+    private bool $reachedEof = false;
 
     /**
      * @param  string|resource $stream

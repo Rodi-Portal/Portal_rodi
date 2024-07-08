@@ -7,7 +7,6 @@ namespace Laminas\Diactoros;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-use function get_class;
 use function gettype;
 use function is_float;
 use function is_numeric;
@@ -33,10 +32,9 @@ class Response implements ResponseInterface
     /**
      * Map of standard HTTP status code/reason phrases
      *
-     * @var array
      * @psalm-var array<positive-int, non-empty-string>
      */
-    private $phrases = [
+    private array $phrases = [
         // INFORMATIONAL CODES
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -110,11 +108,9 @@ class Response implements ResponseInterface
         599 => 'Network Connect Timeout Error',
     ];
 
-    /** @var string */
-    private $reasonPhrase;
+    private string $reasonPhrase;
 
-    /** @var int */
-    private $statusCode;
+    private int $statusCode;
 
     /**
      * @param string|resource|StreamInterface $body Stream identifier and/or actual stream resource
@@ -181,7 +177,7 @@ class Response implements ResponseInterface
         if (! is_string($reasonPhrase)) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Unsupported response reason phrase; must be a string, received %s',
-                is_object($reasonPhrase) ? get_class($reasonPhrase) : gettype($reasonPhrase)
+                is_object($reasonPhrase) ? $reasonPhrase::class : gettype($reasonPhrase)
             ));
         }
 

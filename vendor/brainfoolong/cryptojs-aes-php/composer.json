@@ -1,7 +1,7 @@
 {
   "name": "brainfoolong/cryptojs-aes-php",
   "type": "library",
-  "description": "CryptoJS 3.x AES encryption/decryption on client side with Javascript and on server side with PHP",
+  "description": "CryptoJS AES encryption/decryption on client side with Javascript and on server side with PHP",
   "keywords": [
     "aes",
     "php",
@@ -22,7 +22,15 @@
       "Nullix\\CryptoJsAes\\": "src/"
     }
   },
-  "version": "2.1.1",
+  "archive": {
+    "exclude": [
+      "/tests",
+      ".gitignore",
+      "package.json",
+      "playwright.config.ts"
+    ]
+  },
+  "version": "2.3.0",
   "require": {
     "php": ">=7.0.0",
     "ext-openssl": "*",

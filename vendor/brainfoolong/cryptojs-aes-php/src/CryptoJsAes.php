@@ -2,12 +2,16 @@
 
 namespace Nullix\CryptoJsAes;
 
+use function strlen;
+
+use const OPENSSL_RAW_DATA;
+
 /**
  * Encrypt/Decrypt data from Javascript's CryptoJS
  * PHP 7.x and later supported
  * If you need PHP 5.x support, goto the legacy branch https://github.com/brainfoolong/cryptojs-aes-php/tree/legacy
  * @link https://github.com/brainfoolong/cryptojs-aes-php
- * @version 2.1.1
+ * @version 2.2.0
  */
 class CryptoJsAes
 {
@@ -28,7 +32,7 @@ class CryptoJsAes
         }
         $key = substr($salted, 0, 32);
         $iv = substr($salted, 32, 16);
-        $encrypted_data = openssl_encrypt(json_encode($value), 'aes-256-cbc', $key, true, $iv);
+        $encrypted_data = openssl_encrypt(json_encode($value), 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
         $data = ["ct" => base64_encode($encrypted_data), "iv" => bin2hex($iv), "s" => bin2hex($salt)];
         return json_encode($data);
     }
@@ -49,12 +53,14 @@ class CryptoJsAes
         $md5 = [];
         $md5[0] = md5($concatedPassphrase, true);
         $result = $md5[0];
-        for ($i = 1; $i < 3; $i++) {
+        $i = 1;
+        while (strlen($result) < 32) {
             $md5[$i] = md5($md5[$i - 1] . $concatedPassphrase, true);
             $result .= $md5[$i];
+            $i++;
         }
         $key = substr($result, 0, 32);
-        $data = openssl_decrypt($ct, 'aes-256-cbc', $key, true, $iv);
+        $data = openssl_decrypt($ct, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
         return json_decode($data, true);
     }
 }

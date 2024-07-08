@@ -31,14 +31,19 @@
   <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-</head>
+</head ->
 
 <body>
   <!-- Se imprimen los modals -->
   <?php echo $modals; 
-  $id_cliente =  $this->session->userdata('idcliente')
-   
+  $id_cliente =  $this->session->userdata('idcliente');
+   /*echo '<pre>';
+   echo $procesosActuales[0]->url;
+   print_r($procesosActuales);
+   echo '</pre>';*/
+   $cliente = $procesosActuales[0];
   ?>
+  
   <header>
     <nav class="navbar navbar-dark" style="background-color: #0a39a6;">
       <a class="navbar-brand" href="javascript:void(0)">
@@ -52,7 +57,10 @@
           <a class="nav-link text-light active" href="javascript:void(0)" onclick="openProcedures()"><i
               class="fas fa-list-ol"></i> <?php echo $translations['menu_inicio_candidatos']; ?></a>
         </li>
-
+        <li class="nav-item">
+          <a class="nav-link text-light active" href="<?php echo site_url("$cliente->url").">".$cliente->nombre ?>"><i
+              class="fas fa-list-ol"></i> Candidatos ESE </a>
+        </li>
         <!--//TODO:  boton para  en un futuro  poder  ver las  requisiciones  finalizadas  actualmente  sin funcionamiento -->
         <!--li class="nav-item">
           <a class="nav-link text-light active" href="javascript:void(0)" onclick="openHistory()"><i

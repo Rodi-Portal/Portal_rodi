@@ -17,7 +17,7 @@ use function is_resource;
 use function is_string;
 use function is_writable;
 use function move_uploaded_file;
-use function strpos;
+use function str_starts_with;
 use function unlink;
 
 use const PHP_SAPI;
@@ -44,23 +44,11 @@ class UploadedFile implements UploadedFileInterface
         UPLOAD_ERR_EXTENSION  => 'A PHP extension stopped the file upload.',
     ];
 
-    /** @var string|null */
-    private $clientFilename;
+    private int $error;
 
-    /** @var string|null */
-    private $clientMediaType;
+    private ?string $file = null;
 
-    /** @var int */
-    private $error;
-
-    /** @var null|string */
-    private $file;
-
-    /** @var bool */
-    private $moved = false;
-
-    /** @var int */
-    private $size;
+    private bool $moved = false;
 
     /** @var null|StreamInterface */
     private $stream;
@@ -71,10 +59,10 @@ class UploadedFile implements UploadedFileInterface
      */
     public function __construct(
         $streamOrFile,
-        int $size,
+        private int $size,
         int $errorStatus,
-        ?string $clientFilename = null,
-        ?string $clientMediaType = null
+        private ?string $clientFilename = null,
+        private ?string $clientMediaType = null
     ) {
         if ($errorStatus === UPLOAD_ERR_OK) {
             if (is_string($streamOrFile)) {
@@ -92,17 +80,12 @@ class UploadedFile implements UploadedFileInterface
             }
         }
 
-        $this->size = $size;
-
         if (0 > $errorStatus || 8 < $errorStatus) {
             throw new Exception\InvalidArgumentException(
                 'Invalid error status for UploadedFile; must be an UPLOAD_ERR_* constant'
             );
         }
         $this->error = $errorStatus;
-
-        $this->clientFilename  = $clientFilename;
-        $this->clientMediaType = $clientMediaType;
     }
 
     /**
@@ -167,7 +150,7 @@ class UploadedFile implements UploadedFileInterface
 
         $sapi = PHP_SAPI;
         switch (true) {
-            case empty($sapi) || 0 === strpos($sapi, 'cli') || 0 === strpos($sapi, 'phpdbg') || ! $this->file:
+            case empty($sapi) || str_starts_with($sapi, 'cli') || str_starts_with($sapi, 'phpdbg') || ! $this->file:
                 // Non-SAPI environment, or no filename present
                 $this->writeFile($targetPath);
 

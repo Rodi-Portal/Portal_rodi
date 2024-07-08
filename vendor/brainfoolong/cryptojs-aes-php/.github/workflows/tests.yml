@@ -1,0 +1,56 @@
+name: PHP and JS Tests
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  tests:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup PHP 7.0
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 7.0
+
+    - name: Setup PHP 8.2
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
+
+    - name: Setup PHP latest
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: latest
+
+    - name: Start PHP 7.0 server
+      run: php7.0 -S 127.0.0.1:9970 &
+
+    - name: Start PHP 8.2 server
+      run: php8.2 -S 127.0.0.1:9982 &
+
+    - name: Start PHP latest server
+      run: php -S 127.0.0.1:9999 &
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+
+    - name: Install npm dependencies
+      run: npm install -y
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright tests
+      run: npx playwright test
+
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
