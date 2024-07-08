@@ -1393,7 +1393,7 @@ class Doping extends CI_Controller
         $data['doping'] = $doping;
 
         		echo "<pre>";
-						print_r($doping);
+						print_r($doping->paterno);
 						echo "<pre>";
         die();
 
