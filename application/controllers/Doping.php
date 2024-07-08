@@ -1239,7 +1239,6 @@ class Doping extends CI_Controller
         } else {
             $data['area'] = $this->area_model->getAreaById($doping->id_area);
         }
-				
 
         //
         if ($doping->qr_token == null) {
@@ -1289,7 +1288,7 @@ class Doping extends CI_Controller
         }
 
         // Primera solicitud cURL
-        $url_doping = API_URL.'doping/' . $id_doping;
+        $url_doping = API_URL . 'doping/' . $id_doping;
         $ch_doping = curl_init($url_doping);
         curl_setopt($ch_doping, CURLOPT_RETURNTRANSFER, true);
         $response_doping = curl_exec($ch_doping);
@@ -1297,16 +1296,15 @@ class Doping extends CI_Controller
         // Verificar si ocurrió un error durante la ejecución de cURL
         if ($response_doping === false) {
             $error_doping = curl_error($ch_doping);
-            
-						$_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $error_doping;
-    
-						// Cerrar la sesión cURL
-						curl_close($ch_doping);
-						
-						// Redireccionar a la página anterior
-						header('Location: ' . $_SERVER['HTTP_REFERER']);
 
-						
+            $_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $error_doping;
+
+            // Cerrar la sesión cURL
+            curl_close($ch_doping);
+
+            // Redireccionar a la página anterior
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+
         }
 
         // Decodificar la respuesta JSON para la primera solicitud
@@ -1317,58 +1315,55 @@ class Doping extends CI_Controller
         die(); */
         // Cerrar la sesión cURL para la primera solicitud
         curl_close($ch_doping);
-				$directorio = '_doping';
-				$nombreArchivo = $doping->foto;
-				
-				$resultado = $this->api_traer_documentos_model->obtenerImagenExterna($directorio, $nombreArchivo);
-	
-				if (isset($resultado['error'])) {
-				log_message('error', 'Error: ' . $resultado['error']);
-			} 
-					// Mostrar la imagen
-				//	header('Content-Type: image/jpeg');
-					//echo $resultado;
+        $directorio = '_doping';
+        $nombreArchivo = $doping->foto;
 
-		  $resultado2 =	$this->api_traer_documentos_model->guardarImagen($resultado,$nombreArchivo,$directorio);
+        $resultado = $this->api_traer_documentos_model->obtenerImagenExterna($directorio, $nombreArchivo);
 
-				
-         // Segunda solicitud cURL para obtener los datos del área
-				$urlArea = '';
-				if ($doping->foraneo == 'SI') {
-						$nombre = "DOPING FORANEO";
-						$urlArea = API_URL.'area/' . urlencode($nombre);
-				} else {
-						$urlArea = API_URL.'area/' . urlencode($doping->id_area);
-				}
+        if (isset($resultado['error'])) {
+            log_message('error', 'Error: ' . $resultado['error']);
+        }
+        // Mostrar la imagen
+        //    header('Content-Type: image/jpeg');
+        //echo $resultado;
 
-				$chArea = curl_init($urlArea);
-				curl_setopt($chArea, CURLOPT_RETURNTRANSFER, true);
-				$responseArea = curl_exec($chArea);
+        $resultado2 = $this->api_traer_documentos_model->guardarImagen($resultado, $nombreArchivo, $directorio);
 
-				if ($responseArea === false) {
-						$errorArea = curl_error($chArea);
-						curl_close($chArea);
-						$_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $errorArea;
-    
-						// Cerrar la sesión cURL
-						curl_close($ch);
-						
-						// Redireccionar a la página anterior
-						header('Location: ' . $_SERVER['HTTP_REFERER']);
-						
-				} else {
-						$area = json_decode($responseArea);
-						curl_close($chArea);
-						$data['area'] = $area ;
-						// Procesar los datos del área obtenidos
-					/*
-						echo "<br>";
-						print_r($doping->foto);
-						echo "<br>";
+        // Segunda solicitud cURL para obtener los datos del área
+        $urlArea = '';
+        if ($doping->foraneo == 'SI') {
+            $nombre = "DOPING FORANEO";
+            $urlArea = API_URL . 'area/' . urlencode($nombre);
+        } else {
+            $urlArea = API_URL . 'area/' . urlencode($doping->id_area);
+        }
+
+        $chArea = curl_init($urlArea);
+        curl_setopt($chArea, CURLOPT_RETURNTRANSFER, true);
+        $responseArea = curl_exec($chArea);
+
+        if ($responseArea === false) {
+            $errorArea = curl_error($chArea);
+            curl_close($chArea);
+            $_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $errorArea;
+
+            // Cerrar la sesión cURL
+            curl_close($ch);
+
+            // Redireccionar a la página anterior
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+
+        } else {
+            $area = json_decode($responseArea);
+            curl_close($chArea);
+            $data['area'] = $area;
+            // Procesar los datos del área obtenidos
+            /*
+        echo "<br>";
+        print_r($doping->foto);
+        echo "<br>";
         die();*/
-				}
-
-
+        }
 
         //* Creacion codigo QR para consulta en linea
         if ($doping->qr_token !== null) {
@@ -1380,9 +1375,9 @@ class Doping extends CI_Controller
             $params['size'] = 10;
             $params['savename'] = "./_qrconsult/qr_$id_doping.png";
             $this->ciqrcode->generate($params);
-						
+
             $data['qr'] = "qr_$id_doping.png";
-					
+
             $datos = array(
                 'qr_token' => $claveAleatoria,
             );
@@ -1391,24 +1386,28 @@ class Doping extends CI_Controller
             $data['qr'] = "qr_$id_doping.png";
         }
 
-
         //
         $data['doping'] = $doping;
 
-
-				
         $html = $this->load->view('pdfs/doping_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader('<div style="width: 100%; float: left;"><img style="height: 150px;" src="' . base_url() . 'img/Encabezado.png"></div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 12px;"><div style="border-bottom:1px solid gray;"><b>Teléfono:</b> (33) 2301-8599 | <b>Correo:</b> hola@rodi.com.mx | <b>Sitio web:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br><br>FOP-07 Rev. 00 <br>Fecha de Rev. 18/11/2021</p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
         $mpdf->WriteHTML($html);
 
-        $mpdf->Output('doping_' . $doping->codigo_prueba . '_' . $doping->nombre . '_' . $doping->paterno . '.pdf', 'D'); // opens in browser
+        echo 'codigo_prueba: ' . $doping->codigo_prueba . '<br>';
+        echo 'nombre: ' . $doping->nombre . '<br>';
+        echo 'paterno: ' . $doping->paterno . '<br>';
+
+        try {
+            $mpdf->Output('doping_' . $doping->codigo_prueba . '_' . $doping->nombre . '_' . $doping->paterno . '.pdf', 'D');
+        } catch (\Mpdf\MpdfException $e) {
+            echo 'Error generating PDF: ' . $e->getMessage();
+        } catch (\DivisionByZeroError $e) {
+            echo 'Division by zero error: ' . $e->getMessage();
+        } // opens in browser
     }
 
-
-
-    
     public function crearPDFIngles()
     {
         $mpdf = new \Mpdf\Mpdf();
@@ -1654,8 +1653,5 @@ class Doping extends CI_Controller
             return true;
         }
     }
-
-
-
 
 }

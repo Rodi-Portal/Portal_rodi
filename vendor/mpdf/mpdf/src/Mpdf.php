@@ -14657,7 +14657,12 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 			}
 		}
 
-		$shrink_f = $w / $use_w;
+		if ($use_w != 0) {
+			$shrink_f = $w / $use_w;
+	} else {
+			// Manejo del caso en el que $use_w es cero
+			$shrink_f = 0; // O cualquier valor por defecto que tenga sentido en tu contexto
+	}
 
 		// ================================================================
 
