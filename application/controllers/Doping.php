@@ -1323,7 +1323,7 @@ class Doping extends CI_Controller
 				$resultado = $this->api_traer_documentos_model->obtenerImagenExterna($directorio, $nombreArchivo);
 	
 				if (isset($resultado['error'])) {
-					echo 'Error: ' . $resultado['error'];
+                    log_message('error', 'Error: ' . $resultado['error']);
 			} 
 					// Mostrar la imagen
 				//	header('Content-Type: image/jpeg');
