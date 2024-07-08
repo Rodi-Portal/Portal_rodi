@@ -1395,7 +1395,7 @@ class Doping extends CI_Controller
         		echo "<pre>";
 						print_r($doping->paterno);
 						echo "<pre>";
-        die();/*
+        die(); */
 
 				
         $html = $this->load->view('pdfs/doping_pdf', $data, true);
