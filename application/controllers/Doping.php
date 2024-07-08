@@ -1361,11 +1361,8 @@ class Doping extends CI_Controller
 						curl_close($chArea);
 						$data['area'] = $area ;
 						// Procesar los datos del área obtenidos
-					/*
-						echo "<br>";
-						print_r($doping->foto);
-						echo "<br>";
-        die();*/
+					
+				
 				}
 
 
@@ -1395,6 +1392,10 @@ class Doping extends CI_Controller
         //
         $data['doping'] = $doping;
 
+        		echo "<pre>";
+						print_r($doping);
+						echo "<pre>";
+        die();
 
 				
         $html = $this->load->view('pdfs/doping_pdf', $data, true);
