@@ -423,6 +423,7 @@ p {
     </tr>
 
     <?php 
+    $contador = 0;
 			for($i = 0; $i < count($desc); $i++){
         if($ids[$i] != 16 && $ids[$i] != 18)
           $unidades = '<td class="texto-centrado padding-5" >ng/ml</td>';
@@ -437,11 +438,15 @@ p {
 				echo $unidades;
 				echo '<td class="texto-centrado padding-5">'.$ref[$i].'</td>';
 				echo '</tr>';
+        $contador ++;
 		} ?>
  </table>
 	<p class="texto-centrado">La investigación de drogas de abuso es una prueba de escrutinio. <br>En caso de positividad se deberá realizar una prueba confirmatoria. <br>RESULTADO NO VÁLIDO SIN EL SELLO DE AUTENTICIDAD GRABADO EN EL PRESENTE. <br>Cualquier aclaración acerca de este estudio, comuníquese al tel: (33)33309678</p>
 
 	<?php 
+  if($contador > 10){ ?>
+    <pagebreak>
+ <?php  }
   $cedula = (!empty($area->cedula))? '<span>Cédula Profesional: '.$area->cedula.'</span><br>' : '<span>Personal autorizado por laboratorio</span><br>'; 
 	if($num_sustancias <= 6){ ?>
 		 <table style="width: 100%;  page-break-inside: avoid;">
