@@ -1318,7 +1318,7 @@ class Doping extends CI_Controller
         $directorio = '_doping';
         $nombreArchivo = $doping->foto;
 
-        $resultado = $this->api_traer_documentos_model->obtenerImagenExterna($directorio, $nombreArchivo);
+       // $resultado = $this->api_traer_documentos_model->obtenerImagenExterna($directorio, $nombreArchivo);
 
         if (isset($resultado['error'])) {
             log_message('error', 'Error: ' . $resultado['error']);
@@ -1327,7 +1327,7 @@ class Doping extends CI_Controller
         //    header('Content-Type: image/jpeg');
         //echo $resultado;
 
-        $resultado2 = $this->api_traer_documentos_model->guardarImagen($resultado, $nombreArchivo, $directorio);
+        //$resultado2 = $this->api_traer_documentos_model->guardarImagen($resultado, $nombreArchivo, $directorio);
 
         // Segunda solicitud cURL para obtener los datos del área
         $urlArea = '';
