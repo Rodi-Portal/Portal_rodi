@@ -410,8 +410,7 @@ p {
     </table>
   </div>
   <div style="height: 160px;position: relative">
-    <?php echo $foto;
-    echo $doping->foto ?>
+    <?php echo $foto;?>
   </div>
   <br>
   <table class="centrado" border="1" cellpadding="0" cellspacing="0" bordercolor="#E2E1E1">
