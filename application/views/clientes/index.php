@@ -190,7 +190,7 @@
                   <tr>
                     <th>ID</th>
                     <th>Aspirante</th>
-                    <th>Reclutado en</th>
+                    <th>Area de interes</th>
                     <th>Acciones</th>
                     <!-- Agrega más columnas según necesites -->
                   </tr>
@@ -647,7 +647,7 @@
         let tbody = '';
 
         data.data.forEach(function(resp) {
-          //console.log("🚀 ~ data.data.forEach ~ resp:", resp)
+          console.log("🚀 ~ data.data.forEach ~ resp:", resp)
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
             '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp
@@ -655,7 +655,7 @@
           tbody += '<tr>';
           tbody += '<td>' + resp.id + '</td>';
           tbody += '<td>' + resp.nombre_aspirante + '</td>';
-          tbody += '<td>' + resp.medio_contacto + '</td>';
+          tbody += '<td>' + resp.area_interes + '</td>';
           tbody += '<td>';
           tbody += '<div class="btn-group">';
           tbody +=
