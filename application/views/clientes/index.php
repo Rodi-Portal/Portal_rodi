@@ -268,7 +268,7 @@
 
   function loadClientView(id_cliente) {
     $.ajax({
-        url: "<?php echo base_url('Cliente_General/indexCliente/'); ?>" + id_cliente,
+        url: "<?php echo base_url('Cliente_General/indexCliente'); ?>",
         method: "GET",
         success: function(data) {
             $('#content').html(data);
