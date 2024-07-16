@@ -30,8 +30,10 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
   <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-</head ->
+ <!-- jQuery -->
+ <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+</head >
 
 <body>
   <!-- Se imprimen los modals -->
@@ -43,7 +45,7 @@
    echo '</pre>';*/
    $cliente = $procesosActuales[0];
   ?>
-  
+
   <header>
     <nav class="navbar navbar-dark" style="background-color: #0a39a6;">
       <a class="navbar-brand" href="javascript:void(0)">
@@ -58,8 +60,7 @@
               class="fas fa-list-ol"></i> <?php echo $translations['menu_inicio_candidatos']; ?></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-light active" href="<?php echo site_url("$cliente->url").">".$cliente->nombre ?>"><i
-              class="fas fa-list-ol"></i> Candidatos ESE </a>
+          <a class="nav-link text-light active"  href="javascript:void(0)" onclick="loadClientView(<?php echo $id_cliente; ?>)">Candidatos BGV</a>
         </li>
         <!--//TODO:  boton para  en un futuro  poder  ver las  requisiciones  finalizadas  actualmente  sin funcionamiento -->
         <!--li class="nav-item">
@@ -92,22 +93,22 @@
       </div>
     </div>
   </div>
+  <div  id="content">
+    <div id="panel-inicio">
+      <div class="d-flex justify-content-center flex-column flex-md-row flex-lg-row mt-5 panel-inicio">
+        <div class="card shadow div1 flex-fill">
+          <div class="card-body">
 
-  <div id="panel-inicio">
-    <div class="d-flex justify-content-center flex-column flex-md-row flex-lg-row mt-5 panel-inicio">
-      <div class="card shadow div1 flex-fill">
-        <div class="card-body">
-
-          <div class="d-flex flex-column flex-sm-row justify-content-around align-items-baseline">
-            <?php $totalRequisiciones = (!empty($procesosActuales))? count($procesosActuales) : 0 ?>
-            <h4 class="text-wrap"><?php echo $translations['proceso_titulo'].':  <b>'.$totalRequisiciones.'</b> ' ?>
-            </h4>
-            <button type="button" class="btn btn-primary btn-sm" onclick="loadPageInSection()">
-              <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
-            </button>
-          </div>
-          <hr>
-          <?php 
+            <div class="d-flex flex-column flex-sm-row justify-content-around align-items-baseline">
+              <?php $totalRequisiciones = (!empty($procesosActuales))? count($procesosActuales) : 0 ?>
+              <h4 class="text-wrap"><?php echo $translations['proceso_titulo'].':  <b>'.$totalRequisiciones.'</b> ' ?>
+              </h4>
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadPageInSection()">
+                <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
+              </button>
+            </div>
+            <hr>
+            <?php 
           
        
           if(!empty($procesosActuales)){
@@ -126,9 +127,9 @@
                 $experiencia = ($proceso->ingles == 1)? '<small">Experiencia: <b>'.$proceso->experiencia.'</b></small><br>' : '<small">Experiencia: <b>'.$proceso->experiencia.'</b></small><br>'; 
                ?>
 
-          <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
-            <!-- Boton de acciones -->
-            <!--div class="btn-group dropstart position-absolute btn-acciones">
+            <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
+              <!-- Boton de acciones -->
+              <!--div class="btn-group dropstart position-absolute btn-acciones">
               <button type="button" class="btn  dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">
                 <i class="fas fa-ellipsis-v"></i>
@@ -154,56 +155,56 @@
                  echo $experiencia;
                 
                 ?>
-            <div>
-              <span class="badge text-bg-info">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo ?> </span>
-              <span class="badge text-bg-info">Sueldo Máximo: <?php echo $proceso->sueldo_maximo ?> </span>
-            </div>
+              <div>
+                <span class="badge text-bg-info">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo ?> </span>
+                <span class="badge text-bg-info">Sueldo Máximo: <?php echo $proceso->sueldo_maximo ?> </span>
+              </div>
 
-            <?php  
+              <?php  
             
             echo '<p class="text-muted text-end">'.$translations['proceso_fecha_registro'].': '.fechaTexto($proceso->creacion, $idioma).'</p>';
                 echo '</div>';
                 ?>
-          </div>
+            </div>
 
 
-          <hr>
-          <?php 
+            <hr>
+            <?php 
             }
           }
           else { ?>
-          <div class="card">
-            <div class="card-body text-center">
-              <?php echo $translations['proceso_sin_candidatos'] ?>
+            <div class="card">
+              <div class="card-body text-center">
+                <?php echo $translations['proceso_sin_candidatos'] ?>
+              </div>
             </div>
-          </div>
-          <?php 
+            <?php 
           } ?>
+          </div>
         </div>
-      </div>
-      <div class="card shadow div2 flex-fill">
-        <div class="card-body">
-          <div id="dataTableContainer">
-            <table id="dataTable" class="table table-striped">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Aspirante</th>
-                  <th>Reclutado en</th>
-                  <th>Acciones</th>
-                  <!-- Agrega más columnas según necesites -->
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Aquí se agregarán las filas dinámicamente con JavaScript -->
-              </tbody>
-            </table>
+        <div class="card shadow div2 flex-fill">
+          <div class="card-body">
+            <div id="dataTableContainer">
+              <table id="dataTable" class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Aspirante</th>
+                    <th>Reclutado en</th>
+                    <th>Acciones</th>
+                    <!-- Agrega más columnas según necesites -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Aquí se agregarán las filas dinámicamente con JavaScript -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
   <section id="panel-tipo-registro" class="mt-5 hidden">
     <div class="container">
       <h3 class="text-center mb-3">Choose an option</h3>
@@ -265,6 +266,18 @@
   <script>
   let base_url = '<?php echo base_url() ?>'
 
+  function loadClientView(id_cliente) {
+    $.ajax({
+        url: "<?php echo base_url('Cliente_General/indexCliente/'); ?>" + id_cliente,
+        method: "GET",
+        success: function(data) {
+            $('#content').html(data);
+        },
+        error: function() {
+            alert('Error al cargar la vista del cliente.');
+        }
+    });
+}
   function finishSession() {
     let timerInterval;
     setTimeout(() => {
@@ -511,7 +524,7 @@
     $('#div_historial_aspirante').empty();
     var id = id;
     console.log("🚀 ~ verHistorial ~ id:", id)
-    
+
 
     $.ajax({
       url: '<?php echo base_url('Reclutamiento/getHistorialAspirante'); ?>',
@@ -556,8 +569,8 @@
         });
       }
     });
-   
-    
+
+
   }
 
 
@@ -700,7 +713,7 @@
         let data = JSON.parse(res);
         let tbody = '';
         data.data.forEach(function(resp) {
-         
+
           let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
             '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra +
@@ -716,7 +729,8 @@
           tbody += 'Acciones';
           tbody += '</button>';
           tbody += '<ul class="dropdown-menu">';
-          tbody += '<li><button type="button" class="dropdown-item" id="ver_historial" onclick="verHistorial(' +
+          tbody +=
+            '<li><button type="button" class="dropdown-item" id="ver_historial" onclick="verHistorial(' +
             resp.id_ra + ', \'' + resp.nombre_aspirante + '\')">Movimientos del Aspirante</button></li>';
           tbody +=
             '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
@@ -735,7 +749,7 @@
         }, 200);
       }
     });
-      console.log("🚀 ~ openDetailss ~ res:", res)
+    console.log("🚀 ~ openDetailss ~ res:", res)
   }
 
   function openProcedures() {

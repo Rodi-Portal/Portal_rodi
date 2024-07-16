@@ -13,7 +13,7 @@ class Cliente_General extends Custom_Controller{
   }
 
   function index(){
-    if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1) {
+    if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1 ) {
       $id_cliente = $this->uri->segment(3);
       $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
       if ($data['permisos']) {
@@ -104,6 +104,51 @@ class Cliente_General extends Custom_Controller{
       ->view('modals/mdl_reclutamiento')
       ->view('analista/candidatos_espanol_index', $vista)
       ->view('adminpanel/footer');
+    }
+  }
+
+  function indexCliente(){
+    if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
+      $id_cliente = $this->session->userdata('idcliente');
+    
+      $data['parentescos'] = $this->funciones_model->getParentescos();
+      $data['escolaridades'] = $this->funciones_model->getEscolaridades();
+      //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
+      //$info['estados'] = $this->funciones_model->getEstados();
+      $info['civiles'] = $this->funciones_model->getEstadosCiviles();
+     // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
+      $info['puestos'] = $this->funciones_model->getPuestos();
+      $info['grados'] = $this->funciones_model->getGradosEstudio();
+      $info['drogas'] = $this->funciones_model->getPaquetesAntidoping();
+      $info['zonas'] = $this->funciones_model->getNivelesZona();
+      $info['viviendas'] = $this->funciones_model->getTiposVivienda();
+      $info['condiciones'] = $this->funciones_model->getTiposCondiciones();
+      $info['studies'] = $this->funciones_model->getTiposEstudios();
+      $info['usuarios_cliente'] = $this->candidato_model->getUsuariosCliente($id_cliente);
+      $info['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
+      $info['paises'] = $this->funciones_model->getPaises();
+			$info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
+			$info['sanguineos'] = $this->funciones_model->getGruposSanguineos();
+      $info['parentescos'] = $this->funciones_model->getParentescos();
+      $info['civiles'] = $this->funciones_model->getEstadosCiviles();
+      $info['escolaridades'] = $this->funciones_model->getEscolaridades();
+      $info['grados_estudios'] = $this->funciones_model->getGradosEstudio();
+      $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($id_cliente);
+			$info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
+      
+      $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
+      //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
+      $config = $this->funciones_model->getConfiguraciones();
+			$data['version'] = $config->version_sistema;
+
+      //Modals
+      $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
+      $modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
+
+      $this->load
+
+      ->view('clientes/panel');
+
     }
   }
   /*----------------------------------------*/

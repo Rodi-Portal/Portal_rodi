@@ -94,7 +94,10 @@ class Notificacion extends CI_Controller{
 
   function get_by_usuario(){
     $id_usuario = $this->session->userdata('id');
+    $notificaciones = '';
+    if($this->session->userdata('tipo') == 1){
     $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
+    }
     if(!empty($notificaciones)){
       $contador = 0; $html = '';
       foreach($notificaciones as $row){
@@ -114,6 +117,7 @@ class Notificacion extends CI_Controller{
         // ];
         $html .= '<a class="dropdown-item d-flex align-items-center notificacion" data-id="'.$row->id.'" data-visto="'.$row->visto.'" id="mensaje'.$row->id.'" style="background-color:'.$colorNotificacion.'" href="#"><div class="mr-3"><div class="icon-circle '.$fondoIconoNotificacion.'" id="icono'.$row->id.'">'.$iconoNotificacion.'</div></div><div><div class="small text-gray-800">'.$fechaCreacion.'</div><span class="font-weight-bold"> '.$row->mensaje.' </span></div></a>';
       }
+
       $data['notificaciones'] = $html;
       $data['contadorNotificaciones'] = $contador;
       echo json_encode($data);

@@ -1082,49 +1082,50 @@ function changeDatatable(url1) {
                   let icono_resultado = '';
                   let previo = '';
                   if (full.liberado == 0) {
-                    previo = 
+                    previo =
                       ' <div style="display: inline-flex;"><form id="reportePrevioForm' +
                       data +
                       '" action="<?php echo base_url('Candidato_Conclusion/createPrevioPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="fa-tooltip icono_datatable icono_previo"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idPDF" id="idPDF' +
-                      data + '" value="' + data + '"></form></div>' ;
+                      data + '" value="' + data + '"></form></div>';
                     return previo;
                   } else {
-                   
-                      switch (full.status_bgc) {
-                        case 1:
-                          icono_resultado = 'icono_resultado_aprobado';
 
-                          break;
-                        case 4:
-                          icono_resultado = 'icono_resultado_aprobado';
-                          break;
-                        case 2:
-                          icono_resultado = 'icono_resultado_reprobado';
-                          break;
-                      
-                        case 3:
-                          icono_resultado = 'icono_resultado_revision';
-                          break;
-                          default:
-                         
-                          icono_resultado = 'icono_resultado_espera';
-                          break;
-                       
-                    break;
-                      }
+                    switch (full.status_bgc) {
+                      case 1:
+                        icono_resultado = 'icono_resultado_aprobado';
+
+                        break;
+                      case 4:
+                        icono_resultado = 'icono_resultado_aprobado';
+                        break;
+                      case 2:
+                        icono_resultado = 'icono_resultado_reprobado';
+                        break;
+
+                      case 3:
+                        icono_resultado = 'icono_resultado_revision';
+                        break;
+                      default:
+
+                        icono_resultado = 'icono_resultado_espera';
+                        break;
+
+                        break;
+                    }
 
 
-                      return '<div style="display: inline-block;">' +
-                        '<form id="reporteForm' + data +
-                        '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST">' +
-                        '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="fa-tooltip icono_datatable '+icono_resultado+'">' +
-                        '<i class="fas fa-file-pdf"></i>' +
-                        '</a>' +
-                        '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
-                        '" value="' + data + '">' +
-                        '</form>' +
-                        '</div>' + previo;
-                    
+                    return '<div style="display: inline-block;">' +
+                      '<form id="reporteForm' + data +
+                      '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST">' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="fa-tooltip icono_datatable ' +
+                      icono_resultado + '">' +
+                      '<i class="fas fa-file-pdf"></i>' +
+                      '</a>' +
+                      '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
+                      '" value="' + data + '">' +
+                      '</form>' +
+                      '</div>' + previo;
+
                   }
 
                 } else {
@@ -2014,8 +2015,7 @@ function changeDatatable111(url) {
       "url": url,
       "dataSrc": "",
       "dataType": 'json',
-      "success": function(data) {
-      },
+      "success": function(data) {},
       "error": function(xhr, error, thrown) {
         console.error("Error al cargar los datos:", error, thrown);
         console.error("Respuesta del servidor:", xhr.responseText);
