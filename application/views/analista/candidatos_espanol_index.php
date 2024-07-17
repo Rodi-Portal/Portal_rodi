@@ -969,14 +969,14 @@ function changeDatatable(url1) {
                     if (full.fecha_resultado != null && full.fecha_resultado != "") {
                       if (full.resultado_doping == 1) {
                         salida +=
-                          '<b>Doping: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
+                          '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
                           full.idDoping +
                           '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_reprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
                           full.idDoping + '" value="' + full.idDoping +
                           '"></form></div>';
                       } else {
                         salida +=
-                          '<b>Doping: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
+                          '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
                           full.idDoping +
                           '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_aprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
                           full.idDoping + '" value="' + full.idDoping +
@@ -984,10 +984,10 @@ function changeDatatable(url1) {
                       }
 
                     } else {
-                      salida += "<b>Doping: Pendiente</b> ";
+                      salida += "<b>DrugTest: Pendiente</b> ";
                     }
                   } else {
-                    salida += "<b>Doping: Pendiente</b> ";
+                    salida += "<b>DrugTest: Pendiente</b> ";
                   }
                   if (full.medico == 1 || full.psicometrico == 1) {
                     salida += '<hr>';

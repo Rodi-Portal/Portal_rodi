@@ -424,7 +424,7 @@
             }
           },
           {
-            title: 'Examen Doping',
+            title: 'DrugTest: ',
             data: 'id',
             mRender: function(data, type, full) {
               let doping = '';
