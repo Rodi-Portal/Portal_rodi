@@ -433,14 +433,14 @@ class Login extends CI_Controller
         $id = (int) $id;
 
         // Depuración
-        echo "Valor inicial de ver: $ver, id: $id<br>";
+       // echo "Valor inicial de ver: $ver, id: $id<br>";
 
         if ($ver >= 0 && $ver < 10) {
             $ver = $ver + 1;
-            echo "Nuevo valor de ver: $ver<br>"; // Depuración
+            //echo "Nuevo valor de ver: $ver<br>"; // Depuración
         } else if ($ver == 10 || $ver > 10) {
             $ver = 0;
-            echo "Valor de ver reiniciado a: $ver<br>"; // Depuración
+           // echo "Valor de ver reiniciado a: $ver<br>"; // Depuración
         }
 
         $data = array(
@@ -507,14 +507,14 @@ class Login extends CI_Controller
             $id = $this->session->userdata('id_data');
 
             // Depuración
-            echo "Valor inicial de ver: $ver, id: $id<br>---";
+            //echo "Valor inicial de ver: $ver, id: $id<br>---";
 
             if ($ver >= 0 && $ver < 10) {
                 $ver = $ver + 1;
-                echo "Nuevo valor de ver: $ver<br>"; // Depuración
+               // echo "Nuevo valor de ver: $ver<br>"; // Depuración
             } else if ($ver == 10 || $ver > 10) {
                 $ver = 1;
-                echo "Valor de ver reiniciado a: $ver<br>"; // Depuración
+               // echo "Valor de ver reiniciado a: $ver<br>"; // Depuración
             }
 
             $data = array(
