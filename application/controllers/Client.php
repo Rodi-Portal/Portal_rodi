@@ -633,7 +633,7 @@ class Client extends Custom_Controller
                 }
 
             } else {
-//TODO:  aqui comienza   a trabajar 
+        //TODO:  aqui comienza   a trabajar 
 							//----- aqui comienza   el registro del  candidaton  con un proyecto previo 
               if ($this->input->post('previo') != 0) {
                  
@@ -968,7 +968,7 @@ class Client extends Custom_Controller
                         $this->registrar_notificacion($usuariosObjetivo, $titulo, $mensaje);
                     }*/
                 }  
-//TODO: hasta  aqui estoy trabajando 
+        //TODO: hasta  aqui estoy trabajando 
                 if ($this->input->post('previo') == 0) {
                     $this->form_validation->set_rules('empleos', 'Employment history', 'required');
                     $this->form_validation->set_rules('empleos_tiempo', 'Time required for employment history', 'required');
