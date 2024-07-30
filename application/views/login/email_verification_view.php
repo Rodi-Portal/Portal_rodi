@@ -7,8 +7,8 @@
 </head>
 <body>
     <p>Estimado usuario,</p>
-    <p>Por favor, utilice el siguiente código para verificar su cuenta en RODI:</p>
+    <p>Por favor, utilice el siguiente código para verificar su cuenta en TALENTSAFE CONTROL:</p>
     <p><strong>Código de verificación:</strong> <?php echo $codigo; ?></p>
-    <p>Gracias,<br>El equipo de RODI</p>
+    <p>Gracias,<br>El equipo de TALENTSAFE CONTROL</p>
 </body>
 </html>

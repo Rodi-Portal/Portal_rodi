@@ -33,10 +33,35 @@ class Usuario_model extends CI_Model{
             return false; // Devolver falso si el correo electrónico no se encuentra en la base de datos
         }
     }
+
+    public function actualizarVerificacion($data, $id) {
+        // Asegúrate de que $data es un array y $id es un entero válido
+       
+            // Actualizar la fila con el ID especificado
+            $this->db->where('id', $id);
+            $this->db->update('datos_generales', $data);
+
+            // Verificar si la actualización fue exitosa
+            if ($this->db->affected_rows() > 0) {
+                return true;
+            } else {
+                // Si no se afectaron filas, verificar si la fila existe
+                $query = $this->db->get_where('datos_generales', ['id' => $id]);
+                if ($query->num_rows() == 1) {
+                    // La fila existe pero no se cambió porque los datos son los mismos
+                    return 'No changes made';
+                } else {
+                    // La fila no existe
+                    return 'Row not found';
+                }
+            }
+       
+    }
+
     //Probando   el modelo para   el usuario_portal 
     function existeUsuarioPortal($correo) {
         $this->db
-            ->select('U.id, D.correo, D.nombre, D.paterno, D.password, U.id_rol, R.nombre as rol, U.logueado as loginBD, P.nombre as nombrePortal, P.id as idPortal')
+            ->select('U.id, D.correo, D.nombre, D.paterno, D.password, D.verificacion, D.id as idDatos,  U.id_rol, R.nombre as rol, U.logueado as loginBD, P.nombre as nombrePortal, P.id as idPortal')
             ->from('usuarios_portal as U')
             ->join('rol as R', 'R.id = U.id_rol')
             ->join('portal as P', 'P.id = U.id_portal')
@@ -58,7 +83,7 @@ class Usuario_model extends CI_Model{
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     function existeUsuarioCliente($correo){
         $this->db
-        ->select('UCL.id, CL.id as  id_cliente, DG.correo, DG.nombre, DG.paterno, DG.password,  UCL.id_cliente, UCL.espectador, CL.nombre as cliente, UCL.logueado as loginBD, UCL.privacidad, CL.ingles, CL.id_portal ')
+        ->select('UCL.id, CL.id as  id_cliente, DG.correo, DG.nombre, DG.paterno, DG.id as idDatos, DG.verificacion, DG.password,  UCL.id_cliente, UCL.espectador, CL.nombre as cliente, UCL.logueado as loginBD, UCL.privacidad, CL.ingles, CL.id_portal ')
         ->from('usuarios_clientes as UCL')
         ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
         ->join('cliente  as CL', ' CL.id = UCL. id_cliente')

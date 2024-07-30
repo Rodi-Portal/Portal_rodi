@@ -225,11 +225,7 @@
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Clientes</a>
             <?php
 							} ?>
-            <?php 
-							if(in_array(7, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Subclientes/index') ?>">Subclientes</a>
-            <?php
-							} ?>
+           
             
             <!-- ?php 
 							if(in_array(8, $submenus)){ ?>

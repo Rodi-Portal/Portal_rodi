@@ -23,7 +23,7 @@
             <br>
 
             <div class="body-text" style="font-family:Helvetica, Arial, sans-serif;font-size:14px;line-height:20px;text-align:left;color:black;">
-              This mail has been sent to you to register your data in this <a href="http://rodicontrol.rodi.com.mx">form</a>.
+              This mail has been sent to you to register your data in this <a href="https://portal.talentsafecontrol.com/">form</a>.
               <br><br>
               Your access credentials are: <br>
               Email: <strong><?php echo $email; ?></strong><br>
@@ -35,7 +35,7 @@
                 <li>2) Then, you must log in again for upload your documents to finish.</li>
               </ul>
               <br><br>
-              Please answer this form as soon as possible. If you experience any problem to access or while filling the form, please let us know, and we will gladly help you. lgonzalez@rodicontrol.com
+              Please answer this form as soon as possible. If you experience any problem to access or while filling the form, please let us know, and we will gladly help you. soporte@talentsafecontrol.com
             </div>
 
           </td>
