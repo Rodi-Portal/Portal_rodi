@@ -215,7 +215,10 @@ class Login extends CI_Controller
 
                         redirect('Login/verifyView');
 
-                    } 
+                    } else{
+											$this->session->set_flashdata('not-found', 'Email account and/or password are not valid');
+											redirect('Login/index');
+										}
                 }
             }
         }
