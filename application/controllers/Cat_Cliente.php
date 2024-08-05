@@ -468,6 +468,7 @@ class Cat_Cliente extends CI_Controller
                           'msg' => 'Los  Datos  y  el archivo  fueron almacenados  correctamente :)',
                       );
                         echo json_encode($msj);
+                        return;
                       
 
                       }else{
@@ -480,8 +481,9 @@ class Cat_Cliente extends CI_Controller
                           'msg' => 'Hubo un problema al actualizar los datos, por favor inténtalo nuevamente',
                       );
                       echo json_encode($msj);
+                      return;
                   }
-                  return;
+                  
                       
               }
               

@@ -313,7 +313,6 @@
         success: function(response) {
           // Ya no necesitas parsear la respuesta
           // response ya es un objeto JavaScript
-          console.log("🚀 ~ $ ~ response:", response)
 
           if (response.codigo == 1) {
             Swal.fire({
