@@ -494,7 +494,10 @@ class Cat_Cliente extends CI_Controller
                 );
 
             } else {
-                
+                $msj = array(
+                    'codigo' => 0,
+                    'msg' => 'Error  al   cargar  el archivo  intentalo nuevamente  x.x ',
+                );
             }
 
         } else {
