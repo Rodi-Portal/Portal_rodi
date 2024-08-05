@@ -244,6 +244,8 @@
       success: function(response) {
         // Verifica si la respuesta contiene un array y toma el primer elemento
         if (Array.isArray(response) && response.length > 0) {
+          console.log("🚀 ~ $ ~ response:", response)
+
           var cliente = response[0]; // Accede al primer objeto en el array
 
           // Cargar los datos en el formulario
