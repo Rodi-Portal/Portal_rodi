@@ -94,24 +94,71 @@ class Dashboard extends CI_Controller
 
     public function client()
     {
+        $id_cliente = $this->session->userdata('idcliente');
         $ingles = $this->session->userdata('ingles');
+    
+        // Cargar el idioma
         if ($ingles == 1) {
             $this->lang->load('clientes_panel', 'english');
         } else {
             $this->lang->load('clientes_panel', 'espanol');
         }
+    
+        // Obtener datos del cliente
         $data['translations'] = $this->lang->language;
         $modal['translations'] = $this->lang->language;
         $data['modals'] = $this->load->view('modals/clientes/mdl_panel', $modal, true);
         $data['procesosActuales'] = $this->cliente_model->get_current_procedures2();
-        if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
-            // Muestra el contenido del arreglo con print_r
-            $this->load->view('clientes/index', $data);
+        $datos['cliente'] = $this->cat_cliente_model->getClienteValido();
+    
+        // Verificar si hay campos vacíos
+        $data_incompleta = false; // Cambiado a booleano para mayor claridad
+        if (!empty($datos['cliente'])) {
+            foreach ($datos['cliente'] as $campo) {
+                // Verifica cada propiedad del objeto para encontrar campos vacíos
+                foreach ($campo as $valor) {
+                    if (is_null($valor) || trim($valor) === '') {
+                        $data_incompleta = true;
+                        break 2; // Salir de ambos bucles si se encuentra un campo vacío
+                    }
+                }
+            }
         } else {
-            redirect('Login/index');
+            $data_incompleta = true; // Si no hay datos de cliente, marcar como incompleto
+        }
+    
+       /* echo '<pre> Inician los datos '; 
+        print_r($datos['cliente']);
+        echo $data_incompleta ? ' (Datos incompletos)' : ' (Datos completos)';
+        echo '</pre>';
+        die();*/
+    
+        // Redirigir a la vista correspondiente
+        if ($data_incompleta) {
+            if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
+                $this->load->view('clientes/validar_datos');
+            } else {
+                redirect('Login/index');
+            }
+        } else {
+            // Verificar si todos los campos están completos y redirigir
+            if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
+                $this->load->view('clientes/index', $data);
+            } else {
+                redirect('Login/index');
+            }
         }
     }
+    public function datosCliente() {
+        // Obtén el ID del cliente de la sesión o de otro orig
 
+        // Llama al modelo para obtener los datos del cliente
+        $this->load->model('cat_cliente_model');
+        $datos_cliente = $this->cat_cliente_model->getClienteValido();
+
+        // Devuelve los datos en formato JSON
+        echo json_encode($datos_cliente);
+    }
     public function hcl_panel()
     {
         $data['paises'] = $this->funciones_model->getPaises();

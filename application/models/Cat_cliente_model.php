@@ -14,6 +14,67 @@ class Cat_cliente_model extends CI_Model{
     $query = $this->db->get();
     return $query->num_rows();
   }
+  function getClienteValido() {
+    // Obtén el valor del portal desde la sesión
+    $id_cliente = $this->session->userdata('idcliente');
+    $portal = $this->session->userdata('idPortal');
+
+    try {
+        // Construye la consulta
+        $this->db->select("
+            C.nombre,
+            C.clave,
+            C.icono,
+            C.constancia_cliente,
+            C.id AS idCliente,
+            C.id_datos_facturacion AS dFac,
+            C.id_domicilios AS dDom,
+            C.id_datos_generales AS dGen,
+            DG.nombre AS nombre_contacto,
+            DG.paterno AS apellido_contacto,
+            DG.correo AS correo_contacto,
+            DG.telefono AS telefono_contacto,
+            D.pais,
+            D.estado,
+            D.ciudad,
+            D.colonia,
+            D.calle,
+            D.exterior,
+            D.cp,
+            F.rfc,
+            F.razon_social,
+            F.regimen,
+            F.forma_pago,
+            F.metodo_pago,
+            F.uso_cfdi
+        ")
+        ->from('cliente AS C')
+        ->join('datos_generales AS DG', 'C.id_datos_generales = DG.id')
+        ->join('domicilios AS D', 'C.id_domicilios = D.id')
+        ->join('datos_facturacion AS F', 'C.id_datos_facturacion = F.id')
+        ->where('C.id_portal', $portal)
+        ->where('C.eliminado', 0)
+        ->where('C.id', $id_cliente);
+
+        // Ejecuta la consulta
+        $query = $this->db->get();
+
+        // Muestra la consulta SQL generada para depuración
+        
+
+        // Devuelve los resultados si existen
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return [];
+        }
+
+    } catch (Exception $e) {
+        // Registra y maneja cualquier excepción
+        log_message('error', 'Excepción en la consulta: ' . $e->getMessage());
+        return [];
+    }
+}
  function getC($id_cliente = null) {
   $portal = $this->session->userdata('idPortal');
     try {

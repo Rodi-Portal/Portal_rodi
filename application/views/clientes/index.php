@@ -37,14 +37,18 @@
 
 <body>
   <!-- Se imprimen los modals -->
-  <?php echo $modals; 
-  $id_cliente =  $this->session->userdata('idcliente');
-   /*echo '<pre>';
-   echo $procesosActuales[0]->url;
-   print_r($procesosActuales);
-   echo '</pre>';*/
-   $cliente = $procesosActuales[0];
-  ?>
+  <?php echo $modals;
+/*echo $modalCliente;
+echo '<pre>';
+print_r($cliente);
+echo '</pre>';*/
+$id_cliente = $this->session->userdata('idcliente');
+/*echo '<pre>';
+echo $procesosActuales[0]->url;
+print_r($procesosActuales);
+echo '</pre>';*/
+$cliente = $procesosActuales[0];
+?>
 
   <header>
     <nav class="navbar navbar-dark" style="background-color: #0a39a6;">
@@ -52,7 +56,7 @@
         <img src="<?php echo base_url(); ?>img/portal_icon.png" width="40" height="35"
           class="d-inline-block align-top ms-1" alt="RODI">
         <h5 class="d-inline text-wrap">
-          <?php echo $this->session->userdata('nombre').' '.$this->session->userdata('paterno') ?></h5>
+          <?php echo $this->session->userdata('nombre') . ' ' . $this->session->userdata('paterno') ?></h5>
       </a>
       <ul class="nav justify-content-end">
         <li class="nav-item">
@@ -100,32 +104,29 @@
           <div class="card-body">
 
             <div class="d-flex flex-column flex-sm-row justify-content-around align-items-baseline">
-              <?php $totalRequisiciones = (!empty($procesosActuales))? count($procesosActuales) : 0 ?>
-              <h4 class="text-wrap"><?php echo $translations['proceso_titulo'].':  <b>'.$totalRequisiciones.'</b> ' ?>
+              <?php $totalRequisiciones = (!empty($procesosActuales)) ? count($procesosActuales) : 0?>
+              <h4 class="text-wrap"><?php echo $translations['proceso_titulo'] . ':  <b>' . $totalRequisiciones . '</b> ' ?>
               </h4>
               <button type="button" class="btn btn-primary btn-sm" onclick="loadPageInSection()">
                 <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
               </button>
             </div>
             <hr>
-            <?php 
-          
-       
-          if(!empty($procesosActuales)){
-            foreach($procesosActuales as $proceso){
-              $idioma = ($proceso->ingles == 1)? 'ingles' : 'espanol'; 
-              $status = ($proceso->statusReq > 1) ? '<label">'.$translations['proceso_status'].': <b>Iniciada </b></label><br>' :  '<label">'.$translations['proceso_status'].': <b>Pendiente </b></label><br>'; 
-             
-              
-                $observaciones = ($proceso->ingles == 1)? '<small">Observations: <b>'.$proceso->observaciones.'</b></small><br>' : '<small">Observaciones: <b>'.$proceso->observaciones.'</b></small><br>'; 
-                
-                $numeroVacantes = ($proceso->ingles == 1)? '<small">Vacantes: <b>'.$proceso->numero_vacantes.'</b></small><br>' : '<small">Vacantes: <b>'.$proceso->numero_vacantes.'</b></small><br>'; 
+            <?php
 
-                $zona = ($proceso->ingles == 1)? '<small">Zona de trabajo: <b>'.$proceso->zona_trabajo.'</b></small><br>' : '<small">Zona de trabajo: <b>'.$proceso->zona_trabajo.'</b></small><br>'; 
+if (!empty($procesosActuales)) {
+    foreach ($procesosActuales as $proceso) {
+        $idioma = ($proceso->ingles == 1) ? 'ingles' : 'espanol';
+        $status = ($proceso->statusReq > 1) ? '<label">' . $translations['proceso_status'] . ': <b>Iniciada </b></label><br>' : '<label">' . $translations['proceso_status'] . ': <b>Pendiente </b></label><br>';
 
-                
-                $experiencia = ($proceso->ingles == 1)? '<small">Experiencia: <b>'.$proceso->experiencia.'</b></small><br>' : '<small">Experiencia: <b>'.$proceso->experiencia.'</b></small><br>'; 
-               ?>
+        $observaciones = ($proceso->ingles == 1) ? '<small">Observations: <b>' . $proceso->observaciones . '</b></small><br>' : '<small">Observaciones: <b>' . $proceso->observaciones . '</b></small><br>';
+
+        $numeroVacantes = ($proceso->ingles == 1) ? '<small">Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>' : '<small">Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>';
+
+        $zona = ($proceso->ingles == 1) ? '<small">Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>' : '<small">Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>';
+
+        $experiencia = ($proceso->ingles == 1) ? '<small">Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' : '<small">Experiencia: <b>' . $proceso->experiencia . '</b></small><br>';
+        ?>
 
             <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
               <!-- Boton de acciones -->
@@ -135,7 +136,7 @@
                 <i class="fas fa-ellipsis-v"></i>
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#"><i class="fas fa-edit"></i> < ?php //echo $translations['proceso_accion_editar'] ?></a></li> 
+                <li><a class="dropdown-item" href="#"><i class="fas fa-edit"></i> < ?php //echo $translations['proceso_accion_editar'] ?></a></li>
                 <li><a class="dropdown-item" href="javascript:void(0)"
                     onclick="viewMessages(< ?php echo $proceso->idReq ?>, '< ?php echo $idioma ?>')"><i
                       class="fas fa-comment-dots"></i> < ?php echo $translations['proceso_accion_ver_comentarios'] ?></a>
@@ -144,42 +145,40 @@
                     onclick="viewFiles(< ?php echo $proceso->idReq ?>)"><i class="fas fa-folder"></i>
                     < ?php echo $translations['proceso_accion_archivos'] ?></a></li>
               </ul>
-            </div --> <?php 
-         
-              echo '<div class="card-title" onclick="openDetails('.$proceso->idReq.')">';
-              echo '<span class="badge text-bg-dark">Nombre de la  vacante </span><h4 class="d-inline align-middle"> <b>'.$proceso->puesto.'</b></h4><br>';
-              echo $status;               
-                echo $observaciones;
-                echo $numeroVacantes;
-                echo $zona; 
-                 echo $experiencia;
-                
-                ?>
+            </div --> <?php
+
+        echo '<div class="card-title" onclick="openDetails(' . $proceso->idReq . ')">';
+        echo '<span class="badge text-bg-dark">Nombre de la  vacante </span><h4 class="d-inline align-middle"> <b>' . $proceso->puesto . '</b></h4><br>';
+        echo $status;
+        echo $observaciones;
+        echo $numeroVacantes;
+        echo $zona;
+        echo $experiencia;
+
+        ?>
               <div>
                 <span class="badge text-bg-info">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo ?> </span>
                 <span class="badge text-bg-info">Sueldo Máximo: <?php echo $proceso->sueldo_maximo ?> </span>
               </div>
 
-              <?php  
-            
-            echo '<p class="text-muted text-end">'.$translations['proceso_fecha_registro'].': '.fechaTexto($proceso->creacion, $idioma).'</p>';
-                echo '</div>';
-                ?>
+              <?php
+
+        echo '<p class="text-muted text-end">' . $translations['proceso_fecha_registro'] . ': ' . fechaTexto($proceso->creacion, $idioma) . '</p>';
+        echo '</div>';
+        ?>
             </div>
 
 
             <hr>
-            <?php 
-            }
-          }
-          else { ?>
+            <?php
+}
+} else {?>
             <div class="card">
               <div class="card-body text-center">
                 <?php echo $translations['proceso_sin_candidatos'] ?>
               </div>
             </div>
-            <?php 
-          } ?>
+            <?php }?>
           </div>
         </div>
         <div class="card shadow div2 flex-fill">
@@ -261,7 +260,7 @@
   <!-- Custom JS -->
 
 
-  <script src="<?php echo base_url() ?>js/clientes/panel.js"></script>
+ 
 
   <script>
   let base_url = '<?php echo base_url() ?>'
@@ -320,8 +319,7 @@
     }, 7200000);
   }
   finishSession();
-  </script>
-  <script>
+
   let url_listado = '<?php echo base_url('Cliente/get_candidates'); ?>';
   let url_psicometria = '<?php echo base_url(); ?>_psicometria/';
   let url_clinico = '<?php echo base_url(); ?>_clinico/';
@@ -345,8 +343,6 @@
     })
     localStorage.removeItem('candidatoRegistrado');
   }
-
-
 
   function openHistory() {
     //$('#lista_candidatos').DataTable().destroy();
@@ -515,9 +511,9 @@
         }
       });
   }
-  // escuchador  para   comentarios 
-  function descargarCV() {
 
+  // escuchador  para   comentarios
+  function descargarCV() {
   }
 
   function verHistorial(id, nombre) {
@@ -573,8 +569,6 @@
 
   }
 
-
-
   function verHistorialMovimientos(nombreCompleto, id) {
     $("#nombre_aspirante").text(nombreCompleto);
     $('#div_historial_aspirante').empty();
@@ -627,7 +621,6 @@
       }
     });
   }
-
 
   function openDetails(requisicion_id) {
     $('.div-candidato').removeClass('card-proceso-active');
@@ -693,8 +686,6 @@
       $('.loader').fadeOut();
     });
   }
-
-
 
   function openDetailss(requisicion_id) {
     $('.div-candidato').removeClass('card-proceso-active');
@@ -808,7 +799,7 @@
 
 
 
-  urlGuardarComentario = "<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>";
+ urlGuardarComentario = "<?php echo base_url('Reclutamiento/guardarHistorialBolsaTrabajo'); ?>";
   </script>
   <script src="<?php echo base_url() ?>js/bolsa/aspirantes.js"></script>
 

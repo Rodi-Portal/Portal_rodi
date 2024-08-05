@@ -3,154 +3,154 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Cliente_General extends Custom_Controller{
 
-  function __construct(){
-    parent::__construct();
-    if(!$this->session->userdata('id')){
-      redirect('Login/index');
+    function __construct(){
+      parent::__construct();
+      if(!$this->session->userdata('id')){
+        redirect('Login/index');
+      }
+      $this->load->library('usuario_sesion');
+      $this->usuario_sesion->checkStatusBD();
     }
-		$this->load->library('usuario_sesion');
-		$this->usuario_sesion->checkStatusBD();
-  }
 
-  function index(){
-    if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1 ) {
-      $id_cliente = $this->uri->segment(3);
-      $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
-      if ($data['permisos']) {
-        foreach ($data['permisos'] as $p) {
-          if ($p->id_cliente == $id_cliente) {
-            $data['cliente'] = $p->nombreCliente;
+    function index(){
+      if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1 ) {
+        $id_cliente = $this->uri->segment(3);
+        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        if ($data['permisos']) {
+          foreach ($data['permisos'] as $p) {
+            if ($p->id_cliente == $id_cliente) {
+              $data['cliente'] = $p->nombreCliente;
+            }
           }
         }
+        $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        foreach($data['submodulos'] as $row) {
+          $items[] = $row->id_submodulo;
+        }
+        $data['submenus'] = $items;
+        $data['parentescos'] = $this->funciones_model->getParentescos();
+        $data['escolaridades'] = $this->funciones_model->getEscolaridades();
+        //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
+        //$info['estados'] = $this->funciones_model->getEstados();
+        $info['civiles'] = $this->funciones_model->getEstadosCiviles();
+      // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
+        $info['puestos'] = $this->funciones_model->getPuestos();
+        $info['grados'] = $this->funciones_model->getGradosEstudio();
+        $info['drogas'] = $this->funciones_model->getPaquetesAntidoping();
+        $info['zonas'] = $this->funciones_model->getNivelesZona();
+        $info['viviendas'] = $this->funciones_model->getTiposVivienda();
+        $info['condiciones'] = $this->funciones_model->getTiposCondiciones();
+        $info['studies'] = $this->funciones_model->getTiposEstudios();
+        $info['usuarios_cliente'] = $this->candidato_model->getUsuariosCliente($this->uri->segment(3));
+        $info['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
+        $info['paises'] = $this->funciones_model->getPaises();
+        $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
+        $info['sanguineos'] = $this->funciones_model->getGruposSanguineos();
+        $info['parentescos'] = $this->funciones_model->getParentescos();
+        $info['civiles'] = $this->funciones_model->getEstadosCiviles();
+        $info['escolaridades'] = $this->funciones_model->getEscolaridades();
+        $info['grados_estudios'] = $this->funciones_model->getGradosEstudio();
+        $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($this->uri->segment(3));
+        $info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
+        
+        $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
+        //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
+        $config = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $config->version_sistema;
+
+        //Modals
+        $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
+        $modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
+
+
+        // $this->load->library('pagination');
+
+        // // Configuración del paginador
+        // $config['base_url'] = base_url('cliente_general/index');
+        // $config['total_rows'] = $this->cliente_general_model->count_candidates(); // Número total de filas en tu modelo
+        // $config['per_page'] = 10; // Número de registros por página
+
+        // // Opcional: Personaliza las etiquetas de paginación
+        // $config['full_tag_open'] = '<ul class="pagination">';
+        // $config['full_tag_close'] = '</ul>';
+        // $config['first_link'] = 'Primero';
+        // $config['last_link'] = 'Último';
+        // $config['next_link'] = '&raquo;';
+        // $config['prev_link'] = '&laquo;';
+        // $config['num_tag_open'] = '<li>';
+        // $config['num_tag_close'] = '</li>';
+        // $config['cur_tag_open'] = '<li class="active"><a href="#">';
+        // $config['cur_tag_close'] = '</a></li>';
+
+        // // Inicializar el paginador
+        // $this->pagination->initialize($config);
+
+        // // Obtener los datos paginados de tu modelo
+        // $vista['registros'] = json_decode(json_encode($this->modelo->get_paginated_data($config['per_page'], $this->uri->segment(3))), true);
+        $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
+        if(!empty($notificaciones)){
+          $contador = 0;
+          foreach($notificaciones as $row){
+            if($row->visto == 0){
+              $contador++;
+            }
+          }
+          $data['contadorNotificaciones'] = $contador;
+        }
+
+        $this->load
+        ->view('adminpanel/header', $data)
+        ->view('adminpanel/scripts',$modales)
+        ->view('modals/mdl_reclutamiento')
+        ->view('analista/candidatos_espanol_index', $vista)
+        ->view('adminpanel/footer');
       }
-      $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
-      foreach($data['submodulos'] as $row) {
-        $items[] = $row->id_submodulo;
+    }
+
+    function indexCliente(){
+      if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
+        $id_cliente = $this->session->userdata('idcliente');
+      
+        $data['parentescos'] = $this->funciones_model->getParentescos();
+        $data['escolaridades'] = $this->funciones_model->getEscolaridades();
+        //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
+        //$info['estados'] = $this->funciones_model->getEstados();
+        $info['civiles'] = $this->funciones_model->getEstadosCiviles();
+      // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
+        $info['puestos'] = $this->funciones_model->getPuestos();
+        $info['grados'] = $this->funciones_model->getGradosEstudio();
+        $info['drogas'] = $this->funciones_model->getPaquetesAntidoping();
+        $info['zonas'] = $this->funciones_model->getNivelesZona();
+        $info['viviendas'] = $this->funciones_model->getTiposVivienda();
+        $info['condiciones'] = $this->funciones_model->getTiposCondiciones();
+        $info['studies'] = $this->funciones_model->getTiposEstudios();
+        $info['usuarios_cliente'] = $this->candidato_model->getUsuariosCliente($id_cliente);
+        $info['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
+        $info['paises'] = $this->funciones_model->getPaises();
+        $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
+        $info['sanguineos'] = $this->funciones_model->getGruposSanguineos();
+        $info['parentescos'] = $this->funciones_model->getParentescos();
+        $info['civiles'] = $this->funciones_model->getEstadosCiviles();
+        $info['escolaridades'] = $this->funciones_model->getEscolaridades();
+        $info['grados_estudios'] = $this->funciones_model->getGradosEstudio();
+        $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($id_cliente);
+        $info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
+        
+        $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
+        //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
+        $config = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $config->version_sistema;
+
+        //Modals
+        $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
+        $modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
+
+        $this->load
+
+        ->view('clientes/panel');
+
       }
-      $data['submenus'] = $items;
-      $data['parentescos'] = $this->funciones_model->getParentescos();
-      $data['escolaridades'] = $this->funciones_model->getEscolaridades();
-      //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
-      //$info['estados'] = $this->funciones_model->getEstados();
-      $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-     // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
-      $info['puestos'] = $this->funciones_model->getPuestos();
-      $info['grados'] = $this->funciones_model->getGradosEstudio();
-      $info['drogas'] = $this->funciones_model->getPaquetesAntidoping();
-      $info['zonas'] = $this->funciones_model->getNivelesZona();
-      $info['viviendas'] = $this->funciones_model->getTiposVivienda();
-      $info['condiciones'] = $this->funciones_model->getTiposCondiciones();
-      $info['studies'] = $this->funciones_model->getTiposEstudios();
-      $info['usuarios_cliente'] = $this->candidato_model->getUsuariosCliente($this->uri->segment(3));
-      $info['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
-      $info['paises'] = $this->funciones_model->getPaises();
-			$info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
-			$info['sanguineos'] = $this->funciones_model->getGruposSanguineos();
-      $info['parentescos'] = $this->funciones_model->getParentescos();
-      $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-      $info['escolaridades'] = $this->funciones_model->getEscolaridades();
-      $info['grados_estudios'] = $this->funciones_model->getGradosEstudio();
-      $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($this->uri->segment(3));
-			$info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
-      
-      $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
-      //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
-      $config = $this->funciones_model->getConfiguraciones();
-			$data['version'] = $config->version_sistema;
-
-      //Modals
-      $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
-      $modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
-
-
-      // $this->load->library('pagination');
-
-      // // Configuración del paginador
-      // $config['base_url'] = base_url('cliente_general/index');
-      // $config['total_rows'] = $this->cliente_general_model->count_candidates(); // Número total de filas en tu modelo
-      // $config['per_page'] = 10; // Número de registros por página
-
-      // // Opcional: Personaliza las etiquetas de paginación
-      // $config['full_tag_open'] = '<ul class="pagination">';
-      // $config['full_tag_close'] = '</ul>';
-      // $config['first_link'] = 'Primero';
-      // $config['last_link'] = 'Último';
-      // $config['next_link'] = '&raquo;';
-      // $config['prev_link'] = '&laquo;';
-      // $config['num_tag_open'] = '<li>';
-      // $config['num_tag_close'] = '</li>';
-      // $config['cur_tag_open'] = '<li class="active"><a href="#">';
-      // $config['cur_tag_close'] = '</a></li>';
-
-      // // Inicializar el paginador
-      // $this->pagination->initialize($config);
-
-      // // Obtener los datos paginados de tu modelo
-      // $vista['registros'] = json_decode(json_encode($this->modelo->get_paginated_data($config['per_page'], $this->uri->segment(3))), true);
-      $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0,1]);
-			if(!empty($notificaciones)){
-				$contador = 0;
-				foreach($notificaciones as $row){
-					if($row->visto == 0){
-						$contador++;
-					}
-				}
-				$data['contadorNotificaciones'] = $contador;
-			}
-
-      $this->load
-      ->view('adminpanel/header', $data)
-      ->view('adminpanel/scripts',$modales)
-      ->view('modals/mdl_reclutamiento')
-      ->view('analista/candidatos_espanol_index', $vista)
-      ->view('adminpanel/footer');
     }
-  }
-
-  function indexCliente(){
-    if($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
-      $id_cliente = $this->session->userdata('idcliente');
-    
-      $data['parentescos'] = $this->funciones_model->getParentescos();
-      $data['escolaridades'] = $this->funciones_model->getEscolaridades();
-      //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
-      //$info['estados'] = $this->funciones_model->getEstados();
-      $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-     // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
-      $info['puestos'] = $this->funciones_model->getPuestos();
-      $info['grados'] = $this->funciones_model->getGradosEstudio();
-      $info['drogas'] = $this->funciones_model->getPaquetesAntidoping();
-      $info['zonas'] = $this->funciones_model->getNivelesZona();
-      $info['viviendas'] = $this->funciones_model->getTiposVivienda();
-      $info['condiciones'] = $this->funciones_model->getTiposCondiciones();
-      $info['studies'] = $this->funciones_model->getTiposEstudios();
-      $info['usuarios_cliente'] = $this->candidato_model->getUsuariosCliente($id_cliente);
-      $info['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
-      $info['paises'] = $this->funciones_model->getPaises();
-			$info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
-			$info['sanguineos'] = $this->funciones_model->getGruposSanguineos();
-      $info['parentescos'] = $this->funciones_model->getParentescos();
-      $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-      $info['escolaridades'] = $this->funciones_model->getEscolaridades();
-      $info['grados_estudios'] = $this->funciones_model->getGradosEstudio();
-      $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($id_cliente);
-			$info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
-      
-      $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
-      //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
-      $config = $this->funciones_model->getConfiguraciones();
-			$data['version'] = $config->version_sistema;
-
-      //Modals
-      $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
-      $modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
-
-      $this->load
-
-      ->view('clientes/panel');
-
-    }
-  }
   /*----------------------------------------*/
   /*  Consultas 
   /*----------------------------------------*/
@@ -190,6 +190,7 @@ class Cliente_General extends Custom_Controller{
       $cand['data'] = $this->cliente_general_model->getCandidatosFinalizados($id_cliente, $this->session->userdata('idrol'), $this->session->userdata('id'));
       $this->output->set_output( json_encode( $cand ) );
     }
+
     function getCandidatosUltimosFinalizados(){
       $id_cliente = $_GET['id'];
       $cand['recordsTotal'] = $this->cliente_general_model->getUltimosFinalizadosTotal($id_cliente, $this->session->userdata('idrol'), $this->session->userdata('id'));
@@ -197,6 +198,7 @@ class Cliente_General extends Custom_Controller{
       $cand['data'] = $this->cliente_general_model->getCandidatosUltimosFinalizados($id_cliente, $this->session->userdata('idrol'), $this->session->userdata('id'));
       $this->output->set_output( json_encode( $cand ) );
     }
+
     function getCandidatosUltimos100(){
       $id_cliente = $_GET['id'];
       $statusBGC = (isset($_GET['enproceso']) && $_GET['enproceso'] == 0) ? [0,1,2,3,4,5] : [0];
@@ -205,6 +207,7 @@ class Cliente_General extends Custom_Controller{
       $cand['data'] = $this->cliente_general_model->getCandidatosUltimos100($id_cliente, $this->session->userdata('idrol'), $this->session->userdata('id'), $statusBGC);
       $this->output->set_output( json_encode( $cand ) );
     }
+
     function getHistorialAcademico(){
       $id_candidato = $this->input->post('id_candidato');
       $res = array();
@@ -244,6 +247,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($res);
     }
+
     function getReferenciasPersonales(){
       $id_candidato = $this->input->post('id_candidato');
       $salida = "";
@@ -263,6 +267,7 @@ class Cliente_General extends Custom_Controller{
           echo $salida = 0;
       }
     }
+
     function getAntecedentesLaborales(){
       $id_candidato = $this->input->post('id_candidato');
       $salida = "";
@@ -298,6 +303,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo $salida;
     }
+
     function getInvestigacionLegal(){
       $id_candidato = $this->input->post('id_candidato');
       $res = array();
@@ -314,6 +320,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($res);
     }
+
     function getGrupoFamiliar(){
       $id_candidato = $_POST['id_candidato'];
       $salida = "";
@@ -530,6 +537,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo $salida;
     }
+
     function getComentariosRefPersonales(){
       $id_candidato = $this->input->post('id_candidato');
       $salida = "";
@@ -545,11 +553,13 @@ class Cliente_General extends Custom_Controller{
           echo $salida;
       }
     }
+
     function countAntecedentesLaborales(){
       $id_candidato = $this->input->post('id_candidato');
       $numero = $this->candidato_model->countAntecedentesLaborales($id_candidato);
       echo $numero;
     }
+
     function getComentariosRefVecinales(){
       $id_candidato = $this->input->post('id_candidato');
       $salida = "";
@@ -565,12 +575,14 @@ class Cliente_General extends Custom_Controller{
           echo $salida;
       }
     }
+
     function getInformacionVisita(){
       $id_candidato = $this->input->post('id_candidato');
       $data['visita'] = $this->candidato_model->getInformacionVisita($id_candidato);
             
       echo json_encode($data['visita']);
     }
+
     function getUsuariosClientePrivados(){
       $id_cliente = $this->input->post('id_cliente');
       $salida = '';
@@ -958,6 +970,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarDatosGenerales(){
       $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
       $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
@@ -1050,6 +1063,8 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
+
     function guardarDatosGeneralesInternacionales(){
       $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
       $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
@@ -1131,6 +1146,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarHistorialAcademico(){
       $this->form_validation->set_rules('prim_promedio', 'Promedio de Primaria', 'numeric|trim');
       $this->form_validation->set_rules('sec_promedio', 'Promedio de Secundaria', 'numeric|trim');
@@ -1241,6 +1257,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarAntecendentesSociales(){
       $this->form_validation->set_rules('sindical', '¿Perteneció algún puesto sindical?', 'required|trim');
       $this->form_validation->set_rules('sindical_nombre', '¿A cuál?', 'required|trim');
@@ -1336,6 +1353,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarReferenciasPersonales(){
       for($i = 1; $i <= 3; $i++){
         $this->form_validation->set_rules('nombre'.$i, 'Nombre de la referencia #'.$i, 'required|trim');
@@ -1383,6 +1401,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarAntecedenteLaboral(){
       $this->form_validation->set_rules('empresa', 'Nombre de la empresa', 'required|trim');
       $this->form_validation->set_rules('area', 'Área o Departamento', 'required|trim');
@@ -1496,6 +1515,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarInvestigacionLegal(){
       $this->form_validation->set_rules('penal', 'Penal', 'required|trim');
       $this->form_validation->set_rules('penal_notas', 'Penal notas', 'required|trim');
@@ -1558,6 +1578,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function actualizarProcesoCandidato(){
       date_default_timezone_set('America/Mexico_City');
       $date = date('Y-m-d H:i:s');
@@ -1683,6 +1704,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo $salida = 1;
     }
+
     function guardarIntegranteFamiliar(){
       $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
       $this->form_validation->set_rules('parentesco', 'Parentesco', 'required|trim');
@@ -1741,6 +1763,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function editarExtrasCandidato(){
       $this->form_validation->set_rules('notas', 'Notas', 'required|trim');
       $this->form_validation->set_rules('muebles', 'Muebles e inmuebles del candidato', 'required|trim');
@@ -1777,6 +1800,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarEgresos(){
       $this->form_validation->set_rules('renta', 'Renta', 'required|trim|numeric');
       $this->form_validation->set_rules('alimentos', 'Alimentos', 'required|trim|numeric');
@@ -1841,6 +1865,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarHabitacion(){
       $this->form_validation->set_rules('tiempo_residencia', 'Tiempo de residencia en el domicilio actual', 'required|trim');
       $this->form_validation->set_rules('nivel_zona', 'Nivel de la zona', 'required|trim');
@@ -1916,6 +1941,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function guardarReferenciasVecinales(){
       $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
       $this->form_validation->set_rules('domicilio', 'Domicilio', 'required|trim');
@@ -1991,6 +2017,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function terminarProceso(){
       $this->form_validation->set_rules('personal1', 'Descripción de datos personales', 'required|trim');
       $this->form_validation->set_rules('personal2', 'Descripción de hábitos y referencias personales', 'required|trim');
@@ -2109,6 +2136,7 @@ class Cliente_General extends Custom_Controller{
       }
       echo json_encode($msj);
     }
+
     function crearPrevioPDF(){
       $mpdf = new \Mpdf\Mpdf();
       date_default_timezone_set('America/Mexico_City');
