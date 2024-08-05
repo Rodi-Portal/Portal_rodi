@@ -242,9 +242,10 @@
       type: 'GET',
       dataType: 'json',
       success: function(response) {
+        console.log("🚀 ~ $ ~ response:", response)
+
         // Verifica si la respuesta contiene un array y toma el primer elemento
         if (Array.isArray(response) && response.length > 0) {
-          console.log("🚀 ~ $ ~ response:", response)
 
           var cliente = response[0]; // Accede al primer objeto en el array
 
@@ -303,7 +304,7 @@
       var formData = new FormData($('#formPaso1')[0]);
 
       $.ajax({
-        url: '<?php echo base_url('Cat_cliente/guardarDatos'); ?>',
+        url: '<?php echo base_url('Cat_Cliente/guardarDatos'); ?>',
         type: 'POST',
         data: formData,
         processData: false,
