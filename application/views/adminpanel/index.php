@@ -930,10 +930,10 @@ function generarDatosFalsos() {
   var datosCard6 = [];
   
   // Generar datos falsos para cada mes del año (enero a diciembre)
-  for (var i = 0; i < 12; i++) {
+  /* for (var i = 0; i < 12; i++) {
     datosCard5.push(Math.floor(Math.random() * 100)); // Valores aleatorios entre 0 y 100
     datosCard6.push(Math.floor(Math.random() * 100)); // Valores aleatorios entre 0 y 100
-  }
+  } */
   
   return { datosCard5, datosCard6 };
 }

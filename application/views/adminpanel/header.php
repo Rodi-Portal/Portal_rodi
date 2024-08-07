@@ -73,16 +73,17 @@
       <hr class="sidebar-divider">
 
       <!-- Manual de Usuario -->
-      <!-- ?php 
-			if(in_array(30, $submenus)){ ?>
-      <li class="nav-item">
-        <a class="nav-link" href="< ?php echo site_url('Manual/index') ?>">
-          <i class="fas fa-book"></i>
-          <span>Manual de usuario</span></a>
-      </li>
-      < ?php
-			}? -->
-
+      
+         <li class="nav-item">
+        <!-- Ajusta la ruta del archivo según corresponda -->
+        <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
+            <i class="fas fa-book"></i>
+            <span>Manual de usuario</span>
+        </a>
+    </li>
+    
+         <!-- Divider -->
+      <hr class="sidebar-divider">
       <!-- Clientes -->
       <?php 
 			if(in_array(2, $submenus)){ ?>
@@ -225,7 +226,13 @@
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Clientes</a>
             <?php
 							} ?>
-           
+            <?php        
+             $portal = $this->session->userdata('idPortal');
+             $idRol = $this->session->userdata('idrol');
+								if($portal == 1 && ($idRol == 1 || $idRol == 6)  ){ ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
+            <?php
+							} ?>
             
             <!-- ?php 
 							if(in_array(8, $submenus)){ ?>
