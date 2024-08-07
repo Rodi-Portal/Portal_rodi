@@ -435,22 +435,22 @@ class Cat_cliente_model extends CI_Model{
           return false;
       }
   
-      $subject = "Credenciales Portal Rodi";
+      $subject = "Credenciales TalentSafeControl";
       // Cargar la vista email_verification_view.php
       $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass'=>$pass, 'switch'=>$soloPass], true);
   
       $this->load->library('phpmailer_lib');
       $mail = $this->phpmailer_lib->load();
       $mail->isSMTP();
-      $mail->Host = 'mail.rodicontrol.com';
+      $mail->Host = 'mail.talentsafecontrol.com';
       $mail->SMTPAuth = true;
-      $mail->Username = 'soporte@portal.rodi.com.mx';
-      $mail->Password = 'iU[A}vWg+JFiRxe+LK';
+      $mail->Username = 'soporte@talentsafecontrol.com';
+      $mail->Password = 'FQ{[db{}%ja-';
       $mail->SMTPSecure = 'ssl';
       $mail->Port = 465;
-  
+     
       if ($correo !== null && $correo !== '') {
-          $mail->setFrom('soporte@portal.rodi.com.mx', 'RODICONTROL');
+          $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
           $mail->addAddress($correo);
       } else {
           return false;

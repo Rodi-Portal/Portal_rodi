@@ -16,10 +16,10 @@
   <p>Es importante que mantenga sus credenciales de acceso de forma segura y no las comparta con nadie.</p>
 
   <p>Por favor, haga clic en el siguiente enlace para acceder:</p>
-  <p><a href="https://portal.rodi.com.mx/">Acceder</a></p>
+  <p><a href="https://portal.talentsafecontrol.com/">Acceder</a></p>
 
   <p>Si tiene alguna pregunta o necesita ayuda, no dude en contactarnos.</p>
-  <p>Gracias por confiar en nosotros,<br>El equipo de RODI</p>
+  <p>Gracias por confiar en nosotros,<br>El equipo de TalentSafeControl</p>
 </body>
 
 <?php }elseif($switch == 1){ ?>
@@ -37,10 +37,10 @@
   <p>Es importante que mantenga sus credenciales de acceso de forma segura y no las comparta con nadie.</p>
 
   <p>Por favor, haga clic en el siguiente enlace para acceder:</p>
-  <p><a href="https://portal.rodi.com.mx/">Acceder</a></p>
+  <p><a href="https://portal.talentsafecontrol.com/">Acceder</a></p>
 
   <p>Si tiene alguna pregunta o necesita ayuda, no dude en contactarnos.</p>
-  <p>Gracias por confiar en nosotros,<br>El equipo de RODI</p>
+  <p>Gracias por confiar en nosotros,<br>El equipo de TalentSafeControl</p>
 </body>
 
 

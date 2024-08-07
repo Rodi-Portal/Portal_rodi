@@ -137,6 +137,7 @@ $autoload['model'] = array(
     'generales_model',
     'area_model',
     'avance_model',
+    'cat_portales_model',
     'cat_subclientes_model',
     'candidato_avance_model',
     'candidato_conclusion_model',

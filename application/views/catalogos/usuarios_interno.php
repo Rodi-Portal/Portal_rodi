@@ -197,6 +197,7 @@ $(document).ready(function() {
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
+
           let editar =
             '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar Usuario" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-pencil-alt" style="font-size: 16px;"></i></a> ';
 
@@ -216,7 +217,7 @@ $(document).ready(function() {
 
           let credenciales =
             '<a href="javascript:void(0)" data-toggle="tooltip" title="Actualizar credenciales al candidato" onclick="enviarCredenciales(\'' +
-            full.correo + '\', \'' + full.id_datos +
+            full.correo + '\', \'' + full.id_datos_generales +
             '\')" class="fa-tooltip icono_datatable icono_amarillo"><i class="fas fa-sync-alt style="font-size: 16px;"></i></a> ';
               if(full.nombre_rol === 'Gerente'){
                 return editar  + credenciales;
@@ -317,6 +318,7 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
   }
 }
 function enviarCredenciales(valor1, valor2) {
+    
     $('#titulo_mensaje_contraseña').text('Reenviar Contraseña');
     $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña <b>' + valor1 + '</b>?');
     $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");

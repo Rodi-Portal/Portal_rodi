@@ -2,7 +2,7 @@
 <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span><strong> <?php echo date("Y"); ?> <a href="https://portal.rodi.com.mx/"> &copy; TalentSafe Control</a>. Versión <?php echo $version; ?></strong> Todos los Derechos Reservados.</span>
+            <span><strong> <?php echo date("Y"); ?> <a href="https://portal.talentsafecontrol.com"> &copy; TalentSafe Control</a>. Versión <?php echo $version; ?></strong> Todos los Derechos Reservados.</span>
           </div>
         </div>
       </footer>

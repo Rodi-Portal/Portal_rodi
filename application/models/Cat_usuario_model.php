@@ -156,37 +156,56 @@ function addUsuarioInterno($usuario, $datos_generales) {
       return "error  excepcion ".$e;
   }
 }
-function updatePass($id, $datos,  $pass, $correo) {
-
-  
+function updatePass($id, $DatosGenerales, $uncode_password, $correo) {
+  /* echo '<pre>';
+  echo $id . ' aqui el id<br>';
+  echo $uncode_password . ' aqui el pass<br>';
+  echo $correo . ' aqui el correo<br>';
+  print_r($DatosGenerales);
+  echo '</pre>' */
 
   $this->db->trans_start();
 
   try {
+      // Verificar si el ID existe antes de intentar actualizar
+      $this->db->where('id', $id);
+      $query = $this->db->get('datos_generales');
+      if ($query->num_rows() <= 0) {
+          throw new Exception("ID no encontrado en la base de datos.");
+      }
+
       // Actualiza los datos en la tabla 'datos_generales'
       $this->db->where('id', $id);
-      $this->db->update('datos_generales', $datos);
+      $this->db->update('datos_generales', $DatosGenerales);
+
+      // Muestra la consulta SQL generada para depuración
+      //echo $this->db->last_query() . '<br>';
+
+      // Verifica si la actualización fue exitosa
+      if ($this->db->affected_rows() <= 0) {
+          throw new Exception("No se actualizaron los datos en la base de datos.");
+      }
 
       // Envía el correo y verifica si fue exitoso
-      $envioExitoso = $this->accesosUsuariosCorreo($correo, $pass, 1);
+      $envioExitoso = $this->accesosUsuariosCorreo($correo, $uncode_password, 1);
 
       if (!$envioExitoso) {
-          throw new Exception("Error al enviar el correo");
+          throw new Exception("Error al enviar el correo.");
       }
 
       // Finaliza la transacción
       $this->db->trans_complete();
 
+      // Verifica si la transacción fue exitosa
       if ($this->db->trans_status() === FALSE) {
-          $this->db->trans_rollback();
-          return 0;
+          return 0;  // Transacción fallida
       } else {
-          $this->db->trans_commit();
-          return 1;
+          return 1;  // Transacción exitosa
       }
   } catch (Exception $e) {
+      // Rollback en caso de excepción
       $this->db->trans_rollback();
-      return "error excepcion ".$e;
+      return "error excepcion " . $e->getMessage();
   }
 }
 
@@ -226,22 +245,22 @@ function getById($idusuario){
           return false;
       }
   
-      $subject = "Credenciales Portal Rodi";
+      $subject = "Credenciales TalentSafeControl";
       // Cargar la vista email_verification_view.php
       $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass'=>$pass, 'switch'=>$soloPass], true);
   
       $this->load->library('phpmailer_lib');
       $mail = $this->phpmailer_lib->load();
       $mail->isSMTP();
-      $mail->Host = 'mail.rodicontrol.com';
+      $mail->Host = 'mail.talentsafecontrol.com';
       $mail->SMTPAuth = true;
-      $mail->Username = 'soporte@portal.rodi.com.mx';
-      $mail->Password = 'iU[A}vWg+JFiRxe+LK';
+      $mail->Username = 'soporte@talentsafecontrol.com';
+      $mail->Password = 'FQ{[db{}%ja-';
       $mail->SMTPSecure = 'ssl';
       $mail->Port = 465;
-  
+     
       if ($correo !== null && $correo !== '') {
-          $mail->setFrom('soporte@portal.rodi.com.mx', 'RODICONTROL');
+          $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
           $mail->addAddress($correo);
       } else {
           return false;
