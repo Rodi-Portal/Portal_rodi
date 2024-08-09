@@ -126,16 +126,15 @@ class Cat_portales_model extends CI_Model{
     } 
   }
 
-  function existeCliente($nombre, $clave, $id){
+  function existePortal($nombre){
 
     //echo " nombre: ". $nombre. " Clave: ". $clave.  "  ID: ". $id;
     //die();
-    $id_portal = $this->session->userdata('idPortal');
     $this->db
       ->select('*')
-      ->from('cliente')
-      ->where('id_portal', $id_portal)
-      ->where("(nombre = '$nombre' OR clave = '$clave') AND id != '$id'");
+      ->from('portal')
+      ->where('nombre', $nombre);
+     
      
     
     $query = $this->db->get();
@@ -149,7 +148,7 @@ class Cat_portales_model extends CI_Model{
   function check($id){
     $this->db
       ->select('id')
-      ->from('cliente')
+      ->from('portal')
       ->where('id', $id);
     
     $query = $this->db->get();
@@ -158,7 +157,7 @@ class Cat_portales_model extends CI_Model{
     return $query->num_rows();
   }
 
-  function addCliente($cliente, $datosFacturacion, $datosDomicilios, $datosGenerales) {
+  function addPortal($portal, $datosFacturacion, $datosDomicilios, $datosGenerales, $uncode_password) {
     try {
         // Iniciar la transacción
         $this->db->trans_start();
@@ -172,38 +171,32 @@ class Cat_portales_model extends CI_Model{
         // Agregar los datos de facturación y obtener el ID
         $id_datosFacturacion = $this->generales_model->addDatosFacturacion($datosFacturacion);
 
-        // Asignar los IDs obtenidos al cliente
-        $cliente['id_datos_generales'] = $id_datosGenerales;
-        $cliente['id_domicilios'] = $id_domicilios;
-        $cliente['id_datos_facturacion'] = $id_datosFacturacion;
+        // Asignar los IDs obtenidos al portal
+        $portal['id_domicilios'] = $id_domicilios;
+        $portal['id_datos_facturacion'] = $id_datosFacturacion;
 
-        // Insertar el cliente en la tabla correspondiente
-        $this->db->insert("cliente", $cliente);
-        $idCliente = $this->db->insert_id();
+        // Insertar el portal en la tabla correspondiente
+        $this->db->insert("portal", $portal);
+        $idPortal= $this->db->insert_id();
 
-        // Actualizar la URL del cliente
-        $url = "Cliente_General/index/" . $idCliente;
-        $this->db->where('id', $idCliente)->update('cliente', ['url' => $url]);
-
-        // Crear permisos para el cliente
-        $permiso = [
-            'id_usuario' => $cliente['id_usuario'],
-            'id_cliente' => $idCliente,
-            'cliente' => strtoupper($cliente['nombre']),
-        ];
-        $this->db->insert("permiso", $permiso);
-
-        // Crear usuario del cliente
-        $usuario_cliente = [
-            'creacion' => $cliente['creacion'],
-            'edicion' => $cliente['creacion'],
-            'id_usuario' => $cliente['id_usuario'],
+        // Crear usuario del portal
+        $usuario_portal = [
+            'id_portal' => $idPortal,
+            'creacion' => $portal['creacion'],
+            'edicion' => $portal['creacion'],
+            'id_usuario' => $portal['id_usuario'],
             'id_datos_generales' => $id_datosGenerales,
-            'id_cliente' => $idCliente,
-            'espectador' => 0,
-            'privacidad' => 1,
+            'id_domicilios' => null,
+            'id_rol'=> 6,
         ];
-        $this->db->insert("usuarios_clientes", $usuario_cliente);
+        $this->db->insert("usuarios_portal", $usuario_portal);
+        $isUsuarioPortal= $this->db->insert_id();
+        
+        $data_portal =  array(
+          'id_usuario_portal' => $isUsuarioPortal,
+        );
+
+        $this->editPortal($idPortal, $data_portal);
 
         // Verificar si la transacción fue exitosa
         if ($this->db->trans_status() === false) {
@@ -216,10 +209,10 @@ class Cat_portales_model extends CI_Model{
         $this->db->trans_commit();
 
         // Envía el correo electrónico después de completar la transacción
-        $this->accesosUsuariosCorreo($datosGenerales['correo'], $datosGenerales['password']);
+        $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode_password);
 
         // Retornar el ID del cliente insertado
-        return $idCliente;
+        return $idPortal;
 
     } catch (Exception $e) {
         // Manejar la excepción si ocurre algún error
@@ -231,58 +224,56 @@ class Cat_portales_model extends CI_Model{
 
 
   function addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos){
-    try {
-      
+      try {
+        
 
-        $this->db->trans_start();
+          $this->db->trans_start();
 
-        // Agregar los datos generales y obtener el ID
-        $usuarioCliente['id_datos_generales'] = $this->generales_model->addDatosGenerales($usuarioClienteDatos);
+          // Agregar los datos generales y obtener el ID
+          $usuarioCliente['id_datos_generales'] = $this->generales_model->addDatosGenerales($usuarioClienteDatos);
 
-        // Insertar en la tabla usuarios_clientes
-        $this->db->insert("usuarios_clientes", $usuarioCliente);
+          // Insertar en la tabla usuarios_clientes
+          $this->db->insert("usuarios_clientes", $usuarioCliente);
 
-        $this->db->trans_complete();
+          $this->db->trans_complete();
 
-        // Verificar si la transacción fue exitosa
-        if ($this->db->trans_status() === false) {
-            // Ocurrió un error durante la transacción
-            return false;
-        }
+          // Verificar si la transacción fue exitosa
+          if ($this->db->trans_status() === false) {
+              // Ocurrió un error durante la transacción
+              return false;
+          }
 
-        // Transacción exitosa, retornar el ID del usuario insertado
-        return $this->db->insert_id();
-    } catch (Exception $e) {
-        log_message('error', 'Error en addUsuarioCliente: ' . $e->getMessage());
-        return false;
-    }
+          // Transacción exitosa, retornar el ID del usuario insertado
+          return $this->db->insert_id();
+      } catch (Exception $e) {
+          log_message('error', 'Error en addUsuarioCliente: ' . $e->getMessage());
+          return false;
+      }
   }
 
 
 
-  function editCliente($idCliente, $cliente ,$datosFacturacion = null,   $datosDomicilios = null, $datosGenerales = null ) {
+  function editPortal($idPortal, $portal ,$datosFacturacion = null,   $datosDomicilios = null) {
     try {
         // Iniciar la transacción
         $this->db->trans_start();
 
         // Editar los datos generales si se proporcionaron
-        if (!is_null($datosGenerales)) {
-            $this->generales_model->editDatosGenerales($cliente['id_datos_generales'], $datosGenerales);
-        }
+        
 
         // Editar los domicilios si se proporcionaron
         if (!is_null($datosDomicilios)) {
-            $this->generales_model->editDomicilios($cliente['id_domicilios'], $datosDomicilios);
+            $this->generales_model->editDomicilios($portal['id_domicilios'], $datosDomicilios);
         }
 
         // Editar los datos de facturación si se proporcionaron
         if (!is_null($datosFacturacion)) {
-            $this->generales_model->editDatosFacturacion($cliente['id_datos_facturacion'], $datosFacturacion);
+            $this->generales_model->editDatosFacturacion($portal['id_datos_facturacion'], $datosFacturacion);
         }
 
-        // Actualizar el cliente en la tabla correspondiente si se proporcionó
-        if (!is_null($cliente)) {
-            $this->db->where('id', $idCliente)->update('cliente', $cliente);
+        // Actualizar el portal en la tabla correspondiente si se proporcionó
+        if (!is_null($portal)) {
+            $this->db->where('id', $idPortal)->update('portal', $portal);
         }
 
         // Completar la transacción

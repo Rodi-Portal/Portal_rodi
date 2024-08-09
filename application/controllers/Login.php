@@ -402,7 +402,7 @@ class Login extends CI_Controller
         $mail->Host = 'mail.talentsafecontrol.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'soporte@talentsafecontrol.com';
-        $mail->Password = 'a,W{t$&N]JtN';
+        $mail->Password = 'FQ{[db{}%ja-'; 
         $mail->SMTPSecure = 'ssl';
         $mail->Port = 465;
 

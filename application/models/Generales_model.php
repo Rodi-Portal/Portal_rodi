@@ -79,7 +79,7 @@ function getPortalCliente($id_cliente){
 }
 
 public function correoExiste($correo ,$idDatos = null, ) {
-    $id_portal = $this->session->userdata('idPortal');
+  
     $this->db->select('id')
              ->from('datos_generales')
              ->where('correo', $correo);

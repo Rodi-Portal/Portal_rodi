@@ -108,33 +108,33 @@ class Cat_Portales extends CI_Controller
                 'creacion' => $date,
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
-                'nombre' => strtoupper($this->input->post('nombre')),
-                'clave' => $this->input->post('clave'),
-                'icono' => '<i class="fas fa-user-tie"></i>',
-                'id_datos_generales' => null,
+                'nombre' => strtoupper($this->input->post('nombrePortal')),
+                'id_usuario_portal' => null,
                 'id_domicilios' => null,
                 'id_datos_facturacion' => null,
             );
 
-
+          /*
             echo '<pre>'; 
             print_r($datos_generales);
             print_r($datos_factura);
-            print_r($datos_cliente);
+            print_r($datos_portal);
             print_r($datos_domicilios);
             echo '</pre>';
-            die();
-            $nombreCliente = $this->input->post('nombre');
-            $claveCliente = $this->input->post('clave');
-            $idCliente = $this->input->post('idCliente');
+            die(); 
+          */
+           
 
-            $correo = $this->input->post('correo');
-            $idGenerales = $this->input->post('idGenerales');
+      
 
-            $existe = $this->cat_cliente_model->existeCliente($this->input->post('nombre'), $this->input->post('clave'), $idCliente);
+            $existe = $this->cat_portales_model->existePortal($this->input->post('nombrePortal'));
+           
+            $idPortal = ($this->input->post('idPortal') !== '') ? $this->input->post('idPortal') : null;
+            $correo = ($this->input->post('correo') !== '') ? $this->input->post('correo') : null;
+            $idGenerales = ($this->input->post('idGenerales') !== '') ? $this->input->post('idGenerales') : null;
 
             if ($existe == 0) {
-                $hayId = $this->cat_cliente_model->check($idCliente);
+                $hayId = $this->cat_portales_model->check($idPortal);
 
                 if ($hayId > 0) {
                     $datos_cliente = array(
@@ -152,12 +152,12 @@ class Cat_Portales extends CI_Controller
                     if ($existeCorreo !== 0) {
                         $msj = array(
                             'codigo' => 2,
-                            'msg' => 'El correo proporcionado ya existe',
+                            'msg' => 'El correo proporcionado ya existe.',
                         );
                         echo json_encode($msj);
                         return; // Detener el flujo del código ya que hay un error
                     }
-                    $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, );
+                    $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
                     $permiso = array(
                         'id_usuario' => $id_usuario,
                         'cliente' => $this->input->post('nombre'),
@@ -183,7 +183,7 @@ class Cat_Portales extends CI_Controller
                         return; // Detener el flujo del código ya que hay un error
                     }
 
-                    $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
+                    $idCliente = $this->cat_portales_model->addPortal($datos_portal, $datos_factura, $datos_domicilios, $datos_generales, $uncode_password );
 
                     if ($idCliente > 0) {
 
@@ -207,7 +207,7 @@ class Cat_Portales extends CI_Controller
             } else {
                 $msj = array(
                     'codigo' => 2,
-                    'msg' => 'El nombre del cliente y/o clave ya existe',
+                    'msg' => 'El nombre del Portal ya  existe, este  tiene  que  ser unico, prueba  con otro nombre por favor',
                 );
             }
         }
