@@ -410,7 +410,7 @@ header('Content-Type: text/html; charset=utf-8');
             <div class="col-4">
               <label>Social Security Number (SSN)</label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
-              <input type="hidden" class="form-control obligado" name="id_cliente" id="id_cliente" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden" maxlength="11">
               <input type="hidden" class="form-control obligado" name="clave" id="clave" maxlength="11">
               <input type="hidden" class="form-control obligado" name="cliente" id="cliente" maxlength="11">
               <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq"
