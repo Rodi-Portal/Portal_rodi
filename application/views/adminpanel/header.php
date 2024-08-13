@@ -6,33 +6,35 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Panel de Control | RODI</title>
-	<!-- CSS -->
-	<?php echo link_tag("css/custom.css"); ?>
-	<?php echo link_tag("css/sb-admin-2.min.css"); ?>
-	<!-- DataTables -->
-	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
+  <!-- CSS -->
+  <?php echo link_tag("css/custom.css"); ?>
+  <?php echo link_tag("css/sb-admin-2.min.css"); ?>
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
   <!-- Custom fonts for this template-->
   <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-	<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-	<!-- FullCalendar -->
-	<!--<link href='<?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
+  <!-- FullCalendar -->
+  <!--<link href='<?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >
 	<!-- Favicon -->
-	<link rel="icon" type="image/jpg" href="<?php echo base_url() ?>img/favicon.jpg" sizes="64x64">
-	<!-- Select Bootstrap -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-	<!-- Sweetalert 2 -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
-	<!-- Bootstrap core JavaScript-->
-	<script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
-	<script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <link rel="icon" type="image/jpg" href="<?php echo base_url() ?>img/favicon.jpg" sizes="64x64">
+  <!-- Select Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+  <!-- Sweetalert 2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
+  <!-- Bootstrap core JavaScript-->
+  <script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
+  <script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- Animate -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   <!-- Core plugin JavaScript-->
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
-	<!-- Page level plugins -->
+  <!-- Page level plugins -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="<?php echo base_url() ?>js/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="<?php echo base_url() ?>js/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
   <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
 
@@ -40,8 +42,8 @@
 </head>
 
 <body id="page-top">
-    <!-- JavaScript -->
-   
+  <!-- JavaScript -->
+
 
   <!-- Page Wrapper -->
   <div id="wrapper">
@@ -49,13 +51,13 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" >
-       
-          <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png">
-        
-       
+      <a class="sidebar-brand d-flex align-items-center justify-content-center">
+
+        <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png">
+
+
       </a>
-      <h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2>      <!-- Divider -->
+      <h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
       <hr class="sidebar-divider my-0">
 
       <!-- Dashboard -->
@@ -73,16 +75,16 @@
       <hr class="sidebar-divider">
 
       <!-- Manual de Usuario -->
-      
-         <li class="nav-item">
+
+      <li class="nav-item">
         <!-- Ajusta la ruta del archivo según corresponda -->
         <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
-            <i class="fas fa-book"></i>
-            <span>Manual de usuario</span>
+          <i class="fas fa-book"></i>
+          <span>Manual de usuario</span>
         </a>
-    </li>
-    
-         <!-- Divider -->
+      </li>
+
+      <!-- Divider -->
       <hr class="sidebar-divider">
       <!-- Clientes -->
       <?php 
@@ -95,13 +97,19 @@
         </a>
         <div id="collapseClientes" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <?php
-									if($permisos){
-										foreach($permisos as $p){ 
-											echo "<a class='collapse-item contraer' data-toggle='tooltip' data-placement='right' title='".$p->nombreCliente."' href='".site_url("$p->url")."'>".$p->nombreCliente."</a>";
-										} 
-									} 
-							?>
+            <?php if (isset($permisos) && !empty($permisos)) : ?>
+            <?php foreach ($permisos as $p) : ?>
+            <?php if (isset($p->nombreCliente) && isset($p->url)) : ?>
+            <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
+              title="<?php echo htmlspecialchars($p->nombreCliente, ENT_QUOTES, 'UTF-8'); ?>"
+              href="<?php echo site_url(htmlspecialchars($p->url, ENT_QUOTES, 'UTF-8')); ?>">
+              <?php echo htmlspecialchars($p->nombreCliente, ENT_QUOTES, 'UTF-8'); ?>
+            </a>
+            <?php endif; ?>
+            <?php endforeach; ?>
+            <?php else : ?>
+            <p>No tienes permisos disponibles.</p>
+            <?php endif; ?>
           </div>
         </div>
       </li>
@@ -131,7 +139,8 @@
             <?php
 							}  
 							if(in_array(19, $submenus)){ ?>
-            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/finalizados') ?>">Requisiciones Finalizadas</a>
+            <a class="collapse-item" href="<?php echo site_url('Reclutamiento/finalizados') ?>">Requisiciones
+              Finalizadas</a>
             <?php
 							}
                if(in_array(28, $submenus)){ ?>
@@ -216,7 +225,7 @@
         </a>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-          <?php 
+            <?php 
 						$idRol = $this->session->userdata('idrol');
             if($idRol == 1 || $idRol == 6 ){ ?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios</a>
@@ -234,12 +243,12 @@
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
             <?php
 							} ?>
-            
+
             <!-- ?php 
 							if(in_array(8, $submenus)){ ?>
             <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
             < ?php
-							} ? --> 
+							} ? -->
           </div>
         </div>
       </li>
@@ -276,8 +285,8 @@
 							}  */
 							if(in_array(16, $submenus)){ ?>
             <a class="collapse-item" href="< ?php echo site_url('Reporte/listado_doping_index') ?>">Listado de Doping</a-->
-            
-              <?php
+
+            <?php
 							if(in_array(25, $submenus)){ ?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
               href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Listado de Clientes</a>
