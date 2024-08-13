@@ -127,7 +127,7 @@ class Usuario_model extends CI_Model{
         ->select('C.nombre as nombreCliente, C.icono, C.url')
         ->from('cliente as C')
         //->where('p.id_subcliente', 0)
-        ->where('id_portal', $id_portal)
+        ->where('C.id_portal', $id_portal)
         ->order_by('C.nombre','ASC');
 
         $query = $this->db->get();
