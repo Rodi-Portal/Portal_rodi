@@ -124,7 +124,7 @@ class Usuario_model extends CI_Model{
     function getPermisos($id){
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-        ->select('C.nombre as nombreCliente, C.icono, C.url')
+        ->select('C.id As id_cliente, C.nombre as nombreCliente, C.icono, C.url')
         ->from('cliente as C')
         //->where('p.id_subcliente', 0)
         ->where('C.id_portal', $id_portal)
