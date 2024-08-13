@@ -17,7 +17,7 @@ class Cat_portales_model extends CI_Model{
   }
 
 
-  function getClienteValido() {
+function getClienteValido() {
     // Obtén el valor del portal desde la sesión
     $id_cliente = $this->session->userdata('idcliente');
     $portal = $this->session->userdata('idPortal');
@@ -78,19 +78,26 @@ class Cat_portales_model extends CI_Model{
         return [];
     }
 }
- function getP() {
+function getP() {
 
     try {
-        $this->db->select("P.nombre, 
-        P.status, P.descripcion, 
+        $this->db->select("
+        P.id AS idPortal,
+        P.cons AS constancia,
+        P.nombre, 
+        P.status, 
+        P.descripcion, 
         P.creacion, 
         P.usuarios_permitidos,
         P.id AS idPortal,
         P.id_datos_facturacion AS idFac,
-       
-        F.*, F.regimen as regimen1,
-        F.forma_pago, F.metodo_pago,
-        UP.id_domicilios AS dDom,
+        P.id_usuario_portal,
+        F.*, 
+        F.regimen as regimen1,
+        F.forma_pago, 
+        F.metodo_pago,
+        
+        P.id_domicilios AS idDom,
         D.*,
         (SELECT COUNT(id) FROM usuarios_portal WHERE id_portal = P.id) AS numero_usuarios_portal,
         DGU.nombre AS nombre_usuario_portal,
@@ -100,7 +107,7 @@ class Cat_portales_model extends CI_Model{
             ->from('portal AS P')
             ->join("usuarios_portal AS UP", "P.id_usuario_portal = UP.id", 'left')
             ->join("datos_generales AS DGU", "UP.id_datos_generales = DGU.id", 'left')
-            ->join("domicilios AS D", "UP.id_domicilios = D.id", 'left')
+            ->join("domicilios AS D", "P.id_domicilios = D.id", 'left')
             ->join("datos_facturacion AS F", "P.id_datos_facturacion = F.id", 'left')
             ->where('P.status', 1);
 
@@ -124,9 +131,9 @@ class Cat_portales_model extends CI_Model{
         log_message('error', 'Excepción en la consulta: ' . $e->getMessage());
         return [];
     } 
-  }
+}
 
-  function existePortal($nombre){
+function existePortal($nombre){
 
     //echo " nombre: ". $nombre. " Clave: ". $clave.  "  ID: ". $id;
     //die();
@@ -143,9 +150,9 @@ class Cat_portales_model extends CI_Model{
    
     log_message('info', 'Consulta SQL en existe: ' . $this->db->last_query());
     return $query->num_rows();
-  }
+}
 
-  function check($id){
+function check($id){
     $this->db
       ->select('id')
       ->from('portal')
@@ -155,9 +162,9 @@ class Cat_portales_model extends CI_Model{
     // Loguear la consulta SQL generada
     log_message('info', 'Consulta SQL en check: ' . $this->db->last_query());
     return $query->num_rows();
-  }
+}
 
-  function addPortal($portal, $datosFacturacion, $datosDomicilios, $datosGenerales, $uncode_password) {
+function addPortal($portal, $datosFacturacion, $datosDomicilios, $datosGenerales, $uncode_password) {
     try {
         // Iniciar la transacción
         $this->db->trans_start();
@@ -220,10 +227,10 @@ class Cat_portales_model extends CI_Model{
         $this->db->trans_rollback();
         return false;
     }
-  }
+}
 
 
-  function addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos){
+function addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos){
       try {
         
 
@@ -249,11 +256,11 @@ class Cat_portales_model extends CI_Model{
           log_message('error', 'Error en addUsuarioCliente: ' . $e->getMessage());
           return false;
       }
-  }
+}
 
 
 
-  function editPortal($idPortal, $portal ,$datosFacturacion = null,   $datosDomicilios = null) {
+function editPortal($idPortal, $portal ,$datosFacturacion = null,   $datosDomicilios = null) {
     try {
         // Iniciar la transacción
         $this->db->trans_start();
@@ -292,135 +299,135 @@ class Cat_portales_model extends CI_Model{
         log_message('error', 'Error en editCliente: ' . $e->getMessage());
         return false;
     }
-  }
+}
 
  
 
-  function addPermiso($permiso){
-    $this->db->insert("permiso", $permiso);
-  }
+function addPermiso($permiso){
+  $this->db->insert("permiso", $permiso);
+}
  
-  function editPermiso($permiso, $id_cliente){
-    $this->db
-    ->where('id_cliente', $id_cliente)
-    ->update('permiso', $permiso);
-  }
+function editPermiso($permiso, $id_cliente){
+  $this->db
+  ->where('id_cliente', $id_cliente)
+  ->update('permiso', $permiso);
+}
   
-  function getById($idCliente){
-    $this->db
-    ->select('*')
-    ->from('cliente')
-    ->where('id',$idCliente);
+function getById($idCliente){
+  $this->db
+  ->select('*')
+  ->from('cliente')
+  ->where('id',$idCliente);
 
-    $query = $this->db->get();
-    return $query->row();
-  }
+  $query = $this->db->get();
+  return $query->row();
+}
 
-  function checkPermisosByCliente($id_cliente){
-    $this->db
-    ->select("id")
-    ->from('permiso')
-    ->where('id_cliente', $id_cliente);
+function checkPermisosByCliente($id_cliente){
+  $this->db
+  ->select("id")
+  ->from('permiso')
+  ->where('id_cliente', $id_cliente);
 
-    $query = $this->db->get();
-    return $query->num_rows();
-  }
-  function getAccesosClienteModal($id_cliente, $id_portal){
+  $query = $this->db->get();
+  return $query->num_rows();
+}
+function getAccesosClienteModal($id_cliente, $id_portal){
+
   
-   
-   
-    $this->db
-        ->select("cli.*, CONCAT(dup.nombre,' ',dup.paterno) as usuario, CONCAT(duc.nombre,' ',duc.paterno) as usuario_cliente, duc.correo as correo_usuario, uc.creacion as alta, uc.id as idUsuarioCliente, uc.privacidad")
-        ->from("cliente AS cli")
-        ->join("usuarios_clientes uc", "uc.id_cliente = cli.id")
-        ->join("usuarios_portal u", "u.id = cli.id_portal")
-        ->join("datos_generales dup", "dup.id = u.id_datos_generales")
-        ->join("datos_generales duc", "duc.id = uc.id_datos_generales")
-        ->where("cli.id", $id_cliente)
-        ->where("u.id", $id_portal);
-       
-    $query = $this->db->get();
-    
-    if ($query->num_rows() > 0) {
-        return $query->result();
-    } else {
-        return FALSE;
-    }
-  }
-
-  function editAccesoUsuarioCliente($idCliente,$usuario ){
-    $this->db
-    ->where('id_cliente', $idCliente)
-    ->update('usuarios_clientes', $usuario);
-  }
-
-  function editAccesoUsuarioSubcliente($idCliente, $usuario){
-    $this->db
-    ->where('id_cliente', $idCliente)
-    ->update('usuario_subcliente', $usuario);
-  }
-
-  function deleteAccesoUsuarioCliente($idUsuarioCliente){
-    $this->db
-    ->where('id', $idUsuarioCliente)
-    ->delete('usuarios_clientes');
-  }
   
-  function getClientesActivosModel(){
-    $id_portal = $this->session->userdata('idPortal');
-    $this->db
-    ->select("C.*")
-    ->from('cliente as C')
-    ->where('C.status', 1)
-    ->where('C.eliminado', 0)
-    ->where('C.id_portal', $id_portal)
-    ->order_by('C.nombre','ASC');
-
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
+  $this->db
+      ->select("cli.*, CONCAT(dup.nombre,' ',dup.paterno) as usuario, CONCAT(duc.nombre,' ',duc.paterno) as usuario_cliente, duc.correo as correo_usuario, uc.creacion as alta, uc.id as idUsuarioCliente, uc.privacidad")
+      ->from("cliente AS cli")
+      ->join("usuarios_clientes uc", "uc.id_cliente = cli.id")
+      ->join("usuarios_portal u", "u.id = cli.id_portal")
+      ->join("datos_generales dup", "dup.id = u.id_datos_generales")
+      ->join("datos_generales duc", "duc.id = uc.id_datos_generales")
+      ->where("cli.id", $id_cliente)
+      ->where("u.id", $id_portal);
+      
+  $query = $this->db->get();
+  
+  if ($query->num_rows() > 0) {
       return $query->result();
-    }else{
+  } else {
       return FALSE;
-    }
   }
+}
 
-  function getUsuariosClientePorCandidato($id_candidato){
-    $this->db
-    ->select("cl.correo, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, c.privacidad as privacidadCandidato, cl.privacidad as privacidadCliente")
-    ->from('candidato as c')
-    ->join("usuario_cliente as cl","cl.id_cliente = c.id_cliente")
-    ->where('c.id', $id_candidato);
+function editAccesoUsuarioCliente($idCliente,$usuario ){
+  $this->db
+  ->where('id_cliente', $idCliente)
+  ->update('usuarios_clientes', $usuario);
+}
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
-    }
+function editAccesoUsuarioSubcliente($idCliente, $usuario){
+  $this->db
+  ->where('id_cliente', $idCliente)
+  ->update('usuario_subcliente', $usuario);
+}
+
+function deleteAccesoUsuarioCliente($idUsuarioCliente){
+  $this->db
+  ->where('id', $idUsuarioCliente)
+  ->delete('usuarios_clientes');
+}
+
+function getClientesActivosModel(){
+  $id_portal = $this->session->userdata('idPortal');
+  $this->db
+  ->select("C.*")
+  ->from('cliente as C')
+  ->where('C.status', 1)
+  ->where('C.eliminado', 0)
+  ->where('C.id_portal', $id_portal)
+  ->order_by('C.nombre','ASC');
+
+  $query = $this->db->get();
+  if($query->num_rows() > 0){
+    return $query->result();
+  }else{
+    return FALSE;
   }
+}
 
-  function addHistorialBloqueos($data){
-    $this->db->insert("bloqueo_historial", $data);
+function getUsuariosClientePorCandidato($id_candidato){
+  $this->db
+  ->select("cl.correo, CONCAT(c.nombre,' ',c.paterno,' ',c.materno) as candidato, c.privacidad as privacidadCandidato, cl.privacidad as privacidadCliente")
+  ->from('candidato as c')
+  ->join("usuario_cliente as cl","cl.id_cliente = c.id_cliente")
+  ->where('c.id', $id_candidato);
+
+  $query = $this->db->get();
+  if($query->num_rows() > 0){
+    return $query->result();
+  }else{
+    return FALSE;
   }
+}
 
-  function editHistorialBloqueos($dataBloqueos, $idCliente){
-    $this->db
-    ->where('id_cliente', $idCliente)
-    ->update('bloqueo_historial', $dataBloqueos);
-  }
+function addHistorialBloqueos($data){
+  $this->db->insert("bloqueo_historial", $data);
+}
 
-  function getBloqueoHistorial($id_cliente){
-    $this->db
-    ->select("*")
-    ->from('bloqueo_historial')
-    ->where('status', 1)
-    ->where('id_cliente', $id_cliente);
+function editHistorialBloqueos($dataBloqueos, $idCliente){
+  $this->db
+  ->where('id_cliente', $idCliente)
+  ->update('bloqueo_historial', $dataBloqueos);
+}
 
-    $consulta = $this->db->get();
-    return $consulta->row();
-  }
+function getBloqueoHistorial($id_cliente){
+  $this->db
+  ->select("*")
+  ->from('bloqueo_historial')
+  ->where('status', 1)
+  ->where('id_cliente', $id_cliente);
 
-  function accesosUsuariosCorreo($correo, $pass, $soloPass = 0){
+  $consulta = $this->db->get();
+  return $consulta->row();
+}
+
+function accesosUsuariosCorreo($correo, $pass, $soloPass = 0){
       if ($correo === null || $correo === '') {
           return false;
       }
@@ -457,5 +464,5 @@ class Cat_portales_model extends CI_Model{
         log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
           return false;
       }
-  }
+}
 }

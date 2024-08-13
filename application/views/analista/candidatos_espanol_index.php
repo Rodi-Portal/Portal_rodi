@@ -216,7 +216,7 @@ function registrarCandidato() {
 
   datos.append('previo', $("#previos").val());
   datos.append('proyecto', $("#proyecto_registro").val());
-  datos.append('id_cliente', id_cliente);
+  datos.append('id_cliente_hidden', id_cliente);
   datos.append('examen', $("#examen_registro").val());
   datos.append('medico', $("#examen_medico").val());
 
@@ -13891,7 +13891,7 @@ function registrar() {
   datos.append('egresos', $("#egresos_registro").val());
   datos.append('habitacion', $("#habitacion_registro").val());
   datos.append('ref_vecinales', $("#ref_vecinales_registro").val());
-  datos.append('id_cliente', id_cliente);
+  datos.append('id_cliente_hidden', id_cliente);
   datos.append('examen', $("#examen_registro").val());
   datos.append('medico', $("#examen_medico").val());
   datos.append('psicometrico', $("#examen_psicometrico").val());

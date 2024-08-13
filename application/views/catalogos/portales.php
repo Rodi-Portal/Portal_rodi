@@ -41,7 +41,7 @@
 
   <?php echo $modals; ?>
   <div class="loader" style="display: none;"></div>
-  <input type="hidden" id="idCliente">
+  <input type="hidden" id="idPortal">
   <input type="hidden" id="idUsuarioCliente">
 
 
@@ -49,53 +49,55 @@
 
 
 
-<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center">
+          <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
+          <div class="col-md-9">
+            <label>Generar contraseña *</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8"
+                readonly>
+              <div class="input-group-append">
+                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
+              </div>
             </div>
-            <div class="modal-body">
-                <div class="row justify-content-center">
-                <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
-                    <div class="col-md-9">
-                        <label>Generar contraseña *</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8" readonly>
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <input type="hidden" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
-                <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
-            </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
-            </div>
+          </div>
         </div>
+        <input type="hidden" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
+        <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- /.content-wrapper -->
 <script>
 var url = '<?php echo base_url('Cat_Portales/getPortales'); ?>';
 var tipos_bloqueo_php =
-  '<?php foreach($tipos_bloqueo as $row){ echo '<option value="'.$row->tipo.'">'.$row->descripcion.'</option>';} ?>';
+  '<?php foreach ($tipos_bloqueo as $row) {echo '<option value="' . $row->tipo . '">' . $row->descripcion . '</option>';}?>';
 var tipos_desbloqueo_php =
-  '<?php foreach($tipos_desbloqueo as $row){ echo '<option value="'.$row->tipo.'">'.$row->descripcion.'</option>';} ?>';
+  '<?php foreach ($tipos_desbloqueo as $row) {echo '<option value="' . $row->tipo . '">' . $row->descripcion . '</option>';}?>';
 $(document).ready(function() {
   $("#cerrarModal").on("click", function() {
 
 
     // Resetea el formulario al cerrar el modal
-  
+
   });
 
   //console.log('Documento listo. Iniciando script.');
@@ -147,24 +149,24 @@ $(document).ready(function() {
         // $('#tabla').DataTable().clear().draw();
       }
     },
-    "columns": [
-      {
-                "title": 'idPortal',
-                "data": 'idPortal',
-                "visible": false,
-                "width": "3%"
-            },
+    "columns": [{
+        "title": 'idPortal',
+        "data": 'idPortal',
+        "visible": false,
+        "width": "3%"
+      },
       {
         title: 'Nombre',
         data: 'nombre',
         bSortable: false,
-        "width": "25%",
+        "width": "10%",
         mRender: function(data, type, full) {
           return '<span class="badge badge-pill badge-dark">#' + full.idPortal + '</span><br><b>' + data +
             '</b>';
         }
       },
-      
+
+
       {
         title: 'Fecha de alta',
         data: 'creacion',
@@ -182,10 +184,52 @@ $(document).ready(function() {
         }
       },
       {
+        title: 'Constancia de Situación Fiscal',
+        data: 'constancia',
+        bSortable: false,
+        width: "10%",
+        mRender: function(data, type, full) {
+          console.log("🚀 ~ mRender ~ data:", data);
+          console.log("🚀 ~ mRender ~ full:", full);
+
+          // La URL completa del archivo debe ser accesible desde la web
+          const fileUrl = '<?php echo base_url("_portal_files/"); ?>' + data;
+
+          if (data && data.trim() !== '') {
+            // Archivo existente
+            return '<b>Constancia:</b> ' +
+              '<a href="' + fileUrl +
+              '" target="_blank" data-toggle="tooltip" title="Ver Constancia" id="descarga_constancia_' +
+              full.id + '" class="fa-tooltip icono_datatable icono_azul_oscuro">' +
+              '<i class="fas fa-file-invoice"></i>' +
+              '</a>' +
+              ' <button onclick="document.getElementById(\'cargar_constancia_' + full.id +
+              '\').click();" ' +
+              'class="btn btn-warning btn-sm ml-2" title="Actualizar Constancia">' +
+              '<i class="fas fa-upload"></i>' +
+              '</button>' +
+              '<input type="file" id="cargar_constancia_' + full.id +
+              '" name="constancia" style="display: none;" ' +
+              'onchange="uploadFile(event, \'' + full.idPortal + '\')">';
+          } else {
+            // Sin archivo
+            return '<b>Subir Constancia:</b> ' +
+              '<input type="file" id="cargar_constancia_' + full.idPortal +
+              '" name="constancia" style="display: none;" ' +
+              'onchange="uploadFile(event, \'' + full.idPortal + '\')">' +
+              '<button onclick="document.getElementById(\'cargar_constancia_' + full.idPortal +
+              '\').click();" ' +
+              'class="btn btn-primary">' +
+              '<i class="fas fa-upload"></i>' +
+              '</button>';
+          }
+        }
+      },
+      {
         title: 'Accesos',
         data: 'numero_usuarios_portal',
         bSortable: false,
-        "width": "15%",
+        "width": "10%",
         mRender: function(data, type, full) {
           if (data == 0) {
             return 'Sin registro de accesos';
@@ -198,7 +242,7 @@ $(document).ready(function() {
         title: 'Acciones',
         data: 'id',
         bSortable: false,
-        "width": "10%",
+        "width": "15%",
         mRender: function(data, type, full) {
           let editar =
             '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a> ';
@@ -226,64 +270,52 @@ $(document).ready(function() {
     },
     rowCallback: function(row, data) {
       $("a#editar", row).bind('click', () => {
-        resetModal();
-        console.log('abriendo editar  ');
-        $("#idCliente").val(data.idCliente);
-        $("#idFacturacion").val(data.dFac);
-        $("#idDomicilios").val(data.dDom);
-        $("#idGenerales").val(data.dGen);
 
-        $("#titulo_nuevo_modal").text("Editar cliente");
+
+        console.log('abriendo editar  ');
+        $("#idPortalE").val(data.idPortal);
+        $("#idFacturacionE").val(data.idFac);
+        $("#idDomiciliosE").val(data.idDom);
+        $("#idUsuarioPortalE").val(data.id_usuario_portal);
 
         // Generales
-        $("#nombre").val(data.nombre);
-        $("#clave").val(data.clave);
-
+        $("#nombrePortal_edit").val(data.nombre);
+        $("#accesosEdit").val(data.usuarios_permitidos);
         // Domicilio
-        
-        $("#numero_exterior").val(data.exterior);
-        $("#numero_interior").val(data.interior);
-        $("#calle").val(data.calle);
-        $("#cp").val(data.cp);
-
-        $("#colonia").val(data.colonia);
+        $("#pais_edit").val(data.pais);
+        $("#ciudad_edit").val(data.ciudad);
+        $("#estado_edit").val(data.estado);
+        $("#numero_exterior_edit").val(data.exterior);
+        $("#numero_interior_edit").val(data.interior);
+        $("#calle_edit").val(data.calle);
+        $("#numero_cp_edit").val(data.cp);
+        $("#colonia_edit").val(data.colonia);
 
         // Datos de Facturación
-        $("#razon_social").val(data.razon_social);
-        $("#telefono").val(data.telefono_contacto);
-        $("#correo").val(data.correo_contacto);
-
-        $("#nombre_contacto").val(data.nombre_contacto);
-        $("#apellido_contacto").val(data.apellido_contacto);
-        $("#rfc").val(data.rfc);
-        $("#regimen").val(data.regimen);
-        $("#forma_pago").val(data.forma_pago).change();
-        $("#metodo_pago").val(data.metodo_pago).change();
-        $("#uso_cfdi").val(data.uso_cfdi);
-
-        $("#password").val(data.password_contacto).hide().prev("label").hide();
-        $("#generarPass").hide();
-        $("#passLabel").hide();
-        // Ocultar elementos
-
+        $("#razon_social_edit").val(data.razon_social);
+        $("#rfc_edit").val(data.rfc);
+        $("#regimen_edit").val(data.regimen);
+        $("#forma_pago_edit").val(data.forma_pago);
+        $("#metodo_pago_edit").val(data.metodo_pago);
+        $("#uso_cfdi_edit").val(data.uso_cfdi);
 
         // Mostrar el modal
-        $("#newPortal").modal("show");
+        $("#editPortal").modal("show");
       });
       $("a#activar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente)
+        mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idPortal)
       });
       $("a#desactivar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.idCliente)
+        mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.idPortal)
       });
       $("a#bloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.idCliente)
+        mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.idPortal)
       });
       $("a#desbloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.idCliente)
+        mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.idPortal)
       });
       $("a#eliminar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idCliente)
+        mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idPortal)
       });
       $("a#acceso", row).bind('click', () => {
         $(".nombreCliente").text(data.nombre);
@@ -293,7 +325,7 @@ $(document).ready(function() {
           url: '<?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
           type: 'post',
           data: {
-            'id_cliente': data.idCliente
+            'id_cliente': data.idPortal
           },
           beforeSend: function() {
             mostrarLoader();
@@ -304,7 +336,6 @@ $(document).ready(function() {
             if (res !== 0) {
               let datos = JSON.parse(res);
               let salida = generarTabla(datos);
-              console.log("🚀 ~ $ ~ datos:", datos)
               $("#div_accesos").html(salida);
             } else {
               mostrarMensajeNoRegistros();
@@ -423,23 +454,23 @@ $(document).ready(function() {
             }, 4000);
           }
         });
-        });
-          },
-          "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página",
-            "zeroRecords": "No se encontraron registros",
-            "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-            "infoEmpty": "Sin registros disponibles",
-            "infoFiltered": "(Filtrado _MAX_ registros totales)",
-            "sSearch": "Buscar:",
-            "oPaginate": {
-              "sLast": "Última página",
-              "sFirst": "Primera",
-              "sNext": "Siguiente",
-              "sPrevious": "Anterior"
-            }
-          }
       });
+    },
+    "language": {
+      "lengthMenu": "Mostrar _MENU_ registros por página",
+      "zeroRecords": "No se encontraron registros",
+      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+      "infoEmpty": "Sin registros disponibles",
+      "infoFiltered": "(Filtrado _MAX_ registros totales)",
+      "sSearch": "Buscar:",
+      "oPaginate": {
+        "sLast": "Última página",
+        "sFirst": "Primera",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
+      }
+    }
+  });
 });
 
 
@@ -495,20 +526,20 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
     $('#btnConfirmar').attr("onclick", "accionCliente('desbloquear'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
- 
+
 }
 
- 
+
 function enviarCredenciales(valor1, valor2) {
-    $('#titulo_mensaje_contraseña').text('Reenviar Contraseña'+valor2);
-    $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña  al usuario <b>' + valor1  + '</b>?');
-    $('#password_cliente').val('');
-    $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
-    $('#btnEnviarPass').attr("data-dismiss", "modal");
-    $('#idDatosGeneralesEditPass').val(valor2); // Asignar valor a idUsuarioInterno
-    $('#idCorreo').val(valor1);
+  $('#titulo_mensaje_contraseña').text('Reenviar Contraseña' + valor2);
+  $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña  al usuario <b>' + valor1 + '</b>?');
+  $('#password_cliente').val('');
+  $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
+  $('#btnEnviarPass').attr("data-dismiss", "modal");
+  $('#idDatosGeneralesEditPass').val(valor2); // Asignar valor a idUsuarioInterno
+  $('#idCorreo').val(valor1);
   // Asignar valor a idCorreo
-    $('#enviarCredenciales').modal('show');
+  $('#enviarCredenciales').modal('show');
 }
 
 function accionCliente(accion, id, correo = null) {
@@ -521,7 +552,7 @@ function accionCliente(accion, id, correo = null) {
     url: '<?php echo base_url('Cat_Cliente/status'); ?>',
     type: 'POST',
     data: {
-      'idCliente': id,
+      'idPortal': id,
       'accion': accion,
       'opcion_motivo': opcion_motivo,
       'mensaje_comentario': mensaje_comentario,
@@ -551,215 +582,63 @@ function accionCliente(accion, id, correo = null) {
   });
 }
 
-function registrarAccesoCliente() {
-  $.ajax({
-    url: '<?php echo base_url('Cat_Cliente/getClientesActivos'); ?>',
-    type: 'post',
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      if (res != 0) {
-        $('#id_cliente').empty();
-        var dato = JSON.parse(res);
-        $('#id_cliente').append('<option value="">Selecciona</option>');
-        for (let i = 0; i < dato.length; i++) {
-          $('#id_cliente').append('<option value="' + dato[i]['id'] + '">' + dato[i]['nombre'] + '</option>');
-        }
-        $('#nuevoAccesoClienteModal').modal('show');
-      }
-    }
-  });
-}
-/*Funcion para  crear  acesos  para  los usuarios de los clientes, esta  captura  
-los datos  del formulario mdl_cat_cliente los transforma en JSon y los envia Medisnte  El protocolo POST 
+
+/*Funcion para  crear  acesos  para  los usuarios de los clientes, esta  captura
+los datos  del formulario mdl_cat_cliente los transforma en JSon y los envia Medisnte  El protocolo POST
   al archivo Cat_usuario a la funcion addUsuario */
-function crearAccesoClientes() {
-  let tipoUsuarioSwitch = document.getElementById("tipoUsuarioSwitch");
-  let tipoUsuarioValue = tipoUsuarioSwitch.checked ? 1 : 0;
 
-  let datosArray = $('#formAccesoCliente').serializeArray();
-  datosArray.push({
-    name: 'tipo_usuario',
-    value: tipoUsuarioValue
-  });
-
-  $.ajax({
-    url: '<?php echo base_url('Cat_Cliente/addUsuarioCliente'); ?>',
-    type: 'POST',
-    data: datosArray,
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      console.log(res);
-
-      try {
-        var data = JSON.parse(res);
-
-        if (data.codigo === 1) {
-          $("#nuevoAccesoClienteModal").modal('hide');
-          recargarTable();
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Usuario guardado correctamente',
-            showConfirmButton: false,
-            timer: 2500
-          });
-          $('#formAccesoCliente¿')[0].reset();
-        } else {
-          $("#nuevoAccesoClienteModal #msj_error").css('display', 'block').html(data.msg);
-        }
-      } catch (error) {
-        console.error("Error al analizar la respuesta JSON:", error);
-        console.log(res);
-      }
-    },
-    error: function(xhr, textStatus, errorThrown) {
-      console.error("Error en la llamada AJAX:", textStatus, errorThrown);
-      console.log(xhr.responseText);
-    }
-  });
-}
-function actualizarContraseña() {
-  var pass = $('#password_cliente').val();
-  var correo = $('#idCorreo').val();
-  var id_datos = $('#idDatosGeneralesEditPass').val();
-  $.ajax({
-    url: '<?php echo base_url('Cat_UsuarioInternos/actualizarPass'); ?>',
-    type: 'post',
-    data: {
-      'id': id_datos,
-      'correo': correo,
-      'pass': pass
-    },
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      var data = JSON.parse(res);
-      if (data.codigo === 1) {
-        recargarTable();
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: data.msg,
-          showConfirmButton: false,
-          timer: 3000
-        });
-      } else {
-        Swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: 'Error al realizar la acción',
-          text: data.msg,
-          showConfirmButton: false,
-          timer: 2500
-        });
-      }
-    },
-    error: function(err) {
-      console.error('Error en la petición AJAX:', err.responseText);
-    }
-  });
-}
-
-function controlAcceso(accion, idUsuarioCliente) {
-  $("tr#" + idUsuarioCliente).hide();
-  $.ajax({
-    url: '<?php echo base_url('Cat_Cliente/controlAcceso'); ?>',
-    type: 'post',
-    data: {
-      'idUsuarioCliente': idUsuarioCliente,
-      'accion': accion
-    },
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      var data = JSON.parse(res);
-      if (data.codigo === 1) {
-        recargarTable()
-        $("#mensajeModal").modal('hide')
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: data.msg,
-          showConfirmButton: false,
-          timer: 2500
-        })
-      }
-    }
-  });
-}
-function generarPassword1() {
-  $.ajax({
-    url: '<?php echo base_url('Funciones/generarPassword'); ?>',
-    type: 'post',
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-    
-      $("#password_cliente").val(res);
-
-    }
-  });
-}
-
-function generarPassword() {
-  $.ajax({
-    url: '<?php echo base_url('Funciones/generarPassword'); ?>',
-    type: 'post',
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      $("#password").val(res);
-
-    }
-  });
-}
-
-function generarPassword_us() {
-  $.ajax({
-    url: '<?php echo base_url('Funciones/generarPassword'); ?>',
-    type: 'post',
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-
-      $("#password_us").val(res)
-    }
-  });
-}
 
 function recargarTable() {
   $("#tabla").DataTable().ajax.reload();
 }
 
 
+function uploadFile(event, idPortal) {
+  console.log("🚀 ~ uploadFile ~ event:", event);
+  console.log("🚀 ~ uploadFile ~ idPortal:", idPortal);
+
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('idPortal', idPortal);
+
+    fetch('<?php echo base_url('Cat_Portales/subirConstancia'); ?>', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Éxito:', data);
+
+        // Mostrar mensaje con SweetAlert2
+        if (data.codigo === 1) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: data.mensaje,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Refrescar la página al confirmar el mensaje de éxito
+              location.reload();
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.mensaje,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un error al intentar subir el archivo.',
+        });
+      });
+  }
+}
 </script>

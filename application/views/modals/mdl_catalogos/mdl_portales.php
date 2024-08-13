@@ -43,12 +43,12 @@
             <div class="col-md-3">
               <label for="accesos">Accesos *</label>
               <input type="number" class="form-control" data-field="Numero de accesos" data-required="required"
-                id="accesos" name="accesos" value = 5>
+                id="accesos" name="accesos" value=5>
               <br>
             </div>
           </div>
           <div class="row">
-          <div class="col-md-4">
+            <div class="col-md-4">
               <label for="telefono">Teléfono</label>
               <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Ingrese el teléfono">
               <input type="hidden" class="form-control" id="idPortal" name="idPortal">
@@ -67,7 +67,8 @@
           <div class="row">
             <div class="col-md-6">
               <label for="nombre_contacto">Nombre Contacto</label>
-              <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto" placeholder="Nombre " onkeyup="capitalizeFirstLetter(event)">
+              <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto" placeholder="Nombre "
+                onkeyup="capitalizeFirstLetter(event)">
               <br>
             </div>
             <div class="col-md-6">
@@ -81,9 +82,11 @@
             <div class="col-md-12">
               <label for="password" id="passLabel">Generar contraseña *</label>
               <div class="input-group">
-                <input type="password" class="form-control" data-field="Contraseña" name="password" id="password" data-required="required"  readonly required>
+                <input type="password" class="form-control" data-field="Contraseña" name="password" id="password"
+                  data-required="required" readonly required>
                 <div class="input-group-append">
-                  <button type="button" class="btn btn-primary" id="generarPass" onclick="generarPassword()">Generar</button>
+                  <button type="button" class="btn btn-primary" id="generarPass"
+                    onclick="generarPassword()">Generar</button>
                 </div>
               </div>
             </div>
@@ -97,25 +100,27 @@
                 placeholder="Ingrese la razón social" onkeyup="capitalizeFirstLetter(event)">
               <br>
             </div>
-          
+
           </div>
           <hr style="border-top: 1px solid #ccc;">
           <div class="row">
             <div class="col-md-6">
               <label for="rfc">RFC</label>
-              <input type="text" class="form-control" id="rfc" name="rfc" placeholder="Ingrese el RFC" onkeyup="this.value=this.value.toUpperCase()">
+              <input type="text" class="form-control" id="rfc" name="rfc" placeholder="Ingrese el RFC"
+                onkeyup="this.value=this.value.toUpperCase()">
               <br>
             </div>
             <div class="col-md-6">
               <label for="regimen">Régimen</label>
-              <input type="text" class="form-control" id="regimen" name="regimen" placeholder="Ingrese el régimen" onkeyup="capitalizeFirstLetter(event)">
+              <input type="text" class="form-control" id="regimen" name="regimen" placeholder="Ingrese el régimen"
+                onkeyup="capitalizeFirstLetter(event)">
               <br>
             </div>
           </div>
           <div class="row">
             <div class="col-md-6">
               <label for="forma_pago">Forma de Pago</label>
-              <select class="custom-select" id="forma_pago" name="forma_pago" >
+              <select class="custom-select" id="forma_pago" name="forma_pago">
                 <option value="" selected>Selecciona</option>
                 <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
                 <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
@@ -154,35 +159,40 @@
           <div class="row">
             <div class="col-md-6">
               <label for="item-details-countryValue">País</label>
-              <input type="text" class="form-control" id="item-details-countryValue" name="pais_name" onkeyup="capitalizeFirstLetter(event)">
-              
-             
+              <input type="text" class="form-control" id="item-details-countryValue" name="pais_name"
+                onkeyup="capitalizeFirstLetter(event)">
+
+
               <br>
             </div>
             <div class="col-md-6">
               <label for="item-details-stateValue">Estado</label>
-              <input type="text" class="form-control" id="item-details-stateValue" name="state_name" onkeyup="capitalizeFirstLetter(event)">
-               
+              <input type="text" class="form-control" id="item-details-stateValue" name="state_name"
+                onkeyup="capitalizeFirstLetter(event)">
+
               <br>
             </div>
           </div>
           <div class="row">
             <div class="col-md-6">
               <label for="item-details-cityValue">Ciudad</label>
-              <input type="text" class="form-control" id="item-details-cityValue" name="ciudad_name" onkeyup="capitalizeFirstLetter(event)">
-            
+              <input type="text" class="form-control" id="item-details-cityValue" name="ciudad_name"
+                onkeyup="capitalizeFirstLetter(event)">
+
               <br>
             </div>
             <div class="col-md-6">
               <label for="colonia">Colonia</label>
-              <input type="text" class="form-control" id="colonia" name="colonia" placeholder="Ingrese la colonia" onkeyup="capitalizeFirstLetter(event)">
+              <input type="text" class="form-control" id="colonia" name="colonia" placeholder="Ingrese la colonia"
+                onkeyup="capitalizeFirstLetter(event)">
               <br>
             </div>
           </div>
           <div class="row">
             <div class="col-md-12">
               <label for="calle">Calle</label>
-              <input type="text" class="form-control" id="calle" name="calle" placeholder="Ingrese la calle" onkeyup="capitalizeFirstLetter(event)">
+              <input type="text" class="form-control" id="calle" name="calle" placeholder="Ingrese la calle"
+                onkeyup="capitalizeFirstLetter(event)">
               <br>
             </div>
           </div>
@@ -227,6 +237,194 @@
     </div>
   </div>
 </div>
+
+
+
+<div class="modal fade" id="editPortal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titulo_nuevo_modal_editar">Editar Portal</h5>
+        <button type="button" class="close custom_modal_close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div>
+
+        </div>
+        <div class="alert alert-info">Este formulario está diseñado para editar la información general del portal.
+        </div>
+
+        <h5 class="text-center" id="titulo_paso"></h5>
+        <form id="formEditar">
+          <div class="row">
+            <div class="col-md-9">
+
+              <label for="nombre">Nombre del Portal *</label>
+              <input type="text" class="form-control" data-field="Nombre del Cliente" data-required="required"
+                id="nombrePortal_edit" name="nombrePortal_edit" placeholder="Ingrese el nombre del cliente"
+                onkeyup="this.value=this.value.toUpperCase()" required>
+
+            </div>
+            <div class="col-md-3">
+              <label for="accesos">Accesos *</label>
+              <input type="number" class="form-control" data-field="Numero de accesos" data-required="required"
+                id="accesosEdit" name="accesosEdit">
+
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <input type="hidden" class="form-control" id="idPortalE" name="idPortalE">
+              <input type="hidden" id="idDomiciliosE" name="idDomiciliosE" class="form-control">
+              <input type="hidden" id="idFacturacionE" name="idFacturacionE" class="form-control">
+              <input type="hidden" id="idUsuarioPortalE" name="idUsuarioPortalE" class="form-control">
+
+
+              <br>
+            </div>
+            <div class="col-md-12">
+              <label for="razon_social">Razón Social</label>
+              <input type="text" class="form-control" id="razon_social_edit" name="razon_social_edit"
+                placeholder="Ingrese la razón social" onkeyup="capitalizeFirstLetter(event)">
+              <br>
+            </div>
+          </div>
+          <div class="row">
+          </div>
+          <hr style="border-top: 1px solid #ccc;">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="rfc">RFC</label>
+              <input type="text" class="form-control" id="rfc_edit" name="rfc_edit" placeholder="Ingrese el RFC"
+                onkeyup="this.value=this.value.toUpperCase()">
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="regimen">Régimen</label>
+              <input type="text" class="form-control" id="regimen_edit" name="regimen_edit"
+                placeholder="Ingrese el régimen" onkeyup="capitalizeFirstLetter(event)">
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="forma_pago">Forma de Pago</label>
+              <select class="custom-select" id="forma_pago_edit" name="forma_pago_edit">
+                <option value="" selected>Selecciona</option>
+                <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
+                <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
+              </select>
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="metodo_pago">Método de Pago</label>
+              <select class="custom-select" id="metodo_pago_edit" name="metodo_pago_edit">
+                <option value="" selected>Selecciona</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Cheque de nómina">Cheque de nómina</option>
+                <option value="Transferencia electrónica">Transferencia electrónica</option>
+                <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+                <option value="Tarjeta de débito">Tarjeta de débito</option>
+                <option value="Por definir">Por definir</option>
+              </select>
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <br>
+              <label for="uso_cfdi">Uso de CFDI</label>
+              <input type="text" class="form-control" id="uso_cfdi_edit" name="uso_cfdi_edit" placeholder="Ingrese el uso de CFDI"
+                value="Gastos Generales" onkeyup="capitalizeFirstLetter(event)">
+              <br>
+            </div>
+          </div>
+
+          <!-- Paso 2: Domicilio -->
+          <div class="row">
+
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="pais_edit">País</label>
+              <input type="text" class="form-control" id="pais_edit" name="pais_edit"
+                onkeyup="capitalizeFirstLetter(event)">
+
+
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="estado_edit">Estado</label>
+              <input type="text" class="form-control" id="estado_edit" name="estado_edit"
+                onkeyup="capitalizeFirstLetter(event)">
+
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label for="ciudad_edit">Ciudad</label>
+              <input type="text" class="form-control" id="ciudad_edit" name="ciudad_edit"
+                onkeyup="capitalizeFirstLetter(event)">
+
+              <br>
+            </div>
+            <div class="col-md-6">
+              <label for="colonia">Colonia</label>
+              <input type="text" class="form-control" id="colonia_edit" name="colonia_edit" placeholder="Ingrese la colonia"
+                onkeyup="capitalizeFirstLetter(event)">
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <label for="calle">Calle</label>
+              <input type="text" class="form-control" id="calle_edit" name="calle_edit" placeholder="Ingrese la calle"
+                onkeyup="capitalizeFirstLetter(event)">
+              <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mx-auto">
+              <label for="numero_exterior">Número Exterior</label>
+              <input type="number" class="form-control" id="numero_exterior_edit" name="numero_exterior_edit"
+                placeholder="Ingrese el número exterior">
+              <br>
+            </div>
+            <div class="col-md-3 mx-auto">
+              <label for="numero_interior">Número Interior</label>
+              <input type="text" class="form-control" id="numero_interior_edit" name="numero_interior_edit"
+                placeholder="Ingrese el número interior">
+              <br>
+            </div>
+            <div class="col-md-3 mx-auto">
+              <label for="cp">Codigo Postal</label>
+              <input type="number" class="form-control" id="numero_cp_edit" name="numero_cp_edit" placeholder="Ingrese el codigo postal">
+              <br>
+            </div>
+          </div>
+          <br>
+        </form>
+
+      </div>
+      <div class="modal-footer custom_modal_footer">
+
+        <button type="button" class="btn btn-success btn-icon-split ml-auto" id="btnActualizar">
+          <span class="text">Actualizar</span>
+          <span class="icon text-white-50">
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- modal para mensaje -->
 <div class="modal fade" id="mensajeModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -345,11 +543,12 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <label for="password_us" >Generar contraseña *</label>
+              <label for="password_us">Generar contraseña *</label>
               <div class="input-group">
-                <input type="password" class="form-control" data-field="Contraseña" name="password_us" id="password_us" data-required="required"  readonly required>
+                <input type="password" class="form-control" data-field="Contraseña" name="password_us" id="password_us"
+                  data-required="required" readonly required>
                 <div class="input-group-append">
-                  <button type="button" class="btn btn-primary"  onclick="generarPassword_us()">Generar</button>
+                  <button type="button" class="btn btn-primary" onclick="generarPassword_us()">Generar</button>
                 </div>
               </div>
             </div>
@@ -395,196 +594,213 @@
 <input type="hidden" id="base_url" value="<?php echo base_url('Cat_Cliente/setCliente'); ?>">
 
 <script>
-  function registrarCliente() {
-  // Resto de tu código...
-  $("#password").show();
-  $("#generarPass").show();
-  $("#passLabel").show();
-  resetModal();
+$(document).ready(function() {
+  let pag = 1; // Variable para controlar el paso actual del formulario
 
-  
-}
-function capitalizeFirstLetter(event) {
-            const input = event.target;
-            const value = input.value;
-            // Solo capitaliza la primera letra y pone el resto en minúsculas
-            input.value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-        }
-function resetModal() {
-  $("#newPortal").on("hidden.bs.modal", function() {
-    $("#newPortal input,#newPortal select").val("");
+  // Manejo de eventos para ocultar el modal
+  $('#newPortal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+    $(this).find('.modal-title').text('');
+    resetModal();
+  });
+
+  $('#editPortal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+    $(this).find('.modal-title').text('Editar Portal');
+  });
+
+  function resetModal() {
+    $("#newPortal input, #newPortal select").val("");
     $("#newPortal #msj_error").css('display', 'none');
     $("#idSubcliente").val("");
-    $(".modal-title").text("Agregar nuevo Cliente");
-    $("#guardar").attr('value', 'nuevo');
-  });
-
-  $("#accesoModal").on("hidden.bs.modal", function() {
-    $("#accesoModal input, #accesoModal select").val("");
-    $("#accesoModal #msj_error").css('display', 'none');
-    $("#idSubcliente").val("");
-  });
-
-  var pag = 1;
-
-  $('#newPortal').on('shown.bs.modal', function(e) {
     $("#newPortal #titulo_paso").text('Informacíon Cliente');
+    $("#newPortal #btnRegresar, #newPortal #paso2").prop('disabled', true);
     $("#newPortal #btnContinuar span.text").text('Continuar');
-    $("#newPortal #btnRegresar, #newPortal #paso2, #newPortal #paso3").prop('disabled', true);
-  });
-
-  $('#newPortal #btnContinuar').on('click', function() {
-    var formulario_actual = document.getElementById('formPaso' + pag);
-    var todoCorrecto = true;
-    var formulario = formulario_actual;
-    for (var i = 0; i < formulario.length; i++) {
-      if (formulario[i].type == 'text' || formulario[i].type == 'number' || formulario[i].type == 'textarea' ||
-        formulario[i].type == 'select-one') {
-        if (formulario[i].getAttribute("data-required") == 'required') {
-          if (formulario[i].value == null || formulario[i].value == '' || formulario[i].value == 0 || formulario[i]
-            .value.length == 0 || /^\s*$/.test(formulario[i].value)) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Hubo un problema',
-              html: 'El campo <b>' + formulario[i].getAttribute("data-field") + '</b> no es válido',
-              width: '50em',
-              confirmButtonText: 'Cerrar'
-            })
-            todoCorrecto = false;
-          }
-        }
-      }
-    }
-    if (todoCorrecto == true) {
-      if (pag == 1) {
-        document.getElementById('formPaso1').className = "animate__animated animate__fadeOut ";
-        setTimeout(function() {
-          document.getElementById('formPaso1').className = "hidden";
-          document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
-        }, 500)
-        $("#newPortal #titulo_paso").text('Informacíon de Contacto');
-        $("#newPortal #btnRegresar, #newPortal #paso2").prop('disabled', false);
-        document.getElementById('barra1').classList.remove('barra_espaciadora_off');
-        document.getElementById('barra1').className += ' barra_espaciadora_on';
-      }
-      if (pag == 2) {
-        document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
-        setTimeout(function() {
-          document.getElementById('formPaso2').className = "hidden";
-          document.getElementById('formPaso3').className = "animate__animated animate__fadeInUp";
-        }, 500)
-        $("#newPortal #titulo_paso").text('Domicilio');
-        $("#newPortal #paso3").prop('disabled', false);
-        document.getElementById('barra2').classList.remove('barra_espaciadora_off');
-        document.getElementById('barra2').className += ' barra_espaciadora_on';
-        $("#newPortal #btnContinuar span.text").text('Finalizar');
-      }
-      if (pag == 3) {
-
-        let formData = $('#formPaso1, #formPaso2, #formPaso3').serializeArray();
-
-        // Construir objeto de datos
-        let datos = {};
-
-        // Obtener datos del primer formulario
-        $('#formPaso1, #formPaso2, #formPaso3').find(':input').each(function() {
-          if ($(this).val() === '') {
-            // Si el campo está vacío, asignarle el valor null
-            datos[$(this).attr('name')] = null;
-          } else {
-            // Si no está vacío, asignarle el valor del campo
-            datos[$(this).attr('name')] = $(this).val();
-          }
-        });
-
-        // Agregar currentPage si es necesario
-        datos['currentPage'] = $('#currentPage').val();
-        $.ajax({
-          url: "<?php echo base_url('Cat_Portales/setPortal'); ?>",
-          type: 'post',
-          data: datos,
-          beforeSend: function() {
-            $('.loader').css("display", "block");
-          },
-          success: function(res) {
-            setTimeout(function() {
-              $('.loader').fadeOut();
-            }, 200);
-            var data = JSON.parse(res);
-            if (data.codigo === 1) {
-              $("#newPortal").modal('hide');
-              Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: data.msg,
-                showConfirmButton: false,
-                timer: 3000
-              }).then(function() {
-                // Recargar la página después de que el mensaje de éxito desaparezca
-                window.location.reload();
-              });
-
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Hubo un problema',
-                html: data.msg,
-                width: '50em',
-                confirmButtonText: 'Cerrar',
-                timer: 3000
-              })
-            }
-          }
-        });
-      }
-      if (pag == 1 || pag == 2)
-        pag++;
-    }
-  });
-
-  $('#newPortal #btnRegresar').on('click', function() {
-    if (pag == 2) {
-      document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
-      setTimeout(function() {
-        document.getElementById('formPaso2').className = "hidden";
-        document.getElementById('formPaso1').className = "animate__animated animate__fadeInUp";
-      }, 500)
-      $("#newPortal #titulo_paso").text('Informacíon Cliente');
-      $("#newPortal #btnRegresar, #newPortal #paso2").prop('disabled', true);
-      document.getElementById('barra1').classList.remove('barra_espaciadora_on');
-      document.getElementById('barra1').className += ' barra_espaciadora_off';
-      $("#newPortal #btnContinuar span.text").text('Continuar');
-      pag--;
-    }
-    if (pag == 3) {
-    
-      document.getElementById('formPaso3').className = "animate__animated animate__fadeOut ";
-      setTimeout(function() {
-        document.getElementById('formPaso3').className = "hidden";
-        document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
-      }, 500)
-      $("#newPortal #titulo_paso").text('Informacíon de Contacto');
-      $("#newPortal #paso3").prop('disabled', true);
-      document.getElementById('barra2').classList.remove('barra_espaciadora_on');
-      document.getElementById('barra2').className += ' barra_espaciadora_off';
-      $("#newPortal #btnContinuar span.text").text('Continuar');
-      pag--;
-    }
-  });
-
-  $('#newPortal').on('hidden.bs.modal', function(e) {
-    $("#newPortalinput, #newPortalselect, #newPortaltextarea").val('');
     document.getElementById('formPaso1').className = "block";
     document.getElementById('formPaso2').className = "hidden";
     document.getElementById('formPaso3').className = "hidden";
-    $("#newPortal#titulo_paso").text('Informacíon Cliente');
-    $("#newPortal#btnRegresar, #newPortal#paso2").prop('disabled', true);
-    document.getElementById('barra1').classList.remove('barra_espaciadora_on');
-    document.getElementById('barra1').className += ' barra_espaciadora_off';
-    document.getElementById('barra2').classList.remove('barra_espaciadora_on');
-    document.getElementById('barra2').className += ' barra_espaciadora_off';
-    $("#newPortal#btnContinuar span.text").text('Continuar');
+    document.getElementById('barra1').className = 'barra_espaciadora_off';
+    document.getElementById('barra2').className = 'barra_espaciadora_off';
     pag = 1;
+  }
+
+  // Manejo de evento para el botón "Continuar"
+  $('#newPortal #btnContinuar').off('click').on('click', function() {
+    $(this).prop('disabled', true); // Desactiva el botón para evitar múltiples clics
+
+    let formulario_actual = document.getElementById('formPaso' + pag);
+    let todoCorrecto = true;
+
+    // Validar formulario
+    $(formulario_actual).find(':input').each(function() {
+      if ($(this).attr('data-required') === 'required' && $.trim($(this).val()) === '') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Hubo un problema',
+          html: 'El campo <b>' + $(this).attr('data-field') + '</b> no es válido',
+          width: '50em',
+          confirmButtonText: 'Cerrar'
+        });
+        todoCorrecto = false;
+        return false; // Rompe el loop
+      }
+    });
+
+    if (todoCorrecto) {
+      if (pag === 1) {
+        transitionForm('formPaso1', 'formPaso2', 'Informacíon de Contacto', 'Continuar', ['#btnRegresar', '#paso2'], 'barra_espaciadora_on', 'barra_espaciadora_off');
+      } else if (pag === 2) {
+        transitionForm('formPaso2', 'formPaso3', 'Domicilio', 'Finalizar', ['#paso3'], 'barra_espaciadora_on', 'barra_espaciadora_off');
+      } else if (pag === 3) {
+        submitForm();
+      }
+      if (pag < 3) pag++;
+    }
+
+    $(this).prop('disabled', false); // Reactiva el botón
   });
+
+  // Manejo de evento para el botón "Regresar"
+  $('#newPortal #btnRegresar').off('click').on('click', function() {
+    if (pag === 2) {
+      transitionForm('formPaso2', 'formPaso1', 'Informacíon Cliente', 'Continuar', [], 'barra_espaciadora_off', 'barra_espaciadora_on');
+    } else if (pag === 3) {
+      transitionForm('formPaso3', 'formPaso2', 'Informacíon de Contacto', 'Continuar', [], 'barra_espaciadora_off', 'barra_espaciadora_on');
+    }
+    if (pag > 1) pag--;
+  });
+
+  function transitionForm(fromId, toId, title, continueText, enabledButtons,        removeClass, addClass) {
+    document.getElementById(fromId).className = "animate__animated animate__fadeOut";
+    setTimeout(function() {
+      document.getElementById(fromId).className = "hidden";
+      document.getElementById(toId).className = "animate__animated animate__fadeInUp";
+      $("#newPortal #titulo_paso").text(title);
+      $("#newPortal #btnContinuar span.text").text(continueText);
+      enabledButtons.forEach(function(btn) {
+        $(btn).prop('disabled', false);
+      });
+      document.getElementById('barra1').classList.toggle(removeClass, removeClass === 'barra_espaciadora_on');
+      document.getElementById('barra1').classList.toggle(addClass, addClass === 'barra_espaciadora_on');
+    }, 500);
+  }
+
+  function submitForm() {
+    let formData = $('#formPaso1, #formPaso2, #formPaso3').serializeArray();
+    let datos = {};
+
+    formData.forEach(function(field) {
+      datos[field.name] = field.value || null;
+    });
+
+    datos['currentPage'] = $('#currentPage').val();
+
+    $.ajax({
+      url: "<?php echo base_url('Cat_Portales/setPortal'); ?>",
+      type: 'post',
+      data: datos,
+      beforeSend: function() {
+        $('.loader').css("display", "block");
+      },
+      success: function(res) {
+        $('.loader').fadeOut();
+        var data = JSON.parse(res);
+        if (data.codigo === 1) {
+          $("#newPortal").modal('hide');
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: data.msg,
+            showConfirmButton: false,
+            timer: 3000
+          }).then(function() {
+            window.location.reload();
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Hubo un problema',
+            html: data.msg,
+            width: '50em',
+            confirmButtonText: 'Cerrar',
+            timer: 3000
+          });
+        }
+      },
+      error: function(xhr, status, error) {
+        $('.loader').fadeOut();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo completar la solicitud.',
+          confirmButtonText: 'Cerrar'
+        });
+      }
+    });
+  }
+});
+
+
+$('#editPortal #btnActualizar').on('click', function() {
+  // Recopilar datos del formulario
+  var datos = $('#formEditar').serialize(); // Serializa los datos del formulario
+
+  $.ajax({
+    url: "<?php echo base_url('Cat_Portales/editPortal'); ?>",
+    type: 'post',
+    data: datos,
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+
+      var data = JSON.parse(res); // Asegúrate de que el servidor devuelve JSON
+
+      if (data.codigo === 1) {
+        $("#editPortal").modal('hide');
+
+
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: data.msg,
+          showConfirmButton: false,
+          timer: 3000
+        }).then(function() {
+          // Recargar la página después de que el mensaje de éxito desaparezca
+          window.location.reload();
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Hubo un problema',
+          html: data.msg,
+          width: '50em',
+          confirmButtonText: 'Cerrar',
+          timer: 3000
+        });
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en la solicitud',
+        text: 'Hubo un problema al enviar la solicitud.',
+        confirmButtonText: 'Cerrar'
+      });
+    }
+  });
+});
+
+function capitalizeFirstLetter(event) {
+  const input = event.target;
+  const value = input.value;
+  // Solo capitaliza la primera letra y pone el resto en minúsculas
+  input.value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 </script>

@@ -15,6 +15,8 @@ function addDomicilios($datosDomicilios){
     $this->db->insert("domicilios", $datosDomicilios);
     return $this->db->insert_id();
   }
+
+  
 function editDatosGenerales($idDatosGenerales, $datosGenerales){
    
     try {

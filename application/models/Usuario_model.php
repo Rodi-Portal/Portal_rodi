@@ -61,7 +61,18 @@ class Usuario_model extends CI_Model{
     //Probando   el modelo para   el usuario_portal 
     function existeUsuarioPortal($correo) {
         $this->db
-            ->select('U.id, D.correo, D.nombre, D.paterno, D.password, D.verificacion, D.id as idDatos,  U.id_rol, R.nombre as rol, U.logueado as loginBD, P.nombre as nombrePortal, P.id as idPortal')
+            ->select('U.id, 
+            D.correo, 
+            D.nombre, 
+            D.paterno, 
+            D.password, 
+            D.verificacion, 
+            D.id as idDatos,  
+            U.id_rol, 
+            R.nombre as rol, 
+            U.logueado as loginBD, 
+            P.nombre as nombrePortal, 
+            P.id as idPortal')
             ->from('usuarios_portal as U')
             ->join('rol as R', 'R.id = U.id_rol')
             ->join('portal as P', 'P.id = U.id_portal')
@@ -111,13 +122,12 @@ class Usuario_model extends CI_Model{
         return $resultado;
     }
     function getPermisos($id){
+        $id_portal = $this->session->userdata('idPortal');
         $this->db
-        ->select('p.*, c.nombre as nombreCliente, c.icono, c.url')
-        ->from('usuario_permiso as up')
-        ->join('permiso as p', 'p.id = up.id_permiso')
-        ->join('cliente as c','c.id = p.id_cliente')
+        ->select('C.nombre as nombreCliente, C.icono, C.url')
+        ->from('cliente as C')
         //->where('p.id_subcliente', 0)
-        ->where('up.id_usuario', $id)
+        ->where('id_portal', $id_portal)
         ->order_by('c.nombre','ASC');
 
         $query = $this->db->get();
