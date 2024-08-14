@@ -849,9 +849,9 @@ class Reclutamiento extends CI_Controller{
 			$data['requisicion'] = $this->reclutamiento_model->getRequisionById($id);
 
 
-      $id.' aqui el id' ;
+      echo $id.' aqui el id' ;
       die();
-      
+
       echo'<pre>'; 
       print_r($data);
       echo'</pre>';
