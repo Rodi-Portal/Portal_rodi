@@ -243,35 +243,42 @@ class Reclutamiento_model extends CI_Model{
 			}
 		}
 
-		function getRequisionById($id){
+		function getRequisionById($id) {
 			$id_portal = $this->session->userdata('idPortal');
-		
+			
+			// Asegúrate de que el valor de $id_portal es correcto
+			if (!$id_portal) {
+					return null; // O manejar el caso según sea necesario
+			}
+			
 			$this->db
-    ->select("R.*, CL.id_datos_generales, CL.id_datos_facturacion, CL.id_domicilios, CL.nombre as nombre,
-    FAC.razon_social, GEN.telefono, GEN.correo,
-    DOM.pais, DOM.estado, DOM.ciudad, DOM.colonia, DOM.calle, DOM.exterior, DOM.interior, DOM.cp,
-    CONCAT('País: ', DOM.pais, ', ', 
-       'Estado: ', DOM.estado, ', ', 
-       'Ciudad: ', DOM.ciudad, ', ', 
-       'Colonia: ', DOM.colonia, ', ', 
-       'Calle: ', DOM.calle, ', ', 
-       'Número Exterior: ', DOM.exterior, ', ', 
-       'CP: ', DOM.cp) as domicilio, 
-    CONCAT(GEN.nombre, ' ', GEN.paterno) as contacto, FAC.forma_pago, FAC.metodo_pago, FAC.uso_cfdi as uso_cfdi, FAC.rfc, FAC.regimen ")
-    ->from('requisicion as R') 
-		->join('usuarios_portal as USP', 'USP.id = R.id_usuario ')
-    ->join('cliente as CL', 'CL.id = R.id_cliente')
-    ->join('domicilios as DOM', 'DOM.id = CL.id_domicilios')
-    ->join('datos_facturacion as FAC', 'CL.id_datos_facturacion = FAC.id')
-    ->join('datos_generales as GEN', 'GEN.id = CL.id_datos_generales')
-    ->where('R.id', $id)
-		->where('R.id_portal ', $id_portal);
-    $consulta = $this->db->get();
-    return $consulta->row();
-
+					->select("R.*, CL.id_datos_generales, CL.id_datos_facturacion, CL.id_domicilios, CL.nombre as nombre,
+							FAC.razon_social, GEN.telefono, GEN.correo,
+							DOM.pais, DOM.estado, DOM.ciudad, DOM.colonia, DOM.calle, DOM.exterior, DOM.interior, DOM.cp,
+							CONCAT('País: ', DOM.pais, ', ', 
+									'Estado: ', DOM.estado, ', ', 
+									'Ciudad: ', DOM.ciudad, ', ', 
+									'Colonia: ', DOM.colonia, ', ', 
+									'Calle: ', DOM.calle, ', ', 
+									'Número Exterior: ', DOM.exterior, ', ', 
+									'CP: ', DOM.cp) as domicilio, 
+							CONCAT(GEN.nombre, ' ', GEN.paterno) as contacto, FAC.forma_pago, FAC.metodo_pago, FAC.uso_cfdi as uso_cfdi, FAC.rfc, FAC.regimen")
+					->from('requisicion as R')
+					->join('usuarios_portal as USP', 'USP.id = R.id_usuario', 'left')
+					->join('cliente as CL', 'CL.id = R.id_cliente', 'left')
+					->join('domicilios as DOM', 'DOM.id = CL.id_domicilios', 'left')
+					->join('datos_facturacion as FAC', 'CL.id_datos_facturacion = FAC.id', 'left')
+					->join('datos_generales as GEN', 'GEN.id = CL.id_datos_generales', 'left')
+					->where('R.id', $id)
+					->where('R.id_portal', $id_portal);
+			
 			$consulta = $this->db->get();
-      return $consulta->row();
-		}
+	
+			// Debug: Imprime la consulta SQL para verificar
+			echo $this->db->last_query();
+	
+			return $consulta->row();
+	}
 	/*----------------------------------------*/
 	/*	Acciones
 	/*----------------------------------------*/

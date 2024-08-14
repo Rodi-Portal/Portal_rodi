@@ -847,17 +847,7 @@ class Reclutamiento extends CI_Controller{
   
       //* Detalles de la requisicion por ID
 			$data['requisicion'] = $this->reclutamiento_model->getRequisionById($id);
-
-
-      echo $id.' aqui el id' ;
-      die();
-
-      echo'<pre>'; 
-      print_r($data);
-      echo'</pre>';
        
-  
-  
       //* Vista PDF del reporte
       if($this->session->userdata('idrol') == 4 || $this->session->userdata('idrol') == 11)
         $html = $this->load->view('pdfs/reclutamiento/requisicion_detalles_pdf',$data,TRUE);
