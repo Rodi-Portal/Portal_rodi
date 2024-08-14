@@ -47,7 +47,7 @@ $id_cliente = $this->session->userdata('idcliente');
 echo $procesosActuales[0]->url;
 print_r($procesosActuales);
 echo '</pre>';*/
-$cliente = $procesosActuales[0];
+$cliente = $procesosActuales[0] ?? null;
 ?>
 
   <header>
