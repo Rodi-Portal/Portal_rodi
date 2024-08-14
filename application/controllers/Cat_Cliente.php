@@ -146,7 +146,7 @@ class Cat_Cliente extends CI_Controller
                         echo json_encode($msj);
                         return; // Detener el flujo del código ya que hay un error
                     }
-                    $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, );
+                    $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
                     $permiso = array(
                         'id_usuario' => $id_usuario,
                         'cliente' => $this->input->post('nombre'),
@@ -172,7 +172,7 @@ class Cat_Cliente extends CI_Controller
                         return; // Detener el flujo del código ya que hay un error
                     }
 
-                    $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
+                    $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, $uncode_password );
 
                     if ($idCliente > 0) {
 

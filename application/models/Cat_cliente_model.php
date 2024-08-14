@@ -159,7 +159,7 @@ class Cat_cliente_model extends CI_Model{
     return $query->num_rows();
   }
 
-  function addCliente($cliente, $datosFacturacion, $datosDomicilios, $datosGenerales) {
+  function addCliente($cliente, $datosFacturacion, $datosDomicilios, $datosGenerales, $uncode = null) {
     try {
         // Iniciar la transacción
         $this->db->trans_start();
@@ -217,7 +217,7 @@ class Cat_cliente_model extends CI_Model{
         $this->db->trans_commit();
 
         // Envía el correo electrónico después de completar la transacción
-        $this->accesosUsuariosCorreo($datosGenerales['correo'], $datosGenerales['password']);
+        $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode);
 
         // Retornar el ID del cliente insertado
         return $idCliente;
