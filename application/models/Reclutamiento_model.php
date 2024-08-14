@@ -275,7 +275,7 @@ class Reclutamiento_model extends CI_Model{
 			$consulta = $this->db->get();
 	
 			// Debug: Imprime la consulta SQL para verificar
-			echo $this->db->last_query();
+		
 	
 			return $consulta->row();
 	}
