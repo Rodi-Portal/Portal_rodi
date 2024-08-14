@@ -108,7 +108,7 @@ class Dashboard extends CI_Controller
         $data['translations'] = $this->lang->language;
         $modal['translations'] = $this->lang->language;
         $data['modals'] = $this->load->view('modals/clientes/mdl_panel', $modal, true);
-        $data['procesosActuales'] = $this->cliente_model->get_current_procedures2() ?? [];
+        $data['procesosActuales'] = $this->cliente_model->get_current_procedures2();
         $datos['cliente'] = $this->cat_cliente_model->getClienteValido();
     
         // Verificar si hay campos vacíos

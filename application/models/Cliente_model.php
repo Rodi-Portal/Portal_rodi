@@ -142,39 +142,29 @@ class Cliente_model extends CI_Model{
     
 
 
-    function get_current_procedures2(){
-			$id_usuario = $this->session->userdata('id');
-      $id_cliente = $this->session->userdata('idcliente');
-     
-     
-			$this->db
-			->select(" R.*, R.id  as idReq, CL.*, R.status as statusReq")
-			->from('requisicion as R')
-			->join('cliente as CL','CL.id = R.id_cliente')
-			//->join('subclientes as SUB','CL.id = SUB.id_cliente')
-      ->join('datos_generales as DATCL', 'DATCL.id  = CL.id_datos_generales')
-      ->where('R.id_cliente', $id_cliente)
-			->where('R.eliminado', 0)
-			
-      ->order_by('R.creacion','desc');
+   function get_current_procedures2() {
+    $id_usuario = $this->session->userdata('id');
+    $id_cliente = $this->session->userdata('idcliente');
 
-			$query = $this->db->get();
-     
-/*
-      echo '<pre>';
-      print_r($query->result());
-      echo '</pre>';
+    $this->db
+        ->select("R.*, R.id as idReq, CL.*, R.status as statusReq")
+        ->from('requisicion as R')
+        ->join('cliente as CL', 'CL.id = R.id_cliente')
+        //->join('subclientes as SUB', 'CL.id = SUB.id_cliente')
+        ->join('datos_generales as DATCL', 'DATCL.id = CL.id_datos_generales')
+        ->where('R.id_cliente', $id_cliente)
+        ->where('R.eliminado', 0)
+        ->order_by('R.creacion', 'desc');
 
-   die();
-   */
-			if($query->num_rows() > 0){
-  
+    $query = $this->db->get();
 
-				return $query->result();
-			}else{
-				return FALSE;
-			}
-		}
+    // Devuelve un arreglo vacío si no hay resultados
+    if ($query->num_rows() > 0) {
+        return $query->result();
+    } else {
+        return []; // Cambiado de FALSE a un arreglo vacío
+    }
+}
     
     
     /*----------------------------------------*/
