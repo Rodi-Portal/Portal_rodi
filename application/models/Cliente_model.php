@@ -174,13 +174,14 @@ class Cliente_model extends CI_Model{
     
     
     
-    
+    /*
     
     function actualizarUsuarioCliente($usuario, $id_usuario_cliente){
         $this->db
         ->where('id', $id_usuario_cliente)
-        ->update('usuario_cliente', $usuario);
+        ->update('datos_generales', $usuario);
     }
+    */
     function verificarMismoUsuarioCliente($correo, $id_usuario_cliente){
         $this->db
         ->select("id")

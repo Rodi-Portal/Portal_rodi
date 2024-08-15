@@ -1,32 +1,35 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Usuario_model extends CI_Model{
+class Usuario_model extends CI_Model
+{
 
-	//Consulta si el usuario que quiere loguearse existe; regresa sus datos en dado caso que exista
-	function existeUsuario($correo, $pass){
-    	$this->db
-    	->select('u.id, u.correo, u.nombre, u.paterno, u.nuevo_password, u.id_rol, rol.nombre as rol, u.logueado as loginBD')
-    	->from('usuario as u')
-    	->join('rol', 'rol.id = u.id_rol')
-    	->where('u.correo', $correo)
-    	->where('u.password', $pass)
+    //Consulta si el usuario que quiere loguearse existe; regresa sus datos en dado caso que exista
+    public function existeUsuario($correo, $pass)
+    {
+        $this->db
+            ->select('u.id, u.correo, u.nombre, u.paterno, u.nuevo_password, u.id_rol, rol.nombre as rol, u.logueado as loginBD')
+            ->from('usuario as u')
+            ->join('rol', 'rol.id = u.id_rol')
+            ->where('u.correo', $correo)
+            ->where('u.password', $pass)
         //->where('u.id_rol !=', 3)
-    	->where('u.status', 1)
-    	->where('u.eliminado', 0);
+            ->where('u.status', 1)
+            ->where('u.eliminado', 0);
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
-	}
-    function traerPass($correo) {
+    }
+    public function traerPass($correo)
+    {
         $this->db
             ->select('password')
             ->from('datos_generales')
             ->where('correo', $correo);
         $consulta = $this->db->get();
         $resultado = $consulta->row();
-        
+
         if ($resultado) {
             return $resultado->password; // Devolver solo la contraseña como una cadena
         } else {
@@ -34,44 +37,70 @@ class Usuario_model extends CI_Model{
         }
     }
 
-    public function actualizarVerificacion($data, $id) {
+    public function actualizarVerificacion($data, $id)
+    {
         // Asegúrate de que $data es un array y $id es un entero válido
-       
-            // Actualizar la fila con el ID especificado
-            $this->db->where('id', $id);
-            $this->db->update('datos_generales', $data);
 
-            // Verificar si la actualización fue exitosa
-            if ($this->db->affected_rows() > 0) {
-                return true;
+        // Actualizar la fila con el ID especificado
+        $this->db->where('id', $id);
+        $this->db->update('datos_generales', $data);
+
+        // Verificar si la actualización fue exitosa
+        if ($this->db->affected_rows() > 0) {
+            return true;
+        } else {
+            // Si no se afectaron filas, verificar si la fila existe
+            $query = $this->db->get_where('datos_generales', ['id' => $id]);
+            if ($query->num_rows() == 1) {
+                // La fila existe pero no se cambió porque los datos son los mismos
+                return 'No changes made';
             } else {
-                // Si no se afectaron filas, verificar si la fila existe
-                $query = $this->db->get_where('datos_generales', ['id' => $id]);
-                if ($query->num_rows() == 1) {
-                    // La fila existe pero no se cambió porque los datos son los mismos
-                    return 'No changes made';
-                } else {
-                    // La fila no existe
-                    return 'Row not found';
-                }
+                // La fila no existe
+                return 'Row not found';
             }
-       
+        }
+
+    }
+    //Probando   el modelo para   el usuario_portal
+    public function updatePass($correo)
+    {
+        $this->db
+            ->select('D.id,
+        D.correo,
+        D.nombre,
+        D.paterno,
+        D.password,
+        D.verificacion,
+        D.id as idDatos')
+            ->from('datos_generales as D')
+
+            ->where('D.correo', $correo);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+
+        if ($resultado) {
+            return $resultado; // Devolver los datos del usuario si existe
+        } else {
+            return false; // Devolver falso si el usuario no se encuentra en la base de datos
+        }
     }
 
-    //Probando   el modelo para   el usuario_portal 
-    function existeUsuarioPortal($correo) {
+    //Probando   el modelo para   el usuario_portal
+    public function existeUsuarioPortal($correo)
+    {
         $this->db
-            ->select('U.id, 
-            D.correo, 
-            D.nombre, 
-            D.paterno, 
-            D.password, 
-            D.verificacion, 
-            D.id as idDatos,  
-            U.id_rol, 
-            R.nombre as rol, 
-            U.logueado as loginBD, 
-            P.nombre as nombrePortal, 
+            ->select('U.id,
+            D.correo,
+            D.nombre,
+            D.paterno,
+            D.password,
+            D.verificacion,
+            D.id as idDatos,
+            U.id_rol,
+            R.nombre as rol,
+            U.logueado as loginBD,
+            P.nombre as nombrePortal,
             P.id as idPortal')
             ->from('usuarios_portal as U')
             ->join('rol as R', 'R.id = U.id_rol')
@@ -80,341 +109,368 @@ class Usuario_model extends CI_Model{
             ->where('D.correo', $correo)
             ->where('U.status', 1)
             ->where('U.eliminado', 0);
-    
+
         $consulta = $this->db->get();
         $resultado = $consulta->row();
-        
+
         if ($resultado) {
             return $resultado; // Devolver los datos del usuario si existe
         } else {
             return false; // Devolver falso si el usuario no se encuentra en la base de datos
         }
     }
-//TODO: pendiente  de revisar  esta  consulta   ya  que 
+//TODO: pendiente  de revisar  esta  consulta   ya  que
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
-    function existeUsuarioCliente($correo){
+    public function existeUsuarioCliente($correo)
+    {
         $this->db
-        ->select('UCL.id, CL.id as  id_cliente, DG.correo, DG.nombre, DG.paterno, DG.id as idDatos, DG.verificacion, DG.password,  UCL.id_cliente, UCL.espectador, CL.nombre as cliente, UCL.logueado as loginBD, UCL.privacidad, CL.ingles, CL.id_portal ')
-        ->from('usuarios_clientes as UCL')
-        ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
-        ->join('cliente  as CL', ' CL.id = UCL. id_cliente')
-        ->where('DG.correo', $correo)
-        ->where('CL.status', 1)
-        ->where('CL.eliminado', 0);
+            ->select('UCL.id, CL.id as  id_cliente, DG.correo, DG.nombre, DG.paterno, DG.id as idDatos, DG.verificacion, DG.password,  UCL.id_cliente, UCL.espectador, CL.nombre as cliente, UCL.logueado as loginBD, UCL.privacidad, CL.ingles, CL.id_portal ')
+            ->from('usuarios_clientes as UCL')
+            ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
+            ->join('cliente  as CL', ' CL.id = UCL. id_cliente')
+            ->where('DG.correo', $correo)
+            ->where('CL.status', 1)
+            ->where('CL.eliminado', 0);
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
-    function existeUsuarioSubcliente($correo, $pass){
+    public function existeUsuarioSubcliente($correo, $pass)
+    {
         $this->db
-        ->select('u.id, u.correo, u.nombre, u.paterno, u.nuevo_password, u.id_cliente, cl.nombre as cliente, u.id_subcliente, SUB.nombre_subcliente as subcliente, u.logueado as loginBD, SUB.tipo_acceso, cl.ingles')
-        ->from('usuario_subcliente as u')
-        ->join('subclientes as SUB', 'SUB.id = u.id_subcliente','left')
-        ->join('cliente as cl', 'cl.id = u.id_cliente')
-        ->where('u.correo', $correo)
-        ->where('u.password', $pass)
-        ->where('u.status', 1)
-        ->where('u.eliminado', 0);
+            ->select('u.id, u.correo, u.nombre, u.paterno, u.nuevo_password, u.id_cliente, cl.nombre as cliente, u.id_subcliente, SUB.nombre_subcliente as subcliente, u.logueado as loginBD, SUB.tipo_acceso, cl.ingles')
+            ->from('usuario_subcliente as u')
+            ->join('subclientes as SUB', 'SUB.id = u.id_subcliente', 'left')
+            ->join('cliente as cl', 'cl.id = u.id_cliente')
+            ->where('u.correo', $correo)
+            ->where('u.password', $pass)
+            ->where('u.status', 1)
+            ->where('u.eliminado', 0);
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
-    function getPermisos($id){
+    public function getPermisos($id)
+    {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-        ->select('C.id As id_cliente, C.nombre as nombreCliente, C.icono, C.url')
-        ->from('cliente as C')
+            ->select('C.id As id_cliente, C.nombre as nombreCliente, C.icono, C.url')
+            ->from('cliente as C')
         //->where('p.id_subcliente', 0)
-        ->where('C.id_portal', $id_portal)
-        ->order_by('C.nombre','ASC');
+            ->where('C.id_portal', $id_portal)
+            ->order_by('C.nombre', 'ASC');
 
         $query = $this->db->get();
-        if($query->num_rows() > 0){
+        if ($query->num_rows() > 0) {
             return $query->result();
-        }
-        else{
-            return FALSE;
+        } else {
+            return false;
         }
     }
-    function getPermisosSubclientes($id){
+    public function getPermisosSubclientes($id)
+    {
         $this->db
-        ->select('p.*, c.nombre as nombreCliente, c.icono, sub.url, sub.nombre as nombreSubcliente, p.id_subcliente')
-        ->from('usuario_permiso as up')
-        ->join('permiso as p', 'p.id = up.id_permiso')
-        ->join('cliente as c','c.id = p.id_cliente')
-        ->join('subcliente as sub','sub.id = p.id_subcliente')
-        ->where('p.id_subcliente !=', 0)
-        ->where('up.id_usuario', $id)
-        ->order_by('c.nombre','ASC');
+            ->select('p.*, c.nombre as nombreCliente, c.icono, sub.url, sub.nombre as nombreSubcliente, p.id_subcliente')
+            ->from('usuario_permiso as up')
+            ->join('permiso as p', 'p.id = up.id_permiso')
+            ->join('cliente as c', 'c.id = p.id_cliente')
+            ->join('subcliente as sub', 'sub.id = p.id_subcliente')
+            ->where('p.id_subcliente !=', 0)
+            ->where('up.id_usuario', $id)
+            ->order_by('c.nombre', 'ASC');
 
         $query = $this->db->get();
-        if($query->num_rows() > 0){
+        if ($query->num_rows() > 0) {
             return $query->result();
+        } else {
+            return false;
         }
-        else{
-            return FALSE;
-        }
-    }/*
+    } /*
     function deleteToken($id_candidato){
-        $this->db
-        ->set('token', NULL)
-        ->where('id', $id_candidato)
-        ->update('candidato', $candidato);
+    $this->db
+    ->set('token', NULL)
+    ->where('id', $id_candidato)
+    ->update('candidato', $candidato);
     }
     function getModulos($id_rol){
-        $this->db
-        ->select('rolop.*')
-        ->from('rol_operaciones as rolop')
-        //->join('rol as rol', 'rol.id = rolop.id_rol')
-        //->join('operaciones as op', 'op.id = .id_operaciones')
-        //->join('modulo as m','m.id = op.id_modulo')
-        ->where('.id_rol', $id_rol);
+    $this->db
+    ->select('rolop.*')
+    ->from('rol_operaciones as rolop')
+    //->join('rol as rol', 'rol.id = rolop.id_rol')
+    //->join('operaciones as op', 'op.id = .id_operaciones')
+    //->join('modulo as m','m.id = op.id_modulo')
+    ->where('.id_rol', $id_rol);
 
-        $query = $this->db->get();
-        if($query->num_rows() > 0){
-            return $query->result();
-        }
-        else{
-            return FALSE;
-        }
+    $query = $this->db->get();
+    if($query->num_rows() > 0){
+    return $query->result();
+    }
+    else{
+    return FALSE;
+    }
     }*/
-    function getDatosUsuario($id_usuario){
+    public function getDatosUsuario($id_usuario)
+    {
         $this->db
-        ->select('u.correo, u.nombre, u.paterno, u.id_rol, u.clave')
-        ->from('usuario as u')
-        ->where('u.id', $id_usuario);
+            ->select('u.correo, u.nombre, u.paterno, u.id_rol, u.clave')
+            ->from('usuario as u')
+            ->where('u.id', $id_usuario);
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
-    function getDatosUsuarioInterno($id_usuario){
+    public function getDatosUsuarioInterno($id_usuario)
+    {
         $this->db
-        ->select('u.correo, u.nombre, u.paterno, u.id_rol, u.clave')
-        ->from('usuario as u')
-        ->where('u.id', $id_usuario);
+            ->select('u.correo, u.nombre, u.paterno, u.id_rol, u.clave')
+            ->from('usuario as u')
+            ->where('u.id', $id_usuario);
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
-    function getDatosUsuarioCliente($id_usuario){
+    public function getDatosUsuarioCliente($id_usuario)
+    {
         $this->db
-        ->select('u.correo, u.nombre, u.paterno, u.clave, u.privacidad')
-        ->from('usuario_cliente as u')
-        ->where('u.id', $id_usuario);
+            ->select('u.correo, u.nombre, u.paterno, u.clave, u.privacidad')
+            ->from('usuario_cliente as u')
+            ->where('u.id', $id_usuario);
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
-    function getDatosUsuarioSubcliente($id_usuario){
+    public function getDatosUsuarioSubcliente($id_usuario)
+    {
         $this->db
-        ->select('u.correo, u.nombre, u.paterno, u.clave')
-        ->from('usuario_subcliente as u')
-        ->where('u.id', $id_usuario);
+            ->select('u.correo, u.nombre, u.paterno, u.clave')
+            ->from('usuario_subcliente as u')
+            ->where('u.id', $id_usuario);
 
         $consulta = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
-    function getUsuarios(){
+    public function getUsuarios()
+    {
         $portal = $this->session->userdata('idPortal');
         $this->db
-        ->select('DATUP.id, DATUP.nombre, DATUP.paterno, U.id_rol')
-        ->from('usuarios_portal as U')
-        ->join('datos_generales as DATUP','DATUP.id = U.id_datos_generales')
-        ->where('U.status', 1)
-        ->where('U.eliminado', 0)
-        ->where_in('U.id_portal', $portal)
-        ->where_in('U.id_rol', [2,9])
-        ->order_by('DATUP.nombre','ASC');
+            ->select('DATUP.id, DATUP.nombre, DATUP.paterno, U.id_rol')
+            ->from('usuarios_portal as U')
+            ->join('datos_generales as DATUP', 'DATUP.id = U.id_datos_generales')
+            ->where('U.status', 1)
+            ->where('U.eliminado', 0)
+            ->where_in('U.id_portal', $portal)
+            ->where_in('U.id_rol', [2, 9])
+            ->order_by('DATUP.nombre', 'ASC');
 
         $query = $this->db->get();
-        if($query->num_rows() > 0){
+        if ($query->num_rows() > 0) {
             return $query->result();
+        } else {
+            return false;
         }
-        else{
-            return FALSE;
+    }
+    public function editarUsuarioInterno($datos, $id)
+    {
+        $this->db
+            ->where('id', $id)
+            ->update('usuario', $datos);
+    }
+    public function editarUsuarioCliente($datos, $id)
+    {
+        $this->db
+            ->where('id', $id)
+            ->update('usuario_cliente', $datos);
+    }
+    public function editarUsuarioSubcliente($datos, $id)
+    {
+        $this->db
+            ->where('id', $id)
+            ->update('usuario_subcliente', $datos);
+    }
+
+    public function forgotenPass($datos, $id)
+    {
+        $this->db
+            ->where('id', $id)
+            ->update('datos_generales', $datos);
+    }
+    public function getAnalistasActivos()
+    {
+        $this->db
+            ->select("u.id, CONCAT(u.nombre,' ',u.paterno) as usuario, u.id_rol")
+            ->from('usuario as u')
+            ->where('u.status', 1)
+            ->where('u.eliminado', 0)
+            ->where_in('u.id_rol', [2, 9])
+            ->order_by('u.nombre', 'ASC');
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
         }
     }
-    function editarUsuarioInterno($datos,$id){
-        $this->db 
-        ->where('id',$id)
-        ->update('usuario',$datos);
-    }
-    function editarUsuarioCliente($datos,$id){
-        $this->db 
-        ->where('id',$id)
-        ->update('usuario_cliente',$datos);
-    }
-    function editarUsuarioSubcliente($datos,$id){
-        $this->db 
-        ->where('id',$id)
-        ->update('usuario_subcliente',$datos);
-    }
-    function getAnalistasActivos(){
-      $this->db
-      ->select("u.id, CONCAT(u.nombre,' ',u.paterno) as usuario, u.id_rol")
-      ->from('usuario as u')
-      ->where('u.status', 1)
-      ->where('u.eliminado', 0)
-      ->where_in('u.id_rol', [2,9])
-      ->order_by('u.nombre','ASC');
 
-      $query = $this->db->get();
-      if($query->num_rows() > 0){
-        return $query->result();
-      }
-      else{
-        return FALSE;
-      }
-    }
-    function getTipoUsuarios($roles){
+    public function getTipoUsuarios($roles)
+    {
         $id_portal = $this->session->userdata('idPortal');
-      $this->db
-      ->select("U.id, CONCAT(GEN.nombre,' ',GEN.paterno) as usuario, U.id_rol")
-      ->from('usuarios_portal as U')
-      ->join('datos_generales as GEN', 'GEN.id = U.id_datos_generales','left')
-      ->where('U.id_portal', $id_portal)
-      ->where('U.status', 1)
-      ->where('U.eliminado', 0)
-      ->where_in('U.id_rol', $roles)
-      ->order_by('GEN.nombre','ASC');
+        $this->db
+            ->select("U.id, CONCAT(GEN.nombre,' ',GEN.paterno) as usuario, U.id_rol")
+            ->from('usuarios_portal as U')
+            ->join('datos_generales as GEN', 'GEN.id = U.id_datos_generales', 'left')
+            ->where('U.id_portal', $id_portal)
+            ->where('U.status', 1)
+            ->where('U.eliminado', 0)
+            ->where_in('U.id_rol', $roles)
+            ->order_by('GEN.nombre', 'ASC');
 
-      $query = $this->db->get();
-      if($query->num_rows() > 0){
-        return $query->result();
-      }
-      else{
-        return FALSE;
-      }
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-    function getUserByIdByRole($id,$roles){
+
+    public function getUserByIdByRole($id, $roles)
+    {
         $id_portal = $this->session->userdata('idPortal');
 
-      $this->db
-      ->select("U.id")
-      ->from('usuarios_portal as U')
-      ->where('U.status', 1)
-      ->where('U.eliminado', 0)
-      ->where('U.id_portal', $id_portal)
-      ->where('U.id', $id)
-      ->where_in('U.id_rol', $roles);
+        $this->db
+            ->select("U.id")
+            ->from('usuarios_portal as U')
+            ->where('U.status', 1)
+            ->where('U.eliminado', 0)
+            ->where('U.id_portal', $id_portal)
+            ->where('U.id', $id)
+            ->where_in('U.id_rol', $roles);
 
-      $query = $this->db->get();
-      return $query->row();
+        $query = $this->db->get();
+        return $query->row();
     }
     /*----------------------------------------*/
     /*  Control de Seguridad
     /*----------------------------------------*/
-			function checkUsuarioActivo($id_usuario){
+    public function checkUsuarioActivo($id_usuario)
+    {
 
-				$this->db
-				->select('status, eliminado')
-				->from('usuarios_portal')
-				->where('id', $id_usuario);
-
-				$consulta = $this->db->get();
-				$resultado = $consulta->row();
-				return $resultado;
-			}
-            //TODO: pendiente de revisar  si sirve
-			function checkPasswordUsuarioInterno($id, $pass){
-                $id_portal = $this->session->userdata('idPortal');
-
-				$this->db
-				->select('u.id')
-				->from('usuario as u')
-				->where('u.id', $id)
-				->where('u.password', $pass);
-
-				$consulta = $this->db->get();
-				$resultado = $consulta->row();
-				return $resultado;
-			}
-			function checkPasswordUsuarioCliente($id, $pass){
-                $id_portal = $this->session->userdata('idPortal');
-
-				$this->db
-				->select('u.id')
-				->from('usuario_cliente as u')
-				->where('u.id', $id)
-				->where('u.password', $pass);
-
-				$consulta = $this->db->get();
-				$resultado = $consulta->row();
-				return $resultado;
-			}
-			function checkPasswordUsuarioSubcliente($id, $pass){
-				$this->db
-				->select('u.id')
-				->from('usuario_subcliente as u')
-				->where('u.id', $id)
-				->where('u.password', $pass);
-
-				$consulta = $this->db->get();
-				$resultado = $consulta->row();
-				return $resultado;
-			}
-			function checkCorreoCliente($correo){
-				$this->db 
-				->select('id')
-				->from('usuario_cliente')
-				->where('correo', $correo);
-
-				$consulta = $this->db->get();
-				return $consulta->row();
-			}
-			function checkCorreoSubcliente($correo){
-				$this->db 
-				->select('id')
-				->from('usuario_subcliente')
-				->where('correo', $correo);
-
-				$consulta = $this->db->get();
-				return $consulta->row();
-			}
-      
-      function addSesion($data){
-        $this->db->insert('sesion',$data);
-      }
-
-      function get_usuarios_by_candidato_privacidad($idCandidato, $nivelesPrivacidadCliente){
         $this->db
-        ->select("CONCAT(C.nombre,' ',C.paterno,' ',C.materno) as candidato, UC.correo, CONCAT(UC.nombre,' ',UC.paterno) as nombreUsuario")
-        ->from('candidato as C')
-        ->join('usuario_cliente as UC','UC.id_cliente = C.id_cliente')
-        ->where('C.id', $idCandidato)
-				->where_in('UC.privacidad', $nivelesPrivacidadCliente)
-        ->where('UC.status', 1)
-        ->where('UC.eliminado', 0);
+            ->select('status, eliminado')
+            ->from('usuarios_portal')
+            ->where('id', $id_usuario);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
+    }
+    //TODO: pendiente de revisar  si sirve
+    public function checkPasswordUsuarioInterno($id, $pass)
+    {
+        $id_portal = $this->session->userdata('idPortal');
+
+        $this->db
+            ->select('u.id')
+            ->from('usuario as u')
+            ->where('u.id', $id)
+            ->where('u.password', $pass);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
+    }
+    public function checkPasswordUsuarioCliente($id, $pass)
+    {
+        $id_portal = $this->session->userdata('idPortal');
+
+        $this->db
+            ->select('u.id')
+            ->from('usuario_cliente as u')
+            ->where('u.id', $id)
+            ->where('u.password', $pass);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
+    }
+    public function checkPasswordUsuarioSubcliente($id, $pass)
+    {
+        $this->db
+            ->select('u.id')
+            ->from('usuario_subcliente as u')
+            ->where('u.id', $id)
+            ->where('u.password', $pass);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
+    }
+    public function checkCorreoUsuario($correo)
+    {
+        $this->db
+            ->select('id')
+            ->from('datos_generales')
+            ->where('correo', $correo);
+
+        $consulta = $this->db->get();
+        return $consulta->row();
+    }
+
+    public function checkCorreoSubcliente($correo)
+    {
+        $this->db
+            ->select('id')
+            ->from('usuario_subcliente')
+            ->where('correo', $correo);
+
+        $consulta = $this->db->get();
+        return $consulta->row();
+    }
+
+    public function addSesion($data)
+    {
+        $this->db->insert('sesion', $data);
+    }
+
+    public function get_usuarios_by_candidato_privacidad($idCandidato, $nivelesPrivacidadCliente)
+    {
+        $this->db
+            ->select("CONCAT(C.nombre,' ',C.paterno,' ',C.materno) as candidato, UC.correo, CONCAT(UC.nombre,' ',UC.paterno) as nombreUsuario")
+            ->from('candidato as C')
+            ->join('usuario_cliente as UC', 'UC.id_cliente = C.id_cliente')
+            ->where('C.id', $idCandidato)
+            ->where_in('UC.privacidad', $nivelesPrivacidadCliente)
+            ->where('UC.status', 1)
+            ->where('UC.eliminado', 0);
 
         $query = $this->db->get();
-        if($query->num_rows() > 0){
-					return $query->result();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
         }
-        else{
-					return FALSE;
-        }
-    	}
-//TODO: pendiente  de revision si funciona  
-	function get_usuarios_by_rol($roles){
+    }
+//TODO: pendiente  de revision si funciona
+    public function get_usuarios_by_rol($roles)
+    {
         $this->db
-        ->select("U.id, CONCAT(U.nombre,' ',U.paterno) as usuario")
-        ->from('usuario as U')
-		->where_in('U.id_rol', $roles)
-        ->where('U.status', 1)
-        ->where('U.eliminado', 0);
+            ->select("U.id, CONCAT(U.nombre,' ',U.paterno) as usuario")
+            ->from('usuario as U')
+            ->where_in('U.id_rol', $roles)
+            ->where('U.status', 1)
+            ->where('U.eliminado', 0);
 
         $query = $this->db->get();
-        if($query->num_rows() > 0){
-					return $query->result();
-        }
-        else{
-					return FALSE;
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
         }
     }
 }

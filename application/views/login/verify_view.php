@@ -90,32 +90,61 @@
     </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-$(document).ready(function() {
-    // Ocultar todas las alertas por defecto
-    $(' #verificationSentAlert, #errorSpan').hide();
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    var cooldown = 60; // Tiempo en segundos para el cooldown
+    var resendButton = $('#resendCodeBtn');
+    var interval;
 
-    // Manejar la validación del formulario
-   
+    // Función para actualizar el estado del botón
+    function updateButton() {
+        if (cooldown > 0) {
+            resendButton.text('Reenviar Código (' + cooldown + 's)');
+            resendButton.prop('disabled', true);
+        } else {
+            resendButton.text('Reenviar Código');
+            resendButton.prop('disabled', false);
+        }
+    }
 
-    // Asociar un evento de clic al botón de reenvío de código de verificación
-    $('#resendCodeBtn').click(function() {
+    // Función para iniciar el temporizador
+    function startCooldown() {
+        clearInterval(interval); // Limpiar el intervalo anterior
+        cooldown = 60; // Reiniciar el temporizador
+        updateButton(); // Actualizar el estado inicial del botón
+        interval = setInterval(function() {
+            cooldown--;
+            updateButton();
+            if (cooldown <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
+
+    // Inicializar el botón y comenzar el temporizador al cargar la página
+    startCooldown();
+
+    // Manejar el clic en el botón de reenvío de código de verificación
+    resendButton.click(function() {
         // Ocultar todas las alertas antes de mostrar la nueva
         $('#emailSentAlert, #verificationSentAlert, #errorSpan').fadeOut(function() {
             // Mostrar la alerta de verificación enviada después de que se haya ocultado la anterior
             $('#verificationSentAlert').fadeIn();
         });
 
-        // Aquí puedes escribir la lógica para reenviar el código de verificación
-        // Por ejemplo, puedes hacer una solicitud AJAX al servidor para manejar el reenvío del código
-        // Ejemplo de solicitud AJAX (reemplaza con tu lógica real)
+        // Lógica para reenviar el código de verificación
         $.ajax({
-            url: 'generar_codigo_autenticacion',
+            url: 'generar_codigo_autenticacion', // Asegúrate de que esta URL sea correcta
             type: 'POST',
             dataType: 'json',
             success: function(response) {
-                // Mostrar la alerta de verificación enviada
+                console.log('Código reenviado exitosamente:', response); // Para depuración
                 $('#verificationSentAlert').fadeIn();
+
+                // Reiniciar el temporizador
+                startCooldown();
 
                 // Ajustar el desplazamiento de la página para mantener la posición
                 var scrollPosition = $('#verificationSentAlert').offset().top;
@@ -124,13 +153,12 @@ $(document).ready(function() {
                 }, 500);
             },
             error: function(xhr, status, error) {
-                // Mostrar el mensaje de error debajo del campo de entrada
-                $('#errorSpan').text('Error al reenviar el código de verificación: ' + error).show();
                 console.error('Error al reenviar el código de verificación:', error);
+                $('#errorSpan').text('Error al reenviar el código de verificación: ' + error).show();
             }
         });
     });
-});
+  });
 </script>
 
 

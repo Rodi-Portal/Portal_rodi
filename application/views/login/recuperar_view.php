@@ -29,28 +29,22 @@
     </div>
   <?php 
   }
-  if($this->session->flashdata('success')){ ?>
-    <div class="alert alert-success alert-dismissible fade show text-center msj_login" role="alert" style="opacity: 1;">
-        <strong><?php echo $this->session->flashdata('success'); ?> </strong>
-        <button type="button" class="close cerrar_login" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    <?php 
-  } ?>
+  ?>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-xl-10 col-lg-12 col-md-9">
         <div class="card o-hidden border-0 shadow-lg my-5">
           <div class="card-body p-0">
             <div class="row">
-              <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+            <div class="col-lg-6 d-none d-lg-block bg-login-image">
+                <img src="<?php echo base_url() ?>img/logoconNombre2.png" alt="Talentsafe Control">
+              </div>
               <div class="col-lg-6">
                 <div class="p-5">
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Password recovery</h1>
                   </div>
-                  <form class="user" action="<?php echo base_url('Login/new_password'); ?>" method="POST">
+                  <form class="user" action="<?php echo base_url('Login/verify_new_pass'); ?>" method="POST">
                     <div class="form-group">
                       <input type="email" class="form-control form-control-user" id="correo" name="correo" aria-describedby="emailHelp" placeholder="Email">
                     </div>
