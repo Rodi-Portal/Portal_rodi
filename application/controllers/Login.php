@@ -263,7 +263,7 @@ class Login extends CI_Controller
                     redirect('Login/verifyView');
                 
 
-                $this->session_verificada();
+              //  $this->session_verificada();
 
             } else {
                 $this->session->set_flashdata('error1', 'Email not found. Please check your email account.');
