@@ -258,13 +258,10 @@ class Login extends CI_Controller
                 $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
                 // Redirigir al dashboard o a donde sea necesario
-                if ($usuario->id_rol != 3) {
-                    $this->session->set_userdata('tipo_acceso', 'usuario');
+               
+                   
                     redirect('Login/verifyView');
-                } else {
-                    $this->session->set_userdata('tipo_acceso', 'visitador');
-                    redirect('Login/verifyView');
-                }
+                
 
                 $this->session_verificada();
 
