@@ -6,7 +6,7 @@ class Cat_portales_model extends CI_Model{
   function getTotal() {
     try {
         $this->db
-            ->select("p.id")
+            ->select("P.id")
             ->from('portal as P')
             ->where('P.status', 1);
 
