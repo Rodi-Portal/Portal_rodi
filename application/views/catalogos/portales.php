@@ -640,4 +640,8 @@ function uploadFile(event, idPortal) {
       });
   }
 }
+
+
+
+
 </script>

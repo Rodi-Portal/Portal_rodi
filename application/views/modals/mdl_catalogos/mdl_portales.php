@@ -228,7 +228,7 @@
           <span class="text">Regresar</span>
         </button>
         <button type="button" class="btn btn-success btn-icon-split" id="btnContinuar">
-          <span class="text"></span>
+          <span class="text">Continuar</span>
           <span class="icon text-white-50">
             <i class="fas fa-arrow-right"></i>
           </span>
@@ -797,10 +797,28 @@ $('#editPortal #btnActualizar').on('click', function() {
   });
 });
 
+function generarPassword() {
+  $.ajax({
+    url: '<?php echo base_url('Funciones/generarPassword'); ?>',
+    type: 'post',
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      $("#password").val(res);
+
+    }
+  });
+}
 function capitalizeFirstLetter(event) {
   const input = event.target;
   const value = input.value;
   // Solo capitaliza la primera letra y pone el resto en minúsculas
   input.value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
+
+
 </script>
