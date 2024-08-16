@@ -356,13 +356,13 @@ class Cat_Portales extends CI_Controller
         try {
             // Obtener el total de registros (recordsTotal)
             $recordsTotal = $this->cat_portales_model->getTotal();
-
+            
             // Obtener el total de registros después de aplicar filtros (recordsFiltered)
             $recordsFiltered = $this->cat_portales_model->getTotal();
 
             // Obtener los datos de clientes (data)
             $data = $this->cat_portales_model->getP();
-
+           
             // Configurar el tipo de contenido de la respuesta como JSON
             $this->output->set_content_type('application/json');
 

@@ -189,8 +189,7 @@ $(document).ready(function() {
         bSortable: false,
         width: "10%",
         mRender: function(data, type, full) {
-          console.log("🚀 ~ mRender ~ data:", data);
-          console.log("🚀 ~ mRender ~ full:", full);
+          
 
           // La URL completa del archivo debe ser accesible desde la web
           const fileUrl = '<?php echo base_url("_portal_files/"); ?>' + data;

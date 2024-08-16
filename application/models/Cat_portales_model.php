@@ -3,18 +3,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Cat_portales_model extends CI_Model{
 
-  function getTotal(){
-    $this->db
-    ->select("p.id")
-    ->from('portal as P')
-    ->where('status', 1);
+  function getTotal() {
+    try {
+        $this->db
+            ->select("p.id")
+            ->from('portal as P')
+            ->where('P.status', 1);
 
+        $query = $this->db->get();
 
-    $query = $this->db->get();
+        // Verifica errores de la base de datos
+        $db_error = $this->db->error();
+        if (!empty($db_error['message'])) {
+            log_message('error', 'Error en getTotal: ' . $db_error['message']);
+            return 0;
+        }
 
-   
-    return $query->num_rows();
-  }
+        // Devuelve el número de filas
+        return $query->num_rows();
+    } catch (Exception $e) {
+        log_message('error', 'Excepción en getTotal: ' . $e->getMessage());
+        return 0;
+    }
+}
 
 
 function getClienteValido() {
@@ -79,66 +90,67 @@ function getClienteValido() {
     }
 }
 function getP() {
+  try {
+      // Construir la consulta
+      $this->db->select("
+          P.id AS idPortal,
+          P.cons AS constancia,
+          P.nombre, 
+          P.status, 
+          P.descripcion, 
+          P.creacion, 
+          P.usuarios_permitidos,
+          P.id_usuario_portal,
+          F.id AS idFac,
+          F.razon_social,
+          F.rfc,
+          F.uso_cfdi,
+          F.regimen as regimen1,
+          F.forma_pago, 
+          F.metodo_pago,
+          D.id AS idDom,
+          D.pais,
+          D.estado,
+          D.ciudad,
+          D.colonia,
+          D.calle,
+          D.exterior,
+          D.interior,
+          D.cp,
+          (SELECT COUNT(id) FROM usuarios_portal WHERE id_portal = P.id) AS numero_usuarios_portal,
+          DGU.nombre AS nombre_usuario_portal,
+          DGU.paterno AS apellido_usuario_portal,
+          DGU.correo AS correo_usuario_portal,
+          DGU.telefono AS telefono_usuario_portal")
+          ->from('portal AS P')
+          ->join("usuarios_portal AS UP", "P.id_usuario_portal = UP.id", 'left')
+          ->join("datos_generales AS DGU", "UP.id_datos_generales = DGU.id", 'left')
+          ->join("domicilios AS D", "P.id_domicilios = D.id", 'left')
+          ->join("datos_facturacion AS F", "P.id_datos_facturacion = F.id", 'left')
+          ->where('P.status', 1);
 
-    try {
-        $this->db->select("
-        P.id AS idPortal,
-        P.cons AS constancia,
-        P.nombre, 
-        P.status, 
-        P.descripcion, 
-        P.creacion, 
-        P.usuarios_permitidos,
-        P.id_usuario_portal,
-        F.id AS idFac,
-        F.razon_social,
-        F.rfc,
-        F.uso_cfdi,
-        F.regimen as regimen1,
-        F.forma_pago, 
-        F.metodo_pago,
-        D.id AS idDom,
-        D.pais,
-        D.estado,
-        D.ciudad,
-        D.colonia,
-        D.calle,
-        D.exterior,
-        D.interior,
-        D.cp,
-        (SELECT COUNT(id) FROM usuarios_portal WHERE id_portal = P.id) AS numero_usuarios_portal,
-        DGU.nombre AS nombre_usuario_portal,
-        DGU.paterno AS apellido_usuario_portal,
-        DGU.correo AS correo_usuario_portal,
-        DGU.telefono AS telefono_usuario_portal")
-            ->from('portal AS P')
-            ->join("usuarios_portal AS UP", "P.id_usuario_portal = UP.id", 'left')
-            ->join("datos_generales AS DGU", "UP.id_datos_generales = DGU.id", 'left')
-            ->join("domicilios AS D", "P.id_domicilios = D.id", 'left')
-            ->join("datos_facturacion AS F", "P.id_datos_facturacion = F.id", 'left')
-            ->where('P.status', 1);
+      // Ejecutar la consulta
+      $query = $this->db->get();
 
-      
+      // Verifica errores de la base de datos
+      $db_error = $this->db->error();
+      if (!empty($db_error['message'])) {
+          log_message('error', 'Error en la consulta: ' . $db_error['message']);
+          return [];
+      }
 
-        $query = $this->db->get();
-
-        // Verifica errores de la base de datos
-        $db_error = $this->db->error();
-        if (!empty($db_error['message'])) {
-            log_message('error', 'Error en la consulta: ' . $db_error['message']);
-            return [];
-        }
-
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return [];
-        }
-    } catch (Exception $e) {
-        log_message('error', 'Excepción en la consulta: ' . $e->getMessage());
-        return [];
-    } 
+      // Verifica si se obtuvieron resultados
+      if ($query->num_rows() > 0) {
+          return $query->result();
+      } else {
+          return [];
+      }
+  } catch (Exception $e) {
+      log_message('error', 'Excepción en la consulta: ' . $e->getMessage());
+      return [];
+  }
 }
+
 
 function existePortal($nombre){
 
