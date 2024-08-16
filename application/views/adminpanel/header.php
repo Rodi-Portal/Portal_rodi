@@ -108,7 +108,7 @@
             <?php endif; ?>
             <?php endforeach; ?>
             <?php else : ?>
-            <p>No tienes permisos disponibles.</p>
+            <p>Aun no hay clientes registrados.</p>
             <?php endif; ?>
           </div>
         </div>
