@@ -252,45 +252,50 @@ function addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos){
 
 
 
-function editPortal($idPortal, $portal ,$datosFacturacion = null,   $datosDomicilios = null) {
-    try {
-        // Iniciar la transacción
-        $this->db->trans_start();
+function editPortal($idPortal, $portal, $datosFacturacion = null, $datosDomicilios = null) {
+  try {
+      // Imprimir datos para depuración (elimina esto en producción)
+     /* echo '<pre>';
+      print_r($datosFacturacion);
+      print_r($datosDomicilios);
+      print_r($portal);
+      echo '</pre>';
+      die();  */
 
-        // Editar los datos generales si se proporcionaron
-        
+      // Iniciar la transacción
+      $this->db->trans_start();
 
-        // Editar los domicilios si se proporcionaron
-        if (!is_null($datosDomicilios)) {
-            $this->generales_model->editDomicilios($portal['id_domicilios'], $datosDomicilios);
-        }
+      // Editar los domicilios si se proporcionaron
+      if (!is_null($datosDomicilios) && !empty($datosDomicilios)) {
+          $this->generales_model->editDomicilios($portal['id_domicilios'], $datosDomicilios);
+      }
 
-        // Editar los datos de facturación si se proporcionaron
-        if (!is_null($datosFacturacion)) {
-            $this->generales_model->editDatosFacturacion($portal['id_datos_facturacion'], $datosFacturacion);
-        }
+      // Editar los datos de facturación si se proporcionaron
+      if (!is_null($datosFacturacion) && !empty($datosFacturacion)) {
+          $this->generales_model->editDatosFacturacion($portal['id_datos_facturacion'], $datosFacturacion);
+      }
 
-        // Actualizar el portal en la tabla correspondiente si se proporcionó
-        if (!is_null($portal)) {
-            $this->db->where('id', $idPortal)->update('portal', $portal);
-        }
+      // Actualizar el portal si se proporcionaron datos
+      if (!is_null($portal) && !empty($portal)) {
+          $this->db->where('id', $idPortal)->update('portal', $portal);
+      }
 
-        // Completar la transacción
-        $this->db->trans_complete();
+      // Completar la transacción
+      $this->db->trans_complete();
 
-        // Verificar si la transacción fue exitosa
-        if ($this->db->trans_status() === false) {
-            // Ocurrió un error durante la transacción, manejar según tus necesidades
-            return false;
-        }
+      // Verificar si la transacción fue exitosa
+      if ($this->db->trans_status() === false) {
+          // Ocurrió un error durante la transacción
+          return false;
+      }
 
-        // La transacción fue exitosa, retornar true
-        return true;
-    } catch (Exception $e) {
-        // Manejar la excepción si ocurre algún error
-        log_message('error', 'Error en editCliente: ' . $e->getMessage());
-        return false;
-    }
+      // La transacción fue exitosa
+      return true;
+  } catch (Exception $e) {
+      // Manejar la excepción
+      log_message('error', 'Error en editPortal: ' . $e->getMessage());
+      return false;
+  }
 }
 
  

@@ -29,29 +29,53 @@ function editDatosGenerales($idDatosGenerales, $datosGenerales){
     }
 }
 
-function editDomicilios($idDomicilios, $datosDomicilios){
-   // echo "id domicilios : ".$idDomicilios;
-    //var_dump($datosDomicilios);
+function editDomicilios($idDomicilios, $datosDomicilios) {
+    // Verifica que $datosDomicilios sea un array
+    if (!is_array($datosDomicilios) || empty($datosDomicilios)) {
+        log_message('error', 'Datos de domicilio no válidos para la actualización.');
+        return false;
+    }
+    
+    // Intenta realizar la actualización
     try {
         $this->db->where('id', $idDomicilios);
         $this->db->update('domicilios', $datosDomicilios);
+        
+        // Verifica si se actualizó al menos una fila
+        if ($this->db->affected_rows() > 0) {
+            return true; // Actualización exitosa
+        } else {
+            log_message('error', 'No se actualizó ningún registro en domicilios.');
+            return false; // No se actualizó ningún registro
+        }
     } catch (Exception $e) {
         log_message('error', 'Error en editDomicilios: ' . $e->getMessage());
-        // Puedes lanzar una excepción personalizada o retornar un código de error, dependiendo de tus necesidades.
-        return false;
+        return false; // Error en la actualización
     }
 }
 
-function editDatosFacturacion($idDatosFacturacion, $datosFacturacion){
-  //  echo "id domicilios : ".$idDatosFacturacion."   ";
-    //var_dump($datosFacturacion);
+function editDatosFacturacion($idDatosFacturacion, $datosFacturacion) {
+    // Verifica que $datosFacturacion sea un array
+    if (!is_array($datosFacturacion) || empty($datosFacturacion)) {
+        log_message('error', 'Datos de facturación no válidos para la actualización.');
+        return false;
+    }
+    
+    // Intenta realizar la actualización
     try {
         $this->db->where('id', $idDatosFacturacion);
         $this->db->update('datos_facturacion', $datosFacturacion);
+        
+        // Verifica si se actualizó al menos una fila
+        if ($this->db->affected_rows() > 0) {
+            return true; // Actualización exitosa
+        } else {
+            log_message('error', 'No se actualizó ningún registro en datos_facturacion.');
+            return false; // No se actualizó ningún registro
+        }
     } catch (Exception $e) {
         log_message('error', 'Error en editDatosFacturacion: ' . $e->getMessage());
-        // Puedes lanzar una excepción personalizada o retornar un código de error, dependiendo de tus necesidades.
-        return false;
+        return false; // Error en la actualización
     }
 }
 
