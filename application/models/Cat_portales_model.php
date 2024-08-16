@@ -7,12 +7,12 @@ class Cat_portales_model extends CI_Model{
     try {
         $this->db
             ->select("P.id")
-            ->from('portal as P')
+            ->from('portal AS P')
             ->where('P.status', 1);
 
         // Imprimir la consulta SQL generada
         $sql = $this->db->get_compiled_select();
-        echo "<pre>$sql</pre>";
+        echo "<pre>Consulta SQL: $sql</pre>";
 
         $query = $this->db->get();
 
@@ -20,17 +20,22 @@ class Cat_portales_model extends CI_Model{
         $db_error = $this->db->error();
         if (!empty($db_error['message'])) {
             log_message('error', 'Error en getTotal: ' . $db_error['message']);
+            echo "<pre>Error en getTotal: " . print_r($db_error, true) . "</pre>";
             return 0;
         }
 
+        // Imprimir el número de filas obtenidas para depuración
+        $num_rows = $query->num_rows();
+        echo "<pre>Number of rows: $num_rows</pre>";
+
         // Devuelve el número de filas
-        return $query->num_rows();
+        return $num_rows;
     } catch (Exception $e) {
         log_message('error', 'Excepción en getTotal: ' . $e->getMessage());
+        echo "<pre>Excepción en getTotal: " . $e->getMessage() . "</pre>";
         return 0;
     }
 }
-
 
 function getClienteValido() {
     // Obtén el valor del portal desde la sesión
