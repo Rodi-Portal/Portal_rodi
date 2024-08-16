@@ -4,6 +4,41 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Cat_subclientes_model extends CI_Model
 {
 
+    
+  function getTotalPortal() {
+    try {
+        $this->db
+            ->select("P.id")
+            ->from('portal AS P')
+            ->where('P.status', 1);
+
+        // Imprimir la consulta SQL generada
+        $sql = $this->db->get_compiled_select();
+        echo "<pre>Consulta SQL: $sql</pre>";
+
+        $query = $this->db->get();
+
+        // Verifica errores de la base de datos
+        $db_error = $this->db->error();
+        if (!empty($db_error['message'])) {
+            log_message('error', 'Error en getTotal: ' . $db_error['message']);
+            echo "<pre>Error en getTotal: " . print_r($db_error, true) . "</pre>";
+            return 0;
+        }
+
+        // Imprimir el número de filas obtenidas para depuración
+        $num_rows = $query->num_rows();
+        echo "<pre>Number of rows: $num_rows</pre>";
+
+        // Devuelve el número de filas
+        return $num_rows;
+    } catch (Exception $e) {
+        log_message('error', 'Excepción en getTotal: ' . $e->getMessage());
+        echo "<pre>Excepción en getTotal: " . $e->getMessage() . "</pre>";
+        return 0;
+    }
+}
+
     public function getTotal()
     {
         $this->db

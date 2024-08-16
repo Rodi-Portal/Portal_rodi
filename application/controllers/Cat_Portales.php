@@ -355,7 +355,7 @@ class Cat_Portales extends CI_Controller
     {
         try {
             // Obtener el total de registros (recordsTotal)
-            $recordsTotal = $this->cat_portales_model->getTotal();
+            $recordsTotal = $this->cat_subclientes_model-->getTotalPortal();
             
             // Obtener el total de registros después de aplicar filtros (recordsFiltered)
             $recordsFiltered = $this->cat_portales_model->getTotal();
