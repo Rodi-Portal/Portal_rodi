@@ -10,6 +10,10 @@ class Cat_portales_model extends CI_Model{
             ->from('portal as P')
             ->where('P.status', 1);
 
+        // Imprimir la consulta SQL generada
+        $sql = $this->db->get_compiled_select();
+        echo "<pre>$sql</pre>";
+
         $query = $this->db->get();
 
         // Verifica errores de la base de datos
@@ -91,7 +95,6 @@ function getClienteValido() {
 }
 function getP() {
   try {
-      // Construir la consulta
       $this->db->select("
           P.id AS idPortal,
           P.cons AS constancia,
@@ -129,6 +132,10 @@ function getP() {
           ->join("datos_facturacion AS F", "P.id_datos_facturacion = F.id", 'left')
           ->where('P.status', 1);
 
+      // Imprimir la consulta SQL generada
+      $sql = $this->db->get_compiled_select();
+      echo "<pre>$sql</pre>";
+
       // Ejecutar la consulta
       $query = $this->db->get();
 
@@ -150,6 +157,7 @@ function getP() {
       return [];
   }
 }
+
 
 
 function existePortal($nombre){
