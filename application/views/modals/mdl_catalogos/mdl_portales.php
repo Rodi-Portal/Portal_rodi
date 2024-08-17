@@ -599,7 +599,7 @@ $(document).ready(function() {
 
   // Manejo de eventos para ocultar el modal
   $('#newPortal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
-    $(this).find('.modal-title').text('');
+    $(this).find('.modal-title').text('Nuevo Portal');
     resetModal();
   });
 

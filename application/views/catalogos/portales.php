@@ -8,8 +8,7 @@
         <h1 class="h3 mb-0 text-gray-800">Portales</h1>
       </div>
       <div class="col-sm-12 col-md-2">
-        <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newPortal"
-          onclick="registrarCliente()">
+        <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newPortal">
           <span class="icon text-white-50">
             <i class="fas fa-user-tie"></i>
           </span>
@@ -189,41 +188,38 @@ $(document).ready(function() {
         bSortable: false,
         width: "10%",
         mRender: function(data, type, full) {
-          
+          //console.log("🚀 ~ $ ~ full:", full);
 
-          // La URL completa del archivo debe ser accesible desde la web
           const fileUrl = '<?php echo base_url("_portal_files/"); ?>' + data;
 
           if (data && data.trim() !== '') {
-            // Archivo existente
             return '<b>Constancia:</b> ' +
               '<a href="' + fileUrl +
-              '" target="_blank" data-toggle="tooltip" title="Ver Constancia" id="descarga_constancia_' +
-              full.id + '" class="fa-tooltip icono_datatable icono_azul_oscuro">' +
+              '" target="_blank" data-toggle="tooltip" title="Ver Constancia" ' +
+              'id="descarga_constancia_' + full.id +
+              '" class="fa-tooltip icono_datatable icono_azul_oscuro">' +
               '<i class="fas fa-file-invoice"></i>' +
               '</a>' +
-              ' <button onclick="document.getElementById(\'cargar_constancia_' + full.id +
-              '\').click();" ' +
-              'class="btn btn-warning btn-sm ml-2" title="Actualizar Constancia">' +
+              ' <button onclick="document.getElementById(\'cargar_constancia_' + full.idPortal +
+              '\').click();" class="btn btn-warning btn-sm ml-2" title="Actualizar Constancia">' +
               '<i class="fas fa-upload"></i>' +
               '</button>' +
-              '<input type="file" id="cargar_constancia_' + full.id +
-              '" name="constancia" style="display: none;" ' +
-              'onchange="uploadFile(event, \'' + full.idPortal + '\')">';
+              '<input type="file" id="cargar_constancia_' + full.idPortal +
+              '" name="constancia" style="display: none;" onchange="uploadFile(event, \'' + full.idPortal +
+              '\')">';
           } else {
-            // Sin archivo
             return '<b>Subir Constancia:</b> ' +
               '<input type="file" id="cargar_constancia_' + full.idPortal +
-              '" name="constancia" style="display: none;" ' +
-              'onchange="uploadFile(event, \'' + full.idPortal + '\')">' +
+              '" name="constancia" style="display: none;" onchange="uploadFile(event, \'' + full.idPortal +
+              '\')">' +
               '<button onclick="document.getElementById(\'cargar_constancia_' + full.idPortal +
-              '\').click();" ' +
-              'class="btn btn-primary">' +
+              '\').click();" class="btn btn-primary">' +
               '<i class="fas fa-upload"></i>' +
               '</button>';
           }
         }
       },
+
       {
         title: 'Accesos',
         data: 'numero_usuarios_portal',
@@ -593,8 +589,13 @@ function recargarTable() {
 
 
 function uploadFile(event, idPortal) {
-  console.log("🚀 ~ uploadFile ~ event:", event);
-  console.log("🚀 ~ uploadFile ~ idPortal:", idPortal);
+
+
+  // Opcional: Pausar la ejecución para inspeccionar el estado
+  // debugger;
+
+  // Detener la ejecución si solo quieres ver los datos
+  // return;
 
   const file = event.target.files[0];
   if (file) {
@@ -640,8 +641,4 @@ function uploadFile(event, idPortal) {
       });
   }
 }
-
-
-
-
 </script>
