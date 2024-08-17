@@ -451,6 +451,7 @@ $(document).ready(function() {
         });
       });
     },
+    "responsive": true, // Habilita el modo responsive
     "language": {
       "lengthMenu": "Mostrar _MENU_ registros por página",
       "zeroRecords": "No se encontraron registros",
