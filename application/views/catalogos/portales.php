@@ -188,34 +188,33 @@ $(document).ready(function() {
         bSortable: false,
         width: "10%",
         mRender: function(data, type, full) {
-          //console.log("🚀 ~ $ ~ full:", full);
-
           const fileUrl = '<?php echo base_url("_portal_files/"); ?>' + data;
 
           if (data && data.trim() !== '') {
             return '<b>Constancia:</b> ' +
-              '<a href="' + fileUrl +
-              '" target="_blank" data-toggle="tooltip" title="Ver Constancia" ' +
+              '<a href="' + fileUrl + '" target="_blank" data-toggle="tooltip" title="Ver Constancia" ' +
               'id="descarga_constancia_' + full.id +
               '" class="fa-tooltip icono_datatable icono_azul_oscuro">' +
               '<i class="fas fa-file-invoice"></i>' +
               '</a>' +
-              ' <button onclick="document.getElementById(\'cargar_constancia_' + full.idPortal +
-              '\').click();" class="btn btn-warning btn-sm ml-2" title="Actualizar Constancia">' +
+              ' <a href="javascript:void(0)" onclick="document.getElementById(\'cargar_constancia_' + full
+              .idPortal + '\').click();" ' +
+              'class="btn btn-warning btn-sm ml-2" data-toggle="tooltip" title="Actualizar Constancia">' +
               '<i class="fas fa-upload"></i>' +
-              '</button>' +
+              '</a>' +
               '<input type="file" id="cargar_constancia_' + full.idPortal +
-              '" name="constancia" style="display: none;" onchange="uploadFile(event, \'' + full.idPortal +
-              '\')">';
+              '" name="constancia" style="display: none;" ' +
+              'onchange="uploadFile(event, \'' + full.idPortal + '\')">';
           } else {
             return '<b>Subir Constancia:</b> ' +
               '<input type="file" id="cargar_constancia_' + full.idPortal +
-              '" name="constancia" style="display: none;" onchange="uploadFile(event, \'' + full.idPortal +
-              '\')">' +
-              '<button onclick="document.getElementById(\'cargar_constancia_' + full.idPortal +
-              '\').click();" class="btn btn-primary">' +
+              '" name="constancia" style="display: none;" ' +
+              'onchange="uploadFile(event, \'' + full.idPortal + '\')">' +
+              '<a href="javascript:void(0)" onclick="document.getElementById(\'cargar_constancia_' + full
+              .idPortal + '\').click();" ' +
+              'class="btn btn-primary" data-toggle="tooltip" title="Subir Constancia">' +
               '<i class="fas fa-upload"></i>' +
-              '</button>';
+              '</a>';
           }
         }
       },
@@ -244,27 +243,26 @@ $(document).ready(function() {
           let eliminar =
             '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" id="eliminar" class="fa-tooltip icono_datatable icono_gris"><i class="fas fa-trash"></i></a> ';
           let acceso =
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" id="acceso" class="fa-tooltip icono_datatable icono_azul_claro"><i class="fas fa-sign-in-alt"></i></a>';
+            '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" id="acceso" class="fa-tooltip icono_datatable icono_azul_claro"><i class="fas fa-sign-in-alt"></i></a> ';
 
-          let accion = (full.status == 0) ?
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a> ' :
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" id="desactivar" class="fa-tooltip icono_datatable icono_verde"><i class="far fa-check-circle"></i></a> ';
+          // let accion = (full.status == 0) ?
+          //'<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a> ' :
+          //'<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" id="desactivar" class="fa-tooltip icono_datatable icono_verde"><i class="far fa-check-circle"></i></a> ';
 
           let bloqueo = (full.bloqueado === 'NO') ?
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" id="bloquear_cliente" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" id="desbloquear_cliente" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> ';
 
-          return editar + accion + eliminar + acceso + bloqueo;
+          return editar + acceso + bloqueo + eliminar;
+          //  antesreturn editar + accion + bloqueo + acceso +  eliminar;
         }
       }
     ],
-    "columnDefs": [
-        {
-            "targets": [2, 4], // Índices de las columnas a ocultar
-            "visible": false,   // Oculta las columnas
-            "responsive": true  // Asegúrate de que Responsive esté habilitado
-        }
-    ],
+    "columnDefs": [{
+      "targets": [2, 4], // Índices de las columnas a ocultar
+      "visible": false, // Oculta las columnas
+      "responsive": true // Asegúrate de que Responsive esté habilitado
+    }],
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
