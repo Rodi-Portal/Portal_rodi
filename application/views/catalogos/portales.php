@@ -258,6 +258,13 @@ $(document).ready(function() {
         }
       }
     ],
+    "columnDefs": [
+        {
+            "targets": [0, 1, 3], // Índices de las columnas a ocultar
+            "visible": false,   // Oculta las columnas
+            "responsive": true  // Asegúrate de que Responsive esté habilitado
+        }
+    ],
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
