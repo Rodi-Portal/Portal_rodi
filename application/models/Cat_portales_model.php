@@ -337,7 +337,7 @@ function getAccesosPortalModal($id_portal){
       ->select("P.*, CONCAT(DUP.nombre,' ',DUP.paterno) as usuario, DUP.correo AS correo_usuario,  U.creacion as alta, U.id as idUsuarioCliente")
       ->from("portal AS P")
       
-      ->join("usuarios_portal U", "u.id_portal = P.id")
+      ->join("usuarios_portal U", "U.id_portal = P.id")
       ->join("datos_generales DUP", "DUP.id = U.id_datos_generales")
       ->where("U.eliminado", 0)
       ->where("P.id", $id_portal);
