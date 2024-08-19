@@ -687,7 +687,7 @@ class Cat_Portales extends CI_Controller
         $accion = $this->input->post('accion');
 
         // var_dump("esta es la accion :  ".$accion."  Este es el id del cliente :  ".$idPortal);
-        if ($accion == "desactivar") {
+       /* if ($accion == "desactivar") {
             $cliente = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
@@ -716,7 +716,7 @@ class Cat_Portales extends CI_Controller
                 'codigo' => 1,
                 'msg' => 'Cliente activado correctamente',
             );
-        }
+        }*/
         if ($accion == "eliminar") {
 
             $cliente = array(
@@ -747,35 +747,17 @@ class Cat_Portales extends CI_Controller
             $portal = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
-                'status' => 0,
+                'bloqueado' => 1,
             );
-            $this->cat_portales_model->editPortal($idPortal, $cliente);
+            $this->cat_portales_model->editPortal($idPortal, $portal);
 
-            if ($this->input->post('bloquear_subclientes') === 'SI') {
-                $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idPortal);
-                if ($data['subclientes']) {
-                    foreach ($data['subclientes'] as $row) {
-                        $subcliente = array(
-                            'edicion' => $date,
-                            'id_usuario' => $id_usuario,
-                            'bloqueado' => $this->input->post('opcion_motivo'),
-                        );
-                        $this->cat_subclientes_model->editar($subcliente, $row->id);
-                        unset($subcliente);
-                    }
-                }
-            }
-
-            $dataBloqueos = array(
-                'status' => 0,
-            );
-            $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idPortal);
+     
 
             $data_bloqueo = array(
                 'creacion' => $date,
                 'id_usuario' => $id_usuario,
                 'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_cliente' => $idPortal,
+                'id_portal' => $idPortal,
                 'bloqueo_subclientes' => $this->input->post('bloquear_subclientes'),
                 'tipo' => 'BLOQUEO',
                 'mensaje' => $this->input->post('mensaje_comentario'),
@@ -788,36 +770,21 @@ class Cat_Portales extends CI_Controller
         }
 
         if ($accion == "desbloquear") {
-            $cliente = array(
+            $portal = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
-                'bloqueado' => 'NO',
+                'bloqueado' => 0,
             );
-            $this->cat_cliente_model->editCliente($idPortal, $cliente);
+            $this->cat_portales_model->editPortal($idPortal, $portal);
 
-            $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idPortal);
-            if ($data['subclientes']) {
-                foreach ($data['subclientes'] as $row) {
-                    $subcliente = array(
-                        'edicion' => $date,
-                        'id_usuario' => $id_usuario,
-                        'bloqueado' => 'NO',
-                    );
-                    $this->cat_subclientes_model->editarSubcliente($row->id, $subcliente);
-                    unset($subcliente);
-                }
+           
             }
-
-            $dataBloqueos = array(
-                'status' => 0,
-            );
-            $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idPortal);
 
             $data_bloqueo = array(
                 'creacion' => $date,
                 'id_usuario' => $id_usuario,
                 'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_cliente' => $idPortal,
+                'id_portal' => $idPortal,
                 'bloqueo_subclientes' => 'NO',
                 'tipo' => 'DESBLOQUEO',
                 'status' => 0,
@@ -827,7 +794,7 @@ class Cat_Portales extends CI_Controller
                 'codigo' => 1,
                 'msg' => 'Cliente desbloqueado correctamente',
             );
-        }
+        
 
         echo json_encode($msj);
     }

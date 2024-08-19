@@ -201,7 +201,6 @@ $(document).ready(function() {
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-          console.log("🚀 ~ $ ~ full:", full)
 
           let editar =
             '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a> ';
@@ -214,7 +213,7 @@ $(document).ready(function() {
           //'<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a> ' :
           //'<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" id="desactivar" class="fa-tooltip icono_datatable icono_verde"><i class="far fa-check-circle"></i></a> ';
 
-          let bloqueo = (full.status == 1) ?
+          let bloqueo = (full.bloqueado == 0) ?
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear portal" id="bloquear_portal" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear portal" id="desbloquear_portal" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> ';
 
@@ -499,7 +498,7 @@ function accionPortal(accion, id, correo = null) {
   let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
   let mensaje_comentario = $('#mensajeModal #mensaje_comentario').val()
   let bloquear_subclientes = $("#mensajeModal #bloquear_subclientes").is(":checked") ? 'SI' : 'NO';
-  return;
+  
   $.ajax({
     url: '<?php echo base_url('Cat_Portales/status'); ?>',
     type: 'POST',

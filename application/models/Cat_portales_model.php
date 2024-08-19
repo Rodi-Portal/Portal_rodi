@@ -86,6 +86,7 @@ function getP() {
       P.status, 
       P.descripcion, 
       P.creacion, 
+      P.bloqueado,
       P.usuarios_permitidos,
       P.id_usuario_portal,
       F.id AS idFac,
