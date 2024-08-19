@@ -679,24 +679,23 @@ class Cat_Portales extends CI_Controller
 
     }
 
-    public function status()
-    {
+    public function status() {
         $msj = array();
         $id_usuario = $this->session->userdata('id');
         $date = date('Y-m-d H:i:s');
-        $idCliente = $this->input->post('idCliente');
+        $idPortal = $this->input->post('idPortal');
         $accion = $this->input->post('accion');
 
-        // var_dump("esta es la accion :  ".$accion."  Este es el id del cliente :  ".$idCliente);
+        // var_dump("esta es la accion :  ".$accion."  Este es el id del cliente :  ".$idPortal);
         if ($accion == "desactivar") {
             $cliente = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
                 'status' => 0,
             );
-            $this->cat_cliente_model->editCliente($idCliente, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
+            $this->cat_cliente_model->editCliente($idPortal, $cliente);
+            $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
+            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
             $msj = array(
                 'codigo' => 1,
                 'msg' => 'Cliente inactivado correctamente',
@@ -709,9 +708,9 @@ class Cat_Portales extends CI_Controller
                 'id_usuario' => $id_usuario,
                 'status' => 1,
             );
-            $this->cat_cliente_model->editCliente($idCliente, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
+            $this->cat_cliente_model->editCliente($idPortal, $cliente);
+            $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
+            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
 
             $msj = array(
                 'codigo' => 1,
@@ -728,16 +727,16 @@ class Cat_Portales extends CI_Controller
             /*
             // ver  que traen las variables
             echo "usuarioCliente: ";
-            print_r($idCliente);
+            print_r($idPortal);
             echo "<br>";
 
             echo "usuarioClienteDatos: ";
             print_r($data);
             echo "<br>";
              */
-            $this->cat_cliente_model->editCliente($idCliente, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
+            $this->cat_cliente_model->editCliente($idPortal, $cliente);
+            $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
+            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
             $msj = array(
                 'codigo' => 1,
                 'msg' => 'Cliente eliminado correctamente',
@@ -745,15 +744,15 @@ class Cat_Portales extends CI_Controller
         }
 
         if ($accion == "bloquear") {
-            $cliente = array(
+            $portal = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
-                'bloqueado' => $this->input->post('opcion_motivo'),
+                'status' => 0,
             );
-            $this->cat_cliente_model->editCliente($idCliente, $cliente);
+            $this->cat_portales_model->editPortal($idPortal, $cliente);
 
             if ($this->input->post('bloquear_subclientes') === 'SI') {
-                $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idCliente);
+                $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idPortal);
                 if ($data['subclientes']) {
                     foreach ($data['subclientes'] as $row) {
                         $subcliente = array(
@@ -770,13 +769,13 @@ class Cat_Portales extends CI_Controller
             $dataBloqueos = array(
                 'status' => 0,
             );
-            $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idCliente);
+            $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idPortal);
 
             $data_bloqueo = array(
                 'creacion' => $date,
                 'id_usuario' => $id_usuario,
                 'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_cliente' => $idCliente,
+                'id_cliente' => $idPortal,
                 'bloqueo_subclientes' => $this->input->post('bloquear_subclientes'),
                 'tipo' => 'BLOQUEO',
                 'mensaje' => $this->input->post('mensaje_comentario'),
@@ -794,9 +793,9 @@ class Cat_Portales extends CI_Controller
                 'id_usuario' => $id_usuario,
                 'bloqueado' => 'NO',
             );
-            $this->cat_cliente_model->editCliente($idCliente, $cliente);
+            $this->cat_cliente_model->editCliente($idPortal, $cliente);
 
-            $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idCliente);
+            $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idPortal);
             if ($data['subclientes']) {
                 foreach ($data['subclientes'] as $row) {
                     $subcliente = array(
@@ -812,13 +811,13 @@ class Cat_Portales extends CI_Controller
             $dataBloqueos = array(
                 'status' => 0,
             );
-            $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idCliente);
+            $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idPortal);
 
             $data_bloqueo = array(
                 'creacion' => $date,
                 'id_usuario' => $id_usuario,
                 'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_cliente' => $idCliente,
+                'id_cliente' => $idPortal,
                 'bloqueo_subclientes' => 'NO',
                 'tipo' => 'DESBLOQUEO',
                 'status' => 0,
@@ -903,14 +902,14 @@ class Cat_Portales extends CI_Controller
             $uncode_password = $this->input->post('password_name');
             $hashed_password = password_hash($uncode_password, PASSWORD_BCRYPT);
 
-            $idCliente = $this->input->post('cliente');
+            $idPortal = $this->input->post('cliente');
             $espectador = $this->input->post('tipo_usuario');
 
             $usuarioCliente = array(
                 'creacion' => $date,
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
-                'id_cliente' => $idCliente,
+                'id_cliente' => $idPortal,
                 'id_datos_generales' => null,
                 'espectador' => $espectador,
                 'privacidad' => $privacidad,
@@ -927,19 +926,19 @@ class Cat_Portales extends CI_Controller
 
             $this->cat_cliente_model->addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos);
 
-            $dataCliente = $this->cat_cliente_model->getById($idCliente);
+            $dataCliente = $this->cat_cliente_model->getById($idPortal);
             if ($dataCliente->ingles == 1) {
-                $existe_cliente = $this->cat_cliente_model->checkPermisosByCliente($idCliente);
+                $existe_cliente = $this->cat_cliente_model->checkPermisosByCliente($idPortal);
                 if ($existe_cliente == 0) {
-                    $url = "Cliente_General/index/" . $idCliente;
+                    $url = "Cliente_General/index/" . $idPortal;
                     $cliente = array(
                         'url' => $url,
                     );
-                    $this->cat_cliente_model->editCliente($idCliente, $cliente);
+                    $this->cat_cliente_model->editCliente($idPortal, $cliente);
                     $permiso = array(
                         'id_usuario' => $id_usuario,
                         'cliente' => $dataCliente->nombre,
-                        'id_cliente' => $idCliente,
+                        'id_cliente' => $idPortal,
                     );
                     $this->cat_cliente_model->addPermiso($permiso);
                 }
@@ -952,13 +951,14 @@ class Cat_Portales extends CI_Controller
         echo json_encode($msj);
     }
 
-    public function getClientesAccesos()
+    public function getPortalesAccesos()
     {
 
-        $id_cliente = $this->input->post('id_cliente');
-        $id_portal = $this->generales_model->getPortalCliente($id_cliente);
-        // var_dump("Este  es el id del cliente: ".$id_cliente."Este  es el id del portal: ".$id_portal);
-        $res = $this->cat_cliente_model->getAccesosClienteModal($id_cliente, $id_portal);
+        $idPortal = $this->input->post('idPortal');
+       
+      
+        // var_dump("Este  es el id del cliente: ".$id_cliente."Este  es el id del portal: ".$idPortal);
+        $res = $this->cat_portales_model->getAccesosPortalModal($idPortal);
         if ($res) {
             echo json_encode($res);
         } else {

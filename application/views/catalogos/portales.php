@@ -48,41 +48,6 @@
 
 
 
-<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="row justify-content-center">
-          <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
-          <div class="col-md-9">
-            <label>Generar contraseña *</label>
-            <div class="input-group">
-              <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8"
-                readonly>
-              <div class="input-group-append">
-                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <input type="hidden" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
-        <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- /.content-wrapper -->
 <script>
@@ -183,16 +148,15 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Constancia de Situación Fiscal',
+        title: 'Situación Fiscal',
         data: 'constancia',
         bSortable: false,
-        width: "10%",
+        width: "3%",
         mRender: function(data, type, full) {
           const fileUrl = '<?php echo base_url("_portal_files/"); ?>' + data;
 
           if (data && data.trim() !== '') {
-            return '<b>Constancia:</b> ' +
-              '<a href="' + fileUrl + '" target="_blank" data-toggle="tooltip" title="Ver Constancia" ' +
+            return '<a href="' + fileUrl + '" target="_blank" data-toggle="tooltip" title="Ver Constancia" ' +
               'id="descarga_constancia_' + full.id +
               '" class="fa-tooltip icono_datatable icono_azul_oscuro">' +
               '<i class="fas fa-file-invoice"></i>' +
@@ -206,8 +170,7 @@ $(document).ready(function() {
               '" name="constancia" style="display: none;" ' +
               'onchange="uploadFile(event, \'' + full.idPortal + '\')">';
           } else {
-            return '<b>Subir Constancia:</b> ' +
-              '<input type="file" id="cargar_constancia_' + full.idPortal +
+            return  '<input type="file" id="cargar_constancia_' + full.idPortal +
               '" name="constancia" style="display: none;" ' +
               'onchange="uploadFile(event, \'' + full.idPortal + '\')">' +
               '<a href="javascript:void(0)" onclick="document.getElementById(\'cargar_constancia_' + full
@@ -236,12 +199,14 @@ $(document).ready(function() {
         title: 'Acciones',
         data: 'id',
         bSortable: false,
-        "width": "15%",
+        "width": "10%",
         mRender: function(data, type, full) {
+          console.log("🚀 ~ $ ~ full:", full)
+
           let editar =
             '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a> ';
           let eliminar =
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" id="eliminar" class="fa-tooltip icono_datatable icono_gris"><i class="fas fa-trash"></i></a> ';
+            '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar portal" id="eliminar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-trash"></i></a> ';
           let acceso =
             '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" id="acceso" class="fa-tooltip icono_datatable icono_azul_claro"><i class="fas fa-sign-in-alt"></i></a> ';
 
@@ -249,9 +214,9 @@ $(document).ready(function() {
           //'<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a> ' :
           //'<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" id="desactivar" class="fa-tooltip icono_datatable icono_verde"><i class="far fa-check-circle"></i></a> ';
 
-          let bloqueo = (full.bloqueado === 'NO') ?
-            ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" id="bloquear_cliente" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
-            ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" id="desbloquear_cliente" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> ';
+          let bloqueo = (full.status == 1) ?
+            ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear portal" id="bloquear_portal" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
+            ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear portal" id="desbloquear_portal" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> ';
 
           return editar + acceso + bloqueo + eliminar;
           //  antesreturn editar + accion + bloqueo + acceso +  eliminar;
@@ -259,10 +224,15 @@ $(document).ready(function() {
       }
     ],
     "columnDefs": [{
-      "targets": [2, 4], // Índices de las columnas a ocultar
-      "visible": false, // Oculta las columnas
-      "responsive": true // Asegúrate de que Responsive esté habilitado
-    }],
+        "targets": [2, 4], // Índices de las columnas a ocultar
+        "visible": false, // Oculta las columnas
+        "responsive": true // Asegúrate de que Responsive esté habilitado
+      },
+      {
+        "targets": [3, 5], // Índice de la columna que quieres centrar (la columna "Acciones")
+        "className": "centered-content"
+      }
+    ],
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
@@ -303,30 +273,32 @@ $(document).ready(function() {
         $("#editPortal").modal("show");
       });
       $("a#activar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idPortal)
+        mostrarMensajeConfirmacion('activar portal', data.nombre, data.idPortal)
       });
       $("a#desactivar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.idPortal)
+        mostrarMensajeConfirmacion('desactivar portal', data.nombre, data.idPortal)
       });
-      $("a#bloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.idPortal)
+      $("a#bloquear_portal", row).bind('click', () => {
+        mostrarMensajeConfirmacion('bloquear portal', data.nombre, data.idPortal)
       });
-      $("a#desbloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.idPortal)
+      $("a#desbloquear_portal", row).bind('click', () => {
+        mostrarMensajeConfirmacion('desbloquear portal', data.nombre, data.idPortal)
       });
       $("a#eliminar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idPortal)
+        mostrarMensajeConfirmacion('eliminar portal', data.nombre, data.idPortal)
       });
       $("a#acceso", row).bind('click', () => {
         $(".nombreCliente").text(data.nombre);
         mostrarLoader();
 
         $.ajax({
-          url: '<?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
+          
+          url: '<?php echo base_url('Cat_Portales/getPortalesAccesos'); ?>',
           type: 'post',
           data: {
-            'id_cliente': data.idPortal
+            'idPortal': data.idPortal
           },
+            
           beforeSend: function() {
             mostrarLoader();
           },
@@ -364,32 +336,26 @@ $(document).ready(function() {
         let salida = `<table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Correo</th>
-                            <th scope="col">Alta</th>
                             <th scope="col">Usuario</th>
-                            <th scope="col">Categoría</th>
-                            <th scope="col">Acciones</th>
+                            <th scope="col">Correo</th>
+                            <th scope="col">Alta</th>           
                         </tr>
                     </thead>
                     <tbody>`;
 
         datos.forEach(dato => {
-          let usuarioCliente = dato['usuario_cliente'] === null ? 'Pendiente de registrar' : dato[
-            'usuario_cliente'];
+          let usuarioCliente = dato['usuario_portal'] === null ? 'Pendiente de registrar' : dato[
+            'usuario_portal'];
           let privacidad = dato['privacidad'] > 0 ? `Nivel ${dato['privacidad']}` : 'Sin privacidad';
           let fecha = fechaCompletaAFront(dato['alta']);
 
           salida += `<tr id="${dato['idUsuarioCliente']}">
-                        <th>${usuarioCliente}</th>
+                        <th>${dato['usuario']}</th>
                         <th>${dato['correo_usuario']}</th>
                         <th>${fecha}</th>
-                        <th>${dato['usuario']}</th>
-                        <th>${privacidad}</th>
-                        <th>
-                            <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_gris" onclick="mostrarMensajeConfirmacion('eliminar usuario cliente', '${usuarioCliente}', ${dato['idUsuarioCliente']})"><i class="fas fa-trash"></i></a>
-                            <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_amarillo" onclick="enviarCredenciales( '${dato['correo_usuario']}', ${dato['id_datos_generales']})"><i class="fas fa-sync-alt style="font-size: 16px;"></i></a>
-                        </th>
+                      
+                      
+                      
                     </tr>`;
         });
 
@@ -475,82 +441,67 @@ $(document).ready(function() {
 });
 
 
-
-
-
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
-  if (accion == "activar cliente") {
-    $('#titulo_mensaje1').text('Activar cliente');
-    $('#mensaje').html('¿Desea activar al cliente <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "accionCliente('activar'," + valor2 + ")");
+  if (accion == "activar portal") {
+    $('#titulo_mensaje1').text('Activar portal');
+    $('#mensaje').html('¿Desea activar al portal <b>' + valor1 + '</b>?');
+    $('#btnConfirmar').attr("onclick", "accionPortal('activar'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
-  if (accion == "desactivar cliente") {
-    $('#titulo_mensaje1').text('Desactivar cliente');
-    $('#mensaje').html('¿Desea desactivar al cliente <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "accionCliente('desactivar'," + valor2 + ")");
+  if (accion == "desactivar portal") {
+    $('#titulo_mensaje1').text('Desactivar portal');
+    $('#mensaje').html('¿Desea desactivar al portal <b>' + valor1 + '</b>?');
+    $('#btnConfirmar').attr("onclick", "accionPortal('desactivar'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
-  if (accion == "eliminar cliente") {
-    $('#titulo_mensaje1').text('Eliminar cliente');
-    $('#mensaje').html('¿Desea eliminar al cliente <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "accionCliente('eliminar'," + valor2 + ")");
+  if (accion == "eliminar portal") {
+    $('#titulo_mensaje1').text('Eliminar portal');
+    $('#mensaje').html('¿Desea eliminar al portal <b>' + valor1 + '</b>?');
+    $('#btnConfirmar').attr("onclick", "accionPortal('eliminar'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
-  if (accion == "eliminar usuario cliente") {
+  if (accion == "eliminar usuario portal") {
     $('#titulo_mensaje1').text('Eliminar usuario');
     $('#mensaje').html('¿Desea eliminar al usuario <b>' + valor1 + '</b>?');
     $('#btnConfirmar').attr("onclick", "controlAcceso('eliminar'," + valor2 + ")");
     $("#accesosClienteModal").modal('hide')
     $('#mensajeModal').modal('show');
   }
-  if (accion == "bloquear cliente") {
-    $('#titulo_mensaje1').text('Bloquear cliente');
-    $('#mensaje').html('¿Desea bloquear al cliente <b>' + valor1 + '</b>?');
+  if (accion == "bloquear portal") {
+    $('#titulo_mensaje1').text('Bloquear portal');
+    $('#mensaje').html('¿Desea bloquear al portal <b>' + valor1 + '</b>?');
     $('#mensaje').append(
       '<div class="row mt-3"><div class="col-12"><label>Motivo de bloqueo *</label><select class="form-control" id="opcion_motivo" name="opcion_motivo"><option value="">Selecciona</option>' +
       tipos_bloqueo_php +
-      '</select></div></div><div class="row mt-3"><div class="col-12"><label>Mensaje para presentar en panel del cliente *</label><textarea class="form-control" rows="5" id="mensaje_comentario" name="mensaje_comentario">¡Lo sentimos! Su acceso ha sido interrumpido por falta de pago. Favor de comunicarse al teléfono 33 3454 2877.</textarea></div></div>'
+      '</select></div></div><div class="row mt-3"><div class="col-12"><label>Mensaje para presentar en panel del portal *</label><textarea class="form-control" rows="5" id="mensaje_comentario" name="mensaje_comentario">¡Lo sentimos! Su acceso ha sido interrumpido por falta de pago. Favor de comunicarse al teléfono 33 3454 2877.</textarea></div></div>'
     );
-    $('#mensaje').append(
-      '<div class="row mt-3"><div class="col-12"><label class="container_checkbox">Bloquear también subclientes/proveedores<input type="checkbox" id="bloquear_subclientes" name="bloquear_subclientes"><span class="checkmark"></span></label></div></div>'
-    );
-    $('#btnConfirmar').attr("onclick", "accionCliente('bloquear'," + valor2 + ")");
+    $('#btnConfirmar').attr("onclick", "accionPortal('bloquear'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
-  if (accion == "desbloquear cliente") {
-    $('#titulo_mensaje5').text('Desbloquear cliente');
+  if (accion == "desbloquear portal") {
+    $('#titulo_mensaje5').text('Desbloquear portal');
     $('#mensaje').html('¿Desea desbloquear al cliente <b>' + valor1 + '</b>?');
     $('#mensaje').append(
       '<div class="row mt-3"><div class="col-12"><label>Razón de desbloqueo *</label><select class="form-control" id="opcion_motivo" name="opcion_motivo"><option value="">Selecciona</option>' +
       tipos_desbloqueo_php + '</select></div></div>');
-    $('#btnConfirmar').attr("onclick", "accionCliente('desbloquear'," + valor2 + ")");
+    $('#btnConfirmar').attr("onclick", "accionPortal('desbloquear'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
 
 }
 
 
-function enviarCredenciales(valor1, valor2) {
-  $('#titulo_mensaje_contraseña').text('Reenviar Contraseña' + valor2);
-  $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña  al usuario <b>' + valor1 + '</b>?');
-  $('#password_cliente').val('');
-  $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
-  $('#btnEnviarPass').attr("data-dismiss", "modal");
-  $('#idDatosGeneralesEditPass').val(valor2); // Asignar valor a idUsuarioInterno
-  $('#idCorreo').val(valor1);
-  // Asignar valor a idCorreo
-  $('#enviarCredenciales').modal('show');
-}
 
-function accionCliente(accion, id, correo = null) {
-  console.log("id del cliente:  " + id + "  accion d a realizar:  " + accion)
+
+function accionPortal(accion, id, correo = null) {
+  console.log("id del portal:  " + id + "  accion d a realizar:  " + accion)
   let opcion_motivo = $('#mensajeModal #opcion_motivo').val()
   let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
   let mensaje_comentario = $('#mensajeModal #mensaje_comentario').val()
   let bloquear_subclientes = $("#mensajeModal #bloquear_subclientes").is(":checked") ? 'SI' : 'NO';
+  return;
   $.ajax({
-    url: '<?php echo base_url('Cat_Cliente/status'); ?>',
+    url: '<?php echo base_url('Cat_Portales/status'); ?>',
     type: 'POST',
     data: {
       'idPortal': id,
@@ -560,6 +511,7 @@ function accionCliente(accion, id, correo = null) {
       'opcion_descripcion': opcion_descripcion,
       'bloquear_subclientes': bloquear_subclientes
     },
+    
     beforeSend: function() {
       $('.loader').css("display", "block");
     },

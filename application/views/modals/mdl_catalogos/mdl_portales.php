@@ -221,6 +221,8 @@
 
       </div>
       <div class="modal-footer custom_modal_footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+
         <button type="button" class="btn btn-primary btn-icon-split" id="btnRegresar">
           <span class="icon text-white-50">
             <i class="fas fa-arrow-left"></i>
@@ -412,6 +414,7 @@
 
       </div>
       <div class="modal-footer custom_modal_footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 
         <button type="button" class="btn btn-success btn-icon-split ml-auto" id="btnActualizar">
           <span class="text">Actualizar</span>
@@ -564,7 +567,7 @@
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-success" onclick="crearAccesoClientes()">Guardar</button>
       </div>
     </div>

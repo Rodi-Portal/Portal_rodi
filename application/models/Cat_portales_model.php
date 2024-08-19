@@ -329,19 +329,18 @@ function checkPermisosByCliente($id_cliente){
   $query = $this->db->get();
   return $query->num_rows();
 }
-function getAccesosClienteModal($id_cliente, $id_portal){
+function getAccesosPortalModal($id_portal){
 
   
   
   $this->db
-      ->select("cli.*, CONCAT(dup.nombre,' ',dup.paterno) as usuario, CONCAT(duc.nombre,' ',duc.paterno) as usuario_cliente, duc.correo as correo_usuario, uc.creacion as alta, uc.id as idUsuarioCliente, uc.privacidad")
-      ->from("cliente AS cli")
-      ->join("usuarios_clientes uc", "uc.id_cliente = cli.id")
-      ->join("usuarios_portal u", "u.id = cli.id_portal")
-      ->join("datos_generales dup", "dup.id = u.id_datos_generales")
-      ->join("datos_generales duc", "duc.id = uc.id_datos_generales")
-      ->where("cli.id", $id_cliente)
-      ->where("u.id", $id_portal);
+      ->select("P.*, CONCAT(DUP.nombre,' ',DUP.paterno) as usuario, DUP.correo AS correo_usuario,  U.creacion as alta, U.id as idUsuarioCliente")
+      ->from("portal AS P")
+      
+      ->join("usuarios_portal U", "u.id_portal = P.id")
+      ->join("datos_generales DUP", "DUP.id = U.id_datos_generales")
+      ->where("U.eliminado", 0)
+      ->where("P.id", $id_portal);
       
   $query = $this->db->get();
   

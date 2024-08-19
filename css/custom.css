@@ -281,6 +281,10 @@ color: white;
 .texto_sutil{
   color: darkgrey !important;
 }
+
+.centered-content {
+  text-align: center;
+}
 /*----------------------------------------*/
 /*  Modals
 /*----------------------------------------*/
