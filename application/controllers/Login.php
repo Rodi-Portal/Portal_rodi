@@ -39,6 +39,13 @@ class Login extends CI_Controller
             $usuario = $this->usuario_model->existeUsuarioPortal($correo);
 
             if ($usuario && password_verify($pass, $usuario->password)) {
+
+                if ($usuario->bloqueado > 0) {
+                    $this->load->view('bloqueado');
+                    return; 
+                   
+                }
+
                 $this->session->set_userdata('correo', $correo);
 
                 $ver = $usuario->verificacion;
@@ -95,6 +102,11 @@ class Login extends CI_Controller
 
                 if ($cliente && password_verify($pass, $cliente->password)) {
                     $this->session->set_userdata('correo', $correo);
+
+                    if ($cliente->bloqueado > 0) {
+                        $this->load->view('bloqueado');
+                        return;
+                    }
 
                     $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
@@ -258,12 +270,10 @@ class Login extends CI_Controller
                 $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
                 // Redirigir al dashboard o a donde sea necesario
-               
-                   
-                    redirect('Login/verifyView');
-                
 
-              //  $this->session_verificada();
+                redirect('Login/verifyView');
+
+                //  $this->session_verificada();
 
             } else {
                 $this->session->set_flashdata('error1', 'Email not found. Please check your email account.');
@@ -308,78 +318,78 @@ class Login extends CI_Controller
         $this->load->view('login/verify_view', $data);
     }
 
-   /* 
+    /*
     public function new_password()
     {
-        $this->form_validation->set_rules('correo', 'Email', 'required|valid_email|trim');
+    $this->form_validation->set_rules('correo', 'Email', 'required|valid_email|trim');
 
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un email válido');
+    $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
+    $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un email válido');
 
-        if ($this->form_validation->run() == false) {
-            $this->session->set_flashdata('error', 'Enter your email account');
-            redirect('Login/recovery_view');
-        } else {
+    if ($this->form_validation->run() == false) {
+    $this->session->set_flashdata('error', 'Enter your email account');
+    redirect('Login/recovery_view');
+    } else {
 
-            $pwd = substr(md5(microtime()), 1, 8);
-            $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
+    $pwd = substr(md5(microtime()), 1, 8);
+    $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
 
-            $hayIDCliente = $this->usuario_model->checkCorreoUsuario($correo);
-        }
-        /*
-        echo $pwd.' aqui el pass sin encriptar   ';
-        echo $password.' aqui el pass encriptado   ';
-        var_dump( $hayIDCliente);
-        die();
-         //
+    $hayIDCliente = $this->usuario_model->checkCorreoUsuario($correo);
+    }
+    /*
+    echo $pwd.' aqui el pass sin encriptar   ';
+    echo $password.' aqui el pass encriptado   ';
+    var_dump( $hayIDCliente);
+    die();
+    //
 
-        if ($hayIDCliente != null) {
-            $usuario = array(
-                'password' => $password,
-            );
-            $this->cliente_model->actualizarUsuarioCliente($usuario, $hayIDCliente->id);
-            //Envío de correo
-            $to = $correo;
-            if ($correo === null || $correo === '') {
-                return false;
-            }
+    if ($hayIDCliente != null) {
+    $usuario = array(
+    'password' => $password,
+    );
+    $this->cliente_model->actualizarUsuarioCliente($usuario, $hayIDCliente->id);
+    //Envío de correo
+    $to = $correo;
+    if ($correo === null || $correo === '') {
+    return false;
+    }
 
-            $subject = "Reenvio  de  credenciales   TalentSafeControl";
-            // Cargar la vista email_verification_view.php
-            $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
+    $subject = "Reenvio  de  credenciales   TalentSafeControl";
+    // Cargar la vista email_verification_view.php
+    $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
 
-            $this->load->library('phpmailer_lib');
-            $mail = $this->phpmailer_lib->load();
-            $mail->isSMTP();
-            $mail->Host = 'mail.talentsafecontrol.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'soporte@talentsafecontrol.com';
-            $mail->Password = 'FQ{[db{}%ja-';
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port = 465;
+    $this->load->library('phpmailer_lib');
+    $mail = $this->phpmailer_lib->load();
+    $mail->isSMTP();
+    $mail->Host = 'mail.talentsafecontrol.com';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'soporte@talentsafecontrol.com';
+    $mail->Password = 'FQ{[db{}%ja-';
+    $mail->SMTPSecure = 'ssl';
+    $mail->Port = 465;
 
-            if ($correo !== null && $correo !== '') {
-                $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
-                $mail->addAddress($correo);
-            } else {
-                return false;
-            }
+    if ($correo !== null && $correo !== '') {
+    $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
+    $mail->addAddress($correo);
+    } else {
+    return false;
+    }
 
-            $mail->Subject = $subject;
-            $mail->isHTML(true); // Enviar el correo como HTML
-            $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
-            $mail->Body = $message;
+    $mail->Subject = $subject;
+    $mail->isHTML(true); // Enviar el correo como HTML
+    $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
+    $mail->Body = $message;
 
-            if ($mail->send()) {
-                return true;
-            } else {
-                log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
-                return false;
-            }
-        }
+    if ($mail->send()) {
+    return true;
+    } else {
+    log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
+    return false;
+    }
+    }
 
     }
-    */
+     */
     // Funcion para generar aut
     public function generarCodigoAutenticacion($correo)
     {
@@ -574,9 +584,9 @@ class Login extends CI_Controller
                 $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
 
                 if ($id !== null) {
-                    $usuario = array(  
+                    $usuario = array(
                         'password' => $password,
-                        'verificacion'=> 1);
+                        'verificacion' => 1);
 
                     $this->usuario_model->forgotenPass($usuario, $id);
 
@@ -614,10 +624,10 @@ class Login extends CI_Controller
                             // Obtén la configuración
                             $config = $this->funciones_model->getConfiguraciones();
                             $data['version'] = $config->version_sistema;
-                        
+
                             // Agrega el mensaje de éxito al array de datos
                             $data['success_message'] = 'A new password has been sent to your email.';
-                        
+
                             // Cargar la vista directamente con los datos
                             $this->load->view('login/login_view', $data);
                         } else {

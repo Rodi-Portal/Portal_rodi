@@ -101,6 +101,7 @@ class Usuario_model extends CI_Model
             R.nombre as rol,
             U.logueado as loginBD,
             P.nombre as nombrePortal,
+            P.bloqueado,
             P.id as idPortal')
             ->from('usuarios_portal as U')
             ->join('rol as R', 'R.id = U.id_rol')
@@ -124,10 +125,26 @@ class Usuario_model extends CI_Model
     public function existeUsuarioCliente($correo)
     {
         $this->db
-            ->select('UCL.id, CL.id as  id_cliente, DG.correo, DG.nombre, DG.paterno, DG.id as idDatos, DG.verificacion, DG.password,  UCL.id_cliente, UCL.espectador, CL.nombre as cliente, UCL.logueado as loginBD, UCL.privacidad, CL.ingles, CL.id_portal ')
+            ->select('UCL.id,
+             CL.id as  id_cliente, 
+             DG.correo,
+             DG.nombre,
+             DG.paterno,
+             DG.id as idDatos,
+             DG.verificacion, 
+             DG.password,  
+             UCL.id_cliente, 
+             UCL.espectador, 
+             CL.nombre as cliente,
+             UCL.logueado as loginBD, 
+             UCL.privacidad, 
+             CL.ingles, 
+             CL.id_portal,
+             P.bloqueado')
             ->from('usuarios_clientes as UCL')
             ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
             ->join('cliente  as CL', ' CL.id = UCL. id_cliente')
+            ->join('portal AS P', 'P.id = CL.id_portal' )
             ->where('DG.correo', $correo)
             ->where('CL.status', 1)
             ->where('CL.eliminado', 0);
