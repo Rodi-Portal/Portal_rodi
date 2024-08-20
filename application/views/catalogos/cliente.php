@@ -49,38 +49,40 @@
 
 
 
-<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center">
+          <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
+          <div class="col-md-9">
+            <label>Generar contraseña *</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8"
+                readonly>
+              <div class="input-group-append">
+                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
+              </div>
             </div>
-            <div class="modal-body">
-                <div class="row justify-content-center">
-                <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
-                    <div class="col-md-9">
-                        <label>Generar contraseña *</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8" readonly>
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <input type="hidden" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
-                <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
-            </div>
-            
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
-            </div>
+          </div>
         </div>
+        <input type="hidden" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
+        <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- /.content-wrapper -->
@@ -225,7 +227,30 @@ $(document).ready(function() {
         }
       }
     ],
-    "scrollX": true, 
+    "scrollX": true,
+    "responsive": {
+      details: {
+        display: $.fn.dataTable.Responsive.display.modal({
+          header: function(row) {
+            var data = row.data();
+            return 'Detalles de ' + data['nombre'];
+          }
+        }),
+        renderer: function(api, rowIdx, columns) {
+          var data = $.map(columns, function(col, i) {
+            return col.hidden ? '<tr data-dt-row="' + col.rowIdx + '" data-dt-column="' + col
+              .columnIndex + '">' +
+              '<td>' + col.title + ':' + '</td> ' +
+              '<td>' + col.data + '</td>' +
+              '</tr>' : '';
+          }).join('');
+
+          return data ?
+            $('<table/>').append(data) :
+            false;
+        }
+      }
+    },
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
@@ -692,20 +717,20 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
     $('#btnConfirmar').attr("onclick", "accionCliente('desbloquear'," + valor2 + ")");
     $('#mensajeModal').modal('show');
   }
- 
+
 }
 
- 
+
 function enviarCredenciales(valor1, valor2) {
-    $('#titulo_mensaje_contraseña').text('Reenviar Contraseña'+valor2);
-    $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña  al usuario <b>' + valor1  + '</b>?');
-    $('#password_cliente').val('');
-    $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
-    $('#btnEnviarPass').attr("data-dismiss", "modal");
-    $('#idDatosGeneralesEditPass').val(valor2); // Asignar valor a idUsuarioInterno
-    $('#idCorreo').val(valor1);
+  $('#titulo_mensaje_contraseña').text('Reenviar Contraseña' + valor2);
+  $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña  al usuario <b>' + valor1 + '</b>?');
+  $('#password_cliente').val('');
+  $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
+  $('#btnEnviarPass').attr("data-dismiss", "modal");
+  $('#idDatosGeneralesEditPass').val(valor2); // Asignar valor a idUsuarioInterno
+  $('#idCorreo').val(valor1);
   // Asignar valor a idCorreo
-    $('#enviarCredenciales').modal('show');
+  $('#enviarCredenciales').modal('show');
 }
 
 function accionCliente(accion, id, correo = null) {
@@ -825,6 +850,7 @@ function crearAccesoClientes() {
     }
   });
 }
+
 function actualizarContraseña() {
   var pass = $('#password_cliente').val();
   var correo = $('#idCorreo').val();
@@ -902,6 +928,7 @@ function controlAcceso(accion, idUsuarioCliente) {
     }
   });
 }
+
 function generarPassword1() {
   $.ajax({
     url: '<?php echo base_url('Funciones/generarPassword'); ?>',
@@ -913,7 +940,7 @@ function generarPassword1() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
-    
+
       $("#password_cliente").val(res);
 
     }
