@@ -225,6 +225,7 @@ $(document).ready(function() {
         }
       }
     ],
+    "scrollX": true, 
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
