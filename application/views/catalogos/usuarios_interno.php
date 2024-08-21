@@ -72,7 +72,7 @@
                 <input type="hidden" class="form-control" name="idUsuarioInternoEditPass" id="idUsuarioInternoEditPass">
                 <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
             </div>
-            
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
@@ -98,12 +98,12 @@ $(document).ready(function() {
     $(this).find('input[type=text],select,textarea').filter(':visible:first').focus();
   });
 
-  $('#tabla').DataTable({
+  var tabla = $('#tabla').DataTable({
 
     "pageLength": 25,
     //"pagingType": "simple",
     "order": [0, "desc"],
-    "stateSave": true,
+    "stateSave": false,
     "serverSide": false,
     "ajax": url,
     "columns": [{
@@ -224,12 +224,22 @@ $(document).ready(function() {
               }else{
                 return editar + accion + eliminar + credenciales;
               }
-          
+
         }
-           
+
       }
     ],
-
+    "columnDefs": [{
+      "targets": [1, 3, 4, 6, 7], // Índices de las columnas a ocultar en pantallas pequeñas
+      "className": 'hide-on-small' // Clase personalizada para ocultar
+    }],
+    "responsive": {
+      details: {
+        type: 'column',
+        target: 'tr'
+      }
+    },
+    "scrollX": true,
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
@@ -289,8 +299,10 @@ $(document).ready(function() {
       }
     }
   });
- 
 
+  $(window).on('resize', function() {
+    tabla.columns.adjust().draw();
+  });
 
 });
 
@@ -318,7 +330,7 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
   }
 }
 function enviarCredenciales(valor1, valor2) {
-    
+
     $('#titulo_mensaje_contraseña').text('Reenviar Contraseña');
     $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña <b>' + valor1 + '</b>?');
     $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
@@ -328,7 +340,7 @@ function enviarCredenciales(valor1, valor2) {
     $('#password').val(''); // Asignar valor a idCorreo
     $('#enviarCredenciales').modal('show');
 }
-   
+
 
 
 /*********************************************************************************/
@@ -342,7 +354,7 @@ function BotonRegistroUsuarioInterno() {
 
 
   $.ajax({
-    url: '<?php echo base_url('Cat_UsuarioInternos/getActivos');?>',
+    url: '<?php echo base_url('Cat_UsuarioInternos/getActivos'); ?>',
     type: 'post',
     beforeSend: function() {
       $('.loader').css("display", "block");
@@ -355,7 +367,7 @@ function BotonRegistroUsuarioInterno() {
       $("#btnGuardar").text("Guardar");
       $("#btnGuardar").off("click").on("click", function() {
         registroUsuariosInternos(); // Llama a la función con el ID del usuario
-      }); 
+      });
       $('#formAccesoUsuariosinternos')[0]
           .reset()
       $('#nuevoAccesoUsuariosInternos').modal('show');

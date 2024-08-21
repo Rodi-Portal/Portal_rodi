@@ -7,7 +7,7 @@
       <div class="col-sm-12 col-md-8">
         <h1 class="h3 mb-0 text-gray-800">Portales</h1>
       </div>
-      <div class="col-sm-12 col-md-2">
+      <div class="col-sm-12 col-md-3">
         <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newPortal">
           <span class="icon text-white-50">
             <i class="fas fa-user-tie"></i>
@@ -94,11 +94,11 @@ $(document).ready(function() {
    } else {
      console.log('DataTables cargado correctamente.');
    }*/
-  $('#tabla').DataTable({
+  var tabla = $('#tabla').DataTable({
     "pageLength": 25,
     //"pagingType": "simple",
     "order": [0, "desc"],
-    "stateSave": true,
+    "stateSave": false,
     "serverSide": false,
     "ajax": {
       "url": url,
@@ -156,26 +156,27 @@ $(document).ready(function() {
           const fileUrl = '<?php echo base_url("_portal_files/"); ?>' + data;
 
           if (data && data.trim() !== '') {
-            return '<a href="' + fileUrl + '" target="_blank" data-toggle="tooltip" title="Ver Constancia" ' +
+            return '<a href="' + fileUrl +
+              '" target="_blank" data-toggle="tooltip" title="Ver Constancia" ' +
               'id="descarga_constancia_' + full.id +
-              '" class="fa-tooltip icono_datatable icono_azul_oscuro">' +
+              '" class="fa-tooltip icono_datatable icono_azul_oscuro ">' +
               '<i class="fas fa-file-invoice"></i>' +
               '</a>' +
               ' <a href="javascript:void(0)" onclick="document.getElementById(\'cargar_constancia_' + full
               .idPortal + '\').click();" ' +
-              'class="btn btn-warning btn-sm ml-2" data-toggle="tooltip" title="Actualizar Constancia">' +
+              'class="fa-tooltip icono_datatable icono_amarillo" data-toggle="tooltip" title="Subir Constancia">' +
               '<i class="fas fa-upload"></i>' +
-              '</a>' +
+              '</a>'+
               '<input type="file" id="cargar_constancia_' + full.idPortal +
               '" name="constancia" style="display: none;" ' +
               'onchange="uploadFile(event, \'' + full.idPortal + '\')">';
           } else {
-            return  '<input type="file" id="cargar_constancia_' + full.idPortal +
+            return '<input type="file" id="cargar_constancia_' + full.idPortal +
               '" name="constancia" style="display: none;" ' +
               'onchange="uploadFile(event, \'' + full.idPortal + '\')">' +
               '<a href="javascript:void(0)" onclick="document.getElementById(\'cargar_constancia_' + full
               .idPortal + '\').click();" ' +
-              'class="btn btn-primary" data-toggle="tooltip" title="Subir Constancia">' +
+              'class="fa-tooltip icono_datatable icono_azul_oscuro" data-toggle="tooltip" title="Subir Constancia">' +
               '<i class="fas fa-upload"></i>' +
               '</a>';
           }
@@ -223,15 +224,16 @@ $(document).ready(function() {
       }
     ],
     "columnDefs": [{
-        "targets": [2, 4], // Índices de las columnas a ocultar
-        "visible": false, // Oculta las columnas
-        "responsive": true // Asegúrate de que Responsive esté habilitado
-      },
-      {
-        "targets": [3, 5], // Índice de la columna que quieres centrar (la columna "Acciones")
-        "className": "centered-content"
+      "targets": [2, 4], // Índices de las columnas a ocultar en pantallas pequeñas
+      "className": 'hide-on-small' // Clase personalizada para ocultar
+    }],
+    "responsive": {
+      details: {
+        type: 'column',
+        target: 'tr'
       }
-    ],
+    },
+    "scrollX": true,
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
@@ -291,13 +293,13 @@ $(document).ready(function() {
         mostrarLoader();
 
         $.ajax({
-          
+
           url: '<?php echo base_url('Cat_Portales/getPortalesAccesos'); ?>',
           type: 'post',
           data: {
             'idPortal': data.idPortal
           },
-            
+
           beforeSend: function() {
             mostrarLoader();
           },
@@ -421,7 +423,7 @@ $(document).ready(function() {
         });
       });
     },
-    "responsive": true, // Habilita el modo responsive
+
     "language": {
       "lengthMenu": "Mostrar _MENU_ registros por página",
       "zeroRecords": "No se encontraron registros",
@@ -436,6 +438,10 @@ $(document).ready(function() {
         "sPrevious": "Anterior"
       }
     }
+  });
+
+  $(window).on('resize', function() {
+    tabla.columns.adjust().draw();
   });
 });
 
@@ -498,7 +504,7 @@ function accionPortal(accion, id, correo = null) {
   let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
   let mensaje_comentario = $('#mensajeModal #mensaje_comentario').val()
   let bloquear_subclientes = $("#mensajeModal #bloquear_subclientes").is(":checked") ? 'SI' : 'NO';
-  
+
   $.ajax({
     url: '<?php echo base_url('Cat_Portales/status'); ?>',
     type: 'POST',
@@ -510,7 +516,7 @@ function accionPortal(accion, id, correo = null) {
       'opcion_descripcion': opcion_descripcion,
       'bloquear_subclientes': bloquear_subclientes
     },
-    
+
     beforeSend: function() {
       $('.loader').css("display", "block");
     },

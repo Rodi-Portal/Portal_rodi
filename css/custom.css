@@ -62,6 +62,21 @@
   border-radius: 10px;
   color: white !important;
 }
+
+/*----------------------------------------*/
+/*  Botones
+/*----------------------------------------*/
+.btn.btn-primary {
+  display: flex; /* Usar flexbox para el contenido dentro del botón */
+  align-items: center; /* Centra el contenido verticalmente */
+  justify-content: center; /* Centra el contenido horizontalmente */
+  width: auto; /* El ancho se ajusta al contenido */
+  padding: 0.5rem 1rem; /* Ajusta el padding para asegurar que el botón se vea bien */
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+  overflow: hidden; /* Oculta el texto que se desborda */
+  text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto se desborda */
+}
+
 /*----------------------------------------*/
 /*  Cards
 /*----------------------------------------*/
@@ -111,14 +126,20 @@
 /*  DataTables
 /*----------------------------------------*/
 .icono_datatable {
-  font-size: 20px;
-  /*margin-right: 15px;*/
-  /*border: 1px solid gray;*/
+  font-size: 20px; /* Tamaño del ícono */
   border-radius: 5px;
-  width: 25px;
-  height: 25px;
-  padding: 7px;
+  width: 35px; /* Tamaño del contenedor en pantallas grandes */
+  height: 35px; /* Tamaño del contenedor en pantallas grandes */
+  padding: 5px; /* Ajusta el padding según sea necesario */
+  display: inline-flex; /* Asegura que el contenido se centre */
+  align-items: center; /* Centra verticalmente el ícono */
+  justify-content: center; /* Centra horizontalmente el ícono */
+  text-align: center;
 }
+.icono_datatable i {
+  font-size: inherit; /* Hereda el tamaño del contenedor */
+}
+
 .icono_datatable:hover {
   opacity: 0.6;
 }
@@ -285,6 +306,114 @@ color: white;
 .centered-content {
   text-align: center;
 }
+
+   /* Ajusta el tamaño del campo de búsqueda */
+/* Estilo de entrada y botones de paginación */
+.dataTables_filter input {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+  padding: 8px; /* Ajusta el padding por defecto */
+  font-size: 14px; /* Tamaño de la fuente por defecto */
+}
+
+/* Ajusta el tamaño de los botones de paginación */
+.dataTables_paginate .paginate_button {
+  padding: 5px 10px; /* Tamaño del padding por defecto */
+  font-size: 12px; /* Tamaño de la fuente por defecto */
+}
+
+/* Ajusta el contenedor de paginación */
+.dataTables_paginate {
+    text-align: center; /* Centra los botones de paginación */
+}
+
+/* Asegura que la tabla no se desborde */
+.dataTables_wrapper {
+    overflow-x: auto; /* Permite el desplazamiento horizontal si es necesario */
+}
+.icon-size i {
+  font-size: 1.5rem; /* Ajusta el tamaño según tus necesidades */
+}
+.btn-sm {
+  font-size: 0.75rem; /* Ajusta el tamaño del texto en botones pequeños */
+  padding: 0.25rem 0.5rem; /* Ajusta el relleno del botón */
+}
+
+/* Estilo general para pantallas pequeñas */
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .icono_datatable {
+    width: 30px; /* Tamaño del contenedor en pantallas pequeñas */
+    height: 30px; /* Tamaño del contenedor en pantallas pequeñas */
+    font-size: 18px; /* Tamaño del ícono en pantallas pequeñas */
+  }
+
+  .dataTables_filter input {
+    font-size: 12px; /* Reduce el tamaño de la fuente del campo de búsqueda */
+    padding: 6px; /* Ajusta el padding para pantallas pequeñas */
+  }
+
+  .dataTables_paginate .paginate_button {
+    font-size: 10px; /* Reduce aún más el tamaño de la fuente en pantallas pequeñas */
+    padding: 4px 8px; /* Ajusta el padding para pantallas pequeñas */
+  }
+
+  .dataTables_filter {
+    text-align: center; /* Centra el campo de búsqueda en pantallas pequeñas */
+  }
+
+  .icon-size i {
+    font-size: 1.2rem; /* Ajusta el tamaño para pantallas pequeñas */
+  }
+
+  .hide-on-small {
+    display: none !important; /* Oculta elementos en pantallas pequeñas */
+  }
+  .btn.btn-primary {
+    width: 100%; /* Abarca todo el ancho del contenedor */
+    box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+  }
+
+}
+
+@media (max-width: 576px) {
+
+  .icono_datatable {
+    width: 25px; /* Tamaño del contenedor en pantallas muy pequeñas */
+    height: 25px; /* Tamaño del contenedor en pantallas muy pequeñas */
+    font-size: 16px; /* Tamaño del ícono en pantallas muy pequeñas */
+  }
+
+  .dataTables_filter input {
+    font-size: 10px; /* Reduce aún más el tamaño de la fuente en pantallas muy pequeñas */
+    padding: 4px; /* Ajusta el padding para pantallas muy pequeñas */
+  }
+
+  .dataTables_paginate .paginate_button {
+    font-size: 8px; /* Reduce el tamaño de la fuente aún más */
+    padding: 2px 6px; /* Ajusta el padding para pantallas muy pequeñas */
+  }
+
+  .icon-size i {
+    font-size: 1rem; /* Ajusta el tamaño para pantallas muy pequeñas */
+  }
+  .col-sm-12 {
+    text-align: center; /* Centra el contenido en el contenedor */
+  }
+  
+  .btn.btn-primary {
+    width: 100%; /* Abarca todo el ancho del contenedor en pantallas pequeñas */
+    box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+    justify-content: center; /* Asegura que el contenido dentro del botón esté centrado */
+  }
+
+  /* Opcional: Ajusta el padding del botón en pantallas pequeñas si es necesario */
+  .btn.btn-primary {
+    padding-left: 0.5rem; /* Ajusta el padding en pantallas muy pequeñas */
+    padding-right: 0.5rem; /* Ajusta el padding en pantallas muy pequeñas */
+  }
+}
+
 /*----------------------------------------*/
 /*  Modals
 /*----------------------------------------*/
@@ -574,4 +703,25 @@ color: white;
   max-width: 90%;
   width: auto;
   height: 90%;
+}
+
+/* Ajustes generales */
+.sidebar h2 {
+  font-size: 1.5em;
+  margin: 0.5em 0; /* Margen alrededor del texto */
+}
+
+/* Para pantallas pequeñas */
+@media (max-width: 768px) {
+  .sidebar h2 {
+    font-size: 1.2em;
+    margin: 0.4em 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar h2 {
+    font-size: 1em;
+    margin: 0.3em 0;
+  }
 }

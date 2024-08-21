@@ -7,7 +7,7 @@
       <div class="col-sm-12 col-md-8">
         <h1 class="h3 mb-0 text-gray-800">Clientes</h1>
       </div>
-      <div class="col-sm-12 col-md-2">
+      <div class="col-sm-12 col-md-3">
         <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newModal"
           onclick="registrarCliente()">
           <span class="icon text-white-50">
@@ -89,9 +89,9 @@
 <script>
 var url = '<?php echo base_url('Cat_Cliente/getClientes'); ?>';
 var tipos_bloqueo_php =
-  '<?php foreach($tipos_bloqueo as $row){ echo '<option value="'.$row->tipo.'">'.$row->descripcion.'</option>';} ?>';
+  '<?php foreach ($tipos_bloqueo as $row) {echo '<option value="' . $row->tipo . '">' . $row->descripcion . '</option>';}?>';
 var tipos_desbloqueo_php =
-  '<?php foreach($tipos_desbloqueo as $row){ echo '<option value="'.$row->tipo.'">'.$row->descripcion.'</option>';} ?>';
+  '<?php foreach ($tipos_desbloqueo as $row) {echo '<option value="' . $row->tipo . '">' . $row->descripcion . '</option>';}?>';
 $(document).ready(function() {
   $("#cerrarModal").on("click", function() {
 
@@ -104,7 +104,7 @@ $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
   $('#newModal').on('shown.bs.modal', function() {
 
-    $(this).find('input[type=text],select,textarea').filter(':visible:first').focus();
+    //$(this).find('input[type=text],select,textarea').filter(':visible:first').focus();
   });
   //console.log('URL de Ajax:', url);
   var msj = localStorage.getItem("success");
@@ -130,11 +130,11 @@ $(document).ready(function() {
    } else {
      console.log('DataTables cargado correctamente.');
    }*/
-  $('#tabla').DataTable({
+   var tabla = $('#tabla').DataTable({
     "pageLength": 25,
     //"pagingType": "simple",
     "order": [0, "desc"],
-    "stateSave": true,
+    "stateSave": false,
     "serverSide": false,
     "ajax": {
       "url": url,
@@ -227,30 +227,19 @@ $(document).ready(function() {
         }
       }
     ],
-    "scrollX": true,
-    "responsive": {
-      details: {
-        display: $.fn.dataTable.Responsive.display.modal({
-          header: function(row) {
-            var data = row.data();
-            return 'Detalles de ' + data['nombre'];
-          }
-        }),
-        renderer: function(api, rowIdx, columns) {
-          var data = $.map(columns, function(col, i) {
-            return col.hidden ? '<tr data-dt-row="' + col.rowIdx + '" data-dt-column="' + col
-              .columnIndex + '">' +
-              '<td>' + col.title + ':' + '</td> ' +
-              '<td>' + col.data + '</td>' +
-              '</tr>' : '';
-          }).join('');
-
-          return data ?
-            $('<table/>').append(data) :
-            false;
+    "columnDefs": [
+        {
+            "targets": [2, 3, 4], // Índices de las columnas a ocultar en pantallas pequeñas
+            "className": 'hide-on-small' // Clase personalizada para ocultar
         }
-      }
+    ],
+    "responsive": {
+        details: {
+            type: 'column',
+            target: 'tr'
+        }
     },
+    "scrollX": true,
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
@@ -336,7 +325,6 @@ $(document).ready(function() {
             if (res !== 0) {
               let datos = JSON.parse(res);
               let salida = generarTabla(datos);
-              console.log("🚀 ~ $ ~ datos:", datos)
               $("#div_accesos").html(salida);
             } else {
               mostrarMensajeNoRegistros();
@@ -458,7 +446,7 @@ $(document).ready(function() {
       });
     },
     "language": {
-      "lengthMenu": "Mostrar _MENU_ registros por página",
+      "lengthMenu": "Mostrar _MENU_ registros ",
       "zeroRecords": "No se encontraron registros",
       "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
       "infoEmpty": "Sin registros disponibles",
@@ -472,6 +460,11 @@ $(document).ready(function() {
       }
     }
   });
+  // Ajuste adicional si es necesario
+  $(window).on('resize', function() {
+    tabla.columns.adjust().draw();
+  });
+
 });
 
 function cargarDatosDomicilioGeneral(datos) {
@@ -796,8 +789,8 @@ function registrarAccesoCliente() {
     }
   });
 }
-/*Funcion para  crear  acesos  para  los usuarios de los clientes, esta  captura  
-los datos  del formulario mdl_cat_cliente los transforma en JSon y los envia Medisnte  El protocolo POST 
+/*Funcion para  crear  acesos  para  los usuarios de los clientes, esta  captura
+los datos  del formulario mdl_cat_cliente los transforma en JSon y los envia Medisnte  El protocolo POST
   al archivo Cat_usuario a la funcion addUsuario */
 function crearAccesoClientes() {
   let tipoUsuarioSwitch = document.getElementById("tipoUsuarioSwitch");
