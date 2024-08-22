@@ -501,9 +501,12 @@ class Client extends Custom_Controller
         $usuario = $this->session->userdata('tipo');
         if ($this->session->userdata('idcliente') != null) {
             $id_cliente = $this->session->userdata('idcliente');
-        } else {
+        } elseif($this->input->post('id_cliente_hidden') !=  null){
+            $id_cliente = $this->input->post('id_cliente_hidden');
+        }else{
             $id_cliente = $this->input->post('id_cliente');
         }
+        
 
         if ($this->form_validation->run() == false) {
             $msj = array(
@@ -511,6 +514,8 @@ class Client extends Custom_Controller
                 'msg' => validation_errors(),
             );
         } else {
+          
+       
 					$privacidad_usuario = 0;
 					switch ($usuario) {
 							case 1:
@@ -571,10 +576,10 @@ class Client extends Custom_Controller
 
 
                 );
-               /*echo "<br>";
+               echo "<br>";
                 print_r($data);
                 echo "<br>";
-                die(); */
+                die(); 
                 $url =  API_URL.'candidatos';
 
                 $ch = curl_init($url);
