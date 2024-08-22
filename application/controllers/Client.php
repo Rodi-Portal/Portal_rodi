@@ -576,10 +576,7 @@ class Client extends Custom_Controller
 
 
                 );
-               echo "<br>";
-                print_r($data);
-                echo "<br>";
-                die(); 
+              
                 $url =  API_URL.'candidatos';
 
                 $ch = curl_init($url);
