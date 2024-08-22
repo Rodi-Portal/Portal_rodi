@@ -101,10 +101,10 @@
                 <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
                   <option value="">Select</option>
                   <?php
-foreach ($paises_estudio as $pe) {?>
+    foreach ($paises_estudio as $pe) {?>
                   <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
                   <?php
-}?>
+    }?>
                 </select>
                 <br>
               </div>
@@ -275,11 +275,11 @@ foreach ($paises_estudio as $pe) {?>
                   <option value="">Select</option>
                   <option value="0" selected>N/A</option>
                   <?php
-foreach ($paquetes_antidoping as $paq) {?>
+    foreach ($paquetes_antidoping as $paq) {?>
                   <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
                   </option>
                   <?php
-}?>
+      }?>
                 </select>
                 <br>
               </div>
@@ -302,6 +302,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="passModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
@@ -318,6 +319,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="quitarModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -347,6 +349,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="statusModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
@@ -365,6 +368,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="avancesModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -383,6 +387,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="verModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -401,6 +406,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="documentosModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
@@ -419,6 +425,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="ofacModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -460,6 +467,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="perfilUsuarioModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
@@ -518,6 +526,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="confirmarPasswordModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered  modal-lg">
       <div class="modal-content">
@@ -543,6 +552,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="aviso2Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -579,6 +589,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="avisoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -599,6 +610,7 @@ foreach ($paquetes_antidoping as $paq) {?>
       </div>
     </div>
   </div>
+
   <div class="modal fade" id="docsModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -626,11 +638,11 @@ foreach ($paquetes_antidoping as $paq) {?>
               <select name="tipo_archivo" id="tipo_archivo" class="form-control personal_obligado">
                 <option value="">Selecciona</option>
                 <?php
-foreach ($tipos_docs as $t) {
-    if ($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45) {?>
-                <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
-                <?php }
-}?>
+      foreach ($tipos_docs as $t) {
+          if ($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45) {?>
+                      <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+                      <?php }
+      }?>
               </select>
               <br>
             </div>
@@ -648,6 +660,7 @@ foreach ($tipos_docs as $t) {
       </div>
     </div>
   </div>
+  
   <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light" id="menu">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"

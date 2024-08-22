@@ -374,8 +374,28 @@ color: white;
     box-sizing: border-box; /* Incluye padding y borde en el ancho total */
   }
 
+  .sidebar h2 {
+    font-size: 1.25rem; /* Tamaño de fuente por defecto */
+    margin: 10px 0; /* Márgenes por defecto */
 }
 
+.sidebar-brand img {
+    width: 100px; /* Tamaño del logo por defecto */
+}
+
+}
+
+
+@media (min-width: 577px) and (max-width: 768px) {
+  .sidebar h2 {
+      font-size: 1.125rem; /* Tamaño de fuente ligeramente más pequeño */
+      margin: 8px 0; /* Márgenes ajustados */
+  }
+
+  .sidebar-brand img {
+      width: 90px; /* Ajusta el tamaño del logo para tabletas */
+  }
+}
 @media (max-width: 576px) {
 
   .icono_datatable {
@@ -412,6 +432,15 @@ color: white;
     padding-left: 0.5rem; /* Ajusta el padding en pantallas muy pequeñas */
     padding-right: 0.5rem; /* Ajusta el padding en pantallas muy pequeñas */
   }
+
+  .sidebar h2 {
+    font-size: 1rem; /* Tamaño de fuente más pequeño */
+    margin: 5px 0; /* Márgenes reducidos */
+}
+
+.sidebar-brand img {
+    width: 80px; /* Ajusta el tamaño del logo para pantallas pequeñas */
+}
 }
 
 /*----------------------------------------*/

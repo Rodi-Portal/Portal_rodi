@@ -100,6 +100,7 @@ $(document).ready(function() {
     "order": [0, "desc"],
     "stateSave": false,
     "serverSide": false,
+    "destroy": true, 
     "ajax": {
       "url": url,
       "type": "GET",
