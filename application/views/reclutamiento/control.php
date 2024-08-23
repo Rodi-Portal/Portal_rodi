@@ -342,7 +342,7 @@ function changeDataTable(url) {
         var apellidoMaterno = partesNombre.length > 2 ? partesNombre[2] : "";
         var id_cliente = data.id_cliente;
         let id_position = 0;
-        $("#id_cliente").val(data.id_cliente);
+        $("#id_cliente_hidden").val(data.id_cliente);
         $("#clave").val(data.clave);
         $("#cliente").val(data.nombre_cliente);
         $("#idAspiranteReq").val(data.id);
@@ -687,7 +687,6 @@ function guardarEstatusRequisicion() {
 
 function registrarCandidato() {
   var datos = new FormData();
-  
 
   datos.append('nombre', $("#nombre_registro").val());
   datos.append('paterno', $("#paterno_registro").val());
@@ -701,11 +700,11 @@ function registrarCandidato() {
 
   datos.append('previo', $("#previos").val());
   datos.append('proyecto', $("#proyecto_registro").val());
-  datos.append('id_cliente', id_cliente);
+  
   datos.append('examen', $("#examen_registro").val());
   datos.append('medico', $("#examen_medico").val());
 
-  datos.append('id_cliente', $('#id_cliente').val());
+  datos.append('id_cliente', $('#id_cliente_hidden').val());
   datos.append('clave', $("#clave").val());
   datos.append('cliente', $("#cliente").val());
   datos.append('idAspiranteReq', $("#idAspiranteReq").val());
