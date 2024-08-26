@@ -29,11 +29,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
+ 
   <!-- jQuery -->
- <!-- jQuery -->
- <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
     crossorigin="anonymous"></script>
-</head >
+</head>
 
 <body>
   <!-- Se imprimen los modals -->
@@ -64,7 +64,8 @@ $cliente = $procesosActuales[0] ?? null;
               class="fas fa-list-ol"></i> <?php echo $translations['menu_inicio_candidatos']; ?></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-light active"  href="javascript:void(0)" onclick="loadClientView(<?php echo $id_cliente; ?>)">Candidatos BGV</a>
+          <a class="nav-link text-light active" href="javascript:void(0)"
+            onclick="loadClientView(<?php echo $id_cliente; ?>)">Candidatos BGV</a>
         </li>
         <!--//TODO:  boton para  en un futuro  poder  ver las  requisiciones  finalizadas  actualmente  sin funcionamiento -->
         <!--li class="nav-item">
@@ -97,92 +98,77 @@ $cliente = $procesosActuales[0] ?? null;
       </div>
     </div>
   </div>
-  <div  id="content">
+  <div id="content">
     <div id="panel-inicio">
       <div class="d-flex justify-content-center flex-column flex-md-row flex-lg-row mt-5 panel-inicio">
         <div class="card shadow div1 flex-fill">
           <div class="card-body">
-
             <div class="d-flex flex-column flex-sm-row justify-content-around align-items-baseline">
               <?php $totalRequisiciones = (!empty($procesosActuales)) ? count($procesosActuales) : 0?>
-              <h4 class="text-wrap"><?php echo $translations['proceso_titulo'] . ':  <b>' . $totalRequisiciones . '</b> ' ?>
-              </h4>
-              <button type="button" class="btn btn-primary btn-sm" onclick="loadPageInSection()">
-                <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
-              </button>
+              <h4 class="text-wrap">
+                <?php echo $translations['proceso_titulo'] . ': <b>' . $totalRequisiciones . '</b>' ?></h4>
             </div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="loadPageInSection()">
+              <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
+            </button>
             <hr>
-            <?php
+            <?php if (!empty($procesosActuales)) {
+            foreach ($procesosActuales as $proceso) {
+                $idioma = ($proceso->ingles == 1) ? 'ingles' : 'espanol';
+                $status = ($proceso->statusReq > 1) ? 
+                    '<label>' . $translations['proceso_status'] . ': <b>Iniciada</b></label><br>' : 
+                    '<label>' . $translations['proceso_status'] . ': <b>Pendiente</b></label><br>';
 
-if (!empty($procesosActuales)) {
-    foreach ($procesosActuales as $proceso) {
-        $idioma = ($proceso->ingles == 1) ? 'ingles' : 'espanol';
-        $status = ($proceso->statusReq > 1) ? '<label">' . $translations['proceso_status'] . ': <b>Iniciada </b></label><br>' : '<label">' . $translations['proceso_status'] . ': <b>Pendiente </b></label><br>';
+                $observaciones = ($proceso->ingles == 1) ? 
+                    '<small>Observations: <b>' . $proceso->observaciones . '</b></small><br>' : 
+                    '<small>Observaciones: <b>' . $proceso->observaciones . '</b></small><br>';
 
-        $observaciones = ($proceso->ingles == 1) ? '<small">Observations: <b>' . $proceso->observaciones . '</b></small><br>' : '<small">Observaciones: <b>' . $proceso->observaciones . '</b></small><br>';
+                $numeroVacantes = ($proceso->ingles == 1) ? 
+                    '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>' : 
+                    '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>';
 
-        $numeroVacantes = ($proceso->ingles == 1) ? '<small">Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>' : '<small">Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>';
+                $zona = ($proceso->ingles == 1) ? 
+                    '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>' : 
+                    '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>';
 
-        $zona = ($proceso->ingles == 1) ? '<small">Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>' : '<small">Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>';
-
-        $experiencia = ($proceso->ingles == 1) ? '<small">Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' : '<small">Experiencia: <b>' . $proceso->experiencia . '</b></small><br>';
-        ?>
-
+                $experiencia = ($proceso->ingles == 1) ? 
+                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' : 
+                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>';
+                ?>
             <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
-              <!-- Boton de acciones -->
-              <!--div class="btn-group dropstart position-absolute btn-acciones">
-              <button type="button" class="btn  dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false">
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#"><i class="fas fa-edit"></i> < ?php //echo $translations['proceso_accion_editar'] ?></a></li>
-                <li><a class="dropdown-item" href="javascript:void(0)"
-                    onclick="viewMessages(< ?php echo $proceso->idReq ?>, '< ?php echo $idioma ?>')"><i
-                      class="fas fa-comment-dots"></i> < ?php echo $translations['proceso_accion_ver_comentarios'] ?></a>
-                </li>
-                <li><a class="dropdown-item" href="javascript:void(0)"
-                    onclick="viewFiles(< ?php echo $proceso->idReq ?>)"><i class="fas fa-folder"></i>
-                    < ?php echo $translations['proceso_accion_archivos'] ?></a></li>
-              </ul>
-            </div --> <?php
-
-        echo '<div class="card-title" onclick="openDetails(' . $proceso->idReq . ')">';
-        echo '<span class="badge text-bg-dark">Nombre de la  vacante </span><h4 class="d-inline align-middle"> <b>' . $proceso->puesto . '</b></h4><br>';
-        echo $status;
-        echo $observaciones;
-        echo $numeroVacantes;
-        echo $zona;
-        echo $experiencia;
-
-        ?>
-              <div>
-                <span class="badge text-bg-info">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo ?> </span>
-                <span class="badge text-bg-info">Sueldo Máximo: <?php echo $proceso->sueldo_maximo ?> </span>
+              <div class="card-title" onclick="openDetails(<?php echo $proceso->idReq ?>)">
+                <span class="badge text-bg-dark">Nombre de la vacante</span>
+                <h4 class="d-inline align-middle"><b><?php echo $proceso->puesto ?></b></h4><br>
+                <?php echo $status; ?>
+                <?php echo $observaciones; ?>
+                <?php echo $numeroVacantes; ?>
+                <?php echo $zona; ?>
+                <?php echo $experiencia; ?>
+                <div>
+                  <span class="badge text-bg-info">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo ?></span>
+                  <span class="badge text-bg-info">Sueldo Máximo: <?php echo $proceso->sueldo_maximo ?></span>
+                </div>
+                <p class="text-muted text-end">
+                  <?php echo $translations['proceso_fecha_registro'] . ': ' . fechaTexto($proceso->creacion, $idioma) ?>
+                </p>
               </div>
-
-              <?php
-
-        echo '<p class="text-muted text-end">' . $translations['proceso_fecha_registro'] . ': ' . fechaTexto($proceso->creacion, $idioma) . '</p>';
-        echo '</div>';
-        ?>
             </div>
-
-
             <hr>
-            <?php
-}
-} else {?>
+            <?php }
+        } else { ?>
             <div class="card">
               <div class="card-body text-center">
                 <?php echo $translations['proceso_sin_candidatos'] ?>
               </div>
             </div>
-            <?php }?>
+            <?php } ?>
           </div>
         </div>
         <div class="card shadow div2 flex-fill">
           <div class="card-body">
+            <button type="button" class="btn btn-secondary btn-sm d-block d-md-none" onclick="goBack()">
+              <i class="fas fa-arrow-left"></i> Volver
+            </button>
             <div id="dataTableContainer">
               <table id="dataTable" class="table table-striped">
                 <thead>
@@ -204,7 +190,7 @@ if (!empty($procesosActuales)) {
       </div>
     </div>
   </div>
- 
+
 
   <section id="panel-agregar-candidato" class="mt-5 hidden">
 
@@ -214,7 +200,7 @@ if (!empty($procesosActuales)) {
 
 
   </section>
- <!--section id="panel-tipo-registro" class="mt-5 hidden">
+  <!--section id="panel-tipo-registro" class="mt-5 hidden">
     <div class="container">
       <h3 class="text-center mb-3">Choose an option</h3>
       <div class="d-flex justify-content-evenly">
@@ -260,23 +246,24 @@ if (!empty($procesosActuales)) {
   <!-- Custom JS -->
 
 
- 
+
 
   <script>
   let base_url = '<?php echo base_url() ?>'
 
   function loadClientView(id_cliente) {
     $.ajax({
-        url: "<?php echo base_url('Cliente_General/indexCliente'); ?>",
-        method: "GET",
-        success: function(data) {
-            $('#content').html(data);
-        },
-        error: function() {
-            alert('Error al cargar la vista del cliente.');
-        }
+      url: "<?php echo base_url('Cliente_General/indexCliente'); ?>",
+      method: "GET",
+      success: function(data) {
+        $('#content').html(data);
+      },
+      error: function() {
+        alert('Error al cargar la vista del cliente.');
+      }
     });
-}
+  }
+
   function finishSession() {
     let timerInterval;
     setTimeout(() => {
@@ -514,8 +501,7 @@ if (!empty($procesosActuales)) {
   }
 
   // escuchador  para   comentarios
-  function descargarCV() {
-  }
+  function descargarCV() {}
 
   function verHistorial(id, nombre) {
     $('#div_historial_aspirante').empty();
@@ -624,13 +610,20 @@ if (!empty($procesosActuales)) {
   }
 
   function openDetails(requisicion_id) {
+    if (window.innerWidth <= 768) {
+      // Oculta el div1 y muestra el div2 en pantallas pequeñas
+      $('.div1').hide();
+      $('.div2').show();
+    }
+
     $('.div-candidato').removeClass('card-proceso-active');
     $('#div-candidato' + requisicion_id).addClass('card-proceso-active');
+
     $.ajax({
       url: '<?php echo base_url('Cliente/get_requisicion_details'); ?>',
       method: 'POST',
       data: {
-        'requisicion_id': requisicion_id,
+        'requisicion_id': requisicion_id
       },
       beforeSend: function() {
         $('.loader').css("display", "block");
@@ -641,11 +634,12 @@ if (!empty($procesosActuales)) {
         let tbody = '';
 
         data.data.forEach(function(resp) {
-          console.log("🚀 ~ data.data.forEach ~ resp:", resp)
-          let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
+          let cvLink = (resp.cv != null) ?
+            '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
             '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
-            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp
-            .id_ra + ')">CV/Pendiente</button>';
+            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra +
+            ')">CV/Pendiente</button>';
+
           tbody += '<tr>';
           tbody += '<td>' + resp.id + '</td>';
           tbody += '<td>' + resp.nombre_aspirante + '</td>';
@@ -653,27 +647,23 @@ if (!empty($procesosActuales)) {
           tbody += '<td>';
           tbody += '<div class="btn-group">';
           tbody +=
-            '<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
-          tbody += 'Acciones';
-          tbody += '</button>';
+            '<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button>';
           tbody += '<ul class="dropdown-menu">';
           tbody += '<li><button type="button" class="dropdown-item" id="ver_historial" onclick="verHistorial(' +
             resp.id_ra + ', \'' + resp.nombre_aspirante + '\')">Movimientos del Aspirante</button></li>';
           tbody +=
-            '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
-            resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
-          tbody +=
-            '<li>' + cvLink + '</li>';
-          // Agrega más opciones de modales dentro del dropdown según necesites
+            '<li><button type="button" class="dropdown-item comentarios-reclutador-btn" onclick="verHistorialMovimientos(\'' +
+            resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button></li>';
+          tbody += '<li>' + cvLink + '</li>';
           tbody += '</ul>';
           tbody += '</div>';
           tbody += '</td>';
+          tbody += '</tr>';
         });
 
         $('#dataTable tbody').html(tbody);
         $('#dataTable').DataTable(); // Inicializa el DataTable
       } else {
-        // No se devolvió ningún dato, muestra un mensaje
         let tbody = '<tr>';
         tbody += '<td colspan="4" class="text-center">Aún no hay aspirantes para esta requisición</td>';
         tbody += '</tr>';
@@ -681,11 +671,17 @@ if (!empty($procesosActuales)) {
       }
     }).fail(function(jqXHR, textStatus, errorThrown) {
       console.error("Error en la solicitud AJAX:", textStatus, errorThrown);
-      // Maneja el error como desees, por ejemplo, mostrando un mensaje de error
     }).always(function() {
-      // Oculta el loader independientemente del resultado de la solicitud AJAX
       $('.loader').fadeOut();
     });
+  }
+
+  function goBack() {
+    if (window.innerWidth <= 768) {
+      // Muestra el div1 y oculta el div2 en pantallas pequeñas
+      $('.div1').show();
+      $('.div2').hide();
+    }
   }
 
   function openDetailss(requisicion_id) {
@@ -741,7 +737,7 @@ if (!empty($procesosActuales)) {
         }, 200);
       }
     });
-    console.log("🚀 ~ openDetailss ~ res:", res)
+
   }
 
   function openProcedures() {
@@ -796,10 +792,6 @@ if (!empty($procesosActuales)) {
       }
     });
   }
-
-
-
-
   </script>
   <script src="<?php echo base_url() ?>js/bolsa/aspirantes.js"></script>
 

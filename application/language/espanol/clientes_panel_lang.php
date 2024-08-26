@@ -22,13 +22,13 @@ $lang['guardar_modal_nuevo_candidato'] = "Guardar";
 $lang['cerrar_modal_nuevo_candidato'] = "Cancelar";
 
 $lang['menu_historial_candidatos'] = "Historial de requisiciones";
-$lang['menu_inicio_candidatos'] = "Requisiciones en proceso";
+$lang['menu_inicio_candidatos'] = "Requisiciones ";
 $lang['menu_usuarios'] = "Usuarios";
 $lang['accion_nueva_requisicion'] = "Agregar una Nueva Requisicion";
 $lang['accion_nuevo_candidato_examenes'] = "Registrar exámenes para un nuevo candidato";
 
 
-$lang['proceso_titulo'] = "Listado de Requisiciones en proceso";
+$lang['proceso_titulo'] = "Requisiciones en proceso";
 $lang['proceso_sin_candidatos'] = "No hay requisiciones";
 $lang['proceso_titulo_subcliente'] = "Proveedor/Subcliente";
 $lang['proceso_status'] = "Estatus";
