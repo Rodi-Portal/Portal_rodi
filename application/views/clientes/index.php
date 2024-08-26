@@ -5,37 +5,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Client's Panel | RODI</title>
+
+  <!-- Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <!-- CSS -->
-  <?php echo link_tag("css/paneles/clientes.css"); ?>
-  <script src="https://kit.fontawesome.com/fdf6fee49b.js"></script>
+
   <!-- Bootstrap 5.2.3 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-  <!-- Select Bootstrap -->
+
+  <!-- Select2 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-  <!-- Sweetalert 2 -->
+
+  <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" />
-  <!-- Bootstrap 4.6 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-  <!-- Bootstrap Select -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
- 
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-    crossorigin="anonymous"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" />
 </head>
 
 <body>
+  <!-- Your content goes here -->
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+
+  <!-- Bootstrap 5.3.0 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/fdf6fee49b.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.all.min.js"></script>
+
   <!-- Se imprimen los modals -->
   <?php echo $modals;
 /*echo $modalCliente;
@@ -55,29 +70,42 @@ $cliente = $procesosActuales[0] ?? null;
       <a class="navbar-brand" href="javascript:void(0)">
         <img src="<?php echo base_url(); ?>img/portal_icon.png" width="40" height="35"
           class="d-inline-block align-top ms-1" alt="RODI">
-        <h5 class="d-inline text-wrap">
-          <?php echo $this->session->userdata('nombre') . ' ' . $this->session->userdata('paterno') ?></h5>
+        <h5 class="d-inline d-none d-sm-inline text-wrap">
+          <?php echo $this->session->userdata('nombre') . ' ' . $this->session->userdata('paterno') ?>
+        </h5>
       </a>
       <ul class="nav justify-content-end">
         <li class="nav-item">
-          <a class="nav-link text-light active" href="javascript:void(0)" onclick="openProcedures()"><i
-              class="fas fa-list-ol"></i> <?php echo $translations['menu_inicio_candidatos']; ?></a>
+          <a class="nav-link text-light active" href="javascript:void(0)" onclick="openProcedures()">
+            <i class="fas fa-list-ol"></i>
+            <span class="d-none d-md-inline"><?php echo $translations['menu_inicio_candidatos']; ?></span>
+          </a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-light active" href="javascript:void(0)"
-            onclick="loadClientView(<?php echo $id_cliente; ?>)">Candidatos BGV</a>
+            onclick="loadClientView(<?php echo $id_cliente; ?>)">
+            <i class="fas fa-chart-line"></i>
+            <span class="d-none d-md-inline">Candidatos BGV</span>
+          </a>
         </li>
-        <!--//TODO:  boton para  en un futuro  poder  ver las  requisiciones  finalizadas  actualmente  sin funcionamiento -->
+        <!--//TODO: boton para en un futuro poder ver las requisiciones finalizadas actualmente sin funcionamiento -->
         <!--li class="nav-item">
-          <a class="nav-link text-light active" href="javascript:void(0)" onclick="openHistory()"><i
-              class="fas fa-history"></i> < ?php echo $translations['menu_historial_candidatos']; ?></a>
+          <a class="nav-link text-light active" href="javascript:void(0)" onclick="openHistory()">
+            <i class="fas fa-history"></i> 
+            <span class="d-none d-md-inline">< ?php echo $translations['menu_historial_candidatos']; ?></span>
+          </a>
         </li -->
         <!-- <li class="nav-item">
-          <a class="nav-link text-light active" href="javascript:void(0)" onclick="openUsers()"><i class="fas fa-users"></i> <?php //echo $translations['menu_usuarios']; ?></a>
+          <a class="nav-link text-light active" href="javascript:void(0)" onclick="openUsers()">
+            <i class="fas fa-users"></i>
+            <span class="d-none d-md-inline">< ?php //echo $translations['menu_usuarios']; ?></span>
+          </a>
         </li> -->
         <li class="nav-item">
-          <a class="nav-link text-light active" href="<?php echo base_url(); ?>Login/logout"><i
-              class="fas fa-sign-out-alt"></i> <?php echo $translations['cerrar_sesion']; ?></a>
+          <a class="nav-link text-light active" href="<?php echo base_url(); ?>Login/logout">
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="d-none d-md-inline"><?php echo $translations['cerrar_sesion']; ?></span>
+          </a>
         </li>
       </ul>
     </nav>
@@ -167,15 +195,15 @@ $cliente = $procesosActuales[0] ?? null;
         <div class="card shadow div2 flex-fill">
           <div class="card-body">
             <button type="button" class="btn btn-secondary btn-sm d-block d-md-none" onclick="goBack()">
-              <i class="fas fa-arrow-left"></i> Volver
+              <i class="fas fa-arrow-left"></i> Back
             </button>
             <div id="dataTableContainer">
               <table id="dataTable" class="table table-striped">
                 <thead>
                   <tr>
-                    <th>ID</th>
+                    <th class="d-none d-md-table-cell">ID</th>
                     <th>Aspirante</th>
-                    <th>Area de interes</th>
+                    <th class="d-none d-md-table-cell">Area de interes</th>
                     <th>Acciones</th>
                     <!-- Agrega más columnas según necesites -->
                   </tr>
@@ -200,32 +228,7 @@ $cliente = $procesosActuales[0] ?? null;
 
 
   </section>
-  <!--section id="panel-tipo-registro" class="mt-5 hidden">
-    <div class="container">
-      <h3 class="text-center mb-3">Choose an option</h3>
-      <div class="d-flex justify-content-evenly">
-        <div class="card text-center border-success mb-3" style="max-width: 22rem">
-          <div class="card-header fw-bold">Add a candidate to a process</div>
-          <div class="card-body text-success">
-            <p class="card-text">In this option you must to assign the candidates to an existing process to check some
-              aspects as personal data, employment history, academic background, criminal records or others. Besides,
-              you can assign to the candidate some tests such as drug test, medical test and/or psychometric test.</p>
-            <button type="button" class="btn btn-success" onclick="openAddCandidateStep1(1)">Open register form</button>
-          </div>
-        </div>
-        <div class="d-flex align-items-center">
-          <h5 class="text-center">Or</h5>
-        </div>
-        <div class="card text-center border-info mb-3" style="max-width: 22rem">
-          <div class="card-header fw-bold">Add a candidate for tests</div>
-          <div class="card-body text-secondary">
-            <p class="card-text">In this option you can assign to the candidate only some tests such as drug test,
-              medical test and/or psychometric test.</p>
-            <button type="button" class="btn btn-info" onclick="openAddTest(0)">Open register form</button>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </section -->
   <!-- Scripts al final del cuerpo del documento -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
@@ -346,8 +349,8 @@ $cliente = $procesosActuales[0] ?? null;
     }
 
     $('#lista_candidatos').DataTable({
-        "processing": true,
-        "serverSide": true,
+        "processing": false,
+        "serverSide": false,
         "order": [],
         "ajax": {
           url: url_listado,
@@ -489,6 +492,20 @@ $cliente = $procesosActuales[0] ?? null;
           },
 
         ],
+        "columnDefs": [
+            {
+                "targets": [4], // Índices de las columnas a ocultar en pantallas pequeñas
+                "visible": false // Ocultar columnas en pantallas pequeñas
+            }
+        ], 
+        "initComplete": function(settings, json) {
+            // Añadir la clase hide-on-small a las columnas especificadas
+            var api = this.api();
+            $(api.column(4).header()).addClass('hide-on-small');
+        }
+    
+        
+          
 
       })
       .on("processing.dt", function(e, settings, processing) {
@@ -505,10 +522,6 @@ $cliente = $procesosActuales[0] ?? null;
 
   function verHistorial(id, nombre) {
     $('#div_historial_aspirante').empty();
-    var id = id;
-    console.log("🚀 ~ verHistorial ~ id:", id)
-
-
     $.ajax({
       url: '<?php echo base_url('Reclutamiento/getHistorialAspirante'); ?>',
       type: 'post',
@@ -517,12 +530,12 @@ $cliente = $procesosActuales[0] ?? null;
         'tipo_id': 'aspirante'
       },
       success: function(res) {
-        var salida = '<table class="table table-striped" style="font-size: 14px">';
-        salida += '<tr style="background: gray;color:white;">';
+        var salida = '<table class="table table-striped" style="font-size: 14px; width: 100%;">';
+        salida += '<thead><tr style="background: gray; color: white;">';
         salida += '<th>Fecha</th>';
         salida += '<th>Estatus</th>';
-        salida += '<th>Comentario / Descripción / Fecha y lugar</th>';
-        salida += '</tr>';
+        salida += '<th>Comentario / Descripción </th>';
+        salida += '</tr></thead><tbody>';
 
         if (res != 0) {
           var dato = JSON.parse(res);
@@ -530,35 +543,35 @@ $cliente = $procesosActuales[0] ?? null;
             var aux = dato[i]['creacion'].split(' ');
             var f = aux[0].split('-');
             var fecha = f[2] + '/' + f[1] + '/' + f[0];
-            salida += "<tr>";
+            salida += '<tr>';
             salida += '<td>' + fecha + '</td>';
-            salida += '<td style="white-space: nowrap;">' + dato[i]['accion'] + '</td>';
+            salida += '<td>' + dato[i]['accion'] + '</td>';
             salida += '<td>' + dato[i]['descripcion'] + '</td>';
-            salida += "</tr>";
+            salida += '</tr>';
           }
         } else {
-          salida += "<tr>";
+          salida += '<tr>';
           salida += '<td colspan="3" class="text-center"><h5>Sin movimientos</h5></td>';
-          salida += "</tr>";
+          salida += '</tr>';
         }
-        salida += "</table>";
+        salida += '</tbody></table>';
 
         $('#div_historial_aspirante').html(salida);
         $("#historialModal").modal('show');
 
-        // Asigna el evento click al botón de cerrar
+        // Ocultar el control de "Show entries" en el modal de historial
+        $('#historialModal .dataTables_wrapper .dataTables_length').hide();
+
         $('#btnCerrarPasos').click(function() {
           $('#historialModal').modal('hide');
         });
       }
     });
-
-
   }
 
   function verHistorialMovimientos(nombreCompleto, id) {
     $("#nombre_aspirante").text(nombreCompleto);
-    $('#div_historial_aspirante').empty();
+    $('#div_historial_comentario').empty();
     $('#btnComentario').attr('onclick', 'guardarComentario(' + id + ')');
     $.ajax({
       url: '<?php echo base_url('Reclutamiento/getHistorialBolsaTrabajo'); ?>',
@@ -568,42 +581,44 @@ $cliente = $procesosActuales[0] ?? null;
         'tipo_id': 'bolsa'
       },
       success: function(res) {
-        var salida = '<table class="table table-striped" style="font-size: 14px">';
-        salida += '<tr style="background: gray;color:white;">';
+        var salida = '<table class="table table-striped" style="font-size: 14px; width: 100%;">';
+        salida += '<thead><tr style="background: gray; color: white;">';
         salida += '<th>Fecha</th>';
         salida += '<th>Usuario</th>';
         salida += '<th>Comentario / Estatus</th>';
-        salida += '</tr>';
+        salida += '</tr></thead><tbody>';
+
         if (res != 0) {
           var dato = JSON.parse(res);
           for (var i = 0; i < dato.length; i++) {
             var aux = dato[i]['creacion'].split(' ');
             var f = aux[0].split('-');
             var fecha = f[2] + '/' + f[1] + '/' + f[0];
-            salida += "<tr>";
+            salida += '<tr>';
             salida += '<td>' + fecha + '</td>';
             salida += '<td>' + dato[i]['usuario'] + '</td>';
             salida += '<td>' + dato[i]['comentario'] + '</td>';
-            salida += "</tr>";
+            salida += '</tr>';
           }
         } else {
-          salida += "<tr>";
-          salida += '<td colspan="4" class="text-center"><h5>Sin comentarios</h5></td>';
-          salida += "</tr>";
+          salida += '<tr>';
+          salida += '<td colspan="3" class="text-center"><h5>Sin comentarios</h5></td>';
+          salida += '</tr>';
         }
-        salida += "</table>";
+        salida += '</tbody></table>';
 
         $('#comentario_bolsa').val('');
-
         $('#div_historial_comentario').html(salida);
-        // Mostrar el modal
-        $('#historialComentariosModal ').modal('show');
+        $('#historialComentariosModal').modal('show');
+
+        // Ocultar el control de "Show entries" en el modal de historial de comentarios
+        $('#historialComentariosModal .dataTables_wrapper .dataTables_length').hide();
+
         $('#historialComentariosModal .btn-secondary').click(function() {
           $('#historialComentariosModal').modal('hide');
         });
       },
       error: function(xhr, status, error) {
-        // Manejar errores si es necesario
         console.error(error);
       }
     });
@@ -636,26 +651,29 @@ $cliente = $procesosActuales[0] ?? null;
         data.data.forEach(function(resp) {
           let cvLink = (resp.cv != null) ?
             '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
-            '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
-            '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp.id_ra +
-            ')">CV/Pendiente</button>';
+            '" target="_blank" class="btn btn-link text-primary" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-file-alt"></i></a>' :
+            '<button type="button" class="btn btn-link text-primary" onclick="mostrarFormularioCargaCV(' + resp
+            .id_ra +
+            ')"><i class="fas fa-exclamation-circle"></i></button>';
+
 
           tbody += '<tr>';
-          tbody += '<td>' + resp.id + '</td>';
+          tbody += '<td class="d-none d-sm-table-cell">' + resp.id + '</td>';
           tbody += '<td>' + resp.nombre_aspirante + '</td>';
-          tbody += '<td>' + resp.area_interes + '</td>';
+          tbody += '<td class="d-none d-sm-table-cell">' + resp.area_interes +
+            '</td>'; // Oculta en pantallas pequeñas
           tbody += '<td>';
-          tbody += '<div class="btn-group">';
-          tbody +=
-            '<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Acciones</button>';
-          tbody += '<ul class="dropdown-menu">';
-          tbody += '<li><button type="button" class="dropdown-item" id="ver_historial" onclick="verHistorial(' +
-            resp.id_ra + ', \'' + resp.nombre_aspirante + '\')">Movimientos del Aspirante</button></li>';
-          tbody +=
-            '<li><button type="button" class="dropdown-item comentarios-reclutador-btn" onclick="verHistorialMovimientos(\'' +
-            resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button></li>';
-          tbody += '<li>' + cvLink + '</li>';
-          tbody += '</ul>';
+          tbody += '<div class="action-icons">';
+          tbody += '<a href="#" onclick="verHistorial(' + resp.id_ra + ', \'' + resp.nombre_aspirante +
+            '\')" class="btn btn-link text-primary" title="Movimientos del Aspirante"><i class="fas fa-history"></i></a>';
+          tbody += '<a href="#" onclick="verHistorialMovimientos(\'' + resp.nombre_aspirante + '\', \'' + resp
+            .id_ra +
+            '\')" class="btn btn-link text-primary" title="Comentarios Reclutador"><i class="fas fa-comments"></i></a>';
+
+          // Actualización del enlace CV
+
+
+          tbody += cvLink;
           tbody += '</div>';
           tbody += '</td>';
           tbody += '</tr>';

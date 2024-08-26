@@ -948,14 +948,14 @@ function changeDatatable(url1) {
                 "width": "15%",
                 render: function(data, type, row) {
                   if (data) {
-    return '<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">' +
-      '<button style="flex: 1; height: 50px; margin: 0; font-size: 14px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" class="btn btn-primary btn-info">' +
-      data + '</button></div>';
-} else {
-                  return '<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><button style="width: 120px; height: 50px; margin: 0; font-size: 14px;" class="btn btn-primary btn-info">Exámenes</button></div>';
-                }
-              }
-            },
+                          return '<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">' +
+                            '<button style="flex: 1; height: 50px; margin: 0; font-size: 14px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" class="btn btn-primary btn-info">' +
+                            data + '</button></div>';
+                      } else {
+                            return '<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><button style="width: 120px; height: 50px; margin: 0; font-size: 14px;" class="btn btn-primary btn-info">Exámenes</button></div>';
+                          }
+                        }
+                      },
             {
               title: 'Exámenes',
               data: null,

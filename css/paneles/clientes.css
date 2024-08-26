@@ -318,7 +318,12 @@ td{ vertical-align: middle !important; }
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
 }
 
+
+
 @media (max-width: 768px) {
+  .hide-on-small {
+    display: none !important; /* Oculta las columnas */
+  }
   .div1 {
     display: none;
   }
@@ -330,4 +335,12 @@ td{ vertical-align: middle !important; }
   .btn-secondary {
     display: block;
   }
+  .navbar .nav-link span {
+    display: none;
+  }
+  
+
+
 }
+
+

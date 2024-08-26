@@ -18,14 +18,13 @@
 </div>
 
 <div class="modal fade" id="historialComentariosModal" role="dialog" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-xl" role="document">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Historial de comentarios con respecto a: <br><span class="nombreRegistro" id="nombre_aspirante"></span></h4>
-       
       </div>
       <div class="modal-body">
-        <div id="div_historial_comentario" class="escrolable"></div>
+        <div id="div_historial_comentario" class="table-responsive"></div>
         <hr>
         <div class="row">
           <div class="col-12">
@@ -35,8 +34,7 @@
         </div>
         <div class="row mt-2">
           <div class="col-12">
-            <button type="button" class="btn btn-primary text-lg btn-block w-100" id="btnComentario">Guardar
-              comentario</button>
+            <button type="button" class="btn btn-primary text-lg btn-block w-100" id="btnComentario">Guardar comentario</button>
           </div>
         </div>
       </div>
@@ -48,14 +46,13 @@
 </div>
 
 <div class="modal fade" id="historialModal" role="dialog" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-xl" role="document">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Historial de movimientos del aspirante: <br><span class="nombreAspirante"></span></h4>
-       
+        <h4 class="modal-title">Historial de movimientos del aspirante:<br><span class="nombreAspirante"></span></h4>
       </div>
       <div class="modal-body">
-        <div id="div_historial_aspirante"></div>
+        <div id="div_historial_aspirante" class="table-responsive"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" id="btnCerrarPasos" data-dismiss="modal">Cerrar</button>

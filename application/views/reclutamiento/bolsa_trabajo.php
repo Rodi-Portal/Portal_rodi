@@ -26,7 +26,7 @@
             <span class="text">Subir  aspirantes      </span> <!-- Agrega un salto de línea -->
           </button>
           <div class="d-md-none mb-3"></div>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split"
+          <button type="button" id="btnNuevaRequisicion" class="btn btn-success btn-icon-split"
             onclick="nuevaRequisicion()">
             <span class="icon text-white-50">
               <i class="far fa-file-alt"></i>
@@ -41,13 +41,14 @@
         }else{
           $disabled = ''; $textTitle = '';
         } ?>
-          <button type="button" id="btnAsignarAspirante" class="btn btn-primary btn-icon-split"
+          <button type="button" id="btnAsignarAspirante" class="btn btn-navy btn-icon-split"
             onclick="openAssignToUser()" <?php echo $disabled; ?>>
             <span class="icon text-white-50">
               <i class="fas fa-user-edit"></i>
             </span>
             <span class="text">Asignar aspirante</span>
           </button>
+          <div class="d-md-none mb-3"></div>
         </div>
         <div class="btn-group d-none d-md-block" role="group" aria-label="Botones en pantallas grandes">
           <button type="button" id="btnDescargarFormato" class="btn btn-info btn-icon-split"
@@ -57,6 +58,7 @@
             </span>
             <span class="text">Descargar formato</span>
           </button>
+          <div class="d-md-none mb-3"></div>
           <button type="button" id="btnSubirAspirantes" class="btn btn-success btn-icon-split"
             onclick="openUploadCSV()">
             <span class="icon text-white-50">
@@ -64,28 +66,32 @@
             </span>
             <span class="text">Subir aspirantes</span> <!-- Agrega un salto de línea -->
           </button>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split"
+          <div class="d-md-none mb-3"></div>
+          <button type="button" id="btnNuevaRequisicion" class="btn btn-navy btn-icon-split"
             onclick="nuevaRequisicion()">
             <span class="icon text-white-50">
               <i class="far fa-file-alt"></i>
             </span>
             <span class="text">Nueva Requisición</span>
           </button>
+          <div class="d-md-none mb-3"></div>
           <?php 
         if($this->session->userdata('idrol') == 4){
           $disabled = 'disabled'; $textTitle = 'title="No posees permiso para esta acción"';
         }else{
           $disabled = ''; $textTitle = '';
         } ?>
-          <button type="button" id="btnAsignarAspirante" class="btn btn-primary btn-icon-split"
+          <button type="button" id="btnAsignarAspirante" class="btn btn-navy btn-icon-split"
             onclick="openAssignToUser()" <?php echo $disabled; ?>>
             <span class="icon text-white-50">
               <i class="fas fa-user-edit"></i>
             </span>
             <span class="text">Asignar aspirante</span>
           </button>
+          <div class="d-md-none mb-3"></div>
         </div>
       </div>
+      
     </div>
   </section>
 
