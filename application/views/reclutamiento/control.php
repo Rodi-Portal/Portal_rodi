@@ -69,6 +69,7 @@
 
 </div>
 <!-- /.content-wrapper -->
+<script src="<?php echo base_url('js/whatsapi.js'); ?>"></script>
 <script>
 $(document).ready(function() {
   var url = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
@@ -285,6 +286,8 @@ function changeDataTable(url) {
         $("#idAspirante").val(data.id);
         $(".nombreAspirante").text(data.aspirante);
         $('#idRequisicion').val(data.id_requisicion);
+       // console.log("🚀 ~ $ ~ data:", data)
+
         $("#nuevaAccionModal").modal('show');
       });
       $('a#ver_historial', row).bind('click', () => {
@@ -328,6 +331,7 @@ function changeDataTable(url) {
           }
         });
       });
+
       $('a#iniciar_socio', row).bind('click', () => {
 
 
@@ -624,8 +628,9 @@ function guardarAccion() {
           icon: 'success',
           title: data.msg,
           showConfirmButton: false,
-          timer: 2500
+          timer: 3000
         })
+          console.log("🚀 ~ guardarAccion ~ data.msg:", data.msg)
       } else {
         Swal.fire({
           icon: 'error',

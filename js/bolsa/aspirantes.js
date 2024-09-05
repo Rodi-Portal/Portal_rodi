@@ -25,6 +25,8 @@ function guardarComentario(id_bolsa) {
             showConfirmButton: false,
             timer: 3000
           })
+          console.log("🚀 ~ guardarAccion ~ data.msg:", data.msg)
+
         } else {
           Swal.fire({
             icon: 'error',

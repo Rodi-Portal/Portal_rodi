@@ -133,6 +133,7 @@ $autoload['language'] = array();
 |    $autoload['model'] = array('first_model' => 'first');
  */
 $autoload['model'] = array(
+    'notificaciones_whatsapp_model',
     'api_traer_documentos_model',
     'generales_model',
     'area_model',
