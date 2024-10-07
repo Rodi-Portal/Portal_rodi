@@ -23,6 +23,49 @@ class Reclutamiento extends CI_Controller
         // Llama a la vista y pasa los datos necesarios
         $this->load->view('modals/mdl_reclutamiento');
     }
+    public function menu()
+    {
+        $data['submenus'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+    
+        foreach ($data['submodulos'] as $row) {
+            $items[] = $row->id_submodulo;
+        }
+        $data['submenus'] = $items;
+    
+        $config = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $config->version_sistema;
+
+
+        $res = $this->cat_portales_model->getModulos(); 
+    
+        if (!empty($res)) {
+            // Accede directamente a la fila
+            $modulo = $res; // getModulos devuelve solo una fila como array
+    
+            // Verifica el valor de reclu
+            if ($modulo['reclu'] == 1) {
+                $View = $this->load->view('reclutamiento/menu_reclutamiento', $data, true);
+            } else {
+                $View = $this->load->view('reclutamiento/descripcion_modulo', $data, true);
+            }
+        } else {
+            // Si no hay módulos, carga una vista de error o una descripción
+            $View = $this->load->view('reclutamiento/descripcion_modulo', $data, true);
+        }
+    
+        // Cargar las vistas en variables
+        $headerView = $this->load->view('adminpanel/header', $data, true);
+        $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+        $footerView = $this->load->view('adminpanel/footer', [], true);
+    
+        // Mostrar las vistas
+        echo $headerView;
+        echo $scriptsView; // Mostrar scripts si es necesario
+        echo $View; // Mostrar el menú
+    }
 
     /*----------------------------------------*/
     /*  Submenus
@@ -139,12 +182,17 @@ class Reclutamiento extends CI_Controller
             }
             $data['contadorNotificaciones'] = $contador;
         }
-        $this->load
-            ->view('adminpanel/header', $data)
-            ->view('adminpanel/scripts', $modales)
-            ->view('reclutamiento/requisicion', $vista)
-            ->view('adminpanel/footer');
+        // Cargar las vistas en variables, sin mostrarlas
+        $headerView = $this->load->view('adminpanel/header', $data, true);
+        $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+        $requisicionView = $this->load->view('reclutamiento/requisicion', $vista, true);
+        $footerView = $this->load->view('adminpanel/footer', [], true);
+
+        echo $scriptsView;
+        echo $requisicionView; // Si decides que esta vista sí debe mostrarse
+        echo $footerView;
     }
+
     public function control()
     {
         $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
@@ -236,12 +284,18 @@ class Reclutamiento extends CI_Controller
             }
             $data['contadorNotificaciones'] = $contador;
         }
-        $this->load
-            ->view('adminpanel/header', $data)
-            ->view('adminpanel/scripts', $modales)
-            ->view('reclutamiento/control', $vista)
-            ->view('adminpanel/footer');
+       
+            
+            $headerView = $this->load->view('adminpanel/header', $data, true);
+            $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+            $requisicionView = $this->load->view('reclutamiento/control', $vista, true);
+            $footerView = $this->load->view('adminpanel/footer', [], true);
+    
+            echo $scriptsView;
+            echo $requisicionView; // Si decides que esta vista sí debe mostrarse
+            echo $footerView;
     }
+
     public function finalizados()
     {
         $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
@@ -282,12 +336,17 @@ class Reclutamiento extends CI_Controller
             $data['contadorNotificaciones'] = $contador;
         }
 
-        $this->load
-            ->view('adminpanel/header', $data)
-            ->view('adminpanel/scripts', $modales)
-            ->view('reclutamiento/finalizados', $vista)
-            ->view('adminpanel/footer');
+
+            $headerView = $this->load->view('adminpanel/header', $data, true);
+            $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+            $requisicionView = $this->load->view('reclutamiento/finalizados', $vista, true);
+            $footerView = $this->load->view('adminpanel/footer', [], true);
+    
+            echo $scriptsView;
+            echo $requisicionView; // Si decides que esta vista sí debe mostrarse
+            echo $footerView;
     }
+
     public function bolsa()
     {
         $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
@@ -428,11 +487,15 @@ class Reclutamiento extends CI_Controller
             }
             $data['contadorNotificaciones'] = $contador;
         }
-        $this->load
-            ->view('adminpanel/header', $data)
-            ->view('adminpanel/scripts', $modales)
-            ->view('reclutamiento/bolsa_trabajo', $vista)
-            ->view('adminpanel/footer');
+
+        $headerView = $this->load->view('adminpanel/header', $data, true);
+        $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+        $requisicionView = $this->load->view('reclutamiento/bolsa_trabajo', $vista, true);
+        $footerView = $this->load->view('adminpanel/footer', [], true);
+
+        echo $scriptsView;
+        echo $requisicionView; // Si decides que esta vista sí debe mostrarse
+        echo $footerView;
     }
 
     /*----------------------------------------*/
@@ -468,6 +531,7 @@ class Reclutamiento extends CI_Controller
 
         echo json_encode($msj);
     }
+
     public function reactivarRequisicion()
     {
         $id = $this->input->post('id');
@@ -479,6 +543,7 @@ class Reclutamiento extends CI_Controller
         );
         echo json_encode($msj);
     }
+    
     public function addApplicant()
     {
         $this->form_validation->set_rules('requisicion', 'Asignar requisición', 'required');
@@ -752,7 +817,7 @@ class Reclutamiento extends CI_Controller
             // Realizar todas las operaciones en una transacción
             $result = $this->reclutamiento_model->registrarMovimiento($datos_accion, $data_aspirante, $data_bolsa, $aspirante->id_bolsa_trabajo, $id_aspirante);
 
-            if ($result && $notificacion > 0 ) {
+            if ($result && $notificacion > 0) {
                 $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspirante($id_aspirante);
 
                 // Verifica que el resultado no sea NULL y que sea un objeto
@@ -1200,7 +1265,6 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        
         $msj = array();
 
         if ($this->form_validation->run() == false) {
@@ -1336,19 +1400,17 @@ class Reclutamiento extends CI_Controller
             var_dump($req);
             die('pausa');
              */
-            $result =  $this->reclutamiento_model->addRequisicion($id_cliente, $cliente, $domicilios, $generales, $facturacion, $req);
+            $result = $this->reclutamiento_model->addRequisicion($id_cliente, $cliente, $domicilios, $generales, $facturacion, $req);
 
             if (!empty($result)) {
-
-             
 
                 if ($notificacion > 0) {
                     // Obtener datos para notificación
                     if ($tipo == 1) {
                         $result2 = $this->notificaciones_whatsapp_model->obtenerDatosRegistroRequicisionCliente($result);
-                        echo '<pre>'; 
+                        echo '<pre>';
                         print_r($result2);
-                        echo'</pre>';
+                        echo '</pre>';
                         die();
                         if ($result2 && !empty($result2->phone)) {
                             $datos_plantilla = array(

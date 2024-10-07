@@ -100,7 +100,7 @@ $(document).ready(function() {
     "order": [0, "desc"],
     "stateSave": false,
     "serverSide": false,
-    "destroy": true, 
+    "destroy": true,
     "ajax": {
       "url": url,
       "type": "GET",
@@ -144,8 +144,68 @@ $(document).ready(function() {
           var hora = aux[0] + ':' + aux[1];
           var aux = f[0].split('-');
           var fecha = aux[2] + "/" + aux[1] + "/" + aux[0];
-          var tiempo = fecha + ' ' + hora;
+          var tiempo = fecha;
           return tiempo;
+        }
+      },
+      {
+        title: 'Modulos',
+        data: 'idPortal',
+        bSortable: false,
+        "width": "10%",
+        mRender: function(data, type, full) {
+          // Modulo de Reclutamiento
+          let modulosReclu = '';
+          if (full.reclu == 1) {
+            modulosReclu =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Recruitment" id="moduloReclutamiento" class="fa-tooltip icono_datatable icono_verde" onclick="handleModuloClick(\'DesactivarReclutamiento\', ' +
+              data + ')"><i class="fas fa-user-plus"></i></a> ';
+
+          } else {
+            modulosReclu =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Recruitment" id="moduloReclutamiento" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarReclutamiento\', ' +
+              data + ')"><i class="fas fa-user-plus"></i></a> ';
+          }
+
+          // Modulo de Pre-empleo
+          let modulosPre = '';
+          if (full.pre == 1) {
+            modulosPre =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Pre-Employment" id="moduloPre" class="fa-tooltip icono_datatable icono_verde" onclick="handleModuloClick(\'DesactivarPreEmpleo\', ' +
+              data + ')"><i class="fas fa-user-check"></i></a> ';
+          } else {
+
+              modulosPre =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Pre-Employment" id="moduloPre" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarPreEmpleo\', ' +
+             data+ ')"><i class="fas fa-user-check"></i></a> ';
+          }
+
+          // Modulo de Empleo
+          let modulosEmpleo = '';
+          if (full.emp == 1) {
+            modulosEmpleo =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Employee" id="moduloEmpleado" class="fa-tooltip icono_datatable icono_verde" onclick="handleModuloClick(\'DesactivarEmpleo\', ' +
+              data + ')"><i class="fas fa-user-tie"></i></a> ';
+          } else {
+            modulosEmpleo =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Employee" id="moduloEmpleado" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarEmpleo\', ' +
+              data + ')"><i class="fas fa-user-tie"></i></a> ';
+          }
+          // Modulo de Ex-empleado
+          let modulosFormer = '';
+          if (full.former == 1) {
+
+            modulosFormer =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Former Employee" id="moduloFormer" class="fa-tooltip icono_datatable icono_verde" onclick="handleModuloClick(\'DesactivarExEmpleado\', ' +
+              data + ')"><i class="fas fa-user-slash"></i></a> ';
+
+          } else {
+            modulosFormer =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Former Employee" id="moduloFormer" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarExEmpleado\', ' +
+              data + ')"><i class="fas fa-user-slash"></i></a> ';
+          }
+
+          return modulosReclu + modulosPre + modulosEmpleo + modulosFormer;
         }
       },
       {
@@ -167,7 +227,7 @@ $(document).ready(function() {
               .idPortal + '\').click();" ' +
               'class="fa-tooltip icono_datatable icono_amarillo" data-toggle="tooltip" title="Subir Constancia">' +
               '<i class="fas fa-upload"></i>' +
-              '</a>'+
+              '</a>' +
               '<input type="file" id="cargar_constancia_' + full.idPortal +
               '" name="constancia" style="display: none;" ' +
               'onchange="uploadFile(event, \'' + full.idPortal + '\')">';
@@ -340,7 +400,7 @@ $(document).ready(function() {
                         <tr>
                             <th scope="col">Usuario</th>
                             <th scope="col">Correo</th>
-                            <th scope="col">Alta</th>           
+                            <th scope="col">Alta</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -355,9 +415,9 @@ $(document).ready(function() {
                         <th>${dato['usuario']}</th>
                         <th>${dato['correo_usuario']}</th>
                         <th>${fecha}</th>
-                      
-                      
-                      
+
+
+
                     </tr>`;
         });
 
@@ -409,7 +469,6 @@ $(document).ready(function() {
             $('.loader').css("display", "block");
           },
           success: function(res) {
-            console.log(res);
             setTimeout(function() {
               $('.loader').fadeOut();
             }, 200);
@@ -573,7 +632,7 @@ function uploadFile(event, idPortal) {
       })
       .then(response => response.json())
       .then(data => {
-        console.log('Éxito:', data);
+
 
         // Mostrar mensaje con SweetAlert2
         if (data.codigo === 1) {
@@ -605,4 +664,52 @@ function uploadFile(event, idPortal) {
       });
   }
 }
+// funcion  para    activar  y desactivar modulos  a los portales
+function handleModuloClick(accion, id) {
+    // Realizar la solicitud AJAX
+    $.ajax({
+        url: '<?php echo base_url('Cat_Portales/editModulos'); ?>',
+        type: 'POST',
+        data: {
+            accion: accion,
+            id: id
+        },
+        success: function(response) {
+            var data = JSON.parse(response);
+            console.log("🚀 ~ handleModuloClick ~ data:", data.codigo )
+
+            if (data.mensaje.codigo == 1) {
+              recargarTable();
+
+                // Mostrar el mensaje recibido desde el controlador
+                Swal.fire({
+                    title: 'Succes',
+                    text: data.mensaje.msg, // Asegúrate de que tu controlador devuelva un mensaje
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            } else {
+                // Manejar el caso cuando la actualización no fue exitosa
+                Swal.fire({
+                    title: 'Advertencia',
+                    text: data.msj || 'No se pudo realizar la acción.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            // Mostrar un mensaje de error
+            Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error. Intenta nuevamente.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+}
+
+
+
 </script>

@@ -63,7 +63,6 @@ class Dashboard extends CI_Controller
                 }
                 $data['contadorNotificaciones'] = $contador;
             }
-
             //Modals
             $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
 
@@ -71,8 +70,81 @@ class Dashboard extends CI_Controller
                 ->view('adminpanel/header', $data)
                 ->view('adminpanel/index')
                 ->view('adminpanel/scripts', $modales)
-                ->view('adminpanel/links')
                 ->view('adminpanel/footer');
+
+               
+               
+
+        } else {
+            redirect('Login/index');
+        }
+    }
+
+    public function dashboardIndex()
+    {
+        if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1) {
+            $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+
+            $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+            foreach ($data['submodulos'] as $row) {
+                $items[] = $row->id_submodulo;
+            }
+            $data['submenus'] = $items;
+
+            $config = $this->funciones_model->getConfiguraciones();
+            $data['version'] = $config->version_sistema;
+            //TODO:pendiente  si es  util   para      la plataforma  de reclutamiento
+
+            if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {
+                $ReqProceso = $this->estadistica_model->countReqEnProceso();
+                $data['titulo_dato1'] = 'Total de Requisiciones en Proceso';
+                $data['dato1'] = $ReqProceso->total;
+
+                $ReqFinalizadas = $this->estadistica_model->countReqFinalizadas();
+                $data['titulo_dato2'] = 'Total de Requisiciones Finalizadas';
+                $data['dato2'] = $ReqFinalizadas->total;
+
+                $ReqCanceladas = $this->estadistica_model->countReqCanceladas();
+                $data['titulo_dato3'] = 'Total de Requisiciones Canceladas';
+                $data['dato3'] = $ReqCanceladas->total;
+
+                $AspirantesTotal = $this->estadistica_model->countBolsaTrabajo();
+                $data['titulo_dato4'] = 'Aspirantes  en Bolsa de Trabajo';
+                $data['dato4'] = $AspirantesTotal->total;
+
+            }
+            if ($this->session->userdata('idrol') == 2) {
+                $num = $this->estadistica_model->countCandidatosAnalista($this->session->userdata('id'));
+                $data['dato_totalcandidatos'] = $num->total;
+                $num = $this->estadistica_model->countCandidatosSinFormulario($this->session->userdata('id'));
+                $data['dato_2'] = $num->total;
+                $data['texto_2'] = "Candidatos sin envío de formulario";
+                $num = $this->estadistica_model->countCandidatosSinDocumentos($this->session->userdata('id'));
+                $data['dato_3'] = $num->total;
+                $data['texto_3'] = "Candidatos sin envío de documentos";
+            }
+
+            $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
+            if (!empty($notificaciones)) {
+                $contador = 0;
+                foreach ($notificaciones as $row) {
+                    if ($row->visto == 0) {
+                        $contador++;
+                    }
+                }
+                $data['contadorNotificaciones'] = $contador;
+            }
+            //Modals
+            $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+
+            $this->load
+                ->view('adminpanel/header', $data)
+                ->view('adminpanel/index')
+                ->view('adminpanel/footer');
+
+               
+               
+
         } else {
             redirect('Login/index');
         }

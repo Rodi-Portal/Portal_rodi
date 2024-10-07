@@ -213,8 +213,6 @@ class Cat_Portales extends CI_Controller
             date_default_timezone_set('America/Mexico_City');
             $date = date('Y-m-d H:i:s');
 
-           
-
             $datos_domicilios = array(
                 'pais' => $this->input->post('pais_edit'),
                 'estado' => $this->input->post('estado_edit'),
@@ -223,10 +221,10 @@ class Cat_Portales extends CI_Controller
                 'calle' => $this->input->post('calle_edit'),
                 'exterior' => $this->input->post('numero_exterior_edit'),
                 'interior' => $this->input->post('numero_interior_edit'),
-                'cp' => $this->input->post('numero_cp_edit')
+                'cp' => $this->input->post('numero_cp_edit'),
             );
 
-            $datos_domicilios = array_filter($datos_domicilios, function($value) {
+            $datos_domicilios = array_filter($datos_domicilios, function ($value) {
                 return $value !== '';
             });
 
@@ -236,16 +234,14 @@ class Cat_Portales extends CI_Controller
                 'regimen' => $this->input->post('regimen_edit'),
                 'forma_pago' => $this->input->post('forma_pago_edit'),
                 'metodo_pago' => $this->input->post('metodo_pago_edit'),
-                'uso_cfdi' => $this->input->post('uso_cfdi_edit')
+                'uso_cfdi' => $this->input->post('uso_cfdi_edit'),
             );
-            
+
             // Filtrar el arreglo para eliminar valores vacíos y nulos
-            $datos_factura = array_filter($datos_factura, function($value) {
+            $datos_factura = array_filter($datos_factura, function ($value) {
                 return !empty($value);
             });
 
-
-           
             $datos_portal = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
@@ -256,33 +252,24 @@ class Cat_Portales extends CI_Controller
                 'usuarios_permitidos' => $this->input->post('accesosEdit'),
             );
 
-            $datos_portal = array_filter($datos_portal, function($value) {
+            $datos_portal = array_filter($datos_portal, function ($value) {
                 return !empty($value);
             });
 
-           ;
-
             /*
-           echo'<pre>';
-                    print_r($datos_factura);
-                    print_r($datos_domicilios);
-                    print_r($datos_portal);
-                    echo'</pre>';
+            echo'<pre>';
+            print_r($datos_factura);
+            print_r($datos_domicilios);
+            print_r($datos_portal);
+            echo'</pre>';
             die();
              */
-
-            
-
-           
-           
-           
 
             if ($idPortal > 0) {
                 $hayId = $this->cat_portales_model->check($idPortal);
 
                 if ($hayId > 0) {
-                  
-                  
+
                     $this->cat_portales_model->editPortal($idPortal, $datos_portal, $datos_factura, $datos_domicilios);
 
                     $msj = array(
@@ -293,16 +280,13 @@ class Cat_Portales extends CI_Controller
                     return;
                 } else {
 
-                    
-                        $msj = array(
-                            'codigo' => 0,
-                            'msg' => 'Error  al actualizar  el Portal. ',
-                        );
-                        echo json_encode($msj);
-                        return;
-                    }
-
-                
+                    $msj = array(
+                        'codigo' => 0,
+                        'msg' => 'Error  al actualizar  el Portal. ',
+                    );
+                    echo json_encode($msj);
+                    return;
+                }
 
             } else {
                 $msj = array(
@@ -356,13 +340,13 @@ class Cat_Portales extends CI_Controller
         try {
             // Obtener el total de registros (recordsTotal)
             $recordsTotal = $this->cat_portales_model->getTotal();
-            
+
             // Obtener el total de registros después de aplicar filtros (recordsFiltered)
             $recordsFiltered = $this->cat_portales_model->getTotal();
 
             // Obtener los datos de clientes (data)
             $data = $this->cat_portales_model->getP();
-           
+
             // Configurar el tipo de contenido de la respuesta como JSON
             $this->output->set_content_type('application/json');
 
@@ -385,9 +369,10 @@ class Cat_Portales extends CI_Controller
             $this->output->set_output(json_encode(['error' => 'Error en la consulta.']));
         }
     }
-    public function subirConstancia() {
+    public function subirConstancia()
+    {
         header('Content-Type: application/json');
-        
+
         if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
             $fileTmpPath = $_FILES['file']['tmp_name'];
             $fileName = $_FILES['file']['name'];
@@ -395,7 +380,7 @@ class Cat_Portales extends CI_Controller
             $fileType = $_FILES['file']['type'];
             $fileNameCmps = explode(".", $fileName);
             $fileExtension = strtolower(end($fileNameCmps));
-            
+
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf');
             if (in_array($fileExtension, $allowedExtensions)) {
                 $maxFileSize = 5 * 1024 * 1024; // 5MB
@@ -403,32 +388,28 @@ class Cat_Portales extends CI_Controller
                     $randomFileName = bin2hex(random_bytes(7));
                     $idPortal = isset($_POST['idPortal']) ? $_POST['idPortal'] : '';
                     $newFileName = $idPortal . "_" . $randomFileName . "." . $fileExtension;
-                    
+
                     $uploadFileDir = './_portal_files/';
                     if (!is_dir($uploadFileDir)) {
                         mkdir($uploadFileDir, 0755, true);
                     }
                     $dest_path = $uploadFileDir . $newFileName;
 
-                   
-                  
-
-
                     if (move_uploaded_file($fileTmpPath, $dest_path)) {
-                        
+
                         $portal = array(
-                            'cons'=> $newFileName,
+                            'cons' => $newFileName,
                         );
 
                         $res = $this->cat_portales_model->editPortal($idPortal, $portal);
 
-                        if($res){
+                        if ($res) {
                             echo json_encode(array('codigo' => 1, 'mensaje' => 'Constancia cargada exitosamente.'));
-                        }else{
+                        } else {
                             unlink($dest_path);
                             echo json_encode(array('codigo' => 0, 'mensaje' => 'No se pudo  subir  la  constancia  intenta  nuevamente.'));
                         }
-                     
+
                     } else {
                         echo json_encode(array('codigo' => 0, 'mensaje' => 'No se pudo cargar el  archivo en el  directorio de destino.'));
                     }
@@ -442,9 +423,6 @@ class Cat_Portales extends CI_Controller
             echo json_encode(array('codigo' => 0, 'mensaje' => 'No se ha subido ningún archivo.'));
         }
     }
-    
-    
-    
 
     public function getClientesPorId()
     {
@@ -486,6 +464,114 @@ class Cat_Portales extends CI_Controller
         }
     }
 
+    public function editModulos()
+    {
+
+        $idPortal = $this->session->userdata('idPortal');
+
+        // Define la regla de validación con los parámetros como un arreglo
+        $this->form_validation->set_rules('accion', '', 'required');
+        $this->form_validation->set_rules('id', '', 'required');
+       
+
+        // Define los mensajes de error personalizados
+        $this->form_validation->set_message('required', 'Algo salio  mal  intenta   nuevcamente ');
+     
+
+        // Validación de formulario
+        $msj = array();
+        if ($this->form_validation->run() == false) {
+            $msj = array(
+                'codigo' => 0,
+                'msg' => validation_errors(),
+            );
+        } else {
+            $accion = $this->input->post('accion');
+            $id = $this->input->post('id');
+
+            switch ($accion) {
+                case 'DesactivarReclutamiento':
+                    $campo = 'reclu';
+                    $valor = 0;
+                    break;
+            
+                // You can add more cases here
+                case 'DesactivarPreEmpleo':
+                    $campo = 'pre';
+                    $valor = 0;
+                    break;
+                    // You can add more cases here
+                case 'DesactivarEmpleo':
+                    $campo = 'emp';
+                    $valor = 0;
+                    break;
+                    // You can add more cases here
+                case 'DesactivarExEmpleado':
+                    $campo = 'former';
+                    $valor = 0;
+                    break;
+                    // You can add more cases here
+                case 'ActivarReclutamiento':
+                    $campo = 'reclu';
+                    $valor = 1;
+                    break;
+                    // You can add more cases here
+                case 'ActivarPreEmpleo':
+                    $campo = 'pre';
+                    $valor = 1;
+                    break;
+                    // You can add more cases here
+                case 'ActivarEmpleo':
+                    $campo = 'emp';
+                    $valor = 1;
+                    break;
+                    // You can add more cases here
+                case 'ActivarExEmpleado':
+                    $campo = 'former';
+                    $valor = 1;
+                    break;
+               
+            }
+
+
+
+            $data = array(
+                $campo => $valor,  
+            );
+                /*
+            echo '<pre>';
+            print_r($data);
+            echo '</pre>';
+            echo ' aqui el id'.$id;
+            die();*/
+            // Lógica para activar/desactivar el módulo basado en la acción
+            // Supón que se procesó correctamente
+
+
+            $res = $this->cat_portales_model->editModulos($data, $id);
+            
+           
+
+            if($res == 1){
+                $msj = array(
+                    'codigo' => 1,
+                    'msg' => "Se Cambio el estatus del modulo Correctamente ",
+                );
+
+            }else{
+                $msj = array(
+                    'codigo' => 0,
+                    'msg' => "Error  al intetntar   cambiar  el  estatus  del modulo,  por favor  intentalo mas  tarde =(...",
+                );
+
+            }
+
+            
+            // Responder con JSON
+            echo json_encode(['mensaje' => $msj]);
+        }
+
+    }
 // Funcion para registrar Clientes Julio  2024
     public function guardarDatos()
     {
@@ -679,7 +765,8 @@ class Cat_Portales extends CI_Controller
 
     }
 
-    public function status() {
+    public function status()
+    {
         $msj = array();
         $id_usuario = $this->session->userdata('id');
         $date = date('Y-m-d H:i:s');
@@ -687,35 +774,35 @@ class Cat_Portales extends CI_Controller
         $accion = $this->input->post('accion');
 
         // var_dump("esta es la accion :  ".$accion."  Este es el id del cliente :  ".$idPortal);
-       /* if ($accion == "desactivar") {
-            $cliente = array(
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'status' => 0,
-            );
-            $this->cat_cliente_model->editCliente($idPortal, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
-            $msj = array(
-                'codigo' => 1,
-                'msg' => 'Cliente inactivado correctamente',
-            );
+        /* if ($accion == "desactivar") {
+        $cliente = array(
+        'edicion' => $date,
+        'id_usuario' => $id_usuario,
+        'status' => 0,
+        );
+        $this->cat_cliente_model->editCliente($idPortal, $cliente);
+        $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
+        $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
+        $msj = array(
+        'codigo' => 1,
+        'msg' => 'Cliente inactivado correctamente',
+        );
         }
 
         if ($accion == "activar") {
-            $cliente = array(
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'status' => 1,
-            );
-            $this->cat_cliente_model->editCliente($idPortal, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
-            $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
+        $cliente = array(
+        'edicion' => $date,
+        'id_usuario' => $id_usuario,
+        'status' => 1,
+        );
+        $this->cat_cliente_model->editCliente($idPortal, $cliente);
+        $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
+        $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
 
-            $msj = array(
-                'codigo' => 1,
-                'msg' => 'Cliente activado correctamente',
-            );
+        $msj = array(
+        'codigo' => 1,
+        'msg' => 'Cliente activado correctamente',
+        );
         }*/
         if ($accion == "eliminar") {
 
@@ -751,8 +838,6 @@ class Cat_Portales extends CI_Controller
             );
             $this->cat_portales_model->editPortal($idPortal, $portal);
 
-     
-
             $data_bloqueo = array(
                 'creacion' => $date,
                 'id_usuario' => $id_usuario,
@@ -777,24 +862,22 @@ class Cat_Portales extends CI_Controller
             );
             $this->cat_portales_model->editPortal($idPortal, $portal);
 
-           
-            }
+        }
 
-            $data_bloqueo = array(
-                'creacion' => $date,
-                'id_usuario' => $id_usuario,
-                'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_portal' => $idPortal,
-                'bloqueo_subclientes' => 'NO',
-                'tipo' => 'DESBLOQUEO',
-                'status' => 0,
-            );
-            $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
-            $msj = array(
-                'codigo' => 1,
-                'msg' => 'Cliente desbloqueado correctamente',
-            );
-        
+        $data_bloqueo = array(
+            'creacion' => $date,
+            'id_usuario' => $id_usuario,
+            'descripcion' => $this->input->post('opcion_descripcion'),
+            'id_portal' => $idPortal,
+            'bloqueo_subclientes' => 'NO',
+            'tipo' => 'DESBLOQUEO',
+            'status' => 0,
+        );
+        $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
+        $msj = array(
+            'codigo' => 1,
+            'msg' => 'Cliente desbloqueado correctamente',
+        );
 
         echo json_encode($msj);
     }
@@ -922,8 +1005,7 @@ class Cat_Portales extends CI_Controller
     {
 
         $idPortal = $this->input->post('idPortal');
-       
-      
+
         // var_dump("Este  es el id del cliente: ".$id_cliente."Este  es el id del portal: ".$idPortal);
         $res = $this->cat_portales_model->getAccesosPortalModal($idPortal);
         if ($res) {

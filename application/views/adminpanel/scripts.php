@@ -27,8 +27,27 @@
 
   
   <script>
-    
-	  const url_psicometrias = '<?php echo base_url(); ?>_psicometria/';
+     $(document).ready(function() {
+        // Obtener la URL actual
+        var currentUrl = window.location.href;
+
+        // Iterar sobre cada botón
+        $('.custom-btn').each(function() {
+            // Comparar la URL del botón con la URL actual
+            if (this.href === currentUrl) {
+                $(this).addClass('active'); // Añadir clase 'active' si coincide
+            }
+        });
+
+        // Manejo de clics para cambiar el estado del botón activo
+        $('.custom-btn').on('click', function() {
+            // Remover la clase 'active' de todos los botones
+            $('.custom-btn').removeClass('active');
+            // Añadir la clase 'active' al botón clicado
+            $(this).addClass('active');
+        });
+    });
+	  //const url_psicometrias = '<?php echo base_url(); ?>_psicometria/';
 
     //* Cierre de sesion
     function finishSession(){

@@ -225,19 +225,10 @@ class Candidato_Estudio extends CI_Controller{
     $this->form_validation->set_rules('mayor_estudios_candidato', 'Nivel escolar del Candidato', 'required|trim');
     $this->form_validation->set_rules('periodo_candidato', 'Periodo del Candidato', 'required|trim');
     $this->form_validation->set_rules('escuela_candidato', 'Escuela del Candidato', 'required|trim');
-    $this->form_validation->set_rules('ciudad_candidato', 'Ciudad del Candidato', 'required|trim');
-    $this->form_validation->set_rules('certificado_candidato', 'Certificado del Candidato', 'required|trim');
-    $this->form_validation->set_rules('mayor_estudios_analista', 'Nivel escolar revisado por Analista', 'required|trim');
-    $this->form_validation->set_rules('periodo_analista', 'Periodo revisado por Analista', 'required|trim');
-    $this->form_validation->set_rules('escuela_analista', 'Escuela revisado por Analista', 'required|trim');
-    $this->form_validation->set_rules('ciudad_analista', 'Ciudad revisado por Analista', 'required|trim');
-    $this->form_validation->set_rules('certificado_analista', 'Certificado obtenido revisado por Analista', 'required|trim');
-    $this->form_validation->set_rules('comentarios', 'Comentarios de la analista', 'required|trim');
+  
 
     $this->form_validation->set_message('required','El campo {field} es obligatorio');
-    $this->form_validation->set_message('max_length','El campo {field} debe tener máximo {param} carácteres');
-    $this->form_validation->set_message('alpha','El campo {field} debe contener solo carácteres alfabéticos y sin acentos');
-    $this->form_validation->set_message('numeric','El campo {field} debe ser numérico');
+    
 
 
     $msj = array();
@@ -254,62 +245,7 @@ class Candidato_Estudio extends CI_Controller{
       $id_usuario = $this->session->userdata('id');
 
       $hayId = $this->candidato_estudio_model->checkMayor($id_candidato);
-      if($hayId > 0){
-        $candidato = array(
-          'edicion' => $date,
-          'id_usuario' => $id_usuario,
-          'id_grado_estudio' => $this->input->post('mayor_estudios_candidato'),
-          'estudios_periodo' => $this->input->post('periodo_candidato'),
-          'estudios_escuela' => $this->input->post('escuela_candidato'),
-          'estudios_ciudad' => $this->input->post('ciudad_candidato'),
-          'estudios_certificado' => $this->input->post('certificado_candidato')
-        );
-        $this->candidato_model->editarCandidato($candidato, $id_candidato);
-        $verificacion = array(
-          'edicion' => $date,
-          'id_usuario' => $id_usuario,
-          'id_tipo_studies' => $this->input->post('mayor_estudios_analista'),
-          'periodo' => $this->input->post('periodo_analista'),
-          'escuela' => $this->input->post('escuela_analista'),
-          'ciudad' => $this->input->post('ciudad_analista'),
-          'certificado' => $this->input->post('certificado_analista'),
-          'comentarios' => $this->input->post('comentarios')
-        );
-        $this->candidato_estudio_model->editMayor($verificacion, $id_candidato);
-        $msj = array(
-          'codigo' => 1,
-          'msg' => 'success'
-        );
-      }
-      else{
-        $candidato = array(
-          'edicion' => $date,
-          'id_usuario' => $id_usuario,
-          'id_grado_estudio' => $this->input->post('mayor_estudios_candidato'),
-          'estudios_periodo' => $this->input->post('periodo_candidato'),
-          'estudios_escuela' => $this->input->post('escuela_candidato'),
-          'estudios_ciudad' => $this->input->post('ciudad_candidato'),
-          'estudios_certificado' => $this->input->post('certificado_candidato')
-        );
-        $this->candidato_model->editarCandidato($candidato, $id_candidato);
-        $verificacion = array(
-          'creacion' => $date,
-          'edicion' => $date,
-          'id_usuario' => $id_usuario,
-          'id_candidato' => $id_candidato,
-          'id_tipo_studies' => $this->input->post('mayor_estudios_analista'),
-          'periodo' => $this->input->post('periodo_analista'),
-          'escuela' => $this->input->post('escuela_analista'),
-          'ciudad' => $this->input->post('ciudad_analista'),
-          'certificado' => $this->input->post('certificado_analista'),
-          'comentarios' => $this->input->post('comentarios')
-        );
-        $this->candidato_estudio_model->addMayor($verificacion);
-        $msj = array(
-          'codigo' => 1,
-          'msg' => 'success'
-        );
-      }
+      
     }
     echo json_encode($msj);
   }

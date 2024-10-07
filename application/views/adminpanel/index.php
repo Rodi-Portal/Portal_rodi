@@ -1,183 +1,188 @@
+
+
 <style>
-    .modal-dialog {
-      max-width: 90vw; /* Limitar el ancho máximo al 90% de la ventana */
-      max-height: 90vh; /* Limitar la altura máxima al 90% de la ventana */
-    }
-    .modal-content {
-      max-height: 90vh; /* Limitar la altura máxima al 90% de la ventana */
-      overflow-y: auto; /* Permitir desplazamiento vertical */
-    }
-    .chart-area {
-      height: auto;
-      max-width: 100%; /* Asegurar que el canvas no exceda el ancho del modal */
-    }
-    #chartReclu {
-      max-height: 90vh; /* Establecer un tamaño máximo para el canvas */
-      max-width: 75%;
-    }
-    #chartReclu {
-      max-height: 90vh; /* Establecer un tamaño máximo para el canvas */
-      max-width: 75%;
-    }
+.modal-dialog {
+  max-width: 90vw;
+  /* Limitar el ancho máximo al 90% de la ventana */
+  max-height: 90vh;
+  /* Limitar la altura máxima al 90% de la ventana */
+}
 
-    #chartPastel {
-      max-height: 90vh; /* Establecer un tamaño máximo para el canvas */
-      max-width: 75%;
-    }
-  </style>
+.modal-content {
+  max-height: 90vh;
+  /* Limitar la altura máxima al 90% de la ventana */
+  overflow-y: auto;
+  /* Permitir desplazamiento vertical */
+}
+
+.chart-area {
+  height: auto;
+  max-width: 100%;
+  /* Asegurar que el canvas no exceda el ancho del modal */
+}
+
+#chartReclu {
+  max-height: 90vh;
+  /* Establecer un tamaño máximo para el canvas */
+  max-width: 75%;
+}
+
+#chartReclu {
+  max-height: 90vh;
+  /* Establecer un tamaño máximo para el canvas */
+  max-width: 75%;
+}
+
+#chartPastel {
+  max-height: 90vh;
+  /* Establecer un tamaño máximo para el canvas */
+  max-width: 75%;
+}
+</style>
 <!-- Begin Page Content -->
-<div class="container-fluid" id="content-container">
+  
 
-  <!-- Page Heading -->
-  <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-    <h1 id="msg_push"></h1>
-    <!--a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</!--a-->
-  </div>
+    <?php
 
-  <?php 
-
-
-
-
-	//TODO: revisar esta  parte 
-  if($this->session->userdata('idrol') == 6 || $this->session->userdata('idrol') == 1){ 
+    //TODO: revisar esta  parte
+    if ($this->session->userdata('idrol') == 6 || $this->session->userdata('idrol') == 1) {
     $today = date('Y-m-d');
     ?>
-  <div class="row">
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-success shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
-								 ?></div>
-              <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
+    <div class="row">
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
+    ?></div>
+                <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-check-circle fa-2x text-success"></i>
+              </div>
             </div>
-            <div class="col-auto">
-              <i class="fas fa-check-circle fa-2x text-success"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1"><?php echo $titulo_dato2; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-info"><?php echo $dato2; ?></div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-check-circle fa-2x text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-danger"><?php echo $dato3; ?></div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-times-circle fa-2x text-danger"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo $titulo_dato4; ?>
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-warning"><?php echo $dato4; ?></div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-user-tie fa-2x text-warning"></i>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-info shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-info text-uppercase mb-1"><?php echo $titulo_dato2; ?></div>
-              <div class="h5 mb-0 font-weight-bold text-info"><?php echo $dato2; ?></div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-check-circle fa-2x text-primary"></i>
+
+
+
+
+
+
+    <div class="row">
+      <!-- Miniatura- General -->
+
+      <div class="col-md-6 d-flex align-items-stretch">
+        <div class="card shadow mb-4 w-100" id="miniChartCard">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Estadística General Area de Reclutamiento
+              <?php echo date('Y'); ?></h6>
+          </div>
+          <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
+            <div class="chart-area" style="position: relative; height: 100%; width: 100%;">
+              <canvas id="chartCandidatosMiniaturaGeneral" style="cursor: pointer; width: 100%;" data-toggle="modal"
+                data-target="#graficaModalGeneral"></canvas>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-danger shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
-              <div class="h5 mb-0 font-weight-bold text-danger"><?php echo $dato3; ?></div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-times-circle fa-2x text-danger"></i>
+      <!-- Miniatura- reclutadores -->
+      <div class="col-md-6 d-flex align-items-stretch">
+        <div class="card shadow mb-4 w-100" id="miniChartCard">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Estadísticas de Reclutadores <?php echo date('Y'); ?></h6>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <canvas id="miniChartReclu" style="cursor: pointer; width: 100%;" data-toggle="modal"
+                data-target="#chartModalReclu"></canvas>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-warning shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo $titulo_dato4; ?></div>
-              <div class="h5 mb-0 font-weight-bold text-warning"><?php echo $dato4; ?></div>
-            </div>
-            <div class="col-auto">
-              <i class="fas fa-user-tie fa-2x text-warning"></i>
+      <!-- Miniatura para abrir el modal Pastel-->
+      <div class="col-md-5 d-flex align-items-stretch">
+        <div class="card shadow mb-4 w-100" id="miniChartCard">
+          <div class="card-header py- d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios de contacto <?php echo date('Y'); ?></h6>
+          </div>
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <!-- Miniatura de la gráfica -->
+            <div>
+              <canvas id="chartPastelMini" style=cursor: pointer;" data-toggle="modal"
+                data-target="#graficaModalPastel"></canvas>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Miniatura para abrir el modal ESE-->
+      <div class="col-md-7 d-flex align-items-stretch">
+        <div class="card shadow mb-4 w-100" id="miniChartCard">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Estadística ESE & DT
+              <?php echo date('Y'); ?></h6>
+          </div>
+          <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
+            <div class="chart-area" style="position: relative; height: 100%; width: 100%;">
+              <canvas id="chartESEMini" style="cursor: pointer; width: 100%;" data-toggle="modal"
+                data-target="#graficaModalESE"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-
-
-
-
-
-
-  <div class="row">
-    <!-- Miniatura- General -->
-
-    <div class="col-md-6 d-flex align-items-stretch">
-  <div class="card shadow mb-4 w-100" id="miniChartCard">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Estadística General Area de Reclutamiento
-        <?php echo date('Y'); ?></h6>
-    </div>
-    <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
-      <div class="chart-area" style="position: relative; height: 100%; width: 100%;">
-        <canvas id="chartCandidatosMiniaturaGeneral" style="cursor: pointer; width: 100%;" data-toggle="modal"
-          data-target="#graficaModalGeneral"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
-    <!-- Miniatura- reclutadores -->
-    <div class="col-md-6 d-flex align-items-stretch">
-      <div class="card shadow mb-4 w-100" id="miniChartCard">
-      <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Estadísticas de Reclutadores <?php echo date('Y'); ?></h6>
-        </div>
-        <div class="card-body">
-          <div class="chart-area">
-            <canvas id="miniChartReclu" style="cursor: pointer; width: 100%;" data-toggle="modal"
-              data-target="#chartModalReclu"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Miniatura para abrir el modal Pastel-->
-    <div class="col-md-5 d-flex align-items-stretch">
-      <div class="card shadow mb-4 w-100" id="miniChartCard">
-        <div class="card-header py- d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Estadistica Medios de contacto <?php echo date('Y'); ?></h6>
-        </div>
-        <div class="card-body d-flex justify-content-center align-items-center">
-          <!-- Miniatura de la gráfica -->
-          <div>
-            <canvas id="chartPastelMini" style=cursor: pointer;" data-toggle="modal"
-              data-target="#graficaModalPastel"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-
-     <!-- Miniatura para abrir el modal ESE-->
-     <div class="col-md-7 d-flex align-items-stretch">
-  <div class="card shadow mb-4 w-100" id="miniChartCard">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-      <h6 class="m-0 font-weight-bold text-primary">Estadística ESE & DT
-        <?php echo date('Y'); ?></h6>
-    </div>
-    <div class="card-body" style="display: flex; align-items: center; justify-content: center;">
-      <div class="chart-area" style="position: relative; height: 100%; width: 100%;">
-            <canvas id="chartESEMini" style="cursor: pointer; width: 100%;" data-toggle="modal"
-          data-target="#graficaModalESE"></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
 </div>
 <div class="modal fade" id="graficaModalGeneral" tabindex="-1" aria-labelledby="graficaModalLabelGeneral"
   aria-hidden="true">
@@ -208,7 +213,7 @@
             <option value="12">Diciembre</option>
           </select>
         </div>
-        <div class="chart-area" >
+        <div class="chart-area">
           <canvas id="chartCandidatosModalGeneral" style="width: 80%;"></canvas>
         </div>
       </div>
@@ -235,7 +240,7 @@
           </div>
           <div class="col-md-3">
             <label for="fechaFin">Fecha de Fin:</label>
-            <input type="date" id="fechaFin" name="fechaFin" class="form-control"  value="<?php echo $today; ?>">
+            <input type="date" id="fechaFin" name="fechaFin" class="form-control" value="<?php echo $today; ?>">
           </div>
           <div class="col-md-6 position-relative">
             <div class="text-center" style="position: absolute; bottom: 0; left: 0; right: 0;">
@@ -243,7 +248,7 @@
             </div>
           </div>
         </div>
-        <div class="row mt-4" >
+        <div class="row mt-4">
           <div class="col-md-12">
             <div class="card shadow mb-4">
               <div class="card-body">
@@ -260,10 +265,10 @@
 </div>
 
 
-</div>
 
- <!-- Modal Grafica Pastel -->
-<div class="modal fade" id="graficaModalPastel" tabindex="-1"  aria-labelledby="chartModalLabel" aria-hidden="true">
+
+<!-- Modal Grafica Pastel -->
+<div class="modal fade" id="graficaModalPastel" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
 
@@ -273,7 +278,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      
+
       <div class="modal-body">
         <div class="row justify-content-center">
           <div class="col-md-3">
@@ -282,7 +287,7 @@
           </div>
           <div class="col-md-3">
             <label for="fechaFin">Fecha de Fin:</label>
-            <input type="date" id="fechaFinPastel" name="fechaFin" class="form-control"  value="<?php echo $today; ?>">
+            <input type="date" id="fechaFinPastel" name="fechaFin" class="form-control" value="<?php echo $today; ?>">
           </div>
           <div class="col-md-6 text-center d-flex align-items-end">
             <button class="btn btn-primary w-100" onclick="cargarDatosPastel()">Actualizar Gráficas</button>
@@ -306,9 +311,9 @@
 </div>
 
 
- <!-- Modal Grafica ESE -->
- <div class="modal fade" id="graficaModalESE" tabindex="-1"  aria-labelledby="chartModalLabel" aria-hidden="true">
- <div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- Modal Grafica ESE -->
+<div class="modal fade" id="graficaModalESE" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="graficaModalLabelGeneral">Estadística ESE & DT</h5>
@@ -333,9 +338,9 @@
             <option value="10">Octubre</option>
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
-            </select>
+          </select>
         </div>
-        <div class="chart-area" >
+        <div class="chart-area">
           <canvas id="chartESE" style="width: 80%;"></canvas>
         </div>
       </div>
@@ -343,12 +348,24 @@
   </div>
 </div>
 
+<div id="seccion2" >
+    <!-- Contenido de Vue para esta sección -->
+    <div id="vue-app-2"></div> <!-- Este div se usará para montar la aplicación Vue -->
+</div>
 
+<div id="seccion3" class="seccion">
+    <!-- Contenido de Vue para esta sección -->
+    <div id="vue-app-3"></div> <!-- Este div se usará para montar la aplicación Vue -->
+</div>
+<div id="seccion3" class="seccion">
+    <!-- Contenido de Vue para esta sección -->
+    <div id="vue-app-4"></div> <!-- Este div se usará para montar la aplicación Vue -->
+</div>
 
 </div>
-<?php 
-  }
-  if($this->session->userdata('idrol') == 2 || $this->session->userdata('idrol') == 9){ ?>
+<?php
+}
+if ($this->session->userdata('idrol') == 2 || $this->session->userdata('idrol') == 9) {?>
 <div class="row">
   <div class="col-12">
     <div class="card shadow mb-4">
@@ -377,20 +394,26 @@
     </div>
   </div>
 </div>
+</div>
 
-<?php 
-  }
+<?php }
 // Verifica el rol del usuario y agrega los datos al conjunto de datos de la gráfica
-if($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6){ ?>
+if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {?>
+
+<!-- Incluye los archivos generados por Vue -->
+
 <script>
 // Grafica  estadisticas   General --------------------------->
 
 $(document).ready(function() {
+
   cargarGraficaGeneral();
   cargarGraficaESE();
   cargarDatosReclutamiento();
   cargarDatosPastel();
+
 });
+
 // Variables globales para almacenar datos
 let datosCard1, datosCard2, datosCard3, datosCard4, datosCard5, datosCard6;
 
@@ -408,7 +431,7 @@ function cargarGraficaGeneral() {
     datosCard3 = datos.map(mes => mes.requisiciones_canceladas);
     datosCard4 = datos.map(mes => mes.aspirantes_proceso);
 
-    
+
     actualizarGraficaGeneral('#chartCandidatosMiniaturaGeneral', datosCard1, datosCard2, datosCard3, datosCard4,
       true);
 
@@ -433,7 +456,8 @@ function cargarGraficaGeneral() {
 function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, datosCard4, esMiniatura, filtroMes =
   'all') {
   const nombresMeses = esMiniatura ? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov',
-    'Dic'] : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+    'Dic'
+  ] : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
     'Noviembre', 'Diciembre'
   ];
 
@@ -525,19 +549,19 @@ function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, 
       maintainAspectRatio: false,
       responsive: true,
       elements: {
-      line: {
-        tension: 0.4, // Ajusta la tensión para redondear las líneas. Valores entre 0 y 1.
-        borderCapStyle: 'round', // Redondea los extremos de las líneas.
-        borderJoinStyle: 'round' // Redondea las uniones de las líneas.
-      },
-      point: {
-        radius: 5, // Ajusta el radio de los puntos en la línea.
-        borderColor: 'white', // Color del borde de los puntos.
-        backgroundColor: (context) => context.dataset.borderColor, // Color de fondo de los puntos.
-        borderWidth: 2, // Ancho del borde de los puntos.
-        hoverRadius: 7 // Radio de los puntos al pasar el mouse.
+        line: {
+          tension: 0.4, // Ajusta la tensión para redondear las líneas. Valores entre 0 y 1.
+          borderCapStyle: 'round', // Redondea los extremos de las líneas.
+          borderJoinStyle: 'round' // Redondea las uniones de las líneas.
+        },
+        point: {
+          radius: 5, // Ajusta el radio de los puntos en la línea.
+          borderColor: 'white', // Color del borde de los puntos.
+          backgroundColor: (context) => context.dataset.borderColor, // Color de fondo de los puntos.
+          borderWidth: 2, // Ancho del borde de los puntos.
+          hoverRadius: 7 // Radio de los puntos al pasar el mouse.
+        }
       }
-    }
     }
   };
 
@@ -731,7 +755,7 @@ var myChart = new Chart(ctx, {
     ]
   },
   options: {
-    responsive: true ,
+    responsive: true,
     maintainAspectRatio: false,
 
     title: {
@@ -888,7 +912,7 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
   },
   options: {
     responsive: true,
-    maintainAspectRatio: false, 
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
@@ -915,8 +939,8 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
           return percentage;
         },
         font: {
-            size: 15
-          },
+          size: 15
+        },
         color: '#fff',
       }
     }
@@ -928,14 +952,17 @@ var pastelChart = new Chart(document.getElementById('chartPastel').getContext('2
 function generarDatosFalsos() {
   var datosCard5 = [];
   var datosCard6 = [];
-  
+
   // Generar datos falsos para cada mes del año (enero a diciembre)
   /* for (var i = 0; i < 12; i++) {
     datosCard5.push(Math.floor(Math.random() * 100)); // Valores aleatorios entre 0 y 100
     datosCard6.push(Math.floor(Math.random() * 100)); // Valores aleatorios entre 0 y 100
   } */
-  
-  return { datosCard5, datosCard6 };
+
+  return {
+    datosCard5,
+    datosCard6
+  };
 }
 
 function cargarGraficaESE() {
@@ -962,13 +989,14 @@ function actualizarGraficaESE(canvasID, datosCard5, datosCard6, responsive) {
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-      datasets: [
-        {
+      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+        'Noviembre', 'Diciembre'
+      ],
+      datasets: [{
           label: 'Requisiciones en Proceso',
           data: datosCard5,
           backgroundColor: 'rgba(255, 99, 132, 0.6)'
-          
+
         },
         {
           label: 'Requisiciones Finalizadas',
@@ -985,8 +1013,11 @@ function actualizarGraficaESE(canvasID, datosCard5, datosCard6, responsive) {
 }
 
 function actualizarGraficaESE(canvasID, datosCard5, datosCard6, esMiniatura, filtroMes = 'all') {
-  const nombresMeses = esMiniatura ? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'] : 
-  ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const nombresMeses = esMiniatura ? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov',
+    'Dic'
+  ] : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
+    'Noviembre', 'Diciembre'
+  ];
 
   let labels, dataCard5Filtered, dataCard6Filtered;
 
@@ -1008,73 +1039,73 @@ function actualizarGraficaESE(canvasID, datosCard5, datosCard6, esMiniatura, fil
     labels: labels,
     datasets: [{
       label: 'Socioeconómicos  ',
-      
+
       borderColor: 'rgba(92, 184, 92, 1)',
       backgroundColor: 'rgba(92, 184, 92, 0.5)',
       borderWidth: 2,
-    
+
       data: dataCard5Filtered,
     }, {
       label: 'Drug Test',
-    
+
       borderColor: 'rgba(54, 162, 235, 1)',
       backgroundColor: 'rgba(54, 162, 235, 0.6)',
       borderWidth: 3,
-     
+
       data: dataCard6Filtered,
     }]
   };
 
   const config = {
-  plugins: [ChartDataLabels],
-  type: filtroMes === 'all' ? 'line' : 'bar',
-  data: data,
-  options: {
-    plugins: {
-      datalabels: {
-        align: 'end',
-        anchor: 'end',
-        backgroundColor: (context) => context.dataset.borderColor,
-        borderRadius: 4,
-        color: 'black',
-        font: {
-          weight: 'bold'
+    plugins: [ChartDataLabels],
+    type: filtroMes === 'all' ? 'line' : 'bar',
+    data: data,
+    options: {
+      plugins: {
+        datalabels: {
+          align: 'end',
+          anchor: 'end',
+          backgroundColor: (context) => context.dataset.borderColor,
+          borderRadius: 4,
+          color: 'black',
+          font: {
+            weight: 'bold'
+          },
+          padding: 3
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            borderColor: 'red'
+          }
         },
-        padding: 3
-      }
-    },
-    scales: {
-      x: {
-        grid: {
-          borderColor: 'red'
+        y: {
+          min: 0,
+          max: maxYValue,
+          ticks: {
+            stepSize: 50
+          }
         }
       },
-      y: {
-        min: 0,
-        max: maxYValue,
-        ticks: {
-          stepSize: 50
+      maintainAspectRatio: false,
+      responsive: true,
+      elements: {
+        line: {
+          tension: 0.4, // Ajusta la tensión para redondear las líneas. Valores entre 0 y 1.
+          borderCapStyle: 'round', // Redondea los extremos de las líneas.
+          borderJoinStyle: 'round' // Redondea las uniones de las líneas.
+        },
+        point: {
+          radius: 5, // Ajusta el radio de los puntos en la línea.
+          borderColor: 'white', // Color del borde de los puntos.
+          backgroundColor: (context) => context.dataset.borderColor, // Color de fondo de los puntos.
+          borderWidth: 2, // Ancho del borde de los puntos.
+          hoverRadius: 7 // Radio de los puntos al pasar el mouse.
         }
-      }
-    },
-    maintainAspectRatio: false,
-    responsive: true,
-    elements: {
-      line: {
-        tension: 0.4, // Ajusta la tensión para redondear las líneas. Valores entre 0 y 1.
-        borderCapStyle: 'round', // Redondea los extremos de las líneas.
-        borderJoinStyle: 'round' // Redondea las uniones de las líneas.
-      },
-      point: {
-        radius: 5, // Ajusta el radio de los puntos en la línea.
-        borderColor: 'white', // Color del borde de los puntos.
-        backgroundColor: (context) => context.dataset.borderColor, // Color de fondo de los puntos.
-        borderWidth: 2, // Ancho del borde de los puntos.
-        hoverRadius: 7 // Radio de los puntos al pasar el mouse.
       }
     }
-  }
-};
+  };
 
   const canvas = document.querySelector(canvasID);
   if (canvas) {
@@ -1105,6 +1136,5 @@ function generarPaleta(numColores) {
   }
   return paleta;
 }
-
 </script>
-<?php } ?>
+<?php }?>
