@@ -1403,7 +1403,7 @@ class Reclutamiento extends CI_Controller
             $result = $this->reclutamiento_model->addRequisicion($id_cliente, $cliente, $domicilios, $generales, $facturacion, $req);
 
             if (!empty($result)) {
-
+                /*
                 if ($notificacion > 0) {
                     // Obtener datos para notificación
                     if ($tipo == 1) {
@@ -1453,11 +1453,11 @@ class Reclutamiento extends CI_Controller
                                 'telefono' => $result2->phone,
                                 'ruta' => 'send-message-comentario-cliente', // Ajusta según sea necesario
                             );
-                            /* echo '<pre>';
+                            // echo '<pre>';
 
-                            print_r($datos_plantilla);
-                            echo '</pre>';
-                            die();*/
+                            //print_r($datos_plantilla);
+                            //echo '</pre>';
+                           // die();
                             $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'mensaje_cliente', $datos_plantilla);
 
                             if ($api_response['codigo'] == 1) {
@@ -1487,7 +1487,7 @@ class Reclutamiento extends CI_Controller
                         'msg' => 'El registro se realizó correctamente. La notificación no fué enviada.',
                     );
                 }
-
+                */
                 $msj = array(
                     'codigo' => 1,
                     'msg' => 'Requisición express registrada correctamente',
@@ -1497,7 +1497,7 @@ class Reclutamiento extends CI_Controller
                     'codigo' => 0,
                     'msg' => 'Error al registrar la requisición',
                 );
-            }
+            } 
         }
         echo json_encode($msj);
     }

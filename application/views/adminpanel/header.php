@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Panel de Control | RODI</title>
 
   <!-- Favicon -->
@@ -198,7 +199,7 @@ if (in_array(5, $submenus)) {?>
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
 $idRol = $this->session->userdata('idrol');
-    if ($idRol == 1) {?>
+    if ($idRol == 1|| $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Admon Account´s</a>
             <?php
 }?>
