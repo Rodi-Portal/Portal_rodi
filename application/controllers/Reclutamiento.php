@@ -816,7 +816,12 @@ class Reclutamiento extends CI_Controller
 
             // Realizar todas las operaciones en una transacción
             $result = $this->reclutamiento_model->registrarMovimiento($datos_accion, $data_aspirante, $data_bolsa, $aspirante->id_bolsa_trabajo, $id_aspirante);
-
+            if($result){
+                $msj = array(
+                    'codigo' => 1,
+                    'msg' => 'Accion registrada  correctamente ',
+                );
+             /*  funcion  para  integrar  whats APP 
             if ($result && $notificacion > 0) {
                 $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspirante($id_aspirante);
 
@@ -851,7 +856,13 @@ class Reclutamiento extends CI_Controller
                     'codigo' => 0,
                     'msg' => 'Error al realizar las operaciones en la base de datos',
                 );
-            }
+            } */
+        }else{
+            $msj = array(
+                'codigo' => 0,
+                'msg' => 'Hubo un problema  se  registro la accion  ',
+            );
+        }
         }
 
         echo json_encode($msj);
