@@ -95,6 +95,10 @@ $(document).ready(function() {
 });
 
 function changeDataTable(url) {
+  if ($.fn.DataTable.isDataTable('#tabla')) {
+    $('#tabla').DataTable().clear().destroy();
+  }
+
   $('#tabla').DataTable({
     "pageLength": 25,
     //"pagingType": "simple",
