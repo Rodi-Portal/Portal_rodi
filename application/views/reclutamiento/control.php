@@ -98,6 +98,7 @@ function changeDataTable(url) {
   if ($.fn.DataTable.isDataTable('#tabla')) {
     $('#tabla').DataTable().clear().destroy();
   }
+  $('#tabla').empty();
 
   $('#tabla').DataTable({
     "pageLength": 25,
