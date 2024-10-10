@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+
+// Esto te mostrará el contenido de $reqs
+
 ?>
 <div class="modal fade" id="nuevoAspiranteModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
@@ -14,61 +17,60 @@ header('Content-Type: text/html; charset=utf-8');
         <form id="formAspirante">
           <div class="col-sm-12 ">
             <label for="buscador">Selecciona una Requisición :</label>
-            <select name="req_asignada" id="req_asignada" class="selectpicker form-control" data-live-search="true"
-              data-style="btn-custom-selectpicker" title="Selecciona" data-live-search="true">
+            <select name="req_asignada" id="req_asignada" class="btn-custom-buscador">
 
               <?php
-  if ($reqs) {
-      foreach ($reqs as $req) {?>
-                <option value="<?php echo $req->id; ?>">
-                  <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-                </option>
-                <?php }
-  } else {?>
-                <option value="">Sin requisiones registradas</option>
-                <?php }?>
-              </select>
+                  if ($reqs) {
+                      foreach ($reqs as $req) {?>
+                                <option value="<?php echo $req->id; ?>">
+                                  <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                                </option>
+                                <?php }
+                  } else {?>
+              <option value="">Sin requisiones registradas</option>
+              <?php }?>
+            </select>
+          </div>
+          <br>
+          <div class="row mb-3">
+            <div class="col-sm-12 col-md-4">
+              <label>Nombre(s) *</label>
+              <input type="text" class="form-control obligado" name="nombre" id="nombre"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
-            <br>
-            <div class="row mb-3">
-              <div class="col-sm-12 col-md-4">
-                <label>Nombre(s) *</label>
-                <input type="text" class="form-control obligado" name="nombre" id="nombre"
-                  onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-              </div>
-              <div class="col-sm-12 col-md-4">
-                <label>Primer apellido *</label>
-                <input type="text" class="form-control obligado" name="paterno" id="paterno"
-                  onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-              </div>
-              <div class="col-sm-12 col-md-4">
-                <label>Segundo apellido</label>
-                <input type="text" class="form-control" name="materno" id="materno"
-                  onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
-              </div>
+            <div class="col-sm-12 col-md-4">
+              <label>Primer apellido *</label>
+              <input type="text" class="form-control obligado" name="paterno" id="paterno"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
-            <div class="row mb-3">
-              <div class="col-12">
-                <label>Localización o domicilio *</label>
-                <textarea class="form-control" name="domicilio" id="domicilio" rows="2"></textarea>
-              </div>
+            <div class="col-sm-12 col-md-4">
+              <label>Segundo apellido</label>
+              <input type="text" class="form-control" name="materno" id="materno"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
-            <div class="row mb-3">
-              <div class="col-sm-12 col-md-4">
-                <label>Área de interés *</label>
-                <input type="text" id="area_interes" name="area_interes" class="form-control">
-              </div>
-              <div class="col-sm-12 col-md-4">
-                <label>Medio de contacto *</label>
-                <select name="medio" id="medio" class="form-control obligado">
+          </div>
+          <div class="row mb-3">
+            <div class="col-12">
+              <label>Localización o domicilio *</label>
+              <textarea class="form-control" name="domicilio" id="domicilio" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-12 col-md-4">
+              <label>Área de interés *</label>
+              <input type="text" id="area_interes" name="area_interes" class="form-control">
+            </div>
+            <div class="col-sm-12 col-md-4">
+              <label>Medio de contacto *</label>
+              <select name="medio" id="medio" class="form-control obligado">
 
-                  <option value="">Selecciona</option>
-                  <?php
-  if ($medios != null) {
-      foreach ($medios as $m) {?>
-                  <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
-                  <?php }
-  }?>
+                <option value="">Selecciona</option>
+                <?php
+if ($medios != null) {
+    foreach ($medios as $m) {?>
+                <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
+                <?php }
+}?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -140,10 +142,10 @@ header('Content-Type: text/html; charset=utf-8');
               <select name="accion_aspirante" id="accion_aspirante" class="form-control obligado">
                 <option value="">Selecciona</option>
                 <?php if ($acciones != null) {
-      foreach ($acciones as $a) {?>
-                  <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
-                  <?php }
-  }?>
+    foreach ($acciones as $a) {?>
+                <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
+                <?php }
+}?>
               </select>
               <br>
             </div>
@@ -196,21 +198,22 @@ header('Content-Type: text/html; charset=utf-8');
         </button>
       </div>
       <div class="modal-body">
+
         <form id="formEstatusReq">
           <div class="row">
             <div class="col-12">
               <label>Requisición *</label>
-              <select name="req_estatus" id="req_estatus" class="selectpicker form-control"
-                data-style="btn-custom-selectpicker" data-live-search="true">
+              <select name="req_estatus" id="req_estatus" class="btn-custom-buscador">
                 <option value="">Selecciona</option>
                 <?php
-  if ($reqs) {
-      foreach ($reqs as $req) {?>
-                  <option value="<?php echo $req->id; ?>">
-                    <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-                  </option>
-                  <?php }
-  }?>
+
+if ($reqs) {
+    foreach ($reqs as $req) {?>
+                <option value="<?php echo $req->id; ?>">
+                  <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                </option>
+                <?php }
+}?>
               </select>
               <br>
             </div>
@@ -262,13 +265,13 @@ header('Content-Type: text/html; charset=utf-8');
             <select name="reactivar_req" id="reactivar_req" class="form-control obligado">
               <option value="">Selecciona</option>
               <?php
-  if ($reqs) {
-      foreach ($reqs as $req) {?>
-                <option value="<?php echo $req->id; ?>">
-                  <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-                </option>
-                <?php }
-  }?>
+if ($reqs) {
+    foreach ($reqs as $req) {?>
+              <option value="<?php echo $req->id; ?>">
+                <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+              </option>
+              <?php }
+}?>
             </select>
             <br>
           </div>
@@ -355,19 +358,19 @@ header('Content-Type: text/html; charset=utf-8');
               </select>
               <br>
             </div>
-         
+
 
 
             <div class="col-4">
               <label>Position*</label>
               <select name="puesto" id="puesto" class="form-control">
-              <option value="0">N/A</option>
+                <option value="0">N/A</option>
               </select>
-              
+
               <br>
             </div>
-           
-           
+
+
 
             <div class="col-4">
               <label>Phone *</label>
@@ -382,14 +385,14 @@ header('Content-Type: text/html; charset=utf-8');
               <label>Country of Residence *</label>
               <select class="form-control" id="pais" name="pais">
                 <?php
-                    if ($paises != null) {
-                        foreach ($paises as $p) {
-                            $default = ($p->nombre == 'México') ? 'selected' : '';?>
-                                    <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
-                                    <?php
-                    }
-                    }
-                    ?>
+if ($paises != null) {
+    foreach ($paises as $p) {
+        $default = ($p->nombre == 'México') ? 'selected' : '';?>
+                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <?php
+}
+}
+?>
               </select>
               <br>
             </div>
@@ -410,7 +413,8 @@ header('Content-Type: text/html; charset=utf-8');
             <div class="col-4">
               <label>Social Security Number (SSN)</label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
-              <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden"
+                maxlength="11">
               <input type="hidden" class="form-control obligado" name="clave" id="clave" maxlength="11">
               <input type="hidden" class="form-control obligado" name="cliente" id="cliente" maxlength="11">
               <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq"
@@ -1397,9 +1401,8 @@ foreach ($paquetes_antidoping as $paq) {?>
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_usuario"></label>
-              <select id="asignar_usuario" class="form-control selectpicker dropup" data-dropup-auto="false"
-                data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona"
-                data-selected-text-format="count > 4" multiple>
+              <select id="asignar_usuario" name ="asignar_usuario" class="btn-custom-buscador" >
+              <option value="">Selecciona</option>
                 <?php
 if (!empty($usuarios_asignacion)) {
     foreach ($usuarios_asignacion as $row) {?>
@@ -1414,8 +1417,8 @@ if (!empty($usuarios_asignacion)) {
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_registro"></label>
-              <select name="asignar_registro" id="asignar_registro" class="form-control selectpicker"
-                data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona" data-size="10">
+              <select name="asignar_registro" id="asignar_registro" class="btn-custom-buscador">
+              <option value="">Selecciona</option>
                 <?php
 if (!empty($registros_asignacion)) {
     foreach ($registros_asignacion as $fila) {?>
@@ -2027,6 +2030,26 @@ $('#ingresoCandidatoModal').on('hidden.bs.modal', function(e) {
   $("#ingresoCandidatoModal input, #ingresoCandidatoModal textarea").val('');
 });
 $(document).ready(function() {
+  $('#req_estatus').select2({
+        placeholder: "Selecciona",
+        allowClear: true,
+        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+    $('#asignar_usuario').select2({
+        placeholder: "Selecciona",
+        allowClear: true,
+        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+    $('#asignar_registro').select2({
+        placeholder: "Selecciona",
+        allowClear: true,
+        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+    $('#req_asignada').select2({
+        placeholder: "Selecciona",
+        allowClear: true,
+        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
   $("#previos").change(function() {
     var previo = $(this).val();
     if (previo != 0) {

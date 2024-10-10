@@ -25,6 +25,8 @@
 
   <!-- Select Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
 
   <!-- Sweetalert 2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
@@ -36,6 +38,11 @@
   <script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
   <script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
+  <!-- Incluir Bootstrap Select JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 
   <!-- Page Level Plugins -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -43,7 +50,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   
   <!-- FullCalendar (Descomentado si se necesita) -->
-  <!--<link href='<?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
+  <!--<link href='< ?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
 
   <!-- Uncomment if Pusher is needed -->
   <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
