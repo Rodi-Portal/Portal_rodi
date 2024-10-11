@@ -4,7 +4,7 @@ function assignToUser(url, view) {
   form += '&label_usuario=' + $('label[for="asignar_usuario"]').text();
   form += '&label_registro=' + $('label[for="asignar_registro"]').text();
   form += '&view=' + view;
-  let selectedRegistro = $('#asignar_registro').selectpicker('val')
+  let selectedRegistro = $('#asignar_registro').val();
   $.ajax({
     url: url,
     method: 'POST',
@@ -27,9 +27,7 @@ function assignToUser(url, view) {
           showConfirmButton: false,
           timer: 2500
         })
-        setTimeout(function(){
-          location.reload()
-        },2500)
+        
       } else {
         Swal.fire({
           icon: 'error',

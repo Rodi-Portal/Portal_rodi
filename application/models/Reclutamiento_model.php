@@ -671,7 +671,7 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as nombre_cliente, CL.clave, CL.id as id_cliente, R.puesto as req_puesto, H.id as idHistorial, R.numero_vacantes")
+            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as nombre_cliente, CL.clave, CL.id as id_cliente, R.puesto , H.id as idHistorial, R.numero_vacantes")
             ->from('requisicion_aspirante as A')
             ->join('requisicion as R', 'R.id = A.id_requisicion')
             ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')

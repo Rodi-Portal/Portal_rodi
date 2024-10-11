@@ -1,29 +1,31 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-  <!-- Page Heading -->
-  <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Requisiciones en Proceso</h1><br>
-    <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="openAddApplicant()">
-      <span class="icon text-white-50">
-        <i class="fas fa-user-plus"></i>
-      </span>
-      <span class="text">Registrar aspirante a Requisición</span>
-    </a>
-    <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#estatusRequisicionModal">
-      <span class="icon text-white-50">
-        <i class="fas fa-exchange-alt"></i>
-      </span>
-      <span class="text">Cambiar estatus de requisición</span>
-    </a>
-    <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
-      style="display: none;">
-      <span class="icon text-white-50">
-        <i class="fas fa-arrow-left"></i>
-      </span>
-      <span class="text">Regresar al listado</span>
-    </a>
-  </div>
+  <section class="content-header">
+    <div class="row align-items-center">
+      <div class="col-sm-12 col-md-6 col-lg-6">
+        <h1 class="titulo_seccion">Job Requisitions in Progress</h1>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-6 d-flex justify-content-end">
+        <button type="button" class="btn btn-primary btn-icon-split mr-2" id="btn_nuevo" onclick="openAddApplicant()">
+          <span class="icon text-white-50">
+            <i class="fas fa-user-plus"></i>
+          </span>
+          <span class="text">Register Candidate for Requisition</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-icon-split" data-toggle="modal"
+          data-target="#estatusRequisicionModal">
+          <span class="icon text-white-50">
+            <i class="fas fa-exchange-alt"></i>
+          </span>
+          <span class="text">Change Requisition Status</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+
 
   <?php echo $modals; ?>
   <div class="loader" style="display: none;"></div>
@@ -36,9 +38,9 @@
 
   <div id="div_requisiciones" class="row">
     <div class="col-6">
-      <label>Selecciona la requisición a mostrar: </label>
+      <label>Select a Requisition to View: </label>
       <select class="form-control" name="opcion_requisicion" id="opcion_requisicion">
-        <option value="">Todas</option>
+        <option value="">All</option>
         <?php
         if ($reqs) {
           foreach ($reqs as $req) { ?>
@@ -131,12 +133,12 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
-          return '#' + full.id_requisicion + ' ' + data;
+          return '#' + full.id_requisicion + ' ' + full.nombre_cliente;
         }
       },
       {
         title: 'Puesto',
-        data: 'req_puesto',
+        data: 'puesto',
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
@@ -151,7 +153,8 @@ function changeDataTable(url) {
         mRender: function(data, type, full) {
           var correo = (full.correo != '') ? full.correo : 'No registrado';
 
-          return '<b>Teléfono: </b>' + data + '<br><b>Correo: </b>' + correo + '<br><b>Medio: </b>' + full
+          return '<b>Teléfono: </b>' + full.telefono + '<br><b>Correo: </b>' + correo + '<br><b>Medio: </b>' +
+            full
             .medio_contacto;
         }
       },
@@ -265,14 +268,12 @@ function changeDataTable(url) {
         }
       }
       $("a#editar_aspirante", row).bind('click', () => {
-
         $("#idAspirante").val(data.id);
         $("#idBolsa").val(data.id_bolsa_trabajo);
 
         var nombre = data.aspirante.split(' ');
 
-        $('#req_asignada').val(data.id_req);
-        $('#req_asignada').selectpicker('refresh');
+        $('#req_asignada').val(data.id_req).trigger('change'); // Reiniciar Select2
         $('#nombre').val(nombre[0]);
         $('#paterno').val(nombre[1]);
         $('#materno').val(nombre.slice(2).join(' '));
@@ -281,17 +282,19 @@ function changeDataTable(url) {
         $('#medio').val(data.medio_contacto);
         $('#telefono').val(data.telefono);
         $('#correo').val(data.correo);
+
         if (data.cv != null) {
           $('#cv_previo').html('<small><b> (CV previo: </b></small><a href="<?php echo base_url(); ?>_docs/' +
             data.cv + '" target="_blank">' + data.cv + '</a>)');
         }
+
         $("#nuevoAspiranteModal").modal('show');
       });
       $('a#accion', row).bind('click', () => {
         $("#idAspirante").val(data.id);
         $(".nombreAspirante").text(data.aspirante);
         $('#idRequisicion').val(data.id_requisicion);
-       // console.log("🚀 ~ $ ~ data:", data)
+        // console.log("🚀 ~ $ ~ data:", data)
 
         $("#nuevaAccionModal").modal('show');
       });
@@ -398,9 +401,11 @@ function changeDataTable(url) {
                   $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] +
                     '</option>');
                 }
-                $('#puesto').selectpicker({
-                  liveSearch: true
-                })
+                $('#puesto').select2({
+                  placeholder: 'Selecciona una opción',
+                  allowClear: true,
+                  // Puedes agregar más opciones según tus necesidades
+                });
               } else {
                 $('#puesto').append('<option value="">No hay puestos registrados</option>');
               }
@@ -408,7 +413,7 @@ function changeDataTable(url) {
           });
         }, 200);
         setTimeout(function() {
-          $('#puesto').selectpicker('val', id_position)
+          $('#puesto').val(id_position).trigger('change');
           $('.loader').fadeOut();
         }, 250);
         $('#registroCandidatoModal').modal('show');
@@ -483,10 +488,11 @@ function addApplicant() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
-      recargarTable();
+
       var data = JSON.parse(res);
       if (data.codigo === 1) {
         $("#nuevoAspiranteModal").modal('hide')
+        recargarTable()
         Swal.fire({
           position: 'center',
           icon: 'success',
@@ -576,19 +582,14 @@ function subirCVReqAspirante() {
       var data = JSON.parse(res);
       if (data.codigo === 1) {
         $("#modalCargaCV").modal('hide');
+        recargarTable()
         Swal.fire({
           position: 'center',
           icon: 'success',
           title: 'CV subido correctamente',
           showConfirmButton: false,
           timer: 2500
-        }).
-        then(function() {
-          // Recargar la página después de 2500 milisegundos (2.5 segundos)
-          setTimeout(function() {
-            location.reload();
-          }, 1);
-        });
+        })
       } else {
         Swal.fire({
           icon: 'error',
@@ -635,7 +636,7 @@ function guardarAccion() {
           showConfirmButton: false,
           timer: 3000
         })
-          console.log("🚀 ~ guardarAccion ~ data.msg:", data.msg)
+        console.log("🚀 ~ guardarAccion ~ data.msg:", data.msg)
       } else {
         Swal.fire({
           icon: 'error',
@@ -672,6 +673,7 @@ function guardarEstatusRequisicion() {
       var data = JSON.parse(res);
       if (data.codigo === 1) {
         $("#estatusRequisicionModal").modal('hide')
+        recargarTable()
         Swal.fire({
           position: 'center',
           icon: 'success',
@@ -679,9 +681,6 @@ function guardarEstatusRequisicion() {
           showConfirmButton: false,
           timer: 2500
         })
-        setTimeout(() => {
-          location.reload();
-        }, 2500);
       } else {
         Swal.fire({
           icon: 'error',
@@ -704,13 +703,13 @@ function registrarCandidato() {
   datos.append('celular', $("#celular_registro").val());
   datos.append('subcliente', $("#subcliente").val());
   datos.append('opcion', $('#opcion_registro').val());
-  datos.append('puesto', $('#puesto').selectpicker('val'));
+  datos.append('puesto', $('#puesto').val());
   datos.append('pais', $("#pais").val());
   datos.append('region', $("#region").val());
 
   datos.append('previo', $("#previos").val());
   datos.append('proyecto', $("#proyecto_registro").val());
-  
+
   datos.append('examen', $("#examen_registro").val());
   datos.append('medico', $("#examen_medico").val());
 
@@ -726,7 +725,7 @@ function registrarCandidato() {
   datos.append('usuario', 1);
   datos.append('id_requisicion', $("#idRequisicion").val());
   datos.append('id_bolsa_trabajo', $("#idBolsaTrabajo").val());
-  
+
   $.ajax({
     url: '<?php echo base_url('Client/registrar'); ?>',
     type: 'POST',
@@ -881,18 +880,18 @@ function updateAdmission(section) {
       var dato = JSON.parse(res);
       if (dato.codigo === 1) {
         getIngresoCandidato(id_aspirante)
+
+        $("#ingresoCandidatoModal").modal('hide');
+
+        recargarTable()
         Swal.fire({
           position: 'center',
           icon: 'success',
           title: dato.msg,
           showConfirmButton: false,
           timer: 3000
-        }).then(function() {
-          // Recargar la página después de 2500 milisegundos (2.5 segundos)
-          setTimeout(function() {
-            location.reload();
-          }, 1);
-        });
+        })
+
       } else {
         Swal.fire({
           icon: 'error',

@@ -1,99 +1,52 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
   <section class="content-header">
-    <div class="row">
-      <div class="col-sm-12 col-md-3 col-lg-3 mb-1 d-flex align-items-center justify-content-center">
-        <h2 class="titulo_seccion">Bolsa de Trabajo</h2>
+    <div class="row align-items-center">
+      <div class="col-sm-12 col-md-3 col-lg-3 mb-1 d-flex align-items-center">
+        <h2 class="titulo_seccion">Job Board</h2>
       </div>
-      <div class="col-sm-12 col-md-9 col-lg-9 mb-1 text-right">
-        <!-- Columna para los botones ajustable en tamaño y alineada a la derecha -->
-        <div class="d-md-none mb-3"></div> <!-- Espacio entre el título y los botones en pantallas pequeñas -->
-        <div class="btn-group-vertical d-md-none" role="group" aria-label="Botones en pantallas pequeñas">
-          <button type="button" id="btnDescargarFormato" class="btn btn-info btn-icon-split"
-            onclick="descargarFormato()">
+      <div class="col-sm-12 col-md-9 col-lg-9 mb-1 d-flex justify-content-end">
+        <div class="btn-group d-none d-md-flex" role="group" aria-label="Buttons for large screens">
+          <button type="button" id="btnDownloadTemplate" class="btn btn-info btn-icon-split"
+            onclick="downloadTemplate()">
             <span class="icon text-white-50">
               <i class="fas fa-download"></i>
             </span>
-            <span class="text">Descargar formato</span>
+            <span class="text">Download Template</span>
           </button>
-          <div class="d-md-none mb-3"></div>
-
-          <button type="button" id="btnSubirAspirantes" class="btn btn-success btn-icon-split"
+          <button type="button" id="btnUploadCandidates" class="btn btn-success btn-icon-split"
             onclick="openUploadCSV()">
             <span class="icon text-white-50">
               <i class="fas fa-upload"></i>
             </span>
-            <span class="text">Subir  aspirantes      </span> <!-- Agrega un salto de línea -->
+            <span class="text">Upload Candidates</span>
           </button>
-          <div class="d-md-none mb-3"></div>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-success btn-icon-split"
-            onclick="nuevaRequisicion()">
+          <button type="button" id="btnNewRequisition" class="btn btn-navy btn-icon-split" onclick="nuevaRequisicion()">
             <span class="icon text-white-50">
               <i class="far fa-file-alt"></i>
             </span>
-            <span class="text">Nueva requisición</span>
+            <span class="text">New Requisition</span>
           </button>
-          <div class="d-md-none mb-3"></div>
-
           <?php 
-        if($this->session->userdata('idrol') == 4){
-          $disabled = 'disabled'; $textTitle = 'title="No posees permiso para esta acción"';
-        }else{
-          $disabled = ''; $textTitle = '';
-        } ?>
-          <button type="button" id="btnAsignarAspirante" class="btn btn-navy btn-icon-split"
-            onclick="openAssignToUser()" <?php echo $disabled; ?>>
+                if ($this->session->userdata('idrol') == 4) {
+                    $disabled = 'disabled'; 
+                    $textTitle = 'title="You do not have permission for this action"';
+                } else {
+                    $disabled = ''; 
+                    $textTitle = '';
+                } ?>
+          <button type="button" id="btnAssignCandidate" class="btn btn-navy btn-icon-split" onclick="openAssignToUser()"
+            <?php echo $disabled; ?>>
             <span class="icon text-white-50">
               <i class="fas fa-user-edit"></i>
             </span>
-            <span class="text">Asignar aspirante</span>
+            <span class="text">Assign Candidate</span>
           </button>
-          <div class="d-md-none mb-3"></div>
-        </div>
-        <div class="btn-group d-none d-md-block" role="group" aria-label="Botones en pantallas grandes">
-          <button type="button" id="btnDescargarFormato" class="btn btn-info btn-icon-split"
-            onclick="descargarFormato()">
-            <span class="icon text-white-50">
-              <i class="fas fa-download"></i>
-            </span>
-            <span class="text">Descargar formato</span>
-          </button>
-          <div class="d-md-none mb-3"></div>
-          <button type="button" id="btnSubirAspirantes" class="btn btn-success btn-icon-split"
-            onclick="openUploadCSV()">
-            <span class="icon text-white-50">
-              <i class="fas fa-upload"></i>
-            </span>
-            <span class="text">Subir aspirantes</span> <!-- Agrega un salto de línea -->
-          </button>
-          <div class="d-md-none mb-3"></div>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-navy btn-icon-split"
-            onclick="nuevaRequisicion()">
-            <span class="icon text-white-50">
-              <i class="far fa-file-alt"></i>
-            </span>
-            <span class="text">Nueva Requisición</span>
-          </button>
-          <div class="d-md-none mb-3"></div>
-          <?php 
-        if($this->session->userdata('idrol') == 4){
-          $disabled = 'disabled'; $textTitle = 'title="No posees permiso para esta acción"';
-        }else{
-          $disabled = ''; $textTitle = '';
-        } ?>
-          <button type="button" id="btnAsignarAspirante" class="btn btn-navy btn-icon-split"
-            onclick="openAssignToUser()" <?php echo $disabled; ?>>
-            <span class="icon text-white-50">
-              <i class="fas fa-user-edit"></i>
-            </span>
-            <span class="text">Asignar aspirante</span>
-          </button>
-          <div class="d-md-none mb-3"></div>
         </div>
       </div>
-      
     </div>
   </section>
+
 
   <?php echo $modals; ?>
   <div class="loader" style="display: none;"></div>
@@ -103,30 +56,29 @@
 
   <div class="row mt-3 mb-5" id="divFiltros">
     <div class="col-sm-12 col-md-3 col-lg-3 mb-1">
-      <label for="ordenar">Ordenar:</label>
+      <label for="ordenar">Sort by:</label>
       <select name="ordenar" id="ordenar" class="form-control">
-        <option value="">Selecciona</option>
-        <option value="ascending">De la más antigua a la más actual</option>
-        <option value="descending">De la más actual a la más antigua</option>
+        <option value="">Select</option>
+        <option value="ascending">From oldest to newest</option>
+        <option value="descending">From newest to oldest</option>
       </select>
     </div>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-      <label for="filtrar">Filtrar por:</label>
+      <label for="filtrar">Filter by:</label>
       <select name="filtrar" id="filtrar" class="form-control">
-        <option value="">Selecciona</option>
-        <option value="En espera">Estatus en espera</option>
-        <option value="En proceso">Estatus en proceso de reclutamiento</option>
-        <option value="Aceptado">Estatus aceptado para iniciar ESE</option>
-        <option value="ESE">Estatus ESE en proceso</option>
-        <option value="Bloqueado">Estatus bloqueado</option>
+        <option value="">Select</option>
+        <option value="En espera">Status Pending</option>
+        <option value="En proceso">Status In Recruitment Process</option>
+        <option value="Aceptado">Status Accepted to Start ESE</option>
+        <option value="ESE">Status ESE In Progress</option>
+        <option value="Bloqueado">Status Blocked</option>
       </select>
     </div>
     <?php $isDisabled = ($this->session->userdata('idrol') == 4)? 'isDisabled' : ''; ?>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-      <label for="asignar">Asignado a:</label>
-      <select name="asignar" id="asignar" class="selectpicker form-control <?php echo $isDisabled ?>"
-        data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona">
-        <option value="0">VER TODAS</option>
+      <label for="asignar">Assigned to:</label>
+      <select name="asignar" id="asignar" class="form-control <?php echo $isDisabled ?>" title="Select">
+        <option value="0">All</option>
         <?php
         if ($usuarios_asignacion) {
           foreach ($usuarios_asignacion as $row) { ?>
@@ -134,15 +86,14 @@
         <?php 
           }
         }else{ ?>
-        <option value="">Sin usuarios registrados</option>
+        <option value="">No registered users</option>
         <?php } ?>
       </select>
     </div>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-      <label for="area_interes_search">Por área de interés:</label>
-      <select name="area_interes_search" id="area_interes_search" class="selectpicker form-control"
-        data-live-search="true" data-style="btn-custom-selectpicker" title="Selecciona">
-        <option value="">VER TODAS</option>
+      <label for="area_interes_search">By interest area:</label>
+      <select name="area_interes_search" id="area_interes_search" class="form-control">
+        <option value="">All</option>
         <?php
         if ($areas_interes) {
           foreach ($areas_interes as $row) { ?>
@@ -150,15 +101,14 @@
         <?php 
           }
         }else{ ?>
-        <option value="">Sin áreas de interés registrados</option>
+        <option value="">No registered areas of interest</option>
         <?php } ?>
       </select>
     </div>
     <div class="col-sm-12 col-md-3 col-lg-3 mb-1">
-      <label for="buscador">Buscar:</label>
-      <select name="buscador" id="buscador" class="selectpicker form-control" data-live-search="true"
-        data-style="btn-custom-selectpicker" title="Selecciona">
-        <option value="0">VER TODAS</option>
+      <label for="buscador">Search:</label>
+      <select name="buscador" id="buscador" class="form-control">
+        <option value="0">Find</option>
         <?php
         if ($registros_asignacion) {
           foreach ($registros_asignacion as $row) { ?>
@@ -166,7 +116,7 @@
         <?php 
           }
         }else{ ?>
-        <option value="">Sin aspirantes registrados</option>
+        <option value="">No registered applicants</option>
         <?php } ?>
       </select>
     </div>
@@ -248,9 +198,9 @@
             <b><?php echo '#'.$r->id.' '.$r->nombreCompleto; ?></b>
           </div>
           <div class="card-body">
-            <h5 class="card-title">Área de interés: <br><b><?php echo $area_interes; ?></b></h5>
-            <h5 class="card-text">Localización: <br><b><?php echo $domicilio; ?></b></h5>
-            <h5 class="card-text">Teléfono: <b><?php echo $r->telefono; ?></b></h5>
+            <h5 class="card-title">Interest Area: <br><b><?php echo $area_interes; ?></b></h5>
+            <h5 class="card-text">Location: <br><b><?php echo $domicilio; ?></b></h5>
+            <h5 class="card-text">Phone: <b><?php echo $r->telefono; ?></b></h5>
             <div class="alert alert-secondary text-center mt-3"><?php echo $text_estatus ?></div>
             <div class="row">
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
@@ -305,7 +255,7 @@
 				}
 				echo '</div>';
 			}else{  ?>
-      <h3 class="text-center">No hay aspirantes registrados actualmente.</h3>
+      <h3 class="text-center">There are currently no registered applicants.</h3>
       <?php 
       } ?>
     </div>
@@ -315,7 +265,7 @@
         <div class="card-header">
           <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
-              <a class="nav-link active" id="link_personales" href="javascript:void(0)">Detalles</a>
+              <a class="nav-link active" id="link_personales" href="javascript:void(0)">Details</a>
             </li>
           </ul>
         </div>
@@ -356,12 +306,12 @@
     <div id="seccionEditarBolsa" class="hidden">
       <div class="alert alert-info text-center" id="nombreBolsa"></div>
       <div class="card mb-5">
-        <h5 class="card-header text-center seccion">Datos Personales</h5>
+        <h5 class="card-header text-center seccion">Personal Data</h5>
         <div class="card-body">
           <form id="formDatosPersonales">
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Nombre(s) *</label>
+                <label>Name(s) *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -371,7 +321,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Primer apellido *</label>
+                <label>Last name*</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -381,7 +331,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Segundo apellido</label>
+                <label>Second Last name</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -393,7 +343,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
-                <label>Domicilio *</label>
+                <label>Address *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-home"></i></span>
@@ -402,7 +352,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Fecha de nacimiento *</label>
+                <label>Date of birth *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-calendar"></i></span>
@@ -413,7 +363,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-                <label>Teléfono *</label>
+                <label>Phone *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
@@ -422,7 +372,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Nacionalidad *</label>
+                <label>Nationality *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-globe"></i></span>
@@ -431,13 +381,13 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Estado civil *</label>
+                <label>Marital status*</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                   </div>
                   <select class="custom-select" id="civil_update" name="civil_update">
-                    <option value="">Selecciona</option>
+                    <option value="">Select</option>
                     <?php 
                   if($civiles){
                     foreach($civiles as $row){ ?>
@@ -445,7 +395,7 @@
                     <?php 
                     }
                   }else{ ?>
-                    <option value="">Sin registro de estados civiles</option>
+                    <option value="">Without marital status records.</option>
                     <?php 
                   } ?>
                   </select>
@@ -454,7 +404,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
-                <label>Personas que dependan del aspirante *</label>
+                <label>Dependents of the applicant. *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
@@ -463,13 +413,13 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Grado máximo de estudios *</label>
+                <label>Highest level of education. *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                   </div>
                   <select class="custom-select" id="escolaridad_update" name="escolaridad_update">
-                    <option value="">Selecciona</option>
+                    <option value="">Select</option>
                     <?php 
                   if($grados){
                     foreach($grados as $row){ ?>
@@ -477,7 +427,7 @@
                     <?php 
                     }
                   }else{ ?>
-                    <option value="">Sin registro de escolaridades</option>
+                    <option value="">No education records available.</option>
                     <?php 
                   } ?>
                   </select>
@@ -485,17 +435,16 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Guardar
-            Datos Personales</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Save Personal Information</button>
         </div>
       </div>
       <div class="card mb-5">
-        <h5 class="card-header text-center seccion">Salud y vida social</h5>
+        <h5 class="card-header text-center seccion">Health and Social Life</h5>
         <div class="card-body">
           <form id="formSalud">
             <div class="row">
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>¿Cómo es su estado de salud actual? *</label>
+                <label>What is your current health status? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
@@ -504,7 +453,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>¿Padece de alguna enfermedad crónica? *</label>
+                <label>Do you suffer from any chronic illness? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
@@ -515,7 +464,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>¿Practica algún deporte? *</label>
+                <label>Do you practice any sports? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -524,7 +473,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>¿Cuáles son sus metas en la vida? *</label>
+                <label>What are your goals in life? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -534,17 +483,16 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('salud')">Guardar
-            Información de Salud y Vida Social</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('salud')">Save Health and Social Life Information</button>
         </div>
       </div>
       <div class="card mb-5">
-        <h5 class="card-header text-center seccion">Conocimientos y Habilidades</h5>
+        <h5 class="card-header text-center seccion">Knowledge and Skills</h5>
         <div class="card-body">
           <form id="formConocimientos">
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Idiomas que domina *</label>
+                <label>Languages Spoken *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="far fa-clock"></i></span>
@@ -553,7 +501,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Máquinas de oficina o taller que maneje *</label>
+                <label>Office or Workshop Equipment Operated *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="far fa-clock"></i></span>
@@ -562,7 +510,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Software que conoce *</label>
+                <label>Software Proficient In *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="far fa-clock"></i></span>
@@ -573,22 +521,22 @@
             </div>
           </form>
           <button type="button" class="btn btn-success btn-block text-lg"
-            onclick="updateApplicant('conocimiento')">Guardar Información de Conocimientos y Habilidades</button>
+            onclick="updateApplicant('conocimiento')">Save Knowledge and Skills Information</button>
         </div>
       </div>
       <div class="card mb-5">
-        <h5 class="card-header text-center seccion">Intereses</h5>
+        <h5 class="card-header text-center seccion">Interests</h5>
         <div class="card-body">
           <form id="formIntereses">
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>¿Cómo se enteró de RODI? *</label>
+                <label>How did you hear about TalentSafe? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
                   </div>
                   <select class="custom-select" id="medio_contacto_update" name="medio_contacto_update">
-                    <option value="">Selecciona</option>
+                    <option value="">Select</option>
                     <?php 
                   if($medios){
                     foreach($medios as $row){ ?>
@@ -596,14 +544,14 @@
                     <?php 
                     }
                   }else{ ?>
-                    <option value="">Sin registro de medios de contacto</option>
+                    <option value="">No records of contact sources.</option>
                     <?php 
                   } ?>
                   </select>
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>¿Qué área es de su interés? *</label>
+                <label>What area are you interested in? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
@@ -612,7 +560,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>¿Qué sueldo desea percibir? *</label>
+                <label>What salary do you wish to receive? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -623,7 +571,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>¿Tiene otros ingresos? *</label>
+                <label>Do you have any additional income? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
@@ -632,7 +580,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>¿Tiene disponibilidad para viajar? *</label>
+                <label>Are you available to travel? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -641,7 +589,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>¿Fecha de disponibilidad para empezar? *</label>
+                <label>What is your availability date to start? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -651,8 +599,7 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('intereses')">Guardar
-            Intereses</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('intereses')">Save Interests</button>
         </div>
       </div>
     </div>
@@ -661,6 +608,32 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
   <script>
   $(document).ready(function() {
+    $('#ordenar').select2({
+      placeholder: "Select",
+      allowClear: false,
+      width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+    $('#filtrar').select2({
+      placeholder: "Select",
+      allowClear: false,
+      width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+    $('#asignar').select2({
+      placeholder: "Select",
+      allowClear: false,
+      width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+    $('#area_interes_search').select2({
+      placeholder: "Select",
+      allowClear: false,
+      width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+    $('#buscador').select2({
+      placeholder: "Search",
+      allowClear: false,
+      width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+    });
+
     let url_applicants = '<?php echo base_url('Reclutamiento/bolsa'); ?>';
     let oldURL = url_applicants;
 
@@ -668,32 +641,42 @@
     let filterOption = '<?php echo $filter ?>';
     let assignOption = '<?php echo $assign ?>';
     let areaOption = '<?php echo $area ?>';
-    $('#ordenar').val(sortOption).trigger('change');
-    $('#filtrar').val(filterOption).trigger('change');
-    $('#asignar').val(assignOption).trigger('change');
-    $('#area_interes_search').val(areaOption).trigger('change');
-
     $('#ordenar, #filtrar, #asignar, #area_interes_search').change(function() {
-      let ordenar = $('#ordenar').val() != '' ? $('#ordenar').val() : 'none';
-      let filtrar = $('#filtrar').val() != '' ? $('#filtrar').val() : 'none';
-      let asignar = $('#asignar').val() != 0 ? $('#asignar').val() : 0;
-      let area = $('#area_interes_search').val() != 0 ? $('#area_interes_search').val() : 'none';
+      let ordenar = $('#ordenar').val() || 'none';
+       let filtrar = $('#filtrar').val() != '' ? $('#filtrar').val() : 'none'
+      let asignar = $('#asignar').val() || 0;
+      let area = $('#area_interes_search').val() || 'none';
 
+      // Construir la nueva URL
       var newUrl = oldURL + '?' + 'sort=' + ordenar + '&filter=' + filtrar + '&user=' + asignar + '&area=' +
-        area
-      $(location).attr('href', newUrl);
-      return false;
+        area;
 
-    })
+      // Realizar la petición AJAX
+      $.get(newUrl, function(data) {
+        $('#module-content').html(data);
+      }).fail(function() {
+        $('#module-content').html('<p>Error al cargar el contenido.</p>');
+      });
+
+      return false;
+    });
+
+    // Inicializa los filtros
+   
     $('#buscador').change(function() {
       var opcion = $(this).val();
-      var oldURL = url_applicants;
-      if (history.pushState) {
-        var newUrl = oldURL + "?applicant=" + opcion;
-        $(location).attr('href', newUrl);
+      if (opcion) {
+        var newUrl = url_applicants + "?applicant=" + opcion;
+
+        $.get(newUrl, function(data) {
+          $('#module-content').html(data);
+        }).fail(function() {
+          $('#module-content').html('<p>Error al cargar el contenido.</p>');
+        });
       }
-      return false;
-    })
+    });
+
+
 
     $('.nav-link').click(function() {
       $('.nav-link').removeClass('active');
@@ -880,7 +863,7 @@
     $('#materno').val(materno);
     $('#telefono').val(telefono);
     $('#medio').val(medio);
-   
+
     $('#area_interes').val(area_interes);
     $('#domicilio').val(domicilio);
     // Limpiar el select antes de agregar nuevas opciones
@@ -906,8 +889,7 @@
               text: optionText
             }));
           }
-          // Actualizar el selectpicker después de agregar las opciones
-          $('#req_asignada').selectpicker('refresh');
+          
         } else {
           Swal.fire({
             icon: 'error',
@@ -1137,7 +1119,7 @@
     });
   }
 
-  
+
 
   function nuevaRequisicion() {
     $('#nuevaRequisicionModal').modal('show')
@@ -1148,9 +1130,19 @@
     $('#titulo_asignarUsuarioModal').text('Asignar registro de bolsa de trabajo a un reclutador');
     $('label[for="asignar_usuario"]').text('Reclutador *');
     $('label[for="asignar_registro"]').text('Persona en bolsa de Trabajo *');
+
     $('#asignar_usuario').removeAttr("multiple");
-    $('#asignar_usuario').selectpicker('destroy');
-    $('#asignar_usuario').selectpicker();
+
+
+
+    // Inicializar Select2
+    $('#asignar_usuario').select2({
+      placeholder: "Select a recruiter", // Placeholder
+      allowClear: false,
+      width: '100%'
+      // Permitir limpiar la selección
+    });
+
     $('#asignar_usuario').attr("name", "asignar_usuario");
     $('#btnAsignar').attr("onclick", "assignToUser(\"" + url + "\",'bolsa_trabajo')");
     $('#asignarUsuarioModal').modal('show');

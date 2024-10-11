@@ -1,21 +1,22 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-<section class="content-header">
+  <section class="content-header">
     <div class="row">
-        <div class="col-sm-12 col-md-6 col-lg-6">
-            <h1 class="titulo_seccion">Requisiciones</small></h1>
-        </div>
+      <div class="col-sm-12 col-md-6 col-lg-6">
+        <h1 class="titulo_seccion">Job Requisitions</small></h1>
+      </div>
 
-        <div class="col-sm-12 col-md-6 col-lg-6">
-            <div class="mb-3 float-right">
-                <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2" onclick="nuevaRequisicion()">
-                    <span class="icon text-white-50">
-                        <i class="far fa-file-alt"></i>
-                    </span>
-                    <span class="text">Requisicíon Exprés</span>
-                </button>
-            </div>
+      <div class="col-sm-12 col-md-6 col-lg-6">
+        <div class="mb-3 float-right">
+          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2"
+            onclick="nuevaRequisicion()">
+            <span class="icon text-white-50">
+              <i class="far fa-file-alt"></i>
+            </span>
+            <span class="text">Express Requisition</span>
+          </button>
+        </div>
         <?php 
     if($this->session->userdata('idrol') == 4){
         $disabled = 'disabled'; $textTitle = 'title="No posees permiso para esta acción"';
@@ -23,16 +24,17 @@
         $disabled = ''; $textTitle = '';
     } ?>
         <div class="mb-3 float-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
-                <button type="button" id="btnOpenAssignToUser" class="btn btn-primary btn-icon-split float-right mr-2" onclick="openAssignToUser()" <?php echo $disabled; ?>>
-                    <span class="icon text-white-50">
-                        <i class="fas fa-user-edit"></i>
-                    </span>
-                    <span class="text">Asignar Requisición</span>
-                </button>
-            </div>
+          <button type="button" id="btnOpenAssignToUser" class="btn btn-primary btn-icon-split float-right mr-2"
+            onclick="openAssignToUser()" <?php echo $disabled; ?>>
+            <span class="icon text-white-50">
+              <i class="fas fa-user-edit"></i>
+            </span>
+            <span class="text">Assign Requisition</span>
+          </button>
         </div>
+      </div>
     </div>
-</section>
+  </section>
 
   <?php echo $modals; ?>
   <?php echo $modals_reclutamiento; ?>
@@ -44,7 +46,7 @@
 
   <div class="row mt-3 mb-5" id="divFiltros">
     <div class="col-sm-12 col-md-2 col-lg-2 offset-md-5 offset-lg-5">
-      <label for="ordenar">Ordenar:</label>
+      <label for="ordenar">Order by:</label>
       <select name="ordenar" id="ordenar" class="form-control">
         <option value="">Selecciona</option>
         <option value="ascending">De la más antigua a la más actual</option>
@@ -52,20 +54,19 @@
       </select>
     </div>
     <div class="col-sm-12 col-md-2 col-lg-2">
-      <label for="filtrar">Filtrar por:</label>
+      <label for="filtrar">Filter by:</label>
       <select name="filtrar" id="filtrar" class="form-control">
-        <option value="">Selecciona</option>
-        <option value="COMPLETA">Requisión COMPLETA (registrada por externo)</option>
-        <option value="EXPRESS">Requisición EXPRESS</option>
-        <option value="En espera">Estatus en espera</option>
-        <option value="En proceso">Estatus en proceso de reclutamiento</option>
+        <option value="">Select</option>
+        <option value="COMPLETA">COMPLETED Requisition (registered by external)</option>
+        <option value="EXPRESS">EXPRESS Requisition</option>
+        <option value="En espera">Status pending</option>
+        <option value="En proceso">Status in recruitment process</option>
       </select>
     </div>
     <div class="col-sm-12 col-md-3 col-lg-3">
-      <label for="buscador">Buscar:</label>
-      <select name="buscador" id="buscador" class="selectpicker form-control" data-live-search="true"
-        data-style="btn-custom-selectpicker" title="Selecciona">
-        <option value="0">VER TODAS</option>
+      <label for="buscador">Search:</label>
+      <select name="buscador" id="buscador">
+        <option value="0">All</option>
         <?php
         
         if ($orders_search) {
@@ -101,32 +102,32 @@
 					if($r->status == 1){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
             $text_estatus = 'Estatus: <b>En espera</b>';
-					/*	$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';*/
-						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Eliminar requisicion" onclick="openDeleteOrder('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-trash"></i></a>';
+						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
+						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Delete Requisition" onclick="openDeleteOrder('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-trash"></i></a>';
 					}
 					if($r->status == 2){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar'.$r->id.'"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'detener\')"><i class="fas fa-stop"></i></a>';
 						$color_estatus = 'req_activa';
             $text_estatus = 'Estatus: <b>En proceso de reclutamiento</b>';
-						/* $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-file-alt"></i></a>';
-            */
-						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Eliminar requisicion"><i class="fas fa-trash"></i></a>';
+						 $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-file-alt"></i></a>';
+            
+						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Delete Requisition"><i class="fas fa-trash"></i></a>';
 					}
-          $usuario = (empty($r->usuario))? 'Requisición sin cambios<br>' : 'Última modificación: <b>'.$r->usuario.'</b><br>';
+          $usuario = (empty($r->usuario))? 'Requisition Without Changes<br>' : ' Last Modified by: <b>'.$r->usuario.'</b><br>';
           $data['users'] = $this->reclutamiento_model->getUsersOrder($r->id);
           if(!empty($data['users'])){
-            $usersAssigned = 'Usuarios asignados:<br>';
+            $usersAssigned = 'Assigned Users:<br>';
             foreach($data['users'] as $user){
               if($this->session->userdata('idrol') == 4)
                 $usersAssigned .= '<div class="mb-1" id="divUser'.$user->id.'"><b>'.$user->usuario.'</b></div>';
               else 
-                $usersAssigned .= '<div class="mb-1" id="divUser'.$user->id.'"><a href="javascript:void(0)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Eliminar usuario de la requsicion" onclick="openDeleteUserOrder('.$user->id.','.$user->id_requisicion.',\''.$user->usuario.'\')"><i class="fas fa-user-times"></i></a> <b>'.$user->usuario.'</b></div>';
+                $usersAssigned .= '<div class="mb-1" id="divUser'.$user->id.'"><a href="javascript:void(0)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Remove User from Requisition" onclick="openDeleteUserOrder('.$user->id.','.$user->id_requisicion.',\''.$user->usuario.'\')"><i class="fas fa-user-times"></i></a> <b>'.$user->usuario.'</b></div>';
             }
           }else{
-            $usersAssigned = 'Sin asignar usuarios';
+            $usersAssigned = 'Unassigned Users';
           }
           unset($data['users']);
-          $btnExpress = ($r->tipo == 'EXPRESS')? '<a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Editar requsición EXPRESS" onclick="openUpdateOrder('.$r->id.',\''.$r->nombre.'\',\''.$r->nombre.'\',\''.$r->puesto.'\')"><i class="fas fa-edit"></i></a>' : '<a href="javascript:void(0)" class="btn btn-primary text-lg isDisabled" data-toggle="tooltip" title="Editar requsición EXPRESS"><i class="fas fa-edit"></i></a>';
+          $btnExpress = ($r->tipo == 'EXPRESS')? '<a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Edit EXPRESS Requisition" onclick="openUpdateOrder('.$r->id.',\''.$r->nombre.'\',\''.$r->nombre.'\',\''.$r->puesto.'\')"><i class="fas fa-edit"></i></a>' : '<a href="javascript:void(0)" class="btn btn-primary text-lg isDisabled" data-toggle="tooltip" title="Edit EXPRESS Requisition"><i class="fas fa-edit"></i></a>';
           //total de requisiciones para saber si fue buscada una en particular y colocarla enmedio de la vista
           $totalOrders = count($requisiciones);
           $moveOrder = ($totalOrders > 1)? '' : 'offset-md-4 offset-lg-4';
@@ -139,11 +140,11 @@
           </div>
           <div class="card-body">
             <h5 class="card-title"><b><?php echo $r->puesto; ?></b></h5>
-            <p class="card-text"><?php echo 'Vacantes: <b>'.$r->numero_vacantes; ?></b></p>
-            <p class="card-text">Contacto:
+            <p class="card-text"><?php echo 'Job Openings: <b>'.$r->numero_vacantes; ?></b></p>
+            <p class="card-text">Contact:
               <br><b><?php echo $r->contacto.' <br>'.$r->telefono.' <br>'.$r->correo; ?></b>
             </p>
-            <div class="alert alert-secondary text-center mt-3">Tipo:
+            <div class="alert alert-secondary text-center mt-3">Type:
               <b><?php echo $r->tipo ?></b><br><b><?php echo $text_estatus ?></b>
             </div>
             <div class="row">
@@ -151,7 +152,7 @@
                 <?php echo $btnExpress; ?>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Ver detalles"
+                <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="View Details"
                   onclick="verDetalles(<?php echo $r->id;?>)"><i class="fas fa-info-circle"></i></a>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id?>">
@@ -1025,54 +1026,68 @@ $(document).ready(function() {
   let url_orders = '<?php echo base_url('Reclutamiento/requisicion'); ?>';
   let sortOption = '<?php echo $sortOrder ?>';
   let filterOption = '<?php echo $filter ?>';
+
+  // Inicializa select2 para el buscador
+  $('#buscador').select2({
+    placeholder: "Selecciona",
+    allowClear: false,
+    width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+  });
+
+  // Función para cargar contenido
+  function loadContent(url) {
+    $.get(url, function(data) {
+      $('#module-content').html(data);
+    }).fail(function() {
+      $('#module-content').html('<p>Error al cargar el contenido. Por favor, inténtalo de nuevo.</p>');
+    });
+  }
+
+  // Manejo del cambio en el select de buscador
+  $('#buscador').change(function() {
+    var opcion = $(this).val();
+
+    if (opcion === "0") { // Si selecciona "VER TODAS"
+      regresarListado()
+    } else {
+      var newUrl = url_orders + "?order=" + opcion;
+      loadContent(newUrl); // Cargar el contenido según la opción seleccionada
+    }
+
+    return false; // Prevenir el comportamiento predeterminado
+  });
+
+  // Inicializa los valores de los selects para ordenar y filtrar
   $('#ordenar').val(sortOption).trigger('change');
   $('#filtrar').val(filterOption).trigger('change');
 
+  // Manejo del cambio en el select de ordenar
   $('#ordenar').change(function() {
     let opcion = $(this).val();
     let filtrar = $('#filtrar').val();
-    let filter = '';
-    let sort = '';
-    var oldURL = url_orders;
-    if (history.pushState) {
-      if (filtrar != '') {
-        filter = "?filter=" + filtrar;
-        sort = "&sort=" + opcion
-      } else {
-        sort = "?sort=" + opcion
-      }
-      var newUrl = oldURL + filter + sort;
-      $(location).attr('href', newUrl);
-    }
-    return false;
-  })
+    let filter = filtrar ? "?filter=" + filtrar : "";
+    let sort = "?sort=" + opcion;
+
+    var newUrl = url_orders + filter + sort;
+    loadContent(newUrl); // Cargar el contenido sin cambiar la URL
+
+    return false; // Prevenir el comportamiento predeterminado
+  });
+
+  // Manejo del cambio en el select de filtrar
   $('#filtrar').change(function() {
     let opcion = $(this).val();
     let ordenar = $('#ordenar').val();
-    let sort = '';
-    let filter = '';
-    var oldURL = url_orders;
-    if (history.pushState) {
-      if (ordenar != '') {
-        sort = "?sort=" + ordenar;
-        filter = "&filter=" + opcion;
-      } else {
-        filter = "?filter=" + opcion;
-      }
-      var newUrl = oldURL + sort + filter;
-      $(location).attr('href', newUrl);
-    }
-    return false;
-  })
-  $('#buscador').change(function() {
-    var opcion = $(this).val();
-    var oldURL = url_orders;
-    if (history.pushState) {
-      var newUrl = oldURL + "?order=" + opcion;
-      $(location).attr('href', newUrl);
-    }
-    return false;
-  })
+    let sort = ordenar ? "?sort=" + ordenar : "";
+    let filter = "?filter=" + opcion;
+
+    var newUrl = url_orders + sort + filter;
+    loadContent(newUrl); // Cargar el contenido sin cambiar la URL
+
+    return false; // Prevenir el comportamiento predeterminado
+  });
+
+
   $('.nav-link').click(function() {
     $('.nav-link').removeClass('active');
     $(this).addClass('active');
@@ -1129,7 +1144,7 @@ function regresarListado() {
 function cambiarStatusRequisicion(id, nombre, accion) {
   var titulo = '';
   var mensaje = '';
-  var status ='';
+  var status = '';
 
   if (accion === 'iniciar') {
     titulo = 'Confirmación de inicio de requisición';
@@ -1154,10 +1169,10 @@ function cambiarStatusRequisicion(id, nombre, accion) {
 }
 
 function confirmarAccion(status) {
-  
+
   $('#mensajeModal').modal('hide');
   var idRequisicion = $('#idRequisicion').val();
-  
+
   //Colocar en privado o publico
   if (status == 1 || status == 2) {
     $.ajax({
@@ -1176,7 +1191,7 @@ function confirmarAccion(status) {
         }, 300);
         var dato = JSON.parse(res);
         if (dato.codigo === 1) {
-         
+
           Swal.fire({
             position: 'center',
             icon: 'success',

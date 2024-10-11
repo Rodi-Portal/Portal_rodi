@@ -3,7 +3,7 @@
 
 	<!-- Page Heading -->
 	<div class="d-sm-flex align-items-center justify-content-between mb-4">
-		<h1 class="h3 mb-0 text-gray-800">Requisiciones Finalizadas</h1><br>
+		<h1 class="h3 mb-0 text-gray-800">Completed Requisitions</h1><br>
 		<!--a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" data-toggle="modal" data-target="#newModal">
 			<span class="icon text-white-50">
 				<i class="fas fa-user-plus"></i>
@@ -14,7 +14,7 @@
 			<span class="icon text-white-50">
         <i class="fas fa-check-circle"></i>
 			</span>
-			<span class="text">Reactivar requisición</span>
+			<span class="text">Reactivate Requisition</span>
 		</a>
 		<a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()" style="display: none;">
 			<span class="icon text-white-50">
@@ -34,7 +34,7 @@
 
   <div id="div_requisiciones" class="row">
 		<div class="col-6">
-			<label>Selecciona la requisición a mostrar: </label>
+			<label>Select a Requisition to View:  </label>
 			<select class="form-control" name="opcion_requisicion" id="opcion_requisicion">
 				<option value="">Todas</option>
 				<?php

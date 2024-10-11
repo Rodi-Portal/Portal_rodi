@@ -72,6 +72,7 @@
   background-color: #fff !important;
   border-color: #d1d3e2 !important;
 }
+
 .btn-return{
   z-index: 9;
   left: 97%;
@@ -908,4 +909,51 @@ color: white;
   color: #e7b915; /* Color del texto en dorado claro */
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* Sombra más profunda para el botón activo */
   transform: translateY(-2px); /* Levanta el botón activo */
+}
+
+/* Estilos para Select2 que imitan .form-control */
+/* Asegura que el contenedor de Select2 tenga la misma altura que .form-control */
+/* Asegura que el contenedor de Select2 tenga la misma altura que .form-control más 5px */
+.select2-container--default .select2-selection--single {
+  height: calc(1.5em + 0.75rem + 2px + 5px); /* Altura igual a .form-control más 5px */
+  padding: 0.375rem 0.75rem; /* Igualar padding */
+  border: 1px solid #d1d3e2; /* Borde igual */
+  border-radius: 0.35rem; /* Radio igual */
+  display: flex;
+  align-items: center; /* Centrar contenido verticalmente */
+}
+
+/* Ajustes para el placeholder */
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #858796;
+  line-height: calc(1.5em + 0.75rem + 5px); /* Alinear verticalmente */
+}
+
+/* Color del texto de selección */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: calc(1.5em + 0.75rem + 5px); /* Alinear verticalmente */
+  color: #6e707e;
+}
+
+/* Flecha de selección */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: calc(1.5em + 0.75rem + 5px); /* Igualar altura */
+  margin-top: calc(0.375rem); /* Centrar verticalmente */
+}
+
+/* Ajustes para el dropdown */
+.select2-container--default .select2-results__option {
+  color: #6e707e;
+}
+
+/* Estilo en estado de foco */
+.select2-container--default .select2-selection--single:focus {
+  border-color: #bac8f3;
+  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Estado deshabilitado */
+.select2-container--default .select2-selection--single.select2-selection--disabled {
+  background-color: #eaecf4;
+  opacity: 1;
 }

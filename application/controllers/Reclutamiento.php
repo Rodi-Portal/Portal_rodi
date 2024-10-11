@@ -674,7 +674,7 @@ class Reclutamiento extends CI_Controller
                                 );
                             } else {
                                 $msj = array(
-                                    'codigo' => 0,
+                                    'codigo' => 1,
                                     'msg' => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente . ' . $api_response['msg'],
                                 );
                             }
@@ -684,7 +684,7 @@ class Reclutamiento extends CI_Controller
 
                     } else {
                         $msj = array(
-                            'codigo' => 0,
+                            'codigo' => 1,
                             'msg' => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente .',
                         );
                     }

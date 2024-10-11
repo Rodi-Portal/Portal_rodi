@@ -120,12 +120,13 @@ $(document).ready(function() {
   
   // Función para cargar contenido
   function loadContent(url) {
-    $.get(url, function(data) {
-      $('#module-content').html(data);
-    }).fail(function() {
-      $('#module-content').html('<p>Error al cargar el contenido. Por favor, inténtalo de nuevo.</p>');
-    });
-  }
+  $.get(url, function(data) {
+    $('#module-content').html(data);
+    
+  }).fail(function() {
+    $('#module-content').html('<p>Error al cargar el contenido. Por favor, inténtalo de nuevo.</p>');
+  });
+}
 
   // Cargar el contenido de la primera pestaña por defecto
   loadContent("<?php echo site_url('Reclutamiento/requisicion'); ?>");

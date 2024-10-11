@@ -17,7 +17,7 @@ header('Content-Type: text/html; charset=utf-8');
         <form id="formAspirante">
           <div class="col-sm-12 ">
             <label for="buscador">Selecciona una Requisición :</label>
-            <select name="req_asignada" id="req_asignada" class="btn-custom-buscador">
+            <select name="req_asignada" id="req_asignada"  >
 
               <?php
                   if ($reqs) {
@@ -203,7 +203,7 @@ if ($medios != null) {
           <div class="row">
             <div class="col-12">
               <label>Requisición *</label>
-              <select name="req_estatus" id="req_estatus" class="btn-custom-buscador">
+              <select name="req_estatus" id="req_estatus" >
                 <option value="">Selecciona</option>
                 <?php
 
@@ -1401,8 +1401,8 @@ foreach ($paquetes_antidoping as $paq) {?>
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_usuario"></label>
-              <select id="asignar_usuario" name ="asignar_usuario" class="btn-custom-buscador" >
-              <option value="">Selecciona</option>
+              <select id="asignar_usuario" name ="asignar_usuario" class="form-control" >
+              <option value="">Select</option>
                 <?php
 if (!empty($usuarios_asignacion)) {
     foreach ($usuarios_asignacion as $row) {?>
@@ -1417,8 +1417,8 @@ if (!empty($usuarios_asignacion)) {
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_registro"></label>
-              <select name="asignar_registro" id="asignar_registro" class="btn-custom-buscador">
-              <option value="">Selecciona</option>
+              <select name="asignar_registro" id="asignar_registro" >
+              <option value="">Select</option>
                 <?php
 if (!empty($registros_asignacion)) {
     foreach ($registros_asignacion as $fila) {?>
@@ -1799,7 +1799,7 @@ $('#nuevaRequisicionModal #btnRegresar').on('click', function() {
 $('#nuevoAspiranteModal').on('hidden.bs.modal', function(e) {
   $("#nuevoAspiranteModal #msj_error").css('display', 'none');
   $("#nuevoAspiranteModal input, #nuevoAspiranteModal select, #nuevoAspiranteModal textarea").val('');
-  $("#nuevoAspiranteModal #req_asignada").val('').selectpicker('refresh');
+  $("#nuevoAspiranteModal #req_asignada").val(null).trigger('change'); // Usar null para reiniciar el valor en Select2
   $('#cv_previo').html('');
   $('#idAspirante').val('');
 });
@@ -1814,22 +1814,23 @@ $('#estatusRequisicionModal').on('hidden.bs.modal', function(e) {
 $("#registroCandidatoModal").on("hidden.bs.modal", function() {
   $("#examen_registro").empty();
   $("#examen_registro").append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
+  
   <?php
-if ($paquetes_antidoping != null) {
-    foreach ($paquetes_antidoping as $paq) {?>
-  $("#examen_registro").append(
-    '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
+  if ($paquetes_antidoping != null) {
+      foreach ($paquetes_antidoping as $paq) { ?>
+    $("#examen_registro").append(
+      '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
   <?php
-}
-}?>
-  $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
-  $("#examen_registro,#examen_medico,#examen_psicometrico").val(0);
-  $('#pais').val('México')
-  $('#subcliente').val(0)
-  $('#detalles_previo').empty();
-  $("#registroCandidatoModal .selectpicker").val('').selectpicker('refresh');
+      }
+  } ?>
 
-})
+  $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
+  $("#examen_registro, #examen_medico, #examen_psicometrico").val(0).trigger('change'); // Actualizar Select2
+  $('#pais').val('México');
+  $('#subcliente').val(0);
+  $('#detalles_previo').empty();
+  $("#registroCandidatoModal #examen_registro").val(null).trigger('change'); // Reiniciar Select2
+});
 
 $("#region").change(function() {
   var region = $(this).val();
@@ -2021,7 +2022,7 @@ $('#nuevaRequisicionModal').on('hidden.bs.modal', function(e) {
   pag = 1;
 });
 $('#asignarUsuarioModal').on('hidden.bs.modal', function(e) {
-  $("#asignarUsuarioModal .selectpicker").val('').selectpicker('refresh');
+  $("#asignarUsuarioModal select").val(null).trigger('change'); // Reiniciar Select2
 });
 $('#subirCSVModal').on('hidden.bs.modal', function(e) {
   $("#subirCSVModal input").val('');
