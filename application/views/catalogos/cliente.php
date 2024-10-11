@@ -9,7 +9,7 @@
       </div>
       <div class="col-sm-12 col-md-3">
         <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newModal"
-          onclick="registrarCliente()">
+          onclick="registrarCliente(this)">
           <span class="icon text-white-50">
             <i class="fas fa-user-tie"></i>
           </span>
@@ -630,36 +630,7 @@ function cargarDatosDomicilioGeneral(datos) {
 }
 </script>
 <script>
-/*  function guardarCliente() {
-  let datos = $('#formCatCliente').serialize();
-  datos += '&id=' + $("#idCliente").val();
-  $.ajax({
-    url: '< ? php echo base_url('Cat_Cliente/setCliente'); ?>',
-    type: "POST",
-    data: datos,
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      console.log(res);
-      $('.loader').fadeOut();
-      var data = JSON.parse(res);
-      if (data.codigo === 1) {
-        $("#newModal").modal('hide');
-        recargarTable();
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'Cliente guardado correctamente',
-          showConfirmButton: false,
-          timer: 2500
-        });
-      } else {
-        $("#newModal #msj_error").css('display', 'block').html(data.msg);
-      }
-    }
-  });
-  }*/
+
 
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
   if (accion == "activar cliente") {

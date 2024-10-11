@@ -113,10 +113,11 @@ public function correoExiste($correo ,$idDatos = null, ) {
 
     // Si estás editando un cliente, excluye el cliente actual de la búsqueda
     if ($idDatos !== null) {
-        $this->db->where_not_in('id', $idDatos);
+        $this->db->where('id !=', $idDatos); // Cambiado de where_not_in a where
     }
 
     $query = $this->db->get();
+    
     return $query->num_rows();
 }
 

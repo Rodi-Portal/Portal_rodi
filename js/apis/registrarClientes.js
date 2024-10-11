@@ -1,6 +1,7 @@
 var baseUrl = document.getElementById('base_url').value;
 
 function registrarCliente() {
+  $(button).addClass('disabled').attr('onclick', 'return false;');
   // Resto de tu código...
 
   // Llamada AJAX para obtener el token y cargar países, estados y ciudades
@@ -382,8 +383,8 @@ function resetModal() {
                 position: 'center',
                 icon: 'success',
                 title: data.msg,
-                showConfirmButton: false,
-                timer: 3000
+                showConfirmButton: true,
+               
               }).then(function() {
                 // Recargar la página después de que el mensaje de éxito desaparezca
                 window.location.reload();
@@ -396,9 +397,13 @@ function resetModal() {
                 html: data.msg,
                 width: '50em',
                 confirmButtonText: 'Cerrar',
-                timer: 3000
+               
               })
             }
+          },
+          complete: function() {
+            // Volver a habilitar el botón
+            $(button).removeClass('disabled').attr('onclick', 'registrarCliente(this)');
           }
         });
       }
