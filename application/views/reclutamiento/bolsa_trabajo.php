@@ -8,7 +8,7 @@
       <div class="col-sm-12 col-md-9 col-lg-9 mb-1 d-flex justify-content-end">
         <div class="btn-group d-none d-md-flex" role="group" aria-label="Buttons for large screens">
           <button type="button" id="btnDownloadTemplate" class="btn btn-info btn-icon-split"
-            onclick="downloadTemplate()">
+            onclick="descargarFormato()">
             <span class="icon text-white-50">
               <i class="fas fa-download"></i>
             </span>
