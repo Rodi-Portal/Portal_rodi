@@ -495,7 +495,7 @@ class Login extends CI_Controller
 
         switch ($tipo_acceso) {
             case 'usuario':
-                redirect('Dashboard/index');
+                redirect('Cat_UsuarioInternos/index');
                 break;
             case 'visitador':
                 redirect('Dashboard/visitador_panel');

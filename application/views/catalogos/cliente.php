@@ -5,7 +5,7 @@
   <div class="align-items-center mb-4">
     <div class="row justify-content-between">
       <div class="col-sm-12 col-md-8">
-        <h1 class="h3 mb-0 text-gray-800">Clientes</h1>
+        <h1 class="h3 mb-0 text-gray-800">Users</h1>
       </div>
       <div class="col-sm-12 col-md-3">
         <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newModal"
@@ -13,7 +13,7 @@
           <span class="icon text-white-50">
             <i class="fas fa-user-tie"></i>
           </span>
-          <span class="text">Agregar cliente</span>
+          <span class="text">Add Users</span>
         </a>
       </div>
       <!-- div class="col-sm-12 col-md-2" style="display: none;">
@@ -54,7 +54,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">Send credentials</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -63,12 +63,12 @@
         <div class="row justify-content-center">
           <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
           <div class="col-md-9">
-            <label>Generar contraseña *</label>
+            <label>Generate password *</label>
             <div class="input-group">
               <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8"
                 readonly>
               <div class="input-group-append">
-                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
+                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generate</button>
               </div>
             </div>
           </div>
@@ -78,8 +78,8 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btnEnviarPass">Resend password</button>
       </div>
     </div>
   </div>
@@ -130,7 +130,7 @@ $(document).ready(function() {
    } else {
      console.log('DataTables cargado correctamente.');
    }*/
-   var tabla = $('#tabla').DataTable({
+  var tabla = $('#tabla').DataTable({
     "pageLength": 25,
     //"pagingType": "simple",
     "order": [0, "desc"],
@@ -155,7 +155,7 @@ $(document).ready(function() {
         visible: false
       },
       {
-        title: 'Nombre',
+        title: 'Name',
         data: 'nombre',
         bSortable: false,
         "width": "25%",
@@ -165,7 +165,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Clave',
+        title: 'Key',
         data: 'clave',
         bSortable: false,
         "width": "3%",
@@ -174,7 +174,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Fecha de alta',
+        title: 'Creation Date',
         data: 'creacion',
         bSortable: false,
         "width": "7%",
@@ -190,20 +190,20 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Accesos',
+        title: 'Access',
         data: 'numero_usuarios_clientes',
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
           if (data == 0) {
-            return 'Sin registro de accesos';
+            return 'No access records found';
           } else {
-            return 'Cuenta con ' + data + ' registro(s) de acceso';
+            return 'There are ' + data + ' access record(s)';
           }
         }
       },
       {
-        title: 'Acciones',
+        title: 'Actions',
         data: 'id',
         bSortable: false,
         "width": "10%",
@@ -227,17 +227,15 @@ $(document).ready(function() {
         }
       }
     ],
-    "columnDefs": [
-        {
-            "targets": [2, 3, 4], // Índices de las columnas a ocultar en pantallas pequeñas
-            "className": 'hide-on-small' // Clase personalizada para ocultar
-        }
-    ],
+    "columnDefs": [{
+      "targets": [2, 3, 4], // Índices de las columnas a ocultar en pantallas pequeñas
+      "className": 'hide-on-small' // Clase personalizada para ocultar
+    }],
     "responsive": {
-        details: {
-            type: 'column',
-            target: 'tr'
-        }
+      details: {
+        type: 'column',
+        target: 'tr'
+      }
     },
     "scrollX": true,
     fnDrawCallback: function(oSettings) {
@@ -446,17 +444,17 @@ $(document).ready(function() {
       });
     },
     "language": {
-      "lengthMenu": "Mostrar _MENU_ registros ",
-      "zeroRecords": "No se encontraron registros",
-      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-      "infoEmpty": "Sin registros disponibles",
-      "infoFiltered": "(Filtrado _MAX_ registros totales)",
-      "sSearch": "Buscar:",
+      "lengthMenu": "Show _MENU_ records",
+      "zeroRecords": "No records found",
+      "info": "Showing records from _START_ to _END_ of a total of _TOTAL_ records",
+      "infoEmpty": "No records available",
+      "infoFiltered": "(Filtered from _MAX_ total records)",
+      "sSearch": "Search:",
       "oPaginate": {
-        "sLast": "Última página",
-        "sFirst": "Primera",
-        "sNext": "Siguiente",
-        "sPrevious": "Anterior"
+        "sLast": "Last page",
+        "sFirst": "First",
+        "sNext": "Next",
+        "sPrevious": "Previous"
       }
     }
   });
@@ -630,8 +628,6 @@ function cargarDatosDomicilioGeneral(datos) {
 }
 </script>
 <script>
-
-
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
   if (accion == "activar cliente") {
     $('#titulo_mensaje1').text('Activar cliente');

@@ -2,14 +2,14 @@
 <div class="align-items-center mb-4">
   <div class="row">
     <div class="col-sm-12 col-md-6 d-flex justify-content-start align-items-center">
-      <h2>Usuarios Internos</h2>
+      <h2>Admon account's</h2>
     </div>
     <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
       <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
         <span class="icon text-white-50">
           <i class="fas fa-user-tie"></i>
         </span>
-        <span class="text">Registro de usuarios</span>
+        <span class="text">Add Acount</span>
       </a>
     </div>
   </div>
@@ -40,8 +40,8 @@
       </div>
       <div class="modal-body" id="mensaje"></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" id="btnConfirmar">Confirmar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmar">Confirm</button>
       </div>
     </div>
   </div>
@@ -51,7 +51,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
+                <h5 class="modal-title" id="titulo_mensaje_contraseña">Send credentials</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -60,7 +60,7 @@
                 <div class="row justify-content-center">
                 <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
                     <div class="col-md-9">
-                        <label>Generar contraseña *</label>
+                        <label>Generate password *</label>
                         <div class="input-group">
                             <input type="text" class="form-control" name="password" id="password" maxlength="8" readonly>
                             <div class="input-group-append">
@@ -74,8 +74,8 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="btnEnviarPass">Renviar contraseña</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="btnEnviarPass">Resend password</button>
             </div>
         </div>
     </div>
@@ -121,7 +121,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Nombre de usuario',
+        title: 'Username',
         data: 'referente',
         bSortable: false,
         "width": "15%",
@@ -139,7 +139,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Correo',
+        title: 'Email',
         data: 'correo',
         bSortable: false,
         "width": "15%",
@@ -148,7 +148,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Tipo de rol',
+        title: 'Role Assignment',
         data: 'nombre_rol',
         bSortable: false,
         "width": "3%",
@@ -157,7 +157,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Fecha de alta',
+        title: 'Activation Date',
         data: 'creacion',
         bSortable: false,
         "width": "7%",
@@ -174,7 +174,7 @@ $(document).ready(function() {
       },
 
       {
-        title: 'Fecha de edición',
+        title: 'Last Edited Date',
         data: 'edicion',
         bSortable: false,
         "width": "8%",
@@ -192,7 +192,7 @@ $(document).ready(function() {
 
 
       {
-        title: 'Acciones',
+        title: 'Actions',
         data: 'id_usuario',
         bSortable: false,
         "width": "15%",
@@ -284,20 +284,20 @@ $(document).ready(function() {
     },
 
     /****************************************************************/
-    "language": {
-      "lengthMenu": "Mostrar _MENU_ registros por página",
-      "zeroRecords": "No se encontraron registros",
-      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-      "infoEmpty": "Sin registros disponibles",
-      "infoFiltered": "(Filtrado _MAX_ registros totales)",
-      "sSearch": "Buscar:",
-      "oPaginate": {
-        "sLast": "Última página",
-        "sFirst": "Primera",
-        "sNext": "Siguiente",
-        "sPrevious": "Anterior"
-      }
+   "language": {
+    "lengthMenu": "Show _MENU_ records",
+    "zeroRecords": "No records found",
+    "info": "Showing records from _START_ to _END_ of a total of _TOTAL_ records",
+    "infoEmpty": "No records available",
+    "infoFiltered": "(Filtered from _MAX_ total records)",
+    "sSearch": "Search:",
+    "oPaginate": {
+        "sLast": "Last page",
+        "sFirst": "First",
+        "sNext": "Next",
+        "sPrevious": "Previous"
     }
+} 
   });
 
   $(window).on('resize', function() {
