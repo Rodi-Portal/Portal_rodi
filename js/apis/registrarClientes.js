@@ -1,7 +1,6 @@
 var baseUrl = document.getElementById('base_url').value;
 
-function registrarCliente(button) {
-  $(button).addClass('disabled').attr('onclick', 'return false;');
+function registrarCliente() {
   // Resto de tu código...
 
   // Llamada AJAX para obtener el token y cargar países, estados y ciudades
@@ -403,7 +402,6 @@ function resetModal() {
           },
           complete: function() {
             // Volver a habilitar el botón
-            $(button).removeClass('disabled').attr('onclick', 'registrarCliente(this)');
           }
         });
       }
