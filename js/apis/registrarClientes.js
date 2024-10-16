@@ -1,6 +1,6 @@
 var baseUrl = document.getElementById('base_url').value;
 
-function registrarCliente() {
+function registrarCliente(button) {
   $(button).addClass('disabled').attr('onclick', 'return false;');
   // Resto de tu código...
 
