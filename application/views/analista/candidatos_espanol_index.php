@@ -182,9 +182,7 @@ function modalRegistrarCandidato() {
             $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] +
               '</option>');
           }
-          $('#puesto').selectpicker({
-            liveSearch: true
-          })
+          
         } else {
           $('#puesto').append('<option value="">No hay puestos registrados</option>');
         }
@@ -192,7 +190,7 @@ function modalRegistrarCandidato() {
     });
   }, 200);
   setTimeout(function() {
-    $('#puesto').selectpicker('val', id_position)
+    $('#puesto')('val', id_position)
     $('.loader').fadeOut();
   }, 250);
 
@@ -210,7 +208,7 @@ function registrarCandidato() {
   datos.append('celular', $("#celular_registro").val());
   datos.append('subcliente', $("#subcliente").val());
   datos.append('opcion', $('#opcion_registro').val());
-  datos.append('puesto', $('#puesto').selectpicker('val'));
+  //datos.append('puesto', $('#puesto').('val'));
   datos.append('pais', $("#pais").val());
   datos.append('region', $("#region").val());
 
@@ -289,6 +287,7 @@ function registrarCandidato() {
 
 
 $(document).ready(function() {
+
   //inputmask
   $('.tipo_fecha').inputmask('dd/mm/yyyy', {
     'placeholder': 'dd/mm/yyyy'
