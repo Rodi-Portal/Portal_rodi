@@ -3,6 +3,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <div class="seccion" id="seccion1">
     <div id="app" data-your-value="<?php echo $this->session->userdata('idPortal'); ?>"></div>
+    <div id="app" data-your-user-value="<?php echo $this->session->userdata('id'); ?>"></div>
 </div>
 
 <script src="<?php echo base_url('public/vue/js/moduloEmpleados.js'); ?>"></script>

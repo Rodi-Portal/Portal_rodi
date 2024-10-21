@@ -42,7 +42,7 @@
 
 
 <div class="recruitment-container">
-    <h1 class="recruitment-title">Access Denied</h1>
+    <h1 class="recruitment-title">Recruitment Module </h1>
     <p>The module you are attempting to access is not part of your contracted plan. Please review your subscription options or contact support for further assistance.</p>
 
     <div class="recruitment-section">

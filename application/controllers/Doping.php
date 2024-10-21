@@ -1275,7 +1275,16 @@ class Doping extends CI_Controller
     }
     public function createPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 16,
+            'margin_bottom' => 16,
+            'margin_header' => 9,
+            'margin_footer' => 9,
+        ]);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");
