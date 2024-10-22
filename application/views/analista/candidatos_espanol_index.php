@@ -875,7 +875,7 @@ function changeDatatable(url1) {
                     .reclutadorAspirante + '</span>' : '';
                   return '<span class="badge badge-pill badge-dark">#' + full.id +
                     '</span><br><a data-toggle="tooltip" class="sin_vinculo" style="color:black;"><b>' +
-                    data;
+                    full.candidato;
                   // reclutador;
                 }
               },
