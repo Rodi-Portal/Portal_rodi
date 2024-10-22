@@ -160,8 +160,12 @@ $cliente = $procesosActuales[0] ?? null;
                     '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>';
 
                 $experiencia = ($proceso->ingles == 1) ? 
-                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' : 
-                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>';
+                '<div class="experiencia" style="max-width: 400px;">' . 
+                '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' . 
+                '</div>' : 
+                '<div class="experiencia" style="max-width: 400px;">' . 
+                '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' . 
+                '</div>';
                 ?>
             <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
               <div class="card-title" onclick="openDetails(<?php echo $proceso->idReq ?>)">
