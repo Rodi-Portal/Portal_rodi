@@ -131,7 +131,7 @@ $cliente = $procesosActuales[0] ?? null;
       <div class="d-flex justify-content-center flex-column flex-md-row flex-lg-row mt-5 panel-inicio">
         <div class="card shadow div1 flex-fill">
           <div class="card-body">
-            <div class="d-flex flex-column flex-sm-row justify-content-around align-items-baseline">
+            <div class="d-flex flex-column flex-sm-row  align-items-baseline">
               <?php $totalRequisiciones = (!empty($procesosActuales)) ? count($procesosActuales) : 0?>
               <h4 class="text-wrap">
                 <?php echo $translations['proceso_titulo'] . ': <b>' . $totalRequisiciones . '</b>' ?></h4>
