@@ -264,14 +264,15 @@ p {
 		$f = explode('-', $aux[0]);
 		$fecha_doping = $f[2].'/'.$f[1].'/'.$f[0];
 
-		if($doping->foto == '' || $doping->foto == null){
-			$foto = '<img width="125px" height="100px" class="foto" src="'.base_url().'img/logo_pie.png"> aqui estamos ';
+    if($doping->foto == '' || $doping->foto == null){
+			$foto = '<img width="125px" height="100px" class="foto" src="'.base_url().'img/logo_pie.png">';
 		}
 		else{
-
-
-			$foto = '<img width="125px" height="125px" class="foto" src="'.base_url().'_doping/'.$doping->foto.'">';
+			$foto = !empty($doping->foto) 
+    ? '<img width="125px" height="125px" class="foto" src="'.base_url().'_doping/'.$doping->foto.'">' 
+    : '';
 		}
+
 
 		$subcliente = ($doping->subcliente == '' || $doping->subcliente == null)? '':'-'.$doping->subcliente;
 		$proyecto = ($doping->proyecto == '' || $doping->proyecto == null)? '':$doping->proyecto;
@@ -336,7 +337,9 @@ p {
 			$ref[] = $s->valor_referencia;		
 		} 	
 		$firma = base_url().'img/'.$area->firma;
-		$qr_consulta = base_url().'_qrconsult/'.$qr;
+    $qr_consulta = !empty($qr) 
+    ? base_url().'_qrconsult/'.$qr 
+    : '';
 	?>
   <!-- HOJA 1 -->
   <div class="center">
