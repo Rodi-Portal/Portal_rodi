@@ -412,9 +412,11 @@ p {
       </tr>
     </table>
   </div>
-  <div style="height: 160px;position: relative">
-    <?php echo $foto;?>
-  </div>
+  <div style="height: 160px; position: relative">
+    <?php if (!empty($foto)): ?>
+        <?php echo $foto; ?>
+    <?php endif; ?>
+</div>
   <br>
   <table class="centrado" border="1" cellpadding="0" cellspacing="0" bordercolor="#E2E1E1">
     <tr>
@@ -442,58 +444,63 @@ p {
 				echo '</tr>';
         $contador ++;
 		} ?>
- </table>
-	<p class="texto-centrado">La investigación de drogas de abuso es una prueba de escrutinio. <br>En caso de positividad se deberá realizar una prueba confirmatoria. <br>RESULTADO NO VÁLIDO SIN EL SELLO DE AUTENTICIDAD GRABADO EN EL PRESENTE. <br>Cualquier aclaración acerca de este estudio, comuníquese al tel: (33)33309678</p>
+  </table>
+  <p class="texto-centrado">La investigación de drogas de abuso es una prueba de escrutinio. <br>En caso de positividad
+    se deberá realizar una prueba confirmatoria. <br>RESULTADO NO VÁLIDO SIN EL SELLO DE AUTENTICIDAD GRABADO EN EL
+    PRESENTE. <br>Cualquier aclaración acerca de este estudio, comuníquese al tel: (33)33309678</p>
 
-	<?php 
+  <?php 
   if($contador > 10){ ?>
-    <pagebreak>
- <?php  }
+  <pagebreak>
+    <?php  }
   $cedula = (!empty($area->cedula))? '<span>Cédula Profesional: '.$area->cedula.'</span><br>' : '<span>Personal autorizado por laboratorio</span><br>'; 
 	if($num_sustancias <= 6){ ?>
-		 <table style="width: 100%;  page-break-inside: avoid;">
-        <tr>
-            <td style="width: 33%; text-align: center;">
-                <img width="180px" src="<?php echo $firma; ?>"><br>
-                <span><?php echo $area->profesion_responsable . ' ' . $area->responsable; ?></span><br>
-                <?php echo $cedula; ?>
-            </td>
-            <td style="width: 33%; text-align: center;">
-                <span>Laboratorio de Análisis</span><br>
-                <span>PERINTEX SC.</span><br>
-                <span>Cédula de licencia municipal: 580386</span><br>
-                <span>REG. SSA COFEPRIS: 21040912</span><br>
-                <img width="60px" src="<?php echo base_url() . 'img/qr_cofepris.jpg'; ?>">
-            </td>
-            <td style="width: 33%; text-align: center;">
-            <img src="<?php echo $qr_consulta; ?>" style="width: 100px;">
-            </td>
-        </tr>
+    <table style="width: 100%;  page-break-inside: avoid;">
+      <tr>
+        <td style="width: 33%; text-align: center;">
+          <img width="180px" src="<?php echo $firma; ?>"><br>
+          <span><?php echo $area->profesion_responsable . ' ' . $area->responsable; ?></span><br>
+          <?php echo $cedula; ?>
+        </td>
+        <td style="width: 33%; text-align: center;">
+          <span>Laboratorio de Análisis</span><br>
+          <span>PERINTEX SC.</span><br>
+          <span>Cédula de licencia municipal: 580386</span><br>
+          <span>REG. SSA COFEPRIS: 21040912</span><br>
+          <img width="60px" src="<?php echo base_url() . 'img/qr_cofepris.jpg'; ?>">
+        </td>
+        <td style="width: 33%; text-align: center;">
+          <?php if (!empty($qr_consulta)): ?>
+          <img src="<?php echo $qr_consulta; ?>" style="width: 100px;">
+          <?php endif; ?>
+        </td>
+      </tr>
     </table>
-	<?php 
+    <?php 
 	}
 	else{ ?>
-	  <table style="width: 100%;  page-break-inside: avoid; table-layout: fixed;">
-        <tr>
-            <td style="width: 33%; text-align: center;">
-                <img width="180px" src="<?php echo $firma; ?>"><br>
-                <span><?php echo $area->profesion_responsable . ' ' . $area->responsable; ?></span><br>
-                <?php echo $cedula; ?>
-            </td>
-            <td style="width: 33%; text-align: center;">
-                <span>Laboratorio de Análisis</span><br>
-                <span>PERINTEX SC.</span><br>
-                <span>Cédula de licencia municipal: 580386</span><br>
-                <span>REG. SSA COFEPRIS: 21040912</span><br>
-                <img width="60px" src="<?php echo base_url() . 'img/qr_cofepris.jpg'; ?>">
-            </td>
-            <td style="width: 33%; text-align: center;">
-                <img src="<?php echo $qr_consulta; ?>" style="width: 100px;">
-            </td>
-        </tr>
-	<?php
+    <table style="width: 100%;  page-break-inside: avoid; table-layout: fixed;">
+      <tr>
+        <td style="width: 33%; text-align: center;">
+          <img width="180px" src="<?php echo $firma; ?>"><br>
+          <span><?php echo $area->profesion_responsable . ' ' . $area->responsable; ?></span><br>
+          <?php echo $cedula; ?>
+        </td>
+        <td style="width: 33%; text-align: center;">
+          <span>Laboratorio de Análisis</span><br>
+          <span>PERINTEX SC.</span><br>
+          <span>Cédula de licencia municipal: 580386</span><br>
+          <span>REG. SSA COFEPRIS: 21040912</span><br>
+          <img width="60px" src="<?php echo base_url() . 'img/qr_cofepris.jpg'; ?>">
+        </td>
+        <td style="width: 33%; text-align: center;">
+          <img src="<?php echo $qr_consulta; ?>" style="width: 100px;">
+        </td>
+      </tr>
+      <?php
 	} ?>
-	
+
 
 </body>
+
 </html>
