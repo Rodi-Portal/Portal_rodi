@@ -412,11 +412,15 @@ p {
       </tr>
     </table>
   </div>
+  <?php if (!empty($foto)): ?>
   <div style="height: 160px; position: relative">
-    <?php if (!empty($foto)): ?>
-        <?php echo $foto; ?>
-    <?php endif; ?>
-</div>
+    <?php echo $foto; ?>
+  </div>
+  <?php else: ?>
+  <div style="height: 160px; position: relative">
+    <img src="" alt="" style="display: none;">
+  </div>
+  <?php endif; ?>
   <br>
   <table class="centrado" border="1" cellpadding="0" cellspacing="0" bordercolor="#E2E1E1">
     <tr>
@@ -469,11 +473,15 @@ p {
           <span>REG. SSA COFEPRIS: 21040912</span><br>
           <img width="60px" src="<?php echo base_url() . 'img/qr_cofepris.jpg'; ?>">
         </td>
+        <?php if (!empty($qr_consulta)): ?>
         <td style="width: 33%; text-align: center;">
-          <?php if (!empty($qr_consulta)): ?>
           <img src="<?php echo $qr_consulta; ?>" style="width: 100px;">
-          <?php endif; ?>
         </td>
+        <?php else: ?>
+        <td style="width: 33%; text-align: center;">
+          <!-- Espacio vacío o contenido alternativo si es necesario -->
+        </td>
+        <?php endif; ?>
       </tr>
     </table>
     <?php 
