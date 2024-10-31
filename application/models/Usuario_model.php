@@ -173,9 +173,9 @@ class Usuario_model extends CI_Model
     {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-            ->select('C.id As id_cliente, C.nombre as nombreCliente, C.icono, C.url')
+            ->select('C.id As id_cliente, C.nombre as nombreCliente, C.icono, C.url, C.creacion, D.telefono, D.correo, D.correo')
             ->from('cliente as C')
-        //->where('p.id_subcliente', 0)
+            ->join('datos_generales AS D','D.id = C.id_datos_generales', 'left')
             ->where('C.id_portal', $id_portal)
             ->order_by('C.nombre', 'ASC');
 

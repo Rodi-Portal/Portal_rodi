@@ -7,7 +7,7 @@
                 <th>Client Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Status</th>
+                
                 <th>Created Date</th>
                 <th>Actions</th>
             </tr>
@@ -18,10 +18,9 @@
                     <?php if (isset($p->nombreCliente) && isset($p->url)): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($p->nombreCliente, ENT_QUOTES, 'UTF-8'); ?></td>
-                            <td><?php echo isset($p->email) ? htmlspecialchars($p->email, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
-                            <td><?php echo isset($p->phone) ? htmlspecialchars($p->phone, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
-                            <td><?php echo isset($p->status) ? htmlspecialchars($p->status, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
-                            <td><?php echo isset($p->createdDate) ? htmlspecialchars($p->createdDate, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+                            <td><?php echo isset($p->correo) ? htmlspecialchars($p->correo, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+                            <td><?php echo isset($p->telefono) ? htmlspecialchars($p->telefono, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+                            <td><?php echo isset($p->creacion) ? htmlspecialchars($p->creacion, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
                             <td>
                                 <a href="<?php echo site_url(htmlspecialchars($p->url, ENT_QUOTES, 'UTF-8')); ?>" class="btn btn-primary">View Process</a>
                             </td>

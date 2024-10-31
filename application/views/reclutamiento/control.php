@@ -42,14 +42,14 @@
       <select class="form-control" name="opcion_requisicion" id="opcion_requisicion">
         <option value="">All</option>
         <?php
-        if ($reqs) {
-          foreach ($reqs as $req) { ?>
+if ($reqs) {
+    foreach ($reqs as $req) {?>
         <option value="<?php echo $req->id; ?>">
-          <?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?></option>
-        <?php   
-        header('Content-Type: text/html; charset=utf-8');
-          }
-        } ?>
+          <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+        </option>
+        <?php
+header('Content-Type: text/html; charset=utf-8');}
+}?>
       </select><br>
     </div>
   </div>
@@ -119,7 +119,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Aspirante',
+        title: 'Applicant',
         data: 'aspirante',
         bSortable: false,
         "width": "15%",
@@ -128,7 +128,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Nombre o Razón Social',
+        title: 'Name or Company Name',
         data: 'nombre_cliente',
         bSortable: false,
         "width": "15%",
@@ -137,7 +137,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Puesto',
+        title: 'Position',
         data: 'puesto',
         bSortable: false,
         "width": "15%",
@@ -146,7 +146,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Contacto',
+        title: 'Contact',
         data: 'telefono',
         bSortable: false,
         "width": "10%",
@@ -160,7 +160,7 @@ function changeDataTable(url) {
       },
 
       {
-        title: 'Acciones',
+        title: 'Actions',
         data: 'id',
         bSortable: false,
         "width": "10%",
@@ -428,17 +428,17 @@ function changeDataTable(url) {
       });
     },
     "language": {
-      "lengthMenu": "Mostrar _MENU_ registros por página",
-      "zeroRecords": "No se encontraron registros",
-      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-      "infoEmpty": "Sin registros disponibles",
-      "infoFiltered": "(Filtrado _MAX_ registros totales)",
-      "sSearch": "Buscar:",
+      "lengthMenu": "Show _MENU_ records per page",
+      "zeroRecords": "No records found",
+      "info": "Showing records from _START_ to _END_ of a total of _TOTAL_ records",
+      "infoEmpty": "No records available",
+      "infoFiltered": "(Filtered from _MAX_ total records)",
+      "sSearch": "Search:",
       "oPaginate": {
-        "sLast": "Última página",
-        "sFirst": "Primera",
-        "sNext": "Siguiente",
-        "sPrevious": "Anterior"
+        "sLast": "Last page",
+        "sFirst": "First",
+        "sNext": "Next",
+        "sPrevious": "Previous"
       }
     }
   });
