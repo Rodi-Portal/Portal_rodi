@@ -15,4 +15,5 @@ document.addEventListener('DOMContentLoaded', () => {
         window.mountVueApp('#app');
     }
 });
+
 </script>
