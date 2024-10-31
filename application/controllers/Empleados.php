@@ -145,7 +145,7 @@ public function index()
         // Verifica el valor de exempleados
         if ($modulo['former'] == 1) {
             // Carga la vista correspondiente para el módulo de exempleados
-            $View = $this->load->view('moduloExEmpleados/procesos', $data, true);
+            $View = $this->load->view('moduloExEmpleados/indexExEmpleados', $data, true);
         } else {
             // Si el módulo no está habilitado, carga una vista de descripción
             $View = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);

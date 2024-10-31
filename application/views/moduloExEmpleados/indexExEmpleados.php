@@ -14,6 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app')) {
         window.mountVueApp('#app');
     }
-});
+}); 
 
 </script>
