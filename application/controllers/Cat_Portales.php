@@ -111,6 +111,15 @@ class Cat_Portales extends CI_Controller
                 'id_datos_facturacion' => null,
             );
 
+            $datos_cliente = array(
+                'creacion' => $date,
+                'edicion' => $date,
+                'id_usuario' => null,
+                'nombre' => strtoupper($this->input->post('nombrePortal')).'-Internal',
+                'id_domicilios' => null,
+                'id_datos_facturacion' => null,
+            );
+
             /*
             echo '<pre>';
             print_r($datos_generales);
@@ -140,7 +149,7 @@ class Cat_Portales extends CI_Controller
                     return; // Detener el flujo del código ya que hay un error
                 }
 
-                $idCliente = $this->cat_portales_model->addPortal($datos_portal, $datos_factura, $datos_domicilios, $datos_generales, $uncode_password);
+                $idCliente = $this->cat_portales_model->addPortal($datos_portal, $datos_factura, $datos_domicilios, $datos_generales, $uncode_password, $datos_cliente);
 
                 if ($idCliente > 0) {
 

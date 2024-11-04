@@ -175,7 +175,7 @@ if (in_array(9, $submenus)) {?>
             <?php
 if (in_array(25, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
-              href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Clients or branches</a>
+              href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Users Reports</a>
             <?php
 }
     if (in_array(29, $submenus)) {?>

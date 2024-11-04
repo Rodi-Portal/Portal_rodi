@@ -161,71 +161,101 @@ class Cat_portales_model extends CI_Model
         return $query->num_rows();
     }
 
-    public function addPortal($portal, $datosFacturacion, $datosDomicilios, $datosGenerales, $uncode_password)
-    {
-        try {
-            // Iniciar la transacción
-            $this->db->trans_start();
+    public function addPortal($portal, $datosFacturacion, $datosDomicilios, $datosGenerales, $uncode_password, $cliente)
+{
+    try {
+        // Iniciar la transacción
+        $this->db->trans_start();
 
-            // Agregar los datos generales y obtener el ID
-            $id_datosGenerales = $this->generales_model->addDatosGenerales($datosGenerales);
+        // Agregar los datos generales y obtener el ID
+        $id_datosGenerales = $this->generales_model->addDatosGenerales($datosGenerales);
+        if (!$id_datosGenerales) {
+            throw new Exception('Error al insertar datos generales');
+        }
 
-            // Agregar los domicilios y obtener el ID
-            $id_domicilios = $this->generales_model->addDomicilios($datosDomicilios);
+        // Agregar los domicilios y obtener el ID
+        $id_domicilios = $this->generales_model->addDomicilios($datosDomicilios);
+        if (!$id_domicilios) {
+            throw new Exception('Error al insertar domicilios');
+        }
 
-            // Agregar los datos de facturación y obtener el ID
-            $id_datosFacturacion = $this->generales_model->addDatosFacturacion($datosFacturacion);
+        // Agregar los datos de facturación y obtener el ID
+        $id_datosFacturacion = $this->generales_model->addDatosFacturacion($datosFacturacion);
+        if (!$id_datosFacturacion) {
+            throw new Exception('Error al insertar datos de facturación');
+        }
 
-            // Asignar los IDs obtenidos al portal
-            $portal['id_domicilios'] = $id_domicilios;
-            $portal['id_datos_facturacion'] = $id_datosFacturacion;
+        // Asignar los IDs obtenidos al portal
+        $portal['id_domicilios'] = $id_domicilios;
+        $portal['id_datos_facturacion'] = $id_datosFacturacion;
 
-            // Insertar el portal en la tabla correspondiente
-            $this->db->insert("portal", $portal);
-            $idPortal = $this->db->insert_id();
+        // Insertar el portal en la tabla correspondiente
+        $this->db->insert("portal", $portal);
+        $idPortal = $this->db->insert_id();
 
-            // Crear usuario del portal
-            $usuario_portal = [
-                'id_portal' => $idPortal,
-                'creacion' => $portal['creacion'],
-                'edicion' => $portal['creacion'],
-                'id_usuario' => $portal['id_usuario'],
-                'id_datos_generales' => $id_datosGenerales,
-                'id_domicilios' => null,
-                'id_rol' => 6,
-            ];
-            $this->db->insert("usuarios_portal", $usuario_portal);
-            $isUsuarioPortal = $this->db->insert_id();
+        // Preparar datos para usuarios_portal
+        $usuario_portal = [
+            'id_portal' => $idPortal,
+            'creacion' => $portal['creacion'],
+            'edicion' => $portal['creacion'],
+            'id_usuario' => $portal['id_usuario'],
+            'id_datos_generales' => $id_datosGenerales,
+            'id_rol' => 6,
+        ];
 
-            $data_portal = array(
-                'id_usuario_portal' => $isUsuarioPortal,
-            );
+        // Insertar en usuarios_portal
+        $this->db->insert("usuarios_portal", $usuario_portal);
+        if ($this->db->affected_rows() <= 0) {
+            throw new Exception('Error al insertar en usuarios_portal: ' . print_r($this->db->error(), true));
+        }
+        $isUsuarioPortal = $this->db->insert_id();
 
-            $this->editPortal($idPortal, $data_portal);
+        // Actualizar el portal con el ID de usuario_portal
+        $data_portal = ['id_usuario_portal' => $isUsuarioPortal];
+        $this->editPortal($idPortal, $data_portal);
 
-            // Verificar si la transacción fue exitosa
-            if ($this->db->trans_status() === false) {
-                // Ocurrió un error durante la transacción, revertir los cambios
-                $this->db->trans_rollback();
-                return false;
-            }
+        // Preparar datos del cliente
+        $cliente['id_domicilios'] = $id_domicilios;
+        $cliente['id_datos_facturacion'] = $id_datosFacturacion;
+        $cliente['id_datos_generales'] = $id_datosGenerales;
+        $cliente['id_usuario'] = $isUsuarioPortal;
+        $cliente['clave'] = 'INT';
+        $cliente['id_portal'] = $idPortal;
 
-            // La transacción fue exitosa, completarla
-            $this->db->trans_commit();
+        // Insertar el cliente
+        $this->db->insert("cliente", $cliente);
+        if ($this->db->affected_rows() <= 0) {
+            throw new Exception('Error al insertar en cliente: ' . print_r($this->db->error(), true));
+        }
+        $idCliente = $this->db->insert_id();
+        $url = "Cliente_General/index/" . $idCliente;
+        $this->db->where('id', $idCliente)->update('cliente', ['url' => $url]);
 
-            // Envía el correo electrónico después de completar la transacción
-            $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode_password);
-
-            // Retornar el ID del cliente insertado
-            return $idPortal;
-
-        } catch (Exception $e) {
-            // Manejar la excepción si ocurre algún error
-            log_message('error', 'Error en addCliente: ' . $e->getMessage());
+        // Verificar si la transacción fue exitosa
+        if ($this->db->trans_status() === false) {
+            // Ocurrió un error durante la transacción, revertir los cambios
             $this->db->trans_rollback();
             return false;
         }
+
+        // La transacción fue exitosa, completarla
+        $this->db->trans_commit();
+
+        // Envía el correo electrónico después de completar la transacción
+        $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode_password);
+
+        // Retornar el ID del cliente insertado
+        return $idPortal;
+
+    } catch (Exception $e) {
+        // Manejar la excepción si ocurre algún error
+        log_message('error', 'Error en addPortal: ' . $e->getMessage());
+        $this->db->trans_rollback();
+        return false;
     }
+}
+
+    
 
     public function addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos)
     {
@@ -239,13 +269,14 @@ class Cat_portales_model extends CI_Model
             // Insertar en la tabla usuarios_clientes
             $this->db->insert("usuarios_clientes", $usuarioCliente);
 
-            $this->db->trans_complete();
-
-            // Verificar si la transacción fue exitosa
             if ($this->db->trans_status() === false) {
-                // Ocurrió un error durante la transacción
+                // Ocurrió un error durante la transacción, revertir los cambios
+                $this->db->trans_rollback();
                 return false;
             }
+
+            // La transacción fue exitosa, completarla
+            $this->db->trans_commit();
 
             // Transacción exitosa, retornar el ID del usuario insertado
             return $this->db->insert_id();
@@ -490,20 +521,21 @@ class Cat_portales_model extends CI_Model
         }
     }
 
-    public function getModulos() {
-      $portal = $this->session->userdata('idPortal');
-  
-      // Construye la consulta SQL
-      $this->db->select("P.reclu, P.pre, P.emp, P.former")
-               ->from('portal AS P')
-               ->where('P.status', 1)
-               ->where('P.id', $portal); // Asumiendo que necesitas filtrar por el ID del portal
-  
-      // Ejecuta la consulta
-      $query = $this->db->get();
-  
-      // Devuelve una fila como array asociativo o null si no hay resultados
-      return $query->row_array();
-  }
+    public function getModulos()
+    {
+        $portal = $this->session->userdata('idPortal');
+
+        // Construye la consulta SQL
+        $this->db->select("P.reclu, P.pre, P.emp, P.former")
+            ->from('portal AS P')
+            ->where('P.status', 1)
+            ->where('P.id', $portal); // Asumiendo que necesitas filtrar por el ID del portal
+
+        // Ejecuta la consulta
+        $query = $this->db->get();
+
+        // Devuelve una fila como array asociativo o null si no hay resultados
+        return $query->row_array();
+    }
 
 }
