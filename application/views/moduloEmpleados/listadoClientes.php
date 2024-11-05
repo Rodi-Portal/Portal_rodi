@@ -20,7 +20,8 @@
                             <p><strong>Created Date:</strong> <?php echo isset($p->creacion) ? htmlspecialchars($p->creacion, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></p>
                         </div>
                         <div class="card-footer">
-                            <a href="<?php echo site_url(htmlspecialchars($p->url, ENT_QUOTES, 'UTF-8')); ?>" class="btn btn-primary">View Process</a>
+                        <a href="<?php echo site_url('proceso/' . $p->id_cliente); ?>" class="btn btn-primary">View Process</a>
+
                         </div>
                     </div>
                 <?php endif; ?>
