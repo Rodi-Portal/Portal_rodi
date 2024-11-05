@@ -190,7 +190,7 @@ public function showEmpleados($id)
         // Verifica el valor de exempleados
         if ($modulo['former'] == 1) {
             // Carga la vista correspondiente para el módulo de exempleados
-            $View = $this->load->view('moduloExEmpleados/indexExEmpleados', $data, true);
+            $View = $this->load->view('moduloExEmpleados/listadoClientes', $data, true);
         } else {
             // Si el módulo no está habilitado, carga una vista de descripción
             $View = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);
@@ -211,6 +211,53 @@ public function showEmpleados($id)
     echo $View; // Mostrar el contenido del módulo de exempleados
 }
 
+public function showExEmpleados($id)
+{
+    // Obtiene los submenús y otros datos necesarios
+    $data['submenus'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+    $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+    $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+    $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+
+    foreach ($data['submodulos'] as $row) {
+        $items[] = $row->id_submodulo;
+    }
+    $data['submenus'] = $items;
+
+    // Obtiene configuraciones
+    $config = $this->funciones_model->getConfiguraciones();
+    $data['version'] = $config->version_sistema;
+    $data['cliente_id'] = $id;
+    // Verifica si el módulo de exempleados está habilitado
+    $res = $this->cat_portales_model->getModulos(); 
+
+    if (!empty($res)) {
+        // Accede directamente a la fila
+        $modulo = $res; // getModulos devuelve solo una fila como array
+
+        // Verifica el valor de exempleados
+        if ($modulo['former'] == 1) {
+            // Carga la vista correspondiente para el módulo de exempleados
+            $View = $this->load->view('moduloExEmpleados/indexExEmpleados', $data, true);
+        } else {
+            // Si el módulo no está habilitado, carga una vista de descripción
+            $View = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);
+        }
+    } else {
+        // Si no hay módulos, carga una vista de error o una descripción
+        $View = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);
+    }
+
+    // Cargar las vistas en variables
+    $headerView = $this->load->view('adminpanel/header', $data, true);
+    $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+    $footerView = $this->load->view('adminpanel/footer', [], true);
+
+    // Mostrar las vistas
+    echo $headerView;
+    echo $scriptsView; // Mostrar scripts si es necesario
+    echo $View; // Mostrar el contenido del módulo de exempleados
+}
 
    
   }

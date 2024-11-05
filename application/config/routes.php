@@ -51,6 +51,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['candidato_conclusion/createPrevioPDF'] = 'Candidato_Conclusion/createPrevioPDF';
 $route['proceso/(:num)'] = 'Empleados/showEmpleados/$1';
+$route['procesoFormer/(:num)'] = 'Empleados/showExEmpleados/$1';
+
 
 $route['default_controller'] = 'login';
 $route['404_override'] = '';
