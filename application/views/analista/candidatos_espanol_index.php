@@ -874,7 +874,7 @@ function changeDatatable(url1) {
                     '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
                     .reclutadorAspirante + '</span>' : '';
                     var actionButton = '<br><button class="btn btn-success btn-sm" onclick="confirmAction(' + full.id + ')">Send to Employee</button>';
-
+ 
 
                   return '<span class="badge badge-pill badge-dark">#' + full.id +
                     '</span><br><a data-toggle="tooltip" class="sin_vinculo" style="color:black;"><b>' +
