@@ -860,7 +860,7 @@ function changeDatatable(url1) {
             "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
             "data": formattedData, // Usar los datos formateados
             "columns": [{
-                title: 'Candidato',
+                title: 'Candidate',
                 data: 'candidato',
                 "width": "15%",
                 mRender: function(data, type, full) {
@@ -873,14 +873,17 @@ function changeDatatable(url1) {
                   var reclutador = (full.reclutadorAspirante !== null) ?
                     '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
                     .reclutadorAspirante + '</span>' : '';
+                    var actionButton = '<br><button class="btn btn-success btn-sm" onclick="confirmAction(' + full.id + ')">Send to Employee</button>';
+
+
                   return '<span class="badge badge-pill badge-dark">#' + full.id +
                     '</span><br><a data-toggle="tooltip" class="sin_vinculo" style="color:black;"><b>' +
-                    full.candidato;
+                    full.candidato + actionButton;
                   // reclutador;
                 }
               },
               {
-                title: 'Fechas',
+                title: 'Dates',
                 data: 'fecha_alta',
                 bSortable: false,
                 "width": "15%",
@@ -921,18 +924,18 @@ function changeDatatable(url1) {
                       if (data != -1) {
                         if (data >= 0 && data <= 2) {
                           return res = '<div class="formato_dias dias_verde">' + data +
-                            ' días</div>';
+                            ' days</div>';
                         }
                         if (data > 2 && data <= 4) {
                           return res = '<div class="formato_dias dias_amarillo">' + data +
-                            ' días</div>';
+                            ' days</div>';
                         }
                         if (data >= 5) {
                           return res = '<div class="formato_dias dias_rojo">' + data +
-                            ' días</div>';
+                            ' days</div>';
                         }
                       } else {
-                        return "Actualizando...";
+                        return "Updating...";
                       }
                     }
                   } else {
@@ -2012,6 +2015,31 @@ function changeDatatable(url1) {
       console.error("Respuesta del servidor:", xhr.responseText);
     }
   });
+}
+function confirmAction(id) {
+    // Muestra la alerta de confirmación con SweetAlert
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Are you sure you want to send this candidate to the Employee module?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, send it!',
+        cancelButtonText: 'No, cancel',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Si el usuario confirma, llama a la función handleAction
+            handleAction(id);
+            Swal.fire(
+                'Sent!',
+                'The candidate has been sent to the Employee module.',
+                'success'
+            );
+        } else {
+            // Si el usuario cancela, muestra un mensaje de cancelación
+           
+        }
+    });
 }
 
 function changeDatatable111(url) {
