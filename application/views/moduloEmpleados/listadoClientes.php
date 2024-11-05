@@ -1,6 +1,7 @@
 <div class="container-fluid">
-    <h2>Pre-Employment</h2>
-    <p>Here you will see the list of your clients or branches.</p>
+    <h2>Employees Module</h2>
+    <p>
+    Select a user to view the  employees associated with that profile.</p>
     
     <input type="text" id="searchInput" placeholder="Search by name, email, or phone" class="search-input">
     
