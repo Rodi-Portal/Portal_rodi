@@ -1,5 +1,5 @@
  <!--Vista  Vue   -->
- <?php  echo $cliente_id. 'aqui el id cliente '; ?>
+
  <link rel="stylesheet" href="<?php echo base_url('public/vue/css/cssEmpleados.css'); ?>">
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <div class="seccion" id="seccion1">

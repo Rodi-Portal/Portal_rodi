@@ -4,19 +4,19 @@
       <ul class="navbar-nav">
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button empleados-header-button-active"
-            href="<?php echo site_url('Reclutamiento/requisicion'); ?>">Mi escritorio</a>
+            href="<?php echo site_url('Reclutamiento/requisicion'); ?>">My desktop</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/control'); ?>">Requisiciones en proceso</a>
+            href="<?php echo site_url('Reclutamiento/control'); ?>">In Progress</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/finalizados'); ?>">Requisiciones Finalizadas</a>
+            href="<?php echo site_url('Reclutamiento/finalizados'); ?>">Completed</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/bolsa'); ?>">Aspirantes</a>
+            href="<?php echo site_url('Reclutamiento/bolsa'); ?>">Applicants</a>
         </li>
       </ul>
     </div>

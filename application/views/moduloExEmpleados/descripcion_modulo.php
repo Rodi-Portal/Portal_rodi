@@ -43,7 +43,7 @@
 </style>
 
 <div class="exemployees-container">
-    <h1 class="exemployees-title">Ex-Employees Module</h1>
+    <h1 class="exemployees-title">Former Employees Module</h1>
     <p>This module allows you to send former employees with all their information, including adding new documents and comments for future references.</p>
 
     <div class="exemployees-section">
