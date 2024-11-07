@@ -1208,9 +1208,7 @@ function confirmarAccion(status) {
   } else {
     let comentario = $('#mensaje_comentario').val();
     $.ajax({
-      url: '<?php echo 
-
-base_url('Reclutamiento/deleteOrder'); ?>',
+      url: '<?php echo base_url('Reclutamiento/deleteOrder'); ?>',
       type: 'post',
       data: {
         'id': idRequisicion,
@@ -1749,16 +1747,23 @@ function openDeleteUserOrder(id, id_requisicion, nombre) {
   $('#mensajeModal').modal('show');
 }
 
-function openDeleteOrder(id, nombre) {
-  $('#titulo_mensaje').text('Eliminar requisición');
-  $('#mensaje').html('¿Desea eliminar la requisición <b>#' + id + ' ' + nombre + '</b>?');
+function openDeleteOrder(id, name) {
+  // Update the modal title with a warning icon and translated text
+  $('#titulo_mensaje').html('<i class="fa fa-exclamation-triangle text-warning"></i> Delete Requisition');
+  // Update the message with translated text and keeping the #id and #name
+  $('#mensaje').html('Are you sure you want to delete requisition <b>#' + id + ' ' + name + '</b>? This action is permanent. To proceed, press <b>Confirm</b>, or <b>Cancel</b> if you do not wish to delete it.');
+  // Set the requisition ID to be deleted
   $('#idRequisicion').val(id);
+  // Keep the textarea for entering the reason for deletion
   $('#campos_mensaje').html(
-    '<div class="row"><div class="col-12"><label>Motivo de eliminacion *</label><textarea class="form-control" rows="3" id="mensaje_comentario" name="mensaje_comentario"></textarea></div></div>'
+    '<div class="row"><div class="col-12"><label>Reason for Deletion *</label><textarea class="form-control" rows="3" id="mensaje_comentario" name="mensaje_comentario"></textarea></div></div>'
   );
-  $('#btnConfirmar').attr("onclick", "confirmarAccion(2," + id + ")");
+  // Set the confirmation action for the button
+  $('#btnConfirmar').attr("onclick", "confirmarAccion(3," + id + ")");
+  // Show the modal
   $('#mensajeModal').modal('show');
 }
+
 
 function verMensajesAvances(id_candidato, candidato) {
   $('#avancesModal #nombreCandidato').text(candidato)

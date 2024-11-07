@@ -2041,6 +2041,9 @@ function confirmAction(id) {
         }
     });
 }
+function handleAction(id) {
+  
+}
 
 function changeDatatable111(url) {
   $('#tabla').DataTable({

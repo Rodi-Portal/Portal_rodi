@@ -1984,7 +1984,7 @@ class Reclutamiento extends CI_Controller
         $this->reclutamiento_model->editarRequisicion($datos, $this->input->post('id'));
         $msj = array(
             'codigo' => 1,
-            'msg' => 'Requisicion eliminada correctamente',
+            'msg' => 'Requisition deleted successfully',
         );
         echo json_encode($msj);
     }
