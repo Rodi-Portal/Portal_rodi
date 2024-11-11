@@ -215,10 +215,10 @@ class Cat_cliente_model extends CI_Model{
 
         // La transacción fue exitosa, completarla
         $this->db->trans_commit();
-
-        // Envía el correo electrónico después de completar la transacción
-        $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode);
-
+        if($this->session->userdata('idPortal')==1 ){
+                // Envía el correo electrónico después} de completar la transacción
+                $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode);
+        }
         // Retornar el ID del cliente insertado
         return $idCliente;
 

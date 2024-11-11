@@ -526,7 +526,7 @@ class Candidato_Conclusion extends CI_Controller
         date_default_timezone_set('America/Mexico_City');
         //$id_candidato = $this->input->post('idPDF');
         $id_usuario = $this->session->userdata('id');
-        $id_candidato = $_POST['idCandidatoPDF'];
+        $id_candidato = isset($_POST['idCandidatoPDF']) ? $_POST['idCandidatoPDF'] : (isset($_GET['idCandidatoPDF']) ? $_GET['idCandidatoPDF'] : null);
 
         $url = API_URL . "report/{$id_candidato}";
 

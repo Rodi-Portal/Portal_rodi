@@ -50,6 +50,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['candidato_conclusion/createPrevioPDF'] = 'Candidato_Conclusion/createPrevioPDF';
+$route['candidato_conclusion/createPDF'] = 'Candidato_Conclusion/createPDF';
+
 $route['proceso/(:num)'] = 'Empleados/showEmpleados/$1';
 $route['procesoFormer/(:num)'] = 'Empleados/showExEmpleados/$1';
 
