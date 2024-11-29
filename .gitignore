@@ -7,6 +7,8 @@ application/logs/*
 !application/logs/index.html
 
 !application/*/.htaccess
+application/views/login/login_view.php
+application/views/login/verify_view.php
 
 application/session/*
 application/ci_sessions/*
