@@ -1,22 +1,23 @@
 <div class="reclutamiento-page">
-  <nav class="empleados-header">
+  <nav class="empleados-header navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <ul class="navbar-nav">
+      <!-- Menú con iconos siempre visibles -->
+      <ul class="navbar-nav reclutamiento-navbar-nav">
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button empleados-header-button-active"
-            href="<?php echo site_url('Reclutamiento/requisicion'); ?>">My desktop</a>
+            href="<?php echo site_url('Reclutamiento/requisicion'); ?>"><i class="fas fa-desktop"></i> My desktop</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/control'); ?>">In Progress</a>
+            href="<?php echo site_url('Reclutamiento/control'); ?>"><i class="fas fa-spinner"></i> In Progress</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/finalizados'); ?>">Completed</a>
+            href="<?php echo site_url('Reclutamiento/finalizados'); ?>"><i class="fas fa-check-circle"></i> Completed</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/bolsa'); ?>">Applicants</a>
+            href="<?php echo site_url('Reclutamiento/bolsa'); ?>"><i class="fas fa-users"></i> Applicants</a>
         </li>
       </ul>
     </div>
@@ -27,91 +28,107 @@
       <p>Por favor selecciona un módulo del menú.</p>
     </div>
   </div>
+</div>
 
-  <style>
-  .reclutamiento-page .empleados-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    margin: 0;
-    background-color: #f0f0f0;
-  }
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0-alpha1/css/bootstrap.min.css" rel="stylesheet">
 
+<!-- Bootstrap JS y Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0-alpha1/js/bootstrap.min.js"></script>
+
+<!-- Tu código CSS adicional -->
+<!-- Estilos adicionales -->
+<style>
+.reclutamiento-page .empleados-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+.reclutamiento-page .navbar-nav {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.reclutamiento-page .nav-item {
+  margin: 0 20px;
+}
+
+.reclutamiento-page .empleados-header-button-container {
+  text-align: center;
+}
+
+.reclutamiento-page .empleados-header-button {
+  display: inline-block;
+  margin: 0;
+  padding: 12px;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  background-color: #5783b1;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s ease;
+  outline: none;
+  text-decoration: none;
+  width: 100px;
+  text-align: center;
+}
+
+.reclutamiento-page .empleados-header-button-active {
+  background-color: #4098f6;
+  border-bottom: 3px solid #ffffff;
+  transform: translateY(-10px);
+}
+
+.reclutamiento-page .empleados-header-button:hover {
+  background-color: #4a6ea9;
+}
+
+.reclutamiento-page .empleados-header-button:focus {
+  box-shadow: 0 0 0 3px rgba(64, 152, 246, 0.3);
+}
+
+.reclutamiento-page #module-content {
+  padding: 20px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Estilos Responsivos */
+@media (max-width: 767px) {
   .reclutamiento-page .navbar-nav {
-    display: flex;
     flex-direction: row;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    justify-content: space-around;
-    /* Distribuir los elementos uniformemente */
+    justify-content: space-evenly;
     width: 100%;
-    /* Asegúrate de que ocupa todo el ancho */
   }
 
   .reclutamiento-page .nav-item {
-    margin: 0 20px;
-    /* Espacio entre botones */
-  }
-
-  .reclutamiento-page .empleados-header-button-container {
-    text-align: center;
+    margin: 10px 0;
   }
 
   .reclutamiento-page .empleados-header-button {
-    display: inline-block;
-    margin: 0;
-    padding: 12px 24px;
-    border: 2px solid #007bff;
-    border-radius: 8px;
-    background-color: #5783b1;
-    color: white;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    transition: all 0.3s ease;
-    outline: none;
-    text-decoration: none;
-    /* Evita subrayado */
+    font-size: 14px;
+    padding: 8px;
+    width: 80px;
   }
 
-  .reclutamiento-page .empleados-header-button-active {
-    background-color: #4098f6;
-    border-bottom: 3px solid #ffffff;
-    transform: translateY(-10px);
-    /* Levanta el botón */
+  .reclutamiento-page .empleados-header-button-container {
+    width: 25%;
   }
-
-  .reclutamiento-page .empleados-header-button:hover {
-    background-color: #4a6ea9;
-  }
-
-  .reclutamiento-page .empleados-header-button:focus {
-    box-shadow: 0 0 0 3px rgba(64, 152, 246, 0.3);
-  }
-
-  /* Estilos generales */
-  .reclutamiento-page body {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    color: #2c3e50;
-    margin: 50px;
-    padding: 50px;
-  }
-
-  .reclutamiento-page h3 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .reclutamiento-page #module-content {
-    padding: 20px;
-    text-align: center;
-    margin-top: 20px;
-  }
-  </style>
+}
+</style>
 </div>
 
 <script>
