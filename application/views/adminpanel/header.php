@@ -143,39 +143,6 @@
 
 </li>
       <!-- Divider -->
-      <hr class="sidebar-divider">
-      <!-- Reclutamiento -->
-      <div class="divider-container">
-        <a class="nav-link" href="<?php echo site_url('Reclutamiento/menu') ?>">
-          <i class="fas fa-handshake"></i>
-          <span class="menu-text">Recruitment</span>
-        </a>
-      </div>
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-      <div class="divider-container">
-        <a class="nav-link" href="<?php echo site_url('Empleados/preEmpleados') ?>">
-          <i class="fas fa-handshake"></i>
-          <span class="menu-text">Pre-employment</span>
-        </a>
-      </div>
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-      <div class="divider-container">
-        <a class="nav-link" href="<?php echo site_url('Empleados/index') ?>" aria-expanded="true">
-          <i class="fas fa-handshake"></i>
-          <span class="menu-text">Employee</span>
-        </a>
-      </div>
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-      <div class="divider-container">
-        <a class="nav-link" href="<?php echo site_url('Empleados/exEmpleados') ?>">
-          <i class="fas fa-handshake"></i>
-          <span class="menu-text">Former Employee</span>
-        </a>
-      </div>
-
 
       <!-- Reportes -->
       <?php
