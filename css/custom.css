@@ -395,12 +395,12 @@ color: white;
   }
 
   .sidebar h2 {
-    font-size: 1.25rem; /* Tamaño de fuente por defecto */
+    font-size: 1.05rem; /* Tamaño de fuente por defecto */
     margin: 10px 0; /* Márgenes por defecto */
 }
 
 .sidebar-brand img {
-    width: 100px; /* Tamaño del logo por defecto */
+    width: 90px; /* Tamaño del logo por defecto */
 }
 
 }
@@ -408,7 +408,7 @@ color: white;
 
 @media (min-width: 577px) and (max-width: 768px) {
   .sidebar h2 {
-      font-size: 1.125rem; /* Tamaño de fuente ligeramente más pequeño */
+      font-size: 1rem; /* Tamaño de fuente ligeramente más pequeño */
       margin: 8px 0; /* Márgenes ajustados */
   }
 
@@ -848,29 +848,7 @@ color: white;
 
 /* diseño  de    divisores  del menu lateral  */
 
-.divider-container {
-  position: relative;
- /* Ajuste del margen superior e inferior */
-  text-align: left; /* Centra el texto y la línea */
-}
 
-
-
-.divider-container span {
-
-  display: inline-block;
-  font-weight: 600;
-  background: rgb(54, 91, 131);/* Color de fondo difuminado para el texto */
-  color: #ffffffe1; /* Color del texto */
-  padding: 0 10px; /* Elimina el espaciado alrededor del texto */
-  margin: 0; /* Asegura que no haya margen alrededor del texto */
-  line-height: 1; /* Ajusta la altura de línea para alinear el texto con la línea divisoria */
-  z-index: 2; /* Asegura que el texto esté por encima de la línea */
-  white-space: nowrap; /* Evita el salto de línea del texto */
-  border-radius: 10px;
- 
-  /* Opcional: agrega bordes redondeados */
-}
 
 .custom-menu {
   background-color: #fbfcfe; /* Color de fondo del menú */
@@ -969,7 +947,6 @@ color: white;
 /* Estilos    responsivos  para  el menu  principal  */
 
 /* Estilos generales */
-/* Estilos generales */
 .navbar.custom-navbar {
   display: flex;
   flex-wrap: nowrap; /* No permite que los elementos bajen de línea */
@@ -977,6 +954,8 @@ color: white;
   white-space: nowrap; /* Mantiene los botones en línea */
   align-items: center;
   padding: 0.5rem 1rem;
+  z-index: 1001; /* Asegura que esté por encima del lateral */
+  position: relative; /* Para asegurarse de que el z-index funcione correctamente */
 }
 
 /* Quita el estilo de scrollbar para navegadores modernos */
@@ -993,8 +972,8 @@ color: white;
   background-color: #555; /* Color del scrollbar al pasar el mouse */
 }
 
-/* Botones en pantallas grandes */
-.custom-navbar .button-container .custom-btn {
+/* Estilo general para los botones */
+.navbar .button-container .custom-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1004,34 +983,35 @@ color: white;
   flex-shrink: 0; /* Evita que los botones se reduzcan */
 }
 
-/* Íconos pequeños */
-.custom-navbar .button-container .custom-btn i {
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
+/* Estilos para los iconos */
+.navbar .button-container .custom-btn i {
+  margin-right: 0.5rem; /* Espaciado entre el ícono y el texto */
+  font-size: 1.2rem; /* Tamaño del ícono */
 }
 
 /* Media Queries para pantallas pequeñas */
-@media (max-width: 768px) {
-  .custom-navbar .button-container .custom-btn {
-    padding: 0.5rem;
+/* Media Query para pantallas pequeñas */
+@media (max-width: 900px) {
+  .navbar .button-container .custom-btn {
     font-size: 0; /* Oculta el texto */
+    padding: 0.5rem; /* Ajusta el padding para íconos */
   }
 
-  .custom-navbar .button-container .custom-btn i {
-    font-size: 1.5rem; /* Tamaño del ícono */
-    margin-right: 0; /* Quita espaciado entre ícono y texto */
+  .navbar .button-container .custom-btn i {
+    font-size: 1.5rem; /* Tamaño más grande para los íconos */
+    margin-right: 0; /* Elimina el margen entre íconos y texto */
+  }
+
+  .navbar .button-container .custom-btn span {
+    display: none; /* Oculta el texto cuando la pantalla es pequeña */
   }
 }
-
-
 
 /* Ajustes  menu lateral  para  que  sea  responsivo */
 
 /* Estilos del Sidebar */
 #accordionSidebar {
   background-color: #343a40;
-  height: 100vh;
-  position: fixed;
   top: 0;
   left: 0;
   width: 250px; /* Ancho fijo del sidebar */
@@ -1039,34 +1019,13 @@ color: white;
   padding-top: 20px;
   transition: all 0.3s ease;
 }
-
-.sidebar-brand img {
-  max-width: 80%;
-  margin-bottom: 20px;
+/* Asegurarse de que el contenido no se oculte detrás del sidebar */
+#content {
+  transition: margin-left 0.3s ease; /* Suaviza la animación cuando el sidebar se abre o cierra */
 }
 
-.nav-item .nav-link {
-  color: #ddd;
-  font-size: 16px;
-  padding: 12px 20px;
-  transition: 0.3s;
-}
-
-.nav-item .nav-link:hover {
-  background-color: #007bff;
-  color: white;
-}
-
-.nav-item .nav-link i {
-  margin-right: 10px;
-}
-
-.nav-item .nav-link span {
-  font-weight: bold;
-}
-
-/* Mejorando la visibilidad en pantallas pequeñas */
-@media (max-width: 768px) {
+/* Ocultar el contenido en pantallas pequeñas */
+@media (max-width: 900px) {
   #accordionSidebar {
     display: none; /* Ocultar el sidebar por defecto en pantallas pequeñas */
     position: absolute;
@@ -1079,12 +1038,47 @@ color: white;
     left: 0; /* Desplazar el sidebar a la izquierda */
   }
 
+  /* Asegurarse de que el contenido se desplace cuando el sidebar se muestre */
+  #content {
+    margin-left: 0; /* El contenido vuelve a su posición cuando el sidebar está oculto */
+  }
+
   /* Estilo del botón de alternancia */
   #sidebarToggle {
     position: fixed;
     top: 20px;
     left: 20px;
     z-index: 1000;
+  }
+}
+
+/* General Styles for nav-links */
+.nav-link { 
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Espaciado entre el icono y el texto */
+}
+
+/* Icon Styles */
+.nav-link i {
+  font-size: 1.2rem; /* Tamaño del ícono */
+  color: #faf8f8; /* Color del ícono */
+}
+
+/* Text Styles */
+.nav-link span {
+  font-size: 2rem; /* Tamaño del texto */
+  color: #ffffff; /* Color del texto */
+}
+
+/* Media Query for Small Screens */
+@media (max-width: 900px) {
+  .nav-link span {
+    display: none; /* Oculta el texto */
+  }
+
+  .nav-link i {
+    font-size: 1.0rem; /* Ajusta el tamaño del ícono */
   }
 }
 

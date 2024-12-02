@@ -82,7 +82,7 @@
   transition: all 0.3s ease;
   outline: none;
   text-decoration: none;
-  width: 100px;
+  width: 150px;
   text-align: center;
 }
 
@@ -119,7 +119,7 @@
   }
 
   .reclutamiento-page .empleados-header-button {
-    font-size: 14px;
+    font-size: 12px;
     padding: 8px;
     width: 80px;
   }

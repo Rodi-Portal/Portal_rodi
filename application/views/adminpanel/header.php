@@ -107,7 +107,41 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
       <!-- Divider with Text -->
+      <li class="nav-item">
+        <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"><i
+            class="fas fa-users"></i>
+          <span>Recruitment</span><!-- Icono de FontAwesome para Recruitment -->
 
+        </a>
+
+      </li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+      <li class="nav-item">
+        <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>" class="nav-link ">
+          <i class="fas fa-user-clock"></i>
+          <span>Pre-employment</span>
+        </a>
+
+      </li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+      <li class="nav-item">
+        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
+          <i class="fas fa-user-times"></i>
+          <span>Employee</span>
+        </a>
+
+</li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+      <li class="nav-item">
+      <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
+                  <i class="fas fa-user-times"></i>
+          <span>Former Employee</span>
+        </a>
+
+</li>
       <!-- Divider -->
       <hr class="sidebar-divider">
       <!-- Reclutamiento -->
@@ -197,6 +231,8 @@
 
 
 
+
+
       <!-- Catalogos -->
       <?php
       if (in_array(5, $submenus)) {?>
@@ -215,7 +251,7 @@
             <?php
             }?>
             <?php
-            if ($idRol == 1 || $idRol == 6) {?>
+if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">User's </a>
             <?php
             }?>
@@ -236,7 +272,7 @@
         </div>
       </li>
       <?php }
-                ?>
+?>
 
 
       <!-- ?php
@@ -247,8 +283,7 @@
 
 
 
-     <button id="sidebarToggle" class="btn btn-primary d-md-none">
-
+      <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
         <i class="fa fa-bars"></i>
       </button>
     </ul>
@@ -261,26 +296,31 @@
       <div id="content">
 
         <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow custom-navbar">
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
           <ul class="navbar-nav d-flex flex-row w-100">
 
             <!-- Contenedor para los botones -->
             <li class="nav-item custom-menu" style="flex: 1;">
               <div class="button-container">
                 <a id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>" class="btn custom-btn">
-                  <i class="fas fa-user-plus"></i> Recruitment
+                  <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
+                  Recruitment
                 </a>
                 <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>"
                   class="btn custom-btn">
-                  <i class="fas fa-user-check"></i> Pre-employment
+                  <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
+                  Pre-employment
                 </a>
                 <a id="employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="btn custom-btn">
-                  <i class="fas fa-users"></i> Employee
+                  <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
+                  Employee
                 </a>
                 <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"
                   class="btn custom-btn">
-                  <i class="fas fa-user-slash"></i> Former employee
+                  <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
+                  Former employee
                 </a>
+
               </div>
             </li>
 
@@ -290,7 +330,7 @@
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <?php if (isset($contadorNotificaciones)) {
-          $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
+            $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
                   style="display: <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php } ?>
@@ -321,8 +361,6 @@
             </li>
           </ul>
         </nav>
-
-
 
         <!-- RutasVue-->
         <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
