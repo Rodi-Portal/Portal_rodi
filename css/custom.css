@@ -1053,7 +1053,7 @@ color: white;
 }
 
 /* General Styles for nav-links */
-.nav-link {
+.nav-link { 
   display: flex;
   align-items: center;
   gap: 0.5rem; /* Espaciado entre el icono y el texto */
