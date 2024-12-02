@@ -13,20 +13,22 @@
 
   <!-- Custom Fonts -->
   <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
 
- 
+
   <?php echo link_tag("css/sb-admin-2.min.css"); ?>
-  
+
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
 
   <!-- Select Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-   <!-- CSS -->
-   <?php echo link_tag("css/custom.css"); ?>
+  <!-- CSS -->
+  <?php echo link_tag("css/custom.css"); ?>
 
   <!-- Sweetalert 2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
@@ -39,7 +41,7 @@
   <script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-  
+
   <!-- Incluir Bootstrap Select JS -->
 
   <!-- Page Level Plugins -->
@@ -47,8 +49,8 @@
   <script src="<?php echo base_url() ?>js/chart.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
-	<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
-  
+  <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+
   <!-- FullCalendar (Descomentado si se necesita) -->
   <!--<link href='<?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
 
@@ -56,7 +58,7 @@
   <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
 
   <!-- Inicialización de Selectpicker -->
- 
+
 </head>
 
 <body id="page-top">
@@ -102,43 +104,43 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
       <!-- Divider with Text -->
-      <div class="divider-container">
-      <a class="nav-link " href="<?php echo site_url('Reclutamiento/menu') ?>" >
-          <i class="fas fa-handshake"></i>
-          <span>Recruitment</span>
+      <li class="nav-item">
+        <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"><i
+            class="fas fa-users"></i>
+          <span>Recruitment</span><!-- Icono de FontAwesome para Recruitment -->
+
         </a>
-     
-      </div>
-       <!-- Divider -->
-       <hr class="sidebar-divider">
-       <div class="divider-container">
-      <a class="nav-link " href="<?php echo site_url('Empleados/preEmpleados') ?>" >
-          <i class="fas fa-handshake"></i>
+
+      </li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+      <li class="nav-item">
+        <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>" class="nav-link ">
+          <i class="fas fa-user-clock"></i>
           <span>Pre-employment</span>
         </a>
-     
-      </div>
-       <!-- Divider -->
-       <hr class="sidebar-divider">
-       <div class="divider-container">
-      <a class="nav-link " href="<?php echo site_url('Empleados/index') ?>"
-          aria-expanded="true" >
-          <i class="fas fa-handshake"></i>
+
+      </li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+      <li class="nav-item">
+        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
+          <i class="fas fa-user-times"></i>
           <span>Employee</span>
         </a>
-     
-      </div>
-       <!-- Divider -->
-       <hr class="sidebar-divider">
-       <div class="divider-container">
-      <a class="nav-link " href="<?php echo site_url('Empleados/exEmpleados') ?>" >
-          <i class="fas fa-handshake"></i>
+
+</li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
+      <li class="nav-item">
+      <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
+                  <i class="fas fa-user-times"></i>
           <span>Former Employee</span>
         </a>
-     
-      </div>
-   <!-- Divider -->
-   <hr class="sidebar-divider">
+
+</li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
       <!-- Reclutamiento -->
 
 
@@ -191,8 +193,8 @@ if (in_array(25, $submenus)) {?>
 ?>
 
 
-    
-   
+
+
 
 
 
@@ -215,7 +217,7 @@ $idRol = $this->session->userdata('idrol');
 }?>
             <?php
 if ($idRol == 1 || $idRol == 6) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">User's  </a>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">User's </a>
             <?php
 }?>
             <?php
@@ -236,74 +238,94 @@ $portal = $this->session->userdata('idPortal');
       </li>
       <?php }
 ?>
-     
 
-            <!-- ?php
+
+      <!-- ?php
                         if(in_array(8, $submenus)){ ?>
                       <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
                       < ?php
                         } ? -->
-      
 
-   
+
+
       <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
         <i class="fa fa-bars"></i>
       </button>
     </ul>
     <!-- End of Sidebar -->
     <!-- Content Wrapper -->
- <!-- Content Wrapper -->
-<div id="content-wrapper" class="d-flex flex-column">
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
 
-<!-- Main Content -->
-<div id="content">
+      <!-- Main Content -->
+      <div id="content">
 
-  <!-- Topbar -->
-  <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-    <ul class="navbar-nav d-flex flex-row w-100">
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+          <ul class="navbar-nav d-flex flex-row w-100">
 
-      <!-- Contenedor para los botones -->
-      <li class="nav-item custom-menu" style="flex: 1;">
-        <div class="button-container">
-          <a id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>" class="btn custom-btn">Recruitment</a>
-          <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>" class="btn custom-btn">Pre-employment</a>
-          <a id="employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="btn custom-btn">Employee</a>
-          <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="btn custom-btn">Former employee</a>
-        </div>
-      </li>
+            <!-- Contenedor para los botones -->
+            <li class="nav-item custom-menu" style="flex: 1;">
+              <div class="button-container">
+                <a id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>" class="btn custom-btn">
+                  <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
+                  Recruitment
+                </a>
+                <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>"
+                  class="btn custom-btn">
+                  <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
+                  Pre-employment
+                </a>
+                <a id="employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="btn custom-btn">
+                  <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
+                  Employee
+                </a>
+                <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"
+                  class="btn custom-btn">
+                  <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
+                  Former employee
+                </a>
 
-      <!-- Nav Item - Alerts -->
-      <li class="nav-item dropdown no-arrow mx-1" id="iconoNotificaciones">
-        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-bell fa-fw"></i>
-          <?php if (isset($contadorNotificaciones)) {
+              </div>
+            </li>
+
+            <!-- Nav Item - Alerts -->
+            <li class="nav-item dropdown no-arrow mx-1" id="iconoNotificaciones">
+              <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bell fa-fw"></i>
+                <?php if (isset($contadorNotificaciones)) {
             $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
-            <span class="badge badge-danger badge-counter" id="contadorNotificaciones" style="display: <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
-          <?php } ?>
-        </a>
-        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-          <h6 class="dropdown-header">Notificaciones</h6>
-          <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto;"></div>
-        </div>
-      </li>
+                <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
+                  style="display: <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                <?php } ?>
+              </a>
+              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="alertsDropdown">
+                <h6 class="dropdown-header">Notificaciones</h6>
+                <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto;"></div>
+              </div>
+            </li>
 
-      <div class="topbar-divider d-none d-sm-block"></div>
+            <div class="topbar-divider d-none d-sm-block"></div>
 
-      <!-- Nav Item - User Information -->
-      <li class="nav-item dropdown no-arrow">
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
-          <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
-        </a>
-        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-            Cerrar sesión
-          </a>
-        </div>
-      </li>
-    </ul>
-  </nav>
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <span
+                  class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
+                <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
+              </a>
+              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
+                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Cerrar sesión
+                </a>
+              </div>
+            </li>
+          </ul>
+        </nav>
 
         <!-- RutasVue-->
         <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
