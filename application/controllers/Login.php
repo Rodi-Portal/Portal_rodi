@@ -502,11 +502,11 @@ class Login extends CI_Controller
                 break;
             case 'cliente_español':
 
-                redirect('Dashboard/client');
+                redirect('Dashboard/header_cliente');
                 break;
             case 'cliente_ingles':
 
-                redirect('Dashboard/client');
+                redirect('Dashboard/header_cliente');
                 break;
             case 'candidato':
                 redirect('Dashboard/candidate_panel');
@@ -561,7 +561,7 @@ class Login extends CI_Controller
                         break;
                     case 'cliente_español':
                     case 'cliente_ingles':
-                        redirect('Dashboard/client');
+                        redirect('Dashboard/header_cliente');
                         break;
                     case 'candidato':
                         redirect('Dashboard/candidate_panel');
