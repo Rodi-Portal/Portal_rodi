@@ -73,7 +73,7 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
 
-      <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png" alt="Logo">
+        <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png" alt="Logo">
 
 
       </a>
@@ -84,7 +84,7 @@
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
 
-       <!-- Menú principal -->
+      <!-- Menú principal -->
       <li class="nav-item active">
         <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>">
           <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -127,26 +127,26 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
+        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
           <i class="fas fa-user-times"></i>
           <span>Employee</span>
         </a>
 
-</li>
+      </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-      <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
-                  <i class="fas fa-user-times"></i>
+        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
+          <i class="fas fa-user-times"></i>
           <span>Former Employee</span>
         </a>
 
-</li>
+      </li>
       <!-- Divider -->
 
       <!-- Reportes -->
       <?php
-      if (in_array(9, $submenus)) {?>
+if (in_array(9, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
           aria-expanded="true" aria-controls="collapseReportes">
@@ -175,22 +175,22 @@
             <a class="collapse-item" href="< ?php echo site_url('Reporte/listado_doping_index') ?>">Listado de Doping</a-->
 
             <?php
-          if (in_array(25, $submenus)) {?>
+if (in_array(25, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
               href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Users Reports</a>
             <?php
-            }
-        if (in_array(29, $submenus)) {?>
+}
+    if (in_array(29, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Recruitment process.</a>
             <?php
-          }?>
+}?>
           </div>
         </div>
       </li>
       <?php }
-            ?>
+?>
 
 
 
@@ -202,7 +202,7 @@
 
       <!-- Catalogos -->
       <?php
-      if (in_array(5, $submenus)) {?>
+if (in_array(5, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
@@ -212,23 +212,23 @@
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-          $idRol = $this->session->userdata('idrol');
-            if ($idRol == 1 || $idRol == 6) {?>
+$idRol = $this->session->userdata('idrol');
+    if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Admon Account´s</a>
             <?php
-            }?>
+}?>
             <?php
 if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">User's </a>
             <?php
-            }?>
+}?>
             <?php
-        $portal = $this->session->userdata('idPortal');
-        $idRol = $this->session->userdata('idrol');
-        if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
+$portal = $this->session->userdata('idPortal');
+    $idRol = $this->session->userdata('idrol');
+    if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
             <?php
-            }?>
+}?>
 
             <!-- ?php
                         if(in_array(8, $submenus)){ ?>
@@ -297,10 +297,11 @@ if ($idRol == 1 || $idRol == 6) {?>
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <?php if (isset($contadorNotificaciones)) {
-            $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
+    $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none';?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
                   style="display: <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
-                <?php } ?>
+                <?php
+}?>
               </a>
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
@@ -308,6 +309,11 @@ if ($idRol == 1 || $idRol == 6) {?>
                 <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto;"></div>
               </div>
             </li>
+            <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
+  <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey">
+    <i class="fas fa-key fa-fw icono-dorado" ></i> <!-- Icono de llave -->
+  </a>
+</li>
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -315,8 +321,8 @@ if ($idRol == 1 || $idRol == 6) {?>
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <span
-                  class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                  style="font-size: 12px;"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -328,6 +334,72 @@ if ($idRol == 1 || $idRol == 6) {?>
             </li>
           </ul>
         </nav>
+     
+        <!-- Modal key supliers-->
+<div class="modal fade" id="modalKey" tabindex="-1" role="dialog" aria-labelledby="modalKeyLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content modal-key-content">
+      <div class="modal-header modal-key-header">
+        <h5 class="modal-title modal-key-title" id="modalKeyLabel">Proveedores Destacados</h5>
+        <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body modal-key-body">
+        <p class="modal-key-intro">
+          Estas compañías hermanas destacan por su excelencia y profesionalismo, apoyando nuestras operaciones.
+        </p>
+        <div class="row text-center">
+          <!-- CROLL -->
+          <div class="col-md-4 modal-key-col">
+            <div class="modal-key-card">
+              <div class="modal-key-card-header modal-key-card-croll">
+                CROLL
+              </div>
+              <div class="modal-key-card-body">
+                <p class="modal-key-card-text">Recursos Contables</p>
+              </div>
+              <div class="modal-key-card-footer">
+                Soluciones contables avanzadas.
+              </div>
+            </div>
+          </div>
+          <!-- Valor H -->
+          <div class="col-md-4 modal-key-col">
+            <div class="modal-key-card">
+              <div class="modal-key-card-header modal-key-card-valorh">
+                Valor H
+              </div>
+              <div class="modal-key-card-body">
+                <p class="modal-key-card-text">Climas Laborales y Evaluaciones</p>
+              </div>
+              <div class="modal-key-card-footer">
+                Fomentando un ambiente laboral positivo.
+              </div>
+            </div>
+          </div>
+          <!-- Asesoría Jurídica -->
+          <div class="col-md-4 modal-key-col">
+            <div class="modal-key-card">
+              <div class="modal-key-card-header modal-key-card-juridica">
+                Asesoría Jurídica
+              </div>
+              <div class="modal-key-card-body">
+                <p class="modal-key-card-text">Consultoría Jurídica</p>
+              </div>
+              <div class="modal-key-card-footer">
+                Orientación legal confiable.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer modal-key-footer">
+        <button type="button" class="btn modal-key-btn-close" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
         <!-- RutasVue-->
         <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
