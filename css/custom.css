@@ -1161,6 +1161,23 @@ color: white;
   color: white;
 }
 
+
+.modal-key-card-fiscalista {
+  background-color: #7db9e1;
+  color: white;
+}
+
+.modal-key-card-clinic {
+  background-color: #67ce92;
+  color: white;
+}
+
+.modal-key-card-cincel {
+  background-color: #c86358;
+  color: white;
+}
+
+
 .modal-key-card-body {
   padding: 15px;
   font-size: 1rem;

@@ -310,10 +310,10 @@ $portal = $this->session->userdata('idPortal');
               </div>
             </li>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
-  <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey">
-    <i class="fas fa-key fa-fw icono-dorado" ></i> <!-- Icono de llave -->
-  </a>
-</li>
+              <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey">
+                <i class="fas fa-key fa-fw icono-dorado"></i> <!-- Icono de llave -->
+              </a>
+            </li>
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -334,72 +334,119 @@ $portal = $this->session->userdata('idPortal');
             </li>
           </ul>
         </nav>
-     
-        <!-- Modal key supliers-->
-<div class="modal fade" id="modalKey" tabindex="-1" role="dialog" aria-labelledby="modalKeyLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content modal-key-content">
-      <div class="modal-header modal-key-header">
-        <h5 class="modal-title modal-key-title" id="modalKeyLabel">Proveedores Destacados</h5>
-        <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body modal-key-body">
-        <p class="modal-key-intro">
-          Estas compañías hermanas destacan por su excelencia y profesionalismo, apoyando nuestras operaciones.
-        </p>
-        <div class="row text-center">
-          <!-- CROLL -->
-          <div class="col-md-4 modal-key-col">
-            <div class="modal-key-card">
-              <div class="modal-key-card-header modal-key-card-croll">
-                CROLL
+
+        <div class="modal fade" id="modalKey" tabindex="-1" role="dialog" aria-labelledby="modalKeyLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content modal-key-content">
+              <div class="modal-header modal-key-header">
+                <h5 class="modal-title modal-key-title" id="modalKeyLabel">Proveedores Destacados</h5>
+                <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
-              <div class="modal-key-card-body">
-                <p class="modal-key-card-text">Recursos Contables</p>
+              <div class="modal-body modal-key-body">
+                <p class="modal-key-intro">
+                  Estas compañías hermanas destacan por su excelencia y profesionalismo, apoyando nuestras operaciones.
+                </p>
+                <div class="row text-center">
+                  <!-- CROL -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-croll">
+                        CROL
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Recursos Contables</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Soluciones contables avanzadas.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Valor H -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-valorh">
+                        Valor H
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Evaluaciones</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Fomentando un ambiente laboral positivo.
+                        Clima Laboral.
+                        Desempeño.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Asesoría Jurídica -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-juridica">
+                        Asesoría Jurídica
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Consultoría Jurídica</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Orientación legal confiable.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row text-center">
+                  <!-- Fiscalista -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-fiscalista">
+                        Fiscalista
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Nómina, Timbrado y Declaración de Impuestos</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Servicios fiscales de alta calidad.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Dr. Clinic -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-clinic">
+                        Dr. Clinic
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Exámenes Médicos Detallados</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Cuidado médico especializado.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- CINCEL -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-cincel">
+                        CINCEL
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Firmas Electrónicas</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Soluciones digitales innovadoras.
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="modal-key-card-footer">
-                Soluciones contables avanzadas.
-              </div>
-            </div>
-          </div>
-          <!-- Valor H -->
-          <div class="col-md-4 modal-key-col">
-            <div class="modal-key-card">
-              <div class="modal-key-card-header modal-key-card-valorh">
-                Valor H
-              </div>
-              <div class="modal-key-card-body">
-                <p class="modal-key-card-text">Climas Laborales y Evaluaciones</p>
-              </div>
-              <div class="modal-key-card-footer">
-                Fomentando un ambiente laboral positivo.
-              </div>
-            </div>
-          </div>
-          <!-- Asesoría Jurídica -->
-          <div class="col-md-4 modal-key-col">
-            <div class="modal-key-card">
-              <div class="modal-key-card-header modal-key-card-juridica">
-                Asesoría Jurídica
-              </div>
-              <div class="modal-key-card-body">
-                <p class="modal-key-card-text">Consultoría Jurídica</p>
-              </div>
-              <div class="modal-key-card-footer">
-                Orientación legal confiable.
+              <div class="modal-footer modal-key-footer">
+                <button type="button" class="btn modal-key-btn-close" data-dismiss="modal">Cerrar</button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer modal-key-footer">
-        <button type="button" class="btn modal-key-btn-close" data-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
         <!-- RutasVue-->
         <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
