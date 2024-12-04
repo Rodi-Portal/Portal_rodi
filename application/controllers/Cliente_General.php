@@ -136,18 +136,15 @@ class Cliente_General extends Custom_Controller{
         $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($id_cliente);
         $info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
         
-        $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
+       // $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
         //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
         $config = $this->funciones_model->getConfiguraciones();
-        $data['version'] = $config->version_sistema;
 
         //Modals
-        $modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
-        $modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
-
-        $this->load
-
-        ->view('clientes/panel');
+        //$modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
+        //$modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
+  
+        $this->load->view('clientes/panel');
 
       }
     }
@@ -2206,6 +2203,7 @@ class Cliente_General extends Custom_Controller{
           
       }
       else{
+
           $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="'.base_url().'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: '.$f_alta.'<br>Fecha de Elaboración: '.$fecha_fin.'</div>');
           $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="'.base_url().'img/logo_pie.png"></div>');
       }        
@@ -2218,4 +2216,42 @@ class Cliente_General extends Custom_Controller{
       $mpdf->WriteHTML($html);
       $mpdf->Output(''.$nombreArchivo.'.pdf','D'); // opens in browser
     }
+
+
+
+
+    public function descripcionesCliente($modulo)
+{
+    // Cargar configuraciones y otros datos necesarios
+    $config = $this->funciones_model->getConfiguraciones();
+    $data['version'] = $config->version_sistema;
+
+    // Cargar la vista correspondiente según el módulo
+    switch ($modulo) {
+        case 1:
+            $view = $this->load->view('reclutamiento/descripcion_modulo', $data, true);
+            break;
+        case 2:
+            $view = $this->load->view('moduloPreEmpleados/descripcion_modulo', $data, true);
+            break;
+        case 3:
+            $view = $this->load->view('moduloEmpleados/descripcion_modulo', $data, true);
+            break;
+        case 4:
+            $view = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);
+            break;
+        default:
+            $view = "Módulo no encontrado.";
+            break;
+    }
+
+    // Agregar footer si es necesario
+    $footerView = $this->load->view('adminpanel/footer', [], true);
+
+    // Renderizar las vistas
+    echo $view;
+    echo $footerView;
+}
+
+
 }

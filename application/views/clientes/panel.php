@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
 
-<head>
-  <meta charset="UTF-8">
-  <title>TalentSafe-Control</title>
-
-</head>
 
 <body>
   <div class="modal fade" id="newModal" role="dialog" data-backdrop="static" data-keyboard="false">

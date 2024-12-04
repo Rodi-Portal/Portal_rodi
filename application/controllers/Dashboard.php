@@ -149,11 +149,13 @@ class Dashboard extends CI_Controller
             redirect('Login/index');
         }
     }
+
     public function manual_usuario()
     {
         $this->load
             ->view('manual_usuario/manual');
     }
+
 
     public function ustglobal_panel()
     {
@@ -163,6 +165,61 @@ class Dashboard extends CI_Controller
             redirect('Login/index');
         }
     }
+
+
+    public function header_cliente()
+    {
+        $id_cliente = $this->session->userdata('idcliente');
+        $ingles = $this->session->userdata('ingles');
+        $data['translations'] = $this->lang->language;
+        // Cargar el idioma
+        if ($ingles == 1) {
+            $this->lang->load('clientes_panel', 'english');
+        } else {
+            $this->lang->load('clientes_panel', 'espanol');
+        }
+    
+        // Obtener datos del cliente
+        $data['translations'] = $this->lang->language;
+        $modal['translations'] = $this->lang->language;
+        $data['modals'] = $this->load->view('modals/clientes/mdl_panel', $modal, true);
+        $data['procesosActuales'] = $this->cliente_model->get_current_procedures2();
+        $datos['cliente'] = $this->cat_cliente_model->getClienteValido();
+    
+        // Verificar si hay campos vacíos
+        $data_incompleta = false; // Cambiado a booleano para mayor claridad
+        if (!empty($datos['cliente'])) {
+            foreach ($datos['cliente'] as $campo) {
+                // Verifica cada propiedad del objeto para encontrar campos vacíos
+                foreach ($campo as $valor) {
+                    if (is_null($valor) || trim($valor) === '') {
+                        $data_incompleta = true;
+                        break 2; // Salir de ambos bucles si se encuentra un campo vacío
+                    }
+                }
+            }
+        } else {
+            $data_incompleta = true; // Si no hay datos de cliente, marcar como incompleto
+        }
+    
+        if ($data_incompleta) {
+            if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
+                $this->load->view('clientes/validar_datos', $data);
+            } else {
+                redirect('Login/index');
+            }
+        } else {
+            // Verificar si todos los campos están completos y redirigir
+            if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
+                $this->load->view('clientes/header_clientes');
+                $this->load->view('adminpanel/footer', [], true);
+             
+            } else {
+                redirect('Login/index');
+            }
+        }
+    }
+
 
     public function client()
     {
@@ -199,27 +256,14 @@ class Dashboard extends CI_Controller
             $data_incompleta = true; // Si no hay datos de cliente, marcar como incompleto
         }
     
-       /* echo '<pre> Inician los datos '; 
-        print_r($datos['cliente']);
-        echo $data_incompleta ? ' (Datos incompletos)' : ' (Datos completos)';
-        echo '</pre>';
-        die();*/
-    
-        // Redirigir a la vista correspondiente
-        if ($data_incompleta) {
-            if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
-                $this->load->view('clientes/validar_datos');
-            } else {
-                redirect('Login/index');
-            }
-        } else {
+        
             // Verificar si todos los campos están completos y redirigir
             if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
                 $this->load->view('clientes/index', $data);
             } else {
                 redirect('Login/index');
             }
-        }
+        
     }
     public function datosCliente() {
         // Obtén el ID del cliente de la sesión o de otro orig

@@ -2,7 +2,13 @@
 /*  General
 /*----------------------------------------*/
 /*Boton Perszonalizado*/
+.icono-dorado {
+  color: gold !important; /* Color dorado */
+}
 
+.icono-dorado:hover {
+  color: darkgoldenrod !important;; /* Color dorado más oscuro al pasar el mouse */
+}
 /* Aumentar la especificidad */
 .btn.btn-navy {
   background-color: #003366; /* Azul marino */
@@ -1080,5 +1086,128 @@ color: white;
   .nav-link i {
     font-size: 1.0rem; /* Ajusta el tamaño del ícono */
   }
+}
+
+
+/* Estilos   key supliers*/
+/* Modal general */
+.modal-key-content {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modal-key-header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 15px 20px;
+}
+
+.modal-key-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.modal-key-close {
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Introducción del modal */
+.modal-key-intro {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+/* Tarjetas */
+.modal-key-col {
+  margin-bottom: 20px;
+}
+
+.modal-key-card {
+  border: 1px solid #e1e1e1;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.modal-key-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-key-card-header {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #e1e1e1;
+  text-transform: uppercase;
+}
+
+.modal-key-card-croll {
+  background-color: #3498db;
+  color: white;
+}
+
+.modal-key-card-valorh {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.modal-key-card-juridica {
+  background-color: #e74c3c;
+  color: white;
+}
+
+
+.modal-key-card-fiscalista {
+  background-color: #7db9e1;
+  color: white;
+}
+
+.modal-key-card-clinic {
+  background-color: #67ce92;
+  color: white;
+}
+
+.modal-key-card-cincel {
+  background-color: #c86358;
+  color: white;
+}
+
+
+.modal-key-card-body {
+  padding: 15px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.modal-key-card-footer {
+  background-color: #f8f9fa;
+  padding: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+/* Footer del modal */
+.modal-key-footer {
+  background-color: #ecf0f1;
+  padding: 15px;
+  text-align: right;
+}
+
+.modal-key-btn-close {
+  background-color: #2c3e50;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+}
+
+.modal-key-btn-close:hover {
+  background-color: #34495e;
 }
 

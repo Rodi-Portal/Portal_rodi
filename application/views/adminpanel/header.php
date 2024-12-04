@@ -52,7 +52,7 @@
   <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 
   <!-- FullCalendar (Descomentado si se necesita) -->
-  <!--<link href='<?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
+  <!--<link href='< ?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
 
   <!-- Uncomment if Pusher is needed -->
   <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
@@ -73,7 +73,7 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
 
-        <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png">
+        <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png" alt="Logo">
 
 
       </a>
@@ -82,13 +82,16 @@
 
 
       <!-- Divider -->
-      <hr class="sidebar-divider">
-      <li class="nav-item active">
-        <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>" class="btn custom-btn">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span></a>
+      <hr class="sidebar-divider my-0">
 
+      <!-- Menú principal -->
+      <li class="nav-item active">
+        <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
       </li>
+
       <!-- Divider -->
       <hr class="sidebar-divider">
 
@@ -124,25 +127,22 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
+        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
           <i class="fas fa-user-times"></i>
           <span>Employee</span>
         </a>
 
-</li>
+      </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-      <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"  class="nav-link ">
-                  <i class="fas fa-user-times"></i>
+        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
+          <i class="fas fa-user-times"></i>
           <span>Former Employee</span>
         </a>
 
-</li>
+      </li>
       <!-- Divider -->
-      <hr class="sidebar-divider">
-      <!-- Reclutamiento -->
-
 
       <!-- Reportes -->
       <?php
@@ -198,6 +198,8 @@ if (in_array(25, $submenus)) {?>
 
 
 
+
+
       <!-- Catalogos -->
       <?php
 if (in_array(5, $submenus)) {?>
@@ -211,7 +213,7 @@ if (in_array(5, $submenus)) {?>
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
 $idRol = $this->session->userdata('idrol');
-    if ($idRol == 1|| $idRol == 6) {?>
+    if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Admon Account´s</a>
             <?php
 }?>
@@ -295,16 +297,22 @@ $portal = $this->session->userdata('idPortal');
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <?php if (isset($contadorNotificaciones)) {
-            $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
+    $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none';?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
                   style="display: <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
-                <?php } ?>
+                <?php
+}?>
               </a>
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header">Notificaciones</h6>
                 <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto;"></div>
               </div>
+            </li>
+            <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
+              <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey">
+                <i class="fas fa-key fa-fw icono-dorado"></i> <!-- Icono de llave -->
+              </a>
             </li>
 
             <div class="topbar-divider d-none d-sm-block"></div>
@@ -313,8 +321,8 @@ $portal = $this->session->userdata('idPortal');
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <span
-                  class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                  style="font-size: 12px;"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -326,6 +334,119 @@ $portal = $this->session->userdata('idPortal');
             </li>
           </ul>
         </nav>
+
+        <div class="modal fade" id="modalKey" tabindex="-1" role="dialog" aria-labelledby="modalKeyLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content modal-key-content">
+              <div class="modal-header modal-key-header">
+                <h5 class="modal-title modal-key-title" id="modalKeyLabel">Proveedores Destacados</h5>
+                <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body modal-key-body">
+                <p class="modal-key-intro">
+                  Estas compañías hermanas destacan por su excelencia y profesionalismo, apoyando nuestras operaciones.
+                </p>
+                <div class="row text-center">
+                  <!-- CROL -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-croll">
+                        CROL
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Recursos Contables</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Soluciones contables avanzadas.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Valor H -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-valorh">
+                        Valor H
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Evaluaciones</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Fomentando un ambiente laboral positivo.
+                        Clima Laboral.
+                        Desempeño.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Asesoría Jurídica -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-juridica">
+                        Asesoría Jurídica
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Consultoría Jurídica</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Orientación legal confiable.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row text-center">
+                  <!-- Fiscalista -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-fiscalista">
+                        Fiscalista
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Nómina, Timbrado y Declaración de Impuestos</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Servicios fiscales de alta calidad.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Dr. Clinic -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-clinic">
+                        Dr. Clinic
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Exámenes Médicos Detallados</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Cuidado médico especializado.
+                      </div>
+                    </div>
+                  </div>
+                  <!-- CINCEL -->
+                  <div class="col-md-4 modal-key-col">
+                    <div class="modal-key-card">
+                      <div class="modal-key-card-header modal-key-card-cincel">
+                        CINCEL
+                      </div>
+                      <div class="modal-key-card-body">
+                        <p class="modal-key-card-text">Firmas Electrónicas</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Soluciones digitales innovadoras.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer modal-key-footer">
+                <button type="button" class="btn modal-key-btn-close" data-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- RutasVue-->
         <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
