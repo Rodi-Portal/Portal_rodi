@@ -2,16 +2,19 @@
 <div class="align-items-center mb-4">
   <div class="row">
     <div class="col-sm-12 col-md-6 d-flex justify-content-start align-items-center">
-      <h2>Admon account's</h2>
+      <h2>Administradores del Sistema</h2>
     </div>
     <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
       <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
         <span class="icon text-white-50">
           <i class="fas fa-user-tie"></i>
         </span>
-        <span class="text">Add Acount</span>
+        <span class="text">Crear Usuario</span>
       </a>
     </div>
+  </div>
+  <div>
+  <P> En este módulo podrás gestionar a tus usuarios internos. Tendrás la capacidad  de crear  <br>nuevos usuarios, actualizar su información y reenviar credenciales cuando sea necesario.</P>
   </div>
 </div>
 
@@ -121,7 +124,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Username',
+        title: 'Nombre',
         data: 'referente',
         bSortable: false,
         "width": "15%",
@@ -130,7 +133,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Portal',
+        title: 'Matriz',
         data: 'nombre_portal',
         bSortable: false,
         "width": "15%",
@@ -139,7 +142,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Email',
+        title: 'Correo',
         data: 'correo',
         bSortable: false,
         "width": "15%",
@@ -148,7 +151,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Role Assignment',
+        title: 'Rol Usuario',
         data: 'nombre_rol',
         bSortable: false,
         "width": "3%",
@@ -157,7 +160,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Activation Date',
+        title: 'Fecha de creacion',
         data: 'creacion',
         bSortable: false,
         "width": "7%",
@@ -174,7 +177,7 @@ $(document).ready(function() {
       },
 
       {
-        title: 'Last Edited Date',
+        title: 'Última Actualización',
         data: 'edicion',
         bSortable: false,
         "width": "8%",
@@ -192,7 +195,7 @@ $(document).ready(function() {
 
 
       {
-        title: 'Actions',
+        title: 'Acciones',
         data: 'id_usuario',
         bSortable: false,
         "width": "15%",
@@ -285,19 +288,20 @@ $(document).ready(function() {
 
     /****************************************************************/
    "language": {
-    "lengthMenu": "Show _MENU_ records",
-    "zeroRecords": "No records found",
-    "info": "Showing records from _START_ to _END_ of a total of _TOTAL_ records",
-    "infoEmpty": "No records available",
-    "infoFiltered": "(Filtered from _MAX_ total records)",
-    "sSearch": "Search:",
+    "lengthMenu": "Mostrar _MENU_ registros",
+    "zeroRecords": "No se encontraron registros",
+    "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+    "infoEmpty": "No hay registros disponibles",
+    "infoFiltered": "(Filtrado de _MAX_ registros en total)",
+    "sSearch": "Buscar:",
     "oPaginate": {
-        "sLast": "Last page",
-        "sFirst": "First",
-        "sNext": "Next",
-        "sPrevious": "Previous"
+        "sLast": "Última página",
+        "sFirst": "Primera",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
     }
-} 
+  }
+
   });
 
   $(window).on('resize', function() {

@@ -130,6 +130,7 @@ class Cronjobs extends CI_Controller{
 			echo "Se ha finalizado la creacion de registros para UST";
 
 		}
+
     public function convertir(){
       $query = $this->db->query("SELECT id, creacion, edicion, FROM tabla");
 
@@ -299,6 +300,8 @@ class Cronjobs extends CI_Controller{
     //echo "dias: ".$contadorDias;
     echo "Calculo de SLA para candidatos finalizado";
 	}
+
+
   function generarPDF(){
     $data['candidatos'] = $this->cronjobs_model->getCandidatoFinalizados();
     $num = 0;
@@ -420,6 +423,7 @@ class Cronjobs extends CI_Controller{
       }
     }
   }
+
 	function generarTiempoIngles(){
 		date_default_timezone_set('America/Mexico_City');
         
@@ -535,6 +539,7 @@ class Cronjobs extends CI_Controller{
 		}
 		echo "Calculo de dias en los procesos de clientes en ingles terminado";
 	}
+
   function generarTiempoUST(){
 		date_default_timezone_set('America/Mexico_City');
         
@@ -700,6 +705,7 @@ class Cronjobs extends CI_Controller{
 		}
 		echo "Calculo de porcentaje de avances en los procesos UST GLOBAL terminado";
 	}
+
 	function asignarSeccionesCandidatos(){
 		//Sempra
 		/*$data['candidatos'] = $this->cronjobs_model->getCandidatosPorProyecto(24);
@@ -1299,6 +1305,7 @@ class Cronjobs extends CI_Controller{
 		}
 		echo "Finalizo la asignacion de Secciones a los Candidatos, con ".$cont." registros";
 	}
+
 	function completarHistorialProyectosPrevios(){
 		date_default_timezone_set('America/Mexico_City');
 		$date = date('Y-m-d H:i:s');
@@ -1335,6 +1342,7 @@ class Cronjobs extends CI_Controller{
 		}
 		echo $salida;
 	}
+
 	/*function generarAvancesClientesGeneral(){
 		$data['candidatos'] = $this->cronjobs_model->getCandidatosClientesGeneral();
 		foreach($data['candidatos'] as $c){
@@ -1383,6 +1391,10 @@ class Cronjobs extends CI_Controller{
 		}
 		echo "Calculo de porcentaje de avances en los procesos UST GLOBAL terminado";
 	}*/
+
+
+
+
 	function generarDocumentosSolicitados(){
 		$data['secciones'] = $this->cronjobs_model->getSeccionVerificacionDocumentacion();
 		if($data['secciones']){
@@ -1896,6 +1908,7 @@ class Cronjobs extends CI_Controller{
 			echo "Se ha finalizado la asignacion de documentos requeridos para los candidatos de candidato_Seccion>";
 		}
 	}
+
 	function modificarVerificacionDocsEnSecciones(){
 		$data['secciones'] = $this->cronjobs_model->getSeccionesHCL();
 		if($data['secciones']){
@@ -1921,6 +1934,7 @@ class Cronjobs extends CI_Controller{
 		}
 		echo "Ha finalizado el cambio de id de la seccion de global search";
 	}
+
 	function generarDocumentosSolicitadosPorProyecto(){
 		$id_tipo_documento = 12;
 		$data['secciones'] = $this->cronjobs_model->getCandidatosSeccionPorProyecto('USAA');
@@ -1953,6 +1967,7 @@ class Cronjobs extends CI_Controller{
 			echo "Se ha finalizado la asignacion de documento requerido para los candidatos del proyecto";
 		}
 	}
+
 	function crearTokenPruebasCovid(){
 		$data['pruebas'] = $this->cronjobs_model->getPruebasCovid();
 		foreach($data['pruebas'] as $row){
@@ -1964,6 +1979,7 @@ class Cronjobs extends CI_Controller{
 		}
 		echo "Se ha terminado de insertar los token en covid";
 	}
+
 	function formatoFecha($f){
 		date_default_timezone_set('America/Mexico_City');
 		$numeroDia = date('d', strtotime($f));
@@ -1975,6 +1991,7 @@ class Cronjobs extends CI_Controller{
 
 		return $nombreMes." ".$numeroDia.", ".$anio;
 	}
+
 	function formatoFechaEspanol($f){
 		date_default_timezone_set('America/Mexico_City');
 		$numeroDia = date('d', strtotime($f));
@@ -1986,6 +2003,7 @@ class Cronjobs extends CI_Controller{
 
 		return $nombreMes." ".$numeroDia.", ".$anio;
 	}
+
   function generarSocioeconomicoConSecciones(){
     date_default_timezone_set('America/Mexico_City');
     $date = date('Y-m-d H:i:s');
@@ -2050,6 +2068,7 @@ class Cronjobs extends CI_Controller{
       $num++;
     }
   }
+
   function generarRegistroVisita(){
     date_default_timezone_set('America/Mexico_City');
     $date = date('Y-m-d H:i:s');
@@ -2069,6 +2088,7 @@ class Cronjobs extends CI_Controller{
       $num++;
     }
   }
+
   function generarFechasFinalizacionBeca(){
     $candidatos = $this->cronjobs_model->getCandidatosBecas();
     if($candidatos){
@@ -2090,4 +2110,12 @@ class Cronjobs extends CI_Controller{
       echo "No se encontraron candidatos con beca";
     }
   }
+
+
+	function  enviarNotificaciones(){
+
+		$data = $this->cronjobs_model->get_all_notificaciones_empleado();
+
+		print_r($data);
+	}
 }

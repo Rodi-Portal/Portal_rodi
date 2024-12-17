@@ -1,6 +1,15 @@
 /*----------------------------------------*/
 /*  General
 /*----------------------------------------*/
+
+
+body, p, h1, h2, h3, h4, h5, h6, table{
+color: #000000 !important; 
+}
+body, p, h1, h2, h3, h4, h5, h6{
+  
+  margin-left: 20px;;/* Sobrescribe el color de texto */
+  }
 /*Boton Perszonalizado*/
 .icono-dorado {
   color: gold !important; /* Color dorado */

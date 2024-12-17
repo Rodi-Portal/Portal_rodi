@@ -499,4 +499,11 @@ class Cronjobs_model extends CI_Model{
 			$query = $this->db->get();
       return $query->row();
     }
+
+
+		public function get_all_notificaciones_empleado() {
+			$query = $this->db->get('notificaciones_empleados'); // SELECT * FROM notificaciones_empleado
+			return $query->result(); // Devuelve un array de objetos
+	}
+
 }
