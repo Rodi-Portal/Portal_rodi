@@ -3,7 +3,8 @@
 
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Cliente: <small><?php echo $cliente; ?></small></h1><br>
+    <h1 class="h3 mb-0 text-gray-800">Sucursal: <small><?php echo $cliente; ?></small></h1><br>
+   
     <?php
 if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri->segment(3) != 233 && $this->uri->segment(3) != 250) {
     ?>
@@ -21,31 +22,9 @@ if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri
       </span>
       <span class="text">Registrar candidato</span>
     </a>
+
     <?php }?>
-    <!-- a href="#" class="btn btn-info btn-icon-split" data-toggle="modal" data-target="#subirVisitaModal">
-            <span class="icon text-white-50">
-                <i class="fas fa-upload"></i>
-            </span>
-            <span class="text">Verificar datos de visita</span>
-        </a -->
-    <?php
-if ($this->uri->segment(3) == 33) {?>
-    <!--a href="#" class="btn btn-info btn-icon-split" data-toggle="modal" data-target="#registroCandidatoBecaModal">
-            <span class="icon text-white-50">
-                <i class="fas fa-user-plus"></i>
-            </span>
-            <span class="text">Registrar candidato para solicitud de Beca</span>
-        </a -->
-    <?php }
-//if($this->session->userdata('idrol') != 2){ ?>
-    <!--a href="#" class="btn btn-primary btn-icon-split" id="btn_asignacion" onclick="asignarCandidatoAnalista()">
-            <span class="icon text-white-50">
-                <i class="fas fa-people-arrows"></i>
-            </span>
-            <span class="text">Reasignacion de candidato</span >
-        </a -->
-    <?php
-//} ?>
+   
     <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
       style="display: none;">
       <span class="icon text-white-50">
@@ -53,7 +32,10 @@ if ($this->uri->segment(3) == 33) {?>
       </span>
       <span class="text">Regresar al listado</span>
     </a>
+
   </div>
+  <p>
+  En este módulo se presenta un listado de los posibles empleados asociados a una sucursal, área o departamento específicos. Estos candidatos aún se encuentran en periodo de exámenes y pruebas. Una vez que hayan concluido satisfactoriamente dicho proceso, podrás proceder a contratarlos y enviarlos al módulo de empleados para su gestión.</p>
 
   <?php echo $modals;
 echo $mdl_candidato; ?>
@@ -123,6 +105,7 @@ echo $mdl_candidato; ?>
   </section>
 
 </div>
+
 <!-- /.content-wrapper -->
 
 <!-- Funciones para guardar secciones -->
