@@ -5,19 +5,19 @@
       <ul class="navbar-nav reclutamiento-navbar-nav">
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button empleados-header-button-active"
-            href="<?php echo site_url('Reclutamiento/requisicion'); ?>"><i class="fas fa-desktop"></i> My desktop</a>
+            href="<?php echo site_url('Reclutamiento/requisicion'); ?>"><i class="fas fa-desktop"></i>Mi escritorio</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/control'); ?>"><i class="fas fa-spinner"></i> In Progress</a>
+            href="<?php echo site_url('Reclutamiento/control'); ?>"><i class="fas fa-spinner"></i>En progreso</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/finalizados'); ?>"><i class="fas fa-check-circle"></i> Completed</a>
+            href="<?php echo site_url('Reclutamiento/finalizados'); ?>"><i class="fas fa-check-circle"></i>Finalizadas</a>
         </li>
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/bolsa'); ?>"><i class="fas fa-users"></i> Applicants</a>
+            href="<?php echo site_url('Reclutamiento/bolsa'); ?>"><i class="fas fa-users"></i>Bolsa de trabajo </a>
         </li>
       </ul>
     </div>

@@ -1,19 +1,17 @@
 
 <div class="container-fluid">
-<h2>Employees Module</h2>
-    <p>
-    Select a user to view the  employees associated with that profile.</p>
-    <table id="processTable" class="display" style="width: 100%;">
-        <thead>
-            <tr>
-                <th>Client Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                
-                <th>Created Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
+<h2>Modulo de Empleados</h2>
+<p>En este módulo podrás consultar un listado de tus clientes o sucursales. Al seleccionar uno, accederás al listado de empleados asociados y podrás gestionar sus datos y procesos de manera eficiente.</p>
+<table id="processTable" class="display" style="width: 100%;">
+    <thead>
+        <tr>
+            <th>Nombre del Cliente</th>
+            <th>Correo Electrónico</th>
+            <th>Teléfono</th>
+            <th>Fecha de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
         <tbody>
             <?php if (isset($permisos) && !empty($permisos)): ?>
                 <?php foreach ($permisos as $p): ?>
@@ -24,7 +22,7 @@
                             <td><?php echo isset($p->telefono) ? htmlspecialchars($p->telefono, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
                             <td><?php echo isset($p->creacion) ? htmlspecialchars($p->creacion, ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
                             <td>
-                            <a href="<?php echo site_url('proceso/' . $p->id_cliente); ?>" class="btn btn-primary">View Employees</a>
+                            <a href="<?php echo site_url('proceso/' . $p->id_cliente); ?>" class="btn btn-primary">Ver Empleados</a>
                             </td>
                         </tr>
                     <?php endif; ?>

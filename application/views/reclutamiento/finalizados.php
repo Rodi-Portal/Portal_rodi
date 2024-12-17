@@ -3,7 +3,7 @@
 
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Completed Requisitions</h1><br>
+    <h1 class="h3 mb-0 text-gray-800">Requisiciones Finalizadas</h1><br>
     <!--a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" data-toggle="modal" data-target="#newModal">
 			<span class="icon text-white-50">
 				<i class="fas fa-user-plus"></i>
@@ -14,7 +14,7 @@
       <span class="icon text-white-50">
         <i class="fas fa-check-circle"></i>
       </span>
-      <span class="text">Reactivate Requisition</span>
+      <span class="text">Reactivar Requisición</span>
     </a>
     <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
       style="display: none;">
@@ -23,6 +23,9 @@
       </span>
       <span class="text">Regresar al listado</span>
     </a>
+  </div>
+  <div>
+    <p>En este módulo se muestran las requisiciones de empleo que han sido finalizadas. Puedes consultar el estatus final de cada requisición, ver los comentarios finales y conocer qué aspirante aplicó para la vacante. Además, tienes la opción de reactivar una requisición si es necesario.</p>
   </div>
 
   <?php echo $modals; ?>
@@ -35,17 +38,17 @@
 
   <div id="div_requisiciones" class="row">
     <div class="col-6">
-      <label>Select a Requisition to View: </label>
+      <label>Selecciona una requisición: </label>
       <select class="form-control" name="opcion_requisicion" id="opcion_requisicion">
         <option value="">Todas</option>
         <?php
-        if ($reqs) {
-          foreach ($reqs as $req) { ?>
+if ($reqs) {
+    foreach ($reqs as $req) {?>
         <option value="<?php echo $req->id; ?>">
-          <?php echo '#'.$req->id.' '.$req->nombre.' - '.$req->puesto.' - Vacantes: '.$req->numero_vacantes; ?></option>
-        <?php   
-          }
-        } ?>
+          <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+        </option>
+        <?php }
+}?>
       </select><br>
     </div>
   </div>
@@ -108,7 +111,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Applicant',
+        title: 'Aspirante',
         data: 'aspirante',
         bSortable: false,
         "width": "15%",
@@ -117,7 +120,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Name or Company Name',
+        title: 'Cliente o sucursal',
         data: 'empresa',
         bSortable: false,
         "width": "15%",
@@ -126,13 +129,13 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Position',
+        title: 'Puesto',
         data: 'puesto',
         bSortable: false,
         "width": "12%"
       },
       {
-        title: 'Actions',
+        title: 'Accion',
         data: 'id',
         bSortable: false,
         "width": "8%",
@@ -147,7 +150,7 @@ function changeDataTable(url) {
             return cv;
           }
           //TODO: revisar  que se agrega  y a¿que se quita   de esta  seccion  fue  remplazada por la de arriba
-          /* 
+          /*
           mRender: function(data, type, full){
 						var cv = (full.cv != null)? '<a href="< ?php echo base_url(); ?>_docs/'+full.cv+'" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' : '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
 						var historial = '<a href="javascript:void(0)" id="ver_historial" class="fa-tooltip icono_datatable"><i class="fas fa-history"></i></a> ';
@@ -160,7 +163,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Applicant status',
+        title: 'Estatus Aspirante',
         data: 'status',
         bSortable: false,
         "width": "10%",
@@ -169,7 +172,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Order status',
+        title: 'Estatus de la Orden',
         data: 'statusReq',
         bSortable: false,
         "width": "10%",
@@ -180,7 +183,7 @@ function changeDataTable(url) {
       },
 
       {
-        title: 'Final Comment.',
+        title: 'Comentario Final.',
         data: 'comentario_final',
         bSortable: false,
         "width": "17%",
@@ -259,19 +262,20 @@ function changeDataTable(url) {
       });
     },
     "language": {
-      "lengthMenu": "Show _MENU_ records per page",
-      "zeroRecords": "No records found",
-      "info": "Showing records from _START_ to _END_ of a total of _TOTAL_ records",
-      "infoEmpty": "No records available",
-      "infoFiltered": "(Filtered from _MAX_ total records)",
-      "sSearch": "Search:",
+      "lengthMenu": "Mostrar _MENU_ registros por página",
+      "zeroRecords": "No se encontraron registros",
+      "info": "Mostrando registros de _START_ a _END_ de un total de _TOTAL_ registros",
+      "infoEmpty": "No hay registros disponibles",
+      "infoFiltered": "(Filtrado de _MAX_ registros totales)",
+      "sSearch": "Buscar:",
       "oPaginate": {
-        "sLast": "Last page",
-        "sFirst": "First",
-        "sNext": "Next",
-        "sPrevious": "Previous"
+        "sLast": "Última página",
+        "sFirst": "Primera",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
       }
     }
+
   });
 }
 
