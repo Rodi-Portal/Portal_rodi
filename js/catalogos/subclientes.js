@@ -14,7 +14,7 @@ $("#accesoModal").on("hidden.bs.modal", function() {
 var pag = 1;
 $('#newModal').on('shown.bs.modal', function(e) {
   registrarCliente();
-  $("#newModal #titulo_paso").text('Informacíon Cliente');
+  $("#newModal #titulo_paso").text('Informacíon Sucursal');
   $("#newModal #btnContinuar span.text").text('Continuar');
   $("#newModal #btnRegresar, #newModal #paso2, #newModal #paso3").prop('disabled', true);
 });
@@ -118,7 +118,7 @@ $('#newModal #btnRegresar').on('click', function() {
       document.getElementById('formPaso2').className = "hidden";
       document.getElementById('formPaso1').className = "animate__animated animate__fadeInUp";
     },500)
-    $("#newModal #titulo_paso").text('Informacíon Cliente');
+    $("#newModal #titulo_paso").text('Informacíon Sucursal');
     $("#newModal #btnRegresar, #newModal #paso2").prop('disabled', true);
     document.getElementById('barra1').classList.remove('barra_espaciadora_on');
     document.getElementById('barra1').className += ' barra_espaciadora_off';
@@ -145,7 +145,7 @@ $('#newModal #btnRegresar').on('click', function() {
   document.getElementById('formPaso1').className = "block";
   document.getElementById('formPaso2').className = "hidden";
   document.getElementById('formPaso3').className = "hidden";
-  $("#newModal#titulo_paso").text('Informacíon Cliente');
+  $("#newModal#titulo_paso").text('Informacíon Sucursal');
   $("#newModal#btnRegresar, #newModal#paso2").prop('disabled', true);
   document.getElementById('barra1').classList.remove('barra_espaciadora_on');
   document.getElementById('barra1').className += ' barra_espaciadora_off';

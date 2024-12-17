@@ -35,8 +35,8 @@
             <div class="col-md-9">
 
               <label for="nombre">Nombre del Portal *</label>
-              <input type="text" class="form-control" data-field="Nombre del Cliente" data-required="required"
-                id="nombrePortal" name="nombrePortal" placeholder="Ingrese el nombre del cliente"
+              <input type="text" class="form-control" data-field="Nombre de la Sucursal" data-required="required"
+                id="nombrePortal" name="nombrePortal" placeholder="Ingrese el nombre de la Sucursal"
                 onkeyup="this.value=this.value.toUpperCase()" required>
               <br>
             </div>
@@ -265,8 +265,8 @@
             <div class="col-md-9">
 
               <label for="nombre">Nombre del Portal *</label>
-              <input type="text" class="form-control" data-field="Nombre del Cliente" data-required="required"
-                id="nombrePortal_edit" name="nombrePortal_edit" placeholder="Ingrese el nombre del cliente"
+              <input type="text" class="form-control" data-field="Nombre del Sucursal" data-required="required"
+                id="nombrePortal_edit" name="nombrePortal_edit" placeholder="Ingrese el nombre de la Sucursal"
                 onkeyup="this.value=this.value.toUpperCase()" required>
 
             </div>
@@ -455,7 +455,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Cliente: <span class="nombreCliente"></span></h4>
+        <h4 class="modal-title">Sucursales: <span class="nombreCliente"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -475,7 +475,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Registro de credenciales del cliente</h5>
+        <h5 class="modal-title">Registro de credenciales de la Sucursal</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -484,7 +484,7 @@
         <form id="formAccesoCliente">
           <div class="row">
             <div class="col-md-12">
-              <label for="id_cliente">Cliente *</label>
+              <label for="id_cliente">Sucursal *</label>
               <select name="cliente" id="id_cliente" class="form-control"></select>
               <br>
             </div>

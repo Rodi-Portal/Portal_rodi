@@ -44,7 +44,7 @@
 									</div>
 									<div class="col-md-2">
 										<select name="cliente" id="cliente" class="form-control nuevo_obligado">
-											<option value="">Selecciona Cliente</option>
+											<option value="">Selecciona Sucursal</option>
 											<option value="0">TODOS</option>
 											<?php
 											foreach ($clientes as $cl) { ?>
@@ -114,7 +114,7 @@
 									</div>
 									<div class="col-md-3">
 										<select name="r2_cliente" id="r2_cliente" class="form-control nuevo_obligado">
-											<option value="">Selecciona Cliente</option>
+											<option value="">Selecciona Sucursal</option>
 											<option value="0">TODOS</option>
 											<?php
 											foreach ($clientes as $cl) { ?>
@@ -144,7 +144,7 @@
 									</div>
 									<div class="col-md-3">
 										<select name="r3_cliente" id="r3_cliente" class="form-control nuevo_obligado">
-											<option value="">Selecciona Cliente</option>
+											<option value="">Selecciona Sucursal</option>
 											<option value="0">TODOS</option>
 											<?php
 											foreach ($clientes as $cl) { ?>

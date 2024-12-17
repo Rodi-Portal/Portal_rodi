@@ -1213,7 +1213,7 @@ class Reclutamiento extends CI_Controller
 
     public function addRequisicion()
     {
-        $this->form_validation->set_rules('id_cliente', 'Cliente', 'required|trim');
+        $this->form_validation->set_rules('id_cliente', 'Sucursal', 'required|trim');
         $this->form_validation->set_rules('nombre_comercial_req', 'Nombre comercial', 'required|trim');
         $this->form_validation->set_rules('nombre_req', 'Razón social', 'required|trim');
         $this->form_validation->set_rules('correo_req', 'Correo', 'required|trim|valid_email');

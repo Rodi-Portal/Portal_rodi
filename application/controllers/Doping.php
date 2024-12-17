@@ -298,7 +298,7 @@ class Doping extends CI_Controller
         $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
         $this->form_validation->set_rules('materno', 'Segundo apellido', 'trim');
         $this->form_validation->set_rules('paquete', 'Parametros', 'required');
-        $this->form_validation->set_rules('cliente', 'Cliente', 'required');
+        $this->form_validation->set_rules('cliente', 'Sucursal', 'required');
         $this->form_validation->set_rules('subcliente', 'Subcliente', 'required');
         $this->form_validation->set_rules('proyecto', 'Proyecto', 'required');
         $this->form_validation->set_rules('fecha_nacimiento', 'Fecha de nacimiento', 'required');
