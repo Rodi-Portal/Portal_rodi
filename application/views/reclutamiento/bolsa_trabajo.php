@@ -3,8 +3,9 @@
   <section class="content-header">
     <div class="row align-items-center">
       <div class="col-sm-12 col-md-3 col-lg-3 mb-1 d-flex align-items-center">
-        <h2 class="titulo_seccion">Job Board</h2>
+        <h2 class="titulo_seccion">Bolsa de Trabajo </h2>
       </div>
+
       <div class="col-sm-12 col-md-9 col-lg-9 mb-1 d-flex justify-content-end">
         <div class="btn-group d-none d-md-flex" role="group" aria-label="Buttons for large screens">
           <button type="button" id="btnDownloadTemplate" class="btn btn-info btn-icon-split"
@@ -12,20 +13,20 @@
             <span class="icon text-white-50">
               <i class="fas fa-download"></i>
             </span>
-            <span class="text">Download Template</span>
+            <span class="text">Descargar Plantilla</span>
           </button>
           <button type="button" id="btnUploadCandidates" class="btn btn-success btn-icon-split"
             onclick="openUploadCSV()">
             <span class="icon text-white-50">
               <i class="fas fa-upload"></i>
             </span>
-            <span class="text">Upload Candidates</span>
+            <span class="text">Subir Aspirantes</span>
           </button>
           <button type="button" id="btnNewRequisition" class="btn btn-navy btn-icon-split" onclick="nuevaRequisicion()">
             <span class="icon text-white-50">
               <i class="far fa-file-alt"></i>
             </span>
-            <span class="text">New Requisition</span>
+            <span class="text">Nueva Requisicion</span>
           </button>
           <?php 
                 if ($this->session->userdata('idrol') == 4) {
@@ -46,6 +47,14 @@
       </div>
     </div>
   </section>
+  <br>
+  <div>
+    <p>En este módulo, puedes gestionar la bolsa de trabajo de manera completa. Se permite cargar aspirantes, asignarlos
+      a requisiciones de empleo, y crear nuevas requisiciones. Además, puedes realizar acciones sobre los aspirantes
+      como bloquear, editar o asignarles nuevas requisiciones, todo de manera ágil y organizada para facilitar el
+      proceso de selección.</p>
+  </div>
+
 
 
   <?php echo $modals; ?>
@@ -56,29 +65,29 @@
 
   <div class="row mt-3 mb-5" id="divFiltros">
     <div class="col-sm-12 col-md-3 col-lg-3 mb-1">
-      <label for="ordenar">Sort by:</label>
+      <label for="ordenar">Ordenar por:</label>
       <select name="ordenar" id="ordenar" class="form-control">
-        <option value="">Select</option>
-        <option value="ascending">From oldest to newest</option>
-        <option value="descending">From newest to oldest</option>
+        <option value="">Seleccionar</option>
+        <option value="ascending">De más antiguo a más reciente</option>
+        <option value="descending">De más reciente a más antiguo</option>
       </select>
     </div>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-      <label for="filtrar">Filter by:</label>
+      <label for="filtrar">Filtrar por:</label>
       <select name="filtrar" id="filtrar" class="form-control">
-        <option value="">Select</option>
-        <option value="En espera">Status Pending</option>
-        <option value="En proceso">Status In Recruitment Process</option>
-        <option value="Aceptado">Status Accepted to Start ESE</option>
-        <option value="ESE">Status ESE In Progress</option>
-        <option value="Bloqueado">Status Blocked</option>
+        <option value="">Seleccionar</option>
+        <option value="En espera">Estatus Pendiente</option>
+        <option value="En proceso">Estatus En Proceso de Reclutamiento</option>
+        <option value="Aceptado">Estatus Aceptado para Iniciar ESE</option>
+        <option value="ESE">Estatus ESE en Progreso</option>
+        <option value="Bloqueado">Estatus Bloqueado</option>
       </select>
     </div>
     <?php $isDisabled = ($this->session->userdata('idrol') == 4)? 'isDisabled' : ''; ?>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-      <label for="asignar">Assigned to:</label>
+      <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar" class="form-control <?php echo $isDisabled ?>" title="Select">
-        <option value="0">All</option>
+        <option value="0">ATodosll</option>
         <?php
         if ($usuarios_asignacion) {
           foreach ($usuarios_asignacion as $row) { ?>
@@ -86,14 +95,14 @@
         <?php 
           }
         }else{ ?>
-        <option value="">No registered users</option>
+        <option value="">Sin Usuario Asignado</option>
         <?php } ?>
       </select>
     </div>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-      <label for="area_interes_search">By interest area:</label>
+      <label for="area_interes_search">Por área de interés:</label>
       <select name="area_interes_search" id="area_interes_search" class="form-control">
-        <option value="">All</option>
+        <option value="">Todas</option>
         <?php
         if ($areas_interes) {
           foreach ($areas_interes as $row) { ?>
@@ -101,14 +110,14 @@
         <?php 
           }
         }else{ ?>
-        <option value="">No registered areas of interest</option>
+        <option value="">No hay áreas de interés registradas</option>
         <?php } ?>
       </select>
     </div>
     <div class="col-sm-12 col-md-3 col-lg-3 mb-1">
-      <label for="buscador">Search:</label>
+      <label for="buscador">Buscar:</label>
       <select name="buscador" id="buscador" class="form-control">
-        <option value="0">Find</option>
+        <option value="0">Encontrar</option>
         <?php
         if ($registros_asignacion) {
           foreach ($registros_asignacion as $row) { ?>
@@ -116,7 +125,7 @@
         <?php 
           }
         }else{ ?>
-        <option value="">No registered applicants</option>
+        <option value="">No hay aspirantes registrados </option>
         <?php } ?>
       </select>
     </div>
@@ -198,9 +207,9 @@
             <b><?php echo '#'.$r->id.' '.$r->nombreCompleto; ?></b>
           </div>
           <div class="card-body">
-            <h5 class="card-title">Interest Area: <br><b><?php echo $area_interes; ?></b></h5>
-            <h5 class="card-text">Location: <br><b><?php echo $domicilio; ?></b></h5>
-            <h5 class="card-text">Phone: <b><?php echo $r->telefono; ?></b></h5>
+            <h5 class="card-title">Área de interés: <br><b><?php echo $area_interes; ?></b></h5>
+            <h5 class="card-text">Ubicación: <br><b><?php echo $domicilio; ?></b></h5>
+            <h5 class="card-text">Teléfono: <b><?php echo $r->telefono; ?></b></h5>
             <div class="alert alert-secondary text-center mt-3"><?php echo $text_estatus ?></div>
             <div class="row">
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
@@ -255,7 +264,7 @@
 				}
 				echo '</div>';
 			}else{  ?>
-      <h3 class="text-center">There are currently no registered applicants.</h3>
+      <h3 class="text-center">Actualmente no hay aspirantes registrados.</h3>
       <?php 
       } ?>
     </div>
@@ -265,7 +274,7 @@
         <div class="card-header">
           <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
-              <a class="nav-link active" id="link_personales" href="javascript:void(0)">Details</a>
+              <a class="nav-link active" id="link_personales" href="javascript:void(0)">Detallés</a>
             </li>
           </ul>
         </div>
@@ -311,7 +320,7 @@
           <form id="formDatosPersonales">
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Name(s) *</label>
+                <label>Nombre(s) *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -321,7 +330,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Last name*</label>
+                <label>Apellido paterno*</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -331,7 +340,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Second Last name</label>
+                <label>Apellido Materno</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -343,7 +352,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
-                <label>Address *</label>
+                <label>Dirección *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-home"></i></span>
@@ -352,7 +361,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Date of birth *</label>
+                <label>Fecha de nacimiento*</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-calendar"></i></span>
@@ -363,7 +372,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-                <label>Phone *</label>
+                <label>Nationality *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
@@ -372,7 +381,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Nationality *</label>
+                <label>Nacionalidad *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-globe"></i></span>
@@ -381,13 +390,13 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Marital status*</label>
+                <label>Estado civil*</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                   </div>
                   <select class="custom-select" id="civil_update" name="civil_update">
-                    <option value="">Select</option>
+                    <option value="">Seleciona</option>
                     <?php 
                   if($civiles){
                     foreach($civiles as $row){ ?>
@@ -395,7 +404,7 @@
                     <?php 
                     }
                   }else{ ?>
-                    <option value="">Without marital status records.</option>
+                    <option value="">Sin registros de estado civil..</option>
                     <?php 
                   } ?>
                   </select>
@@ -404,7 +413,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
-                <label>Dependents of the applicant. *</label>
+                <label>Dependientes del solicitante*</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
@@ -435,7 +444,8 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Save Personal Information</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Save
+            Personal Information</button>
         </div>
       </div>
       <div class="card mb-5">
@@ -483,7 +493,8 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('salud')">Save Health and Social Life Information</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('salud')">Save Health
+            and Social Life Information</button>
         </div>
       </div>
       <div class="card mb-5">
@@ -520,8 +531,8 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg"
-            onclick="updateApplicant('conocimiento')">Save Knowledge and Skills Information</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('conocimiento')">Save
+            Knowledge and Skills Information</button>
         </div>
       </div>
       <div class="card mb-5">
@@ -599,7 +610,8 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('intereses')">Save Interests</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('intereses')">Save
+            Interests</button>
         </div>
       </div>
     </div>
@@ -643,7 +655,7 @@
     let areaOption = '<?php echo $area ?>';
     $('#ordenar, #filtrar, #asignar, #area_interes_search').change(function() {
       let ordenar = $('#ordenar').val() || 'none';
-       let filtrar = $('#filtrar').val() != '' ? $('#filtrar').val() : 'none'
+      let filtrar = $('#filtrar').val() != '' ? $('#filtrar').val() : 'none'
       let asignar = $('#asignar').val() || 0;
       let area = $('#area_interes_search').val() || 'none';
 
@@ -662,7 +674,7 @@
     });
 
     // Inicializa los filtros
-   
+
     $('#buscador').change(function() {
       var opcion = $(this).val();
       if (opcion) {
@@ -889,7 +901,7 @@
               text: optionText
             }));
           }
-          
+
         } else {
           Swal.fire({
             icon: 'error',

@@ -4,7 +4,7 @@
   <section class="content-header">
     <div class="row align-items-center">
       <div class="col-sm-12 col-md-6 col-lg-6">
-        <h1 class="titulo_seccion">Job Requisitions in Progress</h1>
+        <h1 class="titulo_seccion">Requisiciones en progreso</h1>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-6 d-flex justify-content-end">
@@ -12,18 +12,30 @@
           <span class="icon text-white-50">
             <i class="fas fa-user-plus"></i>
           </span>
-          <span class="text">Register Candidate for Requisition</span>
+          <span class="text">Registrar
+            aspirante a requicision
+          </span>
         </button>
         <button type="button" class="btn btn-primary btn-icon-split" data-toggle="modal"
           data-target="#estatusRequisicionModal">
           <span class="icon text-white-50">
             <i class="fas fa-exchange-alt"></i>
           </span>
-          <span class="text">Change Requisition Status</span>
+          <span class="text">Cambiar estatus Requisicion</span>
         </button>
       </div>
     </div>
   </section>
+  <br>
+  <div>
+    <p>Este módulo facilita la gestión de requisiciones de empleo en curso, permitiendo realizar acciones clave como
+      cambiar su estatus, finalizar, cancelar y asignar aspirantes. Además, brinda herramientas para dar seguimiento al
+      proceso de reclutamiento y compartirlo con el solicitante, registrando movimientos, enviando candidatos a
+      socioeconómico, cargando CVs y dejando comentarios. El reclutador puede agregar aspirantes a la requisición,
+      permitiendo que el solicitante vea los avances del proceso de manera ágil y organizada.</p>
+  </div>
+
+
 
 
 
@@ -38,7 +50,7 @@
 
   <div id="div_requisiciones" class="row">
     <div class="col-6">
-      <label>Select a Requisition to View: </label>
+      <label>Selecciona una Requisicion </label>
       <select class="form-control" name="opcion_requisicion" id="opcion_requisicion">
         <option value="">All</option>
         <?php
@@ -119,7 +131,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Applicant',
+        title: 'Aspirante',
         data: 'aspirante',
         bSortable: false,
         "width": "15%",
@@ -128,7 +140,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Name or Company Name',
+        title: 'Cliente o Sucursal',
         data: 'nombre_cliente',
         bSortable: false,
         "width": "15%",
@@ -137,7 +149,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Position',
+        title: 'Puesto',
         data: 'puesto',
         bSortable: false,
         "width": "15%",
@@ -146,7 +158,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Contact',
+        title: 'Contacto',
         data: 'telefono',
         bSortable: false,
         "width": "10%",
@@ -160,7 +172,7 @@ function changeDataTable(url) {
       },
 
       {
-        title: 'Actions',
+        title: 'Acciones',
         data: 'id',
         bSortable: false,
         "width": "10%",
@@ -428,17 +440,17 @@ function changeDataTable(url) {
       });
     },
     "language": {
-      "lengthMenu": "Show _MENU_ records per page",
-      "zeroRecords": "No records found",
-      "info": "Showing records from _START_ to _END_ of a total of _TOTAL_ records",
-      "infoEmpty": "No records available",
-      "infoFiltered": "(Filtered from _MAX_ total records)",
-      "sSearch": "Search:",
+      "lengthMenu": "Mostrar _MENU_ registros por página",
+      "zeroRecords": "No se encontraron registros",
+      "info": "Mostrando registros de _START_ a _END_ de un total de _TOTAL_ registros",
+      "infoEmpty": "No hay registros disponibles",
+      "infoFiltered": "(Filtrado de _MAX_ registros totales)",
+      "sSearch": "Buscar:",
       "oPaginate": {
-        "sLast": "Last page",
-        "sFirst": "First",
-        "sNext": "Next",
-        "sPrevious": "Previous"
+        "sLast": "Última página",
+        "sFirst": "Primera",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
       }
     }
   });

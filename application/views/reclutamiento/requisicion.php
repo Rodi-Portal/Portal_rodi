@@ -1,10 +1,10 @@
 <!-- Begin Page Content -->
-<div class="container-fluid">
+<div>
 
   <section class="content-header">
     <div class="row">
       <div class="col-sm-12 col-md-6 col-lg-6">
-        <h1 class="titulo_seccion">Job Requisitions</small></h1>
+        <h1 class="titulo_seccion">Requisiciones</small></h1>
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-6">
@@ -17,12 +17,14 @@
             <span class="text">Express Requisition</span>
           </button>
         </div>
-        <?php 
-    if($this->session->userdata('idrol') == 4){
-        $disabled = 'disabled'; $textTitle = 'title="No posees permiso para esta acción"';
-    }else{
-        $disabled = ''; $textTitle = '';
-    } ?>
+        <?php
+if ($this->session->userdata('idrol') == 4) {
+    $disabled = 'disabled';
+    $textTitle = 'title="No posees permiso para esta acción"';
+} else {
+    $disabled = '';
+    $textTitle = '';
+}?>
         <div class="mb-3 float-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
           <button type="button" id="btnOpenAssignToUser" class="btn btn-primary btn-icon-split float-right mr-2"
             onclick="openAssignToUser()" <?php echo $disabled; ?>>
@@ -36,6 +38,12 @@
     </div>
   </section>
 
+  <div>
+    <p>Este módulo facilita la gestión de requisiciones de empleo, permitiendo asignar a un reclutador, registrar nuevas
+      requisiciones expresas, y realizar acciones como descargar, iniciar, ver, detener y eliminar requisiciones de
+      manera ágil y organizada.</p>
+  </div>
+
   <?php echo $modals; ?>
   <?php echo $modals_reclutamiento; ?>
   <div class="loader" style="display: none;"></div>
@@ -46,7 +54,7 @@
 
   <div class="row mt-3 mb-5" id="divFiltros">
     <div class="col-sm-12 col-md-2 col-lg-2 offset-md-5 offset-lg-5">
-      <label for="ordenar">Order by:</label>
+      <label for="ordenar">Ordenar:</label>
       <select name="ordenar" id="ordenar" class="form-control">
         <option value="">Selecciona</option>
         <option value="ascending">De la más antigua a la más actual</option>
@@ -54,29 +62,29 @@
       </select>
     </div>
     <div class="col-sm-12 col-md-2 col-lg-2">
-      <label for="filtrar">Filter by:</label>
+      <label for="filtrar">Filtrar:</label>
       <select name="filtrar" id="filtrar" class="form-control">
-        <option value="">Select</option>
-        <option value="COMPLETA">COMPLETED Requisition (registered by external)</option>
-        <option value="EXPRESS">EXPRESS Requisition</option>
-        <option value="En espera">Status pending</option>
-        <option value="En proceso">Status in recruitment process</option>
+        <option value="">Seleccionar</option>
+        <option value="COMPLETA">Requisición COMPLETA (registrada por externo)</option>
+        <option value="EXPRESS">Requisición EXPRESA</option>
+        <option value="En espera">Estado pendiente</option>
+        <option value="En proceso">Estado en proceso de reclutamiento</option>
       </select>
     </div>
     <div class="col-sm-12 col-md-3 col-lg-3">
-      <label for="buscador">Search:</label>
+      <label for="buscador">Buscar:</label>
       <select name="buscador" id="buscador">
-        <option value="0">All</option>
+        <option value="0">Todos</option>
         <?php
-        
-        if ($orders_search) {
-          foreach ($orders_search as $row) { ?>
-        <option value="<?php echo $row->id; ?>"><?php echo '#'.$row->id.' '.$row->nombre.' - '.$row->puesto; ?></option>
-        <?php 
-          }
-        }else{ ?>
+
+if ($orders_search) {
+    foreach ($orders_search as $row) {?>
+        <option value="<?php echo $row->id; ?>">
+          <?php echo '#' . $row->id . ' ' . $row->nombre . ' - ' . $row->puesto; ?></option>
+        <?php }
+} else {?>
         <option value="">Sin requisiones registradas</option>
-        <?php } ?>
+        <?php }?>
       </select>
     </div>
   </div>
@@ -91,60 +99,63 @@
 
   <div id="seccionTarjetas">
     <div id="tarjetas">
-      <?php 
- 
-			if($requisiciones){
-				echo '<div class="row mb-3">';
-				foreach($requisiciones as $r){
-					$hoy = date('Y-m-d H:i:s');
-          $fecha_registro = fechaTexto($r->creacion,'espanol');
-					$color_estatus = ''; $text_estatus = '';
-					if($r->status == 1){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
+      <?php
+
+if ($requisiciones) {
+    echo '<div class="row mb-3">';
+    foreach ($requisiciones as $r) {
+        $hoy = date('Y-m-d H:i:s');
+        $fecha_registro = fechaTexto($r->creacion, 'espanol');
+        $color_estatus = '';
+        $text_estatus = '';
+        if ($r->status == 1) {
+            $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequisicion(' . $r->id . ',\'' . $r->nombre . '\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
             $text_estatus = 'Estatus: <b>En espera</b>';
-						$botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
-						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Delete Requisition" onclick="openDeleteOrder('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-trash"></i></a>';
-					}
-					if($r->status == 2){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar'.$r->id.'"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequisicion('.$r->id.',\''.$r->nombre.'\', \'detener\')"><i class="fas fa-stop"></i></a>';
-						$color_estatus = 'req_activa';
+            $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
+            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Delete Requisition" onclick="openDeleteOrder(' . $r->id . ',\'' . $r->nombre . '\')"><i class="fas fa-trash"></i></a>';
+        }
+        if ($r->status == 2) {
+            $botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar' . $r->id . '"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequisicion(' . $r->id . ',\'' . $r->nombre . '\', \'detener\')"><i class="fas fa-stop"></i></a>';
+            $color_estatus = 'req_activa';
             $text_estatus = 'Estatus: <b>En proceso de reclutamiento</b>';
-						 $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos('.$r->id.',\''.$r->nombre.'\')"><i class="fas fa-file-alt"></i></a>';
-            
-						$btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Delete Requisition"><i class="fas fa-trash"></i></a>';
-					}
-          $usuario = (empty($r->usuario))? 'Requisition Without Changes<br>' : ' Last Modified by: <b>'.$r->usuario.'</b><br>';
-          $data['users'] = $this->reclutamiento_model->getUsersOrder($r->id);
-          if(!empty($data['users'])){
-            $usersAssigned = 'Assigned Users:<br>';
-            foreach($data['users'] as $user){
-              if($this->session->userdata('idrol') == 4)
-                $usersAssigned .= '<div class="mb-1" id="divUser'.$user->id.'"><b>'.$user->usuario.'</b></div>';
-              else 
-                $usersAssigned .= '<div class="mb-1" id="divUser'.$user->id.'"><a href="javascript:void(0)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Remove User from Requisition" onclick="openDeleteUserOrder('.$user->id.','.$user->id_requisicion.',\''.$user->usuario.'\')"><i class="fas fa-user-times"></i></a> <b>'.$user->usuario.'</b></div>';
+            $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos(' . $r->id . ',\'' . $r->nombre . '\')"><i class="fas fa-file-alt"></i></a>';
+
+            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Delete Requisition"><i class="fas fa-trash"></i></a>';
+        }
+        $usuario = (empty($r->usuario)) ? 'Requisition Without Changes<br>' : 'Úlltimo movimiento: <b>' . $r->usuario . '</b><br>';
+        $data['users'] = $this->reclutamiento_model->getUsersOrder($r->id);
+        if (!empty($data['users'])) {
+            $usersAssigned = 'Usuario Asignado:<br>';
+            foreach ($data['users'] as $user) {
+                if ($this->session->userdata('idrol') == 4) {
+                    $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $user->usuario . '</b></div>';
+                } else {
+                    $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><a href="javascript:void(0)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Remove User from Requisition" onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $user->usuario . '\')"><i class="fas fa-user-times"></i></a> <b>' . $user->usuario . '</b></div>';
+                }
+
             }
-          }else{
-            $usersAssigned = 'Unassigned Users';
-          }
-          unset($data['users']);
-          $btnExpress = ($r->tipo == 'EXPRESS')? '<a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Edit EXPRESS Requisition" onclick="openUpdateOrder('.$r->id.',\''.$r->nombre.'\',\''.$r->nombre.'\',\''.$r->puesto.'\')"><i class="fas fa-edit"></i></a>' : '<a href="javascript:void(0)" class="btn btn-primary text-lg isDisabled" data-toggle="tooltip" title="Edit EXPRESS Requisition"><i class="fas fa-edit"></i></a>';
-          //total de requisiciones para saber si fue buscada una en particular y colocarla enmedio de la vista
-          $totalOrders = count($requisiciones);
-          $moveOrder = ($totalOrders > 1)? '' : 'offset-md-4 offset-lg-4';
-          $nombres = (empty($r->nombre_comercial))? $r->nombre : $r->nombre.'<br>'.$r->nombre_comercial;
-					?>
+        } else {
+            $usersAssigned = 'No Asignada aun';
+        }
+        unset($data['users']);
+        $btnExpress = ($r->tipo == 'EXPRESS') ? '<a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Edit EXPRESS Requisition" onclick="openUpdateOrder(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->nombre . '\',\'' . $r->puesto . '\')"><i class="fas fa-edit"></i></a>' : '<a href="javascript:void(0)" class="btn btn-primary text-lg isDisabled" data-toggle="tooltip" title="Edit EXPRESS Requisition"><i class="fas fa-edit"></i></a>';
+        //total de requisiciones para saber si fue buscada una en particular y colocarla enmedio de la vista
+        $totalOrders = count($requisiciones);
+        $moveOrder = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
+        $nombres = (empty($r->nombre_comercial)) ? $r->nombre : $r->nombre . '<br>' . $r->nombre_comercial;
+        ?>
       <div class="col-sm-12 col-md-4 col-lg-4 mb-5 <?php echo $moveOrder ?>">
-        <div class="card text-center tarjeta" id="<?php echo 'tarjeta'.$r->id; ?>">
+        <div class="card text-center tarjeta" id="<?php echo 'tarjeta' . $r->id; ?>">
           <div class="card-header <?php echo $color_estatus; ?>">
-            <b><?php echo '#'.$r->id.' '.$nombres; ?></b>
+            <b><?php echo '#' . $r->id . ' ' . $nombres; ?></b>
           </div>
           <div class="card-body">
             <h5 class="card-title"><b><?php echo $r->puesto; ?></b></h5>
-            <p class="card-text"><?php echo 'Job Openings: <b>'.$r->numero_vacantes; ?></b></p>
-            <p class="card-text">Contact:
-              <br><b><?php echo $r->contacto.' <br>'.$r->telefono.' <br>'.$r->correo; ?></b>
+            <p class="card-text"><?php echo 'Vacantes: <b>' . $r->numero_vacantes; ?></b></p>
+            <p class="card-text">Contacto:
+              <br><b><?php echo $r->contacto . ' <br>' . $r->telefono . ' <br>' . $r->correo; ?></b>
             </p>
-            <div class="alert alert-secondary text-center mt-3">Type:
+            <div class="alert alert-secondary text-center mt-3">Tipo:
               <b><?php echo $r->tipo ?></b><br><b><?php echo $text_estatus ?></b>
             </div>
             <div class="row">
@@ -153,9 +164,9 @@
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="View Details"
-                  onclick="verDetalles(<?php echo $r->id;?>)"><i class="fas fa-info-circle"></i></a>
+                  onclick="verDetalles(<?php echo $r->id; ?>)"><i class="fas fa-info-circle"></i></a>
               </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id?>">
+              <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id ?>">
                 <?php echo $botonProceso; ?>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
@@ -173,17 +184,17 @@
               </div>
             </div>
             <div class="alert alert-secondary text-left mt-3" id="divUsuario<?php echo $r->id; ?>">
-              <?php echo $usuario.$usersAssigned; ?></div>
+              <?php echo $usuario . $usersAssigned; ?></div>
           </div>
           <div class="card-footer text-muted">
             <?php echo $fecha_registro; ?>
           </div>
         </div>
       </div>
-      <?php 
-				}
-				echo '</div>';
-			}  ?>
+      <?php
+}
+    echo '</div>';
+}?>
     </div>
     <div id="tarjeta_detalle" class="hidden mb-5">
       <div class="alert alert-info text-center" id="empresa"></div>
@@ -1751,7 +1762,9 @@ function openDeleteOrder(id, name) {
   // Update the modal title with a warning icon and translated text
   $('#titulo_mensaje').html('<i class="fa fa-exclamation-triangle text-warning"></i> Delete Requisition');
   // Update the message with translated text and keeping the #id and #name
-  $('#mensaje').html('Are you sure you want to delete requisition <b>#' + id + ' ' + name + '</b>? This action is permanent. To proceed, press <b>Confirm</b>, or <b>Cancel</b> if you do not wish to delete it.');
+  $('#mensaje').html('Are you sure you want to delete requisition <b>#' + id + ' ' + name +
+    '</b>? This action is permanent. To proceed, press <b>Confirm</b>, or <b>Cancel</b> if you do not wish to delete it.'
+  );
   // Set the requisition ID to be deleted
   $('#idRequisicion').val(id);
   // Keep the textarea for entering the reason for deletion
