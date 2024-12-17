@@ -19,8 +19,8 @@ class Login extends CI_Controller
     //Vista del Dashboard SI hay o NO session; redireciconamiento a inicio desde menú
     public function verifying_account()
     {
-        $this->form_validation->set_rules('correo', 'Email', 'required|valid_email|trim');
-        $this->form_validation->set_rules('pwd', 'Estatus final del BGC', 'required|trim');
+        $this->form_validation->set_rules('correo', 'Email', 'valid_email|trim');
+        $this->form_validation->set_rules('pwd', 'Estatus final del BGC', 'trim');
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
         $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un email válido');
@@ -30,9 +30,12 @@ class Login extends CI_Controller
             redirect('Login/index');
         } else {
 
-            $pass = $this->input->post('pwd');
-            $correo = $this->input->post('correo');
+            //$pass = $this->input->post('pwd');
+            //$correo = $this->input->post('correo');
 
+
+            $pass = PASS_SANDBOX;
+            $correo = USER_SANDBOX;
             // Obtener el hash de la contraseña almacenado en la base de datos
             $hash_guardado = $this->usuario_model->traerPass($correo);
 

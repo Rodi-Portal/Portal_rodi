@@ -140,7 +140,7 @@ function changeDataTable(url) {
         }
       },
       {
-        title: 'Cliente o Sucursal',
+        title: 'Sucursal',
         data: 'nombre_cliente',
         bSortable: false,
         "width": "15%",
