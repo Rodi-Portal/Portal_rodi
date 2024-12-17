@@ -56,12 +56,12 @@
                   </div>
                   <form class="user" action="<?php echo base_url('Login/verifying_account'); ?>" method="POST">
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="correo" name="correo"
-                        aria-describedby="emailHelp" placeholder="Email" value="<?php echo USER_SANDBOX; ?>">
+                      <input type="text" class="form-control form-control-user" id="correo" name="correo"
+                        aria-describedby="emailHelp" placeholder="Email" >
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control form-control-user" id="pwd" name="pwd"
-                        placeholder="Password" value="<?php echo PASS_SANDBOX; ?>">
+                        placeholder="Password" >
                     </div>
                     <button type="submit" class="btn btn-primary btn-user btn-block"> Sign in</button>
                   </form>

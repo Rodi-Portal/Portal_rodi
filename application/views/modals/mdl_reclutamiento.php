@@ -385,15 +385,15 @@ if ($reqs) {
               <label>Country of Residence *</label>
               <select class="form-control" id="pais" name="pais">
                 <?php
-if ($paises != null) {
-    foreach ($paises as $p) {
-        $default = ($p->nombre == 'México') ? 'selected' : '';?>
-                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
-                <?php
-}
-}
-?>
-              </select>
+              if ($paises != null) {
+                  foreach ($paises as $p) {
+                      $default = ($p->nombre == 'México') ? 'selected' : '';?>
+                              <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                              <?php
+              }
+              }
+              ?>
+                            </select>
               <br>
             </div>
             <div class="col-4">
@@ -648,12 +648,12 @@ if ($paises != null) {
                 <option value="">Select</option>
                 <option value="0" selected>N/A</option>
                 <?php
-foreach ($paquetes_antidoping as $paq) {?>
-                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
-                </option>
-                <?php
-}?>
-              </select>
+        foreach ($paquetes_antidoping as $paq) {?>
+                        <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
+                        </option>
+                        <?php
+        }?>
+                      </select>
               <br>
             </div>
             <div class="col-md-4">

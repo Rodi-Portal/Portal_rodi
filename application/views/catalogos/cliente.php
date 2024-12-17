@@ -5,15 +5,16 @@
   <div class="align-items-center mb-4">
     <div class="row justify-content-between">
       <div class="col-sm-12 col-md-8">
-        <h1 class="h3 mb-0 text-gray-800">Users</h1>
+        <h2 >Administración de Usuarios y Sucursales</h1>
       </div>
+
       <div class="col-sm-12 col-md-3">
         <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newModal"
           onclick="registrarCliente(this)">
           <span class="icon text-white-50">
             <i class="fas fa-user-tie"></i>
           </span>
-          <span class="text">Add Users</span>
+          <span class="text">Crear un usuario</span>
         </a>
       </div>
       <!-- div class="col-sm-12 col-md-2" style="display: none;">
@@ -24,6 +25,10 @@
           <span class="text">Acceso a clientes</span>
         </a>
       </div -->
+    </div>
+    <div>
+      <p>Este módulo permite la gestión completa de usuarios externos y sucursales, con funciones para <br>registrar,
+        actualizar, eliminar y mantener la información de manera organizada y eficiente.</p>
     </div>
   </div>
 
@@ -54,7 +59,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="titulo_mensaje_contraseña">Send credentials</h5>
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -63,12 +68,12 @@
         <div class="row justify-content-center">
           <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
           <div class="col-md-9">
-            <label>Generate password *</label>
+            <label>Generae Contraseña*</label>
             <div class="input-group">
               <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8"
                 readonly>
               <div class="input-group-append">
-                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generate</button>
+                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
               </div>
             </div>
           </div>
@@ -78,8 +83,8 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="btnEnviarPass">Resend password</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnEnviarPass">Reenviar contraseña</button>
       </div>
     </div>
   </div>
@@ -155,17 +160,17 @@ $(document).ready(function() {
         visible: false
       },
       {
-        title: 'Name',
+        title: 'Nombre',
         data: 'nombre',
         bSortable: false,
-        "width": "25%",
+        "width": "15%",
         mRender: function(data, type, full) {
           return '<span class="badge badge-pill badge-dark">#' + full.idCliente + '</span><br><b>' + data +
             '</b>';
         }
       },
       {
-        title: 'Key',
+        title: 'Clave',
         data: 'clave',
         bSortable: false,
         "width": "3%",
@@ -174,7 +179,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Creation Date',
+        title: 'Fecha de Cracion',
         data: 'creacion',
         bSortable: false,
         "width": "7%",
@@ -190,7 +195,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Access',
+        title: 'Accesos',
         data: 'numero_usuarios_clientes',
         bSortable: false,
         "width": "15%",
@@ -198,15 +203,15 @@ $(document).ready(function() {
           if (data == 0) {
             return 'No access records found';
           } else {
-            return 'There are ' + data + ' access record(s)';
+            return 'Cuenta con ' + data + ' acceso(s) ';
           }
         }
       },
       {
-        title: 'Actions',
+        title: 'Acciones',
         data: 'id',
         bSortable: false,
-        "width": "10%",
+        "width": "15%",
         mRender: function(data, type, full) {
           let editar =
             '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a> ';
@@ -444,19 +449,20 @@ $(document).ready(function() {
       });
     },
     "language": {
-      "lengthMenu": "Show _MENU_ records",
-      "zeroRecords": "No records found",
-      "info": "Showing records from _START_ to _END_ of a total of _TOTAL_ records",
-      "infoEmpty": "No records available",
-      "infoFiltered": "(Filtered from _MAX_ total records)",
-      "sSearch": "Search:",
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "zeroRecords": "No se encontraron registros",
+      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+      "infoEmpty": "No hay registros disponibles",
+      "infoFiltered": "(Filtrado de _MAX_ registros en total)",
+      "sSearch": "Buscar:",
       "oPaginate": {
-        "sLast": "Last page",
-        "sFirst": "First",
-        "sNext": "Next",
-        "sPrevious": "Previous"
+        "sLast": "Última página",
+        "sFirst": "Primera",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
       }
     }
+
   });
   // Ajuste adicional si es necesario
   $(window).on('resize', function() {

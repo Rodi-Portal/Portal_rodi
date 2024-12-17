@@ -67,7 +67,7 @@
                   <form class="user" action="<?php echo base_url('Login/verificar_codigo'); ?>" method="POST" id="verificationForm">
                     <div class="form-group">
                       <label for="codigo">Verification Code:</label>
-                      <input type="password" class="form-control form-control-user" id="codigo" name="codigo"  placeholder="Insert verify code" required value="<?php echo VERIFY_SANDBOX; ?>">
+                      <input type="password" class="form-control form-control-user" id="codigo" name="codigo"  placeholder="Insert verify code" required >
               
                     </div>
                     <button type="submit" class="btn btn-primary btn-user btn-block" id="submitButton">Verify</button>

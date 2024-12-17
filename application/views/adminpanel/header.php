@@ -110,7 +110,7 @@
       <li class="nav-item">
         <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"><i
             class="fas fa-users"></i>
-          <span>Recruitment</span><!-- Icono de FontAwesome para Recruitment -->
+          <span>Reclutamiento</span><!-- Icono de FontAwesome para Recruitment -->
 
         </a>
 
@@ -120,7 +120,7 @@
       <li class="nav-item">
         <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>" class="nav-link ">
           <i class="fas fa-user-clock"></i>
-          <span>Pre-employment</span>
+          <span>Preempleo</span>
         </a>
 
       </li>
@@ -129,7 +129,7 @@
       <li class="nav-item">
         <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
           <i class="fas fa-user-times"></i>
-          <span>Employee</span>
+          <span>Empleados</span>
         </a>
 
       </li>
@@ -138,7 +138,7 @@
       <li class="nav-item">
         <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
           <i class="fas fa-user-times"></i>
-          <span>Former Employee</span>
+          <span>Exempleado</span>
         </a>
 
       </li>
@@ -151,7 +151,7 @@ if (in_array(9, $submenus)) {?>
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
           aria-expanded="true" aria-controls="collapseReportes">
           <i class="fas fa-fw fa-medkit"></i>
-          <span>Reports</span>
+          <span>Reportes</span>
         </a>
         <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
@@ -177,13 +177,13 @@ if (in_array(9, $submenus)) {?>
             <?php
 if (in_array(25, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
-              href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Users Reports</a>
+              href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes  de sucursales</a>
             <?php
 }
     if (in_array(29, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
-              href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Recruitment process.</a>
+              href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Procesos de Reclutamiento.</a>
             <?php
 }?>
           </div>
@@ -207,7 +207,7 @@ if (in_array(5, $submenus)) {?>
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
           <i class="fas fa-fw fa-folder"></i>
-          <span>Register</span>
+          <span>Registrar</span>
         </a>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
@@ -271,21 +271,21 @@ $portal = $this->session->userdata('idPortal');
               <div class="button-container">
                 <a id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>" class="btn custom-btn">
                   <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
-                  Recruitment
+                  Reclutamiento
                 </a>
                 <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>"
                   class="btn custom-btn">
                   <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
-                  Pre-employment
+                  Preempleo
                 </a>
                 <a id="employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="btn custom-btn">
                   <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
-                  Employee
+                  Empleados
                 </a>
                 <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"
                   class="btn custom-btn">
                   <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
-                  Former employee
+                  Exempleado
                 </a>
 
               </div>
