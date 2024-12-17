@@ -21,7 +21,7 @@
 		<form id="filtros">
 			<div class="row">
 				<div class="col-md-8 offset-2">
-					<label>Cliente *</label>
+					<label>Sucursal *</label>
 					<select name="cliente" id="cliente" class="form-control">
 						<option value="">Selecciona</option>
 						<option value="0">TODOS</option>

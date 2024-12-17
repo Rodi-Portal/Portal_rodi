@@ -31,7 +31,7 @@
 					<br>
 				</div>
 				<div class="col-md-3">
-					<label>Cliente *</label>
+					<label>Sucursal *</label>
 					<select name="cliente" id="cliente" class="form-control">
 						<option value="">Selecciona</option>
 						<option value="0">TODOS</option>

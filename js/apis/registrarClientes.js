@@ -280,7 +280,7 @@ function resetModal() {
     $("#newModal input,#newModal select").val("");
     $("#newModal #msj_error").css('display', 'none');
     $("#idSubcliente").val("");
-    $(".modal-title").text("Agregar nuevo Cliente");
+    $(".modal-title").text("Agregar nueva Sucursal");
     $("#guardar").attr('value', 'nuevo');
   });
 
@@ -293,7 +293,7 @@ function resetModal() {
   var pag = 1;
 
   $('#newModal').on('shown.bs.modal', function(e) {
-    $("#newModal #titulo_paso").text('Informacíon Cliente');
+    $("#newModal #titulo_paso").text('Informacíon Sucursal');
     $("#newModal #btnContinuar span.text").text('Continuar');
     $("#newModal #btnRegresar, #newModal #paso2, #newModal #paso3").prop('disabled', true);
   });
@@ -417,7 +417,7 @@ function resetModal() {
         document.getElementById('formPaso2').className = "hidden";
         document.getElementById('formPaso1').className = "animate__animated animate__fadeInUp";
       }, 500)
-      $("#newModal #titulo_paso").text('Informacíon Cliente');
+      $("#newModal #titulo_paso").text('Informacíon Sucursal');
       $("#newModal #btnRegresar, #newModal #paso2").prop('disabled', true);
       document.getElementById('barra1').classList.remove('barra_espaciadora_on');
       document.getElementById('barra1').className += ' barra_espaciadora_off';
@@ -445,7 +445,7 @@ function resetModal() {
     document.getElementById('formPaso1').className = "block";
     document.getElementById('formPaso2').className = "hidden";
     document.getElementById('formPaso3').className = "hidden";
-    $("#newModal#titulo_paso").text('Informacíon Cliente');
+    $("#newModal#titulo_paso").text('Informacíon Sucursal');
     $("#newModal#btnRegresar, #newModal#paso2").prop('disabled', true);
     document.getElementById('barra1').classList.remove('barra_espaciadora_on');
     document.getElementById('barra1').className += ' barra_espaciadora_off';

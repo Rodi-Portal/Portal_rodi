@@ -155,14 +155,14 @@ class Cat_Portales extends CI_Controller
 
                     $msj = array(
                         'codigo' => 1,
-                        'msg' => 'Cliente registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
+                        'msg' => 'Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
                     );
                     echo json_encode($msj);
                     return;
                 } else {
                     $msj = array(
                         'codigo' => 0,
-                        'msg' => 'Error  al registrar al cliente',
+                        'msg' => 'Error  al registrar al sucursal',
                     );
                     echo json_encode($msj);
                     return;
@@ -207,7 +207,7 @@ class Cat_Portales extends CI_Controller
         // Define los mensajes de error personalizados
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} caracteres.');
-        $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del cliente ya existe en la base de datos.');
+        $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del sucursal ya existe en la base de datos.');
 
         // Validación de formulario
         $msj = array();
@@ -835,7 +835,7 @@ class Cat_Portales extends CI_Controller
             $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
             $msj = array(
                 'codigo' => 1,
-                'msg' => 'Cliente eliminado correctamente',
+                'msg' => 'Sucursal eliminado correctamente',
             );
         }
 
@@ -859,7 +859,7 @@ class Cat_Portales extends CI_Controller
             $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
             $msj = array(
                 'codigo' => 1,
-                'msg' => 'Cliente bloqueado correctamente',
+                'msg' => 'Sucursal bloqueada correctamente',
             );
         }
 
@@ -885,7 +885,7 @@ class Cat_Portales extends CI_Controller
         $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
         $msj = array(
             'codigo' => 1,
-            'msg' => 'Cliente desbloqueado correctamente',
+            'msg' => 'Sucursal desbloqueada correctamente',
         );
 
         echo json_encode($msj);
@@ -935,7 +935,7 @@ class Cat_Portales extends CI_Controller
     {
         $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
         $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
-        $this->form_validation->set_rules('cliente', 'Cliente', 'required|trim');
+        $this->form_validation->set_rules('cliente', 'Sucursal', 'required|trim');
 
         $this->form_validation->set_rules('correo_cliente_name', 'Correo', 'required|trim|valid_email|is_unique[datos_generales.correo]');
         $this->form_validation->set_rules('password_name', 'Contraseña', 'required|trim');

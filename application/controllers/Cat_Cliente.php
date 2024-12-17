@@ -28,7 +28,7 @@ class Cat_Cliente extends CI_Controller
         $idCliente = $this->input->post('idCliente');
 
         // Define la regla de validación con los parámetros como un arreglo
-        $this->form_validation->set_rules('nombre', 'Nombre del Cliente', 'required');
+        $this->form_validation->set_rules('nombre', 'Nombre del sucursal', 'required');
 
         // Define las demás reglas de validación
         $this->form_validation->set_rules('clave', 'Clave', 'trim|required|max_length[3]');
@@ -56,7 +56,7 @@ class Cat_Cliente extends CI_Controller
         // Define los mensajes de error personalizados
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} caracteres.');
-        $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del cliente ya existe en la base de datos.');
+        $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del sucursal ya existe en la base de datos.');
 
         // Validación de formulario
         $msj = array();
@@ -155,7 +155,7 @@ class Cat_Cliente extends CI_Controller
                     $this->cat_cliente_model->editPermiso($permiso, $this->input->post('id'));
                     $msj = array(
                         'codigo' => 1,
-                        'msg' => 'Cliente actualizado exitosamente',
+                        'msg' => 'sucursal actualizada exitosamente',
                     );
                     echo json_encode($msj);
                     return;
@@ -178,14 +178,14 @@ class Cat_Cliente extends CI_Controller
 
                         $msj = array(
                             'codigo' => 1,
-                            'msg' => 'Cliente registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
+                            'msg' => 'Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
                         );
                         echo json_encode($msj);
                         return;
                     } else {
                         $msj = array(
                             'codigo' => 0,
-                            'msg' => 'Error  al registrar al cliente',
+                            'msg' => 'Error  al registrar al sucursal',
                         );
                         echo json_encode($msj);
                         return;
@@ -196,7 +196,7 @@ class Cat_Cliente extends CI_Controller
             } else {
                 $msj = array(
                     'codigo' => 2,
-                    'msg' => 'El nombre del cliente y/o clave ya existe',
+                    'msg' => 'El nombre del sucursal y/o clave ya existe',
                 );
             }
         }
@@ -300,7 +300,7 @@ class Cat_Cliente extends CI_Controller
                 // Construir la respuesta JSON si no se encontraron datos
                 $response = [
                     'success' => false,
-                    'message' => 'No se encontraron datos de clientes.',
+                    'message' => 'No se encontraron datos de sucursales.',
                 ];
             }
 
@@ -537,7 +537,7 @@ class Cat_Cliente extends CI_Controller
             $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
             $msj = array(
                 'codigo' => 1,
-                'msg' => 'Cliente inactivado correctamente',
+                'msg' => 'Sucursal inactivado correctamente',
             );
         }
 
@@ -553,7 +553,7 @@ class Cat_Cliente extends CI_Controller
 
             $msj = array(
                 'codigo' => 1,
-                'msg' => 'Cliente activado correctamente',
+                'msg' => 'Sucursal activado correctamente',
             );
         }
         if ($accion == "eliminar") {
@@ -578,7 +578,7 @@ class Cat_Cliente extends CI_Controller
             $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
             $msj = array(
                 'codigo' => 1,
-                'msg' => 'Cliente eliminado correctamente',
+                'msg' => 'Sucursal eliminado correctamente',
             );
         }
 
@@ -622,7 +622,7 @@ class Cat_Cliente extends CI_Controller
             $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
             $msj = array(
                 'codigo' => 1,
-                'msg' => 'Cliente bloqueado correctamente',
+                'msg' => 'Sucursal bloqueado correctamente',
             );
         }
 
@@ -664,7 +664,7 @@ class Cat_Cliente extends CI_Controller
             $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
             $msj = array(
                 'codigo' => 1,
-                'msg' => 'Cliente desbloqueado correctamente',
+                'msg' => 'Sucursal desbloqueado correctamente',
             );
         }
 
@@ -715,7 +715,7 @@ class Cat_Cliente extends CI_Controller
     {
         $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
         $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
-        $this->form_validation->set_rules('cliente', 'Cliente', 'required|trim');
+        $this->form_validation->set_rules('cliente', 'Sucursal', 'required|trim');
 
         $this->form_validation->set_rules('correo_cliente_name', 'Correo', 'required|trim|valid_email|is_unique[datos_generales.correo]');
         $this->form_validation->set_rules('password_name', 'Contraseña', 'required|trim');
