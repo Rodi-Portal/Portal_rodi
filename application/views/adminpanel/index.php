@@ -56,7 +56,7 @@
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
     ?></div>
-                <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-success"><?php echo /*$dato1;*/ $numero = rand(200, 600); ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-check-circle fa-2x text-success"></i>
@@ -71,7 +71,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1"><?php echo $titulo_dato2; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-info"><?php echo $dato2; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-info"><?php echo /*$dato2;*/$numero = rand(1000, 5000);  ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-check-circle fa-2x text-primary"></i>
@@ -86,7 +86,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-danger"><?php echo $dato3; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-danger"><?php echo /*$dato3;*/ $numero = rand(500, 4000); ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-times-circle fa-2x text-danger"></i>
@@ -102,7 +102,7 @@
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo $titulo_dato4; ?>
                 </div>
-                <div class="h5 mb-0 font-weight-bold text-warning"><?php echo $dato4; ?></div>
+                <div class="h5 mb-0 font-weight-bold text-warning"><?php echo /*$dato4;*/ $numero = rand(500, 4000); ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-user-tie fa-2x text-warning"></i>
@@ -407,15 +407,47 @@ if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') 
 
 $(document).ready(function() {
 
-  cargarGraficaGeneral();
-  cargarGraficaESE();
-  cargarDatosReclutamiento();
-  cargarDatosPastel();
+  cargarGraficaGeneralFake();
+  cargarGraficaESEFake();
+  cargarDatosReclutamientoFake();
+  cargarDatosPastelFake();
 
 });
 
 // Variables globales para almacenar datos
 let datosCard1, datosCard2, datosCard3, datosCard4, datosCard5, datosCard6;
+// grafica  general fake 
+function cargarGraficaGeneralFake() {
+  // Generar datos fake para 12 meses
+  const meses = Array.from({ length: 12 }, (_, i) => ({
+    requisiciones_en_proceso: Math.floor(Math.random() * 500) + 1, // Valores entre 1 y 50
+    requisiciones_finalizadas: Math.floor(Math.random() * 800) + 1,
+    requisiciones_canceladas: Math.floor(Math.random() * 100),    // Valores entre 0 y 20
+    aspirantes_proceso: Math.floor(Math.random() * 100) + 200,    // Valores entre 20 y 100
+  }));
+
+  // Mapear los datos para cada tarjeta
+  const datosCard1 = meses.map(mes => mes.requisiciones_en_proceso);
+  const datosCard2 = meses.map(mes => mes.requisiciones_finalizadas);
+  const datosCard3 = meses.map(mes => mes.requisiciones_canceladas);
+  const datosCard4 = meses.map(mes => mes.aspirantes_proceso);
+
+  // Renderizar la gráfica principal
+  actualizarGraficaGeneral('#chartCandidatosMiniaturaGeneral', datosCard1, datosCard2, datosCard3, datosCard4, true);
+
+  // Configurar el clic para mostrar la gráfica en un modal
+  $('#chartCandidatosMiniaturaGeneral').on('click', function() {
+    $('#graficaModalGeneral').modal('show');
+    setTimeout(function() {
+      actualizarGraficaGeneral('#chartCandidatosModalGeneral', datosCard1, datosCard2, datosCard3, datosCard4, false, $('#filtroMesGeneral').val());
+    }, 500);
+  });
+
+  // Filtro de meses en el modal
+  $('#filtroMesGeneral').on('change', function() {
+    actualizarGraficaGeneral('#chartCandidatosModalGeneral', datosCard1, datosCard2, datosCard3, datosCard4, false, $(this).val());
+  });
+}
 
 // Función para cargar la gráfica general
 function cargarGraficaGeneral() {
@@ -583,6 +615,51 @@ function actualizarGraficaGeneral(canvasID, datosCard1, datosCard2, datosCard3, 
 }
 
 //Fin Grafica  Estadisticas General ---------------------------->
+
+
+// grafica  reclutadores  Fake ------------------------>
+function cargarDatosReclutamientoFake() {
+  // Listas de nombres y apellidos comunes
+  const nombres = ['Ana', 'Carlos', 'María', 'Juan', 'Sofía', 'Luis', 'Marta', 'José', 'Pedro', 'Laura'];
+  const apellidos = ['López', 'Pérez', 'García', 'Hernández', 'Martínez', 'Rodríguez', 'Fernández', 'González', 'Díaz', 'Moreno'];
+
+  const reclutadoras = [];
+  const numReclutadoras = Math.floor(Math.random() * 5) + 5; // Entre 5 y 10 reclutadoras
+
+  // Generar nombres realistas de reclutadoras
+  for (let i = 0; i < numReclutadoras; i++) {
+    const nombre = nombres[Math.floor(Math.random() * nombres.length)];
+    const apellido = apellidos[Math.floor(Math.random() * apellidos.length)];
+    reclutadoras.push(`${nombre} ${apellido}`); // Combinación de nombre y apellido
+  }
+
+  const requisicionesRecibidas = reclutadoras.map(() => Math.floor(Math.random() * 50) + 10); // Entre 10 y 60
+  const requisicionesCerradas = requisicionesRecibidas.map((recibidas) => Math.floor(recibidas * (Math.random() * 0.8 + 0.2))); // 20%-100%
+  const requisicionesCanceladas = requisicionesRecibidas.map((recibidas) => Math.floor(recibidas * (Math.random() * 0.3))); // 0%-30%
+  const sla = reclutadoras.map(() => Math.floor(Math.random() * 10) + 1); // SLA entre 1 y 10
+
+  // Simular los datos generados
+  console.log('Datos Fake Generados:', { reclutadoras, requisicionesRecibidas, requisicionesCerradas, requisicionesCanceladas, sla });
+
+  // Actualizar miniChart
+  miniChart.data.labels = reclutadoras;
+  miniChart.data.datasets[0].data = requisicionesCanceladas;
+  miniChart.data.datasets[1].data = requisicionesRecibidas;
+  miniChart.data.datasets[2].data = requisicionesCerradas;
+  miniChart.data.datasets[3].data = sla;
+  miniChart.update();
+
+  // Actualizar myChart
+  myChart.data.labels = reclutadoras;
+  myChart.data.datasets[0].data = requisicionesCanceladas;
+  myChart.data.datasets[1].data = requisicionesRecibidas;
+  myChart.data.datasets[2].data = requisicionesCerradas;
+  myChart.data.datasets[3].data = sla;
+  myChart.update();
+}
+
+// Llamar a la función para cargar datos fake
+
 
 // Grafica   Reclutadores ---------------------------->
 function cargarDatosReclutamiento() {
@@ -791,6 +868,40 @@ var myChart = new Chart(ctx, {
 });
 
 // Fin Grafica  Grande reclutadores-->
+
+// fake pastel 
+function cargarDatosPastelFake() {
+  // Datos falsos simulados con más labels (medios de contacto)
+  var fakeData = {
+    labels: [
+      'WhatsApp', 
+      'Indeed', 
+      'Talenteca', 
+      'LinkedIn', 
+      'Facebook', 
+      'Twitter', 
+      'Instagram', 
+      'Google Ads', 
+      'Correo Electrónico', 
+      'Referencias Personales'
+    ],
+    data: [
+      Math.floor(Math.random() * 200) + 50,  // WhatsApp
+      Math.floor(Math.random() * 300) + 100, // Indeed
+      Math.floor(Math.random() * 250) + 80,  // Talenteca
+      Math.floor(Math.random() * 150) + 60,  // LinkedIn
+      Math.floor(Math.random() * 100) + 40,  // Facebook
+      Math.floor(Math.random() * 180) + 70,  // Twitter
+      Math.floor(Math.random() * 220) + 90,  // Instagram
+      Math.floor(Math.random() * 300) + 100, // Google Ads
+      Math.floor(Math.random() * 250) + 100, // Correo Electrónico
+      Math.floor(Math.random() * 150) + 50   // Referencias Personales
+    ]
+  };
+
+  // Llamamos a la función para actualizar la gráfica con los datos fake
+  actualizarGraficaPastelModal(fakeData);
+}
 // Función para cargar datos en el gráfico de pastel
 function cargarDatosPastel() {
   var fechaInicio = $('#fechaInicioPastel').val();
@@ -964,6 +1075,38 @@ function generarDatosFalsos() {
     datosCard6
   };
 }
+
+// grafica ese Fake
+function cargarGraficaESEFake() {
+  // Generar datos fake
+  const generarDatosFalsos = () => {
+    const datosCard5 = Array.from({ length: 12 }, () => Math.floor(Math.random() * 100) + 200); // Entre 10 y 60
+    const datosCard6 = Array.from({ length: 12 }, () => Math.floor(Math.random() * 80) + 200);  // Entre 5 y 45
+
+    return { datosCard5, datosCard6 };
+  };
+
+  const datosGenerados = generarDatosFalsos();
+  const datosCard5 = datosGenerados.datosCard5;
+  const datosCard6 = datosGenerados.datosCard6;
+
+  // Renderizar la gráfica principal
+  actualizarGraficaESE('#chartESEMini', datosCard5, datosCard6, true);
+
+  // Configurar el clic para mostrar la gráfica en un modal
+  $('#chartESEMini').on('click', function() {
+    $('#graficaModalESE').modal('show');
+    setTimeout(function() {
+      actualizarGraficaESE('#chartESE', datosCard5, datosCard6, false, $('#filtroMesGeneral1').val());
+    }, 500);
+  });
+
+  // Filtro de meses en el modal
+  $('#filtroMesGeneral1').on('change', function() {
+    actualizarGraficaESE('#chartESE', datosCard5, datosCard6, false, $(this).val());
+  });
+}
+
 
 function cargarGraficaESE() {
   var datosGenerados = generarDatosFalsos();
