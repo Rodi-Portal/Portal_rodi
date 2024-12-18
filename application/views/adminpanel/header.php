@@ -214,12 +214,12 @@ if (in_array(5, $submenus)) {?>
             <?php
 $idRol = $this->session->userdata('idrol');
     if ($idRol == 1 || $idRol == 6) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Admon Account´s</a>
+            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios Administradores</a>
             <?php
 }?>
             <?php
 if ($idRol == 1 || $idRol == 6) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">User's </a>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
 }?>
             <?php
@@ -311,7 +311,7 @@ $portal = $this->session->userdata('idPortal');
             </li>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
               <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey"
-                data-bs-toggle="tooltip" data-bs-placement="top" title="Ver  proveedores  destacados">
+                data-bs-toggle="tooltip" data-bs-placement="top" title="proveedores  destacados">
                 <i class="fas fa-key fa-fw icono-dorado"></i> <!-- Icono de llave -->
               </a>
             </li>
