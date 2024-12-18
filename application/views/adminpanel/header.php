@@ -177,7 +177,7 @@ if (in_array(9, $submenus)) {?>
             <?php
 if (in_array(25, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
-              href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes  de sucursales</a>
+              href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes de sucursales</a>
             <?php
 }
     if (in_array(29, $submenus)) {?>
@@ -214,12 +214,12 @@ if (in_array(5, $submenus)) {?>
             <?php
 $idRol = $this->session->userdata('idrol');
     if ($idRol == 1 || $idRol == 6) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Admon Account´s</a>
+            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios Administradores</a>
             <?php
 }?>
             <?php
 if ($idRol == 1 || $idRol == 6) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">User's </a>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
 }?>
             <?php
@@ -310,7 +310,8 @@ $portal = $this->session->userdata('idPortal');
               </div>
             </li>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
-              <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey">
+              <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey"
+                data-bs-toggle="tooltip" data-bs-placement="top" title="proveedores  destacados">
                 <i class="fas fa-key fa-fw icono-dorado"></i> <!-- Icono de llave -->
               </a>
             </li>
