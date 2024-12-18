@@ -138,7 +138,7 @@ echo '</pre>';*/
       <!-- Divider with Text -->
       <li class="nav-item">
       <a class="nav-link" id="recruitment-btn" href="javascript:void(0);" onclick="loadSection('seccion-recruitment', '<?php echo site_url('Cliente_General/descripcionesCliente/1'); ?>')">
-            <i class="fas fa-users"></i> Recruitment
+            <i class="fas fa-users"></i> Reclutamiento
         </a>
 
 
@@ -147,7 +147,7 @@ echo '</pre>';*/
       <hr class="sidebar-divider">
       <li class="nav-item">
       <a class="nav-link" id="pre-employment-btn" href="javascript:void(0);" onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')">
-            <i class="fas fa-user-clock"></i> Pre-employment
+            <i class="fas fa-user-clock"></i> Preempleo
         </a>
 
       </li>
@@ -155,7 +155,7 @@ echo '</pre>';*/
       <hr class="sidebar-divider">
       <li class="nav-item">
       <a class="nav-link" id="employees-btn" href="javascript:void(0);" onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')">
-            <i class="fas fa-user-check"></i> Employee
+            <i class="fas fa-user-check"></i> Empleados
         </a>
 
       </li>
@@ -163,7 +163,7 @@ echo '</pre>';*/
       <hr class="sidebar-divider">
       <li class="nav-item">
       <a class="nav-link" id="former-employees-btn" href="javascript:void(0);" onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')">
-            <i class="fas fa-user-times"></i> Former Employees
+            <i class="fas fa-user-times"></i> Exempleadoss
         </a>
 
       </li>
@@ -187,23 +187,23 @@ echo '</pre>';*/
               <div class="button-container">
                 <a id="recruitment-btn" href="javascript:void(0);" onclick="loadSection('seccion-recruitment', '<?php echo site_url('Cliente_General/descripcionesCliente/1'); ?>')" class="btn custom-btn">
                   <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
-                  Recruitment
+                  Reclutamiento
                 </a>
                 <a id="pre-employment-btn" href="javascript:void(0);" onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')"
 
                 
                   class="btn custom-btn">
                   <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
-                  Pre-employment
+                  Preempleo
                 </a>
                 <a id="employment-btn" href="javascript:void(0);" onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')" class="btn custom-btn">
                   <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
-                  Employee
+                  Empleados
                 </a>
                 <a  id="former-employees-btn" href="javascript:void(0);" onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')"
                   class="btn custom-btn">
                   <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
-                  Former employee
+                  Exempleados
                 </a>
 
               </div>
@@ -254,12 +254,12 @@ echo '</pre>';*/
             <li class="nav-item custom-menu" style="flex: 1;">
               <a class="btn custom-btn" href="javascript:void(0)" onclick="showSection('panel-inicio')">
                 <i class="fas fa-list-ol"></i>
-                <span class="d-none d-md-inline">Requisitions</span>
+                <span class="d-none d-md-inline">Requisiciones</span>
               </a>
 
               <a class="btn custom-btn" href="javascript:void(0)" onclick="showSection('seccion-bgv')">
                 <i class="fas fa-chart-line"></i>
-                <span class="d-none d-md-inline">Candidates BGV</span>
+                <span class="d-none d-md-inline">Candidatos BGV</span>
               </a>
             </li>
             <!--//TODO: boton para en un futuro poder ver las requisiciones finalizadas actualmente sin funcionamiento -->
@@ -438,7 +438,7 @@ echo '</pre>';*/
                         if (full.archivo_examen_medico !== null && full.conclusionMedica === null) {
                           medico = '<div class="m-auto" style="text-align:center"><a href="' + url_clinico + full
                             .archivo_examen_medico +
-                            '" target="_blank" data-toggle="tooltip" title="Download result" class="fa-tooltip icono_datatable fondo-azul-claro"><i class="fas fa-file-medical"></i></a></div>';
+                            '" target="_blank" data-toggle="tooltip" title="Descargar" class="fa-tooltip icono_datatable fondo-azul-claro"><i class="fas fa-file-medical"></i></a></div>';
                         }
                         if (full.archivo_examen_medico === null && full.conclusionMedica !== null) {
                           medico =
@@ -447,10 +447,10 @@ echo '</pre>';*/
                             '" data-toggle="tooltip" title="Download result" class="fa-tooltip icono_datatable fondo-azul-claro"><i class="fas fa-file-pdf"></i></a></div>';
                         }
                         if (full.archivo_examen_medico === null && full.conclusionMedica === null) {
-                          medico = '<div class="m-auto" style="text-align:center">Waiting for results</div>';
+                          medico = '<div class="m-auto" style="text-align:center">Pendiente</div>';
                         }
                       } else {
-                        medico = '<div class="m-auto" style="text-align:center">Pending</div>';
+                        medico = '<div class="m-auto" style="text-align:center">Pendiente</div>';
                       }
                     } else {
                       medico = '<div class="m-auto" style="text-align:center">NA</div>';
