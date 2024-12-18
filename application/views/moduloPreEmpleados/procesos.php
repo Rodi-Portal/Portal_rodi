@@ -1,14 +1,14 @@
 <div class="container-fluid">
   <h2>Sucursales</h2>
   <div>
-    <p>En este módulo verás un listado de tus clientes o sucursales. Al seleccionar uno, podrás consultar los candidatos
+    <p>En este módulo verás un listado de tus sucursales, areas o departamentos. Al seleccionar uno, podrás consultar los candidatos
       que se encuentran en exámenes y estudios previos a ser contratados, facilitando el seguimiento del proceso de
       selección antes de la contratación.</p>
   </div>
   <table id="processTable" class="display" style="width: 100%;">
     <thead>
       <tr>
-        <th>Nombre del Sucursal</th>
+        <th>Nombre de la Sucursal</th>
         <th>Correo Electrónico</th>
         <th>Teléfono</th>
         <th>Fecha de Creación</th>
@@ -33,7 +33,7 @@
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-      <td colspan="6">Aún no hay clientes registrados.</td>
+      <td colspan="6">Aún no hay Sucursales registrados.</td>
       </tr>
       <?php endif; ?>
     </tbody>
