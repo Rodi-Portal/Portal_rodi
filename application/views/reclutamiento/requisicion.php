@@ -14,7 +14,7 @@
             <span class="icon text-white-50">
               <i class="far fa-file-alt"></i>
             </span>
-            <span class="text">Express Requisition</span>
+            <span class="text">Requisicion Expres</span>
           </button>
         </div>
         <?php
@@ -31,7 +31,7 @@ if ($this->session->userdata('idrol') == 4) {
             <span class="icon text-white-50">
               <i class="fas fa-user-edit"></i>
             </span>
-            <span class="text">Assign Requisition</span>
+            <span class="text">Asignar Requisicion</span>
           </button>
         </div>
       </div>

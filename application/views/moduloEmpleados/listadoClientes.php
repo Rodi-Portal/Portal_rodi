@@ -1,7 +1,7 @@
 
 <div class="container-fluid">
 <h2>Modulo de Empleados</h2>
-<p>En este módulo podrás consultar un listado de tus clientes o sucursales. Al seleccionar uno, accederás al listado de empleados asociados y podrás gestionar sus datos y procesos de manera eficiente.</p>
+<p>En este módulo podrás consultar un listado de tus areas, departamentos o  sucursales. Al seleccionar uno, accederás al listado de empleados asociados y podrás gestionar sus datos y procesos de manera eficiente.</p>
 <table id="processTable" class="display" style="width: 100%;">
     <thead>
         <tr>
