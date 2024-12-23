@@ -240,6 +240,8 @@ $portal = $this->session->userdata('idPortal');
       </li>
       <?php }
 ?>
+<button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
+<div id="resultados"></div>
 
 
       <!-- ?php
@@ -544,3 +546,23 @@ if(in_array(38, $submenus)){ ?>
         <?php
 }
  */?>
+
+<script>
+    // Al hacer clic en el botón
+    $('#enviarNotificacionesBtn').on('click', function() {
+        $.ajax({
+            url: '<?php echo base_url("Notificacion/enviar_notificaciones_inmediatamente"); ?>', // Ruta a la función
+            type: 'GET', // Método GET
+            dataType: 'json', // Esperamos una respuesta en formato JSON
+            success: function(response) {
+                // Mostrar la respuesta en el div
+                console.log("🚀 ~ $ ~ response:", response)
+
+                $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
+            },
+            error: function(xhr, status, error) {
+                console.log("Error: " + error); // Si ocurre algún error
+            }
+        });
+    });
+</script>
