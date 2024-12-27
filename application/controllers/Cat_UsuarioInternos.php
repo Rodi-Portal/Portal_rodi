@@ -76,7 +76,9 @@ class Cat_UsuarioInternos extends CI_Controller
         $id_rol = $this->input->post('id_rol');
         $correo = $this->input->post('correo');
         $telefono = $this->input->post('telefono');
-
+        if(!$id_rol){
+            $id_rol=$this->session->userdata('idrol');
+        }
         // $uncode_password = $this->input->post('password');
         // $base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
         // $password = md5($base.$uncode_password);
