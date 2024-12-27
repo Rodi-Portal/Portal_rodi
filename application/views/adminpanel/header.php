@@ -214,7 +214,8 @@ if (in_array(5, $submenus)) {?>
             <?php
 $idRol = $this->session->userdata('idrol');
     if ($idRol == 1 || $idRol == 6) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios Administradores</a>
+            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
+              Administradores</a>
             <?php
 }?>
             <?php
@@ -239,10 +240,10 @@ $portal = $this->session->userdata('idPortal');
         </div>
       </li>
       <?php }
-?>
-<button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
-<div id="resultados"></div>
-
+      if ($portal == 1 && ($idRol == 1)) {?>
+      <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
+      <div id="resultados"></div>
+      <?php }?>
 
       <!-- ?php
                         if(in_array(8, $submenus)){ ?>
@@ -547,22 +548,22 @@ if(in_array(38, $submenus)){ ?>
 }
  */?>
 
-<script>
-    // Al hacer clic en el botón
-    $('#enviarNotificacionesBtn').on('click', function() {
-        $.ajax({
+        <script>
+        // Al hacer clic en el botón
+        $('#enviarNotificacionesBtn').on('click', function() {
+          $.ajax({
             url: '<?php echo base_url("Notificacion/enviar_notificaciones_inmediatamente"); ?>', // Ruta a la función
             type: 'GET', // Método GET
             dataType: 'json', // Esperamos una respuesta en formato JSON
             success: function(response) {
-                // Mostrar la respuesta en el div
-                console.log("🚀 ~ $ ~ response:", response)
+              // Mostrar la respuesta en el div
+              console.log("🚀 ~ $ ~ response:", response)
 
-                $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
+              $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
             },
             error: function(xhr, status, error) {
-                console.log("Error: " + error); // Si ocurre algún error
+              console.log("Error: " + error); // Si ocurre algún error
             }
+          });
         });
-    });
-</script>
+        </script>
