@@ -3167,61 +3167,79 @@ class Candidato extends Custom_Controller{
     /*----------------------------------------*/
     /* Panel Subclientes
     /*----------------------------------------*/
-      function viewAvances(){
-    $id_candidato = $this->input->post('id_candidato');
-    $id_rol = $this->input->post('id_rol');
-    $txt_fecha = ($this->input->post('espanol') == 1)? 'Fecha: ':'Date: ';
-    $txt_comentario = ($this->input->post('espanol') == 1)? 'Comentario: ':'Comment: ';
-    $txt_imagen = ($this->input->post('espanol') == 1)? 'Ver imagen: ':'View file';
-    $txt_sin_registros = ($this->input->post('espanol') == 1)? 'Sin registro de avances: ':'No registers';
+    function viewAvances()
+    {
+        $id_candidato = $this->input->post('id_candidato');
+        $id_rol = $this->input->post('id_rol');
+        $txt_fecha = ($this->input->post('espanol') == 1) ? 'Fecha: ' : 'Date: ';
+        $txt_comentario = ($this->input->post('espanol') == 1) ? 'Comentario: ' : 'Comment: ';
+        $txt_imagen = ($this->input->post('espanol') == 1) ? 'Ver imagen: ' : 'View file';
+        $txt_sin_registros = ($this->input->post('espanol') == 1) ? 'Sin registro de avances: ' : 'No registers';
     
-    // Crear la URL de la API
-    $api_url = VUE_URL . 'check-avances?id_candidato=' . $id_candidato . '&id_rol=' . $id_rol;
-
-    // Inicializar cURL
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $api_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPGET, true); // Solicitud GET
-
-    // Realizar la solicitud
-    $response = curl_exec($ch);
-
-    // Comprobar si hubo un error en la solicitud
-    if(curl_errno($ch)){
-        echo 'Error de cURL: ' . curl_error($ch);
-        curl_close($ch);
-        return;
-    }
-
-    // Cerrar la conexión cURL
-    curl_close($ch);
-
-    // Decodificar la respuesta JSON
-    $data = json_decode($response, true);
-
-    // Generar la salida
-    $salida = '<div class="row">';
-    $salida .= '<div class="col-md-12">';
-
-    if($data['success'] && !empty($data['data'])){
-        foreach($data['data'] as $row){
-            $parte = explode(' ', $row['fecha']);
-            $aux = explode('-', $parte[0]);
-            $h = explode(':', $parte[1]);
-            $fecha_espanol = $aux[2].'/'.$aux[1].'/'.$aux[0].' '.$h[0].':'.$h[1];
-            $salida .= '<p style="padding-right: 5px;"><b>'.$txt_fecha.'</b> '.$fecha_espanol.'</p><p><b>'.$txt_comentario.'</b> '.$row['comentarios'].'</p>';
-            $salida .= ($row['adjunto'] != "")? "<a href='".base_url()."_adjuntos/".$row['adjunto']."' target='_blank' style='margin-bottom: 10px;text-align:center;'>".$txt_imagen."</a><hr>" : "<hr>";
+        // Crear la URL de la API
+        $api_base_url = $this->config->item('api_base_url');  // Asegúrate de que esté bien configurado
+        $url = $api_base_url . 'api/viewAvancesJson';
+        // Configurar los datos para enviar como JSON
+        $postData = [
+            'id_candidato' => $id_candidato,
+            'id_rol' => $id_rol
+        ];
+    
+        // Inicializar cURL
+        $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));  // Enviar datos como JSON
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ]);
+        
+            // Ejecutar la solicitud
+            $response = curl_exec($ch);
+        
+            // Verificar errores en cURL
+            if ($response === false) {
+                $error_msg = curl_error($ch);
+                echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
+                curl_close($ch);
+                return;
+            }
+        
+            // Verificar el código HTTP
+            $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        
+            if ($http_status !== 200) {
+                echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud, código HTTP: ' . $http_status]);
+                return;
+            }
+        
+            // Decodificar la respuesta JSON
+    
+        // Decodificar la respuesta JSON
+        $data = json_decode($response, true);
+    
+        // Generar la salida
+        $salida = '<div class="row">';
+        $salida .= '<div class="col-md-12">';
+    
+        if (isset($data['success']) && $data['success'] && !empty($data['data'])) {
+            foreach ($data['data'] as $row) {
+                $salida .= '<p style="padding-right: 5px;"><b>' . $txt_fecha . '</b> ' . $row['fecha'] . '</p>';
+                $salida .= '<p><b>' . $txt_comentario . '</b> ' . $row['comentarios'] . '</p>';
+                $salida .= ($row['adjunto'] != "") 
+                    ? "<a href='" . base_url() . "_adjuntos/" . $row['adjunto'] . "' target='_blank' style='margin-bottom: 10px;text-align:center;'>" . $txt_imagen . "</a><hr>" 
+                    : "<hr>";
+            }
+        } else {
+            $salida .= '<p class="text-center"><b>' . $txt_sin_registros . '</b></p><br>';
         }
-        $salida .= '</div>';
+    
+        $salida .= '</div></div>';
+        echo $salida;
     }
-    else{
-        $salida .= '<p class="text-center"><b>'.$txt_sin_registros.'</b></p><br>';
-        $salida .= '</div>';
-    }
-    $salida .= '</div>';
-    echo $salida;
-}
+    
 
     /*----------------------------------------*/
     /* Formulario y Documentacion Panel Candidatos
