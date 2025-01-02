@@ -326,133 +326,87 @@ class Client extends Custom_Controller
             echo $salida = 0;
         }
     }
-    public function verProcesoCandidato()
-    {
+    public function verProcesoCandidato() {
         $id_candidato = $this->input->post('id_candidato');
         $status_bgc = $this->input->post('status_bgc');
         $formulario = $this->input->post('formulario');
-        $secciones = $this->candidato_model->getSeccionesCandidato($id_candidato);
-        $salida = '';
-        $estudios = '';
-        $domicilios = '';
-        $identidad = '';
-        $empleo = '';
-        $criminal = '';
-        $profesionales = '';
-        $credito = '';
-        //Estudios
-        if ($secciones->lleva_estudios == 1) {
-            $check_estudios = $this->candidato_model->getVerificacionMayoresEstudios($id_candidato);
-            $estudios = ($check_estudios != null) ? "<tr><th>Education </th><th>Registered</th></tr>" : "<tr><th>Education </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $estudios = "<tr><th>Education </th><th>Completed</th></tr>";
-            }
-        } else {
-            $estudios = "<tr><th>Education </th><th>N/A</th></tr>";
+        
+        // Realizamos la solicitud a la función verProcesoCandidatoJson para obtener los datos JSON
+        $api_base_url = $this->config->item('api_base_url');  // Asegúrate de que esté bien configurado
+        $url = $api_base_url . 'api/verProcesoCandidatoJson';  // Verifica que la URL sea correcta
+        
+        $data = array(
+            'id_candidato' => $id_candidato,
+            'status_bgc' => $status_bgc,
+            'formulario' => $formulario
+        );
+       
+        // Usamos cURL para hacer la solicitud
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));  // Envía los datos como JSON
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',  // Tipo de contenido
+            'Accept: application/json',        // Aceptar respuesta JSON
+        ]);
+        
+        // Ejecutar la solicitud
+        $response = curl_exec($ch);
+        
+        // Verificar si hubo un error en la ejecución de cURL
+        if ($response === false) {
+            $error_msg = curl_error($ch);  // Obtener el error de cURL
+            echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
+            curl_close($ch);
+            return;
         }
-        //Identidad/Verificacion de documentos
-        if ($secciones->lleva_identidad == 1) {
-            $data['check_identidad'] = $this->candidato_model->getVerificacionDocumentosCandidato($id_candidato);
-            $identidad = ($data['check_identidad']) ? "<tr><th>Identity </th><th>Registered</th></tr>" : "<tr><th>Identity </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $identidad = "<tr><th>Identity </th><th>Completed</th></tr>";
-            }
-        } else {
-            $identidad = "<tr><th>Identity </th><th>N/A</th></tr>";
+        
+        // Verificar el código de estado HTTP
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        // Si el código HTTP no es 200, algo salió mal
+        if ($http_status !== 200) {
+            echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud, código HTTP: ' . $http_status]);
+            return;
         }
-        //Empleos
-        if ($secciones->lleva_empleos == 1) {
-            $data['check_empleo'] = $this->candidato_model->getVerificacionReferencias($id_candidato);
-            $empleo = ($data['check_empleo']) ? "<tr><th>Employment History </th><th>Registered</th></tr>" : "<tr><th>Employment History </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $empleo = "<tr><th>Employment History </th><th>Completed</th></tr>";
+        
+        // Decodificar la respuesta JSON
+        $response_data = json_decode($response, true);
+      
+        // Si la respuesta es válida, construir el HTML
+        if (isset($response_data)) {
+            $salida = '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th scope="col">Description</th>';
+            $salida .= '<th scope="col">Status</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            
+            // Recorrer los datos y construir el HTML
+            foreach ($response_data as $key => $value) {
+                $salida .= '<tr>';
+                $salida .= '<th>' . htmlspecialchars($key) . '</th>';
+                $salida .= '<th>' . htmlspecialchars($value) . '</th>';
+                $salida .= '</tr>';
             }
+            
+            $salida .= '</tbody>';
+            $salida .= '</table>';
         } else {
-            $empleo = "<tr><th>Employment History </th><th>N/A</th></tr>";
+            $salida = 'No data available';
         }
-        //Globales
-        if ($secciones->id_seccion_global_search != null) {
-            $check_globales = $this->candidato_model->getGlobalSearches($id_candidato);
-            $globales = ($check_globales != null) ? "<tr><th>Global Database Searches </th><th>Completed</th></tr>" : "<tr><th>Global Database Searches </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $globales = "<tr><th>Global Database Searches </th><th>Completed</th></tr>";
-            }
-        } else {
-            $globales = "<tr><th>Global Database Searches </th><th>N/A</th></tr>";
-        }
-        //Domicilios
-        if ($secciones->lleva_domicilios == 1) {
-            $check_domicilios = $this->candidato_model->getVerificacionHistorialDomicilios($id_candidato);
-            $domicilios = ($check_domicilios != null) ? "<tr><th>Address History </th><th>Registered</th></tr>" : "<tr><th>Address History </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $domicilios = "<tr><th>Address History </th><th>Completed</th></tr>";
-            }
-        } else {
-            $domicilios = "<tr><th>Address History </th><th>N/A</th></tr>";
-        }
-        //Criminal
-        if ($secciones->lleva_criminal == 1) {
-            $check_criminal = $this->candidato_model->getStatusVerificacionPenal($id_candidato);
-            if ($status_bgc > 0) {
-                $criminal = "<tr><th>Criminal check </th><th>Completed</th></tr>";
-            } else {
-                $criminal = "<tr><th>Criminal check </th><th>In process</th></tr>";
-            }
-        } else {
-            $criminal = "<tr><th>Criminal check </th><th>N/A</th></tr>";
-        }
-        //Referencias profesionales
-        if ($secciones->cantidad_ref_profesionales > 0) {
-            $data['check_ref_profesionales'] = $this->candidato_model->getReferenciasProfesionales($id_candidato);
-            $profesionales = ($data['check_ref_profesionales']) ? "<tr><th>Professional references  </th><th>Registered</th></tr>" : "<tr><th>Professional references  </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $profesionales = "<tr><th>Professional references </th><th>Completed</th></tr>";
-            }
-        } else {
-            $profesionales = "<tr><th>Professional references </th><th>N/A</th></tr>";
-        }
-        //Credito
-        if ($secciones->lleva_credito == 1) {
-            $data['check_credito'] = $this->candidato_model->checkCredito($id_candidato);
-            $credito = ($data['check_credito']) ? "<tr><th>Credit History  </th><th>Registered</th></tr>" : "<tr><th>Credit History  </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $credito = "<tr><th>Credit History </th><th>Completed</th></tr>";
-            }
-        } else {
-            $credito = "<tr><th>Credit History </th><th>N/A</th></tr>";
-        }
-        //Referencias personales
-        if ($secciones->cantidad_ref_personales > 0) {
-            $data['check_ref_personales'] = $this->candidato_model->getReferenciasPersonales($id_candidato);
-            $personales = ($data['check_ref_personales']) ? "<tr><th>Personal references  </th><th>Registered</th></tr>" : "<tr><th>Personal references  </th><th>In process</th></tr>";
-            if ($status_bgc > 0) {
-                $personales = "<tr><th>Personal references </th><th>Completed</th></tr>";
-            }
-        } else {
-            $personales = "<tr><th>Personal references </th><th>N/A</th></tr>";
-        }
-        //Resultados
-        $salida .= '<table class="table table-striped">';
-        $salida .= '<thead>';
-        $salida .= '<tr>';
-        $salida .= '<th scope="col">Description</th>';
-        $salida .= '<th scope="col">Status</th>';
-        $salida .= '</tr>';
-        $salida .= '</thead>';
-        $salida .= '<tbody>';
-        $salida .= $estudios;
-        $salida .= $identidad;
-        $salida .= $empleo;
-        $salida .= $profesionales;
-        $salida .= $globales;
-        $salida .= $domicilios;
-        $salida .= $criminal;
-        $salida .= $credito;
-        $salida .= $personales;
-        $salida .= '</tbody>';
-        $salida .= '</table>';
+        
+        // Mostrar el resultado HTML
         echo $salida;
     }
+    
+    
+    
+    
     public function getDocumentosRequeridos()
     {
         $id_candidato = $_POST['id_candidato'];

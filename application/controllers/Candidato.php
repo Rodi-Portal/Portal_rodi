@@ -1709,44 +1709,88 @@ class Candidato extends Custom_Controller{
             $this->candidato_model->editarEstatusPenales($datos, $id_verificacion);
             //$this->candidato_model->finishEstatusEstudios($id_verificacion, $date, $id_usuario);
         }
-        function getDocumentosPanelCliente(){
-          $id_candidato = $this->input->post('id_candidato');
-          $data['docs_candidato'] = $this->candidato_model->getDocumentacionEspecificaCandidato($id_candidato);
-          $salida = '';
-          if($data['docs_candidato']){
-              $salida .= '<table class="table table-striped">';
-              $salida .= '<thead>';
-              $salida .= '<tr>';
-              $salida .= '<th width="40%" scope="col">File name</th>';
-              $salida .= '<th scope="col">Category</th>';
-              $salida .= '</tr>';
-              $salida .= '</thead>';
-              $salida .= '<tbody>';
-              foreach($data['docs_candidato'] as $doc){
-                  $salida .= '<tr id="fila'.$doc->id.'">';
-                  $salida .= '<th><a href="'.base_url().'_docs/'.$doc->archivo.'" target="_blank" style="word-break: break-word;">'.$doc->archivo.'</a></th>';
-                  $salida .= '<th>'.$doc->tipo.'</th>';
-              }
-              $salida .= '</tr></tbody></table>';
-          }
-          else{
-              $salida = '<table class="table table-striped">';
-              $salida .= '<thead>';
-              $salida .= '<tr>';
-              $salida .= '<th scope="col">File name</th>';
-              $salida .= '<th scope="col">Category</th>';
-              $salida .= '</tr>';
-              $salida .= '</thead>';
-              $salida .= '<tbody>';
-              $salida .= '<tr>';
-              $salida .= '<th class="text-center" colspan="2">No documents yet</th>';
-              $salida .= '</tr>';
-              $salida .= '</tbody>';
-              $salida .= '</table>';
-          }
-          
-          echo $salida;
+        public function getDocumentosPanelCliente() {
+            $id_candidato = $this->input->post('id_candidato');
+            
+            // Configurar la URL del endpoint
+            $api_base_url = $this->config->item('api_base_url');  // Asegúrate de que esté bien configurado
+            $url = $api_base_url . 'api/verDocumentosCandidatoJson';
+            
+            // Datos a enviar
+            $data = array(
+                'id_candidato' => $id_candidato,
+            );
+        
+            // Inicializar cURL
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));  // Enviar datos como JSON
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ]);
+        
+            // Ejecutar la solicitud
+            $response = curl_exec($ch);
+        
+            // Verificar errores en cURL
+            if ($response === false) {
+                $error_msg = curl_error($ch);
+                echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
+                curl_close($ch);
+                return;
+            }
+        
+            // Verificar el código HTTP
+            $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        
+            if ($http_status !== 200) {
+                echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud, código HTTP: ' . $http_status]);
+                return;
+            }
+        
+            // Decodificar la respuesta JSON
+            $response_data = json_decode($response, true);
+        
+            // Construir el HTML de salida
+            $salida = '';
+            if (!empty($response_data) && is_array($response_data)) {
+                $salida .= '<table class="table table-striped">';
+                $salida .= '<thead>';
+                $salida .= '<tr>';
+                $salida .= '<th width="40%" scope="col">File name</th>';
+                $salida .= '<th scope="col">Category</th>';
+                $salida .= '</tr>';
+                $salida .= '</thead>';
+                $salida .= '<tbody>';
+                foreach ($response_data as $doc) {
+                    $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
+                    $salida .= '<th><a href="' . base_url('_docs/' . htmlspecialchars($doc['archivo'])) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['archivo']) . '</a></th>';
+                    $salida .= '<th>' . htmlspecialchars($doc['tipo']) . '</th>';
+                    $salida .= '</tr>';
+                }
+                $salida .= '</tbody></table>';
+            } else {
+                $salida = '<table class="table table-striped">';
+                $salida .= '<thead>';
+                $salida .= '<tr>';
+                $salida .= '<th scope="col">File name</th>';
+                $salida .= '<th scope="col">Category</th>';
+                $salida .= '</tr>';
+                $salida .= '</thead>';
+                $salida .= '<tbody>';
+                $salida .= '<tr>';
+                $salida .= '<th class="text-center" colspan="2">No documents yet</th>';
+                $salida .= '</tr>';
+                $salida .= '</tbody></table>';
+            }
+        
+            // Mostrar la salida
+            echo $salida;
         }
+        
         function downloadDocumentosPanelCliente(){
           if(isset($_POST['idCandidatoDocs'])){
             $id_candidato = $_POST['idCandidatoDocs'];
@@ -3123,35 +3167,62 @@ class Candidato extends Custom_Controller{
     /*----------------------------------------*/
     /* Panel Subclientes
     /*----------------------------------------*/
-        function viewAvances(){
-            $id_candidato = $this->input->post('id_candidato');
-            $id_rol = $this->input->post('id_rol');
-            $txt_fecha = ($this->input->post('espanol') == 1)? 'Fecha: ':'Date: ';
-            $txt_comentario = ($this->input->post('espanol') == 1)? 'Comentario: ':'Comment: ';
-            $txt_imagen = ($this->input->post('espanol') == 1)? 'Ver imagen: ':'View file';
-            $txt_sin_registros = ($this->input->post('espanol') == 1)? 'Sin registro de avances: ':'No registers';
-            
-            $salida = '<div class="row">';
-            $salida .= '<div class="col-md-12">';
-            $data['avances'] = $this->candidato_model->checkAvances($id_candidato, $id_rol);
-            if($data['avances']){
-                foreach($data['avances'] as $row){
-                    $parte = explode(' ', $row->fecha);
-                    $aux = explode('-', $parte[0]);
-                    $h = explode(':', $parte[1]);
-                    $fecha_espanol = $aux[2].'/'.$aux[1].'/'.$aux[0].' '.$h[0].':'.$h[1];
-                    $salida .= '<p style="padding-right: 5px;"><b>'.$txt_fecha.'</b> '.$fecha_espanol.'</p><p><b>'.$txt_comentario.'</b> '.$row->comentarios.'</p>';
-                    $salida .= ($row->adjunto != "")? "<a href='".base_url()."_adjuntos/".$row->adjunto."' target='_blank' style='margin-bottom: 10px;text-align:center;'>".$txt_imagen."</a><hr>" : "<hr>";
-                }
-                $salida .= '</div>';
-            }
-            else{
-                $salida .= '<p class="text-center"><b>'.$txt_sin_registros.'</b></p><br>';
-                $salida .= '</div>';
-            }
-            $salida .= '</div>';
-            echo $salida;
+      function viewAvances(){
+    $id_candidato = $this->input->post('id_candidato');
+    $id_rol = $this->input->post('id_rol');
+    $txt_fecha = ($this->input->post('espanol') == 1)? 'Fecha: ':'Date: ';
+    $txt_comentario = ($this->input->post('espanol') == 1)? 'Comentario: ':'Comment: ';
+    $txt_imagen = ($this->input->post('espanol') == 1)? 'Ver imagen: ':'View file';
+    $txt_sin_registros = ($this->input->post('espanol') == 1)? 'Sin registro de avances: ':'No registers';
+    
+    // Crear la URL de la API
+    $api_url = VUE_URL . 'check-avances?id_candidato=' . $id_candidato . '&id_rol=' . $id_rol;
+
+    // Inicializar cURL
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPGET, true); // Solicitud GET
+
+    // Realizar la solicitud
+    $response = curl_exec($ch);
+
+    // Comprobar si hubo un error en la solicitud
+    if(curl_errno($ch)){
+        echo 'Error de cURL: ' . curl_error($ch);
+        curl_close($ch);
+        return;
+    }
+
+    // Cerrar la conexión cURL
+    curl_close($ch);
+
+    // Decodificar la respuesta JSON
+    $data = json_decode($response, true);
+
+    // Generar la salida
+    $salida = '<div class="row">';
+    $salida .= '<div class="col-md-12">';
+
+    if($data['success'] && !empty($data['data'])){
+        foreach($data['data'] as $row){
+            $parte = explode(' ', $row['fecha']);
+            $aux = explode('-', $parte[0]);
+            $h = explode(':', $parte[1]);
+            $fecha_espanol = $aux[2].'/'.$aux[1].'/'.$aux[0].' '.$h[0].':'.$h[1];
+            $salida .= '<p style="padding-right: 5px;"><b>'.$txt_fecha.'</b> '.$fecha_espanol.'</p><p><b>'.$txt_comentario.'</b> '.$row['comentarios'].'</p>';
+            $salida .= ($row['adjunto'] != "")? "<a href='".base_url()."_adjuntos/".$row['adjunto']."' target='_blank' style='margin-bottom: 10px;text-align:center;'>".$txt_imagen."</a><hr>" : "<hr>";
         }
+        $salida .= '</div>';
+    }
+    else{
+        $salida .= '<p class="text-center"><b>'.$txt_sin_registros.'</b></p><br>';
+        $salida .= '</div>';
+    }
+    $salida .= '</div>';
+    echo $salida;
+}
+
     /*----------------------------------------*/
     /* Formulario y Documentacion Panel Candidatos
     /*----------------------------------------*/

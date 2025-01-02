@@ -35,7 +35,10 @@ if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri
 
   </div>
   <p>
-  En este módulo se presenta un listado de los posibles empleados asociados a una sucursal, área o departamento específicos. Estos candidatos aún se encuentran en periodo de exámenes y pruebas. Una vez que hayan concluido satisfactoriamente dicho proceso, podrás proceder a contratarlos y enviarlos al módulo de empleados para su gestión.</p>
+    En este módulo se presenta un listado de los posibles empleados asociados a una sucursal, área o departamento
+    específicos. Estos candidatos aún se encuentran en periodo de exámenes y pruebas. Una vez que hayan concluido
+    satisfactoriamente dicho proceso, podrás proceder a contratarlos y enviarlos al módulo de empleados para su gestión.
+  </p>
 
   <?php echo $modals;
 echo $mdl_candidato; ?>
@@ -928,18 +931,25 @@ function changeDatatable(url1) {
             }
           },
           {
-            title: 'Process',
-            data: 'nombre_proyecto',
+            title: 'Acciones',
+            data: 'id',
+            "width": "10%",
             bSortable: false,
-            "width": "15%",
-            render: function(data, type, row) {
-              if (data) {
-                return '<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">' +
-                  '<button style="flex: 1; height: 50px; margin: 0; font-size: 14px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" class="btn btn-primary btn-info">' +
-                  data + '</button></div>';
+            mRender: function(data, type, full) {
+              // Condición para el usuario espectador
+              if (full.socioeconomico == 1) {
+                if (full.tipo_formulario != 0) {
+                  var documentos =
+                    ' <a href="javascript:void(0)" data-toggle="tooltip" title="Documents of the candidate" id="subirDocs" class="fa-tooltip icono_datatable"><i class="fas fa-folder"></i></a>';
+                  return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a> <a href="javascript:void(0)" data-toggle="tooltip" title="Status process" id="ver" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a>' +
+                    documentos;
+                } else {
+                  return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a>';
+                }
               } else {
-                return '<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><button style="width: 120px; height: 50px; margin: 0; font-size: 14px;" class="btn btn-primary btn-info">Exámenes</button></div>';
+                return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a>';
               }
+
             }
           },
           {
@@ -1139,6 +1149,22 @@ function changeDatatable(url1) {
           });
         },
         rowCallback: function(row, data) {
+          $("a#ver", row).bind('click', () => {
+            $(".nombreCandidato").text(data.candidato);
+            $.ajax({
+              url: '<?php echo base_url('Client/verProcesoCandidato'); ?>',
+              type: 'post',
+              data: {
+                'id_candidato': data.id,
+                'status_bgc': data.status_bgc,
+                'formulario': data.fecha_contestado
+              },
+              success: function(res) {
+                $("#div_status").html(res);
+                $("#statusModal").modal("show");
+              }
+            });
+          });
           $('a[id^=pdfDoping]', row).bind('click', () => {
             var id = data.idDoping;
             $('#pdfForm' + id).submit();
@@ -1168,8 +1194,79 @@ function changeDatatable(url1) {
             $('#subirArchivoModal').modal('show');
           });
           $("a#msj_avances", row).bind('click', () => {
-            $("#idCandidato").val(data.id);
-            verMensajesAvances(data.id, data.candidato)
+            $.ajax({
+              url: '<?php echo base_url('Candidato/viewAvances'); ?>',
+              type: 'post',
+              data: {
+                'id_rol': 7,
+                'id_candidato': data.id,
+                'id_cliente': data.id_cliente
+              },
+              success: function(res) {
+                $("#div_avances_dop").html(res);
+
+              }
+            });
+            $("#avancesModal").modal("show");
+          });
+          $('a#documentos', row).bind('click', () => {
+						$.ajax({
+							url: '<?php echo base_url('Candidato/viewDocumentos'); ?>',
+							type: 'post',
+							data: {
+								'id_candidato': data.id
+							},
+							success: function(res) {
+								if (res != 0) {
+									$("#lista_documentos").empty();
+									$("#lista_documentos").html(res);
+									$("#documentosModal").modal('show');
+								} else {
+									$("#lista_documentos").empty();
+									$("#lista_documentos").html("<p class='text-center'><b>Documents under review</b></p>");
+									$("#documentosModal").modal('show');
+								}
+
+
+							},
+							error: function(res) {
+
+							}
+						});
+					});
+          $("a#subirDocs", row).bind('click', () => {
+            $(".idCandidato").val(data.id);
+            $("#idCandidatoDocs").val(data.id);
+            $(".nombreCandidato").text(data.candidato);
+            $.ajax({
+			
+              url: '<?php echo base_url('Candidato/getDocumentosPanelCliente'); ?>',
+              type: 'post',
+              data: {
+                'id_candidato': data.id,
+                'prefijo': data.id + "_" + data.nombre + "" + data.paterno
+              },
+              success: function(res) {
+                $("#tablaDocs").html(res);
+              }
+            });
+            $("#docsModal").modal("show");
+          });
+          $("a#msj_avances", row).bind('click', () => {
+            $.ajax({
+              url: '<?php echo base_url('Candidato/viewAvances'); ?>',
+              type: 'post',
+              data: {
+                'id_rol': 2,
+                'id_candidato': data.id,
+                'id_cliente': data.id_cliente
+              },
+              success: function(res) {
+                $("#div_avances_bgv").html(res);
+
+              }
+            });
+            $("#avancesModal").modal("show");
           });
           $('a[id^=pdfPrevio]', row).bind('click', () => {
             var id = data.id;
