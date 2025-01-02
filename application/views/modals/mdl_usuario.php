@@ -58,7 +58,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Confirm password</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+        
         </button>
       </div>
       <div class="modal-body">
@@ -83,7 +83,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Password recovery</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+      
         </button>
       </div>
       <div class="modal-body">
@@ -102,3 +102,118 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="avancesModal" role="dialog" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+				<h4 class="modal-title">Progress messages:</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					
+					</button>
+				</div>
+				<div class="modal-body">
+					
+					<ul class="nav nav-tabs" id="modalTabs">
+						<li class="nav-item">
+							<a class="nav-link active" id="pestaña1-tab" data-toggle="tab" href="#pestaña1">BGV comments:</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="pestaña2-tab" data-toggle="tab" href="#pestaña2">Drug Test comments:</a>
+						</li>
+					</ul>
+
+					<div class="tab-content">
+						<div class="tab-pane fade show active" id="pestaña1">
+							<p class="" id="comentario_candidato_p1"></p><br>
+							<h4>BGV <h4>
+							<div class="modal-body">
+								
+								<div id="div_avances_bgv">
+
+								</div>
+							</div>						
+						</div>
+						<div class="tab-pane fade" id="pestaña2">
+							<p class="" id="comentario_candidato_p2"></p><br>
+							<h4>Drug Test <h4>
+								<div class="modal-body">
+									<div id="div_avances_dop">
+
+									</div>
+								</div>	
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+  <div class="modal fade" id="statusModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Candidate Status: <br><span class="nombreCandidato"></span></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="div_status"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="docsModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <div id="tablaDocs" class="text-center"></div><br><br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 text-center">
+              <label>Selecciona el documento</label><br>
+              <input type="file" id="documento" class="doc_obligado" name="documento" accept=".jpg, .png, .jpeg, .pdf"><br><br>
+              <br>
+            </div>
+            <div class="col-md-6 text-center">
+              <label>Tipo de archivo *</label>
+              <select name="tipo_archivo" id="tipo_archivo" class="form-control personal_obligado">
+                <option value="">Selecciona</option>
+                <?php 
+                foreach ($tipos_docs as $t) {
+                  if($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45){ ?>
+                    <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+                <?php 
+                  }
+                } ?>
+              </select>
+              <br>
+            </div>
+          </div>
+          <div id="msj_error" class="alert alert-danger hidden"></div>
+        </div>
+        <div class="modal-footer">
+          <form method="POST" action="<?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
+            <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
+            <button type="submit" class="btn btn-primary">Descargar todos los documentos</button>
+          </form>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
+        </div>
+      </div>
+    </div>
+  </div>
