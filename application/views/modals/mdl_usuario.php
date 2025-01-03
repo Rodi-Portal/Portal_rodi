@@ -208,11 +208,12 @@
         </div>
         <div class="modal-footer">
           <!--form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
-            <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
-            <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
+            
 
             <button type="submit" class="btn btn-primary">Descargar todos los documentos</button>
           </form -->
+          <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
+            <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
           <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
         </div>
