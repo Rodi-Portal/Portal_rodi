@@ -4,7 +4,7 @@
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Sucursal: <small><?php echo $cliente; ?></small></h1><br>
-   
+
     <?php
 if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri->segment(3) != 233 && $this->uri->segment(3) != 250) {
     ?>
@@ -24,7 +24,7 @@ if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri
     </a>
 
     <?php }?>
-   
+
     <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
       style="display: none;">
       <span class="icon text-white-50">
@@ -1210,48 +1210,35 @@ function changeDatatable(url1) {
             $("#avancesModal").modal("show");
           });
           $('a#documentos', row).bind('click', () => {
-						$.ajax({
-							url: '<?php echo base_url('Candidato/viewDocumentos'); ?>',
-							type: 'post',
-							data: {
-								'id_candidato': data.id
-							},
-							success: function(res) {
-								if (res != 0) {
-									$("#lista_documentos").empty();
-									$("#lista_documentos").html(res);
-									$("#documentosModal").modal('show');
-								} else {
-									$("#lista_documentos").empty();
-									$("#lista_documentos").html("<p class='text-center'><b>Documents under review</b></p>");
-									$("#documentosModal").modal('show');
-								}
-
-
-							},
-							error: function(res) {
-
-							}
-						});
-					});
-          $("a#subirDocs", row).bind('click', () => {
-            $(".idCandidato").val(data.id);
-            $("#idCandidatoDocs").val(data.id);
-            $(".nombreCandidato").text(data.candidato);
             $.ajax({
-			
-              url: '<?php echo base_url('Candidato/getDocumentosPanelCliente'); ?>',
+              url: '<?php echo base_url('Candidato/viewDocumentos'); ?>',
               type: 'post',
               data: {
-                'id_candidato': data.id,
-                'prefijo': data.id + "_" + data.nombre + "" + data.paterno
+                'id_candidato': data.id
               },
               success: function(res) {
-                $("#tablaDocs").html(res);
+                if (res != 0) {
+                  $("#lista_documentos").empty();
+                  $("#lista_documentos").html(res);
+                  $("#documentosModal").modal('show');
+                } else {
+                  $("#lista_documentos").empty();
+                  $("#lista_documentos").html(
+                    "<p class='text-center'><b>Documents under review</b></p>");
+                  $("#documentosModal").modal('show');
+                }
+
+
+              },
+              error: function(res) {
+
               }
             });
-            $("#docsModal").modal("show");
           });
+          $("a#subirDocs", row).bind('click', () => {
+            cargarDocumentosPanelCliente(data.id, (data.nombre +' '+ data.paterno), data.paterno);
+          });
+
           $("a#msj_avances", row).bind('click', () => {
             $.ajax({
               url: '<?php echo base_url('Candidato/viewAvances'); ?>',
@@ -5290,14 +5277,36 @@ function actualizarInvestigacion() {
     }
   });
 }
+function cargarDocumentosPanelCliente(id, nombre, paterno) {
+  $(".idCandidato").val(id);
+  $("#idCandidatoDocs").val(id);
+  $(".nombreCandidato").text(nombre);
+  $("#nameCandidato").val(nombre);
 
+  $.ajax({
+    url: '<?php echo base_url('Candidato/getDocumentosPanelCliente'); ?>',
+    type: 'post',
+    data: {
+      'id_candidato': id,
+      'prefijo': id + "_" + nombre + "" + paterno
+    },
+    success: function(res) {
+      $("#tablaDocs").html(res);
+    }
+  });
+
+  $("#docsModal").modal("show");
+}
 function subirDoc() {
   var data = new FormData();
   var doc = $("#documento")[0].files[0];
-  data.append('id_candidato', $("#idCandidato").val());
+  data.append('id_candidato', $("#idCandidatoDocs").val());
   data.append('prefijo', $(".prefijo").val());
   data.append('tipo_doc', $("#tipo_archivo").val());
   data.append('documento', doc);
+  id = $("#idCandidatoDocs").val();
+  nombre = $("#nameCandidato").val();
+  console.log("🚀 ~ subirDoc ~ nombre:", nombre)
   $.ajax({
     url: "<?php echo base_url('Candidato/cargarDocumento'); ?>",
     method: "POST",
@@ -5313,23 +5322,32 @@ function subirDoc() {
         $('.loader').fadeOut();
       }, 200);
       var data = JSON.parse(res);
+
       if (data.codigo === 1) {
         $("#documento").val("");
         $("#tablaDocs").empty();
         $('#tipo_archivo').val('');
         $("#tablaDocs").html(data.msg);
-        $("#docsModal #msj_error").css('display', 'none')
-        //recargarTable();
+        $("#docsModal #msj_error").css('display', 'none');
+
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: 'Se ha actualizado correctamente',
+          title: 'Se cargó el documento correctamente',
           showConfirmButton: false,
           timer: 2500
-        })
+        });
+
+        // Llamar a cargarDocumentosPanelCliente
+        cargarDocumentosPanelCliente(
+          id,
+          nombre,
+          ""
+        );
       }
+
       if (data.codigo === 0) {
-        $("#docsModal #msj_error").css('display', 'block').html(data.msg);
+        $("#docsModal #msj_error").css('display', 'block').html(data.message);
       }
     }
   });
