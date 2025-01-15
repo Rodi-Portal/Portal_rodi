@@ -41,6 +41,7 @@
   <script src="<?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <!-- Incluir Bootstrap Select JS -->
 
@@ -146,6 +147,7 @@
 
       <!-- Reportes -->
       <?php
+$portal = $this->session->userdata('idPortal');
 if (in_array(9, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
@@ -224,7 +226,7 @@ if ($idRol == 1 || $idRol == 6) {?>
             <?php
 }?>
             <?php
-$portal = $this->session->userdata('idPortal');
+
     $idRol = $this->session->userdata('idrol');
     if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
@@ -240,7 +242,7 @@ $portal = $this->session->userdata('idPortal');
         </div>
       </li>
       <?php }
-      if ($portal == 1 && ($idRol == 1)) {?>
+if ($portal == 1 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
       <?php }?>
@@ -330,6 +332,10 @@ $portal = $this->session->userdata('idPortal');
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="<?php echo base_url(); ?>Area/pasarela">
+                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Suscripción
+                </a>
                 <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Cerrar sesión
@@ -463,88 +469,88 @@ $portal = $this->session->userdata('idPortal');
 <!-- Doping -->
 <?php
 if (in_array(3, $submenus)) {?>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDoping"
-            aria-expanded="true" aria-controls="collapseDoping">
-            <i class="fas fa-fw fa-eye-dropper"></i>
-            <span>Doping</span>
-          </a>
-          <div id="collapseDoping" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-              <?php
+<li class="nav-item">
+<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDoping"
+aria-expanded="true" aria-controls="collapseDoping">
+<i class="fas fa-fw fa-eye-dropper"></i>
+<span>Doping</span>
+</a>
+<div id="collapseDoping" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+<div class="bg-white py-2 collapse-inner rounded">
+<?php
 if (in_array(4, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Doping/indexGenerales') ?>">Registros generales</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Doping/indexGenerales') ?>">Registros generales</a>
+<?php
 }
 if (in_array(23, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Doping/indexPendientes') ?>">Registros pendientes</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Doping/indexPendientes') ?>">Registros pendientes</a>
+<?php
 }
 if (in_array(24, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Doping/indexFinalizados') ?>">Finalizados</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Doping/indexFinalizados') ?>">Finalizados</a>
+<?php
 }?>
-            </div>
-          </div>
-        </li>
-        <?php }?>
+</div>
+</div>
+</li>
+<?php }?>
 
-        <!-- Laboratorio -->
-        <?php
+<!-- Laboratorio -->
+<?php
 if (in_array(20, $submenus)) {?>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLab" aria-expanded="true"
-            aria-controls="collapseLab">
-            <i class="fas fa-flask"></i>
-            <span>Laboratorio</span>
-          </a>
-          <div id="collapseLab" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-              <?php
+<li class="nav-item">
+<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLab" aria-expanded="true"
+aria-controls="collapseLab">
+<i class="fas fa-flask"></i>
+<span>Laboratorio</span>
+</a>
+<div id="collapseLab" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+<div class="bg-white py-2 collapse-inner rounded">
+<?php
 if (in_array(22, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Medico/index') ?>">Examen médico</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Medico/index') ?>">Examen médico</a>
+<?php
 }
 if (in_array(32, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Covid/index') ?>">Pruebas COVID</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Covid/index') ?>">Pruebas COVID</a>
+<?php
 }
 if (in_array(21, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Laboratorio/sanguineo') ?>">Grupo sanguíneo</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Laboratorio/sanguineo') ?>">Grupo sanguíneo</a>
+<?php
 }?>
-            </div>
-          </div>
-        </li>
-        <?php }?>
-        */
-        ?>
+</div>
+</div>
+</li>
+<?php }?>
+ */
+?>
         <!-- Control -->
         <?php /*
 if (in_array(17, $submenus)) {?>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseControl"
-            aria-expanded="true" aria-controls="collapseControl">
-            <i class="fas fa-cogs"></i>
-            <span>Control</span>
-          </a>
-          <div id="collapseControl" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-              <!--a class="collapse-item" href="<?php //echo site_url('Reporte/index') ?>">Control</a-->
-              <?php /*
+<li class="nav-item">
+<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseControl"
+aria-expanded="true" aria-controls="collapseControl">
+<i class="fas fa-cogs"></i>
+<span>Control</span>
+</a>
+<div id="collapseControl" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+<div class="bg-white py-2 collapse-inner rounded">
+<!--a class="collapse-item" href="<?php //echo site_url('Reporte/index') ?>">Control</a-->
+<?php /*
 if(in_array(32, $submenus)){ ?>
-              <a class="collapse-item" href="<?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
+<?php
 }
 if(in_array(38, $submenus)){ ?>
-              <a class="collapse-item" href="<?php echo site_url('Reporte/listado_doping_index') ?>">Listado de
-                Doping</a>
-              <?php
+<a class="collapse-item" href="<?php echo site_url('Reporte/listado_doping_index') ?>">Listado de
+Doping</a>
+<?php
 } ?>
-            </div>
-          </div>
-        </li>
-        <?php
+</div>
+</div>
+</li>
+<?php
 }
  */?>
 

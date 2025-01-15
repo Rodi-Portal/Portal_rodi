@@ -245,15 +245,15 @@ $(document).ready(function() {
       },
 
       {
-        title: 'Accesos',
+        title: 'Suscripcion',
         data: 'numero_usuarios_portal',
         bSortable: false,
-        "width": "10%",
+        "width": "15%",
         mRender: function(data, type, full) {
           if (data == 0) {
             return 'Sin registro de accesos';
           } else {
-            return 'Cuenta con ' + data + ' registro(s) de acceso';
+            return '<h5>' + full.paquete +'</h5><br> Cuenta con ' + data + ' registro(s) de acceso';
           }
         }
       },
