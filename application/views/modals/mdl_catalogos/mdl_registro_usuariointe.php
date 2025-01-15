@@ -31,6 +31,8 @@
                <option value="6">Administrador</option>
                 <option value="4">Reclutadora</option>
                 <option value="11">Coordinador  reclutamiento </option>
+                <option value="13">Visor</option>
+
               </select>
               <br>
             </div>
