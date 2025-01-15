@@ -90,12 +90,13 @@ class Cat_portales_model extends CI_Model
       P.descripcion,
       P.creacion,
       P.bloqueado,
-      P.usuarios_permitidos,
+      P.usuarios_extras,
       P.id_usuario_portal,
       P.reclu,
       P.pre,
       P.emp,
       P.former,
+      PAQ.nombre AS paquete,
       F.id AS idFac,
       F.razon_social,
       F.rfc,
@@ -121,6 +122,7 @@ class Cat_portales_model extends CI_Model
             ->join("usuarios_portal AS UP", "P.id_usuario_portal = UP.id", 'left')
             ->join("datos_generales AS DGU", "UP.id_datos_generales = DGU.id", 'left')
             ->join("domicilios AS D", "P.id_domicilios = D.id", 'left')
+            ->join("paquetestalentsafe AS PAQ", "P.id_paquete = PAQ.id", 'left')
             ->join("datos_facturacion AS F", "P.id_datos_facturacion = F.id", 'left')
             ->where('P.status', 1);
 
