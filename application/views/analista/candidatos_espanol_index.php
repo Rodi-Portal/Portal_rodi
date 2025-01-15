@@ -5299,14 +5299,14 @@ function cargarDocumentosPanelCliente(id, nombre, paterno) {
 }
 function subirDoc() {
   var data = new FormData();
-  var id = $("#idCandidatoDocs").val();
   var doc = $("#documento")[0].files[0];
-  data.append('id_candidato', id);
+  data.append('id_candidato', $("#idCandidatoDocs").val());
   data.append('prefijo', $(".prefijo").val());
   data.append('tipo_doc', $("#tipo_archivo").val());
   data.append('documento', doc);
-  
+  id = $("#idCandidatoDocs").val();
   nombre = $("#nameCandidato").val();
+  console.log("🚀 ~ subirDoc ~ nombre:", nombre)
   $.ajax({
     url: "<?php echo base_url('Candidato/cargarDocumento'); ?>",
     method: "POST",

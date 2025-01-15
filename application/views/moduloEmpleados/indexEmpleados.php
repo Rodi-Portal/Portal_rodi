@@ -6,7 +6,8 @@
     <div id="app" 
          data-your-value="<?php echo $this->session->userdata('idPortal'); ?>" 
          data-your-user-value="<?php echo $this->session->userdata('id'); ?>"
-         data-your-client-value="<?php echo $cliente_id; ?>"></div>
+         data-your-client-value="<?php echo $cliente_id; ?>"
+         data-your-rol-value="<?php echo $id_rol; ?>"></div>
 </div>
 
 <script src="<?php echo base_url('public/vue/js/moduloEmpleados.js'); ?>"></script>

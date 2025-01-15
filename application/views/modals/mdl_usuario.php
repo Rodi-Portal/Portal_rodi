@@ -174,7 +174,7 @@
         <div class="modal-header">
           <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span inert="true">&times;</span>
+            <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
@@ -207,13 +207,13 @@
           <div id="msj_error" class="alert alert-danger hidden"></div>
         </div>
         <div class="modal-footer">
-          <!--form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
-            
-
-            <button type="submit" class="btn btn-primary">Descargar todos los documentos</button>
-          </form -->
+          <Form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
           <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
-            <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
+          <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
+
+            <!--button type="submit" class="btn btn-primary">Descargar todos los documentos</button -->
+          </form >
+        
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
           <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
         </div>
