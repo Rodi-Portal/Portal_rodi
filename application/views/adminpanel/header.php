@@ -65,6 +65,7 @@
 <body id="page-top">
   <!-- JavaScript -->
 
+<?php $idRol = $this->session->userdata('idrol'); ?>
 
   <!-- Page Wrapper -->
   <div id="wrapper">
@@ -214,7 +215,6 @@ if (in_array(5, $submenus)) {?>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-$idRol = $this->session->userdata('idrol');
     if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
               Administradores</a>
@@ -227,7 +227,6 @@ if ($idRol == 1 || $idRol == 6) {?>
 }?>
             <?php
 
-    $idRol = $this->session->userdata('idrol');
     if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
             <?php
