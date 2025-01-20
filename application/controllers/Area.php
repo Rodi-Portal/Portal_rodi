@@ -38,9 +38,9 @@ class Area extends CI_Controller
             $data['usuarios'] = 'Datos de pago no disponibles.';
             $data['cobro'] = 'Datos de pago no disponibles .';
             $data['vencimiento'] = 'Datos de pago no disponibles.';
-            $data['fecha_vencimiento'] = "no disponible" ;// Fecha de vencimiento
-            $data['estado_pago'] = "no disponible" ;
-
+            $data['fecha_vencimiento'] = "no disponible"; // Fecha de vencimiento
+            $data['estado_pago'] = "no disponible";
+            $data['link_pago'] = [];
         } else {
             $data['usuarios'] = $this->calcularCobro($data['datos_pago']->creacion, $id_portal);
             $data['cantidad_usuarios'] = count($data['usuarios']);
@@ -48,9 +48,23 @@ class Area extends CI_Controller
             $data['vencimiento'] = $this->definirFechaVencimiento($data['datos_pago']->creacion, $data['datos_pago']->estado_pago);
             $data['fecha_vencimiento'] = $data['vencimiento']['fecha_vencimiento']; // Fecha de vencimiento
             $data['estado_pago'] = $data['vencimiento']['estado'];
-
+            $data['link_pago'] = $this->area_model->getLinkPago($id_portal);
+            $data['historial_pagos'] = $this->area_model->getPagos($id_portal);
+          
+            if($data['link_pago']){
+                $data['status_link_pago'] = $this->verificarFechaExpiracion( $data['link_pago']->expires_at);
+                if ($data['status_link_pago'] == 1) {
+                    $data['status_link_pago_text'] = 'Activo';
+                    $data['status_link_pago_class'] = 'text-success';  // Clase CSS para color verde
+                } else {
+                    $data['status_link_pago_text'] = 'Expirado';
+                    $data['status_link_pago_class'] = 'text-danger';  // Clase CSS para color rojo
+                }
+            
+            }
+            
+           
         }
-
         // Cargar vistas
         $headerView = $this->load->view('adminpanel/header', $data, true);
         $View = $this->load->view('adminpanel/pasarela', $data, true);
@@ -74,7 +88,7 @@ class Area extends CI_Controller
             return []; // Si no hay usuarios extras, devolver un arreglo vacío
         }
 
-// Recorrer el listado de usuarios extras y calcular el cobro
+        // Recorrer el listado de usuarios extras y calcular el cobro
         foreach ($usuariosExtras as &$usuario) {
             // Llamar a la función calcularCobro para cada usuario
             $usuario->cobro = $this->calcularCobro1($usuario->creacion);
@@ -185,6 +199,7 @@ class Area extends CI_Controller
         // Retornar el total cobrado
         return $totalCobro;
     }
+
     public function definirFechaVencimiento($fechaCreacionStr, $estadoPago)
     {
         // Crear objetos de fecha para las comparaciones
@@ -222,5 +237,32 @@ class Area extends CI_Controller
         // Devolver la fecha de vencimiento y el estado
         return ['fecha_vencimiento' => $fechaVencimiento->format('Y-m-d'), 'estado' => $estado];
     }
+
+    public function verificarFechaExpiracion($expires_at)
+    {
+        // Establecer la zona horaria de Guadalajara, México
+        date_default_timezone_set('America/Mexico_City');
+
+        // Obtener la fecha y hora actual en Guadalajara
+        $fecha_actual = new DateTime(); // La fecha actual se obtiene en la zona horaria ya configurada
+
+        // Convertir la fecha de expiración a un objeto DateTime
+        $fecha_expiracion = new DateTime($expires_at);
+
+        // Comparar las fechas
+        if ($fecha_actual > $fecha_expiracion) {
+            // El link de pago ha expirado
+            return 0;
+        } else {
+            // El link de pago sigue vigente
+            return 1;
+        }
+    }
+
+  
+    
+   
+   
+    
 
 }
