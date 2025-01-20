@@ -9,9 +9,14 @@ class Checkout_Clip extends CI_Controller
     // Función para generar el pago, llamada desde AJAX
     public function generarPago()
     {
-                                                          // Obtener los datos enviados mediante AJAX
-        $amount      = $this->input->post('amount');      // Ejemplo: 100.5
-        $currency    = $this->input->post('currency');    // Ejemplo: "MXN"
+        $id_portal = $this->session->userdata('idPortal'); 
+      // Obtener los datos enviados mediante AJAX
+        $amount    = $this->input->post('amount');
+        if ($id_portal == 1) {
+            $currency = "MXN";
+        } else { // Ejemplo: 100.5
+            $currency = $this->input->post('currency');
+        }                                                 // Ejemplo: "MXN"
         $description = $this->input->post('description'); // Ejemplo: "Compra de ejemplo"
 
         // Llamar a la API de PayClip para generar el enlace de pago
@@ -35,7 +40,7 @@ class Checkout_Clip extends CI_Controller
     // Función para llamar a la API de Payclip y generar el enlace de pago
     private function createPayclipLink($amount, $currency, $description)
     {
-       
+
         $id_portal = $this->session->userdata('idPortal');
         if ($id_portal == null || $id_portal == '') {
 
@@ -61,7 +66,7 @@ class Checkout_Clip extends CI_Controller
         ]);
 
         $headers = [
-            "Authorization: ".KEY_CLIP,
+            "Authorization: " . KEY_CLIP,
             'Accept: application/json',
             'Content-Type: application/json',
         ];
@@ -117,7 +122,7 @@ class Checkout_Clip extends CI_Controller
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_VERBOSE, true);     // Ver detalle de la solicitud
+        curl_setopt($ch, CURLOPT_VERBOSE, true); // Ver detalle de la solicitud
         $response = curl_exec($ch);
 
         // Registrar errores de cURL, si los hay
@@ -159,8 +164,8 @@ class Checkout_Clip extends CI_Controller
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST  => "GET", // Método GET
             CURLOPT_HTTPHEADER     => [
-                "accept: application/json",                                                                                                  // Indicamos que esperamos respuesta en JSON
-                "Authorization: ".KEY_CLIP,
+                "accept: application/json", // Indicamos que esperamos respuesta en JSON
+                "Authorization: " . KEY_CLIP,
                 // Agrega tu token de acceso aquí
             ],
         ]);
@@ -185,10 +190,10 @@ class Checkout_Clip extends CI_Controller
             echo json_encode(['error' => 'Respuesta vacía de la API']);
             return;
         }
-        
+
         // Intentar decodificar la respuesta JSON
         $data = json_decode($response, true);
-       
+
         // Verificar si la decodificación fue exitosa
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo json_encode(['error' => 'Error al procesar la respuesta JSON: ' . json_last_error_msg()]);
@@ -211,7 +216,7 @@ class Checkout_Clip extends CI_Controller
                     'fecha_pago'         => $fecha_pago,
                     'monto'              => $data['amount'] . ' ' . $data['currency'],
                     'payment_request_id' => $data['payment_request_id'],
-                    'link_status'               => $data['payment_request_url'],
+                    'link_status'        => $data['payment_request_url'],
                     'referencia'         => $data['receipt_no'],
                     'status'             => $status,
                     'created_at'         => $creacion,
