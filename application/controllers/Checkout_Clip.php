@@ -118,7 +118,6 @@ class Checkout_Clip extends CI_Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_VERBOSE, true);     // Ver detalle de la solicitud
-        $logFile = fopen('curl_error_log.txt', 'w'); // Crear un archivo para los errores
         curl_setopt($ch, CURLOPT_STDERR, $logFile);
         $response = curl_exec($ch);
 
