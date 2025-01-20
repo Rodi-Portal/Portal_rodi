@@ -213,26 +213,27 @@ body {
 
 
       <div class="card-body pasarela-card-body">
-        <?php if (isset($datos_pago) && !empty($datos_pago)): ?>
+        <?php if (isset($datos_pago) && ! empty($datos_pago)): ?>
         <div class="pasarela-row">
 
           <p><strong>Nombre del Cliente:</strong> <span
-              class="pasarela-data"><?=htmlspecialchars($datos_pago->nombre)?></span></p>
+              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->nombre)?></span></p>
           <p><strong>Suscripción:</strong> <span
-              class="pasarela-data"><?=htmlspecialchars($datos_pago->nombre_paquete)?></span></p>
+              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->nombre_paquete)?></span></p>
           <p><strong>Descripción del Paquete:</strong> <span
-              class="pasarela-data"><?=htmlspecialchars($datos_pago->descripcion)?></span></p>
+              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->descripcion)?></span></p>
           <p><strong>Usuarios Incluidos:</strong> <span
-              class="pasarela-data"><?=htmlspecialchars($datos_pago->usuarios)?></span></p>
+              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->usuarios)?></span></p>
           <p><strong>Usuarios Extras:</strong> <span
-              class="pasarela-data"><?=htmlspecialchars($cantidad_usuarios)?></span></p>
+              class="pasarela-data"><?php echo htmlspecialchars($cantidad_usuarios)?></span></p>
           <p><strong>Fecha de Vencimiento:</strong> <span
-              class="pasarela-data"><?=htmlspecialchars($fecha_vencimiento)?></span></p>
-          <p><strong>Estado:</strong> <span class="pasarela-status"><?=htmlspecialchars($estado_pago)?></span></p>
+              class="pasarela-data"><?php echo htmlspecialchars($fecha_vencimiento)?></span></p>
+          <p><strong>Estado:</strong> <span class="pasarela-status"><?php echo htmlspecialchars($estado_pago)?></span>
+          </p>
         </div>
 
         <!-- Mostrar los usuarios extras -->
-        <?php if (isset($usuarios) && !empty($usuarios)): ?>
+        <?php if (isset($usuarios) && ! empty($usuarios)): ?>
         <h4>Usuarios Extras:</h4>
         <table class="table table-bordered">
           <thead>
@@ -245,23 +246,23 @@ body {
           <tbody>
             <?php foreach ($usuarios as $usuario): ?>
             <tr>
-              <td><?=htmlspecialchars($usuario->nombre) . ' ' . htmlspecialchars($usuario->paterno)?></td>
-              <td><?=htmlspecialchars($usuario->correo)?></td>
-              <td>$<?=number_format($usuario->cobro, 2)?> USD</td>
+              <td><?php echo htmlspecialchars($usuario->nombre) . ' ' . htmlspecialchars($usuario->paterno)?></td>
+              <td><?php echo htmlspecialchars($usuario->correo)?></td>
+              <td>$<?php echo number_format($usuario->cobro, 2)?> USD</td>
             </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
-        <input type="hidden" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>" />
+        <input type="hidden" id="total" value="<?php echo htmlspecialchars(number_format($cobro, 2))?>" />
 
         <p class="precio-total"><strong>Precio Total:</strong> <span
-            class="pasarela-data">$<?=number_format($cobro, 2)?> USD</span></p>
+            class="pasarela-data">$<?php echo number_format($cobro, 2)?> USD</span></p>
         <?php else: ?>
-          
-          <input type="hidden" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>" />
+
+        <input type="hidden" id="total" value="<?php echo htmlspecialchars(number_format($cobro, 2))?>" />
 
         <p class="precio-total"><strong>Precio Total:</strong> <span
-            class="pasarela-data">$<?=number_format($cobro, 2)?> USD</span></p>
+            class="pasarela-data">$<?php echo number_format($cobro, 2)?> USD</span></p>
         <?php endif; ?>
         <?php else: ?>
         <div class="pasarela-alert">
@@ -293,35 +294,38 @@ body {
         </thead>
 
         <tbody>
-          <?php if (isset($link_pago) && !empty($link_pago)): ?>
-          <td><?=htmlspecialchars($link_pago->id)?></td>
-          <td> <a href="<?=htmlspecialchars($link_pago->payment_request_url)?>" target="_blank" class="text-primary "><i
-                class="bi bi-credit-card"></i>Ir al Pago</a>
+          <?php if (isset($link_pago) && ! empty($link_pago)): ?>
+          <td><?php echo htmlspecialchars($link_pago->id)?></td>
+          <td> <a href="<?php echo htmlspecialchars($link_pago->payment_request_url)?>" target="_blank"
+              class="text-primary "><i class="bi bi-credit-card"></i>Ir al Pago</a>
           </td>
-          <td> <span class="<?=htmlspecialchars($status_link_pago_class)?>">
-              <?=htmlspecialchars($status_link_pago_text)?>
+          <td> <span class="<?php echo htmlspecialchars($status_link_pago_class)?>">
+              <?php echo htmlspecialchars($status_link_pago_text)?>
             </span></td>
-          <td><?=htmlspecialchars($link_pago->created_at)?></td>
-          <td><?=htmlspecialchars($link_pago->expires_at)?></td>
-          <td><a href="<?=htmlspecialchars($link_pago->qr_image_url)?>" target="_blank" class="text-primary ">Ver QR</a>
+          <td><?php echo htmlspecialchars($link_pago->created_at)?></td>
+          <td><?php echo htmlspecialchars($link_pago->expires_at)?></td>
+          <td><a href="<?php echo htmlspecialchars($link_pago->qr_image_url)?>" target="_blank"
+              class="text-primary ">Ver QR</a>
           </td>
           <td>
             <input type="button" class="btn pasarela-btn" value="Confirmar Pago"
-              onclick="confirmarPago('<?=$link_pago->payment_request_id?>')">
+              onclick="confirmarPago('<?php echo $link_pago->payment_request_id?>')">
           </td>
           <?php else: ?>
           <tr>
-            <td colspan="7" class="text-center">No se ha generado un link de pago o este ya expiró. Por favor, genera otro. Ten en cuenta que el link de pago solo podrá generarse a partir del primer día de cada mes o cuando tu suscripción se encuentre pendiente  o vencida.
+            <td colspan="7" class="text-center">No se ha generado un link de pago o este ya expiró. Por favor, genera
+              otro. Ten en cuenta que el link de pago solo podrá generarse a partir del primer día de cada mes o cuando
+              tu suscripción se encuentre pendiente o vencida.
             </td>
           </tr>
           <?php endif; ?>
         </tbody>
       </table>
     </div>
-    <?php   if (!isset($link_pago) && empty($link_pago) && $estado_pago != 'pagado' ): ?>
+    <?php if (! isset($link_pago) && empty($link_pago) && $estado_pago != 'pagado'): ?>
     <div class="text-end mt-4">
       <button class="btn pasarela-btn" id="btnGenerarPago">
-        Generar Link de Pago 
+        Generar Link de Pago
       </button>
     </div>
     <?php endif; ?>
@@ -345,14 +349,14 @@ body {
             </tr>
           </thead>
           <tbody>
-            <?php if (isset($historial_pagos) && !empty($historial_pagos)): ?>
+            <?php if (isset($historial_pagos) && ! empty($historial_pagos)): ?>
             <?php foreach ($historial_pagos as $pago): ?>
             <tr>
-              <td><?=htmlspecialchars($pago->payment_request_id)?></td>
-              <td><?=htmlspecialchars($pago->fecha_pago)?></td>
-              <td>$<?=htmlspecialchars($pago->monto)?></td>
-              <td><a href="<?=htmlspecialchars($pago->link_status)?>" target= "blank">Ver Status</a></td>
-              <td><?=htmlspecialchars($pago->referencia)?></td>
+              <td><?php echo htmlspecialchars($pago->payment_request_id)?></td>
+              <td><?php echo htmlspecialchars($pago->fecha_pago)?></td>
+              <td>$<?php echo htmlspecialchars($pago->monto)?></td>
+              <td><a href="<?php echo htmlspecialchars($pago->link_status)?>" target="blank">Ver Status</a></td>
+              <td><?php echo htmlspecialchars($pago->referencia)?></td>
             </tr>
             <?php endforeach; ?>
             <?php else: ?>
@@ -379,7 +383,7 @@ function confirmarPago(parametro) {
 
   // Realizar una solicitud AJAX para verificar el estado del pago
   $.ajax({
-    url: '<?= base_url("Checkout_Clip/verificarEstadoPago") ?>', // Ruta al método del controlador en CodeIgniter
+    url: '<?php echo base_url("Checkout_Clip/verificarEstadoPago")?>', // Ruta al método del controlador en CodeIgniter
     type: 'POST',
     dataType: 'json', // Esperamos una respuesta JSON
     data: {
@@ -434,12 +438,12 @@ function confirmarPago(parametro) {
           title: 'Información del pago',
           html: mensaje, // Usar el contenido generado
           icon: 'info',
-          confirmButtonText: 'Cerrar'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Recargar la página para actualizar los datos
-            location.reload(); // Esto recargará la página y cargará los nuevos datos
-          }
+          showConfirmButton: false, // Desactiva el botón de confirmación
+          timer: 4000, // El modal se cerrará automáticamente después de 4 segundos
+          timerProgressBar: true // Opcional: Muestra la barra de progreso
+        }).then(() => {
+          // Recargar la página después de 4 segundos
+          location.reload(); // Esto recargará la página para actualizar los datos
         });
 
       } else {
@@ -485,11 +489,12 @@ document.addEventListener('DOMContentLoaded', function() {
           var monto = parseFloat(document.getElementById('total').value) || 0;
           var currency = 'USD';
           //var currency = 'MXN';
-          var description = 'Pago mensual de la suscripción a TalentSafe. Para más detalles sobre los beneficios y características de la suscripción, visita el apartado de Suscripción en nuestra plataforma.';
+          var description =
+            'Pago mensual de la suscripción a TalentSafe. Para más detalles sobre los beneficios y características de la suscripción, visita el apartado de Suscripción en nuestra plataforma.';
 
           // Hacer la solicitud AJAX para generar el enlace de pago
           $.ajax({
-            url: '<?=site_url("Checkout_Clip/generarPago")?>',
+            url: '<?php echo site_url("Checkout_Clip/generarPago")?>',
             type: 'POST',
             data: {
               amount: monto,
