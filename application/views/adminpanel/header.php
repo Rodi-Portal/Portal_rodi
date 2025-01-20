@@ -65,7 +65,7 @@
 <body id="page-top">
   <!-- JavaScript -->
 
-<?php $idRol = $this->session->userdata('idrol'); ?>
+  <?php $idRol = $this->session->userdata('idrol'); ?>
 
   <!-- Page Wrapper -->
   <div id="wrapper">
@@ -148,8 +148,8 @@
 
       <!-- Reportes -->
       <?php
-$portal = $this->session->userdata('idPortal');
-if (in_array(9, $submenus)) {?>
+          $portal = $this->session->userdata('idPortal');
+      if (in_array(9, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
           aria-expanded="true" aria-controls="collapseReportes">
@@ -178,22 +178,22 @@ if (in_array(9, $submenus)) {?>
             <a class="collapse-item" href="< ?php echo site_url('Reporte/listado_doping_index') ?>">Listado de Doping</a-->
 
             <?php
-if (in_array(25, $submenus)) {?>
+            if (in_array(25, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
               href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes de sucursales</a>
             <?php
-}
-    if (in_array(29, $submenus)) {?>
+                }
+                if (in_array(29, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Procesos de Reclutamiento.</a>
             <?php
-}?>
+            }?>
           </div>
         </div>
       </li>
       <?php }
-?>
+      ?>
 
 
 
@@ -205,7 +205,7 @@ if (in_array(25, $submenus)) {?>
 
       <!-- Catalogos -->
       <?php
-if (in_array(5, $submenus)) {?>
+      if (in_array(5, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
@@ -215,22 +215,22 @@ if (in_array(5, $submenus)) {?>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-    if ($idRol == 1 || $idRol == 6) {?>
+            if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
               Administradores</a>
             <?php
-}?>
+            }?>
             <?php
 if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
-}?>
+            }?>
             <?php
 
     if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
             <?php
-}?>
+            }?>
 
             <!-- ?php
                         if(in_array(8, $submenus)){ ?>
@@ -241,7 +241,7 @@ if ($idRol == 1 || $idRol == 6) {?>
         </div>
       </li>
       <?php }
-if ($portal == 1 && ($idRol == 1)) {?>
+      if ($portal == 1 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
       <?php }?>
@@ -301,11 +301,11 @@ if ($portal == 1 && ($idRol == 1)) {?>
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <?php if (isset($contadorNotificaciones)) {
-    $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none';?>
+                    $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display: <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                             <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
-}?>
+                }?>
               </a>
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
@@ -331,9 +331,9 @@ if ($portal == 1 && ($idRol == 1)) {?>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <?php  if ($portal == 1 && ($idRol == 1)) {?>
+                <?php if ($portal == 1 && ($idRol == 1)) {?>
                 <a class="dropdown-item" href="<?php echo base_url(); ?>Area/pasarela">
-                
+
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Suscripción
                 </a>
@@ -352,7 +352,7 @@ if ($portal == 1 && ($idRol == 1)) {?>
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content modal-key-content">
               <div class="modal-header modal-key-header">
-                <h5 class="modal-title modal-key-title" id="modalKeyLabel">Proveedores Destacados</h5>
+                <h5 class="modal-title modal-title-modal-key-title-blanco" id="modalKeyLabel">Proveedores Destacados</h5>
                 <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -362,94 +362,214 @@ if ($portal == 1 && ($idRol == 1)) {?>
                   Estas compañías hermanas destacan por su excelencia y profesionalismo, apoyando nuestras operaciones.
                 </p>
                 <div class="row text-center">
+
                   <!-- CROL -->
                   <div class="col-md-4 modal-key-col">
-                    <div class="modal-key-card">
-                      <div class="modal-key-card-header modal-key-card-croll">
-                        CROL
+                    <a href="https://www.crol.mx/#portada" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-croll">
+                          CROL
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/crol.png');
+                    background-size: 150px; background-position: center;
+                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Recursos Contables</p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Soluciones contables avanzadas.
+                        </div>
                       </div>
-                      <div class="modal-key-card-body">
-                        <p class="modal-key-card-text">Recursos Contables</p>
-                      </div>
-                      <div class="modal-key-card-footer">
-                        Soluciones contables avanzadas.
-                      </div>
-                    </div>
+                    </a>
                   </div>
-                  <!-- Valor H -->
+
+                  <!-- GA -->
                   <div class="col-md-4 modal-key-col">
-                    <div class="modal-key-card">
-                      <div class="modal-key-card-header modal-key-card-valorh">
-                        Valor H
+                    <a href="https://www.ga-solutionsgroup.com/" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-ga">
+                          GA Safety
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative; ">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 50px; left: 0; right: 0; bottom: 0;
+                            background-image: url('<?php echo base_url(); ?>img/provedores/GA.png');
+                            background-size: 100px; background-position: center;
+                            opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Gestión Integral de
+                            Riesgos</p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Soluciones avanzadas en seguridad laboral.
+                        </div>
                       </div>
-                      <div class="modal-key-card-body">
-                        <p class="modal-key-card-text">Evaluaciones</p>
-                      </div>
-                      <div class="modal-key-card-footer">
-                        Fomentando un ambiente laboral positivo.
-                        Clima Laboral.
-                        Desempeño.
-                      </div>
-                    </div>
+                    </a>
                   </div>
+
+                  <!-- Rodi -->
+                  <div class="col-md-4 modal-key-col">
+                    <a href="https://www.rodi.com.mx" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-valorh">
+                          RODI
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 100px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/Rodi.png');
+                    background-size: 100px; background-position: center;
+                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">
+                            Reclutamiento, BGV, psicometrías y antidoping.
+                          </p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Especialistas en soluciones de talento humano a nivel Latinoamérica.
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+
+
                   <!-- Asesoría Jurídica -->
                   <div class="col-md-4 modal-key-col">
-                    <div class="modal-key-card">
-                      <div class="modal-key-card-header modal-key-card-juridica">
-                        Asesoría Jurídica
+                    <a href="https://www.ejemplo.com" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-juridica">
+                          Asesoría Jurídica
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/nadaaun.png');
+                    background-size: 100px; background-position: center;
+                    opacity: 0.4; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Consultoría Jurídica
+                          </p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Orientación legal confiable.
+                        </div>
                       </div>
-                      <div class="modal-key-card-body">
-                        <p class="modal-key-card-text">Consultoría Jurídica</p>
-                      </div>
-                      <div class="modal-key-card-footer">
-                        Orientación legal confiable.
-                      </div>
-                    </div>
+                    </a>
                   </div>
-                </div>
-                <div class="row text-center">
+
                   <!-- Fiscalista -->
                   <div class="col-md-4 modal-key-col">
-                    <div class="modal-key-card">
-                      <div class="modal-key-card-header modal-key-card-fiscalista">
-                        Fiscalista
+                    <a href="#" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-fiscalista">
+                          Fiscalista
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 80px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/nada.png');
+                    background-size: 90px; background-position: center;
+                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Nómina, Timbrado y
+                            Declaración de Impuestos</p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Servicios fiscales de alta calidad.
+                        </div>
                       </div>
-                      <div class="modal-key-card-body">
-                        <p class="modal-key-card-text">Nómina, Timbrado y Declaración de Impuestos</p>
-                      </div>
-                      <div class="modal-key-card-footer">
-                        Servicios fiscales de alta calidad.
-                      </div>
-                    </div>
+                    </a>
                   </div>
+
                   <!-- Dr. Clinic -->
                   <div class="col-md-4 modal-key-col">
-                    <div class="modal-key-card">
-                      <div class="modal-key-card-header modal-key-card-clinic">
-                        Dr. Clinic
+                    <a href="https://doctorclinic.com.mx/" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-clinic">
+                          Dr. Clinic
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/drclinic.png');
+                    background-size: 100px; background-position: center;
+                    opacity: 0.7; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Exámenes Médicos
+                            Detallados</p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Cuidado médico especializado.
+                        </div>
                       </div>
-                      <div class="modal-key-card-body">
-                        <p class="modal-key-card-text">Exámenes Médicos Detallados</p>
-                      </div>
-                      <div class="modal-key-card-footer">
-                        Cuidado médico especializado.
-                      </div>
-                    </div>
+                    </a>
                   </div>
+
+
+                </div>
+                <div class="row text-center">
                   <!-- CINCEL -->
                   <div class="col-md-4 modal-key-col">
-                    <div class="modal-key-card">
-                      <div class="modal-key-card-header modal-key-card-cincel">
-                        CINCEL
+                    <a href="https://www.cincel.digital/" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-cincel">
+                          CINCEL
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/cincel.png');
+                    background-size: 100px; background-position: center;
+                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Firmas Electrónicas</p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Soluciones digitales innovadoras.
+                        </div>
                       </div>
-                      <div class="modal-key-card-body">
-                        <p class="modal-key-card-text">Firmas Electrónicas</p>
-                      </div>
-                      <div class="modal-key-card-footer">
-                        Soluciones digitales innovadoras.
-                      </div>
-                    </div>
+                    </a>
                   </div>
+
+
+                  <!-- Valor H -->
+                  <div class="col-md-4 modal-key-col">
+                    <a href="http://www.valorh.com.mx/" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-valorh">
+                          ValorH
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/valorh.png');
+                    background-size: 100px; background-position: center;
+                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Evaluaciones</p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Fomentando un ambiente laboral positivo.
+                          Clima Laboral.
+                          Desempeño.
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+
                 </div>
               </div>
               <div class="modal-footer modal-key-footer">
@@ -467,92 +587,92 @@ if ($portal == 1 && ($idRol == 1)) {?>
         <!-- End of Topbar -->
 
         <?php
-/*
+            /*
 <!-- Doping -->
 <?php
 if (in_array(3, $submenus)) {?>
-<li class="nav-item">
-<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDoping"
-aria-expanded="true" aria-controls="collapseDoping">
-<i class="fas fa-fw fa-eye-dropper"></i>
-<span>Doping</span>
-</a>
-<div id="collapseDoping" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-<div class="bg-white py-2 collapse-inner rounded">
-<?php
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDoping"
+            aria-expanded="true" aria-controls="collapseDoping">
+            <i class="fas fa-fw fa-eye-dropper"></i>
+            <span>Doping</span>
+          </a>
+          <div id="collapseDoping" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <?php
 if (in_array(4, $submenus)) {?>
-<a class="collapse-item" href="<?php echo site_url('Doping/indexGenerales') ?>">Registros generales</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Doping/indexGenerales') ?>">Registros generales</a>
+              <?php
 }
 if (in_array(23, $submenus)) {?>
-<a class="collapse-item" href="<?php echo site_url('Doping/indexPendientes') ?>">Registros pendientes</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Doping/indexPendientes') ?>">Registros pendientes</a>
+              <?php
 }
 if (in_array(24, $submenus)) {?>
-<a class="collapse-item" href="<?php echo site_url('Doping/indexFinalizados') ?>">Finalizados</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Doping/indexFinalizados') ?>">Finalizados</a>
+              <?php
 }?>
-</div>
-</div>
-</li>
-<?php }?>
+            </div>
+          </div>
+        </li>
+        <?php }?>
 
-<!-- Laboratorio -->
-<?php
+        <!-- Laboratorio -->
+        <?php
 if (in_array(20, $submenus)) {?>
-<li class="nav-item">
-<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLab" aria-expanded="true"
-aria-controls="collapseLab">
-<i class="fas fa-flask"></i>
-<span>Laboratorio</span>
-</a>
-<div id="collapseLab" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-<div class="bg-white py-2 collapse-inner rounded">
-<?php
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLab" aria-expanded="true"
+            aria-controls="collapseLab">
+            <i class="fas fa-flask"></i>
+            <span>Laboratorio</span>
+          </a>
+          <div id="collapseLab" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <?php
 if (in_array(22, $submenus)) {?>
-<a class="collapse-item" href="<?php echo site_url('Medico/index') ?>">Examen médico</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Medico/index') ?>">Examen médico</a>
+              <?php
 }
 if (in_array(32, $submenus)) {?>
-<a class="collapse-item" href="<?php echo site_url('Covid/index') ?>">Pruebas COVID</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Covid/index') ?>">Pruebas COVID</a>
+              <?php
 }
 if (in_array(21, $submenus)) {?>
-<a class="collapse-item" href="<?php echo site_url('Laboratorio/sanguineo') ?>">Grupo sanguíneo</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Laboratorio/sanguineo') ?>">Grupo sanguíneo</a>
+              <?php
 }?>
-</div>
-</div>
-</li>
-<?php }?>
- */
-?>
+            </div>
+          </div>
+        </li>
+        <?php }?>
+        */
+        ?>
         <!-- Control -->
         <?php /*
 if (in_array(17, $submenus)) {?>
-<li class="nav-item">
-<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseControl"
-aria-expanded="true" aria-controls="collapseControl">
-<i class="fas fa-cogs"></i>
-<span>Control</span>
-</a>
-<div id="collapseControl" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-<div class="bg-white py-2 collapse-inner rounded">
-<!--a class="collapse-item" href="<?php //echo site_url('Reporte/index') ?>">Control</a-->
-<?php /*
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseControl"
+            aria-expanded="true" aria-controls="collapseControl">
+            <i class="fas fa-cogs"></i>
+            <span>Control</span>
+          </a>
+          <div id="collapseControl" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <!--a class="collapse-item" href="<?php //echo site_url('Reporte/index') ?>">Control</a-->
+              <?php /*
 if(in_array(32, $submenus)){ ?>
-<a class="collapse-item" href="<?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
+              <?php
 }
 if(in_array(38, $submenus)){ ?>
-<a class="collapse-item" href="<?php echo site_url('Reporte/listado_doping_index') ?>">Listado de
-Doping</a>
-<?php
+              <a class="collapse-item" href="<?php echo site_url('Reporte/listado_doping_index') ?>">Listado de
+                Doping</a>
+              <?php
 } ?>
-</div>
-</div>
-</li>
-<?php
+            </div>
+          </div>
+        </li>
+        <?php
 }
  */?>
 
@@ -565,8 +685,6 @@ Doping</a>
             dataType: 'json', // Esperamos una respuesta en formato JSON
             success: function(response) {
               // Mostrar la respuesta en el div
-              console.log("🚀 ~ $ ~ response:", response)
-
               $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
             },
             error: function(xhr, status, error) {

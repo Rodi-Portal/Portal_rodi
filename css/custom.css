@@ -1099,6 +1099,9 @@ color: white;
 
 
 /* Estilos   key supliers*/
+.modal-title-modal-key-title-blanco{
+  color: white!important;
+}
 /* Modal general */
 .modal-key-content {
   border-radius: 8px;
@@ -1154,7 +1157,12 @@ color: white;
   border-bottom: 1px solid #e1e1e1;
   text-transform: uppercase;
 }
-
+/* GA Safety */
+.modal-key-card-ga {
+  background-color: #16a085; /* Verde agua */
+  color: white;
+  
+}
 .modal-key-card-croll {
   background-color: #3498db;
   color: white;
@@ -1186,8 +1194,30 @@ color: white;
   color: white;
 }
 
-
 .modal-key-card-body {
+  background-image: url('<?php echo base_url(); ?>img/portal_icon.png');
+  background-size: cover; /* Hace que la imagen cubra todo el contenedor */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Previene la repetición de la imagen */
+  height: 150px; /* Ajusta la altura del contenedor según sea necesario */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white; /* Asegura que el texto sea visible */
+  text-align: center; /* Centra el texto */
+  padding: 10px; /* Agrega algo de espacio alrededor del texto */
+  position: relative;
+}
+
+/* Si necesitas ajustar la visibilidad del texto (por ejemplo, si el fondo es oscuro) */
+.modal-key-card-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  z-index: 1; /* Asegura que el texto esté encima del fondo */
+  color: white; /* Asegura que el texto sea blanco para mejor contraste */
+} 
+.modal-key-card-body {
+  
   padding: 15px;
   font-size: 1rem;
   text-align: center;
