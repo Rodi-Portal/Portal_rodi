@@ -252,14 +252,16 @@ body {
             <?php endforeach; ?>
           </tbody>
         </table>
-        <input type="hidden" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>" />
+        <input type="text" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>qqqqq" />
 
         <p class="precio-total"><strong>Precio Total:</strong> <span
             class="pasarela-data">$<?=number_format($cobro, 2)?> USD</span></p>
         <?php else: ?>
-        <div class="pasarela-alert">
-          No hay usuarios extras.
-        </div>
+          
+          <input type="text" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>qqqqq" />
+
+        <p class="precio-total"><strong>Precio Total:</strong> <span
+            class="pasarela-data">$<?=number_format($cobro, 2)?> USD</span></p>
         <?php endif; ?>
         <?php else: ?>
         <div class="pasarela-alert">
@@ -480,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (result.isConfirmed) {
           // Definir los parámetros que deseas enviar
           //var monto = 1.00;
-          monto = parseFloat(document.getElementById('total').value) || 0;
+          var monto = parseFloat(document.getElementById('total').value) || 0;
           var currency = 'USD';
           //var currency = 'MXN';
           var description = 'Pago mensual de la suscripción a TalentSafe. Para más detalles sobre los beneficios y características de la suscripción, visita el apartado de Suscripción en nuestra plataforma.';

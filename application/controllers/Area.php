@@ -162,9 +162,7 @@ class Area extends CI_Controller
         $usuariosExtras = $this->area_model->getUsuariosExtras($id_portal);
 
         // Verificar si hay usuarios extras
-        if (empty($usuariosExtras)) {
-            return []; // Si no hay usuarios extras, devolver un arreglo vacío
-        }
+       
 
         // Obtener el precio base de los datos de pago
         $datosCobro = $this->area_model->getDatosPago($id_portal);
@@ -195,9 +193,12 @@ class Area extends CI_Controller
             $usuario->cobro = $this->calcularCobro1($usuario->creacion); // Calcular el cobro individual para cada usuario
             $totalCobro += $usuario->cobro; // Sumar el cobro por usuario extra
         }
-
+        if($id_portal == 1){
+            return 1;
+        }else{
         // Retornar el total cobrado
         return $totalCobro;
+        }
     }
 
     public function definirFechaVencimiento($fechaCreacionStr, $estadoPago)
