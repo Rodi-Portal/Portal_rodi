@@ -252,13 +252,13 @@ body {
             <?php endforeach; ?>
           </tbody>
         </table>
-        <input type="text" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>qqqqq" />
+        <input type="hidden" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>" />
 
         <p class="precio-total"><strong>Precio Total:</strong> <span
             class="pasarela-data">$<?=number_format($cobro, 2)?> USD</span></p>
         <?php else: ?>
           
-          <input type="text" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>qqqqq" />
+          <input type="hidden" id="total" value="<?=htmlspecialchars(number_format($cobro, 2))?>" />
 
         <p class="precio-total"><strong>Precio Total:</strong> <span
             class="pasarela-data">$<?=number_format($cobro, 2)?> USD</span></p>
