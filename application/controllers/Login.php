@@ -13,9 +13,54 @@ class Login extends CI_Controller
     {
         $config = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
-        $this->load->view('login/login_view', $data);
+        $this->load->view('login/login_sandbox', $data);
         $this->load->library('session');
     }
+
+    public function enviarFormulario() {
+        // Establecer las reglas de validación
+        $this->form_validation->set_rules('nombre', 'Nombre', 'required|min_length[3]');
+        $this->form_validation->set_rules('telefono', 'Teléfono', 'required|numeric');
+        $this->form_validation->set_rules('correo', 'Correo Electrónico', 'required|valid_email');
+        $this->form_validation->set_rules('medio_llegada', '¿Cómo llegaste aquí?', 'required');
+        $this->form_validation->set_rules('contrasena', 'Contraseña', 'required|min_length[8]'); // Validación de contraseña mínima de 8 caracteres
+    
+        $this->form_validation->set_message('required','El campo {field} es obligatorio');
+        // Verificar si las reglas de validación son correctas
+        if ($this->form_validation->run() == FALSE) {
+            return $msj = array(
+                'codigo' => 0,
+                'msg' => validation_errors()
+              );// Recargar la vista del formulario
+        } else {
+            // Recoger los datos enviados del formulario
+            $nombre = $this->input->post('nombre');
+            $empresa = $this->input->post('empresa');
+            $telefono = $this->input->post('telefono');
+            $correo = $this->input->post('correo');
+            $medio_llegada = $this->input->post('medio_llegada');
+            $contrasena = $this->input->post('contrasena');
+    
+            // Aquí puedes agregar lógica adicional, como almacenar los datos en la base de datos
+            $data = [
+                'nombre' => $nombre,
+                'empresa' => $empresa,
+                'telefono' => $telefono,
+                'correo' => $correo,
+                'medio_llegada' => $medio_llegada,
+                'contrasena' => password_hash($contrasena, PASSWORD_DEFAULT), // Asegúrate de encriptar la contraseña
+            ];
+    
+            // Guardar los datos en la base de datos
+            $this->db->insert('usuarios', $data);
+    
+            // Mostrar mensaje de éxito y redirigir al login
+           
+    }
+}
+
+
+
     //Vista del Dashboard SI hay o NO session; redireciconamiento a inicio desde menú
     public function verifying_account()
     {
