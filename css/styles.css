@@ -1,7 +1,17 @@
+:root {
+  --dark-bg: #2c4156;
+  --light-bg: #e2e1e9;
+  --primary-text: #081c20;
+  --secondary-text: #ecf0f1;
+  --primary-accent: #1abc9c;
+  --secondary-accent: rgb(51, 71, 202);
+  --tertiary-accent: rgb(36, 50, 138);
+}
+
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #2c4156!important; /* Fondo oscuro */
-  color: #081c20; /* Texto claro */
+  background-color: var(--dark-bg)!important;
+  color: var(--primary-text);
   margin: 0;
   padding: 0;
 }
@@ -9,41 +19,47 @@ body {
 .container {
   max-width: 900px;
   margin: 50px auto;
-  background-color: #e2e1e9;
+  background-color: var(--light-bg);
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
+
 .row {
   display: flex;
   align-items: center; /* Alinea los elementos al centro verticalmente */
 }
 
 .col {
-  margin-right: 10px; /* Agregar espacio entre los campos si es necesario */
+  margin-right: 10px; /* Espacio entre los campos si es necesario */
 }
+
 h2 {
-  background-color: #2c4156!important; /* Fondo oscuro */
+  background-color: var(--dark-bg)!important;
   text-align: center;
-  color: #f7f0f0;
+  color: var(--secondary-text);
   padding: 15px;
+}
+
+h3 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  color: var(--secondary-text);
+  background-color: var(--tertiary-accent);
 }
 
 .form-group {
   margin-bottom: 0px;
 }
-.link-margen{
+
+.link-margen {
   font-size: 20px;
 }
 
-h3{
-  padding-top: 10px;
-  padding-bottom: 10px;
-  text-align: center;
-  color: #f1eded;
-  background-color: rgb(36, 50, 138);
-}
-input, select, button {
+input,
+select,
+button {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
@@ -51,9 +67,8 @@ input, select, button {
   border: 1px solid #7f8c8d;
 }
 
-
 button {
-  background-color: #1abc9c;
+  background-color: var(--primary-accent);
   color: #fff;
   border: none;
   cursor: pointer;
@@ -65,24 +80,23 @@ button:hover {
 }
 
 .already-registered {
- 
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
 .already-registered a {
-  color: #1abc9c;
+  color: var(--primary-accent);
   font-weight: bold;
 }
 
 .modulos {
   display: flex;
-  background-color: rgb(51, 71, 202);
+  background-color: var(--secondary-accent);
   justify-content: space-between;
-  
   text-align: center;
 }
+
 
 .modulo {
   flex: 1;
@@ -91,60 +105,85 @@ button:hover {
 
 .modulo i {
   font-size: 50px;
-  color: #fff;
+  color: var(--secondary-text);
   margin-bottom: 10px;
 }
 
 .modulo p {
   font-size: 16px;
-  color: #ecf0f1;
+  color: var(--secondary-text);
 }
 
 input[type="password"] {
   font-family: 'Courier New', Courier, monospace; /* Estilo para contraseña */
 }
 
-/* Estilo para el contenedor de los modales */
+/* Estilo para SweetAlert2 */
+.swal2-popup .swal2-header {
+  background-color: transparent !important; /* Fondo transparente */
+  border: none !important; /* Sin bordes */
+  padding: 0 !important; /* Ajuste del espacio */
+}
+
+.swal2-header {
+  background-color: transparent !important; /* Elimina el fondo */
+  color: var(--secondary-text) !important; /* Mantén el color del texto */
+  border-bottom: none !important; /* Elimina el borde inferior */
+  padding: 0 !important; /* Elimina cualquier espacio adicional */
+}
+
+.swal2-title {
+  background-color: var(--secondary-accent)!important;
+  color: var(--secondary-text) !important;
+  font-size: 1.5rem !important;
+}
+
+.swal2-close {
+  color: var(--secondary-text) !important;
+}
+.swal2-html-text p {
+  font-size: 1rem; /* Tamaño de fuente */
+  color: var(--primary-text); /* Color del texto */
+  margin: 5px 0; /* Espaciado vertical entre párrafos */
+  line-height: 1.5; /* Altura de línea */
+  text-align: left; /* Alineación del texto */
+  font-weight: normal; /* Peso de la fuente */
+}
+
+.swal2-html-text p:first-child {
+  margin-top: 0; /* Quitar el margen superior del primer párrafo */
+}
+
+.swal2-html-text p:last-child {
+  margin-bottom: 0; /* Quitar el margen inferior del último párrafo */
+}
+/* Modales */
 .modal-content {
-  background-color: #34495e;
-  color: #212223;
+  background-color: var(--light-bg);
+  color: var(--primary-text);
   border-radius: 10px;
 }
-/* Ajustar el header del modal */
+
 .modal-header {
-  padding: 15px;
-  background-color: #2c3e50;
-  color: #fff;
-  border-bottom: 1px solid #ecf0f1;
-  position: relative; /* Esto es para que el botón de cerrar se posicione de forma absoluta */
+  background-color: var(--dark-bg);
+  color: var(--secondary-text);
+  border-bottom: 1px solid var(--secondary-text);
+  position: relative;
 }
 
-/* Estilo para el botón de cerrar */
-.modal-header .close {
-  position: absolute; /* Lo ponemos en una posición absoluta dentro del header */
-  top: 10px;
-  right: 10px; /* Lo coloca en la esquina superior derecha */
-  font-size: 1.5rem; /* Asegura que el tamaño sea adecuado */
-  color: #ecf0f1; /* Color del botón */
-}
-
-/* Cambiar el color del botón de cerrar cuando el cursor está sobre él */
-.modal-header .close:hover {
-  color: #1abc9c;
-}
-
-/* Reducir el tamaño del texto en el header, si es necesario */
 .modal-title {
   font-size: 1.25rem;
-  margin: 0; /* Eliminar márgenes adicionales */
+  margin: 0;
 }
 
 button.close {
-  position: end;
-  color: #ecf0f1;
+  position: absolute;
+  top: 10px;
+  right: 10px;
   font-size: 1.5rem;
+  color: var(--secondary-text);
 }
 
 button.close:hover {
-  color: #1abc9c;
+  color: var(--primary-accent);
 }

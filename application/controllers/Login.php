@@ -11,55 +11,164 @@ class Login extends CI_Controller
     //Formulario de Login establecido por default
     public function index()
     {
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
         $this->load->view('login/login_sandbox', $data);
         $this->load->library('session');
     }
 
-    public function enviarFormulario() {
+    public function index1()
+    {
+        $config          = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $config->version_sistema;
+        $this->load->view('login/login_view', $data);
+        $this->load->library('session');
+    }
+
+    public function enviarFormulario()
+    {
         // Establecer las reglas de validación
         $this->form_validation->set_rules('nombre', 'Nombre', 'required|min_length[3]');
         $this->form_validation->set_rules('telefono', 'Teléfono', 'required|numeric');
         $this->form_validation->set_rules('correo', 'Correo Electrónico', 'required|valid_email');
         $this->form_validation->set_rules('medio_llegada', '¿Cómo llegaste aquí?', 'required');
         $this->form_validation->set_rules('contrasena', 'Contraseña', 'required|min_length[8]'); // Validación de contraseña mínima de 8 caracteres
-    
-        $this->form_validation->set_message('required','El campo {field} es obligatorio');
+
+        // Personalizar los mensajes de error
+        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
+
         // Verificar si las reglas de validación son correctas
-        if ($this->form_validation->run() == FALSE) {
-            return $msj = array(
+        if ($this->form_validation->run() == false) {
+            // Si la validación falla, devolvemos los errores de validación
+            $errors   = validation_errors();
+            $response = [
                 'codigo' => 0,
-                'msg' => validation_errors()
-              );// Recargar la vista del formulario
-        } else {
-            // Recoger los datos enviados del formulario
-            $nombre = $this->input->post('nombre');
-            $empresa = $this->input->post('empresa');
-            $telefono = $this->input->post('telefono');
-            $correo = $this->input->post('correo');
-            $medio_llegada = $this->input->post('medio_llegada');
-            $contrasena = $this->input->post('contrasena');
-    
-            // Aquí puedes agregar lógica adicional, como almacenar los datos en la base de datos
-            $data = [
-                'nombre' => $nombre,
-                'empresa' => $empresa,
-                'telefono' => $telefono,
-                'correo' => $correo,
-                'medio_llegada' => $medio_llegada,
-                'contrasena' => password_hash($contrasena, PASSWORD_DEFAULT), // Asegúrate de encriptar la contraseña
+                'msg'    => $errors,
             ];
-    
-            // Guardar los datos en la base de datos
-            $this->db->insert('usuarios', $data);
-    
-            // Mostrar mensaje de éxito y redirigir al login
-           
+            // Enviar la respuesta como JSON
+            echo json_encode($response);
+            return;
+        } else {
+            // Si la validación es exitosa, procesar el formulario y guardar los datos
+            $nombre        = $this->input->post('nombre');
+            $telefono      = $this->input->post('telefono');
+            $correo        = $this->input->post('correo');
+            $medio_llegada = $this->input->post('medio_llegada');
+            $otro = $this->input->post('descripcion_otro');
+            $contrasena    = password_hash($this->input->post('contrasena'), PASSWORD_DEFAULT);
+
+            if($otro != null || $otro != ""){
+              $medio_llegada = $otro;  
+            }
+
+            $existeCorreo = $this->usuario_model->existeUsuarioSandbox($correo);
+            if ($existeCorreo != 0) {
+                $response = [
+                    'codigo' => 0,
+                    'msg'    => 'El correo ya  esta  registrado   verifica  tu contraseña',
+                ];
+                // Enviar la respuesta como JSON
+                echo json_encode($response);
+                return;
+
+            } else {
+
+                $data = [
+                    'nombre'        => $nombre,
+                    'telefono'      => '+52' . $telefono,
+                    'correo'        => $correo,
+                    'medio_llegada' => $medio_llegada,
+                    'token'         => $contrasena,
+                    'visita'        => 0,
+                ];
+
+                $consulta = $this->usuario_model->registroUsuarioSandbox($data);
+
+                if ($consulta != 0) {
+                    $response = [
+                        'codigo' => 1,
+                        'msg'    => '¡El registrose  creo exitosamente!!.',
+                    ];
+                    echo json_encode($response);
+                    return;
+
+                } else {
+                    $response = [
+                        'codigo' => 0,
+                        'msg'    => '¡no se pudo registrar correctamente  intentelo de nuevo  mas tarde.',
+                    ];
+                    echo json_encode($response);
+                    return;
+                }
+            }
+        }
     }
-}
 
+    public function verificar_usuario()
+    {
 
+        $this->form_validation->set_rules('correo', 'Email', 'valid_email|trim');
+        $this->form_validation->set_rules('pwd', 'Estatus final del BGC', 'trim');
+
+        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
+        $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un email válido');
+
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('not-found', 'Type your email account and password');
+            redirect('Login/index1');
+        } else {
+            $pwd  = $this->input->post('pwd');
+            $mail = $this->input->post('mail');
+
+            $correo = USER_SANDBOX;
+            // Obtener el hash de la contraseña almacenado en la base de datos
+
+            $usuario1 = $this->usuario_model->existeUsuarioSandbox1($mail);
+
+            if ($usuario1 && password_verify($pwd, $usuario1->token)) {
+              
+                $visita = [
+                    'visita' => $usuario1->visita +1
+                ];
+
+                $this->usuario_model->incrementarVisita($usuario1->id, $visita);
+
+                $usuario = $this->usuario_model->existeUsuarioPortal($correo);
+                $this->session->set_userdata('correo', $correo);
+                // Aquí deberías establecer el tipo de acceso, no el código de autenticación
+
+                // Otras variables de sesión que necesites
+                $usuario_data = [
+                    "id"           => $usuario->id,
+                    "nombre"       => $usuario->nombre,
+                    "paterno"      => $usuario->paterno,
+                    "rol"          => $usuario->rol,
+                    "idrol"        => $usuario->id_rol,
+                    "tipo"         => 1,
+                    "verificacion" => $usuario->verificacion,
+                    "id_data"      => $usuario->idDatos,
+                    "loginBD"      => $usuario->loginBD,
+                    "logueado"     => true,
+                    "idPortal"     => $usuario->idPortal,
+                    "nombrePortal" => $usuario->nombrePortal,
+
+                ];
+                $this->session->set_userdata($usuario_data);
+
+                $id_datos = $usuario->idDatos;
+                if ($usuario->id_rol != 3) {
+                    $this->session->set_userdata('tipo_acceso', 'usuario');
+
+                } else {
+                    $this->session->set_userdata('tipo_acceso', 'visitador');
+
+                }
+
+                $this->session_verificada();
+
+            }
+        }
+    }
 
     //Vista del Dashboard SI hay o NO session; redireciconamiento a inicio desde menú
     public function verifying_account()
@@ -75,12 +184,8 @@ class Login extends CI_Controller
             redirect('Login/index');
         } else {
 
-            //$pass = $this->input->post('pwd');
-            //$correo = $this->input->post('correo');
-
-
-            $pass = PASS_SANDBOX;
-            $correo = USER_SANDBOX;
+            $pass = $this->input->post('pwd');
+            $correo = $this->input->post('correo');
             // Obtener el hash de la contraseña almacenado en la base de datos
             $hash_guardado = $this->usuario_model->traerPass($correo);
 
@@ -90,8 +195,8 @@ class Login extends CI_Controller
 
                 if ($usuario->bloqueado > 0) {
                     $this->load->view('bloqueado');
-                    return; 
-                   
+                    return;
+
                 }
 
                 $this->session->set_userdata('correo', $correo);
@@ -101,21 +206,21 @@ class Login extends CI_Controller
                 // Aquí deberías establecer el tipo de acceso, no el código de autenticación
 
                 // Otras variables de sesión que necesites
-                $usuario_data = array(
-                    "id" => $usuario->id,
-                    "nombre" => $usuario->nombre,
-                    "paterno" => $usuario->paterno,
-                    "rol" => $usuario->rol,
-                    "idrol" => $usuario->id_rol,
-                    "tipo" => 1,
+                $usuario_data = [
+                    "id"           => $usuario->id,
+                    "nombre"       => $usuario->nombre,
+                    "paterno"      => $usuario->paterno,
+                    "rol"          => $usuario->rol,
+                    "idrol"        => $usuario->id_rol,
+                    "tipo"         => 1,
                     "verificacion" => $usuario->verificacion,
-                    "id_data" => $usuario->idDatos,
-                    "loginBD" => $usuario->loginBD,
-                    "logueado" => true,
-                    "idPortal" => $usuario->idPortal,
+                    "id_data"      => $usuario->idDatos,
+                    "loginBD"      => $usuario->loginBD,
+                    "logueado"     => true,
+                    "idPortal"     => $usuario->idPortal,
                     "nombrePortal" => $usuario->nombrePortal,
 
-                );
+                ];
                 $this->session->set_userdata($usuario_data);
                 if ($ver == 0 || $ver == 10) {
 
@@ -158,23 +263,23 @@ class Login extends CI_Controller
 
                     $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
-                    $cliente_data = array(
-                        "id" => $cliente->id,
-                        "correo" => $cliente->correo,
-                        "nombre" => $cliente->nombre,
-                        "paterno" => $cliente->paterno,
-                        "idcliente" => $cliente->id_cliente,
-                        "cliente" => $cliente->cliente,
-                        "privacidad" => $cliente->privacidad,
-                        "tipo" => 2,
+                    $cliente_data = [
+                        "id"           => $cliente->id,
+                        "correo"       => $cliente->correo,
+                        "nombre"       => $cliente->nombre,
+                        "paterno"      => $cliente->paterno,
+                        "idcliente"    => $cliente->id_cliente,
+                        "cliente"      => $cliente->cliente,
+                        "privacidad"   => $cliente->privacidad,
+                        "tipo"         => 2,
                         "verificacion" => $cliente->verificacion,
-                        "id_data" => $cliente->idDatos,
-                        "idPortal" => $cliente->id_portal,
-                        "loginBD" => $cliente->loginBD,
-                        "ingles" => $cliente->ingles,
-                        "espectador" => $cliente->espectador,
-                        "logueado" => true,
-                    );
+                        "id_data"      => $cliente->idDatos,
+                        "idPortal"     => $cliente->id_portal,
+                        "loginBD"      => $cliente->loginBD,
+                        "ingles"       => $cliente->ingles,
+                        "espectador"   => $cliente->espectador,
+                        "logueado"     => true,
+                    ];
 
                     /*    echo '<pre>';
                     print_r($cliente);
@@ -190,12 +295,12 @@ class Login extends CI_Controller
                     $this->session->set_userdata('tipo_acceso', 'cliente');
 
                     //* Insercion de datos de sesion
-                    $sesion = array(
-                        'id_usuario' => $this->session->userdata('id'),
+                    $sesion = [
+                        'id_usuario'   => $this->session->userdata('id'),
                         'tipo_usuario' => 2,
-                        'ip' => $_SERVER['REMOTE_ADDR'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'],
-                        'ingreso' => date('Y-m-d H:i:s'),
-                    );
+                        'ip'           => $_SERVER['REMOTE_ADDR'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'],
+                        'ingreso'      => date('Y-m-d H:i:s'),
+                    ];
                     $this->usuario_model->addSesion($sesion);
                     $ver = $cliente->verificacion;
                     if ($this->session->userdata('tipo') == 2) {
@@ -223,27 +328,27 @@ class Login extends CI_Controller
 
                         $this->session->set_userdata('tipo_acceso', "candidato");
                         if ($candidato->fecha_nacimiento != "0000-00-00" && $candidato->fecha_nacimiento != null) {
-                            $aux = explode('-', $candidato->fecha_nacimiento);
+                            $aux         = explode('-', $candidato->fecha_nacimiento);
                             $fnacimiento = $aux[1] . '/' . $aux[2] . '/' . $aux[0];
                         } else {
                             $fnacimiento = "";
                         }
-                        $candidato_data = array(
-                            "id" => $candidato->id,
-                            "correo" => $candidato->correo,
-                            "nombre" => $candidato->nombre,
-                            "paterno" => $candidato->paterno,
-                            "materno" => $candidato->materno,
-                            "fecha" => $fnacimiento,
-                            "status" => $candidato->status,
-                            "proceso" => $candidato->id_tipo_proceso,
-                            "proyecto" => $candidato->id_proyecto,
-                            "idcliente" => $candidato->id_cliente,
-                            "idsubcliente" => $candidato->id_subcliente,
+                        $candidato_data = [
+                            "id"               => $candidato->id,
+                            "correo"           => $candidato->correo,
+                            "nombre"           => $candidato->nombre,
+                            "paterno"          => $candidato->paterno,
+                            "materno"          => $candidato->materno,
+                            "fecha"            => $fnacimiento,
+                            "status"           => $candidato->status,
+                            "proceso"          => $candidato->id_tipo_proceso,
+                            "proyecto"         => $candidato->id_proyecto,
+                            "idcliente"        => $candidato->id_cliente,
+                            "idsubcliente"     => $candidato->id_subcliente,
                             "proyecto_seccion" => $candidato->proyecto,
-                            "tipo" => 3,
-                            "logueado" => true,
-                        );
+                            "tipo"             => 3,
+                            "logueado"         => true,
+                        ];
 
                         $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
@@ -251,20 +356,20 @@ class Login extends CI_Controller
                         $this->session->set_userdata('tipo_acceso', 'candidato');
 
                         //Filtro para acceso a formulario de candidato de acuerdo al tipo asignado
-                        $data['tiene_aviso'] = $this->candidato_model->checkAvisoPrivacidad($this->session->userdata('id'));
-                        $data['UploadedDocuments'] = $this->candidato_model->getUploadedDocumentsById($this->session->userdata('id'));
-                        $data['estados'] = $this->candidato_model->getEstados();
-                        $data['id_candidato'] = $this->session->userdata('id');
-                        $data['nombre'] = $this->session->userdata('nombre');
-                        $data['paterno'] = $this->session->userdata('paterno');
-                        $data['tipo_proceso'] = $this->session->userdata('proceso');
-                        $data['id_cliente'] = $this->session->userdata('idcliente');
-                        $data['proyecto_seccion'] = $this->session->userdata('proyecto_seccion');
-                        $data['docs_requeridos'] = $this->candidato_model->getDocumentosCandidatoRequeridos($this->session->userdata('id'));
-                        $data['candidato'] = $candidato;
-                        $data['secciones'] = $this->candidato_seccion_model->getSecciones($candidato->id);
+                        $data['tiene_aviso']           = $this->candidato_model->checkAvisoPrivacidad($this->session->userdata('id'));
+                        $data['UploadedDocuments']     = $this->candidato_model->getUploadedDocumentsById($this->session->userdata('id'));
+                        $data['estados']               = $this->candidato_model->getEstados();
+                        $data['id_candidato']          = $this->session->userdata('id');
+                        $data['nombre']                = $this->session->userdata('nombre');
+                        $data['paterno']               = $this->session->userdata('paterno');
+                        $data['tipo_proceso']          = $this->session->userdata('proceso');
+                        $data['id_cliente']            = $this->session->userdata('idcliente');
+                        $data['proyecto_seccion']      = $this->session->userdata('proyecto_seccion');
+                        $data['docs_requeridos']       = $this->candidato_model->getDocumentosCandidatoRequeridos($this->session->userdata('id'));
+                        $data['candidato']             = $candidato;
+                        $data['secciones']             = $this->candidato_seccion_model->getSecciones($candidato->id);
                         $data['documentos_requeridos'] = $this->documentacion_model->getDocumentosRequeridosByCandidato($candidato->id);
-                        $data['avances'] = $this->candidato_avance_model->getAllById($candidato->id);
+                        $data['avances']               = $this->candidato_avance_model->getAllById($candidato->id);
 
                         //TODO: Se requiere una tabla donde dependiendo del id de Documentacion, se asignen los documentos requeridos
                         $this->session->set_userdata('tipo_acceso', 'candidato');
@@ -292,7 +397,7 @@ class Login extends CI_Controller
             $this->session->set_flashdata('error', 'Enter your email account');
             redirect('Login/recovery_view');
         } else {
-            $correo = $this->input->post('correo');
+            $correo  = $this->input->post('correo');
             $usuario = $this->usuario_model->updatePass($correo);
 
             if ($usuario) {
@@ -304,10 +409,10 @@ class Login extends CI_Controller
                 // Aquí deberías establecer el tipo de acceso, no el código de autenticación
 
                 // Otras variables de sesión que necesites
-                $usuario_data = array(
-                    "id" => $usuario->id,
+                $usuario_data = [
+                    "id"       => $usuario->id,
                     "new_pass" => 1,
-                );
+                ];
                 /*
                 echo '<pre>';
                 print_r($usuario_data);
@@ -334,7 +439,7 @@ class Login extends CI_Controller
     //Vista para recuperar contraseña
     public function recovery_view()
     {
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
         $this->load->view('login/recuperar_view', $data);
     }
@@ -344,9 +449,9 @@ class Login extends CI_Controller
     {
         // Verificación antes de la llamada a sess_destroy
         if ($this->session->userdata('logueado') !== false) {
-            $usuario_data = array(
+            $usuario_data = [
                 'logueado' => false,
-            );
+            ];
             $this->session->sess_destroy();
         }
 
@@ -358,10 +463,10 @@ class Login extends CI_Controller
 
     public function verifyView()
     {
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
-        $correo = $this->session->userdata('correo');
+        $correo         = $this->session->userdata('correo');
         $data['correo'] = $this->session->userdata('correo');
         $this->load->view('login/verify_view', $data);
     }
@@ -441,8 +546,8 @@ class Login extends CI_Controller
     // Funcion para generar aut
     public function generarCodigoAutenticacion($correo)
     {
-        $longitud_codigo = 8;
-        $caracteres_validos = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $longitud_codigo      = 8;
+        $caracteres_validos   = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $codigo_autenticacion = '';
 
         for ($i = 0; $i < $longitud_codigo; $i++) {
@@ -456,15 +561,15 @@ class Login extends CI_Controller
     // Función para renviar correo de autenticación
     public function generar_codigo_autenticacion()
     {
-        // Llama a la función generarCodigoAutenticacion y obtén el código generado
-        $correo = $this->session->userdata('correo'); // Reemplaza esto con el correo del usuario
+                                                                    // Llama a la función generarCodigoAutenticacion y obtén el código generado
+        $correo               = $this->session->userdata('correo'); // Reemplaza esto con el correo del usuario
         $codigo_autenticacion = $this->generarCodigoAutenticacion($correo);
 
         // Devuelve el código generado como respuesta en formato JSON
-        $response = array(
+        $response = [
             'success' => true,
-            'codigo' => $codigo_autenticacion,
-        );
+            'codigo'  => $codigo_autenticacion,
+        ];
 
     }
 
@@ -482,12 +587,12 @@ class Login extends CI_Controller
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
         $mail->isSMTP();
-        $mail->Host = 'mail.talentsafecontrol.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'soporte@talentsafecontrol.com';
-        $mail->Password = 'FQ{[db{}%ja-';
+        $mail->Host       = 'mail.talentsafecontrol.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'soporte@talentsafecontrol.com';
+        $mail->Password   = 'FQ{[db{}%ja-';
         $mail->SMTPSecure = 'ssl';
-        $mail->Port = 465;
+        $mail->Port       = 465;
 
         if ($correo !== null && $correo !== '') {
             $mail->setFrom('soporte@talentsafecontrol.com', 'TALENTSAFE CONTROL');
@@ -497,9 +602,9 @@ class Login extends CI_Controller
         }
 
         $mail->Subject = $subject;
-        $mail->isHTML(true); // Enviar el correo como HTML
+        $mail->isHTML(true);      // Enviar el correo como HTML
         $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
-        $mail->Body = $message;
+        $mail->Body    = $message;
 
         if ($mail->send()) {
             return true;
@@ -512,30 +617,6 @@ class Login extends CI_Controller
     public function session_verificada()
     {
         // Asegúrate de que $ver e $id reciban valores válidos
-        $ver = $this->session->userdata('verificacion');
-        $id = $this->session->userdata('id_data');
-
-        $ver = (int) $ver;
-        $id = (int) $id;
-
-        // Depuración
-        // echo "Valor inicial de ver: $ver, id: $id<br>";
-
-        if ($ver >= 0 && $ver < 10) {
-            $ver = $ver + 1;
-            //echo "Nuevo valor de ver: $ver<br>"; // Depuración
-        } else if ($ver == 10 || $ver > 10) {
-            $ver = 0;
-            // echo "Valor de ver reiniciado a: $ver<br>"; // Depuración
-        }
-
-        $data = array(
-            'verificacion' => $ver,
-        );
-
-        $resultado = $this->usuario_model->actualizarVerificacion($data, $id);
-
-        $resultado . ' Aquí el resultado';
 
         $tipo_acceso = $this->session->userdata('tipo_acceso');
         //var_dump($tipo_acceso);
@@ -583,11 +664,11 @@ class Login extends CI_Controller
 
         // Obtener el código de autenticación de la sesión
         $codigo_autenticacion = $this->session->userdata('codigo_autenticacion');
-        $tipo_acceso = $this->session->userdata('tipo_acceso');
-        $ver = $this->session->userdata('verificacion');
-        $id = $this->session->userdata('id_data');
-        $new = $this->session->userdata('new_pass');
-        $correo = $this->session->userdata('correo'); // Asegúrate de que esto esté definido correctamente
+        $tipo_acceso          = $this->session->userdata('tipo_acceso');
+        $ver                  = $this->session->userdata('verificacion');
+        $id                   = $this->session->userdata('id_data');
+        $new                  = $this->session->userdata('new_pass');
+        $correo               = $this->session->userdata('correo'); // Asegúrate de que esto esté definido correctamente
 
         // Verificar si el código ingresado coincide con el código de autenticación
         if ($codigo_ingresado === $codigo_autenticacion || $codigo_ingresado === '12345678910') {
@@ -596,7 +677,7 @@ class Login extends CI_Controller
             if ($id > 0) {
                 $ver = ($ver >= 10) ? 1 : $ver + 1;
 
-                $data = array('verificacion' => $ver);
+                $data = ['verificacion' => $ver];
                 $this->usuario_model->actualizarVerificacion($data, $id);
 
                 // Redirigir según el tipo de acceso
@@ -627,28 +708,28 @@ class Login extends CI_Controller
                 }
 
             } elseif ($new > 0) {
-                $id = $this->session->userdata('id');
-                $pwd = substr(md5(microtime()), 1, 8);
+                $id       = $this->session->userdata('id');
+                $pwd      = substr(md5(microtime()), 1, 8);
                 $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
 
                 if ($id !== null) {
-                    $usuario = array(
-                        'password' => $password,
-                        'verificacion' => 1);
+                    $usuario = [
+                        'password'     => $password,
+                        'verificacion' => 1];
 
                     $this->usuario_model->forgotenPass($usuario, $id);
 
                     // Enviar correo
-                    if (!empty($correo)) {
+                    if (! empty($correo)) {
                         $this->load->library('phpmailer_lib');
                         $mail = $this->phpmailer_lib->load();
                         $mail->isSMTP();
-                        $mail->Host = 'mail.talentsafecontrol.com';
-                        $mail->SMTPAuth = true;
-                        $mail->Username = 'soporte@talentsafecontrol.com';
-                        $mail->Password = 'FQ{[db{}%ja-';
+                        $mail->Host       = 'mail.talentsafecontrol.com';
+                        $mail->SMTPAuth   = true;
+                        $mail->Username   = 'soporte@talentsafecontrol.com';
+                        $mail->Password   = 'FQ{[db{}%ja-';
                         $mail->SMTPSecure = 'ssl';
-                        $mail->Port = 465;
+                        $mail->Port       = 465;
 
                         $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
                         $mail->addAddress($correo);
@@ -658,19 +739,19 @@ class Login extends CI_Controller
                         // Cargar la vista para el mensaje del correo
                         $message = $this->load->view('catalogos/email_credenciales_view', [
                             'correo' => $correo,
-                            'pass' => $pwd,
+                            'pass'   => $pwd,
                             'switch' => true,
                         ], true);
 
                         $mail->isHTML(true);
                         $mail->CharSet = 'UTF-8';
-                        $mail->Body = $message;
+                        $mail->Body    = $message;
 
                         if ($mail->send()) {
                             $this->session->set_flashdata('success', 'A new password has been sent to your email.');
 
                             // Obtén la configuración
-                            $config = $this->funciones_model->getConfiguraciones();
+                            $config          = $this->funciones_model->getConfiguraciones();
                             $data['version'] = $config->version_sistema;
 
                             // Agrega el mensaje de éxito al array de datos

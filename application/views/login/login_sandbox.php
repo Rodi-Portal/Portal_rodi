@@ -7,7 +7,6 @@
   <title>Formulario de Registro</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- Para los iconos -->
-  <link rel="stylesheet" href="<?php echo base_url('css/styles.css'); ?>"> <!-- Tu archivo CSS -->
 
   <!-- Incluir Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -18,6 +17,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="<?php echo base_url('css/styles.css'); ?>"> <!-- Tu archivo CSS -->
+
 </head>
 
 <body>
@@ -30,26 +31,27 @@
     <div class="alert alert-success"><?php echo $this->session->flashdata('mensaje'); ?></div>
     <?php endif; ?>
 
-    <form id="registro-form" action="<?php echo base_url('login/enviarFormulario');?>" method="POST">
+    <form id="registro-form" action="<?php echo base_url('login/enviarFormulario'); ?>" method="POST">
       <div class="form-group row">
         <div class="col">
           <label for="nombre">Nombre:</label>
-          <input type="text" name="nombre" id="nombre" >
+          <input type="text" name="nombre" id="nombre">
         </div>
         <div class="col">
           <label for="telefono">Teléfono:</label>
-          <input type="text" name="telefono" id="telefono" >
+          <input type="text" name="telefono" id="telefono">
         </div>
       </div>
 
       <div class="form-group row">
         <div class="col">
           <label for="correo">Correo Electrónico:</label>
-          <input type="email" name="correo" id="correo" >
+          <input type="email" name="correo" id="correo">
         </div>
         <div class="col">
           <label for="medio_llegada">¿Cómo llegaste aquí?</label>
           <select name="medio_llegada" id="medio_llegada" onchange="mostrarCampoOtro()">
+            <option value="">Elige una opcion</option>
             <option value="Google">Google</option>
             <option value="Redes Sociales">Redes Sociales</option>
             <option value="Recomendación">Recomendación</option>
@@ -61,7 +63,7 @@
       <div class="form-group row">
         <div class="col">
           <label for="contrasena">Contraseña:</label>
-          <input type="password" name="contrasena" id="contrasena" >
+          <input type="password" name="contrasena" id="contrasena">
         </div>
 
         <div class="col" id="campo_otro" style="display:none;">
@@ -74,7 +76,7 @@
 
       <div class="already-registered">
         <p class="link-margen">¿Ya te has registrado antes y quieres acceder nuevamente?</p>
-        <a class="link-margen" href="<?php echo base_url('login');?>">Ingresa aquí</a>
+        <a class="link-margen" href="<?php echo base_url('Login/index1'); ?>">Ingresa aquí</a>
         <br>
       </div>
     </form>
@@ -104,13 +106,12 @@
     <!-- Modales -->
 
     <!-- Modal Reclutamiento -->
-    <div class="modal fade" id="modalReclutamiento" tabindex="-1" role="dialog"
+    <div class="modal fade modal-bootstrap" id="modalReclutamiento" tabindex="-1" role="dialog"
       aria-labelledby="modalReclutamientoLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalReclutamientoLabel">Reclutamiento</h5>
-
           </div>
           <div class="modal-body">
             <p><strong>Características:</strong></p>
@@ -126,13 +127,12 @@
     </div>
 
     <!-- Modal Pre-Empleo -->
-    <div class="modal fade" id="modalPreEmpleo" tabindex="-1" role="dialog" aria-labelledby="modalPreEmpleoLabel"
-      aria-hidden="true">
+    <div class="modal fade modal-bootstrap" id="modalPreEmpleo" tabindex="-1" role="dialog"
+      aria-labelledby="modalPreEmpleoLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalPreEmpleoLabel">Pre-Empleo</h5>
-
           </div>
           <div class="modal-body">
             <p><strong>Características:</strong></p>
@@ -148,13 +148,12 @@
     </div>
 
     <!-- Modal Empleados -->
-    <div class="modal fade" id="modalEmpleados" tabindex="-1" role="dialog" aria-labelledby="modalEmpleadosLabel"
-      aria-hidden="true">
+    <div class="modal fade modal-bootstrap" id="modalEmpleados" tabindex="-1" role="dialog"
+      aria-labelledby="modalEmpleadosLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalEmpleadosLabel">Empleados</h5>
-
           </div>
           <div class="modal-body">
             <p><strong>Características:</strong></p>
@@ -170,20 +169,19 @@
     </div>
 
     <!-- Modal Exempleados -->
-    <div class="modal fade" id="modalExempleados" tabindex="-1" role="dialog" aria-labelledby="modalExempleadosLabel"
-      aria-hidden="true">
+    <div class="modal fade modal-bootstrap" id="modalExempleados" tabindex="-1" role="dialog"
+      aria-labelledby="modalExempleadosLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalExempleadosLabel">Exempleados</h5>
-
           </div>
           <div class="modal-body">
             <p><strong>Características:</strong></p>
             <ul>
               <li>Control de salida de los empleados</li>
               <li>Documentación de finiquitos y cartas de recomendación</li>
-              <li>Generación de reportes de ejemploados</li>
+              <li>Generación de reportes de exempleados</li>
               <li>Acceso a historial laboral</li>
             </ul>
           </div>
@@ -191,47 +189,64 @@
       </div>
     </div>
 
+
   </div>
   <script>
   $(document).ready(function() {
     // Capturamos el evento submit del formulario
     $('#registro-form').submit(function(e) {
-      e.preventDefault(); // Evitar el comportamiento por defecto (recargar la página)
+    e.preventDefault(); // Evitar recargar la página
 
-      // Obtenemos los datos del formulario
-      var formData = $(this).serialize(); // Serializa todos los campos del formulario
+    // Obtenemos los datos del formulario
+    var formData = $(this).serialize(); // Serializa todos los campos del formulario
 
-      // Hacemos la petición AJAX
-      $.ajax({
-        url: $(this).attr(
-          'action'), // Dirección del formulario (o de la ruta que uses para manejar la petición)
-        type: $(this).attr('method'), // Método del formulario (POST en este caso)
-        data: formData, // Los datos del formulario
+    // Primera llamada AJAX: registrar los datos
+    $.ajax({
+        url: $(this).attr('action'), // Dirección del formulario
+        type: $(this).attr('method'), // Método del formulario (POST)
+        data: formData, // Datos del formulario
+        dataType: 'json', // Especificamos que esperamos un JSON
         success: function(response) {
-          console.log("🚀 ~ $ ~ response:", response)
+            console.log("🚀 ~ response registro:", response);
 
-          // Aquí gestionamos la respuesta
-          Swal.fire({
-            icon: 'success',
-            title: '¡Formulario enviado exitosamente!',
-            text: 'Te hemos registrado correctamente.',
-            confirmButtonText: '¡Genial!'
-          });
+            if (response.codigo === 1) {
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Formulario enviado exitosamente!',
+                    text: response.msg,
+                    confirmButtonText: '¡Genial!'
+                }).then(() => {
+                    // Limpiar el formulario
+                    $('#registro-form')[0].reset();
 
-          // Limpiar el formulario (si lo deseas)
-          $('#registro-form')[0].reset();
+                    // Redirigir a la nueva vista
+                    window.location.href = '<?= base_url('Login/index1') ?>';
+                });
+            } else {
+                // Mostrar mensaje de error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al enviar el formulario',
+                    text: response.msg,
+                    confirmButtonText: 'Aceptar'
+                });
+            }
         },
         error: function() {
-          // Si ocurre algún error
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al enviar el formulario',
-            text: 'Hubo un problema al intentar enviar el formulario. Inténtalo nuevamente.',
-            confirmButtonText: 'Aceptar'
-          });
+            // Manejar errores de la primera llamada AJAX
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al enviar el formulario',
+                text: 'Hubo un problema al intentar enviar el formulario. Inténtalo nuevamente.',
+                confirmButtonText: 'Aceptar'
+            });
         }
-      });
     });
+});
+
+
+
   });
 
   function mostrarCampoOtro() {

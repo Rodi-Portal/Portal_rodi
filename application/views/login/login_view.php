@@ -54,9 +54,9 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">WELCOME</h1>
                   </div>
-                  <form class="user" action="<?php echo base_url('Login/verifying_account'); ?>" method="POST">
+                  <form class="user" action="<?php echo base_url('Login/verificar_usuario'); ?>" method="POST">
                     <div class="form-group">
-                      <input type="text" class="form-control form-control-user" id="correo" name="correo"
+                      <input type="text" class="form-control form-control-user" id="mail" name="mail"
                         aria-describedby="emailHelp" placeholder="Email" >
                     </div>
                     <div class="form-group">
@@ -89,7 +89,7 @@
   <!-- Custom scripts for all pages-->
   <script src="<?php echo base_url(); ?>js/sb-admin-2.min.js"></script>
   <script>
-  $('#correo').focus();
+  $('#mail').focus();
   </script>
 </body>
 

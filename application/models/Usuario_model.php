@@ -120,6 +120,94 @@ class Usuario_model extends CI_Model
             return false; // Devolver falso si el usuario no se encuentra en la base de datos
         }
     }
+/* Funciones  para  inicio  de sesion en sandbox* / */
+    public function existeUsuarioSandbox($correo)
+    {
+        $this->db
+            ->select('*')
+            ->from('usuarios_sandbox')
+            ->where('correo', $correo);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+
+        if ($resultado) {
+            return 1; // Devolver los datos del usuario si existe
+        } else {
+            return 0; // Devolver falso si el usuario no se encuentra en la base de datos
+        }
+    }
+    public function existeUsuarioSandbox1($correo)
+    {
+        $this->db
+            ->select('*')
+            ->from('usuarios_sandbox')
+            ->where('correo', $correo);
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+
+        if ($resultado) {
+            return $resultado; // Devolver los datos del usuario si existe
+        } else {
+            return []; // Devolver falso si el usuario no se encuentra en la base de datos
+        }
+    }
+
+    public function registroUsuarioSandbox($datos)
+    {
+        // Insertar los datos en la tabla usuarios_sandbox
+        $this->db->insert('usuarios_sandbox', $datos);
+    
+        // Obtener el ID del último registro insertado
+        $insert_id = $this->db->insert_id();
+    
+        // Verificar si se realizó la inserción correctamente
+        if ($insert_id) {
+            // Consultar el registro recién insertado
+           
+                return $insert_id; // Devolver el registro completo como un objeto
+        
+        }
+    
+        // Retornar 0 si no se realizó la inserción
+        return 0;
+    }
+
+    public function existeUsuarioSanbox($correo)
+    {
+        $this->db
+            ->select('U.*')
+            ->from('usuarios_sandbox as U')
+            ->where('U.correo', $correo);
+        
+
+        $consulta = $this->db->get();
+        $resultado = $consulta->row();
+
+        if ($resultado) {
+            return $resultado; // Devolver los datos del usuario si existe
+        } else {
+            return false; // Devolver falso si el usuario no se encuentra en la base de datos
+        }
+    }
+    public function incrementarVisita($id, $data)
+    {
+        // Asegúrate de que $data es un array y $id es un entero válido
+
+        // Actualizar la fila con el ID especificado
+        $this->db->where('id', $id);
+        $this->db->update('usuarios_sandbox', $data);
+
+        // Verificar si la actualización fue exitosa
+        if ($this->db->affected_rows() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
 //TODO: pendiente  de revisar  esta  consulta   ya  que
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     public function existeUsuarioCliente($correo)
