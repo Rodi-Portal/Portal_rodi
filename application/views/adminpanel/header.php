@@ -303,7 +303,7 @@ if ($idRol == 1 || $idRol == 6) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                             <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -315,7 +315,7 @@ if ($idRol == 1 || $idRol == 6) {?>
             </li>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
               <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey"
-                data-bs-toggle="tooltip" data-bs-placement="top" title="proveedores  destacados">
+                data-bs-toggle="tooltip" data-bs-placement="top" title="Proveedores Destacados">
                 <i class="fas fa-key fa-fw icono-dorado"></i> <!-- Icono de llave -->
               </a>
             </li>
@@ -352,7 +352,8 @@ if ($idRol == 1 || $idRol == 6) {?>
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content modal-key-content">
               <div class="modal-header modal-key-header">
-                <h5 class="modal-title modal-title-modal-key-title-blanco" id="modalKeyLabel">Proveedores Destacados</h5>
+                <h5 class="modal-title modal-title-modal-key-title-blanco" id="modalKeyLabel">Proveedores Destacados
+                </h5>
                 <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -373,7 +374,7 @@ if ($idRol == 1 || $idRol == 6) {?>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative;">
                           <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                          <div style="position: absolute; top: 10px; left: 0; right: 0; bottom: 0;
                     background-image: url('<?php echo base_url(); ?>img/provedores/crol.png');
                     background-size: 150px; background-position: center;
                     opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
@@ -397,7 +398,7 @@ if ($idRol == 1 || $idRol == 6) {?>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative; ">
                           <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 50px; left: 0; right: 0; bottom: 0;
+                          <div style="position: absolute; top: 0px; left: 0; right: 0; bottom: 0;
                             background-image: url('<?php echo base_url(); ?>img/provedores/GA.png');
                             background-size: 100px; background-position: center;
                             opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
@@ -422,7 +423,7 @@ if ($idRol == 1 || $idRol == 6) {?>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative;">
                           <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 100px; left: 0; right: 0; bottom: 0;
+                          <div style="position: absolute; top: 25px; left: 0; right: 0; bottom: 0;
                     background-image: url('<?php echo base_url(); ?>img/provedores/Rodi.png');
                     background-size: 100px; background-position: center;
                     opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
@@ -475,12 +476,12 @@ if ($idRol == 1 || $idRol == 6) {?>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative;">
                           <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 80px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/nada.png');
-                    background-size: 90px; background-position: center;
+                          <div style="position: absolute; top: 45px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/tc.png');
+                    background-size: 70px; background-position: center;
                     opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
                           <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Nómina, Timbrado y
+                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">
                             Declaración de Impuestos</p>
                         </div>
                         <div class="modal-key-card-footer">
@@ -500,9 +501,9 @@ if ($idRol == 1 || $idRol == 6) {?>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative;">
                           <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                          <div style="position: absolute; top: 20px; left: 50px; right: 0; bottom: 0;
                     background-image: url('<?php echo base_url(); ?>img/provedores/drclinic.png');
-                    background-size: 100px; background-position: center;
+                    background-size: 130px; background-position: center;
                     opacity: 0.7; z-index: 1; background-repeat: no-repeat;"></div>
                           <!-- Contenido de texto que no se ve afectado por la opacidad -->
                           <p class="modal-key-card-text" style="position: relative; z-index: 2;">Exámenes Médicos
@@ -528,7 +529,7 @@ if ($idRol == 1 || $idRol == 6) {?>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative;">
                           <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                          <div style="position: absolute; top: 15px; left: 0; right: 0; bottom: 0;
                     background-image: url('<?php echo base_url(); ?>img/provedores/cincel.png');
                     background-size: 100px; background-position: center;
                     opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
@@ -553,9 +554,9 @@ if ($idRol == 1 || $idRol == 6) {?>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative;">
                           <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                          <div style="position: absolute; top: 20px; left: 0; right: 0; bottom: 0;
                     background-image: url('<?php echo base_url(); ?>img/provedores/valorh.png');
-                    background-size: 100px; background-position: center;
+                    background-size: 130px; background-position: center;
                     opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
                           <!-- Contenido de texto que no se ve afectado por la opacidad -->
                           <p class="modal-key-card-text" style="position: relative; z-index: 2;">Evaluaciones</p>
@@ -564,6 +565,37 @@ if ($idRol == 1 || $idRol == 6) {?>
                           Fomentando un ambiente laboral positivo.
                           Clima Laboral.
                           Desempeño.
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <!-- STTECCIMM -->
+                  <div class="col-md-4 modal-key-col">
+                    <a href="#" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-stteccimm">
+                          STTECCIMM
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: start;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 20px; left: 0; right: 0; bottom: 0;
+          background-image: url('<?php echo base_url(); ?>img/provedores/stteccimm.png');
+          background-size: 80px; background-position: center;
+          opacity: 1; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="
+                            position: relative;
+                            z-index: 2;
+                            
+                            line-height: 1; /* Reduce el espacio vertical entre líneas */
+                            margin: 0; /* Elimina márgenes adicionales */
+                            padding: 0; /* Elimina relleno extra */
+                          "> 🏳Sindicato de Confianza🏳
+                          </p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                          Una balanza en PRO de las necesidades del empresario y de sus colaboradores.
                         </div>
                       </div>
                     </a>

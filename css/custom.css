@@ -1128,7 +1128,7 @@ color: white;
 .modal-key-intro {
   font-size: 1.1rem;
   color: #7f8c8d;
-  margin-bottom: 20px;
+ 
   font-style: italic;
 }
 
@@ -1153,7 +1153,7 @@ color: white;
   font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
-  padding: 10px;
+  padding: 8px;
   border-bottom: 1px solid #e1e1e1;
   text-transform: uppercase;
 }
@@ -1193,6 +1193,10 @@ color: white;
   background-color: #c86358;
   color: white;
 }
+.modal-key-card-stteccimm{
+  background-color: #1e1756;
+  color: white;
+}
 
 .modal-key-card-body {
   background-image: url('<?php echo base_url(); ?>img/portal_icon.png');
@@ -1202,23 +1206,23 @@ color: white;
   height: 150px; /* Ajusta la altura del contenedor según sea necesario */
   display: flex;
   justify-content: center;
-  align-items: center;
+  
   color: white; /* Asegura que el texto sea visible */
   text-align: center; /* Centra el texto */
-  padding: 10px; /* Agrega algo de espacio alrededor del texto */
+   /* Agrega algo de espacio alrededor del texto */
   position: relative;
 }
 
 /* Si necesitas ajustar la visibilidad del texto (por ejemplo, si el fondo es oscuro) */
 .modal-key-card-text {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   z-index: 1; /* Asegura que el texto esté encima del fondo */
   color: white; /* Asegura que el texto sea blanco para mejor contraste */
 } 
 .modal-key-card-body {
   
-  padding: 15px;
+  margin-top: 10px;
   font-size: 1rem;
   text-align: center;
 }
@@ -1228,7 +1232,7 @@ color: white;
   padding: 10px;
   font-size: 0.9rem;
   text-align: center;
-  color: #7f8c8d;
+  color: #19191a;
 }
 
 /* Footer del modal */
