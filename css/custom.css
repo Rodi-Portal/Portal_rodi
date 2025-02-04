@@ -1253,6 +1253,7 @@ color: white;
 /* diseño panel  libre de  las  sucursales  */
 
 #vacanteMessage {
+
   font-size: 1.5rem;  /* Aumenta el tamaño de la fuente para hacerlo más visible */
   font-weight: bold;  /* Texto en negrita */
   color: #ffffff!important;  /* Color blanco para mayor contraste */
@@ -1271,6 +1272,7 @@ color: white;
 }
 
 .card-proceso {
+  width: 80%;
   border: 2px solid #007bff;  /* Borde azul para distinguir cada card */
   border-radius: 8px;  /* Bordes redondeados */
   padding: 20px;  /* Espaciado interno */
