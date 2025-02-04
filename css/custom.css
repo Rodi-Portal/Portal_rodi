@@ -1250,3 +1250,49 @@ color: white;
   background-color: #34495e;
 }
 
+/* diseño panel  libre de  las  sucursales  */
+
+#vacanteMessage {
+  font-size: 1.5rem;  /* Aumenta el tamaño de la fuente para hacerlo más visible */
+  font-weight: bold;  /* Texto en negrita */
+  color: #ffffff!important;  /* Color blanco para mayor contraste */
+  background-color: #11a01b;  /* Fondo azul para destacar el mensaje */
+  padding: 15px 20px;  /* Espaciado interno para darle más cuerpo */
+  border-radius: 8px;  /* Bordes redondeados para hacerlo más moderno */
+  text-align: center;  /* Centrar el texto */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombra sutil para destacar */
+  cursor: pointer;  /* Cambio de cursor para indicar que es interactivo */
+  transition: all 0.3s ease;  /* Transición suave para los efectos */
+}
+
+#vacanteMessage:hover {
+  background-color: #0056b3;  /* Cambia el fondo a un azul más oscuro cuando el usuario pase el cursor */
+  transform: scale(1.05);  /* Efecto de aumento al pasar el cursor */
+}
+
+.card-proceso {
+  border: 2px solid #007bff;  /* Borde azul para distinguir cada card */
+  border-radius: 8px;  /* Bordes redondeados */
+  padding: 20px;  /* Espaciado interno */
+  margin-bottom: 20px;  /* Espaciado entre cards */
+  background-color: #f8f9fa;  /* Fondo claro */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+  transition: all 0.3s ease;  /* Transición suave para los efectos */
+  cursor: pointer;  /* Cambiar el cursor a mano cuando pasa el mouse */
+}
+
+.card-proceso:hover {
+  border-color: #0056b3;  /* Cambiar el borde a azul más oscuro al pasar el mouse */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  /* Aumentar la sombra */
+}
+
+.card-proceso:active {
+  border-color: #004085;  /* Cambiar el borde a un tono más oscuro cuando el card se hace clic */
+  transform: scale(0.98);  /* Efecto de reducción al hacer clic, simulando la acción */
+}
+
+.card-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}

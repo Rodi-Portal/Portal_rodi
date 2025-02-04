@@ -767,7 +767,7 @@ echo '</pre>';*/
 
         // Cargar ambas secciones al principio
         $(document).ready(function() {
-          loadSection('seccion-bgv', "<?php echo base_url('Cliente_General/indexCliente'); ?>");
+          //loadSection('seccion-bgv', "<?php echo base_url('Cliente_General/indexCliente'); ?>");
           loadSection('panel-inicio', "<?php echo base_url('Dashboard/client'); ?>");
         });
 
@@ -784,7 +784,7 @@ echo '</pre>';*/
                 method: "GET",
                 data: data,
                 success: function(response) {
-                  console.log('Respuesta recibida: ', response);
+                  
                   // Cargar contenido en la sección específica
                   $('#' + sectionIdToShow).html(response).show();
                 },
