@@ -63,7 +63,7 @@
 </head>
 
 <body id="page-top">
-  <!-- JavaScript -->
+  <!-- JavaScript --> 
 
   <?php $idRol = $this->session->userdata('idrol'); ?>
 <?php  /*$token = $this->session->userdata('jwt_token'); 

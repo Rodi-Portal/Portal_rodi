@@ -79,7 +79,7 @@ class Login extends CI_Controller
                         "exp"    => $expiration_time,
                     ];
                 
-                    // Cargar la clave privada (para firmar el JWT) desde la configuración
+                 /*   // Cargar la clave privada (para firmar el JWT) desde la configuración
                     $private_key = $this->config->item('jwt_private_key'); // Cargar la clave privada de la configuración
                 
                     // Generar el JWT con RS256 (algoritmo asimétrico)
@@ -87,6 +87,8 @@ class Login extends CI_Controller
                 
                     // Almacenar el JWT en la sesión
                     $this->session->set_userdata('jwt_token', $jwt);
+
+                    */
                 }
 
 
