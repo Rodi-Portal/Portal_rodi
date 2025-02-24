@@ -15,7 +15,7 @@ composer.lock
 application/config/constants.php 
 application/config/config.php
 application/config/database.php
-
+application/config/keys/*
 .htaccess
 cpanel.yml
 

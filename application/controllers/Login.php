@@ -1,5 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+use \Firebase\JWT\JWT;
 
 class Login extends CI_Controller
 {
@@ -68,8 +69,30 @@ class Login extends CI_Controller
                     "nombrePortal" => $usuario->nombrePortal,
 
                 );
+                if ($usuario->id_rol == 1 || $usuario->id_rol == 6) {
+                    // Generación del JWT
+                    $issued_at       = time();
+                    $expiration_time = $issued_at + 10800; // 1 hora de duración del token
+                    $payload         = [
+                        "sub"    => $usuario->id, // ID del usuario (puede ser cualquier identificador único)
+                        "correo" => $usuario->correo,
+                        "exp"    => $expiration_time,
+                    ];
+                
+                    // Cargar la clave privada (para firmar el JWT) desde la configuración
+                    $private_key = $this->config->item('jwt_private_key'); // Cargar la clave privada de la configuración
+                
+                    // Generar el JWT con RS256 (algoritmo asimétrico)
+                    $jwt = JWT::encode($payload, $private_key, 'RS256'); // Usar RS256 en lugar de HS256
+                
+                    // Almacenar el JWT en la sesión
+                    $this->session->set_userdata('jwt_token', $jwt);
+                }
+
+
+
                 $this->session->set_userdata($usuario_data);
-                if ($ver == 0 || $ver == 10) {
+                if ($ver == 0 || $ver == 20) {
 
                     $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
@@ -318,78 +341,7 @@ class Login extends CI_Controller
         $this->load->view('login/verify_view', $data);
     }
 
-    /*
-    public function new_password()
-    {
-    $this->form_validation->set_rules('correo', 'Email', 'required|valid_email|trim');
-
-    $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-    $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un email válido');
-
-    if ($this->form_validation->run() == false) {
-    $this->session->set_flashdata('error', 'Enter your email account');
-    redirect('Login/recovery_view');
-    } else {
-
-    $pwd = substr(md5(microtime()), 1, 8);
-    $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
-
-    $hayIDCliente = $this->usuario_model->checkCorreoUsuario($correo);
-    }
-    /*
-    echo $pwd.' aqui el pass sin encriptar   ';
-    echo $password.' aqui el pass encriptado   ';
-    var_dump( $hayIDCliente);
-    die();
-    //
-
-    if ($hayIDCliente != null) {
-    $usuario = array(
-    'password' => $password,
-    );
-    $this->cliente_model->actualizarUsuarioCliente($usuario, $hayIDCliente->id);
-    //Envío de correo
-    $to = $correo;
-    if ($correo === null || $correo === '') {
-    return false;
-    }
-
-    $subject = "Reenvio  de  credenciales   TalentSafeControl";
-    // Cargar la vista email_verification_view.php
-    $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
-
-    $this->load->library('phpmailer_lib');
-    $mail = $this->phpmailer_lib->load();
-    $mail->isSMTP();
-    $mail->Host = 'mail.talentsafecontrol.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'soporte@talentsafecontrol.com';
-    $mail->Password = 'FQ{[db{}%ja-';
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
-
-    if ($correo !== null && $correo !== '') {
-    $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
-    $mail->addAddress($correo);
-    } else {
-    return false;
-    }
-
-    $mail->Subject = $subject;
-    $mail->isHTML(true); // Enviar el correo como HTML
-    $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
-    $mail->Body = $message;
-
-    if ($mail->send()) {
-    return true;
-    } else {
-    log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
-    return false;
-    }
-    }
-
-    }
-     */
+    
     // Funcion para generar aut
     public function generarCodigoAutenticacion($correo)
     {

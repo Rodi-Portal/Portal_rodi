@@ -66,7 +66,9 @@
   <!-- JavaScript -->
 
   <?php $idRol = $this->session->userdata('idrol'); ?>
+<?php  /*$token = $this->session->userdata('jwt_token'); 
 
+echo $token  */ ?>
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
