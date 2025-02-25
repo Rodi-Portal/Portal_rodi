@@ -260,10 +260,96 @@ class Area extends CI_Controller
         }
     }
 
-  
+
+    public function updateLogo() {
+        // Establecer la zona horaria
+        date_default_timezone_set('America/Mexico_City');
+        $date = date('Y-m-d H:i:s');
+        
+        // Obtener datos de la sesión
+        $idPortal = $this->session->userdata('idPortal');
+        $portal = $this->session->userdata('nombrePortal');
+        $nombre_archivo = $idPortal . '_' . $portal;
     
-   
+        // Configuración para la carga de archivo
+        $config['upload_path'] = FCPATH . '_logosPortal/'; // Ruta completa
+        $config['allowed_types'] = 'pdf|jpg|jpeg|png'; // Tipos de archivo permitidos
+        $config['overwrite'] = true; // Sobrescribir archivo si existe
+        $config['file_name'] = $nombre_archivo; // Nombre de archivo único basado en el idPortal y nombre del portal
+    
+        // Cargar la librería de carga
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+    
+        // Verificar si se sube un archivo
+        if ($_FILES['fileLogo']['name']) {
+            // Intentar cargar el archivo
+            if ($this->upload->do_upload('fileLogo')) {
+                // Obtener los datos del archivo cargado
+                $data = $this->upload->data();
+    
+                // Obtener la extensión del archivo
+                $file_extension = $data['file_ext']; // Ejemplo: .jpg, .png, .pdf
+    
+                // Preparar los datos para la actualización
+                $doc = array(
+                    'edicion' => $date,
+                    'logo' => $nombre_archivo . $file_extension, // El logo con su extensión
+                );
+    
+                // Llamar al modelo para actualizar el logo
+                $this->area_model->subirLogo($idPortal, $doc);
+                $this->session->set_userdata('logo', $nombre_archivo . $file_extension);
+                // Responder con éxito
+                echo json_encode(['success' => true, 
+                'message' => 'Logo actualizado correctamente']);
+            } else {
+                // Si ocurre un error con la carga, mostrar el error
+                echo json_encode(['success' => false, 'message' => $this->upload->display_errors()]);
+            }
+        } else {
+            // Si no se subió ningún archivo
+            echo json_encode(['success' => false, 'message' => 'No se ha seleccionado un archivo']);
+        }
+    }
+    public function eliminarLogo() {
+        // Establecer la zona horaria
+        date_default_timezone_set('America/Mexico_City');
+        $date = date('Y-m-d H:i:s');
+        
+        // Obtener datos de la sesión
+        $idPortal = $this->session->userdata('idPortal');
+        $logo = $this->session->userdata('logo');
+
+        $data = './_logosPortal/'.$logo;
+
+        if ($data && file_exists($data)) {
+            // Eliminar el archivo de la imagen
+            unlink($data);
+            
+            // Actualizar la variable de sesión
+            $_SESSION['logo'] = null;
+            $doc = array(
+                'edicion' => $date,
+                'logo' => null, // El logo con su extensión
+            );
+
+            // Llamar al modelo para actualizar el logo
+            $this->area_model->subirLogo($idPortal, $doc);
+            // Responder con éxito
+            echo json_encode(['success' => true]);
+          } else {
+            // Responder con error si no se puede eliminar
+            echo json_encode(['success' => false]);
+          }
+    
+       
+       
+    }
+    
+    
+}
    
     
 
-}
+

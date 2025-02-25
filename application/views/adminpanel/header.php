@@ -63,28 +63,29 @@
 </head>
 
 <body id="page-top">
-  <!-- JavaScript --> 
+  <!-- JavaScript -->
 
-  <?php $idRol = $this->session->userdata('idrol'); ?>
-<?php  /*$token = $this->session->userdata('jwt_token'); 
+  <?php $idRol = $this->session->userdata('idrol');
+  $logo          = $this->session->userdata('logo'); ?>
+  <?php /*$token = $this->session->userdata('jwt_token'); 
 
-echo $token  */ ?>
+echo $token  */?>
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
+      <?php if ($logo == null) {
+              $logo = 'logo_nuevo.png';
+      }?>
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
-
-        <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png" alt="Logo">
-
-
+        <img style="max-width: 220px; max-height: 150px;"
+          src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>" alt="Logo">
       </a>
-      <h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
-      <hr class="sidebar-divider my-0">
 
-
+      <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
+      <br><br>
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
 
@@ -142,7 +143,7 @@ echo $token  */ ?>
       <li class="nav-item">
         <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
           <i class="fas fa-user-times"></i>
-          <span>Exempleado</span>
+          <span>Exempleados</span>
         </a>
 
       </li>
@@ -275,23 +276,39 @@ if ($idRol == 1 || $idRol == 6) {?>
             <!-- Contenedor para los botones -->
             <li class="nav-item custom-menu" style="flex: 1;">
               <div class="button-container">
-                <a id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>" class="btn custom-btn">
-                  <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
-                  Reclutamiento
+                <a id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"
+                  class="btn custom-btn recruitment-btn">
+                  <div class="module-label">Módulo</div>
+                  <div class="btn-content">
+                    <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
+                    Reclutamiento
+                  </div>
                 </a>
                 <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>"
-                  class="btn custom-btn">
-                  <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
-                  Preempleo
+                  class="btn custom-btn pre-employment-btn">
+                  <div class="module-label">Módulo</div>
+                  <div class="btn-content">
+                    <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
+                    Preempleo
+                  </div>
                 </a>
-                <a id="employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="btn custom-btn">
-                  <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
-                  Empleados
+                <a id="employment-btn employment-btn" href="<?php echo site_url('Empleados/index') ?>"
+                  class="btn custom-btn employment-btn">
+                  <div class="module-label">Módulo</div>
+                  <div class="btn-content">
+                    <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
+                    Empleados
+                  </div>
                 </a>
-                <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>"
-                  class="btn custom-btn">
-                  <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
-                  Exempleado
+
+                <a id="former-employment-btn " href="<?php echo site_url('Empleados/exEmpleados') ?>"
+                  class="btn custom-btn former-employment-btn">
+                  <div class="module-label">Módulo</div>
+                  <div class="btn-content">
+                    <!-- Contenedor para el ícono y texto -->
+                    <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
+                    Exempleados
+                  </div>
                 </a>
 
               </div>
@@ -305,7 +322,7 @@ if ($idRol == 1 || $idRol == 6) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                             <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -334,11 +351,16 @@ if ($idRol == 1 || $idRol == 6) {?>
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <?php if ($portal == 1 && ($idRol == 1)) {?>
+                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
+                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Actualizar Logo
+                </a>
                 <a class="dropdown-item" href="<?php echo base_url(); ?>Area/pasarela">
 
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Suscripción
                 </a>
+
                 <?php }?>
                 <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -349,12 +371,59 @@ if ($idRol == 1 || $idRol == 6) {?>
           </ul>
         </nav>
 
+        <!-- Enlace que abre el modal -->
+
+
+        <!-- Modal para subir la imagen -->
+        <div class="modal fade" id="updateLogoModal" tabindex="-1" role="dialog" aria-labelledby="updateLogoModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="updateLogoModalLabel">Subir Nuevo Logo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <form id="logoForm">
+                  <div class="form-group">
+                    <label for="fileLogo">Selecciona una imagen</label>
+                    <input type="file" class="form-control-file" id="fileLogo" name="fileLogo" accept="image/*">
+                  </div>
+                </form>
+                <div id="preview" style="display: none;">
+                  <h6>Vista previa:</h6>
+                  <img id="imagePreview" src="" alt="Vista previa de la imagen" style="max-width: 100%; height: auto;">
+                </div>
+
+                <!-- Si la variable de sesión 'logo' no es null, mostramos el botón de eliminar -->
+                <?php if ($this->session->userdata('logo') != null) {?>
+                <div id="currentLogoContainer">
+                  <h6>Logo Actual:</h6>
+                  <img id="currentLogo" src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>"" alt=" Logo
+                    actual" style="max-width: 100%; height: auto;">
+                  <button type="button" id="deleteLogo" class="btn btn-danger mt-2">Eliminar Logo</button>
+                </div>
+                <?php }?>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" id="saveLogo" class="btn btn-primary">Guardar Logo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         <div class="modal fade" id="modalKey" tabindex="-1" role="dialog" aria-labelledby="modalKeyLabel"
           aria-hidden="true">
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content modal-key-content">
               <div class="modal-header modal-key-header">
-                <h5 class="modal-title modal-title-modal-key-title-blanco" id="modalKeyLabel">Proveedores Destacados</h5>
+                <h5 class="modal-title modal-title-modal-key-title-blanco" id="modalKeyLabel">Proveedores Destacados
+                </h5>
                 <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -679,6 +748,139 @@ if(in_array(38, $submenus)){ ?>
  */?>
 
         <script>
+        document.getElementById('fileLogo').addEventListener('change', function(event) {
+          const file = event.target.files[0];
+          if (file && file.type.startsWith('image')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              // Mostrar la vista previa de la imagen
+              document.getElementById('imagePreview').src = e.target.result;
+              document.getElementById('preview').style.display = 'block'; // Hacer visible la vista previa
+            };
+            reader.readAsDataURL(file);
+          } else {
+            alert('Por favor, selecciona una imagen válida.');
+          }
+        });
+
+
+
+        // Funcionalidad para eliminar el logo usando AJAX
+        $("#deleteLogo").on("click", function() {
+          // Confirmación con SweetAlert2
+          Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡Esta acción no puede deshacerse!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminarlo',
+            cancelButtonText: 'Cancelar',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Hacemos la solicitud AJAX para eliminar el logo
+              $.ajax({
+                url: '<?php echo base_url(); ?>Area/eliminarLogo', // Archivo PHP que manejará la eliminación
+                type: 'POST',
+                dataType: 'json',
+                success: function(response) {
+                  if (response.success) {
+                    // Mostrar mensaje de éxito con SweetAlert2
+                    Swal.fire(
+                      '¡Eliminado!',
+                      'El logo ha sido eliminado exitosamente.',
+                      'success'
+                    );
+                    setTimeout(function() {
+                      window.location.reload(); // Recarga la página
+                    }, 1000);
+                    $('#updateLogoModal').modal('hide'); // Cierra el modal
+                    // Aquí puedes actualizar la vista o cerrar el modal
+                    document.getElementById("currentLogoContainer").style.display = "none";
+                  } else {
+                    // Mostrar mensaje de error con SweetAlert2
+                    Swal.fire(
+                      'Error',
+                      'Hubo un error al eliminar el logo.',
+                      'error'
+                    );
+                  }
+                },
+                error: function(xhr, status, error) {
+                  // Mostrar mensaje de error con SweetAlert2
+                  Swal.fire(
+                    'Error',
+                    'Ocurrió un error al intentar eliminar el logo.',
+                    'error'
+                  );
+                }
+              });
+            }
+          });
+        });
+
+
+        // Funcionalidad del botón "Guardar Logo"
+        document.getElementById('saveLogo').addEventListener('click', function() {
+          const fileLogo = document.getElementById('fileLogo');
+          const file = fileLogo.files[0];
+
+          if (file) {
+            // Aquí puedes enviar la imagen al servidor para guardarla, o actualizar el logo en el front-end
+            const formData = new FormData();
+            formData.append('fileLogo', file); // Asegúrate de que el nombre del campo sea 'logo'
+
+            // Usando jQuery para enviar la solicitud AJAX
+            $.ajax({
+              url: '<?php echo base_url(); ?>Area/updateLogo', // URL de tu controlador en CodeIgniter
+              type: 'POST',
+              data: formData,
+              contentType: false, // No se establecerá el tipo de contenido, porque estamos enviando datos de tipo FormData
+              processData: false, // No procesar los datos automáticamente
+              success: function(data) {
+                // Si todo fue bien, actualizar el logo en la página
+                const response = JSON.parse(data); // Parsear la respuesta JSON
+
+                if (response.success) {
+                  // Actualiza el logo en el sidebar
+                  $('#updateLogoModal').modal('hide'); // Cierra el modal
+
+                  // Mostrar mensaje de éxito con SweetAlert2
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Logo actualizado',
+                    text: 'El logo se ha actualizado correctamente.',
+                  });
+                  setTimeout(function() {
+                    window.location.reload(); // Recarga la página
+                  }, 1000);
+                } else {
+                  // Mostrar mensaje de error con SweetAlert2
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error al actualizar el logo',
+                    text: response.message || 'Hubo un problema al intentar actualizar el logo.',
+                  });
+                }
+              },
+              error: function(xhr, status, error) {
+                // Si hay un error en la solicitud AJAX
+                console.error('Error:', error);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error al actualizar el logo',
+                  text: 'Hubo un problema al intentar actualizar el logo.',
+                });
+              }
+            });
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Sin archivo',
+              text: 'Por favor, selecciona una imagen para el logo.',
+            });
+          }
+        });
+
         // Al hacer clic en el botón
         $('#enviarNotificacionesBtn').on('click', function() {
           $.ajax({

@@ -8,7 +8,7 @@
   <table id="processTable" class="display" style="width: 100%;">
     <thead>
       <tr>
-        <th>Nombre de la Sucursal</th>
+        <th>Sucursal</th>
         <th>Correo Electrónico</th>
         <th>Teléfono</th>
         <th>Fecha de Creación</th>
