@@ -350,11 +350,12 @@ if ($idRol == 1 || $idRol == 6) {?>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <?php if ($portal == 1 && ($idRol == 1)) {?>
-                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
+              <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Actualizar Logo
                 </a>
+                <?php if ($portal == 1 && ($idRol == 1)) {?>
+              
                 <a class="dropdown-item" href="<?php echo base_url(); ?>Area/pasarela">
 
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
