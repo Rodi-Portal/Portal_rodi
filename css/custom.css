@@ -792,125 +792,6 @@ color: white;
 }
 
 
-/*  diseño de botones  de nuesvos  modulos */
-
-
-/* Estilo para el contenedor de botones */
-/* Estilo para el contenedor de botones */
-.button-container {
-  display: flex;
-  flex: 1; /* Hace que el contenedor ocupe el espacio disponible */
-  justify-content: space-between; /* Distribuye los botones uniformemente */
-  align-items: center; /* Centra los botones verticalmente */
-  width: 100%;
- /* Asegura que el contenedor ocupe el ancho completo */
-  position: relative; /* Necesario para los pseudo-elementos de separación */
-}
-
-/* Estilo para los botones */
-.custom-btn {
-  background: none; /* Sin color de fondo */
-  border: 2px solid #007bff; /* Color del borde */
-  color: #007bff; /* Color del texto del botón */
-  border-radius: 0; /* Sin bordes redondeados */
- /* padding: 15px; /* Ajusta el espaciado interno */
-  text-align: center; /* Centra el texto dentro del botón */
-  font-size: 1.5rem; /* Tamaño de fuente más grande */
-  font-weight: 900;
-  /* Fuente en negrita */
-  text-transform: uppercase; /* Texto en mayúsculas */
-  letter-spacing: 1px; /* Espaciado entre letras */
-  flex: 1; /* Hace que los botones ocupen el mismo ancho */
-  min-width: 0; /* Permite que los botones se reduzcan si es necesario */
-  margin: 0; /* Sin margen para los botones */
-  box-sizing: border-box; /* Asegura que el padding y el borde se incluyan en el ancho total */
-  position: relative; /* Necesario para la separación vertical */
-}
-
-/* Separación vertical entre los botones */
-.custom-btn:not(:last-child)::after {
-  content: "";
-  font-weight: 900;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 0px; /* Grosor de la barra de separación */
-  height: 100%;
-  background-color: rgba(16, 16, 16, 0.397); /* Color de la barra de separación */
-  z-index: 0; /* Asegura que la barra de separación esté detrás del botón */
-}
-
-/* Resaltar el botón activo */
-.custom-btn.active {
-  background-color: rgba(54, 91, 131, 0.968);  /* Color de fondo del botón activo */
-  color: white; /* Color del texto del botón activo */
-}
-
-
-
-/* Estilos  para    el menu principal  */
-
-
-
-/* Resaltar el contenedor de botones activo */
-.button-container.active {
-  background-color: rgba(247, 249, 250, 0.994); /* Fondo iluminado para el contenedor de botones activo */
- /* Borde del contenedor activo */
- color: white; 
- /* Añadir padding para hacer visible el borde */
-  border-radius: 5px; /* Bordes redondeados para el contenedor */
-}
-
-/* diseño  de    divisores  del menu lateral  */
-
-
-
-.custom-menu {
-  background-color: #fbfcfe; /* Color de fondo del menú */
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-  display: flex; /* Usar flexbox para alinear los botones */
-  height: 70px; /* Altura del menú */
-}
-
-/* Estilos para los botones */
-.custom-menu .custom-btn {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  font-weight: 600; /* Texto más grueso */
-  flex: 1; /* Cada botón ocupa el mismo espacio */
-  padding: 0; /* Sin padding para que ocupen todo el alto */
-  margin: 0; /* Sin margen entre botones */
-  background-color: transparent; /* Fondo transparente por defecto */
-  color: #1d1c1c; /* Color del texto (blanco) */
-  border: none; /* Sin borde */
-  border-radius: 0; /* Sin bordes redondeados para un efecto de franja */
-  text-decoration: none; /* Sin subrayado */
-  transition: all 0.3s ease; /* Transiciones suaves para todos los cambios */
-  font-size: 18px; /* Tamaño de fuente aumentado */
-  cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-  display: flex; /* Usar flexbox dentro del botón para centrar texto */
-  align-items: center; /* Centrar verticalmente el texto */
-  justify-content: center; /* Centrar horizontalmente el texto */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para un efecto 3D */
-  height: 100%; /* Ocupa todo el alto del menú */
-}
-
-/* Efecto hover para los botones específicos */
-.custom-menu .custom-btn:hover {
-  background-color: rgba(10, 44, 85, 0.58); /* Color de fondo en hover */
-  color: #ffffff; /* Color del texto */
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al pasar el mouse */
-  transform: translateY(-2px); /* Levanta el botón un poco */
-}
-
-/* Estilo para el botón activo */
-.custom-menu .custom-btn.active {
-  background-color: rgba(10, 44, 85, 0.92);; /* Color de fondo del botón activo */
-  color: #e7b915; /* Color del texto en dorado claro */
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* Sombra más profunda para el botón activo */
-  transform: translateY(-2px); /* Levanta el botón activo */
-}
-
 /* Estilos para Select2 que imitan .form-control */
 /* Asegura que el contenedor de Select2 tenga la misma altura que .form-control */
 /* Asegura que el contenedor de Select2 tenga la misma altura que .form-control más 5px */
@@ -1128,7 +1009,7 @@ color: white;
 .modal-key-intro {
   font-size: 1.1rem;
   color: #7f8c8d;
- 
+  margin-bottom: 20px;
   font-style: italic;
 }
 
@@ -1153,7 +1034,7 @@ color: white;
   font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
-  padding: 8px;
+  padding: 10px;
   border-bottom: 1px solid #e1e1e1;
   text-transform: uppercase;
 }
@@ -1193,10 +1074,6 @@ color: white;
   background-color: #c86358;
   color: white;
 }
-.modal-key-card-stteccimm{
-  background-color: #1e1756;
-  color: white;
-}
 
 .modal-key-card-body {
   background-image: url('<?php echo base_url(); ?>img/portal_icon.png');
@@ -1206,23 +1083,23 @@ color: white;
   height: 150px; /* Ajusta la altura del contenedor según sea necesario */
   display: flex;
   justify-content: center;
-  
+  align-items: center;
   color: white; /* Asegura que el texto sea visible */
   text-align: center; /* Centra el texto */
-   /* Agrega algo de espacio alrededor del texto */
+  padding: 10px; /* Agrega algo de espacio alrededor del texto */
   position: relative;
 }
 
 /* Si necesitas ajustar la visibilidad del texto (por ejemplo, si el fondo es oscuro) */
 .modal-key-card-text {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: bold;
   z-index: 1; /* Asegura que el texto esté encima del fondo */
   color: white; /* Asegura que el texto sea blanco para mejor contraste */
 } 
 .modal-key-card-body {
   
-  margin-top: 10px;
+  padding: 15px;
   font-size: 1rem;
   text-align: center;
 }
@@ -1232,7 +1109,7 @@ color: white;
   padding: 10px;
   font-size: 0.9rem;
   text-align: center;
-  color: #19191a;
+  color: #7f8c8d;
 }
 
 /* Footer del modal */
@@ -1254,3 +1131,218 @@ color: white;
   background-color: #34495e;
 }
 
+/* diseño panel  libre de  las  sucursales  */
+
+#vacanteMessage {
+
+  font-size: 1.5rem;  /* Aumenta el tamaño de la fuente para hacerlo más visible */
+  font-weight: bold;  /* Texto en negrita */
+  color: #ffffff!important;  /* Color blanco para mayor contraste */
+  background-color: #11a01b;  /* Fondo azul para destacar el mensaje */
+  padding: 15px 20px;  /* Espaciado interno para darle más cuerpo */
+  border-radius: 8px;  /* Bordes redondeados para hacerlo más moderno */
+  text-align: center;  /* Centrar el texto */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombra sutil para destacar */
+  cursor: pointer;  /* Cambio de cursor para indicar que es interactivo */
+  transition: all 0.3s ease;  /* Transición suave para los efectos */
+}
+
+#vacanteMessage:hover {
+  background-color: #0056b3;  /* Cambia el fondo a un azul más oscuro cuando el usuario pase el cursor */
+  transform: scale(1.05);  /* Efecto de aumento al pasar el cursor */
+}
+
+.card-proceso {
+  width: 80%;
+  border: 2px solid #007bff;  /* Borde azul para distinguir cada card */
+  border-radius: 8px;  /* Bordes redondeados */
+  padding: 20px;  /* Espaciado interno */
+  margin-bottom: 20px;  /* Espaciado entre cards */
+  background-color: #f8f9fa;  /* Fondo claro */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
+  transition: all 0.3s ease;  /* Transición suave para los efectos */
+  cursor: pointer;  /* Cambiar el cursor a mano cuando pasa el mouse */
+}
+
+.card-proceso:hover {
+  border-color: #0056b3;  /* Cambiar el borde a azul más oscuro al pasar el mouse */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  /* Aumentar la sombra */
+}
+
+.card-proceso:active {
+  border-color: #004085;  /* Cambiar el borde a un tono más oscuro cuando el card se hace clic */
+  transform: scale(0.98);  /* Efecto de reducción al hacer clic, simulando la acción */
+}
+
+.card-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+/* agregando   estilos para  el cambio de logo   */
+/* Estilos básicos */
+#imagePreview {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+/* Color para el botón de Reclutamiento */
+/* Color para el botón de Reclutamiento */
+.recruitment-btn {
+  background-color: #5aa85c !important; /* Verde */
+  color: white;
+}
+
+/* Color para el botón de Preempleo */
+.pre-employment-btn {
+  background-color: #9fda64 !important; /* Verde claro */
+  color: white;
+}
+
+/* Color para el botón de Empleados */
+.employment-btn {
+  background-color: #2e86c1 !important; /* Azul */
+  color: white;
+}
+
+/* Color para el botón de Exempleados */
+.former-employment-btn {
+  background-color: #58c4f5 !important; /* Azul claro */
+  color: white;
+}
+.bg-neutral {
+  background-color: #f4f7f6; /* Gris claro elegante */
+  color: #333; /* Texto oscuro */
+}
+/* Estilo para los botones */
+.custom-btn {
+  
+  flex-direction: column;
+  background: none; /* Sin color de fondo */
+  border: 2px solid #007bff; /* Color del borde */
+  color: #007bff; /* Color del texto del botón */
+  border-radius: 0; /* Sin bordes redondeados */
+  text-align: center; /* Centra el texto dentro del botón */
+  font-size: 1.5rem; /* Tamaño de fuente más grande */
+  font-weight: 900; /* Fuente en negrita */
+  text-transform: uppercase; /* Texto en mayúsculas */
+  letter-spacing: 1px; /* Espaciado entre letras */
+  flex: 1; /* Hace que los botones ocupen el mismo ancho */
+  min-width: 0; /* Permite que los botones se reduzcan si es necesario */
+  margin: 0; /* Sin margen para los botones */
+  box-sizing: border-box; /* Asegura que el padding y el borde se incluyan en el ancho total */
+  position: relative; /* Necesario para la separación vertical */
+}
+
+/* Resaltar el botón activo */
+.custom-btn.active {
+  background-color: rgba(54, 91, 131, 0.968); /* Color de fondo del botón activo */
+  color: white; /* Color del texto del botón activo */
+}
+
+/* Efecto hover para los botones */
+.custom-btn:hover {
+  background-color: rgba(0, 123, 255, 0.1); /* Fondo ligero en hover */
+  color: #007bff; /* Color del texto en hover */
+}
+
+/* Estilo para los botones cuando son activos */
+.custom-btn.active {
+  background-color: rgba(54, 91, 131, 0.968); /* Fondo activo */
+  color: white;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3); /* Sombra para efecto activo */
+  transform: translateY(-2px); /* Efecto de elevación */
+}
+
+/* Separación vertical entre los botones */
+.custom-btn:not(:last-child)::after {
+  content: "";
+  font-weight: 900;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0px; /* Grosor de la barra de separación */
+  height: 100%;
+  background-color: rgba(16, 16, 16, 0.397); /* Color de la barra de separación */
+  z-index: 0; /* Asegura que la barra de separación esté detrás del botón */
+}
+
+/* Resaltar el botón activo */
+.custom-btn.active {
+  background-color: rgba(54, 91, 131, 0.968); /* Color de fondo del botón activo */
+  color: white; /* Color del texto del botón activo */
+}
+
+/* Estilo para el contenedor de botones */
+.button-container {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+/* Estilos para el contenedor de botones activo */
+.button-container.active {
+  background-color: rgba(247, 249, 250, 0.994); /* Fondo iluminado para el contenedor activo */
+  border-radius: 5px; /* Bordes redondeados para el contenedor */
+}
+
+/* Estilos para el menú lateral */
+.custom-menu {
+  background-color: #f9f9f9; /* Color de fondo del menú */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  display: flex;
+  height: 70px; /* Altura del menú */
+}
+
+/* Estilos para los botones del menú lateral */
+.custom-menu .custom-btn {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-weight: 600; /* Texto más grueso */
+  flex: 1;
+  padding: 0;
+  margin: 0;
+  background-color: transparent; /* Fondo transparente por defecto */
+  color: #1d1c1c; /* Color del texto */
+  border: none;
+  border-radius: 0;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para efecto 3D */
+  height: 100%;
+}
+
+/* Efecto hover para los botones en el menú */
+.custom-menu .custom-btn:hover {
+  background-color: rgba(10, 44, 85, 0.58);
+  color: #ffffff;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Estilo para el botón activo en el menú */
+.custom-menu .custom-btn.active {
+  background: rgba(10, 44, 85, 0.92)!important;
+  color: #e7b915; /* Color del texto en dorado claro */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.module-label {
+  display: block; 
+  font-size: 0.8rem; /* Tamaño de fuente pequeño */
+  color: #fffefe; /* Color gris claro para que sea sutil */
+  text-transform: uppercase; /* Texto en mayúsculas */
+  margin-bottom: 5px; /* Espacio entre la palabra "Módulo" y el ícono */
+  text-align: center; /* Centra la palabra */
+  font-weight: bold; /* Poner la palabra en negrita */
+}

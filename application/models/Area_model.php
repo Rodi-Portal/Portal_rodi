@@ -136,6 +136,13 @@ class Area_model extends CI_Model
         }
     }
 
+    //funcion  para  actualizar  el nombre del  logo 
+    public function subirLogo($idPortal, $data)
+    {
+        $this->db->where('id', $idPortal); // Filtra por el id del portal
+        return $this->db->update('portal', $data);
+    }
+
     // Puedes agregar otros métodos según necesites, como obtener datos de 'link_pago'
     public function getLinkPago($id)
     {

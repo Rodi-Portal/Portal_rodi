@@ -151,6 +151,7 @@ class Login extends CI_Controller
                     "logueado"     => true,
                     "idPortal"     => $usuario->idPortal,
                     "nombrePortal" => $usuario->nombrePortal,
+                    "logo" => $usuario->logo,
 
                 ];
                 $this->session->set_userdata($usuario_data);
