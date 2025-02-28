@@ -1092,7 +1092,7 @@ color: white;
 
 /* Si necesitas ajustar la visibilidad del texto (por ejemplo, si el fondo es oscuro) */
 .modal-key-card-text {
-  font-size: 1.2rem;
+  font-size: 0.8rem !important;
   font-weight: bold;
   z-index: 1; /* Asegura que el texto esté encima del fondo */
   color: white; /* Asegura que el texto sea blanco para mejor contraste */

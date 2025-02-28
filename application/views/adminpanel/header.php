@@ -639,8 +639,32 @@ if ($idRol == 1 || $idRol == 6) {?>
                       </div>
                     </a>
                   </div>
+                  <!-- Valor H -->
+                  <div class="col-md-4 modal-key-col">
+                    <a href="https://stteccimm.mx/" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-valorh">
+                        STTECCIM
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+                    background-image: url('<?php echo base_url(); ?>img/provedores/stteccimm.png');
+                    background-size: 50px; background-position: center;
+                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+                          <p class="modal-key-card-text" style="z-index: 2; font-size: 0.8rem;">🏳TU SINDICATO DE
+                          CONFIANZA🏳</p>
+                        </div>
+                        <div class="modal-key-card-footer">
+                        Una balanza en PRO de las necesidades del empresario y de sus colaboradores.
 
-
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                 
                 </div>
               </div>
               <div class="modal-footer modal-key-footer">
