@@ -324,7 +324,7 @@ body {
     </div>
     <?php if (! isset($link_pago) && empty($link_pago) && $estado_pago != 'pagado'): ?>
     <div class="text-end mt-4">
-      <button class="btn pasarela-btn" id="btnGenerarPago">
+      <button class="btn pasarela-btn" id="btnGenerarPago" disabled>
         Generar Link de Pago
       </button>
     </div>
@@ -471,6 +471,7 @@ function confirmarPago(parametro) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
   // Confirmación para generar enlace de pago
   const btnGenerarPago = document.getElementById('btnGenerarPago');
   if (btnGenerarPago) {
