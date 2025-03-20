@@ -244,7 +244,7 @@ if ($idRol == 1 || $idRol == 6) {?>
         </div>
       </li>
       <?php }
-      if ($portal == 1 && ($idRol == 1)) {?>
+      if ($idRol == 6 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
       <?php }?>
@@ -350,7 +350,8 @@ if ($idRol == 1 || $idRol == 6) {?>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-              <?php if ($idRol == 1 || $idRol == 6) {?>                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
+                <?php if ($idRol == 1 || $idRol == 6) {?>
+                <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Actualizar Logo
                 </a>
@@ -380,7 +381,7 @@ if ($idRol == 1 || $idRol == 6) {?>
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="updateLogoModalLabel">Subir Nuevo Logo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" >
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
@@ -409,7 +410,7 @@ if ($idRol == 1 || $idRol == 6) {?>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" id="saveLogo" class="btn btn-primary" disabled>Guardar Logo</button>
+                <button type="button" id="saveLogo" class="btn btn-primary">Guardar Logo</button>
               </div>
             </div>
           </div>

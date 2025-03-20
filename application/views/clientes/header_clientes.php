@@ -137,8 +137,9 @@ echo '</pre>';*/
       <hr class="sidebar-divider">
       <!-- Divider with Text -->
       <li class="nav-item">
-      <a class="nav-link" id="recruitment-btn" href="javascript:void(0);" onclick="loadSection('seccion-recruitment', '<?php echo site_url('Cliente_General/descripcionesCliente/1'); ?>')">
-            <i class="fas fa-users"></i> Reclutamiento
+        <a class="nav-link" id="recruitment-btn" href="javascript:void(0);"
+          onclick="loadSection('seccion-recruitment', '<?php echo site_url('Cliente_General/descripcionesCliente/1'); ?>')">
+          <i class="fas fa-users"></i> Reclutamiento
         </a>
 
 
@@ -146,24 +147,27 @@ echo '</pre>';*/
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-      <a class="nav-link" id="pre-employment-btn" href="javascript:void(0);" onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')">
-            <i class="fas fa-user-clock"></i> Preempleo
+        <a class="nav-link" id="pre-employment-btn" href="javascript:void(0);"
+          onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')">
+          <i class="fas fa-user-clock"></i> Preempleo
         </a>
 
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-      <a class="nav-link" id="employees-btn" href="javascript:void(0);" onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')">
-            <i class="fas fa-user-check"></i> Empleados
+        <a class="nav-link" id="employees-btn" href="javascript:void(0);"
+          onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')">
+          <i class="fas fa-user-check"></i> Empleados
         </a>
 
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-      <a class="nav-link" id="former-employees-btn" href="javascript:void(0);" onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')">
-            <i class="fas fa-user-times"></i> Exempleadoss
+        <a class="nav-link" id="former-employees-btn" href="javascript:void(0);"
+          onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')">
+          <i class="fas fa-user-times"></i> Exempleadoss
         </a>
 
       </li>
@@ -185,22 +189,26 @@ echo '</pre>';*/
             <!-- Contenedor para los botones -->
             <li class="nav-item custom-menu" style="flex: 1;">
               <div class="button-container">
-                <a id="recruitment-btn" href="javascript:void(0);" onclick="loadSection('seccion-recruitment', '<?php echo site_url('Cliente_General/descripcionesCliente/1'); ?>')" class="btn custom-btn">
+                <a id="recruitment-btn" href="javascript:void(0);"
+                  onclick="loadSection('seccion-recruitment', '<?php echo site_url('Cliente_General/descripcionesCliente/1'); ?>')"
+                  class="btn custom-btn">
                   <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
                   Reclutamiento
                 </a>
-                <a id="pre-employment-btn" href="javascript:void(0);" onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')"
-
-                
+                <a id="pre-employment-btn" href="javascript:void(0);"
+                  onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')"
                   class="btn custom-btn">
                   <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
                   Preempleo
                 </a>
-                <a id="employment-btn" href="javascript:void(0);" onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')" class="btn custom-btn">
+                <a id="employment-btn" href="javascript:void(0);"
+                  onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')"
+                  class="btn custom-btn">
                   <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
                   Empleados
                 </a>
-                <a  id="former-employees-btn" href="javascript:void(0);" onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')"
+                <a id="former-employees-btn" href="javascript:void(0);"
+                  onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')"
                   class="btn custom-btn">
                   <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
                   Exempleados
@@ -215,11 +223,11 @@ echo '</pre>';*/
                 aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <?php if (isset($contadorNotificaciones)) {
-    $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none';?>
+                    $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display: <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                    <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
-}?>
+                }?>
               </a>
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
@@ -232,13 +240,14 @@ echo '</pre>';*/
 
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small"
-                  style="font-size: 12px;"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px;">
+                  <?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?>
+                </span>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
-              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+              <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Cerrar sesión
@@ -391,9 +400,9 @@ echo '</pre>';*/
                     let acciones =
                       '<div class="text-center"><div class="btn-group dropstart"><button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button><ul class="dropdown-menu"><li><a href="javascript:void(0)" data-toggle="tooltip" title="Progress messages" onclick="viewMessages(' +
                       data + ',' + idioma +
-                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i> <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
+                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i>                                                                                                                                                                                                                                                          <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
                       data +
-                      ')" class="dropdown-item"><i class="fas fa-folder"></i> <?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
+                      ')" class="dropdown-item"><i class="fas fa-folder"></i>                                                                                                                                                                                                                                        <?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
                     return acciones
                   }
                 },
@@ -767,39 +776,45 @@ echo '</pre>';*/
 
         // Cargar ambas secciones al principio
         $(document).ready(function() {
+          $('.dropdown-toggle').dropdown();
+          // Ocultar todas las secciones dinámicas al inicio
+          $('.dynamic-section').hide();
+
+          // Cargar la sección 'panel-inicio' y mostrarla después de su carga
+          loadSection('panel-inicio', "<?php echo base_url('Dashboard/client'); ?>", {}, function() {
+            showSection('panel-inicio'); // Mostrar solo esta después de cargar
+          });
+
+          // Cargar la sección 'seccion-bgv' pero sin mostrarla
           loadSection('seccion-bgv', "<?php echo base_url('Cliente_General/indexCliente'); ?>");
-          loadSection('panel-inicio', "<?php echo base_url('Dashboard/client'); ?>");
         });
 
         // Función para cargar contenido en las secciones
-        function loadSection(sectionIdToShow, url, data = {}) {
+        function loadSection(sectionIdToShow, url, data = {}, callback = null) {
           if ($('#' + sectionIdToShow).length) {
-            // Ocultar todas las secciones dinámicas
-            $('.dynamic-section').hide();
-
-            // Comprobar si el contenido ya está cargado en la sección
-            if ($('#' + sectionIdToShow).html() === '') {
-              $.ajax({
-                url: url,
-                method: "GET",
-                data: data,
-                success: function(response) {
-                  console.log('Respuesta recibida: ', response);
-                  // Cargar contenido en la sección específica
-                  $('#' + sectionIdToShow).html(response).show();
-                },
-                error: function(xhr) {
-                  console.error(`Error al cargar la sección: ${xhr.responseText}`);
-                }
-              });
-            } else {
-              // Si ya está cargada, simplemente mostrarla
-              $('#' + sectionIdToShow).show();
-            }
+            $.ajax({
+              url: url,
+              method: "GET",
+              data: data,
+              success: function(response) {
+                $('#' + sectionIdToShow).html(response);
+                if (callback) callback(); // Ejecutar callback si existe
+              },
+              error: function(xhr) {
+                console.error(`Error al cargar la sección: ${xhr.responseText}`);
+              }
+            });
           } else {
             console.error(`El elemento con el id ${sectionIdToShow} no se encontró en el DOM.`);
           }
         }
+
+        // Función para mostrar una sección y ocultar las demás
+        function showSection(sectionIdToShow) {
+          $('.dynamic-section').hide(); // Ocultar todas
+          $('#' + sectionIdToShow).show(); // Mostrar solo la requerida
+        }
+
 
         // Funciones para mostrar u ocultar las secciones según sea necesario
         function showSection(sectionIdToShow) {

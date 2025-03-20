@@ -1,12 +1,10 @@
 
-
-<body>
   <div class="modal fade" id="newModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">New Candidate</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -94,10 +92,10 @@
                 <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
                   <option value="">Select</option>
                   <?php
-    foreach ($paises_estudio as $pe) {?>
+                  foreach ($paises_estudio as $pe) {?>
                   <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
                   <?php
-    }?>
+                  }?>
                 </select>
                 <br>
               </div>
@@ -268,11 +266,11 @@
                   <option value="">Select</option>
                   <option value="0" selected>N/A</option>
                   <?php
-    foreach ($paquetes_antidoping as $paq) {?>
+                  foreach ($paquetes_antidoping as $paq) {?>
                   <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
                   </option>
                   <?php
-      }?>
+                  }?>
                 </select>
                 <br>
               </div>
@@ -289,7 +287,7 @@
           <div id="msj_error" class="alert alert-danger hidden"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-success" onclick="registrar()">Save</button>
         </div>
       </div>
@@ -307,7 +305,7 @@
           <p id="respuesta_mail"></p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -318,7 +316,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title" id="titulo_accion"></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -336,7 +334,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-danger" id="btnGuardar" onclick="ejecutarAccion()">Accept</button>
         </div>
       </div>
@@ -348,45 +346,114 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Candidate Status: <br><span class="nombreCandidato"></span></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-            <span aria-hidden="true">&times;</span>
-          </button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+
         </div>
         <div class="modal-body">
           <div id="div_status"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="docsModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <div id="tablaDocs" class="text-center"></div><br><br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 text-center">
+              <label>Selecciona el documento</label><br>
+              <input type="file" id="documento" class="doc_obligado" name="documento" accept=".jpg, .png, .jpeg, .pdf"><br><br>
+              <br>
+            </div>
+            <div class="col-md-6 text-center">
+              <label>Tipo de archivo *</label>
+              <select name="tipo_archivo" id="tipo_archivo" class="form-control personal_obligado">
+                <option value="">Selecciona</option>
+                <?php
+
+                    foreach ($tipos_docs as $t) {
+                    if ($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45) {?>
+                    <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+                <?php }
+                }?>
+              </select>
+              <br>
+            </div>
+          </div>
+          <div id="msj_error" class="alert alert-danger hidden"></div>
+        </div>
+        <div class="modal-footer">
+          <Form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
+          <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
+          <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
+
+            <!--button type="submit" class="btn btn-primary">Descargar todos los documentos</button -->
+          </form >
+
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="avancesModal" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Progress messages: <br><span class="nombreCandidato"></span></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+  <div class="modal fade" id="avancesModal" tabindex="-1" aria-labelledby="avancesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="avancesModalLabel">Progress messages:</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" id="modalTabs">
+          <li class="nav-item">
+            <a class="nav-link active" id="pestaña1-tab" data-bs-toggle="tab" href="#pestaña1">BGV comments:</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pestaña2-tab" data-bs-toggle="tab" href="#pestaña2">Drug Test comments:</a>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="pestaña1">
+            <p class="" id="comentario_candidato_p1"></p><br>
+            <h4>BGV</h4>
+            <div id="div_avances"></div>
+          </div>
+          <div class="tab-pane fade" id="pestaña2">
+            <p class="" id="comentario_candidato_p2"></p><br>
+            <h4>Drug Test</h4>
+            <div id="div_avances_dop"></div>
+          </div>
         </div>
-        <div class="modal-body">
-          <div id="div_avances"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
+
 
   <div class="modal fade" id="verModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Candidate comments</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -394,7 +461,7 @@
           <p class="" id="comentario_candidato"></p><br>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -405,7 +472,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Candidate documents</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -413,7 +480,7 @@
           <p id="lista_documentos"></p><br>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -424,7 +491,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">OFAC and OIG Verifications</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -455,7 +522,7 @@
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -466,7 +533,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Edit profile</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -513,7 +580,7 @@
           <div id="msj_error" class="alert alert-danger hidden"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-success" onclick="confirmarPassword()">Save</button>
         </div>
       </div>
@@ -525,7 +592,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Confirm password</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -539,7 +606,7 @@
           <div id="msj_error" class="alert alert-danger hidden"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-success" onclick="checkPasswordActual()">Accept</button>
         </div>
       </div>
@@ -577,7 +644,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -598,7 +665,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -609,7 +676,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -631,11 +698,11 @@
               <select name="tipo_archivo" id="tipo_archivo" class="form-control personal_obligado">
                 <option value="">Selecciona</option>
                 <?php
-      foreach ($tipos_docs as $t) {
-          if ($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45) {?>
-                      <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
-                      <?php }
-      }?>
+                    foreach ($tipos_docs as $t) {
+                    if ($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45) {?>
+                <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+                <?php }
+                }?>
               </select>
               <br>
             </div>
@@ -647,13 +714,13 @@
             <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
             <button type="submit" class="btn btn-primary">Descargar todos los documentos</button>
           </form>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
         </div>
       </div>
     </div>
   </div>
-  
+
   <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light" id="menu">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
@@ -710,7 +777,7 @@
     </div>
   </div>
   <!-- jQuery -->
- 
+
 
   <!-- Bootstrap JS Bundle -->
   <!--script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
@@ -774,8 +841,8 @@
   }
   finishSession();
 
-  var id = '<?php echo $this->session->userdata('id')?>';
-  var id_cliente1 = '<?php echo $this->session->userdata('idcliente')?>';
+  var id = '<?php echo $this->session->userdata('id') ?>';
+  var id_cliente1 = '<?php echo $this->session->userdata('idcliente') ?>';
   console.log("🚀 ~ id_cliente1:", id_cliente1)
 
 
@@ -815,8 +882,58 @@
       localStorage.removeItem("success");
     }
     
+      $(document).on('click', '.ver', function() {
+        let id_candidato = $(this).data('id');
+        let status_bgc = $(this).data('status_bgc');
+        let fecha_contestado = $(this).data('fecha_contestado');
+        let nombreCandidato = $(this).data('candidato')
+            $.ajax({
+              url: '<?php echo base_url('Client/verProcesoCandidato'); ?>',
+              type: 'post',
+              data: {
+                'id_candidato': id,
+                'status_bgc': status_bgc,
+                'formulario': fecha_contestado
+              },
+              success: function(res) {
+                $("#div_status").html(res);
+                $("#statusModal").modal("show");
+              }
+            });
+          });
+    // Evento para el botón de avances
+    $(document).on('click', '.msj_avances', function() {
+      let id_candidato = $(this).data('id');
+      let id_cliente = $(this).data('id_cliente');
 
-		
+      $.ajax({
+        url: '<?php echo base_url('Candidato/viewAvances'); ?>',
+        type: 'post',
+        data: {
+          'id_rol': 7,
+          'id_candidato': id_candidato,
+          'id_cliente': id_cliente
+        },
+        success: function(res) {
+          $("#div_avances_dop").html(res);
+        }
+      });
+
+      $.ajax({
+        url: '<?php echo base_url('Candidato/viewAvances'); ?>',
+        type: 'post',
+        data: {
+          'id_rol': 2,
+          'id_candidato': id_candidato,
+          'id_cliente': id_cliente
+        },
+        success: function(res) {
+          $("#div_avances").html(res);
+          $("#avancesModal").modal("show"); // Mover aquí para evitar que se abra antes de cargar datos
+        }
+      });
+    });
+
     $("#subcliente").change(function() {
       var subcliente = $(this).val();
       if (subcliente != "") {
@@ -838,7 +955,7 @@
     $('#antidoping').change(function() {
       var opcion = $(this).val();
       var id_subcliente = $("#subcliente").val();
-     
+
       subcliente = (id_subcliente == '') ? NULL : id_subcliente;
       if (opcion == 1) {
         $("#examen").prop('disabled', false);
@@ -1279,1178 +1396,1186 @@
 
     changeDatatable(urlFiltrada);
   });
-	function changeDatatable(url1) {
-  $.ajax({
-    url: url1,
-    dataType: 'json',
 
-    success: function(data) {
-      // Normalizar los datos devueltos para que cada entrada tenga la misma estructura de objeto
-      var formattedData = data.map(function(item) {
-        // Si el objeto solo contiene algunas propiedades, crear un nuevo objeto con la estructura completa
-        if (!item.id) {
-          item = {
-            id: item.id_candidato_rodi,
-            creacion: item.creacion,
-            edicion: item.edicion,
-            // Agrega otras propiedades necesarias aquí
-          };
-        }
-        return item;
-      });
+  function changeDatatable(url1) {
+    $.ajax({
+      url: url1,
+      dataType: 'json',
+
+      success: function(data) {
+        // Normalizar los datos devueltos para que cada entrada tenga la misma estructura de objeto
+        var formattedData = data.map(function(item) {
+          // Si el objeto solo contiene algunas propiedades, crear un nuevo objeto con la estructura completa
+          if (!item.id) {
+            item = {
+              id: item.id_candidato_rodi,
+              creacion: item.creacion,
+              edicion: item.edicion,
+              // Agrega otras propiedades necesarias aquí
+            };
+          }
+          return item;
+        });
 
 
-      // Inicializar DataTable con los datos formateados
-      $('#tabla').DataTable({
-        "pageLength": 10,
-        "order": [0, "desc"],
-        "stateSave": true,
-        "serverSide": false,
-        "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
-        "data": formattedData, // Usar los datos formateados
-        "columns": [{
-            title: 'Candidato',
-            data: 'candidato',
-            "width": "15%",
-            mRender: function(data, type, full) {
+        // Inicializar DataTable con los datos formateados
+        $('#tabla').DataTable({
+          "pageLength": 10,
+          "order": [0, "desc"],
+          "stateSave": true,
+          "serverSide": false,
+          "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
+          "data": formattedData, // Usar los datos formateados
+          "columns": [{
+              title: 'Candidato',
+              data: 'candidato',
+              "width": "15%",
+              mRender: function(data, type, full) {
 
-              var subcliente = (full.subcliente === null || full.subcliente === "") ? 'Sin Subcliente' :
-                '<span class="badge badge-pill badge-primary">Subcliente: ' + full.subcliente +
-                '</span><br>';
-              var analista = (full.usuario === null || full.usuario === '') ?
-                'Analista: Sin definir' : 'Analista: ' + full.usuario;
-              var reclutador = (full.reclutadorAspirante !== null) ?
-                '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
-                .reclutadorAspirante + '</span>' : '';
-              return '<span class="badge badge-pill badge-dark">#' + full.id +
-                '</span><br><a data-toggle="tooltip" class="sin_vinculo" style="color:black;"><b>' +
-                data;
-              // reclutador;
-            }
-          },
-          {
-            title: 'Fechas',
-            data: 'fecha_alta',
-            bSortable: false,
-            "width": "15%",
-            mRender: function(data, type, full) {
-              let fechaAlta = '';
-              let fechaFinal = '';
-              let fechaFormulario = '';
-              let fechaDocumentos = '';
-              let fechas = '';
-              fechaAlta = convertirFechaHora(data)
-              fechaFormulario = (full.fecha_contestado != null) ? convertirFechaHora(full
-                .fecha_contestado) : '-'
-              fechaDocumentos = (full.fecha_documentos != null) ? convertirFechaHora(full
-                .fecha_documentos) : '-'
-
-              if (full.fecha_final != null) {
-                fechaFinal = convertirFechaHora(full.fecha_final)
+                var subcliente = (full.subcliente === null || full.subcliente === "") ? 'Sin Subcliente' :
+                  '<span class="badge badge-pill badge-primary">Subcliente: ' + full.subcliente +
+                  '</span><br>';
+                var analista = (full.usuario === null || full.usuario === '') ?
+                  'Analista: Sin definir' : 'Analista: ' + full.usuario;
+                var reclutador = (full.reclutadorAspirante !== null) ?
+                  '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
+                  .reclutadorAspirante + '</span>' : '';
+                return '<span class="badge badge-pill badge-dark">#' + full.id +
+                  '</span><br><a data-toggle="tooltip" class="sin_vinculo" style="color:black;"><b>' +
+                  data;
+                // reclutador;
               }
-              if (full.fecha_bgc != null) {
-                fechaFinal = convertirFechaHora(full.fecha_bgc)
-              }
-              if (full.fecha_final == null && full.fecha_bgc == null) {
-                fechaFinal = '-'
-              }
-              return fechas = '<b>Alta:</b> ' + fechaAlta + '<br>' + '<b>Formulario:</b> ' +
-                fechaFormulario + '<br>' + '<b>Documentos:</b> ' + fechaDocumentos + '<br>' +
-                '<b>Final:</b> ' + fechaFinal
-            }
-          },
-          {
-            title: 'SLA',
-            data: 'tiempo_parcial',
-            bSortable: false,
-            "width": "10%",
-            mRender: function(data, type, full) {
-              if (full.cancelado == 0) {
-                if (data != null) {
-                  if (data != -1) {
-                    if (data >= 0 && data <= 2) {
-                      return res = '<div class="formato_dias dias_verde">' + data +
-                        ' días</div>';
-                    }
-                    if (data > 2 && data <= 4) {
-                      return res = '<div class="formato_dias dias_amarillo">' + data +
-                        ' días</div>';
-                    }
-                    if (data >= 5) {
-                      return res = '<div class="formato_dias dias_rojo">' + data +
-                        ' días</div>';
-                    }
-                  } else {
-                    return "Actualizando...";
-                  }
+            },
+            {
+              title: 'Fechas',
+              data: 'fecha_alta',
+              bSortable: false,
+              "width": "15%",
+              mRender: function(data, type, full) {
+                let fechaAlta = '';
+                let fechaFinal = '';
+                let fechaFormulario = '';
+                let fechaDocumentos = '';
+                let fechas = '';
+                fechaAlta = convertirFechaHora(data)
+                fechaFormulario = (full.fecha_contestado != null) ? convertirFechaHora(full
+                  .fecha_contestado) : '-'
+                fechaDocumentos = (full.fecha_documentos != null) ? convertirFechaHora(full
+                  .fecha_documentos) : '-'
+
+                if (full.fecha_final != null) {
+                  fechaFinal = convertirFechaHora(full.fecha_final)
                 }
-              } else {
-                return 'N/A';
+                if (full.fecha_bgc != null) {
+                  fechaFinal = convertirFechaHora(full.fecha_bgc)
+                }
+                if (full.fecha_final == null && full.fecha_bgc == null) {
+                  fechaFinal = '-'
+                }
+                return fechas = '<b>Alta:</b> ' + fechaAlta + '<br>' + '<b>Formulario:</b> ' +
+                  fechaFormulario + '<br>' + '<b>Documentos:</b> ' + fechaDocumentos + '<br>' +
+                  '<b>Final:</b> ' + fechaFinal
               }
-            }
-          },
-          {
-            title: 'Process',
-            data: 'nombre_proyecto',
-            bSortable: false,
-            "width": "15%",
-            render: function(data, type, row) {
-              if (data) {
-                return '<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><button style="width: 120px; height: 50px; margin: 0; font-size: 14px;" class="btn btn-primary btn-info">' +
-                  data + '</button></div>';
-              } else {
-                return '<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><button style="width: 120px; height: 50px; margin: 0; font-size: 14px;" class="btn btn-primary btn-info">Exámenes</button></div>';
-              }
-            }
-          },
-          {
-            title: 'Exámenes',
-            data: null,
-            bSortable: false,
-            "width": "15%",
-            mRender: function(data, type, full) {
-              if (full.cancelado == 0) {
-                var salida = '';
-                //* Doping
-                if (full.tipo_antidoping == 1) {
-                  if (full.doping_hecho == 1) {
-                    if (full.fecha_resultado != null && full.fecha_resultado != "") {
-                      if (full.resultado_doping == 1) {
-                        salida +=
-                          '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
-                          full.idDoping +
-                          '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_reprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
-                          full.idDoping + '" value="' + full.idDoping +
-                          '"></form></div>';
-                      } else {
-                        salida +=
-                          '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
-                          full.idDoping +
-                          '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_aprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
-                          full.idDoping + '" value="' + full.idDoping +
-                          '"></form></div>';
+            },
+            {
+              title: 'SLA',
+              data: 'tiempo_parcial',
+              bSortable: false,
+              "width": "10%",
+              mRender: function(data, type, full) {
+                if (full.cancelado == 0) {
+                  if (data != null) {
+                    if (data != -1) {
+                      if (data >= 0 && data <= 2) {
+                        return res = '<div class="formato_dias dias_verde">' + data +
+                          ' días</div>';
                       }
+                      if (data > 2 && data <= 4) {
+                        return res = '<div class="formato_dias dias_amarillo">' + data +
+                          ' días</div>';
+                      }
+                      if (data >= 5) {
+                        return res = '<div class="formato_dias dias_rojo">' + data +
+                          ' días</div>';
+                      }
+                    } else {
+                      return "Actualizando...";
+                    }
+                  }
+                } else {
+                  return 'N/A';
+                }
+              }
+            },
+            {
+              title: 'Acciones',
+              data: 'id',
+              "width": "10%",
+              bSortable: false,
+              mRender: function(data, type, full) {
+                let documentos = (full.socioeconomico == 1 && full.tipo_formulario != 0) ?
+                  '<a href="javascript:void(0)" data-toggle="tooltip" title="Documents of the candidate" class="subirDocs fa-tooltip icono_datatable"><i class="fas fa-folder"></i></a>' :
+                  '';
 
+                return `<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" class="msj_avances fa-tooltip icono_datatable" data-id="${full.id}" data-id_cliente="${full.id_cliente}"><i class="fas fa-comment-dots"></i></a>
+                <a href="javascript:void(0)" data-toggle="tooltip" title="Status process" class="ver fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a>
+                ${documentos}`;
+              }
+            },
+
+            {
+              title: 'Exámenes',
+              data: null,
+              bSortable: false,
+              "width": "15%",
+              mRender: function(data, type, full) {
+                if (full.cancelado == 0) {
+                  var salida = '';
+                  //* Doping
+                  if (full.tipo_antidoping == 1) {
+                    if (full.doping_hecho == 1) {
+                      if (full.fecha_resultado != null && full.fecha_resultado != "") {
+                        if (full.resultado_doping == 1) {
+                          salida +=
+                            '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
+                            full.idDoping +
+                            '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_reprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
+                            full.idDoping + '" value="' + full.idDoping +
+                            '"></form></div>';
+                        } else {
+                          salida +=
+                            '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
+                            full.idDoping +
+                            '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_aprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
+                            full.idDoping + '" value="' + full.idDoping +
+                            '"></form></div>';
+                        }
+
+                      } else {
+                        salida += "<b>DrugTest: Pendiente</b> ";
+                      }
                     } else {
                       salida += "<b>DrugTest: Pendiente</b> ";
                     }
-                  } else {
-                    salida += "<b>DrugTest: Pendiente</b> ";
+                    if (full.medico == 1 || full.psicometrico == 1) {
+                      salida += '<hr>';
+                    }
                   }
-                  if (full.medico == 1 || full.psicometrico == 1) {
-                    salida += '<hr>';
-                  }
-                }
-                /*if (full.tipo_antidoping == 0) {
-                	salida += "<b>Doping: N/A</b> <hr>";
-                }*/
-                //* Médico
-                if (full.medico == 1) {
+                  /*if (full.tipo_antidoping == 0) {
+                  	salida += "<b>Doping: N/A</b> <hr>";
+                  }*/
+                  //* Médico
+                  if (full.medico == 1) {
 
-                  if (full.idMedico != null) {
-                    if (full.conclusion != null && full.descripcion != null) {
-                      salida +=
-                        '<b>Médico:</b> <div style="display: inline-flex;"><form id="formMedico' +
-                        full.idMedico +
-                        '" action="<?php echo base_url('Medico/crearPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar documento final" id="pdfMedico" class="icono_datatable icono_medico"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idMedico" id="idMedico' +
-                        full.idMedico + '" value="' + full.idMedico +
-                        '"></form></div><hr>';
+                    if (full.idMedico != null) {
+                      if (full.conclusion != null && full.descripcion != null) {
+                        salida +=
+                          '<b>Médico:</b> <div style="display: inline-flex;"><form id="formMedico' +
+                          full.idMedico +
+                          '" action="<?php echo base_url('Medico/crearPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar documento final" id="pdfMedico" class="icono_datatable icono_medico"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idMedico" id="idMedico' +
+                          full.idMedico + '" value="' + full.idMedico +
+                          '"></form></div><hr>';
+                      } else {
+                        salida += "<b>Médico: En proceso</b>";
+                      }
+
                     } else {
-                      salida += "<b>Médico: En proceso</b>";
+                      salida +=
+                        '<b>Médico: Pendiente</b><div style="display: inline-block;margin-left:3px;"> <br>';
                     }
 
-                  } else {
-                    salida +=
-                      '<b>Médico: Pendiente</b><div style="display: inline-block;margin-left:3px;"> <br>';
+
+
+                    /*if (full.archivo_examen_medico != null && full.archivo_examen_medico !=
+                      "") {
+                      var carpeta_clinico = '< ?php echo base_url(); ?>_clinico/';
+                      salida +=
+                        '<b>Médico: </b> <a href="javascript:void(0)" data-toggle="tooltip" title="Subir examen medico" id="examen_medico" class="icono_datatable icono_medico"><i class="fas fa-upload"></i></a> <a href="' +
+                        carpeta_clinico + full.archivo_examen_medico +
+                        '" id="ver_medico" target="_blank" data-toggle="tooltip" title="Ver examen medico" class="icono_datatable icono_medico"><i class="fas fa-file-medical"></i></a>';
+                    } else {
+                      salida +=
+                        '<b>Médico: </b> <a href="javascript:void(0)" data-toggle="tooltip" title="Subir examen medico" id="examen_medico" class="icono_datatable icono_medico"><i class="fas fa-upload"></i></a>';
+                    }
+                    if (full.psicometrico == 1) {
+                      salida += '<hr>';
+                    }*/
+
                   }
-
-
-
-                  /*if (full.archivo_examen_medico != null && full.archivo_examen_medico !=
-                    "") {
-                    var carpeta_clinico = '< ?php echo base_url(); ?>_clinico/';
-                    salida +=
-                      '<b>Médico: </b> <a href="javascript:void(0)" data-toggle="tooltip" title="Subir examen medico" id="examen_medico" class="icono_datatable icono_medico"><i class="fas fa-upload"></i></a> <a href="' +
-                      carpeta_clinico + full.archivo_examen_medico +
-                      '" id="ver_medico" target="_blank" data-toggle="tooltip" title="Ver examen medico" class="icono_datatable icono_medico"><i class="fas fa-file-medical"></i></a>';
-                  } else {
-                    salida +=
-                      '<b>Médico: </b> <a href="javascript:void(0)" data-toggle="tooltip" title="Subir examen medico" id="examen_medico" class="icono_datatable icono_medico"><i class="fas fa-upload"></i></a>';
-                  }
-                  if (full.psicometrico == 1) {
-                    salida += '<hr>';
+                  /*else {
+                  	salida += "<b>Médico: N/A</b> <hr>";
                   }*/
+                  //* Psicometria
+                  if (full.psicometrico == 1) {
 
-                }
-                /*else {
-                	salida += "<b>Médico: N/A</b> <hr>";
-                }*/
-                //* Psicometria
-                if (full.psicometrico == 1) {
-
-                  if (full.archivo != null && full.archivo != "") {
+                    if (full.archivo != null && full.archivo != "") {
 
 
-                    salida +=
-                      '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a> ' +
-                      '<a href="' + psico + full.archivo +
-                      '" target="_blank" data-toggle="tooltip" title="Ver psicometría" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria">' +
-                      '<i class="fas fa-file-powerpoint"></i>' +
-                      '</a>';
-                  } else {
-                    salida +=
-                      '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a>';
+                      salida +=
+                        '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a> ' +
+                        '<a href="' + psico + full.archivo +
+                        '" target="_blank" data-toggle="tooltip" title="Ver psicometría" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria">' +
+                        '<i class="fas fa-file-powerpoint"></i>' +
+                        '</a>';
+                    } else {
+                      salida +=
+                        '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a>';
+                    }
                   }
-                }
 
-                //* Sin examenes
-                if (full.tipo_antidoping == 0 && full.medico == 0 && full.psicometrico == 0) {
+                  //* Sin examenes
+                  if (full.tipo_antidoping == 0 && full.medico == 0 && full.psicometrico == 0) {
+                    salida = "<b>N/A</b> ";
+                  }
+                  /*else {
+                  	salida += "<b>Psicométrico: N/A</b> ";
+                  }*/
+                } else {
                   salida = "<b>N/A</b> ";
                 }
-                /*else {
-                	salida += "<b>Psicométrico: N/A</b> ";
-                }*/
-              } else {
-                salida = "<b>N/A</b> ";
+                return salida;
               }
-              return salida;
-            }
-          },
+            },
 
-          {
-            title: 'Resultado',
-            data: 'id',
-            bSortable: false,
-            "width": "12%",
-            mRender: function(data, type, full) {
+            {
+              title: 'Resultado',
+              data: 'id',
+              bSortable: false,
+              "width": "12%",
+              mRender: function(data, type, full) {
 
 
-              if (full.cancelado == 0) {
-                if (full.socioeconomico == 1) {
-                  let icono_resultado = '';
-                  let previo = '';
-                  if (full.liberado == 0) {
-                    previo =
-                      ' <div style="display: inline-flex;"><form id="reportePrevioForm' +
-                      data +
-                      '" action="<?php echo base_url('Candidato_Conclusion/createPrevioPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="fa-tooltip icono_datatable icono_previo"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idPDF" id="idPDF' +
-                      data + '" value="' + data + '"></form></div>';
-                    return previo;
-                  } else {
+                if (full.cancelado == 0) {
+                  if (full.socioeconomico == 1) {
+                    let icono_resultado = '';
+                    let previo = '';
+                    if (full.liberado == 0) {
+                      previo =
+                        ' <div style="display: inline-flex;"><form id="reportePrevioForm' +
+                        data +
+                        '" action="<?php echo base_url('Candidato_Conclusion/createPrevioPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="fa-tooltip icono_datatable icono_previo"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idPDF" id="idPDF' +
+                        data + '" value="' + data + '"></form></div>';
+                      return previo;
+                    } else {
 
-                    switch (full.status_bgc) {
-                      case 1:
-                        icono_resultado = 'icono_resultado_aprobado';
+                      switch (full.status_bgc) {
+                        case 1:
+                          icono_resultado = 'icono_resultado_aprobado';
 
-                        break;
-                      case 4:
-                        icono_resultado = 'icono_resultado_aprobado';
-                        break;
-                      case 2:
-                        icono_resultado = 'icono_resultado_reprobado';
-                        break;
+                          break;
+                        case 4:
+                          icono_resultado = 'icono_resultado_aprobado';
+                          break;
+                        case 2:
+                          icono_resultado = 'icono_resultado_reprobado';
+                          break;
 
-                      case 3:
-                        icono_resultado = 'icono_resultado_revision';
-                        break;
-                      default:
+                        case 3:
+                          icono_resultado = 'icono_resultado_revision';
+                          break;
+                        default:
 
-                        icono_resultado = 'icono_resultado_espera';
-                        break;
+                          icono_resultado = 'icono_resultado_espera';
+                          break;
 
-                        break;
+                          break;
+                      }
+
+
+                      return '<div style="display: inline-block;">' +
+                        '<form id="reporteForm' + data +
+                        '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST">' +
+                        '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="fa-tooltip icono_datatable ' +
+                        icono_resultado + '">' +
+                        '<i class="fas fa-file-pdf"></i>' +
+                        '</a>' +
+                        '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
+                        '" value="' + data + '">' +
+                        '</form>' +
+                        '</div>' + previo;
+
                     }
 
+                  } else {
+                    return 'Sin ESE';
+                  }
+                } else {
+                  return 'N/A';
+                }
+              }
+            }
+            // Agrega más columnas según la estructura de tus datos
+          ],
+          fnDrawCallback: function(oSettings) {
+            $('a[data-toggle="tooltip"]').tooltip({
+              trigger: "hover"
+            });
+          },
+          rowCallback: function(row, data) {
+            $('a[id^=pdfDoping]', row).bind('click', () => {
+              var id = data.idDoping;
+              $('#pdfForm' + id).submit();
+            });
+            $('a[id^=pdfMedico]', row).bind('click', () => {
+              var id = data.idMedico;
+              $('#formMedico' + id).submit();
+            });
+            $('a[id^=simplePDF]', row).bind('click', () => {
+              var id = data.id;
+              $('#reporteFormSimple' + id).submit();
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'El reporte PDF se esta creando y se descargará en breve',
+                showConfirmButton: false,
+                timer: 2500
+              })
+            });
 
-                    return '<div style="display: inline-block;">' +
-                      '<form id="reporteForm' + data +
-                      '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST">' +
-                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="fa-tooltip icono_datatable ' +
-                      icono_resultado + '">' +
-                      '<i class="fas fa-file-pdf"></i>' +
-                      '</a>' +
-                      '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
-                      '" value="' + data + '">' +
-                      '</form>' +
-                      '</div>' + previo;
+            $("a#psicometria", row).bind('click', () => {
+              $('#subirArchivoModal #titulo_modal').html(
+                'Carga de archivo de psicometría del candidato: <br>' + data.candidato);
+              $('#subirArchivoModal #label_modal').text('Selecciona el archivo de psicometría *');
+              $('#btnSubir').attr("onclick", "subirArchivo('psicometrico'," + data.id + "," + data
+                .idPsicometrico + ")");
+              $('#subirArchivoModal').modal('show');
+            });
 
+            $('a[id^=pdfPrevio]', row).bind('click', () => {
+              var id = data.id;
+              $('#formPrevio' + id).submit();
+            });
+            $("a#final", row).bind('click', () => {
+              $("#idCandidato").val(data.id);
+              $(".nombreCandidato").text(data.candidato);
+              if (data.tipo_conclusion == 8) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', false);
+                $('#check_credito').prop('disabled', true);
+                $('#check_medico').prop('disabled', true);
+                $('#check_domicilio').prop('disabled', true);
+                $('#check_professional_accreditation').prop('disabled', true);
+                $('#check_ref_academica').prop('disabled', true);
+                $('#check_nss').prop('disabled', true);
+                $('#check_ciudadania').prop('disabled', true);
+                $('#check_mvr').prop('disabled', true);
+                $('#check_servicio_militar').prop('disabled', true);
+                $('#check_credencial_academica').prop('disabled', true);
+                $('#check_ref_profesional').prop('disabled', true);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 9) {
+                $('#finalizarInvestigacionesModal').modal('show')
+              }
+              if (data.tipo_conclusion == 11) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', false);
+                $('#check_medico').prop('disabled', true);
+                $('#check_domicilio').prop('disabled', true);
+                $('#check_professional_accreditation').prop('disabled', true);
+                $('#check_ref_academica').prop('disabled', true);
+                $('#check_nss').prop('disabled', true);
+                $('#check_ciudadania').prop('disabled', true);
+                $('#check_mvr').prop('disabled', true);
+                $('#check_servicio_militar').prop('disabled', true);
+                $('#check_credencial_academica').prop('disabled', true);
+                $('#check_ref_profesional').prop('disabled', true);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 12) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', true);
+                $('#check_penales').prop('disabled', false);
+                $('#check_ofac').prop('disabled', false);
+                $('#check_global').prop('disabled', false);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 13) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', true);
+                $('#check_penales').prop('disabled', false);
+                $('#check_ofac').prop('disabled', false);
+                $('#check_global').prop('disabled', false);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 16) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', true);
+                $('#check_identidad').prop('disabled', false);
+                $('#check_penales').prop('disabled', false);
+                $('#check_ofac').prop('disabled', false);
+                $('#check_global').prop('disabled', false);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 18) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', true);
+                $('#check_identidad').prop('disabled', false);
+                $('#check_laboral').prop('disabled', false);
+                $('#check_estudios').prop('disabled', false);
+                $('#check_penales').prop('disabled', false);
+                $('#check_ofac').prop('disabled', false);
+                $('#check_global').prop('disabled', false);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 20) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', true);
+                $('#check_identidad').prop('disabled', false);
+                $('#check_global').prop('disabled', false);
+                $('#check_penales').prop('disabled', false);
+                $('#check_laboral').prop('disabled', false);
+                $('#check_estudios').prop('disabled', false);
+                $('#check_ofac').prop('disabled', false);
+                $('#check_credito').prop('disabled', false);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 22) {
+                $('.es_check').val(3);
+                $('.es_check').prop('disabled', false);
+                //$('#comentario_final').val('')
+                //$('#comentario_final').prop('disabled',true);
+                $('#finalizarModal').modal('show')
+              }
+              if (data.tipo_conclusion == 1 || data.tipo_conclusion == 2 || data
+                .tipo_conclusion == 3 || data.tipo_conclusion == 4 || data.tipo_conclusion ==
+                5 || data.tipo_conclusion == 6 || data.tipo_conclusion == 7 || data
+                .tipo_conclusion == 10 || data.tipo_conclusion == 14 || data.tipo_conclusion ==
+                15 || data.tipo_conclusion == 17 || data.tipo_conclusion == 19 || data
+                .tipo_conclusion == 21) {
+                $('.loader').css("display", "block");
+                //* Datos generales
+                var adeudo = (data.adeudo_muebles == 1) ? "con adeudo" : "sin adeudo";
+                var estatus_final_conclusion = '';
+                switch (data.status_bgc) {
+                  case '1':
+                    estatus_final_conclusion = 'Recomendable';
+                    break;
+                  case '2':
+                    estatus_final_conclusion = 'No recomendable';
+                    break;
+                  case '3':
+                    estatus_final_conclusion = 'A consideración del cliente';
+                    break;
+                  default:
+                    estatus_final_conclusion = 'Estatus final';
+                    break;
+                }
+                //* Origen
+                if (data.pais == 'México' || data.pais == 'Mexico' || data.pais == null) {
+                  var originario = data.lugar_nacimiento;
+                } else {
+                  var originario = data.lugar_nacimiento + ', ' + data.pais;
+                }
+                //* Antecedentes sociales
+                var data_social = $.ajax({
+                  url: '<?php echo base_url('Candidato_Social/getById'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                if (data_social != 0) {
+                  var social = JSON.parse(data_social);
+                  var bebidas = (social.bebidas == 1) ? "ingerir" : "no ingerir";
+                  var fuma = (social.fumar == 1) ? "Fuma " + social.fumar_frecuencia + "." :
+                    "No fuma.";
+                  if (social.religion != "" && social.religion != "Ninguna" && social
+                    .religion != "NINGUNA" && social.religion != "No" && social.religion !=
+                    "NO" && social.religion != "NA" && social.religion != "N/A" && social
+                    .religion != "No aplica" && social.religion != "NO APLICA" && social
+                    .religion != "No Aplica") {
+                    var religion = "profesa la religion " + social.religion + ".";
+                  } else {
+                    var religion = "no profesa alguna religión.";
+                  }
+                  if (social.cirugia != "" && social.cirugia != "Ninguna" && social.cirugia !=
+                    "NINGUNA" && social.cirugia != "No" && social.cirugia != "NO" && social
+                    .cirugia != "NA" && social.cirugia != "N/A" && social.cirugia !=
+                    "No aplica" && social.cirugia != "NO APLICA" && social.cirugia !=
+                    "No Aplica" && social.cirugia != "0") {
+                    var cirugia = "Cuenta con cirugia(s) de " + social.cirugia + ".";
+                  } else {
+                    var cirugia = "No cuenta con cirugias.";
+                  }
+                  if (social.enfermedades != "" && social.enfermedades != "Ninguna" && social
+                    .enfermedades != "NINGUNA" && social.enfermedades != "No" && social
+                    .enfermedades != "NO" && social.enfermedades != "NA" && social
+                    .enfermedades != "N/A" && social.enfermedades != "No aplica" && social
+                    .enfermedades != "NO APLICA" && social.enfermedades != "No Aplica" &&
+                    social.enfermedades != "0") {
+                    var enfermedades =
+                      "Tiene alguna(s) enfermedad(es) con antecedente familiar como " +
+                      social.enfermedades + ".";
+                  } else {
+                    var enfermedades =
+                      "No tiene antecedentes de enfermedadades en su familia.";
                   }
 
                 } else {
-                  return 'Sin ESE';
+                  var social = '';
+                  var bebidas = '';
+                  var fuma = '';
+                  var religion = '';
+                  var cirugia = '';
+                  var enfermedades = '';
                 }
-              } else {
-                return 'N/A';
+                //*Comentarios ref laborales
+                var comentarios_laborales = $.ajax({
+                  url: '<?php echo base_url('Candidato_Laboral/getComentarios'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id_candidato': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Historial de puestos laborales
+                var historial_puestos = $.ajax({
+                  url: '<?php echo base_url('Candidato_Laboral/getHistorialPuestos'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Comentarios ref personales
+                var refs_comentarios = $.ajax({
+                  url: '<?php echo base_url('Candidato_Ref_Personal/getComentarios'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Comentarios ref vecinales
+                var vecinales = $.ajax({
+                  url: '<?php echo base_url('Candidato_Ref_Vecinal/getComentarios'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id_candidato': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Numero de antecedentes laborales reportados
+                var trabajos = $.ajax({
+                  url: '<?php echo base_url('Candidato_Laboral/countAntecedentesLaborales'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id_candidato': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Información de vivienda
+                var data_vivienda = $.ajax({
+                  url: '<?php echo base_url('Candidato_Vivienda/getById'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                if (data_vivienda != 0) {
+                  var vivienda = JSON.parse(data_vivienda);
+                  switch (vivienda.calidad_mobiliario) {
+                    case '1':
+                      var calidad = "Buena";
+                      break;
+                    case '2':
+                      var calidad = "Regular";
+                      break;
+                    case '3':
+                      var calidad = "Mala";
+                      break;
+                  }
+                  switch (vivienda.tamanio_vivienda) {
+                    case '1':
+                      var tamano = "Amplia";
+                      break;
+                    case '2':
+                      var tamano = "Suficiente";
+                      break;
+                    case '3':
+                      var tamano = "Reducidad";
+                      break;
+                  }
+                  switch (vivienda.tipo_propiedad) {
+                    case 'Propia':
+                    case 'Pagando hipoteca':
+                    case 'INFONAVIT':
+                      var propiedad = "suya o de sus padres";
+                      break;
+                    case 'Rentada':
+                      var propiedad = "rentada ";
+                      break;
+                    case 'Prestada':
+                      var propiedad = "prestada ";
+                      break;
+                  }
+                  var distribucion_hogar = '';
+                  if (vivienda.sala == 'Sí')
+                    distribucion_hogar += 'sala, ';
+                  if (vivienda.comedor == 'Sí')
+                    distribucion_hogar += 'comedor, ';
+                  if (vivienda.cocina == 'Sí')
+                    distribucion_hogar += 'cocina, ';
+                  if (vivienda.patio == 'Sí')
+                    distribucion_hogar += 'patio, ';
+                  if (vivienda.cochera == 'Sí')
+                    distribucion_hogar += 'cochera, ';
+                  if (vivienda.cuarto_servicio == 'Sí')
+                    distribucion_hogar += 'cuarto de servicio, ';
+                  if (vivienda.jardin == 'Sí')
+                    distribucion_hogar += 'jardín, ';
+                  distribucion_hogar += vivienda.banios + ' baño(s), ';
+                  distribucion_hogar += vivienda.recamaras + ' recámaras';
+                } else {
+                  var vivienda = '';
+                  var distribucion_hogar = '';
+                }
+                //* Personas en misma vivienda
+                var personas_mismo_domicilio = $.ajax({
+                  url: '<?php echo base_url('Candidato_Familiar/getIntegrantesDomicilio'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Estudios de acuerdo a historial
+                var maximo_estudio = $.ajax({
+                  url: '<?php echo base_url('Candidato_Estudio/getMaximoEstudio'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Información de salud
+                var data_salud = $.ajax({
+                  url: '<?php echo base_url('Candidato_Salud/getById'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                if (data_salud != 0) {
+                  var salud = JSON.parse(data_salud);
+                  if (salud.enfermedad_cronica == 'No aplica' || salud.enfermedad_cronica ==
+                    'NA' || salud.enfermedad_cronica == 'N/A' || salud.enfermedad_cronica ==
+                    'No padece' || salud.enfermedad_cronica == 'No tiene') {
+                    var enfermedad_cronica = 'no padece enfermedades crónicas,';
+                  } else {
+                    var enfermedad_cronica = 'padece de ' + salud.enfermedad_cronica + ',';
+                  }
+                  if (salud.accidentes == 'No aplica' || salud.accidentes == 'NA' || salud
+                    .accidentes == 'N/A' || salud.accidentes == 'No ha tenido') {
+                    var accidente = 'no ha sufrido accidentes graves,';
+                  } else {
+                    var accidente = 'ha sufrido de ' + salud.accidentes + ',';
+                  }
+                  if (salud.alergias == 'No aplica' || salud.alergias == 'NA' || salud
+                    .alergias == 'N/A' || salud.alergias == 'No ha tenido' || salud
+                    .alergias == 'No tiene') {
+                    var alergias = 'no reporta alergias.';
+                  } else {
+                    var alergias = 'reporta alergias de ' + salud.alergias + '.';
+                  }
+                  if (salud.tabaco == 'SI') {
+                    var salud_tabaco = 'Refiere consumir tabaco con una frecuencia de ' +
+                      salud.tabaco_frecuencia.toLowerCase();
+                  } else {
+                    var salud_tabaco = 'Niega la ingesta de tabaco';
+                  }
+                  if (salud.droga == 'SI') {
+                    var salud_droga = ' , hace uso de droga con una frecuencia de ' + salud
+                      .droga_frecuencia.toLowerCase();
+                  } else {
+                    var salud_droga = ' , no hace uso de droga';
+                  }
+                  if (salud.alcohol == 'SI') {
+                    var salud_alcohol = ' y refiere consumir alcohol de manera ' + salud
+                      .alcohol_frecuencia.toLowerCase();
+                  } else {
+                    var salud_alcohol = ' y no consume alcohol';
+                  }
+                  if (salud.practica_deporte == 1) {
+                    var practica_deporte = 'Como actividad física menciona practicar ' +
+                      salud.practica_deporte + ' ' + salud.deporte_frecuencia;
+                  } else {
+                    var practica_deporte = 'Menciona que no practica algún deporte';
+                  }
+                } else {
+                  var salud = '';
+                }
+                //* Información economica
+                var data_economia = $.ajax({
+                  url: '<?php echo base_url('Candidato_Finanzas/getById'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                if (data_economia != 0) {
+                  var economia = JSON.parse(data_economia);
+                } else {
+                  var economia = '';
+                }
+                //*Información referencias y contactos laborales
+                var incidencias_laborales = $.ajax({
+                  url: '<?php echo base_url('Candidato_Laboral/getHistorialIncidencias'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                //* Extra laboral
+                var data_extra_laboral = $.ajax({
+                  url: '<?php echo base_url('Candidato_Laboral/getExtrasById'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                var extra_laboral = JSON.parse(data_extra_laboral);
+                //* Informacion de servicios publicos
+                var data_servicios = $.ajax({
+                  url: '<?php echo base_url('Candidato_Servicio/getById'); ?>',
+                  type: 'post',
+                  async: false,
+                  data: {
+                    'id': data.id
+                  },
+                  success: function(res) {}
+                }).responseText;
+                var servicios = JSON.parse(data_servicios);
+                setTimeout(function() {
+                  $('.loader').fadeOut();
+                }, 200);
+                //*Tipos de conclusion
+                if (data.tipo_conclusion == 0) {
+                  finalizarProcesoSinEstatus();
+                }
+                if (data.tipo_conclusion == 21) {
+                  $("#personal3").prop('disabled', true);
+                  $("#personal3").val("");
+                  $("#personal4").prop('disabled', true);
+                  $("#personal4").val("");
+                  $("#socio1").prop('disabled', true);
+                  $("#socio1").val("");
+                  $("#laboral1").prop('disabled', true);
+                  $("#laboral1").val("");
+                  $("#visita1").prop('disabled', true);
+                  $("#visita1").val("");
+                  $("#visita2").prop('disabled', true);
+                  $("#visita2").val("");
+                  $('#comentario_bgc').prop('disabled', true)
+                  $('#comentario_bgc').val("");
+                  let sumaGastos = (parseInt(economia.renta) + parseInt(economia.alimentos) +
+                    parseInt(economia.servicios) + parseInt(economia.transporte) +
+                    parseInt(economia.otros));
+
+                  $("#personal1").val("C. " + data.candidato + ", de " + data.edad +
+                    " años de edad, es " + data.estado_civil + ", reside en " + data
+                    .municipio + ", " + data.estado + ".");
+                  $("#personal2").val("Menciona " + bebidas + " bebidas alcohólicas y " +
+                    fuma + "." + cirugia + ".");
+                  //$("#personal3").val("Sus referencias personales lo describen como " + refs_comentarios + ".");
+                  //$("#socio1").val("Actualmente vive en un/una " + vivienda.vivienda + ", en una zona " + vivienda.zona + "; el mobiliario en su interior se observa de "+calidad+", la vivienda es "+tamano+", en condiciones "+vivienda.condiciones+". "+servicios.basicos+"; "+servicios.vias_acceso+" y "+servicios.rutas_transporte+".");
+                  $("#socio2").val("Los ingresos mensuales son de $" + economia.sueldo +
+                    "; sus gastos mensualmente son de $" + sumaGastos +
+                    ". Con respecto a si posee bienes el candidato menciona que " +
+                    economia.bienes +
+                    "; y con respecto a sus deudas comenta que tiene" + economia.deudas);
+                  $("#laboral2").val(comentarios_laborales);
+                  //$("#visita2").val("De acuerdo a su(s) referencia(s) vecinal(es), describen que es " + vecinales);
+                  //$("#visita1").val("Durante la visita, el(la) candidato(a) fue: ");
+                  $('#conclusion_investigacion').val(
+                    'En la investigación realizada se encontró que el(la) candidato(a) es una persona ________.Le consideramos ' +
+                    estatus_final_conclusion + ".")
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 14) {
+                  $("#personal4").prop('disabled', true);
+                  $("#personal4").val("");
+                  $("#laboral1").prop('disabled', true);
+                  $("#laboral1").val("");
+                  $('#comentario_bgc').prop('disabled', true)
+                  $('#comentario_bgc').val("");
+
+                  $("#personal1").val("C. " + data.candidato + ", de " + data.edad +
+                    " años de edad, es " + data.estado_civil + ", reside en " + data
+                    .municipio + ", " + data.estado + " " + religion +
+                    ". Cuenta con estudios en " + data.grado);
+                  $("#personal2").val("Menciona " + bebidas + " bebidas alcohólicas y " +
+                    fuma + "." + cirugia + ". Su plan a corto plazo es " + social
+                    .corto_plazo + "; y su meta a mediano plazo es " + social
+                    .mediano_plazo + ".");
+                  $("#personal3").val("Sus referencias personales lo describen como " +
+                    refs_comentarios + ".");
+                  $("#socio1").val("Actualmente vive en un/una " + vivienda.vivienda +
+                    ", en una zona " + vivienda.zona +
+                    "; el mobiliario en su interior se observa de " + calidad +
+                    ", la vivienda es " + tamano + ", en condiciones " + vivienda
+                    .condiciones + ". " + servicios.basicos + "; " + servicios
+                    .vias_acceso + " y " + servicios.rutas_transporte + ".");
+                  $("#socio2").val("El(La) candidato(a) vive " + personas_mismo_domicilio +
+                    ". Los ingresos mensuales ______; gastan mensualmente $" + economia
+                    .otros + ". La vivienda cuenta con " + distribucion_hogar + ".");
+                  $("#laboral2").val(comentarios_laborales);
+                  $("#visita2").val(
+                    "De acuerdo a su(s) referencia(s) vecinal(es), describen que es " +
+                    vecinales);
+                  $("#visita1").val("Durante la visita, el(la) candidato(a) fue: " + data
+                    .comentarioVisitador);
+                  $('#conclusion_investigacion').val(
+                    'En la investigación realizada se encontró que el(la) candidato(a) es una persona ________.Le consideramos ' +
+                    estatus_final_conclusion + ".")
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 1) {
+                  $('#conclusion_investigacion').prop('disabled', true)
+                  $('#conclusion_investigacion').val('')
+                  $("#personal1").val(data.candidato + ", de " + data.edad +
+                    " años, reside en " + data.municipio + ", " + data.estado +
+                    ". Es " + data.estado_civil + " y " + religion);
+                  $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas. " + fuma +
+                    " " + cirugia + " " + enfermedades +
+                    " Sus referencias personales lo describen como " +
+                    refs_comentarios + ".");
+                  $("#personal3").val("Su plan a corto plazo es " + social.corto_plazo +
+                    "; y su meta a mediano plazo es " + social.mediano_plazo);
+                  $("#personal4").val("Su grado máximo de estudios es " + data.grado);
+                  $("#socio1").val("Actualmente vive en un/una " + vivienda.vivienda +
+                    ", con un tiempo de residencia de " + vivienda.tiempo_residencia +
+                    ". El nivel de la zona es " + vivienda.zona +
+                    ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
+                    tamano + " y en condiciones " + vivienda.condiciones +
+                    ". La distribución de su " + vivienda.vivienda + " es " + vivienda
+                    .distribucion);
+                  $("#socio2").val(data.candidato + " declara en sus ingresos " + data
+                    .ingresos +
+                    ". Los gastos generados en el hogar son solventados por _____. Cuenta con " +
+                    data.muebles + " " + adeudo + ".");
+                  $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
+                  $("#laboral2").val(comentarios_laborales);
+                  $("#visita1").val("El candidato durante la visita: " + data
+                    .comentarioVisitador);
+                  $("#visita2").val(
+                    "De acuerdo a la referencia vecinal, el candidato es considerado: " +
+                    vecinales);
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 2) {
+                  $('#conclusion_investigacion').prop('disabled', true)
+                  $('#conclusion_investigacion').val('')
+                  if (data.visitador == 1) {
+                    $("#personal1").val("Se aplicó estudio socioeconómico a " + data
+                      .candidato + ", de " + data.edad + " años, originario de " +
+                      originario + " con CURP:" + data.curp + " y NSS:" + data.nss +
+                      "; estado civil " + data.estado_civil.toLowerCase() +
+                      ", vive " + personas_mismo_domicilio + "en el domicilio " + data
+                      .calle + " #" + data.exterior + " " + data.interior +
+                      ", colonia " + data.colonia + ", desde hace " + data
+                      .tiempo_dom_actual + ", en una propiedad " + propiedad +
+                      " que se encuentra ubicada en una zona " + vivienda.tipo_zona
+                      .toLowerCase() + " de clase " + vivienda.zona.toLowerCase() +
+                      ".");
+                  } else {
+                    $("#personal1").val("No se pudo aplicar el estudio socioeconómico.");
+                  }
+                  $("#personal2").val("En cuanto a su salud " + enfermedad_cronica + " " +
+                    accidente + " su tipo de sangre es " + salud.tipo_sangre + " y " +
+                    alergias + " " + salud_tabaco + salud_droga + salud_alcohol + ". " +
+                    practica_deporte + ".");
+                  $("#personal4").val("Sus estudios máximos son de " + maximo_estudio +
+                    " su experiencia laboral es como " + historial_puestos + ".");
+                  $("#socio1").val(
+                    "Referente a su economía, menciona solventar sus gastos con " +
+                    economia.observacion + ".");
+                  $("#socio2").val("Sus referencias personales lo describen como " +
+                    refs_comentarios + ".");
+                  $("#laboral2").val("En cuanto a sus empleos, estuvo en " +
+                    incidencias_laborales);
+                  $("#personal3").prop('disabled', true);
+                  $("#personal3").val("");
+                  $("#laboral1").prop('disabled', true);
+                  $("#laboral1").val("");
+                  $("#visita1").prop('disabled', true);
+                  $("#visita1").val("");
+                  $("#visita2").prop('disabled', true);
+                  $("#visita2").val("");
+                  $("#comentario_bgc").prop('disabled', true);
+                  $("#comentario_bgc").val("");
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 3) {
+                  $('.es_conclusion').prop('disabled', true)
+                  $('.es_conclusion').val('')
+                  $("#comentario_bgc").prop('disabled', false);
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 4) {
+                  $('.es_conclusion').prop('disabled', true)
+                  $("#personal1").prop('disabled', false)
+                  $("#laboral1").prop('disabled', false)
+                  $("#laboral2").prop('disabled', false)
+                  $('.es_conclusion').val('')
+                  $("#personal1").val(data.candidato + ", de " + data.edad +
+                    " años, es originario de " + originario +
+                    ". Tiene como máximo grado de estudios: " + data.grado +
+                    ". Refiere ser " + social.religion + ". Su plan a corto plazo: " +
+                    social.corto_plazo + ". Su plan a mediano plazo: " + social
+                    .mediano_plazo);
+                  $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
+                  $("#laboral2").val(" es quien nos valida referencia laboral..");
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 5) {
+                  $('.es_conclusion').prop('disabled', false)
+                  $('.es_conclusion').val('')
+                  $("#socio1").prop('disabled', true);
+                  $("#visita2").prop('disabled', true);
+                  $("#conclusion_investigacion").prop('disabled', false)
+                  $("#personal1").val(data.candidato + ", de " + data.edad +
+                    " años, de nacionalidad " + data.nacionalidad + ", que reside en " +
+                    data.municipio + ", " + data.estado + ". Es " + data.estado_civil);
+                  $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas. " + fuma +
+                    " " + cirugia + " " + enfermedades +
+                    " Sus referencias personales lo describen como " +
+                    refs_comentarios + ".");
+                  $("#personal3").val("Su plan a corto plazo: " + social.corto_plazo +
+                    ". Su plan a mediano plazo: " + social.mediano_plazo);
+                  $("#personal4").val("Su grado máximo de estudios es " + data.grado);
+
+                  $("#socio2").val(data.candidato + " declara en sus ingresos $" + data
+                    .ingresos +
+                    ". Los gastos generados en el hogar son solventados por _____. Cuenta con " +
+                    data.muebles + " " + adeudo + ".");
+                  $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
+                  $("#laboral2").val(comentarios_laborales);
+                  $("#visita1").val("El candidato durante la visita: ");
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 6) {
+                  $('.es_conclusion').prop('disabled', false)
+                  $('.es_conclusion').val('')
+                  $("#socio1").prop('disabled', true)
+                  $("#socio2").prop('disabled', true)
+                  $("#visita1").prop('disabled', true)
+                  $("#visita2").prop('disabled', true)
+                  $('#conclusion_investigacion').prop('disabled', true)
+                  $("#personal1").val(data.candidato + ", de " + data.edad +
+                    " años, de nacionalidad " + data.nacionalidad + ". Es " + data
+                    .estado_civil);
+                  $("#personal2").val(
+                    "Refiere _ bebidas alcohólicas. Sus referencias personales lo describen como _."
+                  );
+                  $("#personal3").val(
+                    "Su plan a corto plazo es _; y su meta a mediano plazo es _");
+                  $("#personal4").val("Su grado máximo de estudios es " + data.grado);
+                  $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
+                  $("#laboral2").val(comentarios_laborales);
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 7) {
+                  $('.es_conclusion').prop('disabled', true)
+                  $('.es_conclusion').val('')
+                  $('#personal1').prop('disabled', false)
+                  $('#personal2').prop('disabled', false)
+                  $("#laboral1").prop('disabled', false)
+                  $("#laboral2").prop('disabled', false)
+                  $("#socio1").prop('disabled', false)
+                  $("#socio2").prop('disabled', false)
+                  $("#personal1").val(data.candidato + ", de " + data.edad +
+                    " años, es originario de " + originario +
+                    ". Tiene como máximo grado de estudios: " + data.grado +
+                    ". Refiere ser " + social.religion + ". Su plan a corto plazo: " +
+                    social.corto_plazo + ". Su plan a mediano plazo: " + social
+                    .mediano_plazo);
+                  $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas " + social
+                    .bebidas_frecuencia + ". " + fuma +
+                    " Sus referencias personales lo describen como " +
+                    refs_comentarios + ".");
+                  $("#laboral1").val("Señaló " + trabajos + " referencias laborales.");
+                  $("#laboral2").val(" es quien nos valida referencia laboral.");
+                  $("#socio1").val(data.candidato + ", actualmente vive en un/una " + vivienda
+                    .vivienda + ", con un tiempo de residencia de " + vivienda
+                    .tiempo_residencia + ". El nivel de la zona es " + vivienda.zona +
+                    ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
+                    tamano + " y en condiciones " + vivienda.condiciones);
+                  $("#socio2").val(
+                    "Los gastos generados en el hogar son solventados por _____. Sus referencias vecinales describen que es " +
+                    vecinales + ". El candidato cuenta con " + data.muebles + " " +
+                    adeudo);
+                  $("#revisionModal").modal('show');
+                }
+                if (data.tipo_conclusion == 19) {
+                  $('.es_conclusion').prop('disabled', true)
+                  $('.es_conclusion').val('')
+                  $('#personal1').prop('disabled', false)
+                  $('#personal2').prop('disabled', false)
+                  $("#laboral1").prop('disabled', false)
+                  $("#laboral2").prop('disabled', false)
+                  $("#socio1").prop('disabled', false)
+                  $("#personal1").val(data.candidato + ", de " + data.edad +
+                    " años, es originario de " + originario +
+                    ". Tiene como máximo grado de estudios: " + data.grado +
+                    ". Refiere ser " + social.religion + ". Su plan a corto plazo: " +
+                    social.corto_plazo + ". Su plan a mediano plazo: " + social
+                    .mediano_plazo);
+                  $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas " + social
+                    .bebidas_frecuencia + ". " + fuma +
+                    " Sus referencias personales lo describen como " +
+                    refs_comentarios + ".");
+                  $("#laboral1").val("Señaló " + trabajos + " referencias laborales.");
+                  $("#laboral2").val(" es quien nos valida referencia laboral.");
+                  $("#socio1").val(data.candidato + ", actualmente vive en un/una " + vivienda
+                    .vivienda + ", con un tiempo de residencia de " + vivienda
+                    .tiempo_residencia + ". El nivel de la zona es " + vivienda.zona +
+                    ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
+                    tamano + " y en condiciones " + vivienda.condiciones +
+                    ". El candidato cuenta con " + data.muebles + " " + adeudo);
+                  $("#revisionModal").modal('show');
+                }
+                if (data.tipo_conclusion == 10) {
+                  $('.es_conclusion').prop('disabled', true)
+                  $('.es_conclusion').val('')
+                  $('#personal1').prop('disabled', false)
+                  $('#personal2').prop('disabled', false)
+                  $("#laboral2").prop('disabled', false)
+                  $("#socio1").prop('disabled', false)
+                  $("#socio2").prop('disabled', false)
+                  $("#personal1").val(data.candidato + ", de " + data.edad +
+                    " años, es originario de " + originario +
+                    ". Tiene como máximo grado de estudios: " + data.grado + ". Es " +
+                    data.estado_civil + " y " + religion);
+                  $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas " + social
+                    .bebidas_frecuencia + ". " + fuma + ". Refiere ser " + social
+                    .religion + ". Su plan a corto plazo: " + social.corto_plazo +
+                    ". Su plan a mediano plazo: " + social.mediano_plazo);
+                  $("#laboral2").val("Indica que tiene trabajando para " + data.cliente +
+                    " por " + extra_laboral.actual_activo);
+                  $("#socio1").val(data.candidato + ", actualmente vive en un/una " + vivienda
+                    .vivienda + ", con un tiempo de residencia de " + vivienda
+                    .tiempo_residencia + ". El nivel de la zona es " + vivienda.zona +
+                    ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
+                    tamano + " y en condiciones " + vivienda.condiciones);
+                  $("#socio2").val(
+                    "Los gastos generados en el hogar son solventados por _____. Sus referencias vecinales describen que es " +
+                    vecinales + ". El candidato cuenta con " + data.muebles + " " +
+                    adeudo);
+                  $("#revisionModal").modal('show');
+                }
+                if (data.tipo_conclusion == 15) {
+                  $("#personal3").prop('disabled', true);
+                  $("#personal3").val("");
+                  $("#personal4").prop('disabled', true);
+                  $("#personal4").val("");
+                  $("#laboral1").prop('disabled', true);
+                  $("#laboral1").val("");
+                  $("#visita1").prop('disabled', true);
+                  $("#visita1").val("");
+                  $("#visita2").prop('disabled', true);
+                  $("#visita2").val("");
+                  $("#socio1").prop('disabled', true);
+                  $("#socio1").val("");
+                  $("#socio2").prop('disabled', true);
+                  $("#socio2").val("");
+                  $('#comentario_bgc').prop('disabled', true)
+                  $('#comentario_bgc').val("");
+
+                  $("#personal1").val("C. " + data.candidato + ", de " + data.edad +
+                    " años de edad, es " + data.estado_civil + ", reside en " + data
+                    .municipio + ", " + data.estado + " " + religion +
+                    ". Cuenta con estudios en " + data.grado);
+                  $("#personal2").val("Menciona " + bebidas + " bebidas alcohólicas y " +
+                    fuma + "." + cirugia + ". Su plan a corto plazo es " + social
+                    .corto_plazo + "; y su meta a mediano plazo es " + social
+                    .mediano_plazo + ".");
+                  $("#laboral2").val(comentarios_laborales);
+                  $('#conclusion_investigacion').val(
+                    'En la investigación realizada se encontró que el(la) candidato(a) es una persona ________.Le consideramos ' +
+                    estatus_final_conclusion + ".")
+                  $("#completarModal").modal('show');
+                }
+                if (data.tipo_conclusion == 17) {
+                  $('.es_conclusion').prop('disabled', true)
+                  $('.es_conclusion').val('')
+                  // $('#conclusion_investigacion').prop('disabled', false)
+                  $("#comentario_bgc").prop('disabled', false);
+                  $("#completarModal").modal('show');
+                }
               }
-            }
+            });
+         
+            
+           
+            $(document).on('click', '.subirDocs', function() {
+              cargarDocumentosPanelCliente(data.id, (data.nombre + ' ' + data.paterno), data.paterno);
+            });
+
+
+            $('a[id^=reportePDF]', row).bind('click', () => {
+              var id = data.id;
+              $('#reporteForm' + id).submit();
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'El reporte PDF se esta creando y se descargará en breve',
+                showConfirmButton: false,
+                timer: 2500
+              })
+            });
+            $('a[id^=reportePrevioPDF]', row).bind('click', () => {
+              var id = data.id;
+              $('#reportePrevioForm' + id).submit();
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'El reporte previo PDF se descargará en breve',
+                showConfirmButton: false,
+                timer: 2500
+              })
+            });
+            $('a[id^=completoPDF]', row).bind('click', () => {
+              var id = data.id;
+              $('#reporteFormCompleto' + id).submit();
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: 'El reporte PDF se esta creando y se descargará en breve',
+                showConfirmButton: false,
+                timer: 2500
+              })
+            });
+
           }
-          // Agrega más columnas según la estructura de tus datos
-        ],
-        fnDrawCallback: function(oSettings) {
-          $('a[data-toggle="tooltip"]').tooltip({
-            trigger: "hover"
-          });
-        },
-        rowCallback: function(row, data) {
-          $('a[id^=pdfDoping]', row).bind('click', () => {
-            var id = data.idDoping;
-            $('#pdfForm' + id).submit();
-          });
-          $('a[id^=pdfMedico]', row).bind('click', () => {
-            var id = data.idMedico;
-            $('#formMedico' + id).submit();
-          });
-          $('a[id^=simplePDF]', row).bind('click', () => {
-            var id = data.id;
-            $('#reporteFormSimple' + id).submit();
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: 'El reporte PDF se esta creando y se descargará en breve',
-              showConfirmButton: false,
-              timer: 2500
-            })
-          });
-
-          $("a#psicometria", row).bind('click', () => {
-            $('#subirArchivoModal #titulo_modal').html(
-              'Carga de archivo de psicometría del candidato: <br>' + data.candidato);
-            $('#subirArchivoModal #label_modal').text('Selecciona el archivo de psicometría *');
-            $('#btnSubir').attr("onclick", "subirArchivo('psicometrico'," + data.id + "," + data
-              .idPsicometrico + ")");
-            $('#subirArchivoModal').modal('show');
-          });
-          $("a#msj_avances", row).bind('click', () => {
-            $("#idCandidato").val(data.id);
-            verMensajesAvances(data.id, data.candidato)
-          });
-          $('a[id^=pdfPrevio]', row).bind('click', () => {
-            var id = data.id;
-            $('#formPrevio' + id).submit();
-          });
-          $("a#final", row).bind('click', () => {
-            $("#idCandidato").val(data.id);
-            $(".nombreCandidato").text(data.candidato);
-            if (data.tipo_conclusion == 8) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', false);
-              $('#check_credito').prop('disabled', true);
-              $('#check_medico').prop('disabled', true);
-              $('#check_domicilio').prop('disabled', true);
-              $('#check_professional_accreditation').prop('disabled', true);
-              $('#check_ref_academica').prop('disabled', true);
-              $('#check_nss').prop('disabled', true);
-              $('#check_ciudadania').prop('disabled', true);
-              $('#check_mvr').prop('disabled', true);
-              $('#check_servicio_militar').prop('disabled', true);
-              $('#check_credencial_academica').prop('disabled', true);
-              $('#check_ref_profesional').prop('disabled', true);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 9) {
-              $('#finalizarInvestigacionesModal').modal('show')
-            }
-            if (data.tipo_conclusion == 11) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', false);
-              $('#check_medico').prop('disabled', true);
-              $('#check_domicilio').prop('disabled', true);
-              $('#check_professional_accreditation').prop('disabled', true);
-              $('#check_ref_academica').prop('disabled', true);
-              $('#check_nss').prop('disabled', true);
-              $('#check_ciudadania').prop('disabled', true);
-              $('#check_mvr').prop('disabled', true);
-              $('#check_servicio_militar').prop('disabled', true);
-              $('#check_credencial_academica').prop('disabled', true);
-              $('#check_ref_profesional').prop('disabled', true);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 12) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', true);
-              $('#check_penales').prop('disabled', false);
-              $('#check_ofac').prop('disabled', false);
-              $('#check_global').prop('disabled', false);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 13) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', true);
-              $('#check_penales').prop('disabled', false);
-              $('#check_ofac').prop('disabled', false);
-              $('#check_global').prop('disabled', false);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 16) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', true);
-              $('#check_identidad').prop('disabled', false);
-              $('#check_penales').prop('disabled', false);
-              $('#check_ofac').prop('disabled', false);
-              $('#check_global').prop('disabled', false);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 18) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', true);
-              $('#check_identidad').prop('disabled', false);
-              $('#check_laboral').prop('disabled', false);
-              $('#check_estudios').prop('disabled', false);
-              $('#check_penales').prop('disabled', false);
-              $('#check_ofac').prop('disabled', false);
-              $('#check_global').prop('disabled', false);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 20) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', true);
-              $('#check_identidad').prop('disabled', false);
-              $('#check_global').prop('disabled', false);
-              $('#check_penales').prop('disabled', false);
-              $('#check_laboral').prop('disabled', false);
-              $('#check_estudios').prop('disabled', false);
-              $('#check_ofac').prop('disabled', false);
-              $('#check_credito').prop('disabled', false);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 22) {
-              $('.es_check').val(3);
-              $('.es_check').prop('disabled', false);
-              //$('#comentario_final').val('')
-              //$('#comentario_final').prop('disabled',true);
-              $('#finalizarModal').modal('show')
-            }
-            if (data.tipo_conclusion == 1 || data.tipo_conclusion == 2 || data
-              .tipo_conclusion == 3 || data.tipo_conclusion == 4 || data.tipo_conclusion ==
-              5 || data.tipo_conclusion == 6 || data.tipo_conclusion == 7 || data
-              .tipo_conclusion == 10 || data.tipo_conclusion == 14 || data.tipo_conclusion ==
-              15 || data.tipo_conclusion == 17 || data.tipo_conclusion == 19 || data
-              .tipo_conclusion == 21) {
-              $('.loader').css("display", "block");
-              //* Datos generales
-              var adeudo = (data.adeudo_muebles == 1) ? "con adeudo" : "sin adeudo";
-              var estatus_final_conclusion = '';
-              switch (data.status_bgc) {
-                case '1':
-                  estatus_final_conclusion = 'Recomendable';
-                  break;
-                case '2':
-                  estatus_final_conclusion = 'No recomendable';
-                  break;
-                case '3':
-                  estatus_final_conclusion = 'A consideración del cliente';
-                  break;
-                default:
-                  estatus_final_conclusion = 'Estatus final';
-                  break;
-              }
-              //* Origen
-              if (data.pais == 'México' || data.pais == 'Mexico' || data.pais == null) {
-                var originario = data.lugar_nacimiento;
-              } else {
-                var originario = data.lugar_nacimiento + ', ' + data.pais;
-              }
-              //* Antecedentes sociales
-              var data_social = $.ajax({
-                url: '<?php echo base_url('Candidato_Social/getById'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              if (data_social != 0) {
-                var social = JSON.parse(data_social);
-                var bebidas = (social.bebidas == 1) ? "ingerir" : "no ingerir";
-                var fuma = (social.fumar == 1) ? "Fuma " + social.fumar_frecuencia + "." :
-                  "No fuma.";
-                if (social.religion != "" && social.religion != "Ninguna" && social
-                  .religion != "NINGUNA" && social.religion != "No" && social.religion !=
-                  "NO" && social.religion != "NA" && social.religion != "N/A" && social
-                  .religion != "No aplica" && social.religion != "NO APLICA" && social
-                  .religion != "No Aplica") {
-                  var religion = "profesa la religion " + social.religion + ".";
-                } else {
-                  var religion = "no profesa alguna religión.";
-                }
-                if (social.cirugia != "" && social.cirugia != "Ninguna" && social.cirugia !=
-                  "NINGUNA" && social.cirugia != "No" && social.cirugia != "NO" && social
-                  .cirugia != "NA" && social.cirugia != "N/A" && social.cirugia !=
-                  "No aplica" && social.cirugia != "NO APLICA" && social.cirugia !=
-                  "No Aplica" && social.cirugia != "0") {
-                  var cirugia = "Cuenta con cirugia(s) de " + social.cirugia + ".";
-                } else {
-                  var cirugia = "No cuenta con cirugias.";
-                }
-                if (social.enfermedades != "" && social.enfermedades != "Ninguna" && social
-                  .enfermedades != "NINGUNA" && social.enfermedades != "No" && social
-                  .enfermedades != "NO" && social.enfermedades != "NA" && social
-                  .enfermedades != "N/A" && social.enfermedades != "No aplica" && social
-                  .enfermedades != "NO APLICA" && social.enfermedades != "No Aplica" &&
-                  social.enfermedades != "0") {
-                  var enfermedades =
-                    "Tiene alguna(s) enfermedad(es) con antecedente familiar como " +
-                    social.enfermedades + ".";
-                } else {
-                  var enfermedades =
-                    "No tiene antecedentes de enfermedadades en su familia.";
-                }
-
-              } else {
-                var social = '';
-                var bebidas = '';
-                var fuma = '';
-                var religion = '';
-                var cirugia = '';
-                var enfermedades = '';
-              }
-              //*Comentarios ref laborales
-              var comentarios_laborales = $.ajax({
-                url: '<?php echo base_url('Candidato_Laboral/getComentarios'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id_candidato': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Historial de puestos laborales
-              var historial_puestos = $.ajax({
-                url: '<?php echo base_url('Candidato_Laboral/getHistorialPuestos'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Comentarios ref personales
-              var refs_comentarios = $.ajax({
-                url: '<?php echo base_url('Candidato_Ref_Personal/getComentarios'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Comentarios ref vecinales
-              var vecinales = $.ajax({
-                url: '<?php echo base_url('Candidato_Ref_Vecinal/getComentarios'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id_candidato': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Numero de antecedentes laborales reportados
-              var trabajos = $.ajax({
-                url: '<?php echo base_url('Candidato_Laboral/countAntecedentesLaborales'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id_candidato': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Información de vivienda
-              var data_vivienda = $.ajax({
-                url: '<?php echo base_url('Candidato_Vivienda/getById'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              if (data_vivienda != 0) {
-                var vivienda = JSON.parse(data_vivienda);
-                switch (vivienda.calidad_mobiliario) {
-                  case '1':
-                    var calidad = "Buena";
-                    break;
-                  case '2':
-                    var calidad = "Regular";
-                    break;
-                  case '3':
-                    var calidad = "Mala";
-                    break;
-                }
-                switch (vivienda.tamanio_vivienda) {
-                  case '1':
-                    var tamano = "Amplia";
-                    break;
-                  case '2':
-                    var tamano = "Suficiente";
-                    break;
-                  case '3':
-                    var tamano = "Reducidad";
-                    break;
-                }
-                switch (vivienda.tipo_propiedad) {
-                  case 'Propia':
-                  case 'Pagando hipoteca':
-                  case 'INFONAVIT':
-                    var propiedad = "suya o de sus padres";
-                    break;
-                  case 'Rentada':
-                    var propiedad = "rentada ";
-                    break;
-                  case 'Prestada':
-                    var propiedad = "prestada ";
-                    break;
-                }
-                var distribucion_hogar = '';
-                if (vivienda.sala == 'Sí')
-                  distribucion_hogar += 'sala, ';
-                if (vivienda.comedor == 'Sí')
-                  distribucion_hogar += 'comedor, ';
-                if (vivienda.cocina == 'Sí')
-                  distribucion_hogar += 'cocina, ';
-                if (vivienda.patio == 'Sí')
-                  distribucion_hogar += 'patio, ';
-                if (vivienda.cochera == 'Sí')
-                  distribucion_hogar += 'cochera, ';
-                if (vivienda.cuarto_servicio == 'Sí')
-                  distribucion_hogar += 'cuarto de servicio, ';
-                if (vivienda.jardin == 'Sí')
-                  distribucion_hogar += 'jardín, ';
-                distribucion_hogar += vivienda.banios + ' baño(s), ';
-                distribucion_hogar += vivienda.recamaras + ' recámaras';
-              } else {
-                var vivienda = '';
-                var distribucion_hogar = '';
-              }
-              //* Personas en misma vivienda
-              var personas_mismo_domicilio = $.ajax({
-                url: '<?php echo base_url('Candidato_Familiar/getIntegrantesDomicilio'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Estudios de acuerdo a historial
-              var maximo_estudio = $.ajax({
-                url: '<?php echo base_url('Candidato_Estudio/getMaximoEstudio'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Información de salud
-              var data_salud = $.ajax({
-                url: '<?php echo base_url('Candidato_Salud/getById'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              if (data_salud != 0) {
-                var salud = JSON.parse(data_salud);
-                if (salud.enfermedad_cronica == 'No aplica' || salud.enfermedad_cronica ==
-                  'NA' || salud.enfermedad_cronica == 'N/A' || salud.enfermedad_cronica ==
-                  'No padece' || salud.enfermedad_cronica == 'No tiene') {
-                  var enfermedad_cronica = 'no padece enfermedades crónicas,';
-                } else {
-                  var enfermedad_cronica = 'padece de ' + salud.enfermedad_cronica + ',';
-                }
-                if (salud.accidentes == 'No aplica' || salud.accidentes == 'NA' || salud
-                  .accidentes == 'N/A' || salud.accidentes == 'No ha tenido') {
-                  var accidente = 'no ha sufrido accidentes graves,';
-                } else {
-                  var accidente = 'ha sufrido de ' + salud.accidentes + ',';
-                }
-                if (salud.alergias == 'No aplica' || salud.alergias == 'NA' || salud
-                  .alergias == 'N/A' || salud.alergias == 'No ha tenido' || salud
-                  .alergias == 'No tiene') {
-                  var alergias = 'no reporta alergias.';
-                } else {
-                  var alergias = 'reporta alergias de ' + salud.alergias + '.';
-                }
-                if (salud.tabaco == 'SI') {
-                  var salud_tabaco = 'Refiere consumir tabaco con una frecuencia de ' +
-                    salud.tabaco_frecuencia.toLowerCase();
-                } else {
-                  var salud_tabaco = 'Niega la ingesta de tabaco';
-                }
-                if (salud.droga == 'SI') {
-                  var salud_droga = ' , hace uso de droga con una frecuencia de ' + salud
-                    .droga_frecuencia.toLowerCase();
-                } else {
-                  var salud_droga = ' , no hace uso de droga';
-                }
-                if (salud.alcohol == 'SI') {
-                  var salud_alcohol = ' y refiere consumir alcohol de manera ' + salud
-                    .alcohol_frecuencia.toLowerCase();
-                } else {
-                  var salud_alcohol = ' y no consume alcohol';
-                }
-                if (salud.practica_deporte == 1) {
-                  var practica_deporte = 'Como actividad física menciona practicar ' +
-                    salud.practica_deporte + ' ' + salud.deporte_frecuencia;
-                } else {
-                  var practica_deporte = 'Menciona que no practica algún deporte';
-                }
-              } else {
-                var salud = '';
-              }
-              //* Información economica
-              var data_economia = $.ajax({
-                url: '<?php echo base_url('Candidato_Finanzas/getById'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              if (data_economia != 0) {
-                var economia = JSON.parse(data_economia);
-              } else {
-                var economia = '';
-              }
-              //*Información referencias y contactos laborales
-              var incidencias_laborales = $.ajax({
-                url: '<?php echo base_url('Candidato_Laboral/getHistorialIncidencias'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              //* Extra laboral
-              var data_extra_laboral = $.ajax({
-                url: '<?php echo base_url('Candidato_Laboral/getExtrasById'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              var extra_laboral = JSON.parse(data_extra_laboral);
-              //* Informacion de servicios publicos
-              var data_servicios = $.ajax({
-                url: '<?php echo base_url('Candidato_Servicio/getById'); ?>',
-                type: 'post',
-                async: false,
-                data: {
-                  'id': data.id
-                },
-                success: function(res) {}
-              }).responseText;
-              var servicios = JSON.parse(data_servicios);
-              setTimeout(function() {
-                $('.loader').fadeOut();
-              }, 200);
-              //*Tipos de conclusion
-              if (data.tipo_conclusion == 0) {
-                finalizarProcesoSinEstatus();
-              }
-              if (data.tipo_conclusion == 21) {
-                $("#personal3").prop('disabled', true);
-                $("#personal3").val("");
-                $("#personal4").prop('disabled', true);
-                $("#personal4").val("");
-                $("#socio1").prop('disabled', true);
-                $("#socio1").val("");
-                $("#laboral1").prop('disabled', true);
-                $("#laboral1").val("");
-                $("#visita1").prop('disabled', true);
-                $("#visita1").val("");
-                $("#visita2").prop('disabled', true);
-                $("#visita2").val("");
-                $('#comentario_bgc').prop('disabled', true)
-                $('#comentario_bgc').val("");
-                let sumaGastos = (parseInt(economia.renta) + parseInt(economia.alimentos) +
-                  parseInt(economia.servicios) + parseInt(economia.transporte) +
-                  parseInt(economia.otros));
-
-                $("#personal1").val("C. " + data.candidato + ", de " + data.edad +
-                  " años de edad, es " + data.estado_civil + ", reside en " + data
-                  .municipio + ", " + data.estado + ".");
-                $("#personal2").val("Menciona " + bebidas + " bebidas alcohólicas y " +
-                  fuma + "." + cirugia + ".");
-                //$("#personal3").val("Sus referencias personales lo describen como " + refs_comentarios + ".");
-                //$("#socio1").val("Actualmente vive en un/una " + vivienda.vivienda + ", en una zona " + vivienda.zona + "; el mobiliario en su interior se observa de "+calidad+", la vivienda es "+tamano+", en condiciones "+vivienda.condiciones+". "+servicios.basicos+"; "+servicios.vias_acceso+" y "+servicios.rutas_transporte+".");
-                $("#socio2").val("Los ingresos mensuales son de $" + economia.sueldo +
-                  "; sus gastos mensualmente son de $" + sumaGastos +
-                  ". Con respecto a si posee bienes el candidato menciona que " +
-                  economia.bienes +
-                  "; y con respecto a sus deudas comenta que tiene" + economia.deudas);
-                $("#laboral2").val(comentarios_laborales);
-                //$("#visita2").val("De acuerdo a su(s) referencia(s) vecinal(es), describen que es " + vecinales);
-                //$("#visita1").val("Durante la visita, el(la) candidato(a) fue: ");
-                $('#conclusion_investigacion').val(
-                  'En la investigación realizada se encontró que el(la) candidato(a) es una persona ________.Le consideramos ' +
-                  estatus_final_conclusion + ".")
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 14) {
-                $("#personal4").prop('disabled', true);
-                $("#personal4").val("");
-                $("#laboral1").prop('disabled', true);
-                $("#laboral1").val("");
-                $('#comentario_bgc').prop('disabled', true)
-                $('#comentario_bgc').val("");
-
-                $("#personal1").val("C. " + data.candidato + ", de " + data.edad +
-                  " años de edad, es " + data.estado_civil + ", reside en " + data
-                  .municipio + ", " + data.estado + " " + religion +
-                  ". Cuenta con estudios en " + data.grado);
-                $("#personal2").val("Menciona " + bebidas + " bebidas alcohólicas y " +
-                  fuma + "." + cirugia + ". Su plan a corto plazo es " + social
-                  .corto_plazo + "; y su meta a mediano plazo es " + social
-                  .mediano_plazo + ".");
-                $("#personal3").val("Sus referencias personales lo describen como " +
-                  refs_comentarios + ".");
-                $("#socio1").val("Actualmente vive en un/una " + vivienda.vivienda +
-                  ", en una zona " + vivienda.zona +
-                  "; el mobiliario en su interior se observa de " + calidad +
-                  ", la vivienda es " + tamano + ", en condiciones " + vivienda
-                  .condiciones + ". " + servicios.basicos + "; " + servicios
-                  .vias_acceso + " y " + servicios.rutas_transporte + ".");
-                $("#socio2").val("El(La) candidato(a) vive " + personas_mismo_domicilio +
-                  ". Los ingresos mensuales ______; gastan mensualmente $" + economia
-                  .otros + ". La vivienda cuenta con " + distribucion_hogar + ".");
-                $("#laboral2").val(comentarios_laborales);
-                $("#visita2").val(
-                  "De acuerdo a su(s) referencia(s) vecinal(es), describen que es " +
-                  vecinales);
-                $("#visita1").val("Durante la visita, el(la) candidato(a) fue: " + data
-                  .comentarioVisitador);
-                $('#conclusion_investigacion').val(
-                  'En la investigación realizada se encontró que el(la) candidato(a) es una persona ________.Le consideramos ' +
-                  estatus_final_conclusion + ".")
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 1) {
-                $('#conclusion_investigacion').prop('disabled', true)
-                $('#conclusion_investigacion').val('')
-                $("#personal1").val(data.candidato + ", de " + data.edad +
-                  " años, reside en " + data.municipio + ", " + data.estado +
-                  ". Es " + data.estado_civil + " y " + religion);
-                $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas. " + fuma +
-                  " " + cirugia + " " + enfermedades +
-                  " Sus referencias personales lo describen como " +
-                  refs_comentarios + ".");
-                $("#personal3").val("Su plan a corto plazo es " + social.corto_plazo +
-                  "; y su meta a mediano plazo es " + social.mediano_plazo);
-                $("#personal4").val("Su grado máximo de estudios es " + data.grado);
-                $("#socio1").val("Actualmente vive en un/una " + vivienda.vivienda +
-                  ", con un tiempo de residencia de " + vivienda.tiempo_residencia +
-                  ". El nivel de la zona es " + vivienda.zona +
-                  ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
-                  tamano + " y en condiciones " + vivienda.condiciones +
-                  ". La distribución de su " + vivienda.vivienda + " es " + vivienda
-                  .distribucion);
-                $("#socio2").val(data.candidato + " declara en sus ingresos " + data
-                  .ingresos +
-                  ". Los gastos generados en el hogar son solventados por _____. Cuenta con " +
-                  data.muebles + " " + adeudo + ".");
-                $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
-                $("#laboral2").val(comentarios_laborales);
-                $("#visita1").val("El candidato durante la visita: " + data
-                  .comentarioVisitador);
-                $("#visita2").val(
-                  "De acuerdo a la referencia vecinal, el candidato es considerado: " +
-                  vecinales);
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 2) {
-                $('#conclusion_investigacion').prop('disabled', true)
-                $('#conclusion_investigacion').val('')
-                if (data.visitador == 1) {
-                  $("#personal1").val("Se aplicó estudio socioeconómico a " + data
-                    .candidato + ", de " + data.edad + " años, originario de " +
-                    originario + " con CURP:" + data.curp + " y NSS:" + data.nss +
-                    "; estado civil " + data.estado_civil.toLowerCase() +
-                    ", vive " + personas_mismo_domicilio + "en el domicilio " + data
-                    .calle + " #" + data.exterior + " " + data.interior +
-                    ", colonia " + data.colonia + ", desde hace " + data
-                    .tiempo_dom_actual + ", en una propiedad " + propiedad +
-                    " que se encuentra ubicada en una zona " + vivienda.tipo_zona
-                    .toLowerCase() + " de clase " + vivienda.zona.toLowerCase() +
-                    ".");
-                } else {
-                  $("#personal1").val("No se pudo aplicar el estudio socioeconómico.");
-                }
-                $("#personal2").val("En cuanto a su salud " + enfermedad_cronica + " " +
-                  accidente + " su tipo de sangre es " + salud.tipo_sangre + " y " +
-                  alergias + " " + salud_tabaco + salud_droga + salud_alcohol + ". " +
-                  practica_deporte + ".");
-                $("#personal4").val("Sus estudios máximos son de " + maximo_estudio +
-                  " su experiencia laboral es como " + historial_puestos + ".");
-                $("#socio1").val(
-                  "Referente a su economía, menciona solventar sus gastos con " +
-                  economia.observacion + ".");
-                $("#socio2").val("Sus referencias personales lo describen como " +
-                  refs_comentarios + ".");
-                $("#laboral2").val("En cuanto a sus empleos, estuvo en " +
-                  incidencias_laborales);
-                $("#personal3").prop('disabled', true);
-                $("#personal3").val("");
-                $("#laboral1").prop('disabled', true);
-                $("#laboral1").val("");
-                $("#visita1").prop('disabled', true);
-                $("#visita1").val("");
-                $("#visita2").prop('disabled', true);
-                $("#visita2").val("");
-                $("#comentario_bgc").prop('disabled', true);
-                $("#comentario_bgc").val("");
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 3) {
-                $('.es_conclusion').prop('disabled', true)
-                $('.es_conclusion').val('')
-                $("#comentario_bgc").prop('disabled', false);
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 4) {
-                $('.es_conclusion').prop('disabled', true)
-                $("#personal1").prop('disabled', false)
-                $("#laboral1").prop('disabled', false)
-                $("#laboral2").prop('disabled', false)
-                $('.es_conclusion').val('')
-                $("#personal1").val(data.candidato + ", de " + data.edad +
-                  " años, es originario de " + originario +
-                  ". Tiene como máximo grado de estudios: " + data.grado +
-                  ". Refiere ser " + social.religion + ". Su plan a corto plazo: " +
-                  social.corto_plazo + ". Su plan a mediano plazo: " + social
-                  .mediano_plazo);
-                $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
-                $("#laboral2").val(" es quien nos valida referencia laboral..");
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 5) {
-                $('.es_conclusion').prop('disabled', false)
-                $('.es_conclusion').val('')
-                $("#socio1").prop('disabled', true);
-                $("#visita2").prop('disabled', true);
-                $("#conclusion_investigacion").prop('disabled', false)
-                $("#personal1").val(data.candidato + ", de " + data.edad +
-                  " años, de nacionalidad " + data.nacionalidad + ", que reside en " +
-                  data.municipio + ", " + data.estado + ". Es " + data.estado_civil);
-                $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas. " + fuma +
-                  " " + cirugia + " " + enfermedades +
-                  " Sus referencias personales lo describen como " +
-                  refs_comentarios + ".");
-                $("#personal3").val("Su plan a corto plazo: " + social.corto_plazo +
-                  ". Su plan a mediano plazo: " + social.mediano_plazo);
-                $("#personal4").val("Su grado máximo de estudios es " + data.grado);
-
-                $("#socio2").val(data.candidato + " declara en sus ingresos $" + data
-                  .ingresos +
-                  ". Los gastos generados en el hogar son solventados por _____. Cuenta con " +
-                  data.muebles + " " + adeudo + ".");
-                $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
-                $("#laboral2").val(comentarios_laborales);
-                $("#visita1").val("El candidato durante la visita: ");
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 6) {
-                $('.es_conclusion').prop('disabled', false)
-                $('.es_conclusion').val('')
-                $("#socio1").prop('disabled', true)
-                $("#socio2").prop('disabled', true)
-                $("#visita1").prop('disabled', true)
-                $("#visita2").prop('disabled', true)
-                $('#conclusion_investigacion').prop('disabled', true)
-                $("#personal1").val(data.candidato + ", de " + data.edad +
-                  " años, de nacionalidad " + data.nacionalidad + ". Es " + data
-                  .estado_civil);
-                $("#personal2").val(
-                  "Refiere _ bebidas alcohólicas. Sus referencias personales lo describen como _."
-                );
-                $("#personal3").val(
-                  "Su plan a corto plazo es _; y su meta a mediano plazo es _");
-                $("#personal4").val("Su grado máximo de estudios es " + data.grado);
-                $("#laboral1").val("Señaló " + trabajos + " referencias laborales");
-                $("#laboral2").val(comentarios_laborales);
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 7) {
-                $('.es_conclusion').prop('disabled', true)
-                $('.es_conclusion').val('')
-                $('#personal1').prop('disabled', false)
-                $('#personal2').prop('disabled', false)
-                $("#laboral1").prop('disabled', false)
-                $("#laboral2").prop('disabled', false)
-                $("#socio1").prop('disabled', false)
-                $("#socio2").prop('disabled', false)
-                $("#personal1").val(data.candidato + ", de " + data.edad +
-                  " años, es originario de " + originario +
-                  ". Tiene como máximo grado de estudios: " + data.grado +
-                  ". Refiere ser " + social.religion + ". Su plan a corto plazo: " +
-                  social.corto_plazo + ". Su plan a mediano plazo: " + social
-                  .mediano_plazo);
-                $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas " + social
-                  .bebidas_frecuencia + ". " + fuma +
-                  " Sus referencias personales lo describen como " +
-                  refs_comentarios + ".");
-                $("#laboral1").val("Señaló " + trabajos + " referencias laborales.");
-                $("#laboral2").val(" es quien nos valida referencia laboral.");
-                $("#socio1").val(data.candidato + ", actualmente vive en un/una " + vivienda
-                  .vivienda + ", con un tiempo de residencia de " + vivienda
-                  .tiempo_residencia + ". El nivel de la zona es " + vivienda.zona +
-                  ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
-                  tamano + " y en condiciones " + vivienda.condiciones);
-                $("#socio2").val(
-                  "Los gastos generados en el hogar son solventados por _____. Sus referencias vecinales describen que es " +
-                  vecinales + ". El candidato cuenta con " + data.muebles + " " +
-                  adeudo);
-                $("#revisionModal").modal('show');
-              }
-              if (data.tipo_conclusion == 19) {
-                $('.es_conclusion').prop('disabled', true)
-                $('.es_conclusion').val('')
-                $('#personal1').prop('disabled', false)
-                $('#personal2').prop('disabled', false)
-                $("#laboral1").prop('disabled', false)
-                $("#laboral2").prop('disabled', false)
-                $("#socio1").prop('disabled', false)
-                $("#personal1").val(data.candidato + ", de " + data.edad +
-                  " años, es originario de " + originario +
-                  ". Tiene como máximo grado de estudios: " + data.grado +
-                  ". Refiere ser " + social.religion + ". Su plan a corto plazo: " +
-                  social.corto_plazo + ". Su plan a mediano plazo: " + social
-                  .mediano_plazo);
-                $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas " + social
-                  .bebidas_frecuencia + ". " + fuma +
-                  " Sus referencias personales lo describen como " +
-                  refs_comentarios + ".");
-                $("#laboral1").val("Señaló " + trabajos + " referencias laborales.");
-                $("#laboral2").val(" es quien nos valida referencia laboral.");
-                $("#socio1").val(data.candidato + ", actualmente vive en un/una " + vivienda
-                  .vivienda + ", con un tiempo de residencia de " + vivienda
-                  .tiempo_residencia + ". El nivel de la zona es " + vivienda.zona +
-                  ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
-                  tamano + " y en condiciones " + vivienda.condiciones +
-                  ". El candidato cuenta con " + data.muebles + " " + adeudo);
-                $("#revisionModal").modal('show');
-              }
-              if (data.tipo_conclusion == 10) {
-                $('.es_conclusion').prop('disabled', true)
-                $('.es_conclusion').val('')
-                $('#personal1').prop('disabled', false)
-                $('#personal2').prop('disabled', false)
-                $("#laboral2").prop('disabled', false)
-                $("#socio1").prop('disabled', false)
-                $("#socio2").prop('disabled', false)
-                $("#personal1").val(data.candidato + ", de " + data.edad +
-                  " años, es originario de " + originario +
-                  ". Tiene como máximo grado de estudios: " + data.grado + ". Es " +
-                  data.estado_civil + " y " + religion);
-                $("#personal2").val("Refiere " + bebidas + " bebidas alcohólicas " + social
-                  .bebidas_frecuencia + ". " + fuma + ". Refiere ser " + social
-                  .religion + ". Su plan a corto plazo: " + social.corto_plazo +
-                  ". Su plan a mediano plazo: " + social.mediano_plazo);
-                $("#laboral2").val("Indica que tiene trabajando para " + data.cliente +
-                  " por " + extra_laboral.actual_activo);
-                $("#socio1").val(data.candidato + ", actualmente vive en un/una " + vivienda
-                  .vivienda + ", con un tiempo de residencia de " + vivienda
-                  .tiempo_residencia + ". El nivel de la zona es " + vivienda.zona +
-                  ", el mobiliario es de calidad " + calidad + ", la vivienda es " +
-                  tamano + " y en condiciones " + vivienda.condiciones);
-                $("#socio2").val(
-                  "Los gastos generados en el hogar son solventados por _____. Sus referencias vecinales describen que es " +
-                  vecinales + ". El candidato cuenta con " + data.muebles + " " +
-                  adeudo);
-                $("#revisionModal").modal('show');
-              }
-              if (data.tipo_conclusion == 15) {
-                $("#personal3").prop('disabled', true);
-                $("#personal3").val("");
-                $("#personal4").prop('disabled', true);
-                $("#personal4").val("");
-                $("#laboral1").prop('disabled', true);
-                $("#laboral1").val("");
-                $("#visita1").prop('disabled', true);
-                $("#visita1").val("");
-                $("#visita2").prop('disabled', true);
-                $("#visita2").val("");
-                $("#socio1").prop('disabled', true);
-                $("#socio1").val("");
-                $("#socio2").prop('disabled', true);
-                $("#socio2").val("");
-                $('#comentario_bgc').prop('disabled', true)
-                $('#comentario_bgc').val("");
-
-                $("#personal1").val("C. " + data.candidato + ", de " + data.edad +
-                  " años de edad, es " + data.estado_civil + ", reside en " + data
-                  .municipio + ", " + data.estado + " " + religion +
-                  ". Cuenta con estudios en " + data.grado);
-                $("#personal2").val("Menciona " + bebidas + " bebidas alcohólicas y " +
-                  fuma + "." + cirugia + ". Su plan a corto plazo es " + social
-                  .corto_plazo + "; y su meta a mediano plazo es " + social
-                  .mediano_plazo + ".");
-                $("#laboral2").val(comentarios_laborales);
-                $('#conclusion_investigacion').val(
-                  'En la investigación realizada se encontró que el(la) candidato(a) es una persona ________.Le consideramos ' +
-                  estatus_final_conclusion + ".")
-                $("#completarModal").modal('show');
-              }
-              if (data.tipo_conclusion == 17) {
-                $('.es_conclusion').prop('disabled', true)
-                $('.es_conclusion').val('')
-                // $('#conclusion_investigacion').prop('disabled', false)
-                $("#comentario_bgc").prop('disabled', false);
-                $("#completarModal").modal('show');
-              }
-            }
-          });
-          $('a[id^=reportePDF]', row).bind('click', () => {
-            var id = data.id;
-            $('#reporteForm' + id).submit();
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: 'El reporte PDF se esta creando y se descargará en breve',
-              showConfirmButton: false,
-              timer: 2500
-            })
-          });
-          $('a[id^=reportePrevioPDF]', row).bind('click', () => {
-            var id = data.id;
-            $('#reportePrevioForm' + id).submit();
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: 'El reporte previo PDF se descargará en breve',
-              showConfirmButton: false,
-              timer: 2500
-            })
-          });
-          $('a[id^=completoPDF]', row).bind('click', () => {
-            var id = data.id;
-            $('#reporteFormCompleto' + id).submit();
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: 'El reporte PDF se esta creando y se descargará en breve',
-              showConfirmButton: false,
-              timer: 2500
-            })
-          });
-
-        }
-      });
-    },
-    error: function(xhr, error, thrown) {
-      console.error("Error al cargar los datos:", error, thrown);
-      console.error("Respuesta del servidor:", xhr.responseText);
-    }
-  });
-}
+        });
+      },
+      error: function(xhr, error, thrown) {
+        console.error("Error al cargar los datos:", error, thrown);
+        console.error("Respuesta del servidor:", xhr.responseText);
+      }
+    });
+  }
 
 
 
@@ -2652,6 +2777,7 @@
       }
     }
   })
+
   $("#previos").change(function() {
     var previo = $(this).val();
     if (previo != 0) {
@@ -2811,8 +2937,82 @@
       }
     });
   }
+  function cargarDocumentosPanelCliente(id, nombre, paterno) {
+  $(".idCandidato").val(id);
+  $("#idCandidatoDocs").val(id);
+  $(".nombreCandidato").text(nombre);
+  $("#nameCandidato").val(nombre);
 
-  function subirDoc() {
+  $.ajax({
+    url: '<?php echo base_url('Candidato/getDocumentosPanelCliente'); ?>',
+    type: 'post',
+    data: {
+      'id_candidato': id,
+      'prefijo': id + "_" + nombre + "" + paterno
+    },
+    success: function(res) {
+      $("#tablaDocs").html(res);
+    }
+  });
+
+  $("#docsModal").modal("show");
+}
+function subirDoc() {
+  var data = new FormData();
+  var doc = $("#documento")[0].files[0];
+  data.append('id_candidato', $("#idCandidatoDocs").val());
+  data.append('prefijo', $(".prefijo").val());
+  data.append('tipo_doc', $("#tipo_archivo").val());
+  data.append('documento', doc);
+  id = $("#idCandidatoDocs").val();
+  nombre = $("#nameCandidato").val();
+  //console.log("🚀 ~ subirDoc ~ nombre:", nombre)
+  $.ajax({
+    url: "<?php echo base_url('Candidato/cargarDocumento'); ?>",
+    method: "POST",
+    data: data,
+    contentType: false,
+    cache: false,
+    processData: false,
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      var data = JSON.parse(res);
+
+      if (data.codigo === 1) {
+        $("#documento").val("");
+        $("#tablaDocs").empty();
+        $('#tipo_archivo').val('');
+        $("#tablaDocs").html(data.msg);
+        $("#docsModal #msj_error").css('display', 'none');
+
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Se cargó el documento correctamente',
+          showConfirmButton: false,
+          timer: 2500
+        });
+
+        // Llamar a cargarDocumentosPanelCliente
+        cargarDocumentosPanelCliente(
+          id,
+          nombre,
+          ""
+        );
+      }
+
+      if (data.codigo === 0) {
+        $("#docsModal #msj_error").css('display', 'block').html(data.message);
+      }
+    }
+  });
+}
+  function subirDoc1() {
     var data = new FormData();
     var doc = $("#documento")[0].files[0];
     data.append('id_candidato', $(".idCandidato").val());

@@ -26,10 +26,10 @@ class Requisicion extends CI_Controller
         $data['hoy'] = date("d/m/Y");
 
         $data['id_cliente'] = $id_cliente;
-        echo "<pre>";
-        print_r($id_cliente);
-        echo "</pre>";
-        die();
+        //echo "<pre>";
+        //print_r($id_cliente);
+        //echo "</pre>";
+        //die();
 
         $data['datos'] = $this->cat_cliente_model->getC($id_cliente);
 
