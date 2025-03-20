@@ -112,11 +112,11 @@ class Cliente_General extends Custom_Controller{
         $id_cliente = $this->session->userdata('idcliente');
       
         $data['parentescos'] = $this->funciones_model->getParentescos();
-        $data['escolaridades'] = $this->funciones_model->getEscolaridades();
+      
         //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
         //$info['estados'] = $this->funciones_model->getEstados();
-        $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-      // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
+     
+      /* $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
         $info['puestos'] = $this->funciones_model->getPuestos();
         $info['grados'] = $this->funciones_model->getGradosEstudio();
         $info['drogas'] = $this->funciones_model->getPaquetesAntidoping();
@@ -134,8 +134,8 @@ class Cliente_General extends Custom_Controller{
         $info['escolaridades'] = $this->funciones_model->getEscolaridades();
         $info['grados_estudios'] = $this->funciones_model->getGradosEstudio();
         $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($id_cliente);
-        $info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
-        
+        $info['paises_estudio'] = $this->funciones_model->getPaisesEstudio(); */
+        $info['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
        // $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, TRUE);
         //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
         $config = $this->funciones_model->getConfiguraciones();
@@ -144,7 +144,7 @@ class Cliente_General extends Custom_Controller{
         //$modales['modals'] = $this->load->view('modals/mdl_usuario','', TRUE);
         //$modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato','', TRUE);
   
-        $this->load->view('clientes/panel');
+        $this->load->view('clientes/panel',$info);
 
       }
     }

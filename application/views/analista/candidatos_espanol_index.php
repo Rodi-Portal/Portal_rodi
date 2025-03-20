@@ -5306,7 +5306,7 @@ function subirDoc() {
   data.append('documento', doc);
   id = $("#idCandidatoDocs").val();
   nombre = $("#nameCandidato").val();
-  console.log("🚀 ~ subirDoc ~ nombre:", nombre)
+  //console.log("🚀 ~ subirDoc ~ nombre:", nombre)
   $.ajax({
     url: "<?php echo base_url('Candidato/cargarDocumento'); ?>",
     method: "POST",
@@ -5862,6 +5862,8 @@ function getMensajesAvances(id_candidato, candidato) {
   });
 }
 
+//TODO:    verificar si las  funciones  son necesarias FUNCIONES OBSOLETAS
+/*
 function crearAvance() {
   let id_candidato = $("#idCandidato").val()
   let candidato = $('#avancesModal #nombreCandidato').text()
@@ -5931,7 +5933,7 @@ function editarAvance(id, msj) {
   datos.append('msj', msj);
   datos.append('archivo', $("#avanceArchivo" + id)[0].files[0]);
   $.ajax({
-    url: '<?php echo base_url('Avance/editar'); ?>',
+    url: '< ?php echo base_url('Avance/editar'); ?>',
     async: false,
     type: 'post',
     data: datos,
@@ -5973,7 +5975,7 @@ function eliminarAvance(id) {
   let id_candidato = $("#idCandidato").val()
   let candidato = $('#avancesModal #nombreCandidato').text()
   $.ajax({
-    url: '<?php echo base_url('Avance/eliminar'); ?>',
+    url: '< ?php echo base_url('Avance/eliminar'); ?>',
     type: 'POST',
     data: {
       'id': id
@@ -6000,7 +6002,7 @@ function eliminarAvance(id) {
     }
   });
 }
-
+*/
 
 
 function guardarExtrasCandidato(id_candidato) {

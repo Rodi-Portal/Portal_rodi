@@ -902,7 +902,14 @@ color: white;
     display: none; /* Oculta el texto cuando la pantalla es pequeña */
   }
 }
-
+@media (max-width: 768px) {
+  .panel-inicio {
+    flex-direction: column!important;;
+  }
+  .div1, .div2 {
+    max-width: 100%!important;; /* Para que ocupen el ancho completo en móviles */
+  }
+}
 /* Ajustes  menu lateral  para  que  sea  responsivo */
 
 /* Estilos del Sidebar */
@@ -945,6 +952,12 @@ color: white;
     top: 20px;
     left: 20px;
     z-index: 1000;
+  }
+  .panel-inicio {
+    flex-direction: column!important;;
+  }
+  .div1, .div2 {
+    max-width: 100%!important;; /* Para que ocupen el ancho completo en móviles */
   }
 }
 
@@ -1345,4 +1358,11 @@ color: white;
   margin-bottom: 5px; /* Espacio entre la palabra "Módulo" y el ícono */
   text-align: center; /* Centra la palabra */
   font-weight: bold; /* Poner la palabra en negrita */
+}
+
+
+.div1, .div2 {
+  flex: 1; /* Para que ambos div ocupen el mismo espacio */
+  max-width: 50%; /* Asegura que no sobrepasen la mitad */
+  overflow: auto; /* Para manejar contenido extenso */
 }

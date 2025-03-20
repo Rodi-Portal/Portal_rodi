@@ -244,7 +244,7 @@ if ($idRol == 1 || $idRol == 6) {?>
         </div>
       </li>
       <?php }
-      if ($portal == 1 && ($idRol == 1)) {?>
+      if ($idRol == 6 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
       <?php }?>
