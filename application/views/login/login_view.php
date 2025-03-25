@@ -22,23 +22,23 @@
 </head>
 
 <body class="bg-gradient-primary">
-<?php if (isset($success_message)): ?>
+  <?php if (isset($success_message)): ?>
   <div class="alert alert-success alert-dismissible fade show text-center msj_login" role="alert" style="opacity: 1;">
-            <strong><?php echo $success_message; ?></strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    <?php endif; ?>
-  <?php 
-  if($this->session->flashdata('not-found')):  ?>
+    <strong><?php echo $success_message; ?></strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <?php endif; ?>
+  <?php
+if ($this->session->flashdata('not-found')): ?>
   <div class="alert alert-danger alert-dismissible fade show text-center msj_login" role="alert" style="opacity: 1;">
     <strong><?php echo $this->session->flashdata('not-found'); ?> </strong>
     <button type="button" class="close cerrar_login" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-  <?php 
+  <?php
   endif; ?>
   <div class="container">
     <div class="row justify-content-center">
@@ -57,13 +57,17 @@
                   <form class="user" action="<?php echo base_url('Login/verificar_usuario'); ?>" method="POST">
                     <div class="form-group">
                       <input type="text" class="form-control form-control-user" id="mail" name="mail"
-                        aria-describedby="emailHelp" placeholder="Email" >
+                        placeholder="Email">
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control form-control-user" id="pwd" name="pwd"
-                        placeholder="Password" >
+                        placeholder="Password">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-user btn-block"> Sign in</button>
+                    <div>
+                      <button type="submit" name="accion" value="admin" class="btn btn-primary btn-user">Admin</button>
+                      <!--button type="submit" name="accion" value="sucursal"
+                        class="btn btn-primary btn-user">Sucursal</button -->
+                    </div>
                   </form>
                   <hr>
                   <div class="text-center">
