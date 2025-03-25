@@ -208,7 +208,7 @@ echo $token  */?>
 
       <!-- Catalogos -->
       <?php
-      if (in_array(5, $submenus)) {?>
+      if (in_array(5, $submenus) &&  ($idRol == 1 || $idRol == 6)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
@@ -224,7 +224,7 @@ echo $token  */?>
             <?php
             }?>
             <?php
-if ($idRol == 1 || $idRol == 6) {?>
+          if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>

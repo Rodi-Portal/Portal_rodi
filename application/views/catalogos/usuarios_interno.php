@@ -14,7 +14,8 @@
     </div>
   </div>
   <div>
-  <P> En este módulo podrás gestionar a tus usuarios internos. Tendrás la capacidad  de crear  <br>nuevos usuarios, actualizar su información y reenviar credenciales cuando sea necesario.</P>
+    <P> En este módulo podrás gestionar a tus usuarios internos. Tendrás la capacidad de crear <br>nuevos usuarios,
+      actualizar su información y reenviar credenciales cuando sea necesario.</P>
   </div>
 </div>
 
@@ -50,38 +51,39 @@
   </div>
 </div>
 <!-- Modal de Confirmación  para los botones de tipos de  Acciones-->
-<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="titulo_mensaje_contraseña">Send credentials</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">Send credentials</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center">
+          <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
+          <div class="col-md-9">
+            <label>Generate password *</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="password" id="password" maxlength="8" readonly>
+              <div class="input-group-append">
+                <button type="button" class="btn btn-primary" onclick="generarPassword()">Generar</button>
+              </div>
             </div>
-            <div class="modal-body">
-                <div class="row justify-content-center">
-                <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
-                    <div class="col-md-9">
-                        <label>Generate password *</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="password" id="password" maxlength="8" readonly>
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-primary" onclick="generarPassword()">Generar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <input type="hidden" class="form-control" name="idUsuarioInternoEditPass" id="idUsuarioInternoEditPass">
-                <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="btnEnviarPass">Resend password</button>
-            </div>
+          </div>
         </div>
+        <input type="hidden" class="form-control" name="idUsuarioInternoEditPass" id="idUsuarioInternoEditPass">
+        <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btnEnviarPass">Resend password</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <?php echo $modals; ?>
@@ -92,7 +94,7 @@
 
 
 <script>
-var  idGerente ='<?php echo $this->session->userdata('id_rol'); ?>';
+var idGerente = '<?php echo $this->session->userdata('id_rol'); ?>';
 var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
 
 $(document).ready(function() {
@@ -200,37 +202,35 @@ $(document).ready(function() {
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
-
           let editar =
-            '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar Usuario" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-pencil-alt" style="font-size: 16px;"></i></a> ';
+            '<a id="editar" href="javascript:void(0)" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-pencil-alt" style="font-size: 16px;"></i></a> ';
 
           let accion = (full.status == 0) ?
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" class="fa-tooltip icono_datatable icono_rojo cambiar-estado" onclick="mostrarMensajeConfirmacion(\'Activar usuario\', \'' +
-            full.referente + '\', \'' + data +
-            '\')"><i class="fas fa-ban" style="font-size: 16px;"></i></a> ' :
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" class="fa-tooltip icono_datatable icono_verde cambiar-estado"  onclick="mostrarMensajeConfirmacion(\'Desactivar usuario\', \'' +
-            full.referente + '\', \'' + data +
-            '\')"><i class="far fa-check-circle" style="font-size: 16px;"></i></a> ';
+            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo cambiar-estado" data-id="' +
+            data + '" data-referente="' + full.referente +
+            '" data-status="activar"><i class="fas fa-ban" style="font-size: 16px;"></i></a> ' :
+            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_verde cambiar-estado" data-id="' +
+            data + '" data-referente="' + full.referente +
+            '" data-status="desactivar"><i class="far fa-check-circle" style="font-size: 16px;"></i></a> ';
 
           let eliminar =
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar usuario" onclick="mostrarMensajeConfirmacion(\'eliminar usuario\', \'' +
-            full.referente + '\', \'' + data +
-            '\')" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-trash" style="font-size: 16px;"></i></a> ';
-
+            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo" data-id="' + data +
+            '" data-referente="' + full.referente +
+            '" data-action="eliminar"><i class="fas fa-trash" style="font-size: 16px;"></i></a> ';
 
           let credenciales =
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Actualizar credenciales al candidato" onclick="enviarCredenciales(\'' +
-            full.correo + '\', \'' + full.id_datos_generales +
-            '\')" class="fa-tooltip icono_datatable icono_amarillo"><i class="fas fa-sync-alt style="font-size: 16px;"></i></a> ';
-              if(full.nombre_rol === 'Gerente'){
-                return editar  + credenciales;
-              }else{
-                return editar + accion + eliminar + credenciales;
-              }
+            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_amarillo" data-correo="' +
+            full.correo + '" data-id="' + full.id_datos_generales +
+            '"><i class="fas fa-sync-alt" style="font-size: 16px;"></i></a> ';
 
+          if (full.nombre_rol === 'Gerente') {
+            return editar + credenciales;
+          } else {
+            return editar + accion + eliminar + credenciales;
+          }
         }
-
       }
+
     ],
     "columnDefs": [{
       "targets": [1, 3, 4, 6, 7], // Índices de las columnas a ocultar en pantallas pequeñas
@@ -259,11 +259,11 @@ $(document).ready(function() {
         $("#titulo_nuevo_modal").text("Editar Usuario");
         $("#nombre").val(data.nombre);
         $("#paterno").val(data.paterno);
-        if(data.id_rol == 6){
+        if (data.id_rol == 6) {
           $("#id_rol").val(data.id_rol);
           $("#id_rol").prop('disabled', true);
 
-        }else{
+        } else {
           $("#id_rol").val(data.id_rol);
 
         }
@@ -287,23 +287,40 @@ $(document).ready(function() {
     },
 
     /****************************************************************/
-   "language": {
-    "lengthMenu": "Mostrar _MENU_ registros",
-    "zeroRecords": "No se encontraron registros",
-    "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-    "infoEmpty": "No hay registros disponibles",
-    "infoFiltered": "(Filtrado de _MAX_ registros en total)",
-    "sSearch": "Buscar:",
-    "oPaginate": {
+    "language": {
+      "lengthMenu": "Mostrar _MENU_ registros",
+      "zeroRecords": "No se encontraron registros",
+      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+      "infoEmpty": "No hay registros disponibles",
+      "infoFiltered": "(Filtrado de _MAX_ registros en total)",
+      "sSearch": "Buscar:",
+      "oPaginate": {
         "sLast": "Última página",
         "sFirst": "Primera",
         "sNext": "Siguiente",
         "sPrevious": "Anterior"
+      }
     }
-  }
 
   });
+  $(document).on('click', '.cambiar-estado', function() {
+    var status = $(this).data('status');
+    var id = $(this).data('id');
+    var referente = $(this).data('referente');
+    mostrarMensajeConfirmacion(status === 'activar' ? 'Activar usuario' : 'Desactivar usuario', referente, id);
+  });
 
+  $(document).on('click', '.fa-trash', function() {
+    var id = $(this).data('id');
+    var referente = $(this).data('referente');
+    mostrarMensajeConfirmacion('Eliminar usuario', referente, id);
+  });
+
+  $(document).on('click', '.fa-sync-alt', function() {
+    var correo = $(this).data('correo');
+    var idDatosGenerales = $(this).data('id');
+    enviarCredenciales(correo, idDatosGenerales);
+  });
   $(window).on('resize', function() {
     tabla.columns.adjust().draw();
   });
@@ -333,16 +350,17 @@ function mostrarMensajeConfirmacion(accion, valor1, valor2) {
     $('#mensajeModal').modal('show');
   }
 }
+
 function enviarCredenciales(valor1, valor2) {
 
-    $('#titulo_mensaje_contraseña').text('Reenviar Contraseña');
-    $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña <b>' + valor1 + '</b>?');
-    $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
-    $('#btnEnviarPass').attr("data-dismiss", "modal");
-    $('#idUsuarioInternoEditPass').val(valor2); // Asignar valor a idUsuarioInterno
-    $('#idCorreo').val(valor1);
-    $('#password').val(''); // Asignar valor a idCorreo
-    $('#enviarCredenciales').modal('show');
+  $('#titulo_mensaje_contraseña').text('Reenviar Contraseña');
+  $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña <b>' + valor1 + '</b>?');
+  $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
+  $('#btnEnviarPass').attr("data-dismiss", "modal");
+  $('#idUsuarioInternoEditPass').val(valor2); // Asignar valor a idUsuarioInterno
+  $('#idCorreo').val(valor1);
+  $('#password').val(''); // Asignar valor a idCorreo
+  $('#enviarCredenciales').modal('show');
 }
 
 
@@ -373,7 +391,7 @@ function BotonRegistroUsuarioInterno() {
         registroUsuariosInternos(); // Llama a la función con el ID del usuario
       });
       $('#formAccesoUsuariosinternos')[0]
-          .reset()
+        .reset()
       $('#nuevoAccesoUsuariosInternos').modal('show');
 
     }

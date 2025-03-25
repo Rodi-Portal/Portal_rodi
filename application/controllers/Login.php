@@ -450,8 +450,15 @@ class Login extends CI_Controller
 
         switch ($tipo_acceso) {
             case 'usuario':
-                redirect('Cat_UsuarioInternos/index');
-                break;
+               $rol = $this->session->userdata('idrol');
+                if($rol == 1 || $rol == 6){
+                    redirect('Cat_UsuarioInternos/index');
+                    break;
+                }else{
+                    redirect('Dashboard/index');
+                    break;
+                };
+               
             case 'visitador':
                 redirect('Dashboard/visitador_panel');
                 break;
@@ -509,8 +516,14 @@ class Login extends CI_Controller
                 // Redirigir según el tipo de acceso
                 switch ($tipo_acceso) {
                     case 'usuario':
-                        redirect('Dashboard/index');
-                        break;
+                        $rol = $this->session->userdata('idrol');
+                if($rol == 1 || $rol == 6){
+                    redirect('Cat_UsuarioInternos/index');
+                    break;
+                }else{
+                    redirect('Dashboard/index');
+                    break;
+                };
                     case 'visitador':
                         redirect('Dashboard/visitador_panel');
                         break;
