@@ -1366,3 +1366,17 @@ color: white;
   max-width: 50%; /* Asegura que no sobrepasen la mitad */
   overflow: auto; /* Para manejar contenido extenso */
 }
+
+
+#modalAsignarSucursalUsuariosInternos {
+  display: none;
+  z-index: 1050 !important;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+#modalAsignarSucursalUsuariosInternos .modal-content {
+  z-index: 1060 !important;
+}

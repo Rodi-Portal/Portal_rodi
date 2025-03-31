@@ -57,6 +57,13 @@ class Cat_UsuarioInternos extends CI_Controller
         $this->output->set_output(json_encode($usuarios_interno));
     }
 
+    public  function getSucursales(){
+        $id_portal = $this->session->userdata('idPortal');
+
+        $sucursalesActivas['data'] = $this->cat_usuario_model->getSucursales();
+        $this->output->set_output(json_encode($sucursalesActivas));
+    }
+
 /************************************EDITAR USUARIO INTERNO*****************************************/
     public function editarUsuarioControlador()
     {
@@ -212,6 +219,60 @@ class Cat_UsuarioInternos extends CI_Controller
             }
 
         }
+        echo json_encode($msj);
+    }
+
+
+    public function asignarSucursal()
+    {
+        // Cargar la librería de validación si no está cargada en autoload
+        $this->load->library('form_validation');
+    
+        // Reglas de validación
+        $this->form_validation->set_rules('usuarios[]', 'Usuarios', 'required', array('required' => 'Debe seleccionar al menos un usuario.'));
+        $this->form_validation->set_rules('sucursales[]', 'Sucursales', 'required', array('required' => 'Debe seleccionar al menos una sucursal.'));
+    
+        // Array de respuesta
+        $msj = array();
+    
+        // Validación de los datos
+        if ($this->form_validation->run() == false) {
+            $msj = array(
+                'codigo' => 0,
+                'msg' => validation_errors(),
+            );
+        } else {
+            // Obtener los datos del POST
+            $usuarios = $this->input->post('usuarios');
+            $sucursales = $this->input->post('sucursales');
+           
+             
+            // Validar que los arrays no estén vacíos
+            if (empty($usuarios) || empty($sucursales)) {
+                $msj = array(
+                    'codigo' => 0,
+                    'msg' => 'Debe seleccionar al menos un usuario y una sucursal.',
+                );
+            } else {
+              
+             
+                $resultado = $this->cat_usuario_model->asignarSucursal($usuarios, $sucursales);
+    
+                if ($resultado) {
+                    $msj = array(
+                        'codigo' => 1,
+                        'msg' => 'Asignación guardada con éxito.',
+                    );
+                } else {
+                    $msj = array(
+                        'codigo' => 0,
+                        'msg' => 'Error al guardar la asignación.',
+                    );
+                }
+            }
+        }
+    
+        // Devolver respuesta en formato JSON
         echo json_encode($msj);
     }
 

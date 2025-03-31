@@ -285,4 +285,66 @@ class Cat_usuario_model extends CI_Model
         }
     }
 
+
+    //.............................................................................//
+    //---------------------LLevar  sucursales-------------------------------------//
+    public function getSucursales()
+    {
+        $id_portal = $this->session->userdata('idPortal');
+        $this->db
+            ->select("C.* ")
+            ->from('cliente as C')
+            ->where('C.id_portal', $id_portal)
+            ->where('C.status', 1)
+            ->where('C.eliminado', 0)
+            ->order_by('C.nombre', 'ASC');
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+
+
+     /**
+     * Asigna sucursales a los usuarios en la tabla usuario_permiso
+     * @param array $usuarios Lista de IDs de usuarios
+     * @param array $sucursales Lista de IDs de sucursales
+     * @return bool Retorna TRUE si la operación fue exitosa, FALSE en caso de error
+     */
+    public function asignarSucursal($usuarios, $sucursales)
+    {
+
+    
+        // Iniciar transacción para evitar errores en caso de fallo
+        $this->db->trans_start();
+
+        // Insertar cada combinación de usuario y sucursal en la tabla usuario_permiso
+        foreach ($usuarios as $id_usuario) {
+            foreach ($sucursales as $id_cliente) {
+                // Verificar si la asignación ya existe
+                $this->db->where('id_usuario', $id_usuario);
+                $this->db->where('id_cliente', $id_cliente);
+                $existe = $this->db->get('usuario_permiso')->row();
+
+                if (!$existe) {
+                    // Insertar si no existe
+                    $this->db->insert('usuario_permiso', [
+                        'id_usuario' => $id_usuario,
+                        'id_cliente' => $id_cliente
+                    ]);
+                }
+            }
+        }
+
+        // Finalizar la transacción
+        $this->db->trans_complete();
+
+        // Verificar si la transacción fue exitosa
+        return $this->db->trans_status();
+    }
+
+
 }
