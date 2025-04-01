@@ -261,7 +261,7 @@ function registrarCandidato() {
 
 
 $(document).ready(function() {
-  var urlInternos = '<?php echo base_url("cliente_general/getEmpleadosInternos/") ?>' + id;
+  var urlInternos = '<?php echo base_url("Cliente_general/getEmpleadosInternos/") ?>' + id;
   var urlExternos = '<?php echo API_URL ?>candidato-sync/' + id;
   //inputmask
   $('.tipo_fecha').inputmask('dd/mm/yyyy', {

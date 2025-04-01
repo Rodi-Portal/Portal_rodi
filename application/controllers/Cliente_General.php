@@ -2238,8 +2238,7 @@ class Cliente_General extends Custom_Controller
     }
     public function getEmpleadosInternos($id)
     {
-
-                                                                     // Carga el modelo
+                                                       
         $data = $this->candidato_avance_model->getAllEmpleados($id); // Obtiene los datos
         echo json_encode(["data" => $data]);                         // Retorna JSON compatible con DataTables
     }
