@@ -56,7 +56,7 @@
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1"><?php echo $titulo_dato1;
     ?></div>
-                <div class="h5 mb-0 font-weight-bold text-success"><?php echo /*$dato1;*/ $numero = rand(200, 600); ?></div>
+                <div class="h5 mb-0 font-weight-bold text-success"><?php echo $dato1; ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-check-circle fa-2x text-success"></i>
@@ -71,7 +71,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1"><?php echo $titulo_dato2; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-info"><?php echo /*$dato2;*/$numero = rand(1000, 5000);  ?></div>
+                <div class="h5 mb-0 font-weight-bold text-info"><?php echo $dato2;  ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-check-circle fa-2x text-primary"></i>
@@ -86,7 +86,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-danger text-uppercase mb-1"><?php echo $titulo_dato3; ?></div>
-                <div class="h5 mb-0 font-weight-bold text-danger"><?php echo /*$dato3;*/ $numero = rand(500, 4000); ?></div>
+                <div class="h5 mb-0 font-weight-bold text-danger"><?php echo $dato3; ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-times-circle fa-2x text-danger"></i>
@@ -102,7 +102,7 @@
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1"><?php echo $titulo_dato4; ?>
                 </div>
-                <div class="h5 mb-0 font-weight-bold text-warning"><?php echo /*$dato4;*/ $numero = rand(500, 4000); ?></div>
+                <div class="h5 mb-0 font-weight-bold text-warning"><?php echo $dato4; ?></div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-user-tie fa-2x text-warning"></i>
