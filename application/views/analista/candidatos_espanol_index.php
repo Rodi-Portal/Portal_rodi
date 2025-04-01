@@ -107,7 +107,7 @@ var id = '<?php echo $this->uri->segment(3) ?>';
 var nombre_cliente = '<?php echo $cliente; ?>';
 var id_cliente = id;
 //var url = '< ?php echo site_url("cliente_general/getEmpleadosInternos/") ?>' + id;
-var url = '<?php echo API_URL ?>candidato-sync/' + id;
+//var url = '<?php echo API_URL ?>candidato-sync/' + id;
 var psico = '<?php echo base_url(); ?>_psicometria/';
 var beca_url = '<?php echo base_url(); ?>_beca/';
 let url_form = '<?php echo base_url() . "Form/external?fid="; ?>';
@@ -261,7 +261,7 @@ function registrarCandidato() {
 
 
 $(document).ready(function() {
-  var urlInternos = '<?php echo site_url("cliente_general/getEmpleadosInternos/") ?>' + id;
+  var urlInternos = '<?php echo base_url("Cliente_general/getEmpleadosInternos/") ?>' + id;
   var urlExternos = '<?php echo API_URL ?>candidato-sync/' + id;
   //inputmask
   $('.tipo_fecha').inputmask('dd/mm/yyyy', {
