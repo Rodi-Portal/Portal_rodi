@@ -438,7 +438,10 @@ class Client extends Custom_Controller
         $nombre = strtoupper($this->input->post('nombre'));
         $paterno = strtoupper($this->input->post('paterno'));
         $materno = strtoupper($this->input->post('materno'));
-				$puesto = $this->input->post('puesto');
+		$puesto = $this->input->post('puesto');
+        $puesto_otro = $this->input->post('puesto_otro');
+        $nss = $this->input->post('nss');
+        $curp = $this->input->post('curp');
         $cel = $this->input->post('celular');
         $correo = strtolower($this->input->post('correo'));
         $proyecto = $this->input->post('proyecto');
@@ -484,7 +487,7 @@ class Client extends Custom_Controller
 									break;
 					}
            
-            if ($opcion != 0) {
+            if ($opcion == 1) {
 									
 					
                 $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
@@ -588,8 +591,8 @@ class Client extends Custom_Controller
                     $this->registrar_notificacion($usuariosObjetivo, $titulo, $mensaje);
                 }
 
-            } else {
-        //TODO:  aqui comienza   a trabajar 
+            } if ($opcion == 0){
+                     //TODO:  aqui comienza   a trabajar 
 							//----- aqui comienza   el registro del  candidaton  con un proyecto previo 
               if ($this->input->post('previo') != 0) {
                  
@@ -924,7 +927,7 @@ class Client extends Custom_Controller
                         $this->registrar_notificacion($usuariosObjetivo, $titulo, $mensaje);
                     }*/
                 }  
-        //TODO: hasta  aqui estoy trabajando 
+                //TODO: hasta  aqui estoy trabajando 
                 if ($this->input->post('previo') == 0) {
                     $this->form_validation->set_rules('empleos', 'Employment history', 'required');
                     $this->form_validation->set_rules('empleos_tiempo', 'Time required for employment history', 'required');
@@ -1399,6 +1402,44 @@ class Client extends Custom_Controller
                     }
                 }
 
+            }else{
+                $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
+
+                $data = array(
+                    // datos  para  tabla  candidato
+                    'creacion' => $date,
+                    'edicion' => $date,
+                    'id_portal' => $id_portal, 
+                    'id_cliente' => $id_cliente,
+                    'id_usuario'=> $id_usuario,                    
+                    'nombre' => $nombre,
+                    'paterno' => $paterno,
+                    'materno' => $materno,
+                    'telefono' => $cel,
+                    'correo' => $correo,
+                    'puesto' => !empty($puesto_otro) ? $puesto_otro : $puesto,
+                    'nss' => $nss,
+                    'curp' => $curp,
+                    'status' => 3,
+                    'eliminado' => 0
+                );
+
+
+               $resultado = $this->candidato_avance_model->registrarPreEmpleadoConDomicilio($data, $pais);
+
+               if($resultado > 0  ){
+                $msj = array(
+                    'codigo' => 1,
+                    'msg' => "Success",
+                                );
+                       
+               }else{
+                $msj = array(
+                    'codigo' => 0,
+                    'msg' => "Error",
+                     );
+               }
+               
             }
 
         }

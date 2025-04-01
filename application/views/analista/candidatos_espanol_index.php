@@ -5,25 +5,13 @@
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Sucursal: <small><?php echo $cliente; ?></small></h1><br>
 
-    <?php
-if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri->segment(3) != 233 && $this->uri->segment(3) != 250) {
-    ?>
+
     <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">
       <span class="icon text-white-50">
         <i class="fas fa-user-plus"></i>
       </span>
       <span class="text">Registrar candidato</span>
     </a>
-    <?php
-} else {?>
-    <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="nuevoRegistroAlterno()">
-      <span class="icon text-white-50">
-        <i class="fas fa-user-plus"></i>
-      </span>
-      <span class="text">Registrar candidato</span>
-    </a>
-
-    <?php }?>
 
     <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
       style="display: none;">
@@ -41,7 +29,7 @@ if ($this->uri->segment(3) != 100 && $this->uri->segment(3) != 205 && $this->uri
   </p>
 
   <?php echo $modals;
-echo $mdl_candidato; ?>
+  echo $mdl_candidato; ?>
   <div class="top-loader" style="display: none;">
     <h3 class="text-center">Actualizando listado, por favor espere...</h3>
   </div>
@@ -67,19 +55,18 @@ echo $mdl_candidato; ?>
       </div>
       <div class="card-body">
         <div class="row mb-3">
-          <!--div class="col-sm-12 col-md-4 col-lg-4 m-auto">
+          <div class="col-sm-12 col-md-4 col-lg-4 m-auto">
             <select class="form-control" name="filtroListado" id="filtroListado">
               <option value="">Selecciona un filtro para el listado de candidatos</option>
-              <option value="1">Candidatos en proceso</option>
-              <option value="2">Todos los candidatos finalizados</option>
-              <option value="3">Últimos candidatos finalizados</option>
-              <option value="4">Todos los candidatos</option>
-
+              <option value="1">Candidatos en enviados a RODI</option>
+              <option value="2" selected>Candidatos Registrados Internamente</option>
             </select>
-          </div -->
+          </div>
         </div>
         <div class="table-responsive">
-          <table id="tabla" class="table table-hover table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <table id="tablaInternos" class="table table-hover table-bordered" width="100%" cellspacing="0"></table>
+          <table id="tablaExternos" class="table table-hover table-bordered" width="100%" cellspacing="0"
+            style="display: none;"></table>
 
 
           </table>
@@ -119,6 +106,7 @@ echo $mdl_candidato; ?>
 var id = '<?php echo $this->uri->segment(3) ?>';
 var nombre_cliente = '<?php echo $cliente; ?>';
 var id_cliente = id;
+//var url = '< ?php echo site_url("cliente_general/getEmpleadosInternos/") ?>' + id;
 var url = '<?php echo API_URL ?>candidato-sync/' + id;
 var psico = '<?php echo base_url(); ?>_psicometria/';
 var beca_url = '<?php echo base_url(); ?>_beca/';
@@ -273,7 +261,8 @@ function registrarCandidato() {
 
 
 $(document).ready(function() {
-
+  var urlInternos = '<?php echo base_url("cliente_general/getEmpleadosInternos/") ?>' + id;
+  var urlExternos = '<?php echo API_URL ?>candidato-sync/' + id;
   //inputmask
   $('.tipo_fecha').inputmask('dd/mm/yyyy', {
     'placeholder': 'dd/mm/yyyy'
@@ -301,38 +290,24 @@ $(document).ready(function() {
     localStorage.removeItem("success");
   }
   //
-  changeDatatable(url);
+  loadInternos(urlInternos);
+
   $("#filtroListado").change(function() {
     var opcion = $(this).val();
 
-    let urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
     if (opcion == 1) {
-      $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
-
-      changeDatatable(urlFiltrada);
-    }
-    if (opcion == 2) {
-      $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
-      changeDatatable(urlFiltrada);
-    }
-    if (opcion == 3) {
-      $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
-      changeDatatable(urlFiltrada);
-    }
-    if (opcion == 4) {
-      $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
-      changeDatatable(urlFiltrada);
-    }
-    if (opcion == 5) {
-      $('#tabla').DataTable().destroy();
-      urlFiltrada = '<?php echo API_URL ?>candidato-sync/' + id;
-      changeDatatable(urlFiltrada);
+      // Mostrar tabla de candidatos externos
+      $('#tablaInternos').hide();
+      $('#tablaExternos').show();
+      changeDatatable(url);
+    } else {
+      // Mostrar tabla de candidatos internos
+      $('#tablaExternos').hide();
+      $('#tablaInternos').show();
+      loadInternos(urlInternos);
     }
   });
+
   $("#subcliente").change(function() {
     var subcliente = $(this).val();
     if (subcliente != "") {
@@ -816,6 +791,103 @@ function obtenerToken(url) {
   });
 }
 
+
+function loadInternos(url) {
+  $.ajax({
+    url: url,
+    dataType: 'json',
+    success: function(response) {
+      // Verificar que 'data' sea un array antes de mapear
+      var formattedData = Array.isArray(response.data) ? response.data.map(function(item) {
+        // Concatenación de nombre, paterno y materno
+        var nombreCompleto = [item.nombre, item.paterno, item.materno].filter(Boolean).join(' ');
+
+        return {
+          id: item.id || '',
+          nombreCompleto: nombreCompleto, // Columna concatenada
+          creacion: item.creacion || '',
+          correo: item.correo || '',
+          telefono: item.telefono || '',
+          documentos: item.documentos || '', // Aquí puedes añadir lógica para manejar documentos
+          examenes: item.examenes || '' // Aquí puedes añadir lógica para manejar exámenes
+        };
+      }) : [];
+      // Destruir la tabla anterior si ya existe
+      if ($.fn.DataTable.isDataTable('#tablaExternos')) {
+        $('#tablaExternos').DataTable().clear().destroy();
+      }
+      // Inicializar DataTable para Internos
+      $('#tablaInternos').DataTable({
+        "pageLength": 10,
+        "order": [0, "desc"],
+        "stateSave": false,
+        "serverSide": false,
+        "destroy": true,
+        "data": formattedData,
+        "columns": [{
+            title: 'ID',
+            data: 'id',
+            "width": "10%",
+            className: 'text-center' // Centrado de contenido
+          },
+          {
+            title: 'Nombre',
+            data: 'nombreCompleto',
+            "width": "20%",
+            className: 'text-center' // Centrado de contenido
+          }, // Columna concatenada
+          {
+            title: 'Fecha Alta',
+            data: 'creacion',
+            "width": "15%",
+            className: 'text-center' // Centrado de contenido
+          },
+          {
+            title: 'Correo y Teléfono',
+            data: function(row) {
+              return row.correo + '<br>' + row.telefono;
+            },
+            "width": "25%",
+            className: 'text-center' // Centrado de contenido
+          },
+          {
+            title: 'Documentos',
+            data: null,
+            "width": "15%",
+            className: 'text-center', // Centrado de contenido
+
+            render: function(data, type, row) {
+              // Crear botones para los documentos
+              return '<button class="btn btn-info btn-sm" onclick="cargarDocumentosPanelClienteInterno(' + row.id +
+                ', \'' + row.nombreCompleto +'\', 1)">' +
+                '<i class="fa fa-eye"></i></button>';
+            }
+          },
+          {
+            title: 'Exámenes',
+            data: null,
+            "width": "15%",
+            className: 'text-center', // Centrado de contenido
+            render: function(data, type, row) {
+              console.log("🚀 ~ loadInternos ~ r:", row)
+              // Botón para los exámenes
+              return '<div style="display: flex; justify-content: center; align-items: center;">' +
+                '<button class="btn btn-primary btn-sm" onclick="cargarDocumentosPanelClienteInterno(' + row.id +
+                ', \'' + row.nombreCompleto + '\', 2)">' +
+                '<i class="fa fa-syringe"></i></button>' +
+                '</div>';
+
+            }
+          }
+        ]
+      });
+    },
+    error: function(xhr, status, error) {
+      console.error("Error en la petición AJAX de Internos:", status, error);
+    }
+  });
+}
+
 function changeDatatable(url1) {
   $.ajax({
     url: url1,
@@ -835,10 +907,12 @@ function changeDatatable(url1) {
         }
         return item;
       });
-
-
+      // Destruir la tabla anterior si ya existe
+      if ($.fn.DataTable.isDataTable('#tablaInternos')) {
+        $('#tablaInternos').DataTable().clear().destroy();
+      }
       // Inicializar DataTable con los datos formateados
-      var tabla = $('#tabla').DataTable({
+      var tabla = $('#tablaExternos').DataTable({
         "pageLength": 10,
         "order": [0, "desc"],
         "stateSave": false,
@@ -1013,23 +1087,6 @@ function changeDatatable(url1) {
                       '<b>Médico: Pendiente</b><div style="display: inline-block;margin-left:3px;"> <br>';
                   }
 
-
-
-                  /*if (full.archivo_examen_medico != null && full.archivo_examen_medico !=
-                    "") {
-                    var carpeta_clinico = '< ?php echo base_url(); ?>_clinico/';
-                    salida +=
-                      '<b>Médico: </b> <a href="javascript:void(0)" data-toggle="tooltip" title="Subir examen medico" id="examen_medico" class="icono_datatable icono_medico"><i class="fas fa-upload"></i></a> <a href="' +
-                      carpeta_clinico + full.archivo_examen_medico +
-                      '" id="ver_medico" target="_blank" data-toggle="tooltip" title="Ver examen medico" class="icono_datatable icono_medico"><i class="fas fa-file-medical"></i></a>';
-                  } else {
-                    salida +=
-                      '<b>Médico: </b> <a href="javascript:void(0)" data-toggle="tooltip" title="Subir examen medico" id="examen_medico" class="icono_datatable icono_medico"><i class="fas fa-upload"></i></a>';
-                  }
-                  if (full.psicometrico == 1) {
-                    salida += '<hr>';
-                  }*/
-
                 }
 
                 //* Psicometria
@@ -1054,9 +1111,7 @@ function changeDatatable(url1) {
                 if (full.tipo_antidoping == 0 && full.medico == 0 && full.psicometrico == 0) {
                   salida = "<b>N/A</b> ";
                 }
-                /*else {
-                	salida += "<b>Psicométrico: N/A</b> ";
-                }*/
+
               } else {
                 salida = "<b>N/A</b> ";
               }
@@ -1236,8 +1291,9 @@ function changeDatatable(url1) {
             });
           });
           $("a#subirDocs", row).bind('click', () => {
-            cargarDocumentosPanelCliente(data.id, (data.nombre +' '+ data.paterno), data.paterno);
+            cargarDocumentosPanelCliente(data.id, (data.nombre + ' ' + data.paterno), data.paterno);
           });
+
 
           $("a#msj_avances", row).bind('click', () => {
             $.ajax({
@@ -3316,7 +3372,7 @@ function getHistorialLaboral(id, id_seccion) {
   let autor_anterior = '';
   let candidato = $('#nombreCandidato').val();
   // let url_estados = '<?php //echo base_url('Funciones/getEstados'); ?>'; let estados_data = getDataCatalogo(url_estados, 'id', 0,'espanol');
-  // let url_paises = '<?php //echo base_url('Funciones/getPaises'); ?>'; let paises_data = getDataCatalogo(url_paises, 'nombre', 0,'espanol');
+  // let url_paises = '<?php  //echo base_url('Funciones/getPaises'); ?>'; let paises_data = getDataCatalogo(url_paises, 'nombre', 0,'espanol');
   if (id_seccion == 16 || id_seccion == 32 || id_seccion == 59 || id_seccion == 90) {
     $.ajax({
       url: '<?php echo base_url('Candidato_Laboral/getHistorialLaboralById'); ?>',
@@ -5277,6 +5333,7 @@ function actualizarInvestigacion() {
     }
   });
 }
+
 function cargarDocumentosPanelCliente(id, nombre, paterno) {
   $(".idCandidato").val(id);
   $("#idCandidatoDocs").val(id);
@@ -5297,6 +5354,7 @@ function cargarDocumentosPanelCliente(id, nombre, paterno) {
 
   $("#docsModal").modal("show");
 }
+
 function subirDoc() {
   var data = new FormData();
   var doc = $("#documento")[0].files[0];
@@ -5354,6 +5412,159 @@ function subirDoc() {
 }
 
 function eliminarArchivo(idDoc, archivo, id_candidato) {
+  $("#fila" + idDoc).remove();
+  $.ajax({
+    url: '<?php echo base_url('Candidato/eliminarDocumento'); ?>',
+    method: 'POST',
+    data: {
+      'idDoc': idDoc,
+      'archivo': archivo,
+      'id_candidato': id_candidato
+    },
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      var data = JSON.parse(res);
+      if (data.codigo === 1) {
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Se ha eliminado correctamente',
+          showConfirmButton: false,
+          timer: 2500
+        })
+      } else {
+        Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: 'Hubo un problema al eliminar, intenta más tarde',
+          showConfirmButton: false,
+          timer: 2500
+        })
+      }
+    }
+  });
+}
+
+function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
+  console.log("🚀 ~ cargarDocumentosPanelClienteInterno ~ id:", id)
+  $("#employee_id").val(id);
+  $("#idCandidatoDocsInterno").val(id);
+  $(".nombreCandidato").text(nombre);
+  $("#nameCandidato").val(nombre);
+
+  $.ajax({
+    url: '<?php echo base_url('Candidato/getDocumentosPanelClienteInterno'); ?>',
+    type: 'post',
+    data: {
+      'id_candidato': id,
+      'prefijo': id + "_" + nombre ,
+      'origen' : origen
+    },
+    success: function(res) {
+      $("#tablaDocsInterno").html(res);
+    }
+  });
+
+  $("#docsModalInterno").modal("show");
+}
+
+function subirDocInterno() {
+  var data = new FormData();
+  var modal = $("#docsModalInterno");
+
+  var docInput = modal.find("#documentoInterno")[0];
+  if (docInput.files.length === 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Selecciona un archivo',
+      text: 'Por favor, elige un archivo antes de subirlo.',
+      timer: 2500
+    });
+    return;
+  }
+  var doc = docInput.files[0];
+  var fechaHoraMexico = new Date().toLocaleString("es-MX", { timeZone: "America/Mexico_City" });
+  var fecha = new Date(fechaHoraMexico);
+  var id_portal = "<?php echo $this->session->userdata('idPortal') ?>";
+// Sumar un año a la fecha
+    fecha.setFullYear(fecha.getFullYear() + 1);
+  // Agregar los datos esperados por el backend
+    data.append('employee_id', modal.find("#employee_id").val());
+    data.append('name', modal.find("#nombre_archivoInterno").val());
+    data.append('description', null);
+    data.append('expiry_date', '');
+    data.append('expiry_reminder', modal.find("#recordatorioExpiracion").val() || "");
+    data.append('file', doc);
+    data.append('creacion', fechaHoraMexico);
+    data.append('edicion',fechaHoraMexico);
+    data.append('status', 1);
+    data.append('id_portal', id_portal);
+ 
+    var url_api ="<?php echo API_URL ?>";
+  $.ajax({
+    url: url_api + 'documents/',
+    method: "POST",
+    data: data,
+    contentType: false,
+    cache: false,
+    processData: false,
+    beforeSend: function () {
+      $('.loader').css("display", "block");
+    },
+    success: function (res) {
+      setTimeout(function () {
+        $('.loader').fadeOut();
+      }, 200);
+
+      var data = (typeof res === "string") ? JSON.parse(res) : res;
+
+      if (data.message) {
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: data.message,
+          showConfirmButton: false,
+          timer: 2500
+        });
+
+        // Limpiar campos y actualizar tabla
+        modal.find("#documentoInterno").val("");
+        modal.find("#tablaDocsInterno").empty();
+        modal.find("#nombre_archivoInterno").val("");
+        cargarDocumentosPanelClienteInterno(
+          modal.find("#idCandidatoDocs").val(),
+          modal.find("#nameCandidato").val(),
+          ""
+        );
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data.error || 'No se pudo subir el documento.',
+          timer: 2500
+        });
+      }
+    },
+    error: function (jqXHR) {
+      setTimeout(function () {
+        $('.loader').fadeOut();
+      }, 200);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: jqXHR.responseJSON?.error || 'Error en la solicitud.',
+        timer: 2500
+      });
+    }
+  });
+}
+
+function eliminarArchivoInterno(idDoc, archivo, id_candidato) {
   $("#fila" + idDoc).remove();
   $.ajax({
     url: '<?php echo base_url('Candidato/eliminarDocumento'); ?>',

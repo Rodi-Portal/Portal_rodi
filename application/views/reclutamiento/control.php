@@ -716,6 +716,7 @@ function registrarCandidato() {
   datos.append('subcliente', $("#subcliente").val());
   datos.append('opcion', $('#opcion_registro').val());
   datos.append('puesto', $('#puesto').val());
+  datos.append('puesto_otro', $('#puesto_otro').val());
   datos.append('pais', $("#pais").val());
   datos.append('region', $("#region").val());
 

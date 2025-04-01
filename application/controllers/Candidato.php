@@ -1800,6 +1800,115 @@ class Candidato extends Custom_Controller
         echo $salida;
     }
 
+    public function getDocumentosPanelClienteInterno()
+    {
+        $id = $this->input->post('id_candidato');
+        $origen = $this->input->post('origen');
+        
+
+        // Verificar si ID y origen están definidos
+        if (empty($id) || empty($origen)) {
+            echo json_encode(['codigo' => 0, 'msg' => 'ID o origen no proporcionado']);
+            return;
+        }
+
+        // Configurar la URL del endpoint según el origen
+        $api_base_url = API_URL; 
+        if ($origen == 1) {
+            $url = $api_base_url . "documents/" . $id;
+        } elseif ($origen == 2) {
+            $url = $api_base_url . "exam/" . $id; // URL diferente para origen 2
+        } else {
+            echo json_encode(['codigo' => 0, 'msg' => 'Origen no válido']);
+            return;
+        }
+
+        // Inicializar cURL
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPGET, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ]);
+
+        // Ejecutar la solicitud
+        $response = curl_exec($ch);
+
+        // Verificar errores en cURL
+        if ($response === false) {
+            $error_msg = curl_error($ch);
+            echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
+            curl_close($ch);
+            return;
+        }
+
+        // Verificar el código HTTP
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_status !== 200) {
+            echo '<table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">File name</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Upload Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="text-center" colspan="3">No documents yet</td></tr>
+                    </tbody>
+                </table>';
+            return;
+        }
+
+        // Decodificar la respuesta JSON
+        $response_data = json_decode($response, true);
+
+        // Construir la tabla de salida
+        $salida = '';
+        if (!empty($response_data['documentos']) && is_array($response_data['documentos'])) {
+            $salida .= '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th width="40%" scope="col">File name</th>';
+            $salida .= '<th scope="col">Category</th>';
+            $salida .= '<th scope="col">Upload Date</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            
+            foreach ($response_data['documentos'] as $doc) {
+                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
+                $salida .= '<td><a href="' . base_url('_documentEmpleado/' . htmlspecialchars($doc['nameDocument'])) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameDocument']) . '</a></td>';
+                $salida .= '<td>' . htmlspecialchars($doc['optionName']) . '</td>';
+                $salida .= '<td>' . htmlspecialchars($doc['upload_date']) . '</td>';
+                $salida .= '</tr>';
+            }
+            
+            $salida .= '</tbody></table>';
+        } else {
+            $salida = '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th scope="col">File name</th>';
+            $salida .= '<th scope="col">Category</th>';
+            $salida .= '<th scope="col">Upload Date</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            $salida .= '<tr>';
+            $salida .= '<td class="text-center" colspan="3">No documents yet</td>';
+            $salida .= '</tr>';
+            $salida .= '</tbody></table>';
+        }
+        
+        // Mostrar la salida
+        echo $salida;
+    }
+
+
     public function downloadDocumentosPanelCliente()
     {
         if (isset($_POST['idCandidatoDocs'])) {
