@@ -28,7 +28,9 @@
               <label>Tipo de rol *</label>
               <select class="form-control" id="id_rol" name="id_rol">
                <option value="">Selecciona un rol</option>
-               <option value="6">Administrador</option>
+               <option value="1">Administrador</option>
+               <option value="6">Gerente</option>
+               <option value="6">RRHH</option>
                 <option value="4">Reclutadora</option>
                 <option value="11">Coordinador  reclutamiento </option>
                 <option value="13">Visor</option>

@@ -290,7 +290,7 @@ $(document).ready(function() {
     localStorage.removeItem("success");
   }
   //
-  changeDatatable(url);
+  loadInternos(urlInternos);
 
   $("#filtroListado").change(function() {
     var opcion = $(this).val();
@@ -792,9 +792,10 @@ function obtenerToken(url) {
 }
 
 
-function loadInternos(url) {
+function loadInternos(url1) {
+  console.log(url1);
   $.ajax({
-    url: url,
+    url: url1,
     dataType: 'json',
     success: function(response) {
       // Verificar que 'data' sea un array antes de mapear
