@@ -407,10 +407,10 @@ if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') 
 
 $(document).ready(function() {
 
-  cargarGraficaGeneralFake();
-  cargarGraficaESEFake();
-  cargarDatosReclutamientoFake();
-  cargarDatosPastelFake();
+  cargarGraficaGeneral();
+  cargarGraficaESE();
+  cargarDatosReclutamiento();
+  cargarDatosPastel();
 
 });
 
