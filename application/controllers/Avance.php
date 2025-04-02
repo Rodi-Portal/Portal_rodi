@@ -121,9 +121,9 @@ class Avance extends CI_Controller
 
         // Determina la URL del endpoint de la API de Laravel
         if ($this->input->post('origen') == 1) {
-            $api_url = API_URL . 'documents/';
+            $api_url = API_URL . 'documents';
         } else {
-            $api_url = API_URL . 'exams/';
+            $api_url = API_URL . 'exams';
         }
 
         // Preparar los datos para la API de Laravel
@@ -145,8 +145,10 @@ class Avance extends CI_Controller
         $post_fields = array_merge($data, $file_data);
 
         // Realizar la solicitud cURL a la API de Laravel
+       
+        // Procesar la respuesta de la API
         $response = $this->callApi($api_url, $post_fields);
-        
+       
         // Procesar la respuesta de la API
         if ($response['message']) {
             // Obtener el mensaje y los datos del documento desde la respuesta
