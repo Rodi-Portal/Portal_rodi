@@ -5480,8 +5480,7 @@ function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
 function subirDocInterno() {
   var origen = $("#origen").val();
   var nombreCandidato = $("#nameCandidatoInterno").val();
-
- var id = $("#employee_id").val();
+  var id = $("#employee_id").val();
 
   var data = new FormData();
   var modal = $("#docsModalInterno");
@@ -5498,10 +5497,9 @@ function subirDocInterno() {
   }
   var doc = docInput.files[0];
   var id_portal = "<?php echo $this->session->userdata('idPortal') ?>";
-  // Sumar un año a la fecha
 
   // Agregar los datos esperados por el backend
-  data.append('employee_id', modal.find("#employee_id").val());
+  data.append('employee_id', id);
   data.append('name', modal.find("#nombre_archivoInterno").val());
   data.append('description', null);
   data.append('expiry_date', '');
@@ -5509,24 +5507,14 @@ function subirDocInterno() {
   data.append('file', doc);
   data.append('status', 1);
   data.append('id_portal', id_portal);
+  data.append('origen', origen);
 
-
-  var url_api = "<?php echo API_URL ?>";
-// Eliminar la barra final, si existe
-if(url_api.slice(-1) === '/') {
-    url_api = url_api.slice(0, -1);
-}
-
-if (origen == 1) {
-    data.append('carpeta', '_documentEmpleado');
-    url_api = url_api + '/documents/';
-} else {
-    data.append('carpeta', '_examEmpleado');
-    url_api = url_api + '/exams/';
-}
+  // Determinar la carpeta y la URL de destino
+  var carpeta = (origen == 1) ? '_documentEmpleado' : '_examEmpleado';
+  data.append('carpeta', carpeta);
 
   $.ajax({
-    url: url_api,
+    url: "<?php echo site_url('Avance/subirDocumentoInterno'); ?>",  // Este es el endpoint de tu controlador CodeIgniter
     method: "POST",
     data: data,
     contentType: false,
@@ -5540,7 +5528,6 @@ if (origen == 1) {
         $('.loader').fadeOut();
       }, 200);
 
-      // Asegurar que res sea un objeto JSON
       var data = (typeof res === "string") ? JSON.parse(res) : res;
 
       if (data.message) {
@@ -5553,15 +5540,13 @@ if (origen == 1) {
         });
 
         // Limpiar campos del formulario
-        let modal = $("#docsModalInterno"); // Asegúrate de cambiar esto por el ID correcto
+        let modal = $("#docsModalInterno");
         modal.find("#documentoInterno").val("");
         modal.find("#tablaDocsInterno").empty();
         modal.find("#nombre_archivoInterno").val("");
 
-
         // Recargar documentos
-
-        cargarDocumentosPanelClienteInterno(id,nombreCandidato, origen);
+        cargarDocumentosPanelClienteInterno(id, nombreCandidato, origen);
       } else {
         Swal.fire({
           icon: 'error',
@@ -5595,6 +5580,7 @@ if (origen == 1) {
     }
   });
 }
+
 
 function eliminarArchivoInterno(idDoc, archivo, id_candidato) {
   $("#fila" + idDoc).remove();
