@@ -5520,7 +5520,7 @@ if(url_api.slice(-1) === '/') {
 if (origen == 1) {
     data.append('carpeta', '_documentEmpleado');
     url_api = url_api + '/documents/';
-} else {
+} elseif(origen == 2) {
     data.append('carpeta', '_examEmpleado');
     url_api = url_api + '/exams/';
 }
@@ -5532,10 +5532,7 @@ if (origen == 1) {
     contentType: false,
     cache: false,
     processData: false,
-    headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    },
+  
     beforeSend: function() {
       $('.loader').css("display", "block");
     },
