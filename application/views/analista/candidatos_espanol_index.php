@@ -835,7 +835,13 @@ function loadInternos(url1) {
             title: 'Nombre',
             data: 'nombreCompleto',
             "width": "20%",
-            className: 'text-center' // Centrado de contenido
+            className: 'text-center',
+            mRender: function(data, type, full) {
+              return full.nombreCompleto +
+                '<br><br><button class="btn btn-success btn-sm" onclick="confirmAction(' +
+                full.id + ')">Enviar a Empleados</button>';
+              // reclutador;
+            } // Centrado de contenido
           }, // Columna concatenada
           {
             title: 'Fecha Alta',
@@ -880,7 +886,22 @@ function loadInternos(url1) {
                 '</div>';
 
             }
-          }
+          },
+          {
+            title: 'Eliminar',
+            data: 'id',
+            width: "10%",
+            className: 'text-center',
+            render: function(data, type, row) {
+              return `<button class="btn btn-link text-danger "
+                    onclick="eliminarCandidato(${data})"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="Eliminar candidato">
+                <i class="fas fa-trash fa-lg"></i>
+            </button> `;
+            }
+          },
         ]
       });
     },
@@ -936,7 +957,7 @@ function changeDatatable(url1) {
                 '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
                 .reclutadorAspirante + '</span>' : '';
               var actionButton = '<br><button class="btn btn-success btn-sm" onclick="confirmAction(' +
-                full.id + ')">Send to Employee</button>';
+                full.id + ')">Enviar a Empleados</button>';
 
 
               return '<span class="badge badge-pill badge-dark">#' + full.id +
@@ -2144,12 +2165,12 @@ function changeDatatable(url1) {
 function confirmAction(id) {
   // Muestra la alerta de confirmación con SweetAlert
   Swal.fire({
-    title: 'Are you sure?',
-    text: 'Are you sure you want to send this candidate to the Employee module?',
+    title: '¿Estás seguro?',
+    text: '¿Estás seguro de que quieres enviar este candidato al módulo de Empleados?',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Yes, send it!',
-    cancelButtonText: 'No, cancel',
+    confirmButtonText: 'Sí, enviarlo!',
+    cancelButtonText: 'No, cancelar',
     reverseButtons: true
   }).then((result) => {
     if (result.isConfirmed) {
@@ -5451,6 +5472,72 @@ function eliminarArchivo(idDoc, archivo, id_candidato) {
     }
   });
 }
+function eliminarCandidato(idCandidato) {
+    // Mostrar confirmación antes de proceder con la eliminación
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¿Deseas eliminar al candidato y todos sus documentos relacionados?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminarlo',
+        cancelButtonText: 'No, cancelar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Realizar solicitud AJAX
+            $.ajax({
+                url: '<?php echo base_url('Candidato/eliminarCandidato'); ?>',  // URL del controlador para eliminar el candidato
+                method: 'POST',
+                data: {
+                    'id_candidato': idCandidato  // Pasar el ID del candidato
+                },
+                beforeSend: function() {
+                    $('.loader').css("display", "block");  // Mostrar el loader mientras se procesa
+                },
+                success: function(response) {
+                    // Ocultar el loader
+                    setTimeout(function() {
+                        $('.loader').fadeOut();
+                    }, 200);
+
+                    // Respuesta JSON de la API
+                    var data = JSON.parse(response);
+
+                    if (data.codigo === 1) {
+                        // Si la eliminación fue exitosa
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Candidato eliminado correctamente',
+                            showConfirmButton: false,
+                            timer: 2500
+                        });
+                        // Aquí puedes hacer que se elimine la fila del candidato de la tabla, por ejemplo
+                        $('#fila' + idCandidato).remove(); // Eliminar la fila correspondiente del DataTable
+                    } else {
+                        // Si hubo un error
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Hubo un problema al eliminar, intenta más tarde',
+                            showConfirmButton: false,
+                            timer: 2500
+                        });
+                    }
+                },
+                error: function() {
+                    // Si ocurre un error en la solicitud
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'Error en la conexión con el servidor',
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                }
+            });
+        }
+    });
+}
 
 function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
   $("#employee_id").val(id);
@@ -5514,7 +5601,7 @@ function subirDocInterno() {
   data.append('carpeta', carpeta);
 
   $.ajax({
-    url: "<?php echo site_url('Avance/subirDocumentoInterno'); ?>",  // Este es el endpoint de tu controlador CodeIgniter
+    url: "<?php echo site_url('Avance/subirDocumentoInterno'); ?>", // Este es el endpoint de tu controlador CodeIgniter
     method: "POST",
     data: data,
     contentType: false,
@@ -5583,56 +5670,56 @@ function subirDocInterno() {
 
 
 function eliminarArchivoInterno(idDoc, archivo, id_candidato, origen) {
-    Swal.fire({
-        title: "¿Estás seguro?",
-        text: "Este documento se eliminará para siempre.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '<?php echo base_url('Candidato/eliminarDocumentoInterno'); ?>',
-                method: 'POST',
-                data: {
-                    'idDoc': idDoc,
-                    'archivo': archivo,
-                    'id_candidato': id_candidato,
-                    'origen': origen
-                },
-                beforeSend: function () {
-                    $('.loader').css("display", "block");
-                },
-                success: function (res) {
-                    setTimeout(function () {
-                        $('.loader').fadeOut();
-                    }, 200);
-                    var data = JSON.parse(res);
-                    if (data.codigo === 1) {
-                        $("#fila" + idDoc).remove(); // Elimina la fila solo si se eliminó con éxito
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Se ha eliminado correctamente',
-                            showConfirmButton: false,
-                            timer: 2500
-                        });
-                    } else {
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'error',
-                            title: 'Hubo un problema al eliminar, intenta más tarde',
-                            showConfirmButton: false,
-                            timer: 2500
-                        });
-                    }
-                }
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "Este documento se eliminará para siempre.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: '<?php echo base_url('Candidato/eliminarDocumentoInterno'); ?>',
+        method: 'POST',
+        data: {
+          'idDoc': idDoc,
+          'archivo': archivo,
+          'id_candidato': id_candidato,
+          'origen': origen
+        },
+        beforeSend: function() {
+          $('.loader').css("display", "block");
+        },
+        success: function(res) {
+          setTimeout(function() {
+            $('.loader').fadeOut();
+          }, 200);
+          var data = JSON.parse(res);
+          if (data.codigo === 1) {
+            $("#fila" + idDoc).remove(); // Elimina la fila solo si se eliminó con éxito
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'Se ha eliminado correctamente',
+              showConfirmButton: false,
+              timer: 2500
             });
+          } else {
+            Swal.fire({
+              position: 'center',
+              icon: 'error',
+              title: 'Hubo un problema al eliminar, intenta más tarde',
+              showConfirmButton: false,
+              timer: 2500
+            });
+          }
         }
-    });
+      });
+    }
+  });
 }
 
 
