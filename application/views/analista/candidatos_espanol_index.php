@@ -5473,7 +5473,7 @@ function eliminarArchivo(idDoc, archivo, id_candidato) {
   });
 }
 function eliminarCandidato(idCandidato) {
-    // Mostrar confirmación antes de proceder con la eliminación
+    // Primera confirmación
     Swal.fire({
         title: '¿Estás seguro?',
         text: '¿Deseas eliminar al candidato y todos sus documentos relacionados?',
@@ -5483,61 +5483,62 @@ function eliminarCandidato(idCandidato) {
         cancelButtonText: 'No, cancelar',
     }).then((result) => {
         if (result.isConfirmed) {
-            // Realizar solicitud AJAX
-            $.ajax({
-                url: '<?php echo base_url('Candidato/eliminarCandidato'); ?>',  // URL del controlador para eliminar el candidato
-                method: 'POST',
-                data: {
-                    'id_candidato': idCandidato  // Pasar el ID del candidato
-                },
-                beforeSend: function() {
-                    $('.loader').css("display", "block");  // Mostrar el loader mientras se procesa
-                },
-                success: function(response) {
-                    // Ocultar el loader
-                    setTimeout(function() {
-                        $('.loader').fadeOut();
-                    }, 200);
-
-                    // Respuesta JSON de la API
-                    var data = JSON.parse(response);
-
-                    if (data.codigo === 1) {
-                        // Si la eliminación fue exitosa
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'Candidato eliminado correctamente',
-                            showConfirmButton: false,
-                            timer: 2500
-                        });
-                        // Aquí puedes hacer que se elimine la fila del candidato de la tabla, por ejemplo
-                        $('#fila' + idCandidato).remove(); // Eliminar la fila correspondiente del DataTable
-                    } else {
-                        // Si hubo un error
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'error',
-                            title: 'Hubo un problema al eliminar, intenta más tarde',
-                            showConfirmButton: false,
-                            timer: 2500
-                        });
-                    }
-                },
-                error: function() {
-                    // Si ocurre un error en la solicitud
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'error',
-                        title: 'Error en la conexión con el servidor',
-                        showConfirmButton: false,
-                        timer: 2500
+            // Segunda confirmación
+            Swal.fire({
+                title: 'Confirmación final',
+                text: 'Esta acción es irreversible. ¿Realmente deseas eliminar al candidato?',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar definitivamente',
+                cancelButtonText: 'No, cancelar',
+            }).then((finalResult) => {
+                if (finalResult.isConfirmed) {
+                    // Realizar solicitud AJAX
+                    $.ajax({
+                        url: '<?php echo base_url('Candidato/eliminarCandidatoInterno'); ?>',  
+                        method: 'POST',
+                        data: { 'id': idCandidato },
+                        beforeSend: function() {
+                            $('.loader').css("display", "block");
+                        },
+                        success: function(response) {
+                            setTimeout(function() { $('.loader').fadeOut(); }, 200);
+                            var data = JSON.parse(response);
+                            if (data.codigo === 1) {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'Candidato eliminado correctamente',
+                                    showConfirmButton: false,
+                                    timer: 2500
+                                });
+                                $('#fila' + idCandidato).remove();
+                            } else {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Hubo un problema al eliminar, intenta más tarde',
+                                    showConfirmButton: false,
+                                    timer: 2500
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Error en la conexión con el servidor',
+                                showConfirmButton: false,
+                                timer: 2500
+                            });
+                        }
                     });
                 }
             });
         }
     });
 }
+
 
 function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
   $("#employee_id").val(id);

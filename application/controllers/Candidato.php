@@ -2394,6 +2394,53 @@ class Candidato extends Custom_Controller
     }
     
 
+    public function eliminarCandidatoInterno()
+    {
+        $idCandidato = $this->input->post('id');
+
+        if (!$idCandidato) {
+            echo json_encode(['codigo' => 0, 'mensaje' => 'ID de candidato no recibido']);
+            return;
+        }
+
+        $this->load->database();
+
+        // 1️⃣ Buscar y eliminar documentos del candidato
+        $documentos = $this->db->get_where('documents_empleado', ['employee_id' => $idCandidato])->result();
+
+        foreach ($documentos as $doc) {
+            $rutaArchivo = './_documentsEmpleado/' . $doc->name;
+            if (file_exists($rutaArchivo)) {
+                unlink($rutaArchivo);
+            }
+        }
+
+        // Eliminar registros de documentos en la base de datos
+        $this->db->delete('documents_empleado', ['employee_id' => $idCandidato]);
+
+        // 2️⃣ Buscar y eliminar exámenes del candidato
+        $examenes = $this->db->get_where('exams_empleados', ['employee_id' => $idCandidato])->result();
+
+        foreach ($examenes as $exam) {
+            $ext = pathinfo($exam->name, PATHINFO_EXTENSION);
+            if (in_array(strtolower($ext), ['jpg', 'png', 'jpeg', 'pdf'])) {
+                $rutaArchivo = './_examEmpleado/' . $exam->name;
+                if (file_exists($rutaArchivo)) {
+                    unlink($rutaArchivo);
+                }
+            }
+        }
+
+        // Eliminar registros de exámenes en la base de datos
+        $this->db->delete('exams_empleados', ['employee_id' => $idCandidato]);
+
+        // 3️⃣ Eliminar candidato de la tabla empleados
+        $this->db->delete('empleados', ['id' => $idCandidato]);
+
+        echo json_encode(['codigo' => 1, 'mensaje' => 'Candidato eliminado correctamente']);
+    }
+
+
     public function eliminarReferenciaLaboral()
     {
         $id              = $this->input->post('id');
