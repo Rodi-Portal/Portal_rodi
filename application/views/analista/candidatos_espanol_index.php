@@ -859,8 +859,9 @@ function loadInternos(url1) {
 
             render: function(data, type, row) {
               // Crear botones para los documentos
-              return '<button class="btn btn-info btn-sm" onclick="cargarDocumentosPanelClienteInterno(' + row.id +
-                ', \'' + row.nombreCompleto +'\', 1)">' +
+              return '<button class="btn btn-info btn-sm" onclick="cargarDocumentosPanelClienteInterno(' +
+                row.id +
+                ', \'' + row.nombreCompleto + '\', 1)">' +
                 '<i class="fa fa-eye"></i></button>';
             }
           },
@@ -873,7 +874,8 @@ function loadInternos(url1) {
               console.log("🚀 ~ loadInternos ~ r:", row)
               // Botón para los exámenes
               return '<div style="display: flex; justify-content: center; align-items: center;">' +
-                '<button class="btn btn-primary btn-sm" onclick="cargarDocumentosPanelClienteInterno(' + row.id +
+                '<button class="btn btn-primary btn-sm" onclick="cargarDocumentosPanelClienteInterno(' +
+                row.id +
                 ', \'' + row.nombreCompleto + '\', 2)">' +
                 '<i class="fa fa-syringe"></i></button>' +
                 '</div>';
@@ -5452,19 +5454,21 @@ function eliminarArchivo(idDoc, archivo, id_candidato) {
 }
 
 function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
-  console.log("🚀 ~ cargarDocumentosPanelClienteInterno ~ id:", id)
   $("#employee_id").val(id);
   $("#idCandidatoDocsInterno").val(id);
   $(".nombreCandidato").text(nombre);
-  $("#nameCandidato").val(nombre);
+  $("#nameCandidatoInterno").val(nombre);
+  $("#origen").val(origen);
+
+
 
   $.ajax({
     url: '<?php echo base_url('Candidato/getDocumentosPanelClienteInterno'); ?>',
     type: 'post',
     data: {
       'id_candidato': id,
-      'prefijo': id + "_" + nombre ,
-      'origen' : origen
+      'prefijo': id + "_" + nombre,
+      'origen': origen
     },
     success: function(res) {
       $("#tablaDocsInterno").html(res);
@@ -5475,6 +5479,11 @@ function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
 }
 
 function subirDocInterno() {
+  var origen = $("#origen").val();
+  var nombreCandidato = $("#nameCandidatoInterno").val();
+ 
+ var id = $("#employee_id").val();
+
   var data = new FormData();
   var modal = $("#docsModalInterno");
 
@@ -5489,39 +5498,45 @@ function subirDocInterno() {
     return;
   }
   var doc = docInput.files[0];
-  var fechaHoraMexico = new Date().toLocaleString("es-MX", { timeZone: "America/Mexico_City" });
-  var fecha = new Date(fechaHoraMexico);
   var id_portal = "<?php echo $this->session->userdata('idPortal') ?>";
-// Sumar un año a la fecha
-    fecha.setFullYear(fecha.getFullYear() + 1);
-  // Agregar los datos esperados por el backend
-    data.append('employee_id', modal.find("#employee_id").val());
-    data.append('name', modal.find("#nombre_archivoInterno").val());
-    data.append('description', null);
-    data.append('expiry_date', '');
-    data.append('expiry_reminder', modal.find("#recordatorioExpiracion").val() || "");
-    data.append('file', doc);
-    data.append('creacion', fechaHoraMexico);
-    data.append('edicion',fechaHoraMexico);
-    data.append('status', 1);
-    data.append('id_portal', id_portal);
+  // Sumar un año a la fecha
  
-    var url_api ="<?php echo API_URL ?>";
+  // Agregar los datos esperados por el backend
+  data.append('employee_id', modal.find("#employee_id").val());
+  data.append('name', modal.find("#nombre_archivoInterno").val());
+  data.append('description', null);
+  data.append('expiry_date', '');
+  data.append('expiry_reminder', modal.find("#recordatorioExpiracion").val() || "");
+  data.append('file', doc);
+  data.append('status', 1);
+  data.append('id_portal', id_portal);
+  
+  
+  var url_api = "<?php echo API_URL ?>";
+  if (origen == 1) {
+    data.append('carpeta', '_documentEmpleado');
+    url_api = url_api + 'documents/';
+  } else {
+    url_api = url_api + 'exams/';
+    data.append('carpeta', '_examEmpleado');
+  }
+
   $.ajax({
-    url: url_api + 'documents/',
+    url: url_api,
     method: "POST",
     data: data,
     contentType: false,
     cache: false,
     processData: false,
-    beforeSend: function () {
+    beforeSend: function() {
       $('.loader').css("display", "block");
     },
-    success: function (res) {
-      setTimeout(function () {
+    success: function(res) {
+      setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
 
+      // Asegurar que res sea un objeto JSON
       var data = (typeof res === "string") ? JSON.parse(res) : res;
 
       if (data.message) {
@@ -5533,15 +5548,18 @@ function subirDocInterno() {
           timer: 2500
         });
 
-        // Limpiar campos y actualizar tabla
+        // Limpiar campos del formulario
+        let modal = $("#docsModalInterno"); // Asegúrate de cambiar esto por el ID correcto
         modal.find("#documentoInterno").val("");
         modal.find("#tablaDocsInterno").empty();
         modal.find("#nombre_archivoInterno").val("");
-        cargarDocumentosPanelClienteInterno(
-          modal.find("#idCandidatoDocs").val(),
-          modal.find("#nameCandidato").val(),
-          ""
-        );
+        console.log("🚀 ~ subirDocInterno ~ id:", id)
+        console.log("🚀 ~ subirDocInterno ~ id:", nombreCandidato)
+        console.log("🚀 ~ subirDocInterno ~ id:", origen)
+
+        // Recargar documentos
+        
+        cargarDocumentosPanelClienteInterno(id,nombreCandidato, origen);
       } else {
         Swal.fire({
           icon: 'error',
@@ -5551,14 +5569,25 @@ function subirDocInterno() {
         });
       }
     },
-    error: function (jqXHR) {
-      setTimeout(function () {
+    error: function(jqXHR) {
+      setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
+
+      let errorMessage = "Error en la solicitud.";
+
+      if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+        errorMessage = jqXHR.responseJSON.error;
+      } else if (jqXHR.status === 413) {
+        errorMessage = "El archivo es demasiado grande.";
+      } else if (jqXHR.status === 500) {
+        errorMessage = "Error interno del servidor.";
+      }
+
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: jqXHR.responseJSON?.error || 'Error en la solicitud.',
+        text: errorMessage,
         timer: 2500
       });
     }

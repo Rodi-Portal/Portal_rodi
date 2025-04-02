@@ -245,7 +245,9 @@
             <div class="col-md-6 text-center">
               <label>Nombre del Archivo *</label>
               <input name="nombre_archivoInterno" id="nombre_archivoInterno" class="form-control personal_obligado">
-              <input  type="hidden" name="employee_id" id="employee_id" value="">
+              <input  type="hidden" name="employee_id" id="employee_id" >
+              <input type="hidden"  id="nameCandidatoInterno" name="nameCandidatoInterno"  >
+              <input type="hidden"  id="origen" name="origen"  >
 
               <br>
             </div>
@@ -255,7 +257,6 @@
         <div class="modal-footer">
           <Form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
           <input type="hidden" id="idCandidatoDocsInterno" name="idCandidatoDocsInterno">
-          <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
 
             <!--button type="submit" class="btn btn-primary">Descargar todos los documentos</button -->
         </form >
