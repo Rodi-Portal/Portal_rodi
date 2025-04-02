@@ -793,7 +793,7 @@ function obtenerToken(url) {
 
 
 function loadInternos(url1) {
-  console.log(url1);
+
   $.ajax({
     url: url1,
     dataType: 'json',
@@ -871,7 +871,6 @@ function loadInternos(url1) {
             "width": "15%",
             className: 'text-center', // Centrado de contenido
             render: function(data, type, row) {
-              console.log("🚀 ~ loadInternos ~ r:", row)
               // Botón para los exámenes
               return '<div style="display: flex; justify-content: center; align-items: center;">' +
                 '<button class="btn btn-primary btn-sm" onclick="cargarDocumentosPanelClienteInterno(' +
@@ -5481,7 +5480,7 @@ function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
 function subirDocInterno() {
   var origen = $("#origen").val();
   var nombreCandidato = $("#nameCandidatoInterno").val();
- 
+
  var id = $("#employee_id").val();
 
   var data = new FormData();
@@ -5500,7 +5499,7 @@ function subirDocInterno() {
   var doc = docInput.files[0];
   var id_portal = "<?php echo $this->session->userdata('idPortal') ?>";
   // Sumar un año a la fecha
- 
+
   // Agregar los datos esperados por el backend
   data.append('employee_id', modal.find("#employee_id").val());
   data.append('name', modal.find("#nombre_archivoInterno").val());
@@ -5510,16 +5509,21 @@ function subirDocInterno() {
   data.append('file', doc);
   data.append('status', 1);
   data.append('id_portal', id_portal);
-  
-  
+
+
   var url_api = "<?php echo API_URL ?>";
-  if (origen == 1) {
+// Eliminar la barra final, si existe
+if(url_api.slice(-1) === '/') {
+    url_api = url_api.slice(0, -1);
+}
+
+if (origen == 1) {
     data.append('carpeta', '_documentEmpleado');
-    url_api = url_api + 'documents/';
-  } else {
-    url_api = url_api + 'exams/';
+    url_api = url_api + '/documents/';
+} else {
     data.append('carpeta', '_examEmpleado');
-  }
+    url_api = url_api + '/exams/';
+}
 
   $.ajax({
     url: url_api,
@@ -5553,12 +5557,10 @@ function subirDocInterno() {
         modal.find("#documentoInterno").val("");
         modal.find("#tablaDocsInterno").empty();
         modal.find("#nombre_archivoInterno").val("");
-        console.log("🚀 ~ subirDocInterno ~ id:", id)
-        console.log("🚀 ~ subirDocInterno ~ id:", nombreCandidato)
-        console.log("🚀 ~ subirDocInterno ~ id:", origen)
+
 
         // Recargar documentos
-        
+
         cargarDocumentosPanelClienteInterno(id,nombreCandidato, origen);
       } else {
         Swal.fire({
