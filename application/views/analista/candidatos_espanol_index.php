@@ -5532,6 +5532,10 @@ if (origen == 1) {
     contentType: false,
     cache: false,
     processData: false,
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    },
     beforeSend: function() {
       $('.loader').css("display", "block");
     },
