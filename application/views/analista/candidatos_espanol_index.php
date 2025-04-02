@@ -5582,44 +5582,59 @@ function subirDocInterno() {
 }
 
 
-function eliminarArchivoInterno(idDoc, archivo, id_candidato) {
-  $("#fila" + idDoc).remove();
-  $.ajax({
-    url: '<?php echo base_url('Candidato/eliminarDocumento'); ?>',
-    method: 'POST',
-    data: {
-      'idDoc': idDoc,
-      'archivo': archivo,
-      'id_candidato': id_candidato
-    },
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      var data = JSON.parse(res);
-      if (data.codigo === 1) {
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'Se ha eliminado correctamente',
-          showConfirmButton: false,
-          timer: 2500
-        })
-      } else {
-        Swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: 'Hubo un problema al eliminar, intenta más tarde',
-          showConfirmButton: false,
-          timer: 2500
-        })
-      }
-    }
-  });
+function eliminarArchivoInterno(idDoc, archivo, id_candidato, origen) {
+    Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Este documento se eliminará para siempre.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '<?php echo base_url('Candidato/eliminarDocumentoInterno'); ?>',
+                method: 'POST',
+                data: {
+                    'idDoc': idDoc,
+                    'archivo': archivo,
+                    'id_candidato': id_candidato,
+                    'origen': origen
+                },
+                beforeSend: function () {
+                    $('.loader').css("display", "block");
+                },
+                success: function (res) {
+                    setTimeout(function () {
+                        $('.loader').fadeOut();
+                    }, 200);
+                    var data = JSON.parse(res);
+                    if (data.codigo === 1) {
+                        $("#fila" + idDoc).remove(); // Elimina la fila solo si se eliminó con éxito
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Se ha eliminado correctamente',
+                            showConfirmButton: false,
+                            timer: 2500
+                        });
+                    } else {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Hubo un problema al eliminar, intenta más tarde',
+                            showConfirmButton: false,
+                            timer: 2500
+                        });
+                    }
+                }
+            });
+        }
+    });
 }
+
 
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
   if (accion == "eliminar referencia personal") {

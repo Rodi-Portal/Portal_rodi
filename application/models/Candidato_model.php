@@ -505,6 +505,12 @@ class Candidato_model extends CI_Model{
             ->where('id', $idDoc)
             ->delete('candidato_documento');
         }
+
+        function eliminarDocCandidatoInterno($idDoc, $tabla ){
+            $this->db
+            ->where('id', $idDoc)
+            ->delete($tabla);
+        }
         function eliminarChecklist($id_candidato){
             $this->db->where('id_candidato', $id_candidato)
             ->delete('verificacion_checklist');
