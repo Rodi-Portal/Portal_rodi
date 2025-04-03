@@ -1,13 +1,13 @@
 var baseUrl = document.getElementById('base_url').value;
 
+
 function registrarCliente() {
   // Resto de tu código...
-
   // Llamada AJAX para obtener el token y cargar países, estados y ciudades
-  var auth_token = "MUJkuDQTBwg6L_OLJghlvf5LDwdas3Tnm5EaF3Kny_7GIUXTah_7nbuE-K15HdxxTxo";
+  //var auth_token = "MUJkuDQTBwg6L_OLJghlvf5LDwdas3Tnm5EaF3Kny_7GIUXTah_7nbuE-K15HdxxTxo";
 
   // Agrega la lógica para cargar países, estados y ciudades aquí
-  cargarPaisesEstadosCiudades(auth_token);
+ 
   $("#password").show();
   $("#generarPass").show();
   $("#passLabel").show();

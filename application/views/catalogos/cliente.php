@@ -5,7 +5,7 @@
   <div class="align-items-center mb-4">
     <div class="row justify-content-between">
       <div class="col-sm-12 col-md-8">
-        <h2 >Administración de Usuarios y Sucursales</h1>
+        <h2 >Administración de Sucursales</h1>
       </div>
 
       <div class="col-sm-12 col-md-3">
@@ -14,7 +14,7 @@
           <span class="icon text-white-50">
             <i class="fas fa-user-tie"></i>
           </span>
-          <span class="text">Crear un usuario</span>
+          <span class="text">Crear Sucursal</span>
         </a>
       </div>
       <!-- div class="col-sm-12 col-md-2" style="display: none;">
@@ -59,7 +59,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="titulo_mensaje_contraseña">Enviar credenciales</h5>
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">Registrar</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -68,7 +68,7 @@
         <div class="row justify-content-center">
           <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
           <div class="col-md-9">
-            <label>Generae Contraseña*</label>
+            <label>Generar Contraseña*</label>
             <div class="input-group">
               <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8"
                 readonly>
@@ -251,7 +251,7 @@ $(document).ready(function() {
     rowCallback: function(row, data) {
       $("a#editar", row).bind('click', () => {
         resetModal();
-        console.log('abriendo editar  ');
+        
         $("#idCliente").val(data.idCliente);
         $("#idFacturacion").val(data.dFac);
         $("#idDomicilios").val(data.dDom);
@@ -264,7 +264,9 @@ $(document).ready(function() {
         $("#clave").val(data.clave);
 
         // Domicilio
-        cargarDatosDomicilioGeneral(data);
+        $("#item-details-countryValue").val(data.pais);
+        $("#item-details-stateValue").val(data.estado);
+        $("#item-details-cityValue").val(data.ciudad);
         $("#numero_exterior").val(data.exterior);
         $("#numero_interior").val(data.interior);
         $("#calle").val(data.calle);
@@ -632,8 +634,7 @@ function cargarDatosDomicilioGeneral(datos) {
     }
   });
 }
-</script>
-<script>
+
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
   if (accion == "activar cliente") {
     $('#titulo_mensaje1').text('Activar cliente');

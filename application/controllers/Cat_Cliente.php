@@ -32,8 +32,8 @@ class Cat_Cliente extends CI_Controller
 
         // Define las demás reglas de validación
         $this->form_validation->set_rules('clave', 'Clave', 'trim|required|max_length[3]');
-        $this->form_validation->set_rules('correo', 'Correo', 'trim|required|valid_email');
-        $this->form_validation->set_rules('password', 'Contraseña', 'trim|required');
+        $this->form_validation->set_rules('correo', 'Correo', 'trim|valid_email');
+        $this->form_validation->set_rules('password', 'Contraseña', 'trim');
         $this->form_validation->set_rules('pais_name', 'País', 'trim');
         $this->form_validation->set_rules('state_name', 'Estado', 'trim');
         $this->form_validation->set_rules('ciudad_name', 'Ciudad', 'trim');
@@ -71,6 +71,11 @@ class Cat_Cliente extends CI_Controller
             date_default_timezone_set('America/Mexico_City');
             $date = date('Y-m-d H:i:s');
             $uncode_password = $this->input->post('password');
+            if (empty($uncode_password)) {
+                // Genera una contraseña segura de 12 caracteres
+                $uncode_password = bin2hex(random_bytes(12)); 
+            }
+
             $password = password_hash($uncode_password, PASSWORD_BCRYPT);
 
             $datos_generales = array(
@@ -121,10 +126,10 @@ class Cat_Cliente extends CI_Controller
             $idGenerales = $this->input->post('idGenerales');
 
             $existe = $this->cat_cliente_model->existeCliente($this->input->post('nombre'), $this->input->post('clave'), $idCliente);
-
+            
             if ($existe == 0) {
                 $hayId = $this->cat_cliente_model->check($idCliente);
-
+               
                 if ($hayId > 0) {
                     $datos_cliente = array(
                         'edicion' => $date,
@@ -147,12 +152,7 @@ class Cat_Cliente extends CI_Controller
                         return; // Detener el flujo del código ya que hay un error
                     }
                     $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
-                    $permiso = array(
-                        'id_usuario' => $id_usuario,
-                        'cliente' => $this->input->post('nombre'),
-                    );
-
-                    $this->cat_cliente_model->editPermiso($permiso, $this->input->post('id'));
+                    
                     $msj = array(
                         'codigo' => 1,
                         'msg' => 'sucursal actualizada exitosamente',
