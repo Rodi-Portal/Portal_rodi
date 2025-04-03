@@ -72,7 +72,7 @@
           <div id="listaSucursales" class="mb-3"></div> <!-- Aquí se mostrarán las sucursales seleccionadas -->
 
           <div class="text-center">
-            <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
+            <button type="button" class="btn btn-primary" id="btnGuardarSucursal">Guardar</button>
           </div>
         </form>
       </div>
@@ -145,16 +145,7 @@ var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
-  $('#nuevoAccesoUsuariosInternos').on('shown.bs.modal', function() {
-    $(this).removeAttr("aria-hidden");
-    $(this).removeAttr('inert');
 
-  });
-  $('#nuevoAsignarSucursalUsuariosInternos').on('shown.bs.modal', function() {
-    $(this).removeAttr("aria-hidden");
-    $(this).removeAttr('inert');
-
-  });
 
   var tabla = $('#tabla').DataTable({
 
@@ -421,12 +412,10 @@ function enviarCredenciales(valor1, valor2) {
 /*********************************************************************************/
 /*--------------LLAMADO DEL BOTON REGISTRO USUARIO INTERNOS----------------------------*/
 function BotonRegistroUsuarioInterno() {
-
   // Mostrar el botón de Generar contraseña al agregar un nuevo usuario
   $("#divGenerarPassword").css('display', 'block');
   $("#ocultar-en-editar").css('display', 'block');
   $("#labelOcultar").css('display', 'block');
-
 
   $.ajax({
     url: '<?php echo base_url('Cat_UsuarioInternos/getActivos'); ?>',
@@ -443,17 +432,21 @@ function BotonRegistroUsuarioInterno() {
       $("#btnGuardar").off("click").on("click", function() {
         registroUsuariosInternos(); // Llama a la función con el ID del usuario
       });
-      $('#formAccesoUsuariosinternos')[0]
-        .reset()
+      $('#formAccesoUsuariosinternos')[0].reset();
       $('#nuevoAccesoUsuariosInternos').modal('show');
 
+      // Mover el foco al primer campo del formulario para mejorar la accesibilidad
+      $("#nombre").focus();
     }
   });
 }
 
+// Cerrar modal y liberar foco
+$('#nuevoAccesoUsuariosInternos').on('hidden.bs.modal', function () {
+  document.activeElement.blur();
+});
 
-
-/*--------------LLAMADO DEL ONCLIK DEL BOTON GUARDAR DEL REGISTRO DEL FORMULARIO----------------------------*/
+  // Función de registro de usuario
 function registroUsuariosInternos() {
   let datos = $('#formAccesoUsuariosinternos').serialize();
   $.ajax({
@@ -462,27 +455,27 @@ function registroUsuariosInternos() {
     data: datos,
     beforeSend: function() {
       $('.loader').css("display", "block");
+      $("#btnGuardar").prop("disabled", true);  // Desactivar el botón durante la solicitud
     },
     success: function(res) {
       setTimeout(function() {
         $('.loader').fadeOut();
+        $("#btnGuardar").prop("disabled", false);  // Rehabilitar el botón después de la respuesta
       }, 200);
       var data = JSON.parse(res);
-      //console.log("🚀 ~ registroUsuariosInternos ~ data:", data)
 
       if (data.codigo === 1) {
         $("#nuevoAccesoUsuariosInternos").modal('hide');
-        recargarTable()
+        recargarTable();
         Swal.fire({
           position: 'center',
           icon: 'success',
           title: 'Usuario guardado correctamente',
           showConfirmButton: false,
           timer: 2500
-        })
+        });
 
-        $('#formAccesoUsuariosinternos')[0]
-          .reset(); //se limpian nuevamente los campos de registro después de guardar
+        $('#formAccesoUsuariosinternos')[0].reset();  // Limpia el formulario
       } else {
         $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'block').html(data.msg);
       }
@@ -623,7 +616,7 @@ function eliminarSucursal(index) {
 }
 
 // Guardar asignaciones
-$("#btnGuardar").on("click", function() {
+$("#btnGuardarSucursal").on("click", function() {
   if (usuariosSeleccionados.length === 0 || sucursalesSeleccionadas.length === 0) {
     Swal.fire({
       icon: 'warning',
@@ -834,7 +827,5 @@ function generarPassword() {
 
 function recargarTable() {
   $("#tabla").DataTable().ajax.reload();
-
-  debug: true
 }
 </script>

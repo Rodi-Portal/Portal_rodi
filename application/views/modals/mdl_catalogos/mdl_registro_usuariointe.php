@@ -93,14 +93,13 @@
 
 
 <!-- Modal de Confirmación  para los botones de tipos de  Acciones-->
-<div class="modal fade" id="mensajeModal" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
-  aria-hidden="true">
+<div class="modal fade" id="mensajeModal" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_mensaje"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span >&times;</span>
         </button>
       </div>
       <div class="modal-body" id="mensaje"></div>
@@ -117,16 +116,7 @@
 
 
 <script>
-  $("#nuevoAccesoUsuariosInternos").on("hidden.bs.modal", function() {
-    $("#nuevoAccesoUsuariosInternos input").val("");
-    $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'none');
-    $("#titulo_nuevo_modal").text("Registro de usuarios internos");
-   $(this).attr('inert', 'true');
 
-  // Limpiar el foco
-  document.activeElement.blur();
-
-  }); 
   $("#accesoModal").on("hidden.bs.modal", function() {
     $("#accesoModal input, #accesoModal select").val("");
     $("#accesoModal #id_rol").val(0);
@@ -134,7 +124,7 @@
     $("#accesoModal #msj_error").css('display', 'none');
     $("#idusuario").val("");
      // Habilitar los elementos fuera del modal
-     document.activeElement.blur();
+   
 
   });
   $("#editarModal").on("hidden.bs.modal", function() {
@@ -142,11 +132,6 @@
     $("#editarModal #msj_error").css('display', 'none');
     $("#titulo_editar_modal").text("Nuevo Usuario");
     // Habilitar los elementos fuera del modal
-
-
-    // Asegúrate de que el foco se libere cuando se cierra el modal
-    document.activeElement.blur();
-
 
   }); 
 
