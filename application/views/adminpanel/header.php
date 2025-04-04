@@ -210,7 +210,7 @@ echo $token  */?>
 
       <!-- Catalogos -->
       <?php
-      if (in_array(5, $submenus) &&  ($idRol == 1 || $idRol == 6)) {?>
+      if (in_array(5, $submenus) ||  ($idRol == 1 || $idRol == 6 || $idRol == 9)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
@@ -220,13 +220,13 @@ echo $token  */?>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-            if ($idRol == 1 || $idRol == 6) {?>
+            if ($idRol == 1 || $idRol == 6 || $idRol == 9){?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
               Administradores</a>
             <?php
             }?>
             <?php
-          if ($idRol == 1 || $idRol == 6) {?>
+          if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
@@ -246,7 +246,7 @@ echo $token  */?>
         </div>
       </li>
       <?php }
-      if ($idRol == 6 && ($idRol == 1)) {?>
+      if ($portal == 1 && ($idRol == 1 || $idRol == 6))  {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
       <?php }?>
@@ -352,7 +352,7 @@ echo $token  */?>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <?php if ($idRol == 1 || $idRol == 6) {?>
+                <?php if ($idRol == 1 ) {?>
                 <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Actualizar Logo
@@ -362,7 +362,6 @@ echo $token  */?>
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Suscripción
                 </a>
-
                 <?php }?>
                 <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>

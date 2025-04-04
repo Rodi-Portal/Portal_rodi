@@ -451,7 +451,7 @@ class Login extends CI_Controller
         switch ($tipo_acceso) {
             case 'usuario':
                $rol = $this->session->userdata('idrol');
-                if($rol == 1 || $rol == 6){
+                if($rol == 1 || $rol == 6 || $rol == 9){
                     redirect('Cat_UsuarioInternos/index');
                     break;
                 }else{
@@ -517,7 +517,7 @@ class Login extends CI_Controller
                 switch ($tipo_acceso) {
                     case 'usuario':
                         $rol = $this->session->userdata('idrol');
-                if($rol == 1 || $rol == 6){
+                if($rol == 1 || $rol == 6 || $rol == 9){
                     redirect('Cat_UsuarioInternos/index');
                     break;
                 }else{

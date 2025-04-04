@@ -4,21 +4,24 @@
     <div class="col-sm-12 col-md-6 d-flex justify-content-start align-items-center">
       <h2>Administradores del Sistema</h2>
     </div>
-    <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
-      <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
-        <span class="icon text-white-50">
-          <i class="fas fa-user-tie"></i>
-        </span>
-        <span class="text">Crear Usuario</span>
-      </a>
-      <p> </p>
-      <a href="#" class="btn btn-primary btn-icon-split" onclick="AsignarSucursalUsuarioInterno()">
-        <span class="icon text-white-50">
-          <i class="fas fa-user-tie"></i>
-        </span>
-        <span class="text">Asignar Usuario</span>
-      </a>
-    </div>
+    <?php $idRol = $this->session->userdata('idrol'); ?>
+<?php if ($idRol == 1 || $idRol == 6): ?>
+  <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
+    <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
+      <span class="icon text-white-50">
+        <i class="fas fa-user-tie"></i>
+      </span>
+      <span class="text">Crear Usuario</span>
+    </a>
+    <p> </p>
+    <a href="#" class="btn btn-primary btn-icon-split" onclick="AsignarSucursalUsuarioInterno()">
+      <span class="icon text-white-50">
+        <i class="fas fa-user-tie"></i>
+      </span>
+      <span class="text">Asignar Usuario</span>
+    </a>
+  </div>
+<?php endif; ?>
 
   </div>
   <div>
@@ -140,9 +143,11 @@
 
 
 <script>
-var idGerente = '<?php echo $this->session->userdata('id_rol'); ?>';
+var idRol = Number('<?php echo (int)$this->session->userdata('idrol'); ?>');
+console.log("🚀 ~ idRol:", idRol)
 var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
-
+let rolesVisibles = [1, 6];
+let mostrarColumna = rolesVisibles.includes(idRol); 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
@@ -156,6 +161,7 @@ $(document).ready(function() {
     "serverSide": false,
     "ajax": url,
     "columns": [{
+      
         title: 'id',
         data: 'id',
         visible: false
@@ -244,6 +250,7 @@ $(document).ready(function() {
         title: 'Acciones',
         data: 'id_usuario',
         bSortable: false,
+        visible: mostrarColumna,
         "width": "15%",
         mRender: function(data, type, full) {
           let editar =
