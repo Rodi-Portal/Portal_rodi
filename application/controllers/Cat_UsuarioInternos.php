@@ -98,7 +98,7 @@ class Cat_UsuarioInternos extends CI_Controller
             'id_usuario' => $id_usuario,
             'id_rol' => $id_rol,
         );
-
+        $this->session->set_userdata('idrol', $id_rol);
         $datosGenerales = array(
             'nombre' => $nombre,
             'paterno' => $paterno,
