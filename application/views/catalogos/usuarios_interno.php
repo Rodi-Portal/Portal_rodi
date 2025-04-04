@@ -833,6 +833,7 @@ function generarPassword() {
 }
 
 function recargarTable() {
-  $("#tabla").DataTable().ajax.reload();
+  location.reload();
+  //$("#tabla").DataTable().ajax.reload();
 }
 </script>
