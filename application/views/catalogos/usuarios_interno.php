@@ -310,7 +310,7 @@ $(document).ready(function() {
         $("#titulo_nuevo_modal").text("Editar Usuario");
         $("#nombre").val(data.nombre);
         $("#paterno").val(data.paterno);
-        if (data.id_rol == 6) {
+        if (data.id_rol == 9) {
           $("#id_rol").val(data.id_rol);
           $("#id_rol").prop('disabled', true);
 
