@@ -274,7 +274,7 @@ $(document).ready(function() {
             full.correo + '" data-id="' + full.id_datos_generales +
             '"><i class="fas fa-sync-alt" style="font-size: 16px;"></i></a> ';
 
-          if (full.nombre_rol === 'Gerente') {
+          if (full.id_rol == 1 || full.id_rol == 6 ) {
             return editar + credenciales;
           } else {
             return editar + accion + eliminar + credenciales;
