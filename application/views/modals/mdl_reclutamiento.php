@@ -1,7 +1,7 @@
 <?php
-header('Content-Type: text/html; charset=utf-8');
+    header('Content-Type: text/html; charset=utf-8');
 
-// Esto te mostrará el contenido de $reqs
+    // Esto te mostrará el contenido de $reqs
 
 ?>
 <div class="modal fade" id="nuevoAspiranteModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -10,23 +10,23 @@ header('Content-Type: text/html; charset=utf-8');
       <div class="modal-header">
         <h4 class="modal-title">Datos del aspirante</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <form id="formAspirante">
           <div class="col-sm-12 ">
             <label for="buscador">Selecciona una Requisición :</label>
-            <select name="req_asignada" id="req_asignada"  >
+            <select name="req_asignada" id="req_asignada">
 
               <?php
                   if ($reqs) {
-                      foreach ($reqs as $req) {?>
-                                <option value="<?php echo $req->id; ?>">
-                                  <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-                                </option>
-                                <?php }
-                  } else {?>
+                  foreach ($reqs as $req) {?>
+              <option value="<?php echo $req->id; ?>">
+                <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+              </option>
+              <?php }
+              } else {?>
               <option value="">Sin requisiones registradas</option>
               <?php }?>
             </select>
@@ -62,15 +62,13 @@ header('Content-Type: text/html; charset=utf-8');
             </div>
             <div class="col-sm-12 col-md-4">
               <label>Medio de contacto *</label>
-              <select name="medio" id="medio" class="form-control obligado">
-
+              <select name="medio" id="medio" class="form-control obligado w-100">
                 <option value="">Selecciona</option>
-                <?php
-if ($medios != null) {
-    foreach ($medios as $m) {?>
+                <?php if ($medios != null): ?>
+                <?php foreach ($medios as $m): ?>
                 <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
-                <?php }
-}?>
+                <?php endforeach; ?>
+                <?php endif; ?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -99,14 +97,13 @@ if ($medios != null) {
 </div>
 
 <!-- Modal para cargar CV -->
-<div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel"
-  aria-hidden="true">
+<div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCargaCVLabel">Cargar CV/Solicitud</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -129,25 +126,36 @@ if ($medios != null) {
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Registro de acción al aspirante: <br><span class="nombreAspirante"></span></h4>
+        <h4 class="modal-title-modal-key-title-blanco">Registro de acción al aspirante: <span
+            class="nombreAspirante"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-success text-start" role="alert" style="text-align: left;">
+          ✅ <strong>NOTA:</strong> En esta sección podrás registrar las acciones que se van tomando en el proceso de
+          reclutamiento en base a este Aspirante.
+        </div>
         <form id="formAccion">
           <div class="row">
             <div class="col-12">
               <label>Acción a aplicar *</label>
               <select name="accion_aspirante" id="accion_aspirante" class="form-control obligado">
                 <option value="">Selecciona</option>
+                <option value="otro">Otro</option>
                 <?php if ($acciones != null) {
-    foreach ($acciones as $a) {?>
+                    foreach ($acciones as $a) {?>
                 <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
                 <?php }
-}?>
+                }?>
+                <!-- Opción para escribir otra acción -->
               </select>
               <br>
+
+              <!-- Input oculto para la acción personalizada -->
+              <input type="text" name="otra_accion" id="otra_accion" class="form-control mt-2"
+                placeholder="Escribe la acción" style="display: none;">
             </div>
           </div>
           <div class="row">
@@ -155,6 +163,54 @@ if ($medios != null) {
               <label>Comentario / Descripción / Fecha y lugar *</label>
               <textarea class="form-control" id="accion_comentario" name="accion_comentario" rows="4"></textarea>
               <br>
+            </div>
+          </div>
+          <div class="alert alert-warning text-start" role="alert" style="text-align: left;">
+            ⚠️ <strong>NOTA:</strong> Si la acción a registrar influye en el estatus o color del aspirante en bolsa de
+            trabajo, o en el proceso, no olvides modificar los siguientes campos:
+            <ul>
+              <ul>
+                <li><strong>Estatus del Aspirante</strong>: Este cambia el color y estatus del aspirante en bolsa de
+                  trabajo.
+                </li>
+                <li><strong>Estatus del Proceso</strong>: Este cambia el estatus actual del proceso de reclutamiento.
+                </li>
+              </ul>
+          </div>
+
+          <div class="row">
+            <!-- Primer Select -->
+
+
+            <!-- Segundo Select -->
+            <div class="col-md-6">
+              <label for="estatus_aspirante" data-toggle="tooltip" data-placement="top"
+                title="El cambio realizado impactará directamente en la Bolsa de Trabajo, actualizando tanto el color como el estatus del aspirante">
+                Estatus del aspirante
+                <i class="fas fa-info-circle text-primary"></i>
+              </label>
+              <select class="form-control" id="estatus_aspirante" name="estatus_aspirante">
+                <option value="">Selecciona</option>
+                <option value="1" data-color="#6c757d">⚪ En espera</option>
+                <option value="3" data-color="#ffc107">🟡 Precaucion</option>
+                <option value="2" data-color="#17a2b8">🔵 En proceso de reclutamiento</option>
+                <option value="4" data-color="#28a745">🟢 Listo para iniciar el proceso de preempleo</option>
+                <option value="0" data-color="#dc3545">🔴 Bloquear aspirante</option>
+              </select>
+            </div>
+            <!-- Tercer Select -->
+            <div class="col-md-6">
+              <label for="select3" data-toggle="tooltip" data-placement="top"
+                title="Esta opción se registra en este módulo 'En proceso' y se refleja en la columna 'Estatus Actual'">
+                Estatus proceso
+                <i class="fas fa-info-circle text-primary"></i>
+              </label>
+              <select class="form-control" id="estatus_proceso" name="estatus_proceso">
+                <option value="">Selecciona</option>
+                <option value="1">Completado</option>
+                <option value="3">Cancelado</option>
+                <option value="2">Eliminar Estatus Final</option>
+              </select>
             </div>
           </div>
         </form>
@@ -174,7 +230,7 @@ if ($medios != null) {
       <div class="modal-header">
         <h4 class="modal-title">Historial de movimientos del aspirante: <br><span class="nombreAspirante"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -194,7 +250,7 @@ if ($medios != null) {
       <div class="modal-header">
         <h4 class="modal-title">Estatus de requisición</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -203,17 +259,17 @@ if ($medios != null) {
           <div class="row">
             <div class="col-12">
               <label>Requisición *</label>
-              <select name="req_estatus" id="req_estatus" >
+              <select name="req_estatus" id="req_estatus">
                 <option value="">Selecciona</option>
                 <?php
 
-if ($reqs) {
-    foreach ($reqs as $req) {?>
+                    if ($reqs) {
+                    foreach ($reqs as $req) {?>
                 <option value="<?php echo $req->id; ?>">
                   <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
                 </option>
                 <?php }
-}?>
+                }?>
               </select>
               <br>
             </div>
@@ -255,7 +311,7 @@ if ($reqs) {
       <div class="modal-header">
         <h4 class="modal-title">Reactivar requisición</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -265,13 +321,13 @@ if ($reqs) {
             <select name="reactivar_req" id="reactivar_req" class="form-control obligado">
               <option value="">Selecciona</option>
               <?php
-if ($reqs) {
-    foreach ($reqs as $req) {?>
+                  if ($reqs) {
+                  foreach ($reqs as $req) {?>
               <option value="<?php echo $req->id; ?>">
                 <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
               </option>
               <?php }
-}?>
+              }?>
             </select>
             <br>
           </div>
@@ -293,7 +349,7 @@ if ($reqs) {
       <div class="modal-header">
         <h4 class="modal-title">Historial de empleos de: <br><span class="nombreRegistro"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -312,7 +368,7 @@ if ($reqs) {
     <div class="modal-content">
       <div class="modal-header">
         <meta charset="UTF-8">
-        <h4 class="modal-title">Register Candidate</h4>
+        <h4 class="modal-title">Registro de candidatos</h4>
 
         <!-- div id="language-switch">
           <label for="language-select">Language:</label>
@@ -322,29 +378,29 @@ if ($reqs) {
           </select>
         </div -->
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
 
       </div>
 
       <div class="modal-body">
-        <div class="alert alert-info text-center">General Data</div>
+        <div class="alert alert-info text-center">Datos generales</div>
         <form id="nuevoRegistroForm">
           <div class="row">
             <div class="col-4">
-              <label>First Name (s) *</label>
+              <label>Nombre (s) *</label>
               <input type="text" class="form-control obligado" name="nombre_registro" id="nombre_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
-              <label>Last Name*</label>
+              <label>Paterno*</label>
               <input type="text" class="form-control obligado" name="paterno_registro" id="paterno_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
-              <label>Second Last Name</label>
+              <label>Materno</label>
               <input type="text" class="form-control" name="materno_registro" id="materno_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
@@ -352,7 +408,7 @@ if ($reqs) {
           </div>
           <div class="row">
             <div class="col-4">
-              <label>Subclient (Supplier)*</label>
+              <label>Subcliente</label>
               <select name="subcliente" id="subcliente" class="form-control obligado">
                 <option value="0">N/A</option>
               </select>
@@ -362,18 +418,23 @@ if ($reqs) {
 
 
             <div class="col-4">
-              <label>Position*</label>
-              <select name="puesto" id="puesto" class="form-control">
-                <option value="0">N/A</option>
+              <label>Posición*</label>
+              <select name="puesto" id="puesto" class="form-control" onchange="mostrarInputOtro()">
+                <option value="0" selected>N/A</option>
+                <option value="otro">Otro</option>
               </select>
 
               <br>
+
+              <!-- Input oculto que se muestra cuando seleccionan "Otro" -->
+              <input type="text" name="puesto_otro" id="puesto_otro" class="form-control"
+                placeholder="Especificar posición" style="display: none;">
             </div>
 
 
 
             <div class="col-4">
-              <label>Phone *</label>
+              <label>Teléfono *</label>
               <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro"
                 maxlength="16">
               <input type="hidden" class="form-control obligado" name="id_cliente_portal" id="id_cliente_portal">
@@ -382,22 +443,22 @@ if ($reqs) {
           </div>
           <div class="row">
             <div class="col-4">
-              <label>Country of Residence *</label>
+              <label>País de residencia *</label>
               <select class="form-control" id="pais" name="pais">
                 <?php
-              if ($paises != null) {
-                  foreach ($paises as $p) {
-                      $default = ($p->nombre == 'México') ? 'selected' : '';?>
-                              <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
-                              <?php
-              }
-              }
-              ?>
-                            </select>
+                    if ($paises != null) {
+                        foreach ($paises as $p) {
+                        $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
+                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <?php
+                    }
+                    }
+                ?>
+              </select>
               <br>
             </div>
             <div class="col-4">
-              <label>Email* </label>
+              <label>Correo* </label>
               <input type="text" class="form-control obligado" name="correo_registro" id="correo_registro">
               <br>
             </div>
@@ -411,7 +472,7 @@ if ($reqs) {
           </div>
           <div class="row">
             <div class="col-4">
-              <label>Social Security Number (SSN)</label>
+              <label>Número de Seguro Social (SSN)</label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
               <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden"
                 maxlength="11">
@@ -430,20 +491,27 @@ if ($reqs) {
             </ul>
           </div -->
           <div class="alert alert-info text-center">
-            Choose what you want to do
+            Seleccione una de las siguientes opciones:
           </div>
           <div class="row">
             <div class="col-12">
               <select name="opcion_registro" id="opcion_registro" class="form-control registro_obligado">
-                <option value="">Select</option>
-                <option value="0">Select a previous project or create a new one</option>
-                <option value="1">Register the candidate with only a Drug Test and/or Medical Test</option>
+                <option value="2" selected>Registrar mi propio proceso - Gratis</option>
+                <option value="0">Seleccionar un proyecto anterior o crear uno nuevo / Enviado a RODI</option>
+                <option value="1">Registrar al candidato solo con Prueba de Drogas y/o Examen Médico / Enviado a RODI
+                </option>
               </select>
+
               <br>
             </div>
           </div>
-          <div class="alert alert-info text-center div_info_previo">Select a Previous Project</div>
+          <div class="alert alert-info text-center div_info_previo">Seleccionar un Proyecto Anterior</div>
+
           <div class="row div_previo">
+            <div class="alert alert-warning text-center">
+              Al enviar a RODI se genera un costo. Si no estás seguro de los costos, ponte en contacto con <a
+                href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>.
+            </div>
             <div class="col-md-12">
               <label>Previous projects</label>
               <select class="form-control" name="previos" id="previos"></select><br>
@@ -457,8 +525,9 @@ if ($reqs) {
           </div>
           <div id="detalles_previo"></div>
           <div class="nuevo_proyecto">
-            <div class="alert alert-info text-center div_info_projectt">Select a New Project</div>
+
             <div class="row div_project">
+              <div class="alert alert-info text-center div_info_projectt">Select a New Project</div>
               <div class="col-md-4">
                 <label>Location *</label>
                 <select name="region" id="region" class="form-control registro_obligado">
@@ -641,19 +710,24 @@ if ($reqs) {
             </div>
           </div>
           <div class="alert alert-danger text-center div_info_test">Complementary Tests</div>
+
           <div class="row div_test">
+            <div class="alert alert-warning text-center">
+              Al enviar a RODI se genera un costo. Si no estás seguro de los costos, ponte en contacto con <a
+                href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>.
+            </div>
             <div class="col-md-4">
               <label>Drug test *</label>
               <select name="examen_registro" id="examen_registro" class="form-control registro_obligado">
                 <option value="">Select</option>
                 <option value="0" selected>N/A</option>
                 <?php
-        foreach ($paquetes_antidoping as $paq) {?>
-                        <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
-                        </option>
-                        <?php
-        }?>
-                      </select>
+                foreach ($paquetes_antidoping as $paq) {?>
+                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
+                </option>
+                <?php
+                }?>
+              </select>
               <br>
             </div>
             <div class="col-md-4">
@@ -677,8 +751,8 @@ if ($reqs) {
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-success" onclick="registrarCandidato()">Save</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" onclick="registrarCandidato()">Guardar</button>
       </div>
     </div>
   </div>
@@ -691,7 +765,7 @@ if ($reqs) {
       <div class="modal-header">
         <h4 class="modal-title">Historial de comentarios con respecto a: <br><span class="nombreRegistro"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -725,7 +799,7 @@ if ($reqs) {
       <div class="modal-body">
         <div>
           <button type="button" class="close custom_modal_close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <span>&times;</span>
           </button>
         </div>
         <div class="alert alert-info">
@@ -1393,7 +1467,7 @@ if ($reqs) {
       <div class="modal-header">
         <h4 class="modal-title" id="titulo_asignarUsuarioModal"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1401,14 +1475,14 @@ if ($reqs) {
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_usuario"></label>
-              <select id="asignar_usuario" name ="asignar_usuario" class="form-control" >
-              <option value="">Select</option>
+              <select id="asignar_usuario" name="asignar_usuario" class="form-control">
+                <option value="">Select</option>
                 <?php
-if (!empty($usuarios_asignacion)) {
-    foreach ($usuarios_asignacion as $row) {?>
+                    if (! empty($usuarios_asignacion)) {
+                    foreach ($usuarios_asignacion as $row) {?>
                 <option value="<?php echo $row->id ?>"><?php echo $row->usuario ?></option>
                 <?php }
-} else {?>
+                } else {?>
                 <option value="">No hay usuarios correspondientes</option>
                 <?php }?>
               </select>
@@ -1417,16 +1491,16 @@ if (!empty($usuarios_asignacion)) {
           <div class="row mb-3">
             <div class="col-md-12">
               <label for="asignar_registro"></label>
-              <select name="asignar_registro" id="asignar_registro" >
-              <option value="">Select</option>
+              <select name="asignar_registro" id="asignar_registro">
+                <option value="">Select</option>
                 <?php
-if (!empty($registros_asignacion)) {
-    foreach ($registros_asignacion as $fila) {?>
+                    if (! empty($registros_asignacion)) {
+                    foreach ($registros_asignacion as $fila) {?>
                 <option value="<?php echo $fila->id ?>">
-                  <?php echo '#' . $fila->id . '  ' . $fila->nombreCompleto . (!empty($fila->puesto) ? ' Puesto: ' . $fila->puesto : ''); ?>
+                  <?php echo '#' . $fila->id . '  ' . $fila->nombreCompleto . (! empty($fila->puesto) ? ' Puesto: ' . $fila->puesto : ''); ?>
                 </option>
                 <?php }
-} else {?>
+                } else {?>
                 <option value="">No hay registros para asignar</option>
                 <?php }?>
               </select>
@@ -1449,7 +1523,7 @@ if (!empty($registros_asignacion)) {
         <h4 class="modal-title">Resultados de los estudios y exámenes de los candidatos de la Requisición: <br><span
             class="nombreRegistro"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1468,7 +1542,7 @@ if (!empty($registros_asignacion)) {
       <div class="modal-header">
         <h4 class="modal-title"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1498,7 +1572,7 @@ if (!empty($registros_asignacion)) {
         <h4 class="modal-title">Información de ingreso al empleo del candidato: <br><span class="nombreRegistro"></span>
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1547,7 +1621,7 @@ if (!empty($registros_asignacion)) {
       <div class="modal-header">
         <h4 class="modal-title">Mensajes de avances del candidato: <br><span id="nombreCandidato"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1584,7 +1658,7 @@ if (!empty($registros_asignacion)) {
       <div class="modal-header">
         <h4 class="modal-title" id="titulo_mensaje"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1606,6 +1680,16 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 </script>
 
 <script>
+document.getElementById('accion_aspirante').addEventListener('change', function() {
+  var inputOtro = document.getElementById('otra_accion');
+  if (this.value === 'otro') {
+    inputOtro.style.display = 'block'; // Mostrar input si selecciona "Otro"
+    inputOtro.setAttribute('required', 'required'); // Hacerlo obligatorio
+  } else {
+    inputOtro.style.display = 'none'; // Ocultar input si elige otra opción
+    inputOtro.removeAttribute('required'); // Quitar obligatoriedad
+  }
+});
 var pag = 1;
 $('.div_info_project, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
   .css('display', 'none');
@@ -1633,39 +1717,31 @@ $("#opcion_registro").change(function() {
   $('.div_info_test').css('display', 'block');
   $('.div_test').css('display', 'flex');
   $("#registroCandidatoModal #msj_error").css('display', 'none');
+
   if (opcion == 1) {
     $('.nuevo_proyecto').css('display', 'none');
-
-    $('.div_check').css('display', 'none');
-    $('.div_info_check').css('display', 'none');
-    $('.div_info_extra').css('display', 'none');
-    $('.div_extra').css('display', 'none');
-  }
-  if (opcion == 0) {
+    $('.div_check, .div_info_check, .div_info_extra, .div_extra').css('display', 'none');
+    $('.div_previo, .div_info_previo').css('display', 'none');
+  } else if (opcion == 0) {
     $('.nuevo_proyecto').css('display', 'none');
-
     $('.div_previo').css('display', 'flex');
-    $('.div_info_previo').css('display', 'block');
+    $('.div_info_previo, #detalles_previo').css('display', 'block');
     $('.div_check').css('display', 'flex');
     $('.div_info_check').css('display', 'block');
     $('.div_info_extra').css('display', 'block');
     $('.div_extra').css('display', 'flex');
-  }
-  if (opcion == '') {
+  } else if (opcion == 2) {
+    $('.nuevo_proyecto').css('display', 'block'); // Si necesitas mostrar algo nuevo
+    $('.div_check, .div_info_check, .div_info_extra, .div_extra').css('display', 'none');
+    $('.div_previo, .div_info_previo').css('display', 'none');
+    $('.div_info_project, .div_project, .div_info_test, .div_test, #detalles_previo').css('display', 'none');
+  } else if (opcion == '') {
     $('.nuevo_proyecto').css('display', 'none');
-
-    $('.div_previo').css('display', 'none');
-    $('.div_info_previo').css('display', 'none');
-    $('.div_check').css('display', 'none');
-    $('.div_info_check').css('display', 'none');
-    $('.div_info_project').css('display', 'none');
-    $('.div_project').css('display', 'none');
-    $('.div_info_test').css('display', 'none');
-    $('.div_test').css('display', 'none');
-    $('.div_info_extra').css('display', 'none');
-    $('.div_extra').css('display', 'none');
+    $('.div_previo, .div_info_previo, .div_check, .div_info_check, .div_info_project, .div_project, .div_info_test, .div_test, .div_info_extra, .div_extra')
+      .css('display', 'none');
   }
 });
+
 $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
   cargarClientesActivos(urltraerClientes);
   $("#nuevaRequisicionModal #titulo_paso").text('Datos  ');
@@ -1799,7 +1875,8 @@ $('#nuevaRequisicionModal #btnRegresar').on('click', function() {
 $('#nuevoAspiranteModal').on('hidden.bs.modal', function(e) {
   $("#nuevoAspiranteModal #msj_error").css('display', 'none');
   $("#nuevoAspiranteModal input, #nuevoAspiranteModal select, #nuevoAspiranteModal textarea").val('');
-  $("#nuevoAspiranteModal #req_asignada").val(null).trigger('change'); // Usar null para reiniciar el valor en Select2
+  $("#nuevoAspiranteModal #req_asignada").val(null).trigger(
+    'change'); // Usar null para reiniciar el valor en Select2
   $('#cv_previo').html('');
   $('#idAspirante').val('');
 });
@@ -1814,15 +1891,15 @@ $('#estatusRequisicionModal').on('hidden.bs.modal', function(e) {
 $("#registroCandidatoModal").on("hidden.bs.modal", function() {
   $("#examen_registro").empty();
   $("#examen_registro").append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
-  
+
   <?php
-  if ($paquetes_antidoping != null) {
-      foreach ($paquetes_antidoping as $paq) { ?>
-    $("#examen_registro").append(
-      '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
+      if ($paquetes_antidoping != null) {
+      foreach ($paquetes_antidoping as $paq) {?>
+  $("#examen_registro").append(
+    '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
   <?php
       }
-  } ?>
+  }?>
 
   $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
   $("#examen_registro, #examen_medico, #examen_psicometrico").val(0).trigger('change'); // Actualizar Select2
@@ -2032,25 +2109,25 @@ $('#ingresoCandidatoModal').on('hidden.bs.modal', function(e) {
 });
 $(document).ready(function() {
   $('#req_estatus').select2({
-        placeholder: "Selecciona",
-        allowClear: true,
-        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
-    });
-    $('#asignar_usuario').select2({
-        placeholder: "Selecciona",
-        allowClear: true,
-        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
-    });
-    $('#asignar_registro').select2({
-        placeholder: "Selecciona",
-        allowClear: true,
-        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
-    });
-    $('#req_asignada').select2({
-        placeholder: "Selecciona",
-        allowClear: true,
-        width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
-    });
+    placeholder: "Selecciona",
+    allowClear: true,
+    width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+  });
+  $('#asignar_usuario').select2({
+    placeholder: "Selecciona",
+    allowClear: true,
+    width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+  });
+  $('#asignar_registro').select2({
+    placeholder: "Selecciona",
+    allowClear: true,
+    width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+  });
+  $('#req_asignada').select2({
+    placeholder: "Selecciona",
+    allowClear: true,
+    width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
+  });
   $("#previos").change(function() {
     var previo = $(this).val();
     if (previo != 0) {
@@ -2117,5 +2194,17 @@ function nuevoRegistro() {
     }
   });
   $('#newModal').modal('show');
+}
+
+function mostrarInputOtro() {
+  var select = document.getElementById("puesto");
+  var inputOtro = document.getElementById("puesto_otro");
+
+  if (select.value == "otro") {
+    inputOtro.style.display = "block"; // Mostrar input
+  } else {
+    inputOtro.style.display = "none"; // Ocultar input
+    inputOtro.value = ""; // Limpiar el input si se cambia a otra opción
+  }
 }
 </script>

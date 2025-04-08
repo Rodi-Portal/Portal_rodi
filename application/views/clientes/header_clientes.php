@@ -82,17 +82,17 @@
 <body id="page-top">
   <!-- JavaScript -->
   <?php
-/*echo $modalCliente;
+      /*echo $modalCliente;
 echo '<pre>';
 print_r($cliente);
 echo '</pre>';*/
-$id_cliente = $this->session->userdata('idcliente');
-/*echo '<pre>';
+      $id_cliente = $this->session->userdata('idcliente');
+      /*echo '<pre>';
 echo $procesosActuales[0]->url;
 print_r($procesosActuales);
 echo '</pre>';*/
 
-?>
+  ?>
 
   <!-- Page Wrapper -->
   <div id="wrapper">
@@ -225,7 +225,7 @@ echo '</pre>';*/
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                    <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                           <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -400,9 +400,9 @@ echo '</pre>';*/
                     let acciones =
                       '<div class="text-center"><div class="btn-group dropstart"><button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button><ul class="dropdown-menu"><li><a href="javascript:void(0)" data-toggle="tooltip" title="Progress messages" onclick="viewMessages(' +
                       data + ',' + idioma +
-                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i>                                                                                                                                                                                                                                                          <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
+                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
                       data +
-                      ')" class="dropdown-item"><i class="fas fa-folder"></i>                                                                                                                                                                                                                                        <?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
+                      ')" class="dropdown-item"><i class="fas fa-folder"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
                     return acciones
                   }
                 },
@@ -764,6 +764,7 @@ echo '</pre>';*/
           window.location.reload();
         }
 
+        // Función que carga una sección y la muestra
         function loadPageInSection() {
           var id_cliente = <?php echo $id_cliente; ?>;
           loadSection(
@@ -777,6 +778,7 @@ echo '</pre>';*/
         // Cargar ambas secciones al principio
         $(document).ready(function() {
           $('.dropdown-toggle').dropdown();
+
           // Ocultar todas las secciones dinámicas al inicio
           $('.dynamic-section').hide();
 
@@ -797,8 +799,11 @@ echo '</pre>';*/
               method: "GET",
               data: data,
               success: function(response) {
-                $('#' + sectionIdToShow).html(response);
-                if (callback) callback(); // Ejecutar callback si existe
+                $('#' + sectionIdToShow).html(response); // Cargar el contenido en la sección
+                if (callback) {
+                  callback(); // Ejecutar callback si existe
+                }
+                showSection(sectionIdToShow); // Mostrar la sección después de cargar
               },
               error: function(xhr) {
                 console.error(`Error al cargar la sección: ${xhr.responseText}`);
@@ -809,18 +814,12 @@ echo '</pre>';*/
           }
         }
 
-        // Función para mostrar una sección y ocultar las demás
-        function showSection(sectionIdToShow) {
-          $('.dynamic-section').hide(); // Ocultar todas
-          $('#' + sectionIdToShow).show(); // Mostrar solo la requerida
-        }
-
-
-        // Funciones para mostrar u ocultar las secciones según sea necesario
+        // Función para mostrar la sección
         function showSection(sectionIdToShow) {
           // Ocultar todas las secciones
           $('.dynamic-section').hide();
-          // Mostrar la sección solicitada
+
+          // Mostrar la sección seleccionada
           $('#' + sectionIdToShow).show();
         }
 

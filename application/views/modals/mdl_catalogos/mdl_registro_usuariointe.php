@@ -4,7 +4,7 @@
       <div class="modal-header">
         <h5 class="modal-title"  id="titulo_nuevo_modal">Registro de usuarios internos *</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+        <span>&times;</span> 
         </button>
       </div>
 
@@ -29,6 +29,8 @@
               <select class="form-control" id="id_rol" name="id_rol">
                <option value="">Selecciona un rol</option>
                <option value="6">Administrador</option>
+               <option value="9">Gerente</option>
+               <option value="9">RRHH</option>
                 <option value="4">Reclutadora</option>
                 <option value="11">Coordinador  reclutamiento </option>
                 <option value="13">Visor</option>
@@ -88,15 +90,16 @@
 </div>
 
 
+
+
 <!-- Modal de Confirmación  para los botones de tipos de  Acciones-->
-<div class="modal fade" id="mensajeModal" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
-  aria-hidden="true">
+<div class="modal fade" id="mensajeModal" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_mensaje"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span >&times;</span>
         </button>
       </div>
       <div class="modal-body" id="mensaje"></div>
@@ -113,23 +116,25 @@
 
 
 <script>
-  $("#nuevoAccesoUsuariosInternos").on("hidden.bs.modal", function() {
-    $("#nuevoAccesoUsuariosInternos input").val("");
-    $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'none');
-    $("#titulo_nuevo_modal").text("Registro de usuarios internos");
-  }); 
+
   $("#accesoModal").on("hidden.bs.modal", function() {
     $("#accesoModal input, #accesoModal select").val("");
     $("#accesoModal #id_rol").val(0);
     $("#accesoModal input").removeClass("requerido");
     $("#accesoModal #msj_error").css('display', 'none');
     $("#idusuario").val("");
+     // Habilitar los elementos fuera del modal
+   
+
   });
   $("#editarModal").on("hidden.bs.modal", function() {
     $("#editarModalinput").val("");
     $("#editarModal #msj_error").css('display', 'none');
     $("#titulo_editar_modal").text("Nuevo Usuario");
+    // Habilitar los elementos fuera del modal
+
   }); 
+
 </script>
 
 

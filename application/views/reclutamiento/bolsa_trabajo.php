@@ -167,16 +167,16 @@
 					if($r->status == 1){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
             $text_estatus = 'Estatus: <b>En espera <br></b>';
-            if($r->semaforo == 0){
-              $color_estatus = '';
-            }
-            if($r->semaforo == 1){
-              $color_estatus = 'req_positivo';
-            }
-            if($r->semaforo == 2){
+            if($r->status == 0){
               $color_estatus = 'req_negativa';
             }
-            if($r->semaforo == 3){
+            if($r->status == 4){
+              $color_estatus = 'req_positivo';
+            }
+            if($r->status == 2){
+              $color_estatus = 'req_activa';
+            }
+            if($r->status == 3){
               $color_estatus = 'req_preventiva';
             }
 					}
@@ -185,14 +185,14 @@
 						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>En proceso de reclutamiento<br></b>';
             $disabled_comentario = 'isDisabled';
 					}
-          if($r->status == 3 && $r->semaforo == 1){
+          if($r->status == 3 ){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_positivo'; $text_estatus = 'Estatus: <b>Aceptado para iniciar ESE<br></b>';
+						$color_estatus = 'req_preventiva'; $text_estatus = 'Estatus: <b>Preventivo Revisar Historial<br></b>';
             $disabled_comentario = 'isDisabled';
 					}
           if($r->status == 4){
 						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>ESE en proceso<br></b>'; 
+						$color_estatus = 'req_positivo'; $text_estatus = 'Estatus: <b>Listo para preempleo<br></b>'; 
             $disabled_comentario = 'isDisabled';
 					}
           $usuario = (empty($r->usuario))? 'Sin asignar' : $r->usuario;

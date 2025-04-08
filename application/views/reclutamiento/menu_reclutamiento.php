@@ -133,33 +133,51 @@
 
 <script>
 $(document).ready(function() {
-
-  
   // Función para cargar contenido
   function loadContent(url) {
-  $.get(url, function(data) {
-    $('#module-content').html(data);
-    
-  }).fail(function() {
-    $('#module-content').html('<p>Error al cargar el contenido. Por favor, inténtalo de nuevo.</p>');
+    $.get(url, function(data) {
+      $('#module-content').html(data);
+    }).fail(function() {
+      $('#module-content').html('<p>Error al cargar el contenido. Por favor, inténtalo de nuevo.</p>');
+    });
+  }
+
+  // Verificar si hay una URL guardada en localStorage
+  var savedUrl = localStorage.getItem('lastMenuUrl');
+  var defaultUrl = "<?php echo site_url('Reclutamiento/requisicion'); ?>";
+
+  // Si hay una URL guardada, úsala, si no, usa la predeterminada
+  var initialUrl = savedUrl ? savedUrl : defaultUrl;
+  loadContent(initialUrl);
+
+  // Marcar como activo el botón correspondiente
+  $('.custom-link').each(function() {
+    if ($(this).attr('href') === initialUrl) {
+      $('.custom-link').removeClass('empleados-header-button-active');
+      $(this).addClass('empleados-header-button-active');
+    }
   });
-}
 
-  // Cargar el contenido de la primera pestaña por defecto
-  loadContent("<?php echo site_url('Reclutamiento/requisicion'); ?>");
-
+  // Al hacer clic en una opción del menú
   $('.custom-link').on('click', function(e) {
-    e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
-    var url = $(this).attr('href'); // Obtener la URL del enlace
+    e.preventDefault(); // Evitar que el navegador siga el enlace
+    var url = $(this).attr('href');
 
-    // Cambiar la clase activa
+    // Guardar en localStorage
+    localStorage.setItem('lastMenuUrl', url);
+
+    // Cambiar el estilo activo
     $('.custom-link').removeClass('empleados-header-button-active');
     $(this).addClass('empleados-header-button-active');
 
-    loadContent(url); // Cargar el contenido de la pestaña seleccionada
+    // Cargar el contenido
+    loadContent(url);
   });
+
+  // Alternar sidebar (opcional si tienes esa funcionalidad)
   $('#sidebarToggle').on('click', function() {
-    $('#sidebar').toggleClass('hidden'); // Alternar la clase 'hidden'
+    $('#sidebar').toggleClass('hidden');
   });
 });
+
 </script>

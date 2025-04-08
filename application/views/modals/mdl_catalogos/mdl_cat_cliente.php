@@ -12,7 +12,7 @@
         <div>
 
         </div>
-        <div class="alert alert-info">¡Bienvenido al registro de un nuevo cliente! Estamos aquí para facilitarte el
+        <div class="alert alert-info">¡Bienvenido al registro de una nueva sucursal! Estamos aquí para facilitarte el
           proceso. Puedes completar el formulario parcialmente si así lo deseas. Los campos marcados con un
           asterisco (*) son obligatorios: Nombre y Clave
         </div>
@@ -34,7 +34,7 @@
           <div class="row">
             <div class="col-md-12">
 
-              <label for="nombre">Nombre del cliente *</label>
+              <label for="nombre">Nombre de la Sucursal *</label>
               <input type="text" class="form-control" data-field="Nombre del Cliente" data-required="required"
                 id="nombre" name="nombre" placeholder="Ingrese el nombre del cliente"
                 onkeyup="this.value=this.value.toUpperCase()" required>
@@ -50,19 +50,30 @@
               <br>
             </div>
             <div class="col-md-6">
-              <label for="correo">Correo</label>
+              <label for="correo">Correo *</label>
               <input type="text" class="form-control" data-field="Correo" id="correo" name="correo"
-                data-required="required" placeholder="Ingrese el correo electrónico" required>
+                 placeholder="Ingrese el correo electrónico">
               <br>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="alert alert-warning" role="alert">
+                <strong>Nota:</strong> Los campos <strong>correo</strong> y <strong>contraseña</strong> solo son
+                necesarios si se cuenta con el módulo de <strong>reclutamiento</strong> y <strong>pre empleo</strong>
+                activos.
+              </div>
             </div>
           </div>
           <div class="row">
             <div class="col-md-12">
               <label for="password" id="passLabel">Generar contraseña *</label>
               <div class="input-group">
-                <input type="password" class="form-control" data-field="Contraseña" name="password" id="password" data-required="required"  readonly required>
+                <input type="password" class="form-control" data-field="Contraseña" name="password" id="password"
+                   readonly>
                 <div class="input-group-append">
-                  <button type="button" class="btn btn-primary" id="generarPass" onclick="generarPassword()">Generar</button>
+                  <button type="button" class="btn btn-primary" id="generarPass"
+                    onclick="generarPassword()">Generar</button>
                 </div>
               </div>
             </div>
@@ -159,29 +170,26 @@
           <div class="row">
             <div class="col-md-6">
               <label for="item-details-countryValue">País</label>
-              <select class="form-control" id="item-details-countryValue" name="pais_name">
-                <!-- Opciones de país cargadas dinámicamente -->
-              </select>
+              <input type="text" class="form-control" id="item-details-countryValue" name="pais_name"
+                placeholder="Ingrese su país">
               <br>
             </div>
             <div class="col-md-6">
               <label for="item-details-stateValue">Estado</label>
-              <select class="form-control" id="item-details-stateValue" name="state_name">
-                <option value="NULL">Primero Selecciona un Pais</option>
-                <!-- Opciones de estado cargadas dinámicamente -->
-              </select>
+              <input type="text" class="form-control" id="item-details-stateValue" name="state_name"
+                placeholder="Ingrese su estado">
               <br>
             </div>
+
           </div>
           <div class="row">
             <div class="col-md-6">
               <label for="item-details-cityValue">Ciudad</label>
-              <select class="form-control" id="item-details-cityValue" name="ciudad_name">
-                <option value="NULL">Primero Selecciona un Estado</option>
-                <!-- Opciones de ciudad cargadas dinámicamente -->
-              </select>
+              <input type="text" class="form-control" id="item-details-cityValue" name="ciudad_name"
+                placeholder="Ingrese su ciudad">
               <br>
             </div>
+
             <div class="col-md-6">
               <label for="colonia">Colonia</label>
               <input type="text" class="form-control" id="colonia" name="colonia" placeholder="Ingrese la colonia">
@@ -263,7 +271,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Cliente: <span class="nombreCliente"></span></h4>
+        <h4 class="modal-title">Sucursal: <span class="nombreCliente"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -283,7 +291,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Registro de credenciales del cliente</h5>
+        <h5 class="modal-title">Registro de credenciales Sucursal</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -292,7 +300,7 @@
         <form id="formAccesoCliente">
           <div class="row">
             <div class="col-md-12">
-              <label for="id_cliente">Cliente *</label>
+              <label for="id_cliente">Sucuarsal *</label>
               <select name="cliente" id="id_cliente" class="form-control"></select>
               <br>
             </div>
@@ -354,11 +362,12 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <label for="password_us" >Generar contraseña *</label>
+              <label for="password_us">Generar contraseña *</label>
               <div class="input-group">
-                <input type="password" class="form-control" data-field="Contraseña" name="password_us" id="password_us" data-required="required"  readonly required>
+                <input type="password" class="form-control" data-field="Contraseña" name="password_us" id="password_us"
+                  data-required="required" readonly required>
                 <div class="input-group-append">
-                  <button type="button" class="btn btn-primary"  onclick="generarPassword_us()">Generar</button>
+                  <button type="button" class="btn btn-primary" onclick="generarPassword_us()">Generar</button>
                 </div>
               </div>
             </div>

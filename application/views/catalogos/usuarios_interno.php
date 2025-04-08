@@ -4,14 +4,25 @@
     <div class="col-sm-12 col-md-6 d-flex justify-content-start align-items-center">
       <h2>Administradores del Sistema</h2>
     </div>
-    <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
-      <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
-        <span class="icon text-white-50">
-          <i class="fas fa-user-tie"></i>
-        </span>
-        <span class="text">Crear Usuario</span>
-      </a>
-    </div>
+    <?php $idRol = $this->session->userdata('idrol'); ?>
+<?php if ($idRol == 1 || $idRol == 6): ?>
+  <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
+    <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
+      <span class="icon text-white-50">
+        <i class="fas fa-user-tie"></i>
+      </span>
+      <span class="text">Crear Usuario</span>
+    </a>
+    <p> </p>
+    <a href="#" class="btn btn-primary btn-icon-split" onclick="AsignarSucursalUsuarioInterno()">
+      <span class="icon text-white-50">
+        <i class="fas fa-user-tie"></i>
+      </span>
+      <span class="text">Asignar Usuario</span>
+    </a>
+  </div>
+<?php endif; ?>
+
   </div>
   <div>
     <P> En este módulo podrás gestionar a tus usuarios internos. Tendrás la capacidad de crear <br>nuevos usuarios,
@@ -30,16 +41,55 @@
     </div>
   </div>
 </div>
+<!-- Modal  Para  asignar  usuario a Sucursales-->
+<div class="modal fade" id="nuevoAsignarSucursalUsuariosInternos" data-backdrop="static" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Asignar Sucursal a Usuarios</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="formAsignarSucursalUsuariosinternos">
 
+          <!-- Usuarios -->
+          <div class="form-group">
+            <label for="usuario">Usuarios</label>
+            <select id="usuario" class="form-control">
+              <option value="">Seleccione un usuario</option>
+            </select>
+          </div>
+          <div id="listaUsuarios" class="mb-3"></div> <!-- Aquí se mostrarán los usuarios seleccionados -->
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="selectAllSucursales"> Seleccionar todas las sucursales
+            </label>
+          </div>
+          <!-- Sucursales -->
+          <div class="form-group">
+            <label for="sucursal">Sucursales</label>
+            <select id="sucursal" class="form-control">
+              <option value="">Seleccione una sucursal</option>
+            </select>
+          </div>
+          <div id="listaSucursales" class="mb-3"></div> <!-- Aquí se mostrarán las sucursales seleccionadas -->
+
+          <div class="text-center">
+            <button type="button" class="btn btn-primary" id="btnGuardarSucursal">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Modal de Confirmación  para los botones de tipos de  Acciones-->
-<div class="modal fade" id="mensajeModal" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
-  aria-hidden="true">
+<div class="modal fade" id="mensajeModal" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_mensaje"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body" id="mensaje"></div>
@@ -51,14 +101,13 @@
   </div>
 </div>
 <!-- Modal de Confirmación  para los botones de tipos de  Acciones-->
-<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
-  aria-hidden="true">
+<div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_mensaje_contraseña">Send credentials</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -94,14 +143,14 @@
 
 
 <script>
-var idGerente = '<?php echo $this->session->userdata('id_rol'); ?>';
+var idRol = Number('<?php echo (int)$this->session->userdata('idrol'); ?>');
+console.log("🚀 ~ idRol:", idRol)
 var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
-
+let rolesVisibles = [1, 6];
+let mostrarColumna = rolesVisibles.includes(idRol); 
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
-  $('#nuevoAccesoUsuariosInternos').on('shown.bs.modal', function() {
-    $(this).find('input[type=text],select,textarea').filter(':visible:first').focus();
-  });
+
 
   var tabla = $('#tabla').DataTable({
 
@@ -112,6 +161,7 @@ $(document).ready(function() {
     "serverSide": false,
     "ajax": url,
     "columns": [{
+      
         title: 'id',
         data: 'id',
         visible: false
@@ -200,6 +250,7 @@ $(document).ready(function() {
         title: 'Acciones',
         data: 'id_usuario',
         bSortable: false,
+        visible: mostrarColumna,
         "width": "15%",
         mRender: function(data, type, full) {
           let editar =
@@ -259,7 +310,7 @@ $(document).ready(function() {
         $("#titulo_nuevo_modal").text("Editar Usuario");
         $("#nombre").val(data.nombre);
         $("#paterno").val(data.paterno);
-        if (data.id_rol == 6) {
+        if (data.id_rol == 9) {
           $("#id_rol").val(data.id_rol);
           $("#id_rol").prop('disabled', true);
 
@@ -368,12 +419,10 @@ function enviarCredenciales(valor1, valor2) {
 /*********************************************************************************/
 /*--------------LLAMADO DEL BOTON REGISTRO USUARIO INTERNOS----------------------------*/
 function BotonRegistroUsuarioInterno() {
-
   // Mostrar el botón de Generar contraseña al agregar un nuevo usuario
   $("#divGenerarPassword").css('display', 'block');
   $("#ocultar-en-editar").css('display', 'block');
   $("#labelOcultar").css('display', 'block');
-
 
   $.ajax({
     url: '<?php echo base_url('Cat_UsuarioInternos/getActivos'); ?>',
@@ -390,14 +439,21 @@ function BotonRegistroUsuarioInterno() {
       $("#btnGuardar").off("click").on("click", function() {
         registroUsuariosInternos(); // Llama a la función con el ID del usuario
       });
-      $('#formAccesoUsuariosinternos')[0]
-        .reset()
+      $('#formAccesoUsuariosinternos')[0].reset();
       $('#nuevoAccesoUsuariosInternos').modal('show');
 
+      // Mover el foco al primer campo del formulario para mejorar la accesibilidad
+      $("#nombre").focus();
     }
   });
 }
-/*--------------LLAMADO DEL ONCLIK DEL BOTON GUARDAR DEL REGISTRO DEL FORMULARIO----------------------------*/
+
+// Cerrar modal y liberar foco
+$('#nuevoAccesoUsuariosInternos').on('hidden.bs.modal', function () {
+  document.activeElement.blur();
+});
+
+  // Función de registro de usuario
 function registroUsuariosInternos() {
   let datos = $('#formAccesoUsuariosinternos').serialize();
   $.ajax({
@@ -406,33 +462,212 @@ function registroUsuariosInternos() {
     data: datos,
     beforeSend: function() {
       $('.loader').css("display", "block");
+      $("#btnGuardar").prop("disabled", true);  // Desactivar el botón durante la solicitud
     },
     success: function(res) {
       setTimeout(function() {
         $('.loader').fadeOut();
+        $("#btnGuardar").prop("disabled", false);  // Rehabilitar el botón después de la respuesta
       }, 200);
       var data = JSON.parse(res);
-      //console.log("🚀 ~ registroUsuariosInternos ~ data:", data)
 
       if (data.codigo === 1) {
-        $("#nuevoAccesoUsuariosInternos").modal('hide')
-        recargarTable()
+        $("#nuevoAccesoUsuariosInternos").modal('hide');
+        recargarTable();
         Swal.fire({
           position: 'center',
           icon: 'success',
           title: 'Usuario guardado correctamente',
           showConfirmButton: false,
           timer: 2500
-        })
+        });
 
-        $('#formAccesoUsuariosinternos')[0]
-          .reset(); //se limpian nuevamente los campos de registro después de guardar
+        $('#formAccesoUsuariosinternos')[0].reset();  // Limpia el formulario
       } else {
         $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'block').html(data.msg);
       }
     }
   });
 }
+
+/*********************************************************************************/
+/*--------------LLAMADO DEL BOTON REGISTRO USUARIO INTERNOS----------------------------*/
+let usuariosSeleccionados = [];
+let sucursalesSeleccionadas = [];
+
+function AsignarSucursalUsuarioInterno() {
+  $.ajax({
+    url: '<?php echo base_url("Cat_UsuarioInternos/getUsuarios");?>',
+    type: 'POST',
+    dataType: 'json',
+    beforeSend: function() {
+      $('.loader').show();
+    },
+    success: function(res) {
+      console.log("usuarios del servidor:", res); // Imprime la respuesta completa en consola
+
+      $('.loader').fadeOut();
+      $("#usuario").html('<option value="">Seleccione un usuario</option>');
+      $.each(res.data, function(index, usuario) {
+        $("#usuario").append('<option value="' + usuario.id_usuario + '">' + usuario.referente + '</option>');
+      });
+
+      // Cargar sucursales
+      $.ajax({
+        url: '<?php echo base_url("Cat_UsuarioInternos/getSucursales");?>',
+        type: 'POST',
+        dataType: 'json',
+        success: function(res) {
+          console.log("Sucursales del servidor:", res); // Imprime la respuesta completa en consola
+
+          $("#sucursal").html('<option value="">Seleccione una sucursal</option>');
+          $.each(res.data, function(index, sucursal) {
+            $("#sucursal").append('<option value="' + sucursal.id + '">' + sucursal.nombre +
+              '</option>');
+          });
+        }
+      });
+
+
+      $('#nuevoAsignarSucursalUsuariosInternos').modal('show');
+    }
+  });
+}
+// Evento para seleccionar todas las sucursales
+$("#selectAllSucursales").on("change", function() {
+  let isChecked = $(this).is(":checked");
+
+  if (isChecked) {
+    $("#sucursal option").each(function() {
+      let id = $(this).val();
+      let nombre = $(this).text();
+
+      if (id && !sucursalesSeleccionadas.some(s => s.id === id)) {
+        sucursalesSeleccionadas.push({
+          id,
+          nombre
+        });
+      }
+    });
+  } else {
+    sucursalesSeleccionadas = [];
+  }
+
+  mostrarSucursalesSeleccionadas();
+});
+
+// Agregar usuario a la lista
+$("#usuario").change(function() {
+  let id = $(this).val();
+  let nombre = $("#usuario option:selected").text();
+
+  if (id && !usuariosSeleccionados.some(u => u.id === id)) {
+    usuariosSeleccionados.push({
+      id,
+      nombre
+    });
+    mostrarUsuariosSeleccionados();
+  }
+});
+
+// Agregar sucursal a la lista
+$("#sucursal").change(function() {
+  let id = $(this).val();
+  let nombre = $("#sucursal option:selected").text();
+
+  if (id && !sucursalesSeleccionadas.some(s => s.id === id)) {
+    sucursalesSeleccionadas.push({
+      id,
+      nombre
+    });
+    mostrarSucursalesSeleccionadas();
+  }
+});
+
+// Mostrar usuarios seleccionados
+function mostrarUsuariosSeleccionados() {
+  $("#listaUsuarios").html("");
+  usuariosSeleccionados.forEach((usuario, index) => {
+    $("#listaUsuarios").append(`
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                ${usuario.nombre}
+                <button type="button" class="close" onclick="eliminarUsuario(${index})">&times;</button>
+            </div>
+        `);
+  });
+}
+
+// Mostrar sucursales seleccionadas
+function mostrarSucursalesSeleccionadas() {
+  $("#listaSucursales").html("");
+  sucursalesSeleccionadas.forEach((sucursal, index) => {
+    $("#listaSucursales").append(`
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${sucursal.nombre}
+                <button type="button" class="close" onclick="eliminarSucursal(${index})">&times;</button>
+            </div>
+        `);
+  });
+}
+
+// Eliminar usuario seleccionado
+function eliminarUsuario(index) {
+  usuariosSeleccionados.splice(index, 1);
+  mostrarUsuariosSeleccionados();
+}
+
+// Eliminar sucursal seleccionada
+function eliminarSucursal(index) {
+  sucursalesSeleccionadas.splice(index, 1);
+  mostrarSucursalesSeleccionadas();
+}
+
+// Guardar asignaciones
+$("#btnGuardarSucursal").on("click", function() {
+  if (usuariosSeleccionados.length === 0 || sucursalesSeleccionadas.length === 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atención',
+      text: 'Seleccione al menos un usuario y una sucursal.',
+      confirmButtonText: 'Aceptar'
+    });
+    return;
+  }
+  let idsUsuarios = usuariosSeleccionados.map(u => u.id);
+  let idsSucursales = sucursalesSeleccionadas.map(s => s.id);
+  $.ajax({
+    url: '<?php echo base_url("Cat_UsuarioInternos/asignarSucursal");?>',
+    type: 'POST',
+    data: {
+      usuarios: idsUsuarios,
+      sucursales: idsSucursales
+    },
+    success: function(response) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: 'Asignación guardada con éxito.',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        $('#nuevoAsignarSucursalUsuariosInternos').modal('hide');
+        usuariosSeleccionados = [];
+        sucursalesSeleccionadas = [];
+        mostrarUsuariosSeleccionados();
+        mostrarSucursalesSeleccionadas();
+      });
+    },
+    error: function() {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al guardar la asignación.',
+        confirmButtonText: 'Aceptar'
+      });
+    }
+  });
+});
+
+
 
 /****************************ACCION**EDITAR USUARIO***********************************************/
 
@@ -598,8 +833,7 @@ function generarPassword() {
 }
 
 function recargarTable() {
-  $("#tabla").DataTable().ajax.reload();
-
-  debug: true
+  location.reload();
+  //$("#tabla").DataTable().ajax.reload();
 }
 </script>
