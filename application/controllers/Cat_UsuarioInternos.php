@@ -98,7 +98,7 @@ class Cat_UsuarioInternos extends CI_Controller
             'id_usuario' => $id_usuario,
             'id_rol' => $id_rol,
         );
-        if($idUsuario == $this->session->usersdata('id')){
+        if($idUsuario == $this->session->userdata('id')){
             $this->session->set_userdata('idrol', $id_rol);
         }
         $datosGenerales = array(
