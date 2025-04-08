@@ -54,14 +54,14 @@
       <select class="form-control" name="opcion_requisicion" id="opcion_requisicion">
         <option value="">All</option>
         <?php
-if ($reqs) {
-    foreach ($reqs as $req) {?>
+            if ($reqs) {
+            foreach ($reqs as $req) {?>
         <option value="<?php echo $req->id; ?>">
           <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
         </option>
         <?php
-header('Content-Type: text/html; charset=utf-8');}
-}?>
+            header('Content-Type: text/html; charset=utf-8');}
+        }?>
       </select><br>
     </div>
   </div>
@@ -194,38 +194,43 @@ function changeDataTable(url) {
           var historial =
             '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
           var iniciar_socio =
-            '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Iniciar ESE"><i class="fas fa-play-circle"></i> Iniciar ESE</a>';
+            '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Enviar al módulo de Preempleo para candidatos con o sin estudios previos a la contratación."><i class="fas fa-play-circle"></i>Enviar a Preempleo</a>';
           let ingreso =
             '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>';
 
           var acciones = '';
-          if (full.status_final == null) {
-            acciones =
-              '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-              '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
-          } else {
-            if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
-              if (full.idCandidato != null && full.idCandidato != '') {
-                acciones = '<b>ESE finalizado</b>';
-              } else {
-                acciones = iniciar_socio;
-              }
+
+          acciones =
+            '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
+            '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
+
+          if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
+            if (full.idCandidato != null && full.idCandidato != '') {
+              acciones = '<b>ESE finalizado</b>';
             } else {
-              if (full.status_final != 'CANCELADO') {
-                acciones = ingreso;
-              }
+              acciones = iniciar_socio +
+                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
+                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+            }
+          } else {
+            if (full.status_final != 'CANCELADO') {
+              acciones = iniciar_socio + ingreso +
+
+                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
             }
           }
+
 
           return '<div class="btn-group">' +
             '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
             '<div class="dropdown-menu">' +
+
             acciones +
+
             historial +
             comentarios +
             cvLink +
 
-            ingreso +
 
 
             '</div>' +
@@ -236,11 +241,18 @@ function changeDataTable(url) {
 
       {
         title: 'Estatus actual',
-        data: 'status',
+        data: null, // Usamos `null` para poder controlar manualmente qué se muestra
         bSortable: false,
-        "width": "10%",
-        mRender: function(data, type, full) {
-          return '<b>' + data + '<b>';
+        width: "10%",
+        render: function(data, type, row) {
+          console.log("🚀 ~ changeDataTable ~ row:", row)
+          if (row.status_final !== null && row.status_final !== "") {
+            return row.status_final;
+          } else if (row.status != null && row.status != "") {
+            return row.status;
+          } else {
+            return "Registrado";
+          }
         }
       }
     ],
@@ -254,31 +266,43 @@ function changeDataTable(url) {
 
       //Color de estatus
       if (data.status_final == 'CANCELADO') {
-        $('td:eq(6)', row).css({
-          'background-color': '#c71c2d',
-          'color': 'white'
-        });
-      }
-      if (data.status_final == 'FINALIZADO') {
-        $('td:eq(6)', row).css({
-          'background-color': '#f9fc12',
-          'color': 'black'
-        });
-      }
-      if (data.status_final == 'COMPLETADO') {
-        $('td:eq(6)', row).css({
-          'background-color': '#04bf13',
-          'color': 'white'
-        });
-      }
-      if (data.status_final == 'ESE FINALIZADO') {
-        for (let i = 0; i < 7; i++) {
-          $('td:eq(' + i + ')', row).css({
-            'background-color': '#1cc88a',
-            'color': 'white'
-          });
-        }
-      }
+  $('td:eq(6)', row).css({
+    'background-color': '#f8d7da',
+    'color': '#721c24',
+     'font-weight': 'bold'
+  });
+}
+if (data.status_final == 'BLOQUEADO') {
+  $('td:eq(6)', row).css({
+    'background-color': '#f5c6cb',
+    'color': '#721c24',
+     'font-weight': 'bold'
+  });
+}
+if (data.status_final == 'FINALIZADO') {
+  $('td:eq(6)', row).css({
+    'background-color': '#d4edda',
+    'color': '#155724',
+     'font-weight': 'bold'
+  });
+}
+if (data.status_final == 'COMPLETADO') {
+  $('td:eq(6)', row).css({
+    'background-color': '#c3e6cb',
+    'color': '#155724',
+     'font-weight': 'bold'
+  });
+}
+if (!data.status_final || data.status_final.trim() === "") {
+  $('td:eq(6)', row).css({
+    'background-color': '#d1ecf1',
+    'color': '#0c5460',
+     'font-weight': 'bold'
+  });
+}
+
+
+
       $("a#editar_aspirante", row).bind('click', () => {
         $("#idAspirante").val(data.id);
         $("#idBolsa").val(data.id_bolsa_trabajo);
@@ -306,7 +330,9 @@ function changeDataTable(url) {
         $("#idAspirante").val(data.id);
         $(".nombreAspirante").text(data.aspirante);
         $('#idRequisicion').val(data.id_requisicion);
-        // console.log("🚀 ~ $ ~ data:", data)
+        $('#semaforo').val(data.semaforo);
+        $('#estatus_aspirante').val(data.status_aspirante);
+        $('#semaforo').val(data.semaforo);
 
         $("#nuevaAccionModal").modal('show');
       });
@@ -327,6 +353,7 @@ function changeDataTable(url) {
             salida += '<th>Fecha</th>';
             salida += '<th>Estatus</th>';
             salida += '<th>Comentario / Descripción / Fecha y lugar</th>';
+            salida += '<th>Eliminar Movimiento</th>';
             salida += '</tr>';
             if (res != 0) {
               var dato = JSON.parse(res);
@@ -334,10 +361,13 @@ function changeDataTable(url) {
                 var aux = dato[i]['creacion'].split(' ');
                 var f = aux[0].split('-');
                 var fecha = f[2] + '/' + f[1] + '/' + f[0];
-                salida += "<tr>";
+                salida += "<tr id='fila_" + dato[i]['id'] + "'>";
                 salida += '<td>' + fecha + '</td>';
                 salida += '<td>' + dato[i]['accion'] + '</td>';
                 salida += '<td>' + dato[i]['descripcion'] + '</td>';
+                salida +=
+                  '<td><i class="fas fa-trash-alt text-danger" style="cursor:pointer;" onclick="eliminarRegistro(' +
+                  dato[i]['id'] + ')"></i></td>';
                 salida += "</tr>";
               }
             } else {
@@ -618,10 +648,14 @@ function subirCVReqAspirante() {
 
 function guardarAccion() {
   var datos = new FormData();
+  datos.append('otra_accion', $("#otra_accion").val());
   datos.append('accion', $("#accion_aspirante").val());
   datos.append('comentario', $("#accion_comentario").val());
   datos.append("id_requisicion", $('#idRequisicion').val());
   datos.append("id_aspirante", $('#idAspirante').val());
+  datos.append('semaforo', $("#semaforo").val());
+  datos.append("estatus_aspirante", $('#estatus_aspirante').val());
+  datos.append("estatus_proceso", $('#estatus_proceso').val());
 
   $.ajax({
     url: '<?php echo base_url('Reclutamiento/guardarAccionRequisicion'); ?>',
@@ -648,7 +682,7 @@ function guardarAccion() {
           showConfirmButton: false,
           timer: 3000
         })
-        console.log("🚀 ~ guardarAccion ~ data.msg:", data.msg)
+        //console.log("🚀 ~ guardarAccion ~ data.msg:", data.msg)
       } else {
         Swal.fire({
           icon: 'error',
@@ -874,6 +908,64 @@ function verHistorialBolsaTrabajo(id, nombreCompleto) {
     }
   });
 }
+
+function eliminarRegistro(id) {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: "¡Esta acción no se puede deshacer!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, continuar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Segunda confirmación
+      Swal.fire({
+        title: '¿Realmente deseas eliminar el registro?',
+        text: "Esta acción es definitiva.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then((result2) => {
+        if (result2.isConfirmed) {
+          // Llamada AJAX al controlador
+          $.ajax({
+            url: '<?php echo base_url('Reclutamiento/eliminarRegistro'); ?>',
+            type: 'POST',
+            data: {
+              id: id
+            },
+            success: function(response) {
+              try {
+                var res = JSON.parse(response);
+
+                if (res.status) {
+                  Swal.fire('Eliminado', res.mensaje, 'success');
+
+                  // Elimina la fila del DOM si tienes una estructura tipo: <tr id="fila_ID">
+                  $("#fila_" + id).remove();
+
+                } else {
+                  Swal.fire('Atención', res.mensaje, 'warning');
+                }
+
+              } catch (e) {
+                Swal.fire('Error', 'Respuesta inesperada del servidor.', 'error');
+                console.error('Error al parsear respuesta:', e, response);
+              }
+            },
+            error: function(xhr, status, error) {
+              Swal.fire('Error', 'Ocurrió un error al eliminar.', 'error');
+              console.error('Error AJAX:', status, error);
+            }
+          });
+        }
+      });
+    }
+  });
+}
+
 
 function updateAdmission(section) {
   let id_aspirante = $('#idAspirante').val()

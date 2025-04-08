@@ -1,597 +1,644 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Funciones_model extends CI_Model{
+class Funciones_model extends CI_Model
+{
 
-  function getEstados(){
-    $this->db
-    ->select('*')
-    ->from('estado')
-    ->order_by('nombre','ASC');
+    public function getEstados()
+    {
+        $this->db
+            ->select('*')
+            ->from('estado')
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getMunicipios($id_estado){
-    $this->db
-    ->select('id, nombre')
-    ->from('municipio')
-    ->where('id_estado', $id_estado)
-    ->order_by('nombre','ASC');
+    public function getMunicipios($id_estado)
+    {
+        $this->db
+            ->select('id, nombre')
+            ->from('municipio')
+            ->where('id_estado', $id_estado)
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getClientesActivos(){
-    $this->db
-    ->select("cl.*")
-    ->from("cliente as cl")
-    ->where("cl.status", 1)
-    ->where("cl.eliminado", 0)
-    ->order_by("cl.nombre", 'ASC');
+    public function getClientesActivos()
+    {
+        $this->db
+            ->select("cl.*")
+            ->from("cliente as cl")
+            ->where("cl.status", 1)
+            ->where("cl.eliminado", 0)
+            ->order_by("cl.nombre", 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getClientesInglesActivos(){
-    $this->db
-    ->select("cl.*")
-    ->from("cliente as cl")
-    ->where("cl.ingles", 1)
-    ->where("cl.status", 1)
-    ->where("cl.eliminado", 0)
-    ->order_by("cl.nombre", 'ASC');
+    public function getClientesInglesActivos()
+    {
+        $this->db
+            ->select("cl.*")
+            ->from("cliente as cl")
+            ->where("cl.ingles", 1)
+            ->where("cl.status", 1)
+            ->where("cl.eliminado", 0)
+            ->order_by("cl.nombre", 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getTiposIdentificaciones(){
-    $this->db
-    ->select('*')
-    ->from('tipo_identificacion')
-    ->where('status', 1)
-    ->where('eliminado', 0)
-    ->order_by('id','ASC');
+    public function getTiposIdentificaciones()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_identificacion')
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('id', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getClaveCliente($id_cliente){
-    $this->db
-    ->select('cl.clave')
-    ->from('cliente as cl')
-    ->where('cl.id', $id_cliente);
+    public function getClaveCliente($id_cliente)
+    {
+        $this->db
+            ->select('cl.clave')
+            ->from('cliente as cl')
+            ->where('cl.id', $id_cliente);
 
-    $consulta = $this->db->get();
-    $resultado = $consulta->row();
-    return $resultado;
-  }
-  function getClaveProyecto($id_cliente, $id_proyecto){
-    $this->db
-    ->select('cl.clave as claveCliente, pro.nombre as claveProyecto')
-    ->from('cliente as cl')
-    ->join('proyecto as pro','pro.id_cliente = cl.id')
-    ->where('cl.id', $id_cliente)
-    ->where('pro.id', $id_proyecto);
-
-    $consulta = $this->db->get();
-    $resultado = $consulta->row();
-    return $resultado;
-  }
-  function getClaveSubcliente($id_cliente, $id_subcliente){
-    $this->db
-    ->select('cl.clave as claveCliente, sub.clave as claveSubcliente')
-    ->from('cliente as cl')
-    ->join('subcliente as sub','sub.id_cliente = cl.id')
-    ->where('cl.id', $id_cliente)
-    ->where('sub.id', $id_subcliente);
-
-    $consulta = $this->db->get();
-    $resultado = $consulta->row();
-    return $resultado;
-  }
-  function getClaveSubclienteProyecto($id_cliente, $id_proyecto, $id_subcliente){
-    $this->db
-    ->select('cl.clave as claveCliente, pro.nombre as claveProyecto, sub.clave as claveSubcliente')
-    ->from('cliente as cl')
-    ->join('proyecto as pro','pro.id_cliente = cl.id')
-    ->join('subcliente as sub','sub.id = pro.id_subcliente','left')
-    ->where('cl.id', $id_cliente)
-    ->where('pro.id', $id_proyecto)
-    ->where('sub.id', $id_subcliente);
-
-    $consulta = $this->db->get();
-    $resultado = $consulta->row();
-    return $resultado;
-  }
-  function getTiposDocumentos(){
-    $this->db
-    ->select('*')
-    ->from('tipo_documentacion')
-    ->where('status',1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
-
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $consulta  = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
     }
-  }
-  function getEstadosCiviles(){
-    $this->db
-    ->select('*')
-    ->from('estado_civil')
-    ->where('id !=', 7)
-    ->order_by('nombre','ASC');
+    public function getClaveProyecto($id_cliente, $id_proyecto)
+    {
+        $this->db
+            ->select('cl.clave as claveCliente, pro.nombre as claveProyecto')
+            ->from('cliente as cl')
+            ->join('proyecto as pro', 'pro.id_cliente = cl.id')
+            ->where('cl.id', $id_cliente)
+            ->where('pro.id', $id_proyecto);
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $consulta  = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
     }
-  }
-  function getBateriasPsicometricas(){
-		$this->db
-	    ->select('*')
-	    ->from('psicometrico_bateria')
-	    ->order_by('nombre','ASC');
+    public function getClaveSubcliente($id_cliente, $id_subcliente)
+    {
+        $this->db
+            ->select('cl.clave as claveCliente, sub.clave as claveSubcliente')
+            ->from('cliente as cl')
+            ->join('subcliente as sub', 'sub.id_cliente = cl.id')
+            ->where('cl.id', $id_cliente)
+            ->where('sub.id', $id_subcliente);
 
-	    $query = $this->db->get();
-	    if($query->num_rows() > 0){
-	    	return $query->result();
-	    }else{
-	      	return FALSE;
-	    }
-	}
-  function getPaquetesAntidoping(){
-    $this->db
-    ->select('*')
-    ->from('antidoping_paquete')
-    ->where('status', 1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
-
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $consulta  = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
     }
-  }
-  function getPuestos(){
-    $id_portal = $this->session->userdata('ídPortal');
-    $this->db
-    ->select('*')
-    ->from('puesto')
-    ->where('id_portal', $id_portal)
-    ->where('status', 1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
+    public function getClaveSubclienteProyecto($id_cliente, $id_proyecto, $id_subcliente)
+    {
+        $this->db
+            ->select('cl.clave as claveCliente, pro.nombre as claveProyecto, sub.clave as claveSubcliente')
+            ->from('cliente as cl')
+            ->join('proyecto as pro', 'pro.id_cliente = cl.id')
+            ->join('subcliente as sub', 'sub.id = pro.id_subcliente', 'left')
+            ->where('cl.id', $id_cliente)
+            ->where('pro.id', $id_proyecto)
+            ->where('sub.id', $id_subcliente);
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $consulta  = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
     }
-  }
-  function getGradosEstudio(){
-    $this->db
-    ->select('*')
-    ->from('grado_estudio')
-    ->order_by('nombre','ASC');
+    public function getTiposDocumentos()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_documentacion')
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getGradoEstudioById($id){
-    $this->db
-    ->select('*')
-    ->from('grado_estudio')
-    ->where('id', $id);
+    public function getEstadosCiviles()
+    {
+        $this->db
+            ->select('*')
+            ->from('estado_civil')
+            ->where('id !=', 7)
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    return $query->row();
-  }
-  function getTiposEstudios(){
-    $this->db
-    ->select('*')
-    ->from('tipo_studies')
-    ->where('status', 1)
-    ->where('eliminado', 0)
-    ->order_by('id','ASC');
-
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getParentescos(){
-    $this->db
-    ->select('*')
-    ->from('tipo_parentesco')
-    ->where('status',1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
+    public function getBateriasPsicometricas()
+    {
+        $this->db
+            ->select('*')
+            ->from('psicometrico_bateria')
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getEscolaridades(){
-    $this->db
-    ->select('*')
-    ->from('tipo_escolaridad')
-    ->order_by('nombre','ASC');
+    public function getPaquetesAntidoping()
+    {
+        $this->db
+            ->select('*')
+            ->from('antidoping_paquete')
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getNivelesZona(){
-    $this->db
-    ->select('*')
-    ->from('tipo_nivel_zona');
+    public function getPuestos()
+    {
+        $id_portal = $this->session->userdata('ídPortal');
+        $this->db
+            ->select('*')
+            ->from('puesto')
+            ->where('id_portal', $id_portal)
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getTiposVivienda(){
-    $this->db
-    ->select('*')
-    ->from('tipo_vivienda');
+    public function getGradosEstudio()
+    {
+        $this->db
+            ->select('*')
+            ->from('grado_estudio')
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getTiposCondiciones(){
-    $this->db
-    ->select('*')
-    ->from('tipo_condiciones');
+    public function getGradoEstudioById($id)
+    {
+        $this->db
+            ->select('*')
+            ->from('grado_estudio')
+            ->where('id', $id);
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        return $query->row();
     }
-  }
-  function getExamenDoping($id_cliente){
-    $this->db
-    ->select('paq.*')
-    ->from('cliente_doping as cd')
-    ->join('antidoping_paquete as paq','paq.id = cd.id_antidoping_paquete')
-    ->where('cd.id_cliente', $id_cliente);
+    public function getTiposEstudios()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_studies')
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('id', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getConfiguraciones(){
-    $this->db
-    ->select("*")
-    ->from('configuracion');
+    public function getParentescos()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_parentesco')
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('nombre', 'ASC');
 
-    $consulta = $this->db->get();
-    $resultado = $consulta->row();
-    return $resultado;
-  }
-  function getUsuariosParaAsignacion(){
-    $this->db
-    ->select("id, CONCAT(nombre,' ',paterno) as usuario")
-    ->from('usuario')
-    ->where_in('id_rol', [2,9])
-    ->where('status', 1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
-
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getTipoAnalistas($tipo_analista){
-    $tipos = [$tipo_analista, 3];
-    $this->db
-    ->select("id, CONCAT(nombre,' ',paterno) as usuario")
-    ->from('usuario')
-    ->where_in('tipo_analista',$tipos)
-    ->where('status', 1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
+    public function getEscolaridades()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_escolaridad')
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getTipoAnalista($id_usuario){
-    $this->db
-    ->select("id, CONCAT(nombre,' ',paterno) as usuario, tipo_analista")
-    ->from('usuario')
-    ->where('id', $id_usuario);
+    public function getNivelesZona()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_nivel_zona');
 
-    $consulta = $this->db->get();
-    $resultado = $consulta->row();
-    return $resultado;
-  }
-  function getCiviles(){
-    $this->db
-    ->select('*')
-    ->from('estado_civil');
-
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-        return $query->result();
-    }else{
-        return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getPaises(){
-    $this->db
-    ->select('*')
-    ->from('paises')
-    ->order_by('id','ASC');
+    public function getTiposVivienda()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_vivienda');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getPaisesEstudio(){
-    $this->db
-    ->select('*')
-    ->from('pais_estudio')
-    ->where('status',1)
-    ->where('eliminado', 0);
+    public function getTiposCondiciones()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_condiciones');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getDatosCandidato($id_candidato){
-    $this->db
-    ->select('cl.nombre as cliente')
-    ->from('candidato as c')
-    ->join('cliente as cl','cl.id = c.id_cliente')
-    //->join('subcliente as sub','sub.id = c.id_subcliente','left')
-    //->join('doping as dop','dop.id_candidato = c.id','left')
-    //->join('puesto as p','p.id = c.id_puesto','left')
-    ->where('c.id',$id_candidato);
-    //->where('c.status',2)
-    //->where('c.status_bgc !=', 0);
+    public function getExamenDoping($id_cliente)
+    {
+        $this->db
+            ->select('paq.*')
+            ->from('cliente_doping as cd')
+            ->join('antidoping_paquete as paq', 'paq.id = cd.id_antidoping_paquete')
+            ->where('cd.id_cliente', $id_cliente);
 
-    $consulta = $this->db->get();
-    $resultado = $consulta->row();
-    return $resultado;
-  }
-  function getFechasFestivas(){
-    $this->db
-    ->select('*')
-    ->from('fechas_festivas')
-    ->order_by('fecha','ASC');
-
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-    else{
-      return FALSE;
+    public function getConfiguraciones()
+    {
+        $this->db
+            ->select("*")
+            ->from('configuracion');
+
+        $consulta  = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
     }
-  }
-  function getMediosContacto(){
-    $this->db
-    ->select('*')
-    ->from('cat_medio_contacto')
-    ->where('status',1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
+    public function getUsuariosParaAsignacion()
+    {
+        $this->db
+            ->select("id, CONCAT(nombre,' ',paterno) as usuario")
+            ->from('usuario')
+            ->where_in('id_rol', [2, 9])
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getAccionesRequisicion(){
-    $this->db
-    ->select('*')
-    ->from('cat_accion_requisicion')
-    ->where('status',1)
-    ->where('eliminado', 0)
-    ->order_by('descripcion','ASC');
+    public function getTipoAnalistas($tipo_analista)
+    {
+        $tipos = [$tipo_analista, 3];
+        $this->db
+            ->select("id, CONCAT(nombre,' ',paterno) as usuario")
+            ->from('usuario')
+            ->where_in('tipo_analista', $tipos)
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getGruposSanguineos(){
-    $this->db
-    ->select('*')
-    ->from('cat_grupo_sanguineo')
-    ->where('status',1)
-    ->where('eliminado', 0)
-    ->order_by('nombre','ASC');
+    public function getTipoAnalista($id_usuario)
+    {
+        $this->db
+            ->select("id, CONCAT(nombre,' ',paterno) as usuario, tipo_analista")
+            ->from('usuario')
+            ->where('id', $id_usuario);
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $consulta  = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
     }
-  }
-  function getMediosContactoByName($nombre){
-    $this->db
-    ->select('*')
-    ->from('cat_medio_contacto')
-    ->where('nombre', $nombre);
+    public function getCiviles()
+    {
+        $this->db
+            ->select('*')
+            ->from('estado_civil');
 
-    $consulta = $this->db->get();
-    return $consulta->row();
-  }
-
-
-  function insertarMedioContacto($nombre){
-    $fecha = date('Y-m-d H:i:s');
-    $nombre = trim($nombre);
-    $nombre = ucfirst($nombre);
-
-    $id_usuario = $this->session->userdata('id');
-    $data = array(
-      'creacion'=>$fecha,
-        'id_usuario'=> $id_usuario,
-        'nombre' => $nombre
-        // Agrega aquí otros campos y sus valores si es necesario
-    );
-
-    $this->db->insert('cat_medio_contacto', $data);
-
-    // Verifica si se insertó correctamente
-    if($this->db->affected_rows() > 0){
-        return true; // Se insertó correctamente
-    } else {
-        return false; // Hubo un error al insertar
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-}
-  function getMediosTransporte(){
-    $this->db 
-    ->select('*')
-    ->from('cat_medio_transporte')
-    ->where('status', 1)
-    ->where('eliminado', 0);
+    public function getPaises()
+    {
+        $this->db
+            ->select('*')
+            ->from('paises')
+            ->order_by('id', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getTiposIdentificacion(){
-    $this->db 
-    ->select('*')
-    ->from('cat_tipo_identificacion')
-    ->where('status', 1)
-    ->where('eliminado', 0);
+    public function getPaisesEstudio()
+    {
+        $this->db
+            ->select('*')
+            ->from('pais_estudio')
+            ->where('status', 1)
+            ->where('eliminado', 0);
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getFrecuencias(){
-    $this->db 
-    ->select('*')
-    ->from('cat_frecuencia')
-    ->where('status', 1)
-    ->where('eliminado', 0);
+    public function getDatosCandidato($id_candidato)
+    {
+        $this->db
+            ->select('cl.nombre as cliente')
+            ->from('candidato as c')
+            ->join('cliente as cl', 'cl.id = c.id_cliente')
+        //->join('subcliente as sub','sub.id = c.id_subcliente','left')
+        //->join('doping as dop','dop.id_candidato = c.id','left')
+        //->join('puesto as p','p.id = c.id_puesto','left')
+            ->where('c.id', $id_candidato);
+        //->where('c.status',2)
+        //->where('c.status_bgc !=', 0);
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $consulta  = $this->db->get();
+        $resultado = $consulta->row();
+        return $resultado;
     }
-  } 
-  function getTiposBloqueo(){
-    $this->db 
-    ->select('*')
-    ->from('cat_tipo_bloqueo')
-    ->where('status', 1);
+    public function getFechasFestivas()
+    {
+        $this->db
+            ->select('*')
+            ->from('fechas_festivas')
+            ->order_by('fecha', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getTiposDesbloqueo(){
-    $this->db 
-    ->select('*')
-    ->from('cat_tipo_desbloqueo')
-    ->where('status', 1);
+    public function getMediosContacto()
+    {
+        $this->db
+            ->select('*') // Seleccionamos todas las columnas
+            ->from('cat_medio_contacto')
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->group_by('nombre') // Agrupamos por la columna 'nombre' para eliminar duplicados
+            ->order_by('nombre', 'ASC');
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
-  function getCondicionesVivienda(){
-    $this->db
-    ->select('*')
-    ->from('tipo_condiciones')
-    ->where('status', 1)
-    ->where('eliminado', 0);
 
-    $query = $this->db->get();
-    if($query->num_rows() > 0){
-      return $query->result();
-    }else{
-      return FALSE;
+    public function getAccionesRequisicion()
+    {
+        $portal = $this->session->userdata('idPortal');
+        $this->db
+            ->select('*')
+            ->from('cat_accion_requisicion')
+            ->where('id_portal', $portal)
+            ->or_where('id_portal IS NULL', null, false)
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('descripcion', 'ASC');
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
     }
-  }
+    public function getGruposSanguineos()
+    {
+        $this->db
+            ->select('*')
+            ->from('cat_grupo_sanguineo')
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->order_by('nombre', 'ASC');
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+    public function getMediosContactoByName($nombre)
+    {
+        $this->db
+            ->select('*')
+            ->from('cat_medio_contacto')
+            ->where('nombre', $nombre);
+
+        $consulta = $this->db->get();
+        return $consulta->row();
+    }
+
+    public function insertarMedioContacto($nombre)
+    {
+        $fecha  = date('Y-m-d H:i:s');
+        $nombre = trim($nombre);
+        $nombre = ucfirst($nombre);
+
+        $id_usuario = $this->session->userdata('id');
+        $data       = [
+            'creacion'   => $fecha,
+            'id_usuario' => $id_usuario,
+            'nombre'     => $nombre,
+            // Agrega aquí otros campos y sus valores si es necesario
+        ];
+
+        $this->db->insert('cat_medio_contacto', $data);
+
+        // Verifica si se insertó correctamente
+        if ($this->db->affected_rows() > 0) {
+            return true; // Se insertó correctamente
+        } else {
+            return false; // Hubo un error al insertar
+        }
+    }
+    public function getMediosTransporte()
+    {
+        $this->db
+            ->select('*')
+            ->from('cat_medio_transporte')
+            ->where('status', 1)
+            ->where('eliminado', 0);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+    public function getTiposIdentificacion()
+    {
+        $this->db
+            ->select('*')
+            ->from('cat_tipo_identificacion')
+            ->where('status', 1)
+            ->where('eliminado', 0);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+    public function getFrecuencias()
+    {
+        $this->db
+            ->select('*')
+            ->from('cat_frecuencia')
+            ->where('status', 1)
+            ->where('eliminado', 0);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+    public function getTiposBloqueo()
+    {
+        $this->db
+            ->select('*')
+            ->from('cat_tipo_bloqueo')
+            ->where('status', 1);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+    public function getTiposDesbloqueo()
+    {
+        $this->db
+            ->select('*')
+            ->from('cat_tipo_desbloqueo')
+            ->where('status', 1);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+    public function getCondicionesVivienda()
+    {
+        $this->db
+            ->select('*')
+            ->from('tipo_condiciones')
+            ->where('status', 1)
+            ->where('eliminado', 0);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
 }

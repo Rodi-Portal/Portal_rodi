@@ -10,7 +10,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Datos del aspirante</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -62,15 +62,13 @@
             </div>
             <div class="col-sm-12 col-md-4">
               <label>Medio de contacto *</label>
-              <select name="medio" id="medio" class="form-control obligado">
-
+              <select name="medio" id="medio" class="form-control obligado w-100">
                 <option value="">Selecciona</option>
-                <?php
-                    if ($medios != null) {
-                    foreach ($medios as $m) {?>
+                <?php if ($medios != null): ?>
+                <?php foreach ($medios as $m): ?>
                 <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
-                <?php }
-                }?>
+                <?php endforeach; ?>
+                <?php endif; ?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -99,14 +97,13 @@
 </div>
 
 <!-- Modal para cargar CV -->
-<div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel"
-  aria-hidden="true">
+<div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCargaCVLabel">Cargar CV/Solicitud</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -129,25 +126,36 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Registro de acción al aspirante: <br><span class="nombreAspirante"></span></h4>
+        <h4 class="modal-title-modal-key-title-blanco">Registro de acción al aspirante: <span
+            class="nombreAspirante"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-success text-start" role="alert" style="text-align: left;">
+          ✅ <strong>NOTA:</strong> En esta sección podrás registrar las acciones que se van tomando en el proceso de
+          reclutamiento en base a este Aspirante.
+        </div>
         <form id="formAccion">
           <div class="row">
             <div class="col-12">
               <label>Acción a aplicar *</label>
               <select name="accion_aspirante" id="accion_aspirante" class="form-control obligado">
                 <option value="">Selecciona</option>
+                <option value="otro">Otro</option>
                 <?php if ($acciones != null) {
                     foreach ($acciones as $a) {?>
                 <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
                 <?php }
                 }?>
+                <!-- Opción para escribir otra acción -->
               </select>
               <br>
+
+              <!-- Input oculto para la acción personalizada -->
+              <input type="text" name="otra_accion" id="otra_accion" class="form-control mt-2"
+                placeholder="Escribe la acción" style="display: none;">
             </div>
           </div>
           <div class="row">
@@ -155,6 +163,54 @@
               <label>Comentario / Descripción / Fecha y lugar *</label>
               <textarea class="form-control" id="accion_comentario" name="accion_comentario" rows="4"></textarea>
               <br>
+            </div>
+          </div>
+          <div class="alert alert-warning text-start" role="alert" style="text-align: left;">
+            ⚠️ <strong>NOTA:</strong> Si la acción a registrar influye en el estatus o color del aspirante en bolsa de
+            trabajo, o en el proceso, no olvides modificar los siguientes campos:
+            <ul>
+              <ul>
+                <li><strong>Estatus del Aspirante</strong>: Este cambia el color y estatus del aspirante en bolsa de
+                  trabajo.
+                </li>
+                <li><strong>Estatus del Proceso</strong>: Este cambia el estatus actual del proceso de reclutamiento.
+                </li>
+              </ul>
+          </div>
+
+          <div class="row">
+            <!-- Primer Select -->
+
+
+            <!-- Segundo Select -->
+            <div class="col-md-6">
+              <label for="estatus_aspirante" data-toggle="tooltip" data-placement="top"
+                title="El cambio realizado impactará directamente en la Bolsa de Trabajo, actualizando tanto el color como el estatus del aspirante">
+                Estatus del aspirante
+                <i class="fas fa-info-circle text-primary"></i>
+              </label>
+              <select class="form-control" id="estatus_aspirante" name="estatus_aspirante">
+                <option value="">Selecciona</option>
+                <option value="1" data-color="#6c757d">⚪ En espera</option>
+                <option value="3" data-color="#ffc107">🟡 Precaucion</option>
+                <option value="2" data-color="#17a2b8">🔵 En proceso de reclutamiento</option>
+                <option value="4" data-color="#28a745">🟢 Listo para iniciar el proceso de preempleo</option>
+                <option value="0" data-color="#dc3545">🔴 Bloquear aspirante</option>
+              </select>
+            </div>
+            <!-- Tercer Select -->
+            <div class="col-md-6">
+              <label for="select3" data-toggle="tooltip" data-placement="top"
+                title="Esta opción se registra en este módulo 'En proceso' y se refleja en la columna 'Estatus Actual'">
+                Estatus proceso
+                <i class="fas fa-info-circle text-primary"></i>
+              </label>
+              <select class="form-control" id="estatus_proceso" name="estatus_proceso">
+                <option value="">Selecciona</option>
+                <option value="1">Completado</option>
+                <option value="3">Cancelado</option>
+                <option value="2">Eliminar Estatus Final</option>
+              </select>
             </div>
           </div>
         </form>
@@ -174,7 +230,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Historial de movimientos del aspirante: <br><span class="nombreAspirante"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -194,7 +250,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Estatus de requisición</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -255,7 +311,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Reactivar requisición</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -293,7 +349,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Historial de empleos de: <br><span class="nombreRegistro"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -322,7 +378,7 @@
           </select>
         </div -->
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
 
       </div>
@@ -709,7 +765,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Historial de comentarios con respecto a: <br><span class="nombreRegistro"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -743,7 +799,7 @@
       <div class="modal-body">
         <div>
           <button type="button" class="close custom_modal_close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <span>&times;</span>
           </button>
         </div>
         <div class="alert alert-info">
@@ -1411,7 +1467,7 @@
       <div class="modal-header">
         <h4 class="modal-title" id="titulo_asignarUsuarioModal"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1467,7 +1523,7 @@
         <h4 class="modal-title">Resultados de los estudios y exámenes de los candidatos de la Requisición: <br><span
             class="nombreRegistro"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1486,7 +1542,7 @@
       <div class="modal-header">
         <h4 class="modal-title"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1516,7 +1572,7 @@
         <h4 class="modal-title">Información de ingreso al empleo del candidato: <br><span class="nombreRegistro"></span>
         </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1565,7 +1621,7 @@
       <div class="modal-header">
         <h4 class="modal-title">Mensajes de avances del candidato: <br><span id="nombreCandidato"></span></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1602,7 +1658,7 @@
       <div class="modal-header">
         <h4 class="modal-title" id="titulo_mensaje"></h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
@@ -1624,6 +1680,16 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 </script>
 
 <script>
+document.getElementById('accion_aspirante').addEventListener('change', function() {
+  var inputOtro = document.getElementById('otra_accion');
+  if (this.value === 'otro') {
+    inputOtro.style.display = 'block'; // Mostrar input si selecciona "Otro"
+    inputOtro.setAttribute('required', 'required'); // Hacerlo obligatorio
+  } else {
+    inputOtro.style.display = 'none'; // Ocultar input si elige otra opción
+    inputOtro.removeAttribute('required'); // Quitar obligatoriedad
+  }
+});
 var pag = 1;
 $('.div_info_project, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
   .css('display', 'none');
@@ -2131,14 +2197,14 @@ function nuevoRegistro() {
 }
 
 function mostrarInputOtro() {
-    var select = document.getElementById("puesto");
-    var inputOtro = document.getElementById("puesto_otro");
+  var select = document.getElementById("puesto");
+  var inputOtro = document.getElementById("puesto_otro");
 
-    if (select.value === "otro") {
-        inputOtro.style.display = "block"; // Mostrar input
-    } else {
-        inputOtro.style.display = "none"; // Ocultar input
-        inputOtro.value = ""; // Limpiar el input si se cambia a otra opción
-    }
+  if (select.value == "otro") {
+    inputOtro.style.display = "block"; // Mostrar input
+  } else {
+    inputOtro.style.display = "none"; // Ocultar input
+    inputOtro.value = ""; // Limpiar el input si se cambia a otra opción
+  }
 }
 </script>

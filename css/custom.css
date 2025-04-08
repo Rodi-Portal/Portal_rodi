@@ -18,6 +18,7 @@ body, p, h1, h2, h3, h4, h5, h6{
 .icono-dorado:hover {
   color: darkgoldenrod !important;; /* Color dorado más oscuro al pasar el mouse */
 }
+
 /* Aumentar la especificidad */
 .btn.btn-navy {
   background-color: #003366; /* Azul marino */
@@ -700,6 +701,7 @@ color: white;
 .container_checkbox input:checked ~ .checkmark:after {
   display: block;
 }
+
 
 /* Style the checkmark/indicator */
 .container_checkbox .checkmark:after {
