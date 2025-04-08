@@ -24,7 +24,7 @@ class Dashboard extends CI_Controller
             $data['version'] = $config->version_sistema;
             //TODO:pendiente  si es  util   para      la plataforma  de reclutamiento
 
-            if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {
+            if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6 || $this->session->userdata('idrol') == 9) {
                 $ReqProceso = $this->estadistica_model->countReqEnProceso();
                 $data['titulo_dato1'] = 'Total de Requisiciones en Proceso';
                 $data['dato1'] = $ReqProceso->total;

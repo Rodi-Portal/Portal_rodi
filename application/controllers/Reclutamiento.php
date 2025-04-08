@@ -7,7 +7,7 @@ class Reclutamiento extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('id')) {
+        if (! $this->session->userdata('id')) {
             redirect('Login/index');
             $this->load->helper('language');
 
@@ -25,26 +25,25 @@ class Reclutamiento extends CI_Controller
     }
     public function menu()
     {
-        $data['submenus'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
-        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
-    
+
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
-    
-        $config = $this->funciones_model->getConfiguraciones();
+
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
+        $res = $this->cat_portales_model->getModulos();
 
-        $res = $this->cat_portales_model->getModulos(); 
-    
-        if (!empty($res)) {
-            // Accede directamente a la fila
+        if (! empty($res)) {
+                            // Accede directamente a la fila
             $modulo = $res; // getModulos devuelve solo una fila como array
-    
+
             // Verifica el valor de reclu
             if ($modulo['reclu'] == 1) {
                 $View = $this->load->view('reclutamiento/menu_reclutamiento', $data, true);
@@ -55,16 +54,16 @@ class Reclutamiento extends CI_Controller
             // Si no hay módulos, carga una vista de error o una descripción
             $View = $this->load->view('reclutamiento/descripcion_modulo', $data, true);
         }
-    
+
         // Cargar las vistas en variables
-        $headerView = $this->load->view('adminpanel/header', $data, true);
+        $headerView  = $this->load->view('adminpanel/header', $data, true);
         $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
-        $footerView = $this->load->view('adminpanel/footer', [], true);
-    
+        $footerView  = $this->load->view('adminpanel/footer', [], true);
+
         // Mostrar las vistas
         echo $headerView;
         echo $scriptsView; // Mostrar scripts si es necesario
-        echo $View; // Mostrar el menú
+        echo $View;        // Mostrar el menú
     }
 
     /*----------------------------------------*/
@@ -72,16 +71,16 @@ class Reclutamiento extends CI_Controller
     /*----------------------------------------*/
     public function requisicion()
     {
-        $filter = '';
-        $getFilter = '';
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $filter             = '';
+        $getFilter          = '';
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
-        $config = $this->funciones_model->getConfiguraciones();
-        $data['version'] = $config->version_sistema;
+        $config           = $this->funciones_model->getConfiguraciones();
+        $data['version']  = $config->version_sistema;
         //Filtros de busqueda y ordenamiento
         if (isset($_GET['sort'])) {
             $getSort = $_GET['sort'];
@@ -97,71 +96,71 @@ class Reclutamiento extends CI_Controller
                     break;
             }
         } else {
-            $sort = 'DESC';
+            $sort    = 'DESC';
             $getSort = '';
         }
         if (isset($_GET['filter'])) {
 
-            $getFilter = $_GET['filter'];
+            $getFilter   = $_GET['filter'];
             $filterOrder = '';
             if ($getFilter == 'COMPLETA' || $getFilter == 'EXPRESS') {
-                $filter = $getFilter;
+                $filter      = $getFilter;
                 $filterOrder = 'R.tipo';
             }
             if ($getFilter == 'En espera') {
-                $filter = 1;
+                $filter      = 1;
                 $filterOrder = 'R.status';
             }
             if ($getFilter == 'En proceso') {
-                $filter = 2;
+                $filter      = 2;
                 $filterOrder = 'R.status';
             }
         } else {
 
-            $filter = '';
+            $filter      = '';
             $filterOrder = 'R.tipo !=';
         }
         if (isset($_GET['order'])) {
             $order = $_GET['order'];
             if ($order != '') {
-                $id_order = ($order > 0) ? $order : 0;
+                $id_order        = ($order > 0) ? $order : 0;
                 $condition_order = ($order > 0) ? 'R.id' : 'R.id >';
             } else {
-                $id_order = 0;
+                $id_order        = 0;
                 $condition_order = 'R.id >';
             }
         } else {
-            $id_order = 0;
+            $id_order        = 0;
             $condition_order = 'R.id >';
         }
         //Dependiendo el rol del usuario se veran todas o sus propias requisiciones
         if ($this->session->userdata('idrol') == 4) {
-            $id_usuario = $this->session->userdata('id');
+            $id_usuario            = $this->session->userdata('id');
             $info['requisiciones'] = $this->reclutamiento_model->getOrdersByUser($id_usuario, $sort, $id_order, $condition_order);
             $info['orders_search'] = $this->reclutamiento_model->getOrdersByUser($id_usuario, $sort, 0, 'R.id >');
-            $info['sortOrder'] = $getSort;
-            $info['filter'] = $getFilter;
+            $info['sortOrder']     = $getSort;
+            $info['filter']        = $getFilter;
         } else {
 
             $info['requisiciones'] = $this->reclutamiento_model->getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder);
             $info['orders_search'] = $this->reclutamiento_model->getAllOrders($sort, 0, 'R.id >', $filter, $filterOrder);
             //var_dump($info['orders_search']);
             $info['sortOrder'] = $getSort;
-            $info['filter'] = $getFilter;
+            $info['filter']    = $getFilter;
         }
-        $info['registros'] = null;
-        $info['medios'] = $this->funciones_model->getMediosContacto();
-        $info['puestos'] = $this->funciones_model->getPuestos();
-        $info['paises'] = $this->funciones_model->getPaises();
+        $info['registros']           = null;
+        $info['medios']              = $this->funciones_model->getMediosContacto();
+        $info['puestos']             = $this->funciones_model->getPuestos();
+        $info['paises']              = $this->funciones_model->getPaises();
         $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
 
         //Obtiene los usuarios con id rol 4 y 11 que pertencen a reclutadores y coordinadores de reclutadores
-        $info['usuarios_asignacion'] = $this->usuario_model->getTipoUsuarios([4, 11]);
+        $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11]);
         $info['registros_asignacion'] = $this->reclutamiento_model->getRequisicionesActivas();
-        $info['acciones'] = $this->funciones_model->getAccionesRequisicion();
+        $info['acciones']             = $this->funciones_model->getAccionesRequisicion();
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario = $this->session->userdata('id');
-            $reqs = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
+            $reqs       = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
         } else {
             $reqs = $this->reclutamiento_model->getAllOrdersInProcess();
         }
@@ -169,11 +168,11 @@ class Reclutamiento extends CI_Controller
         //var_dump($reqs);
         $info['reqs'] = $reqs;
         //Modals
-        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+        $modales['modals']             = $this->load->view('modals/mdl_usuario', '', true);
         $vista['modals_reclutamiento'] = $this->load->view('modals/mdl_reclutamiento', $info, true);
 
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -183,10 +182,10 @@ class Reclutamiento extends CI_Controller
             $data['contadorNotificaciones'] = $contador;
         }
         // Cargar las vistas en variables, sin mostrarlas
-        $headerView = $this->load->view('adminpanel/header', $data, true);
-        $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+        $headerView      = $this->load->view('adminpanel/header', $data, true);
+        $scriptsView     = $this->load->view('adminpanel/scripts', $modales, true);
         $requisicionView = $this->load->view('reclutamiento/requisicion', $vista, true);
-        $footerView = $this->load->view('adminpanel/footer', [], true);
+        $footerView      = $this->load->view('adminpanel/footer', [], true);
 
         echo $scriptsView;
         echo $requisicionView; // Si decides que esta vista sí debe mostrarse
@@ -195,14 +194,14 @@ class Reclutamiento extends CI_Controller
 
     public function control()
     {
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
-        $config = $this->funciones_model->getConfiguraciones();
-        $data['version'] = $config->version_sistema;
+        $config           = $this->funciones_model->getConfiguraciones();
+        $data['version']  = $config->version_sistema;
         if (isset($_GET['sort'])) {
             $getSort = $_GET['sort'];
             switch ($getSort) {
@@ -217,65 +216,65 @@ class Reclutamiento extends CI_Controller
                     break;
             }
         } else {
-            $sort = 'DESC';
+            $sort    = 'DESC';
             $getSort = '';
         }
         if (isset($_GET['filter'])) {
             $getFilter = $_GET['filter'];
             if ($getFilter == 'COMPLETA' || $getFilter == 'EXPRESS') {
-                $filter = $getFilter;
+                $filter      = $getFilter;
                 $filterOrder = 'R.tipo';
             }
             if ($getFilter == 'En espera') {
-                $filter = 1;
+                $filter      = 1;
                 $filterOrder = 'R.status';
             }
             if ($getFilter == 'En proceso') {
-                $filter = 2;
+                $filter      = 2;
                 $filterOrder = 'R.status';
             }
         } else {
-            $getFilter = '';
-            $filter = '';
+            $getFilter   = '';
+            $filter      = '';
             $filterOrder = 'R.tipo !=';
         }
         if (isset($_GET['order'])) {
             $order = $_GET['order'];
             if ($order != '') {
-                $id_order = ($order > 0) ? $order : 0;
+                $id_order        = ($order > 0) ? $order : 0;
                 $condition_order = ($order > 0) ? 'R.id' : 'R.id >';
             } else {
-                $id_order = 0;
+                $id_order        = 0;
                 $condition_order = 'R.id >';
             }
         } else {
-            $id_order = 0;
+            $id_order        = 0;
             $condition_order = 'R.id >';
         }
         //Dependiendo el rol del usuario se veran todas o sus propias requisiciones
         if ($this->session->userdata('idrol') == 4) {
-            $id_usuario = $this->session->userdata('id');
-            $reqs = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
+            $id_usuario            = $this->session->userdata('id');
+            $reqs                  = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
             $info['requisiciones'] = $this->reclutamiento_model->getOrdersByUser($id_usuario, $sort, $id_order, $condition_order);
             $info['orders_search'] = $this->reclutamiento_model->getOrdersByUser($id_usuario, $sort, 0, 'R.id >');
         } else {
-            $reqs = $this->reclutamiento_model->getAllOrdersInProcess();
+            $reqs                  = $this->reclutamiento_model->getAllOrdersInProcess();
             $info['requisiciones'] = $this->reclutamiento_model->getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder);
             $info['orders_search'] = $this->reclutamiento_model->getAllOrders($sort, 0, 'R.id >', $filter, $filterOrder);
         }
-        $data['reqs'] = $reqs;
-        $info['reqs'] = $reqs;
-        $info['medios'] = $this->funciones_model->getMediosContacto();
-        $info['acciones'] = $this->funciones_model->getAccionesRequisicion();
-        $info['puestos'] = $this->funciones_model->getPuestos();
-        $info['paises'] = $this->funciones_model->getPaises();
+        $data['reqs']                = $reqs;
+        $info['reqs']                = $reqs;
+        $info['medios']              = $this->funciones_model->getMediosContacto();
+        $info['acciones']            = $this->funciones_model->getAccionesRequisicion();
+        $info['puestos']             = $this->funciones_model->getPuestos();
+        $info['paises']              = $this->funciones_model->getPaises();
         $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $vista['modals'] = $this->load->view('modals/mdl_reclutamiento', $info, true);
+        $vista['modals']   = $this->load->view('modals/mdl_reclutamiento', $info, true);
 
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -284,49 +283,48 @@ class Reclutamiento extends CI_Controller
             }
             $data['contadorNotificaciones'] = $contador;
         }
-       
-            
-            $headerView = $this->load->view('adminpanel/header', $data, true);
-            $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
-            $requisicionView = $this->load->view('reclutamiento/control', $vista, true);
-            $footerView = $this->load->view('adminpanel/footer', [], true);
-    
-            echo $scriptsView;
-            echo $requisicionView; // Si decides que esta vista sí debe mostrarse
-            echo $footerView;
+
+        $headerView      = $this->load->view('adminpanel/header', $data, true);
+        $scriptsView     = $this->load->view('adminpanel/scripts', $modales, true);
+        $requisicionView = $this->load->view('reclutamiento/control', $vista, true);
+        $footerView      = $this->load->view('adminpanel/footer', [], true);
+
+        echo $scriptsView;
+        echo $requisicionView; // Si decides que esta vista sí debe mostrarse
+        echo $footerView;
     }
 
     public function finalizados()
     {
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
-        $config = $this->funciones_model->getConfiguraciones();
-        $data['version'] = $config->version_sistema;
+        $config           = $this->funciones_model->getConfiguraciones();
+        $data['version']  = $config->version_sistema;
         //Dependiendo el rol del usuario se veran todas o sus propias requisiciones
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario = $this->session->userdata('id');
-            $condicion = 'R.id_usuario';
+            $condicion  = 'R.id_usuario';
         } else {
             $id_usuario = 0;
-            $condicion = 'R.id_usuario >=';
+            $condicion  = 'R.id_usuario >=';
         }
-        $reqs = $this->reclutamiento_model->getRequisicionesFinalizadas($id_usuario, $condicion);
-        $data['reqs'] = $reqs;
-        $info['reqs'] = $reqs;
-        $info['medios'] = null;
-        $info['acciones'] = null;
-        $info['paises'] = null;
+        $reqs                        = $this->reclutamiento_model->getRequisicionesFinalizadas($id_usuario, $condicion);
+        $data['reqs']                = $reqs;
+        $info['reqs']                = $reqs;
+        $info['medios']              = null;
+        $info['acciones']            = null;
+        $info['paises']              = null;
         $info['paquetes_antidoping'] = null;
         //$info['acciones'] = $this->funciones_model->getAccionesRequisicion();
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $vista['modals'] = $this->load->view('modals/mdl_reclutamiento', $info, true);
-        $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        $vista['modals']   = $this->load->view('modals/mdl_reclutamiento', $info, true);
+        $notificaciones    = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -336,27 +334,26 @@ class Reclutamiento extends CI_Controller
             $data['contadorNotificaciones'] = $contador;
         }
 
+        $headerView      = $this->load->view('adminpanel/header', $data, true);
+        $scriptsView     = $this->load->view('adminpanel/scripts', $modales, true);
+        $requisicionView = $this->load->view('reclutamiento/finalizados', $vista, true);
+        $footerView      = $this->load->view('adminpanel/footer', [], true);
 
-            $headerView = $this->load->view('adminpanel/header', $data, true);
-            $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
-            $requisicionView = $this->load->view('reclutamiento/finalizados', $vista, true);
-            $footerView = $this->load->view('adminpanel/footer', [], true);
-    
-            echo $scriptsView;
-            echo $requisicionView; // Si decides que esta vista sí debe mostrarse
-            echo $footerView;
+        echo $scriptsView;
+        echo $requisicionView; // Si decides que esta vista sí debe mostrarse
+        echo $footerView;
     }
 
     public function bolsa()
     {
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
-        $config = $this->funciones_model->getConfiguraciones();
-        $data['version'] = $config->version_sistema;
+        $config           = $this->funciones_model->getConfiguraciones();
+        $data['version']  = $config->version_sistema;
         //Filtros de busqueda y ordenamiento
         if (isset($_GET['sort']) && $_GET['sort'] != 'none') {
             $getSort = $_GET['sort'];
@@ -372,113 +369,113 @@ class Reclutamiento extends CI_Controller
                     break;
             }
         } else {
-            $sort = 'DESC';
+            $sort    = 'DESC';
             $getSort = '';
         }
         if (isset($_GET['filter']) && $_GET['filter'] != 'none') {
             $getFilter = $_GET['filter'];
             if ($getFilter == 'En espera') {
-                $filter = 1;
+                $filter          = 1;
                 $filterApplicant = 'B.status';
             }
             if ($getFilter == 'En proceso') {
-                $filter = 2;
+                $filter          = 2;
                 $filterApplicant = 'B.status';
             }
             if ($getFilter == 'Aceptado') {
-                $filter = 3;
+                $filter          = 3;
                 $filterApplicant = 'B.status';
             }
             if ($getFilter == 'ESE') {
-                $filter = 4;
+                $filter          = 4;
                 $filterApplicant = 'B.status';
             }
             if ($getFilter == 'Bloqueado') {
-                $filter = 0;
+                $filter          = 0;
                 $filterApplicant = 'B.status';
             }
         } else {
-            $getFilter = '';
-            $filter = '';
+            $getFilter       = '';
+            $filter          = '';
             $filterApplicant = 'B.id !=';
         }
         if (isset($_GET['user'])) {
-            $user = $_GET['user'];
+            $user    = $_GET['user'];
             $getUser = $_GET['user'];
             if ($user != '') {
-                $idUser = ($user > 0) ? $user : 0;
+                $idUser         = ($user > 0) ? $user : 0;
                 $condition_user = ($user > 0) ? 'B.id_usuario' : 'B.id_usuario >=';
             } else {
-                $idUser = 0;
+                $idUser         = 0;
                 $condition_user = 'B.id >';
             }
         } else {
-            $idUser = 0;
+            $idUser         = 0;
             $condition_user = 'B.id >';
-            $getUser = '';
+            $getUser        = '';
         }
         if (isset($_GET['area']) && $_GET['area'] != 'none') {
-            $area = $_GET['area'];
+            $area    = $_GET['area'];
             $getArea = $_GET['area'];
             if ($area !== '') {
-                $area_interest = $area;
+                $area_interest  = $area;
                 $condition_area = 'B.area_interes';
             } else {
-                $area_interest = '';
+                $area_interest  = '';
                 $condition_area = 'B.area_interes !=';
             }
         } else {
-            $area_interest = '';
+            $area_interest  = '';
             $condition_area = 'B.area_interes !=';
-            $getArea = '';
+            $getArea        = '';
         }
         if (isset($_GET['applicant'])) {
             $applicant = $_GET['applicant'];
             if ($applicant != '') {
-                $id_applicant = ($applicant > 0) ? $applicant : 0;
+                $id_applicant        = ($applicant > 0) ? $applicant : 0;
                 $condition_applicant = ($applicant > 0) ? 'B.id' : 'B.id >';
             } else {
-                $id_applicant = 0;
+                $id_applicant        = 0;
                 $condition_applicant = 'B.id >';
             }
         } else {
-            $id_applicant = 0;
+            $id_applicant        = 0;
             $condition_applicant = 'B.id >';
         }
 
         //Dependiendo el rol del usuario se veran todas o sus propias requisiciones
         if ($this->session->userdata('idrol') == 4) {
-            $id_usuario = $this->session->userdata('id');
+            $id_usuario        = $this->session->userdata('id');
             $info['registros'] = $this->reclutamiento_model->getApplicantsByUser($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $id_usuario, $area_interest, $condition_area);
-            $condition = 'B.id_usuario';
+            $condition         = 'B.id_usuario';
         } else {
             $info['registros'] = $this->reclutamiento_model->getBolsaTrabajo($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $idUser, $condition_user, $area_interest, $condition_area);
-            $id_usuario = 0;
-            $condition = 'B.id_usuario >=';
+            $id_usuario        = 0;
+            $condition         = 'B.id_usuario >=';
         }
         $info['sortApplicant'] = $getSort;
-        $info['filter'] = $getFilter;
-        $info['assign'] = $getUser;
-        $info['area'] = $getArea;
+        $info['filter']        = $getFilter;
+        $info['assign']        = $getUser;
+        $info['area']          = $getArea;
 
-        $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-        $info['grados'] = $this->funciones_model->getGradosEstudio();
-        $info['medios'] = $this->funciones_model->getMediosContacto();
-        $info['puestos'] = $this->funciones_model->getPuestos();
-        $info['paises'] = $this->funciones_model->getPaises();
+        $info['civiles']             = $this->funciones_model->getEstadosCiviles();
+        $info['grados']              = $this->funciones_model->getGradosEstudio();
+        $info['medios']              = $this->funciones_model->getMediosContacto();
+        $info['puestos']             = $this->funciones_model->getPuestos();
+        $info['paises']              = $this->funciones_model->getPaises();
         $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
-        $info['reqs'] = null;
-        $info['acciones'] = null;
+        $info['reqs']                = null;
+        $info['acciones']            = null;
         //Obtiene los usuarios con id rol 4 y 11 que pertencen a reclutadores y coordinadores de reclutadores
-        $info['usuarios_asignacion'] = $this->usuario_model->getTipoUsuarios([4, 11]);
+        $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11]);
         $info['registros_asignacion'] = $this->reclutamiento_model->getAllApplicants($id_usuario, $condition);
-        $info['areas_interes'] = $this->reclutamiento_model->getAllJobPoolByArea();
+        $info['areas_interes']        = $this->reclutamiento_model->getAllJobPoolByArea();
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $vista['modals'] = $this->load->view('modals/mdl_reclutamiento', $info, true);
+        $vista['modals']   = $this->load->view('modals/mdl_reclutamiento', $info, true);
 
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -488,10 +485,10 @@ class Reclutamiento extends CI_Controller
             $data['contadorNotificaciones'] = $contador;
         }
 
-        $headerView = $this->load->view('adminpanel/header', $data, true);
-        $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
+        $headerView      = $this->load->view('adminpanel/header', $data, true);
+        $scriptsView     = $this->load->view('adminpanel/scripts', $modales, true);
         $requisicionView = $this->load->view('reclutamiento/bolsa_trabajo', $vista, true);
-        $footerView = $this->load->view('adminpanel/footer', [], true);
+        $footerView      = $this->load->view('adminpanel/footer', [], true);
 
         echo $scriptsView;
         echo $requisicionView; // Si decides que esta vista sí debe mostrarse
@@ -503,30 +500,30 @@ class Reclutamiento extends CI_Controller
     /*----------------------------------------*/
     public function cambiarStatusrequisicion()
     {
-        $id = $this->input->post('id');
+        $id     = $this->input->post('id');
         $status = $this->input->post('status');
 
         $id_usuario = $this->session->userdata('id');
-        $usuario = array(
-            'status' => $status,
+        $usuario    = [
+            'status'     => $status,
             'id_usuario' => $id_usuario,
-        );
+        ];
 
         $resultado = $this->reclutamiento_model->cambiarStatusrequisicion($id, $usuario);
 
         // Manejar los diferentes resultados retornados por el modelo
         if (strpos($resultado, 'Error') !== false) {
             // Si el resultado contiene la palabra "Error", se considera un error
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => $resultado, // Mensaje de error específico
-            );
+                'msg'    => $resultado, // Mensaje de error específico
+            ];
         } else {
             // Si no hay "Error", se asume que la actualización fue exitosa
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => $resultado, // Mensaje de éxito
-            );
+                'msg'    => $resultado, // Mensaje de éxito
+            ];
         }
 
         echo json_encode($msj);
@@ -534,16 +531,16 @@ class Reclutamiento extends CI_Controller
 
     public function reactivarRequisicion()
     {
-        $id = $this->input->post('id');
+        $id      = $this->input->post('id');
         $usuario = $this->session->userdata('id');
         $this->reclutamiento_model->reactivarRequisicion($id, $usuario);
-        $msj = array(
+        $msj = [
             'codigo' => 1,
-            'msg' => 'Se  a creado  una copia  de esta  Requisición para  que se  inicie el proceso ',
-        );
+            'msg'    => 'Se  a creado  una copia  de esta  Requisición para  que se  inicie el proceso ',
+        ];
         echo json_encode($msj);
     }
-    
+
     public function addApplicant()
     {
         $this->form_validation->set_rules('requisicion', 'Asignar requisición', 'required');
@@ -561,61 +558,61 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
-            $date = date('Y-m-d H:i:s');
-            $id_portal = $this->session->userdata('idPortal');
-            $req = $this->input->post('requisicion');
-            $nombre = $this->input->post('nombre');
-            $paterno = $this->input->post('paterno');
-            $materno = $this->input->post('materno');
-            $medio = $this->input->post('medio');
-            $telefono = $this->input->post('telefono');
-            $correo = $this->input->post('correo');
-            $id_usuario = $this->session->userdata('id');
+            $date         = date('Y-m-d H:i:s');
+            $id_portal    = $this->session->userdata('idPortal');
+            $req          = $this->input->post('requisicion');
+            $nombre       = $this->input->post('nombre');
+            $paterno      = $this->input->post('paterno');
+            $materno      = $this->input->post('materno');
+            $medio        = $this->input->post('medio');
+            $telefono     = $this->input->post('telefono');
+            $correo       = $this->input->post('correo');
+            $id_usuario   = $this->session->userdata('id');
             $id_aspirante = $this->input->post('id_aspirante');
-            $idRol = $this->session->userdata('idrol');
+            $idRol        = $this->session->userdata('idrol');
 
             $id_bolsa_trabajo = $this->input->post('id_bolsa_trabajo');
-            $notificacion = 0;
+            $notificacion     = 0;
 
             $nombre_archivo = null;
             if (empty($id_aspirante)) {
                 if (empty($id_bolsa_trabajo)) {
-                    $jobPool = array(
-                        'creacion' => $date,
-                        'edicion' => $date,
-                        'id_portal' => $id_portal,
-                        'id_usuario' => $id_usuario,
-                        'nombre' => strtoupper($nombre),
-                        'paterno' => strtoupper($paterno),
-                        'materno' => strtoupper($materno),
-                        'telefono' => $telefono,
+                    $jobPool = [
+                        'creacion'       => $date,
+                        'edicion'        => $date,
+                        'id_portal'      => $id_portal,
+                        'id_usuario'     => $id_usuario,
+                        'nombre'         => strtoupper($nombre),
+                        'paterno'        => strtoupper($paterno),
+                        'materno'        => strtoupper($materno),
+                        'telefono'       => $telefono,
                         'medio_contacto' => $medio,
-                        'area_interes' => $this->input->post('area_interes'),
-                        'domicilio' => $this->input->post('domicilio'),
-                        'status' => 2,
-                    );
+                        'area_interes'   => $this->input->post('area_interes'),
+                        'domicilio'      => $this->input->post('domicilio'),
+                        'status'         => 2,
+                    ];
                     $id_bolsa_trabajo = $this->reclutamiento_model->addJobPoolWithIdReturned($jobPool);
                 } else {
-                    $bolsa = array(
+                    $bolsa = [
 
-                        'id_portal' => $id_portal,
-                        'edicion' => $date,
-                        'nombre' => strtoupper($nombre),
-                        'paterno' => strtoupper($paterno),
-                        'materno' => strtoupper($materno),
-                        'telefono' => $telefono,
+                        'id_portal'      => $id_portal,
+                        'edicion'        => $date,
+                        'nombre'         => strtoupper($nombre),
+                        'paterno'        => strtoupper($paterno),
+                        'materno'        => strtoupper($materno),
+                        'telefono'       => $telefono,
                         'medio_contacto' => $medio,
-                        'area_interes' => $this->input->post('area_interes'),
-                        'domicilio' => $this->input->post('domicilio'),
-                        'status' => 2,
-                    );
+                        'area_interes'   => $this->input->post('area_interes'),
+                        'domicilio'      => $this->input->post('domicilio'),
+                        'status'         => 2,
+                    ];
 
                     if ($idRol != 6) {
                         $bolsa['id_usuario'] = $id_usuario;
@@ -626,29 +623,29 @@ class Reclutamiento extends CI_Controller
                     // Ya existe un registro, puedes manejarlo según tu lógica de negocio
                     // Por ejemplo, podrías mostrar un mensaje de error o hacer alguna otra acción
 
-                    $msj = array(
+                    $msj = [
                         'codigo' => 0,
-                        'msg' => "Ya  esta  Registrado elaspirante  para  esta  requicisión ",
-                    );
+                        'msg'    => "Ya  esta  Registrado elaspirante  para  esta  requicisión ",
+                    ];
 
                 } else {
                     // No existe un registro, procedemos a agregar el nuevo registro
-                    $datos = array(
-                        'creacion' => $date,
-                        'edicion' => $date,
-                        'id_usuario' => $id_usuario,
+                    $datos = [
+                        'creacion'         => $date,
+                        'edicion'          => $date,
+                        'id_usuario'       => $id_usuario,
                         'id_bolsa_trabajo' => $id_bolsa_trabajo,
-                        'id_requisicion' => $req,
-                        'correo' => $correo,
-                        'cv' => $nombre_archivo,
-                        'status' => 'Registrado',
-                    );
+                        'id_requisicion'   => $req,
+                        'correo'           => $correo,
+                        'cv'               => $nombre_archivo,
+                        'status'           => 'Registrado',
+                    ];
                     $id_req_aspirante = $this->reclutamiento_model->addApplicant($datos);
 
                     if ($id_bolsa_trabajo != 0) {
-                        $bolsa = array(
+                        $bolsa = [
                             'status' => 2,
-                        );
+                        ];
                         $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
                     }
 
@@ -658,70 +655,70 @@ class Reclutamiento extends CI_Controller
 
                         // Verifica que el resultado no sea NULL y que sea un objeto
                         if ($result2 && $result2->phone != null) {
-                            $datos_plantilla = array(
-                                'nombre_cliente' => $result2->nombre_cliente,
+                            $datos_plantilla = [
+                                'nombre_cliente'   => $result2->nombre_cliente,
                                 'nombre_aspirante' => $result2->nombre_completo,
-                                'vacante' => $result2->vacante,
-                                'telefono' => $result2->phone,
-                            );
+                                'vacante'          => $result2->vacante,
+                                'telefono'         => $result2->phone,
+                            ];
 
                             $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone . '', 'hello_world', $datos_plantilla);
 
                             if ($api_response['codigo'] == 1) {
-                                $msj = array(
+                                $msj = [
                                     'codigo' => 1,
-                                    'msg' => 'El aspirante fue guardado correctamente.  Y se notifico al cliente via  whatssapp ' . $api_response['msg'],
-                                );
+                                    'msg'    => 'El aspirante fue guardado correctamente.  Y se notifico al cliente via  whatssapp ' . $api_response['msg'],
+                                ];
                             } else {
-                                $msj = array(
+                                $msj = [
                                     'codigo' => 1,
-                                    'msg' => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente . ' . $api_response['msg'],
-                                );
+                                    'msg'    => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente . ' . $api_response['msg'],
+                                ];
                             }
                         }
 
                         // Llamar a la API con los datos de la plantilla
 
                     } else {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 1,
-                            'msg' => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente .',
-                        );
+                            'msg'    => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente .',
+                        ];
                     }
                 }
             } elseif ($id_aspirante > 0) {
-                $datos_rh = array(
+                $datos_rh = [
                     'id_requisicion' => $req,
-                    'correo' => $correo,
-                );
-                $datos_bt = array(
+                    'correo'         => $correo,
+                ];
+                $datos_bt = [
 
-                    'id_portal' => $id_portal,
-                    'edicion' => $date,
-                    'nombre' => strtoupper($nombre),
-                    'paterno' => strtoupper($paterno),
-                    'materno' => strtoupper($materno),
-                    'telefono' => $telefono,
+                    'id_portal'      => $id_portal,
+                    'edicion'        => $date,
+                    'nombre'         => strtoupper($nombre),
+                    'paterno'        => strtoupper($paterno),
+                    'materno'        => strtoupper($materno),
+                    'telefono'       => $telefono,
                     'medio_contacto' => $medio,
-                    'area_interes' => $this->input->post('area_interes'),
-                    'domicilio' => $this->input->post('domicilio'),
-                );
+                    'area_interes'   => $this->input->post('area_interes'),
+                    'domicilio'      => $this->input->post('domicilio'),
+                ];
 
                 $resultado = $this->reclutamiento_model->editarDatosAspiranteBolsa($datos_bt, $id_bolsa_trabajo, $datos_rh, $id_aspirante);
 
                 // Verificar si la función se ejecutó correctamente
                 if ($resultado) {
                     // La función se ejecutó correctamente
-                    $msj = array(
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => 'El aspirante fue Actualizado correctamente :)',
-                    );
+                        'msg'    => 'El aspirante fue Actualizado correctamente :)',
+                    ];
                 } else {
                     // La función no se ejecutó correctamente
-                    $msj = array(
+                    $msj = [
                         'codigo' => 0,
-                        'msg' => 'El aspirante no pudo ser actualizado :(',
-                    );
+                        'msg'    => 'El aspirante no pudo ser actualizado :(',
+                    ];
                 }
 
             }
@@ -739,89 +736,120 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $estatus_final = null;
-            $comentario = $this->input->post('comentario');
-            $id_usuario = $this->session->userdata('id');
-            $id_aspirante = $this->input->post('id_aspirante');
-            $id_requisicion = $this->input->post('id_requisicion');
-            $accion = explode(':', $this->input->post('accion'));
-            $aspirante = $this->reclutamiento_model->getAspiranteById($id_aspirante);
-            $idRol = $this->session->userdata('idrol');
+            $date             = date('Y-m-d H:i:s');
+            $estatus_final    = null;
+            $comentario       = $this->input->post('comentario');
+            $id_usuario       = $this->session->userdata('id');
+            $id_portal        = $this->session->userdata('idPortal');
+            $id_aspirante     = $this->input->post('id_aspirante');
+            $id_requisicion   = $this->input->post('id_requisicion');
+            $accion           = explode(':', $this->input->post('accion'));
+            $otra_accion      = $this->input->post('otra_accion');
+            $aspirante        = $this->reclutamiento_model->getAspiranteById($id_aspirante);
+            $idRol            = $this->session->userdata('idrol');
+            $estatusProceso   = $this->input->post('estatus_proceso');
+            $estatusAspirante = $this->input->post('estatus_aspirante');
             $notificacion = 0;
             // Determinar estatus final
-            if ($accion[0] == 13 || $accion[0] == 15) {
+            if ($estatusProceso == 3) {
                 $estatus_final = 'CANCELADO';
-            } elseif ($accion[0] == 17) {
-                $estatus_final = 'FINALIZADO';
-            } elseif ($accion[0] == 16) {
+                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+            } elseif ($estatusProceso == 2) {
+                $estatus_final = NULL;
+                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+            } elseif ($estatusProceso == 1) {
                 $estatus_final = 'COMPLETADO';
+                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+
+            } else {
+                $estatus_final = NULL;
+                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+
             }
 
-            $datos_accion = array(
-                'creacion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_requisicion' => $id_requisicion,
+           
+           
+                if(!empty($otra_accion)){
+                $datos_nuevaAccion = [
+                    'creacion'         => $date,
+                    'edicion'          => $date,
+                    'id_usuario'       => $id_usuario,
+                    'id_portal'        => $id_portal,
+                    'descripcion'      => $otra_accion,
+                ];
+
+                $nuevaAccionResult = $this->reclutamiento_model->registrarNuevaAccion($datos_nuevaAccion);
+
+            }
+            
+
+            $datos_accion = [
+                'creacion'         => $date,
+                'id_usuario'       => $id_usuario,
+                'id_requisicion'   => $id_requisicion,
                 'id_bolsa_trabajo' => $aspirante->id_bolsa_trabajo,
-                'id_aspirante' => $id_aspirante,
-                'accion' => $accion[1],
-                'descripcion' => $comentario,
-            );
+                'id_aspirante'     => $id_aspirante,
+                'accion'           => ! empty($accion[1]) ? $accion[1] : $otra_accion,
+                'descripcion'      => $comentario,
+            ];
 
-            $data_aspirante = array(
-                'edicion' => $date,
+           
+            $data_aspirante = [
+                'edicion'      => $date,
 
-                'status' => $accion[1],
+                'status'       => $status,
                 'status_final' => $estatus_final,
-            );
+            ];
             if ($idRol != 6) {
                 $data_aspirante['id_usuario'] = $id_usuario;
             }
 
             // Determinar estatus de bolsa de trabajo
-            switch ($accion[0]) {
-                case 9:
-                case 13:
-                case 15:
+            switch ($estatusAspirante) {
+                case 0:
+                    $estatus_bolsa = 0;
+                    $semaforo      = 0;
+                    break;
+                case 1:
                     $estatus_bolsa = 1;
-                    $semaforo = 2;
+                    $semaforo      = 0;
                     break;
-                case 16:
-                    $estatus_bolsa = 3;
-                    $semaforo = 1;
-                    break;
-                case 17:
-                    $estatus_bolsa = 1;
-                    $semaforo = 0;
-                    break;
-                default:
+                case 2:
                     $estatus_bolsa = 2;
-                    $semaforo = 0;
+                    $semaforo      = 0;
+                    break;
+                case 3:
+                    $estatus_bolsa = 3;
+                    $semaforo      = 0;
+                    break;
+                case 4:
+                    $estatus_bolsa = 4;
+                    $semaforo      = 0;
                     break;
             }
 
-            $data_bolsa = array(
-                'edicion' => $date,
-                'status' => $estatus_bolsa,
+            $data_bolsa = [
+                'edicion'  => $date,
+                'status'   => $estatus_bolsa,
                 'semaforo' => $semaforo,
-            );
+            ];
 
             // Realizar todas las operaciones en una transacción
             $result = $this->reclutamiento_model->registrarMovimiento($datos_accion, $data_aspirante, $data_bolsa, $aspirante->id_bolsa_trabajo, $id_aspirante);
-            if($result){
-                $msj = array(
+            if ($result) {
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'Accion registrada  correctamente ',
-                );
-             /*  funcion  para  integrar  whats APP 
+                    'msg'    => 'Accion registrada  correctamente ',
+                ];
+                /*  funcion  para  integrar  whats APP 
             if ($result && $notificacion > 0) {
                 $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspirante($id_aspirante);
 
@@ -857,12 +885,12 @@ class Reclutamiento extends CI_Controller
                     'msg' => 'Error al realizar las operaciones en la base de datos',
                 );
             } */
-        }else{
-            $msj = array(
-                'codigo' => 0,
-                'msg' => 'Hubo un problema  se  registro la accion  ',
-            );
-        }
+            } else {
+                $msj = [
+                    'codigo' => 0,
+                    'msg'    => 'Hubo un problema  se  registro la accion  ',
+                ];
+            }
         }
 
         echo json_encode($msj);
@@ -878,89 +906,89 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $comentario = $this->input->post('comentario');
-            $id_usuario = $this->session->userdata('id');
-            $estatus_final = $this->input->post('estatus');
+            $date           = date('Y-m-d H:i:s');
+            $comentario     = $this->input->post('comentario');
+            $id_usuario     = $this->session->userdata('id');
+            $estatus_final  = $this->input->post('estatus');
             $id_requisicion = $this->input->post('id_requisicion');
-            $idRol = $this->session->userdata('idrol');
+            $idRol          = $this->session->userdata('idrol');
 
             //Cancela Requisicion
             if ($estatus_final == 0) {
-                $status = 'status';
+                $status   = 'status';
                 $acciones = 1;
 
-                $condicion = 'A.id_usuario >';
+                $condicion          = 'A.id_usuario >';
                 $data['aspirantes'] = $this->reclutamiento_model->getAspirantesPorRequisicion($id_usuario, $condicion, $id_requisicion);
                 if ($data['aspirantes']) {
                     foreach ($data['aspirantes'] as $row) {
-                        $bolsa = array(
+                        $bolsa = [
                             'edicion' => $date,
-                            'status' => 1,
-                        );
+                            'status'  => 1,
+                        ];
                         $this->reclutamiento_model->editBolsaTrabajo($bolsa, $row->id_bolsa_trabajo);
                     }
                 }
-                $datos = array(
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    $status => $estatus_final,
+                $datos = [
+                    'edicion'          => $date,
+                    'id_usuario'       => $id_usuario,
+                    $status            => $estatus_final,
                     'comentario_final' => $comentario,
-                );
+                ];
 
                 $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'La requisición fue cancelada correctamente',
-                );
+                    'msg'    => 'La requisición fue cancelada correctamente',
+                ];
             }
             //Se elimina la requisicion
             if ($estatus_final == 1) {
-                $status = 'eliminado';
-                $acciones = 1;
-                $id_usuario = 0;
-                $condicion = 'A.id_usuario >';
+                $status             = 'eliminado';
+                $acciones           = 1;
+                $id_usuario         = 0;
+                $condicion          = 'A.id_usuario >';
                 $data['aspirantes'] = $this->reclutamiento_model->getAspirantesPorRequisicion($id_usuario, $condicion, $id_requisicion);
                 if ($data['aspirantes']) {
                     foreach ($data['aspirantes'] as $row) {
-                        $bolsa = array(
+                        $bolsa = [
                             'edicion' => $date,
-                            'status' => 1,
-                        );
+                            'status'  => 1,
+                        ];
                         $this->reclutamiento_model->editBolsaTrabajo($bolsa, $row->id_bolsa_trabajo);
                     }
                 }
-                $datos = array(
-                    'edicion' => $date,
+                $datos = [
+                    'edicion'          => $date,
 
-                    $status => $estatus_final,
+                    $status            => $estatus_final,
                     'comentario_final' => $comentario,
-                );
+                ];
 
                 if ($idRol != 6) {
                     $datos['id_usuario'] = $id_usuario;
                 }
                 $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'La requisición fue eliminada correctamente',
-                );
+                    'msg'    => 'La requisición fue eliminada correctamente',
+                ];
             }
             //Termina o finaliza Requisicion
             if ($estatus_final == 3) {
-                $status = 'status';
-                $acciones = ['FINALIZADO', 'COMPLETADO', 'ESE FINALIZADO'];
+                $status             = 'status';
+                $acciones           = ['FINALIZADO', 'COMPLETADO', 'ESE FINALIZADO'];
                 $sin_registro_socio = 0;
-                $num_aspirantes = $this->reclutamiento_model->getVacantesCubiertasTotal($id_requisicion, $acciones);
-                $requisicion = $this->reclutamiento_model->getRequisionById($id_requisicion);
+                $num_aspirantes     = $this->reclutamiento_model->getVacantesCubiertasTotal($id_requisicion, $acciones);
+                $requisicion        = $this->reclutamiento_model->getRequisionById($id_requisicion);
                 if ($num_aspirantes >= $requisicion->numero_vacantes) {
                     $data['candidatos'] = $this->reclutamiento_model->getCandidatosByRequisicion($id_requisicion);
                     foreach ($data['candidatos'] as $row) {
@@ -970,29 +998,58 @@ class Reclutamiento extends CI_Controller
                         }
                     }
 
-                    $datos = array(
-                        'edicion' => $date,
-                        $status => $estatus_final,
+                    $datos = [
+                        'edicion'          => $date,
+                        $status            => $estatus_final,
                         'comentario_final' => $comentario,
-                    );
+                    ];
                     if ($idRol != 6) {
                         $datos['id_usuario'] = $id_usuario;
                     }
                     $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
-                    $msj = array(
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => 'La requisición fue terminada correctamente',
-                    );
+                        'msg'    => 'La requisición fue terminada correctamente',
+                    ];
 
                 } else {
-                    $msj = array(
+                    $msj = [
                         'codigo' => 0,
-                        'msg' => 'Se debe cumplir el numero de vacantes, el registro del sueldo acordado y fecha de ingreso al empleo',
-                    );
+                        'msg'    => 'Se debe cumplir el numero de vacantes, el registro del sueldo acordado y fecha de ingreso al empleo',
+                    ];
                 }
             }
         }
         echo json_encode($msj);
+    }
+    // funcion para  eliminar Acciones submodulo en proceso mediante  el id  de la accion
+    public function eliminarRegistro()
+    {
+        $id = $this->input->post('id');
+      
+
+        if ($id) {
+
+            $eliminado = $this->reclutamiento_model->eliminarMovimiento($id); // Función del modelo que elimina
+
+            if ($eliminado) {
+                echo json_encode([
+                    'status'  => true,
+                    'mensaje' => 'El registro ha sido eliminado correctamente.',
+                    'id'      => $id,
+                ]);
+            } else {
+                echo json_encode([
+                    'status'  => false,
+                    'mensaje' => 'No se pudo eliminar el registro.',
+                ]);
+            }
+        } else {
+            echo json_encode([
+                'status'  => false,
+                'mensaje' => 'No se pudo eliminar el registro.',
+            ]);
+        }
     }
 
     public function getOrderPDF()
@@ -1024,53 +1081,53 @@ class Reclutamiento extends CI_Controller
     public function cambiarStatusBolsaTrabajo()
     {
         date_default_timezone_set('America/Mexico_City');
-        $date = date('Y-m-d H:i:s');
+        $date       = date('Y-m-d H:i:s');
         $id_usuario = $this->session->userdata('id');
-        $idRol = $this->session->userdata('idrol');
-        $id_bolsa = $this->input->post('id_bolsa');
+        $idRol      = $this->session->userdata('idrol');
+        $id_bolsa   = $this->input->post('id_bolsa');
         $comentario = $this->input->post('comentario');
-        $accion = $this->input->post('accion');
-        $aspirante = $this->reclutamiento_model->getAspiranteByBolsaTrabajo($id_bolsa);
-        $msj = array(); // Inicializa $msj como un array vacío
+        $accion     = $this->input->post('accion');
+        $aspirante  = $this->reclutamiento_model->getAspiranteByBolsaTrabajo($id_bolsa);
+        $msj        = []; // Inicializa $msj como un array vacío
 
         if ($comentario != '') {
             if ($aspirante != null) {
-                $aspirante_data = array(
-                    'edicion' => $date,
-                    'status' => 'Bloqueado del proceso de reclutamiento',
+                $aspirante_data = [
+                    'edicion'      => $date,
+                    'status'       => 'Bloqueado del proceso de reclutamiento',
                     'status_final' => 'BLOQUEADO',
-                );
+                ];
                 if ($idRol != 6) {
                     $datos['id_usuario'] = $id_usuario;
                 }
                 $this->reclutamiento_model->editarAspirante($aspirante_data, $aspirante->id);
-                $historial = array(
-                    'creacion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_requisicion' => $aspirante->id_requisicion,
+                $historial = [
+                    'creacion'         => $date,
+                    'id_usuario'       => $id_usuario,
+                    'id_requisicion'   => $aspirante->id_requisicion,
                     'id_bolsa_trabajo' => $id_bolsa,
-                    'id_aspirante' => $aspirante->id,
-                    'accion' => 'Usuario bloquea a la persona del proceso de reclutamiento',
-                    'descripcion' => $comentario,
-                );
+                    'id_aspirante'     => $aspirante->id,
+                    'accion'           => 'Usuario bloquea a la persona del proceso de reclutamiento',
+                    'descripcion'      => $comentario,
+                ];
                 $this->reclutamiento_model->guardarAccionRequisicion($historial);
             }
 
             // Cambiar estado de la bolsa de trabajo
-            $bolsa = array(
+            $bolsa = [
                 'status' => ($accion == 'bloquear') ? 0 : 1,
-            );
+            ];
             $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
 
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => ($accion == 'bloquear') ? 'Se ha bloqueado correctamente' : 'Se ha desbloqueado correctamente',
-            );
+                'msg'    => ($accion == 'bloquear') ? 'Se ha bloqueado correctamente' : 'Se ha desbloqueado correctamente',
+            ];
         } else {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => 'Debes llenar el motivo de bloqueo e intentarlo de nuevo',
-            );
+                'msg'    => 'Debes llenar el motivo de bloqueo e intentarlo de nuevo',
+            ];
         }
 
         echo json_encode($msj);
@@ -1085,33 +1142,33 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
         // Inicializa el mensaje de respuesta
-        $msj = array();
+        $msj = [];
 
         // Verificar validación
         if ($this->form_validation->run() === false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             // Configuración de fecha y obtención de datos
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $comentario = $this->input->post('comentario');
-            $id_usuario = $this->session->userdata('id');
-            $id_bolsa = $this->input->post('id_bolsa');
-            $tipo = $this->session->userdata('tipo');
-            $nombre = ($tipo == 1) ? 'Reclutador' : 'Cliente';
+            $date         = date('Y-m-d H:i:s');
+            $comentario   = $this->input->post('comentario');
+            $id_usuario   = $this->session->userdata('id');
+            $id_bolsa     = $this->input->post('id_bolsa');
+            $tipo         = $this->session->userdata('tipo');
+            $nombre       = ($tipo == 1) ? 'Reclutador' : 'Cliente';
             $notificacion = 0; // Cambia esto a 0 si quieres desactivar las notificaciones
 
             // Datos a guardar en el historial
-            $datos = array(
-                'creacion' => $date,
-                'id_usuario' => $id_usuario,
+            $datos = [
+                'creacion'                 => $date,
+                'id_usuario'               => $id_usuario,
                 'id_requisicion_aspirante' => $id_bolsa,
-                'nombre_rol' => $nombre,
-                'comentario' => $comentario,
-            );
+                'nombre_rol'               => $nombre,
+                'comentario'               => $comentario,
+            ];
 
             // Guardar el historial en la base de datos
             $result = $this->reclutamiento_model->guardarHistorialBolsaTrabajo($datos);
@@ -1123,47 +1180,47 @@ class Reclutamiento extends CI_Controller
                     if ($tipo == 1) {
                         $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspirante($id_bolsa);
 
-                        if ($result2 && !empty($result2->phone)) {
-                            $datos_plantilla = array(
-                                'nombre_cliente' => $result2->nombre_cliente,
+                        if ($result2 && ! empty($result2->phone)) {
+                            $datos_plantilla = [
+                                'nombre_cliente'   => $result2->nombre_cliente,
                                 'nombre_aspirante' => $result2->nombre_completo,
-                                'vacante' => $result2->vacante,
-                                'telefono' => $result2->phone,
-                                'ruta' => 'send-message-comentario-reclu', // Ajusta según sea necesario
-                            );
+                                'vacante'          => $result2->vacante,
+                                'telefono'         => $result2->phone,
+                                'ruta'             => 'send-message-comentario-reclu', // Ajusta según sea necesario
+                            ];
 
                             $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'mensaje_reclutador', $datos_plantilla);
 
                             if ($api_response['codigo'] == 1) {
-                                $msj = array(
+                                $msj = [
                                     'codigo' => 1,
-                                    'msg' => 'El registro se realizó correctamente. ' . $api_response['msg'],
-                                );
+                                    'msg'    => 'El registro se realizó correctamente. ' . $api_response['msg'],
+                                ];
                             } else {
-                                $msj = array(
+                                $msj = [
                                     'codigo' => 0,
-                                    'msg' => $api_response['msg'],
-                                );
+                                    'msg'    => $api_response['msg'],
+                                ];
                             }
                         } else {
                             // Datos para notificación no válidos
-                            $msj = array(
+                            $msj = [
                                 'codigo' => 1,
-                                'msg' => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
-                            );
+                                'msg'    => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
+                            ];
                         }
 
                     } else {
                         $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspiranteCliente($id_bolsa);
-                        if ($result2 && !empty($result2->phone)) {
-                            $datos_plantilla = array(
-                                'nombre_reclu' => $result2->nombre_reclutador,
-                                'nombre_cliente' => $result2->nombre_cliente,
+                        if ($result2 && ! empty($result2->phone)) {
+                            $datos_plantilla = [
+                                'nombre_reclu'     => $result2->nombre_reclutador,
+                                'nombre_cliente'   => $result2->nombre_cliente,
                                 'nombre_aspirante' => $result2->nombre_completo,
-                                'vacante' => $result2->vacante,
-                                'telefono' => $result2->phone,
-                                'ruta' => 'send-message-comentario-cliente', // Ajusta según sea necesario
-                            );
+                                'vacante'          => $result2->vacante,
+                                'telefono'         => $result2->phone,
+                                'ruta'             => 'send-message-comentario-cliente', // Ajusta según sea necesario
+                            ];
                             /* echo '<pre>';
 
                             print_r($datos_plantilla);
@@ -1172,38 +1229,38 @@ class Reclutamiento extends CI_Controller
                             $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'mensaje_cliente', $datos_plantilla);
 
                             if ($api_response['codigo'] == 1) {
-                                $msj = array(
+                                $msj = [
                                     'codigo' => 1,
-                                    'msg' => 'El registro se realizó correctamente. ' . $api_response['msg'],
-                                );
+                                    'msg'    => 'El registro se realizó correctamente. ' . $api_response['msg'],
+                                ];
                             } else {
-                                $msj = array(
+                                $msj = [
                                     'codigo' => 0,
-                                    'msg' => $api_response['msg'],
-                                );
+                                    'msg'    => $api_response['msg'],
+                                ];
                             }
                         } else {
                             // Datos para notificación no válidos
-                            $msj = array(
+                            $msj = [
                                 'codigo' => 1,
-                                'msg' => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
-                            );
+                                'msg'    => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
+                            ];
                         }
                     }
 
                 } else {
                     // Notificación desactivada
-                    $msj = array(
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => 'El registro se realizó correctamente. La notificación no fue enviada.',
-                    );
+                        'msg'    => 'El registro se realizó correctamente. La notificación no fue enviada.',
+                    ];
                 }
             } else {
                 // Fallo en el guardado
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => 'No se pudo registrar el comentario, intente más tarde.',
-                );
+                    'msg'    => 'No se pudo registrar el comentario, intente más tarde.',
+                ];
             }
         }
 
@@ -1276,63 +1333,63 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
 
             $cadena_competencias = $this->input->post('competencias');
-            $competencias = '';
+            $competencias        = '';
 
-            if (!empty($cadena_competencias)) {
+            if (! empty($cadena_competencias)) {
                 $competencias = implode('_', $cadena_competencias);
             }
 
-            $date = date('Y-m-d H:i:s');
+            $date       = date('Y-m-d H:i:s');
             $id_usuario = $this->session->userdata('id');
             $id_cliente = $this->input->post('id_cliente');
-            $contacto = $this->input->post('contacto_req');
-            $palabras = explode(' ', $contacto);
+            $contacto   = $this->input->post('contacto_req');
+            $palabras   = explode(' ', $contacto);
 
-            // Asignar las palabras a variables individuales
-            $nombre = isset($palabras[0]) ? $palabras[0] : ''; // Primer palabra
+                                                                // Asignar las palabras a variables individuales
+            $nombre  = isset($palabras[0]) ? $palabras[0] : ''; // Primer palabra
             $paterno = isset($palabras[1]) ? $palabras[1] : '';
 
-            $cliente = array(
+            $cliente = [
                 'edicion' => $date,
-                'nombre' => $this->input->post('nombre_comercial_req'),
-            );
-            $domicilios = array(
-                'pais' => $this->input->post('pais_req'),
-                'estado' => $this->input->post('estado_req'),
-                'ciudad' => $this->input->post('ciudad_req'),
-                'colonia' => $this->input->post('colonia_req'),
-                'calle' => $this->input->post('calle_req'),
+                'nombre'  => $this->input->post('nombre_comercial_req'),
+            ];
+            $domicilios = [
+                'pais'     => $this->input->post('pais_req'),
+                'estado'   => $this->input->post('estado_req'),
+                'ciudad'   => $this->input->post('ciudad_req'),
+                'colonia'  => $this->input->post('colonia_req'),
+                'calle'    => $this->input->post('calle_req'),
                 'interior' => $this->input->post('interior_req'),
                 'exterior' => $this->input->post('exterior_req'),
-                'cp' => $this->input->post('cp_req'),
-            );
+                'cp'       => $this->input->post('cp_req'),
+            ];
 
-            $generales = array(
+            $generales = [
                 'telefono_req' => $this->input->post('telefono_req'),
-                'correo_req' => $this->input->post('correo_req'),
-                'nombre' => $nombre,
-                'paterno' => $paterno,
-            );
+                'correo_req'   => $this->input->post('correo_req'),
+                'nombre'       => $nombre,
+                'paterno'      => $paterno,
+            ];
 
-            $facturacion = array(
+            $facturacion = [
                 'razon_social' => $this->input->post('nombre_req'),
-                'regimen' => $this->input->post('regimen_req'),
-                'rfc' => $this->input->post('rfc_req'),
-                'forma_pago' => $this->input->post('forma_pago_req'),
-                'metodo_pago' => $this->input->post('metodo_pago_req'),
-                'uso_cfdi' => $this->input->post('uso_cfdi_req'),
+                'regimen'      => $this->input->post('regimen_req'),
+                'rfc'          => $this->input->post('rfc_req'),
+                'forma_pago'   => $this->input->post('forma_pago_req'),
+                'metodo_pago'  => $this->input->post('metodo_pago_req'),
+                'uso_cfdi'     => $this->input->post('uso_cfdi_req'),
 
-            );
+            ];
             $idiomas = "";
 
             if ($this->input->post('idioma1_req') != "") {
@@ -1371,38 +1428,38 @@ class Reclutamiento extends CI_Controller
                 $licencia .= "N/A";
             }
 
-            $req = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'tipo' => 'EXPRESS',
-                'id_usuario' => $id_usuario,
-                'id_cliente' => $id_cliente,
-                'puesto' => $this->input->post('puesto_req') ?? null,
-                'numero_vacantes' => $this->input->post('numero_vacantes_req') ?? null,
-                'escolaridad' => !empty($this->input->post('escolaridad_req')) ? $this->input->post('escolaridad_req') : null,
-                'estatus_escolar' => !empty($this->input->post('estatus_escolaridad_req')) ? $this->input->post('estatus_escolaridad_req') : null,
-                'otro_estatus_escolar' => !empty($this->input->post('otro_estatus_req')) ? $this->input->post('otro_estatus_req') : null,
-                'carrera_requerida' => !empty($this->input->post('carrera_req')) ? $this->input->post('carrera_req') : null,
-                'otros_estudios' => $this->input->post('otros_estudios_req') ?? null,
-                'idiomas' => $idiomas ?? null,
-                'habilidad_informatica' => $habilidades ?? null,
-                'genero' => $this->input->post('genero_req') ?? null,
-                'estado_civil' => $this->input->post('civil_req') ?? null,
-                'edad_minima' => $this->input->post('edad_minima_req') ?? null,
-                'edad_maxima' => $this->input->post('edad_maxima_req') ?? null,
-                'licencia' => $licencia ?? null,
+            $req = [
+                'creacion'               => $date,
+                'edicion'                => $date,
+                'tipo'                   => 'EXPRESS',
+                'id_usuario'             => $id_usuario,
+                'id_cliente'             => $id_cliente,
+                'puesto'                 => $this->input->post('puesto_req') ?? null,
+                'numero_vacantes'        => $this->input->post('numero_vacantes_req') ?? null,
+                'escolaridad'            => ! empty($this->input->post('escolaridad_req')) ? $this->input->post('escolaridad_req') : null,
+                'estatus_escolar'        => ! empty($this->input->post('estatus_escolaridad_req')) ? $this->input->post('estatus_escolaridad_req') : null,
+                'otro_estatus_escolar'   => ! empty($this->input->post('otro_estatus_req')) ? $this->input->post('otro_estatus_req') : null,
+                'carrera_requerida'      => ! empty($this->input->post('carrera_req')) ? $this->input->post('carrera_req') : null,
+                'otros_estudios'         => $this->input->post('otros_estudios_req') ?? null,
+                'idiomas'                => $idiomas ?? null,
+                'habilidad_informatica'  => $habilidades ?? null,
+                'genero'                 => $this->input->post('genero_req') ?? null,
+                'estado_civil'           => $this->input->post('civil_req') ?? null,
+                'edad_minima'            => $this->input->post('edad_minima_req') ?? null,
+                'edad_maxima'            => $this->input->post('edad_maxima_req') ?? null,
+                'licencia'               => $licencia ?? null,
                 'discapacidad_aceptable' => $this->input->post('discapacidad_req') ?? null,
-                'causa_vacante' => $this->input->post('causa_req') ?? null,
-                'lugar_residencia' => $this->input->post('residencia_req') ?? null,
-                'zona_trabajo' => $this->input->post('zona_req') ?? null,
-                'tipo_pago_sueldo' => $this->input->post('tipo_sueldo_req') ?? null,
-                'sueldo_minimo' => $this->input->post('sueldo_minimo_req') ?? null,
-                'sueldo_maximo' => $this->input->post('sueldo_maximo_req') ?? null,
-                'tipo_prestaciones' => $this->input->post('tipo_prestaciones_req') ?? null,
-                'experiencia' => $this->input->post('experiencia_req') ?? null,
-                'competencias' => $competencias ?? null,
-                'observaciones' => $this->input->post('observaciones_req') ?? null,
-            );
+                'causa_vacante'          => $this->input->post('causa_req') ?? null,
+                'lugar_residencia'       => $this->input->post('residencia_req') ?? null,
+                'zona_trabajo'           => $this->input->post('zona_req') ?? null,
+                'tipo_pago_sueldo'       => $this->input->post('tipo_sueldo_req') ?? null,
+                'sueldo_minimo'          => $this->input->post('sueldo_minimo_req') ?? null,
+                'sueldo_maximo'          => $this->input->post('sueldo_maximo_req') ?? null,
+                'tipo_prestaciones'      => $this->input->post('tipo_prestaciones_req') ?? null,
+                'experiencia'            => $this->input->post('experiencia_req') ?? null,
+                'competencias'           => $competencias ?? null,
+                'observaciones'          => $this->input->post('observaciones_req') ?? null,
+            ];
 
             /* var_dump($cliente);
             var_dump($generales);
@@ -1413,7 +1470,7 @@ class Reclutamiento extends CI_Controller
              */
             $result = $this->reclutamiento_model->addRequisicion($id_cliente, $cliente, $domicilios, $generales, $facturacion, $req);
 
-            if (!empty($result)) {
+            if (! empty($result)) {
                 /*
                 if ($notificacion > 0) {
                     // Obtener datos para notificación
@@ -1499,16 +1556,16 @@ class Reclutamiento extends CI_Controller
                     );
                 }
                 */
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'Requisición express registrada correctamente',
-                );
+                    'msg'    => 'Requisición express registrada correctamente',
+                ];
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => 'Error al registrar la requisición',
-                );
-            } 
+                    'msg'    => 'Error al registrar la requisición',
+                ];
+            }
         }
         echo json_encode($msj);
     }
@@ -1523,38 +1580,38 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             if ($this->input->post('view') == 'bolsa_trabajo') {
-                $data = array(
-                    'edicion' => date('Y-m-d H:i:s'),
+                $data = [
+                    'edicion'    => date('Y-m-d H:i:s'),
                     'id_usuario' => $this->input->post('asignar_usuario'),
-                );
+                ];
                 $this->reclutamiento_model->editBolsaTrabajo($data, $this->input->post('asignar_registro'));
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'La asignación se realizó correctamente',
-                );
+                    'msg'    => 'La asignación se realizó correctamente',
+                ];
             }
             if ($this->input->post('view') == 'requisicion') {
                 $totalUsers = count($this->input->post('asignar_usuario'));
                 for ($i = 0; $i < $totalUsers; $i++) {
-                    $data = array(
-                        'creacion' => date('Y-m-d H:i:s'),
+                    $data = [
+                        'creacion'       => date('Y-m-d H:i:s'),
                         'id_requisicion' => $this->input->post('asignar_registro'),
-                        'id_usuario' => $this->input->post('asignar_usuario')[$i],
-                    );
+                        'id_usuario'     => $this->input->post('asignar_usuario')[$i],
+                    ];
                     $this->reclutamiento_model->addUsersToOrder($data);
                 }
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'La asignación se realizó correctamente',
-                );
+                    'msg'    => 'La asignación se realizó correctamente',
+                ];
             }
         }
         echo json_encode($msj);
@@ -1634,110 +1691,110 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
-            $generales = array();
+            $generales = [];
 
             if ($section == 'data_facturacion') {
 
                 $contacto = $this->input->post('contacto_update');
                 $palabras = explode(' ', $contacto);
 
-                // Asignar las palabras a variables individuales
-                $nombre = isset($palabras[0]) ? $palabras[0] : ''; // Primer palabra
+                                                                    // Asignar las palabras a variables individuales
+                $nombre  = isset($palabras[0]) ? $palabras[0] : ''; // Primer palabra
                 $paterno = isset($palabras[1]) ? $palabras[1] : '';
 
                 // Agregar los valores al arreglo $generales
                 $generales['telefono'] = $this->input->post('telefono_update');
-                $generales['correo'] = $this->input->post('correo_update');
-                $generales['nombre'] = $nombre;
-                $generales['paterno'] = $paterno;
+                $generales['correo']   = $this->input->post('correo_update');
+                $generales['nombre']   = $nombre;
+                $generales['paterno']  = $paterno;
 
-                $req = array(
-                    'edicion' => date('Y-m-d H:i:s'),
+                $req = [
+                    'edicion'    => date('Y-m-d H:i:s'),
                     'id_usuario' => $this->session->userdata('id'),
-                );
+                ];
 
-                $facturacion = array(
+                $facturacion = [
 
                     'razon_social' => $this->input->post('nombre_update'),
-                    'rfc' => $this->input->post('rfc_update'),
-                    'regimen' => $this->input->post('regimen_update'),
-                    'forma_pago' => $this->input->post('forma_pago_update'),
-                    'metodo_pago' => $this->input->post('metodo_pago_update'),
-                    'uso_cfdi' => $this->input->post('uso_cfdi_update'),
-                );
+                    'rfc'          => $this->input->post('rfc_update'),
+                    'regimen'      => $this->input->post('regimen_update'),
+                    'forma_pago'   => $this->input->post('forma_pago_update'),
+                    'metodo_pago'  => $this->input->post('metodo_pago_update'),
+                    'uso_cfdi'     => $this->input->post('uso_cfdi_update'),
+                ];
 
-                $domicilios = array(
-                    'pais' => $this->input->post('pais_update'),
-                    'estado' => $this->input->post('estado_update'),
-                    'ciudad' => $this->input->post('ciudad_update'),
-                    'colonia' => $this->input->post('colonia_update'),
-                    'calle' => $this->input->post('calle_update'),
+                $domicilios = [
+                    'pais'     => $this->input->post('pais_update'),
+                    'estado'   => $this->input->post('estado_update'),
+                    'ciudad'   => $this->input->post('ciudad_update'),
+                    'colonia'  => $this->input->post('colonia_update'),
+                    'calle'    => $this->input->post('calle_update'),
                     'interior' => $this->input->post('interior_update'),
                     'exterior' => $this->input->post('exterior_update'),
-                    'cp' => $this->input->post('cp_update'),
-                );
+                    'cp'       => $this->input->post('cp_update'),
+                ];
 
                 $sectionSuccessMessage = 'Datos de facturación, domicilios, generales del cliente actualizados correctamente';
             }
             if ($section == 'vacante') {
-                $req = array(
-                    'puesto' => $this->input->post('puesto_update'),
-                    'numero_vacantes' => $this->input->post('num_vacantes_update'),
-                    'escolaridad' => $this->input->post('escolaridad_update'),
-                    'estatus_escolar' => $this->input->post('estatus_escolaridad_update'),
-                    'otro_estatus_escolar' => $this->input->post('otro_estatus_update'),
-                    'carrera_requerida' => $this->input->post('carrera_update'),
-                    'idiomas' => $this->input->post('idiomas_update'),
-                    'otros_estudios' => $this->input->post('otros_estudios_update'),
-                    'habilidad_informatica' => $this->input->post('hab_informatica_update'),
-                    'genero' => $this->input->post('genero_update'),
-                    'estado_civil' => $this->input->post('civil_update'),
-                    'edad_minima' => $this->input->post('edad_minima_update'),
-                    'edad_maxima' => $this->input->post('edad_maxima_update'),
-                    'licencia' => $this->input->post('licencia_completa'),
+                $req = [
+                    'puesto'                 => $this->input->post('puesto_update'),
+                    'numero_vacantes'        => $this->input->post('num_vacantes_update'),
+                    'escolaridad'            => $this->input->post('escolaridad_update'),
+                    'estatus_escolar'        => $this->input->post('estatus_escolaridad_update'),
+                    'otro_estatus_escolar'   => $this->input->post('otro_estatus_update'),
+                    'carrera_requerida'      => $this->input->post('carrera_update'),
+                    'idiomas'                => $this->input->post('idiomas_update'),
+                    'otros_estudios'         => $this->input->post('otros_estudios_update'),
+                    'habilidad_informatica'  => $this->input->post('hab_informatica_update'),
+                    'genero'                 => $this->input->post('genero_update'),
+                    'estado_civil'           => $this->input->post('civil_update'),
+                    'edad_minima'            => $this->input->post('edad_minima_update'),
+                    'edad_maxima'            => $this->input->post('edad_maxima_update'),
+                    'licencia'               => $this->input->post('licencia_completa'),
                     'discapacidad_aceptable' => $this->input->post('discapacidad_update'),
-                    'causa_vacante' => $this->input->post('causa_update'),
-                    'lugar_residencia' => $this->input->post('residencia_update'),
-                );
+                    'causa_vacante'          => $this->input->post('causa_update'),
+                    'lugar_residencia'       => $this->input->post('residencia_update'),
+                ];
                 $sectionSuccessMessage = 'Información de la vacante actualizada correctamente';
             }
             if ($section == 'cargo') {
-                $req = array(
-                    'jornada_laboral' => $this->input->post('jornada_update'),
-                    'tiempo_inicio' => $this->input->post('tiempo_inicio_update'),
-                    'tiempo_final' => $this->input->post('tiempo_final_update'),
-                    'dias_descanso' => $this->input->post('descanso_update'),
-                    'disponibilidad_viajar' => $this->input->post('viajar_update'),
-                    'disponibilidad_horario' => $this->input->post('horario_update'),
-                    'lugar_entrevista' => $this->input->post('lugar_entrevista_update'),
-                    'zona_trabajo' => $this->input->post('zona_update'),
-                    'sueldo' => $this->input->post('tipo_sueldo_update'),
-                    'sueldo_adicional' => $this->input->post('sueldo_adicional_completo'),
-                    'sueldo_minimo' => $this->input->post('sueldo_minimo_update'),
-                    'sueldo_maximo' => $this->input->post('sueldo_maximo_update'),
-                    'tipo_pago_sueldo' => $this->input->post('tipo_pago_update'),
-                    'tipo_prestaciones' => $this->input->post('tipo_prestaciones_update'),
+                $req = [
+                    'jornada_laboral'              => $this->input->post('jornada_update'),
+                    'tiempo_inicio'                => $this->input->post('tiempo_inicio_update'),
+                    'tiempo_final'                 => $this->input->post('tiempo_final_update'),
+                    'dias_descanso'                => $this->input->post('descanso_update'),
+                    'disponibilidad_viajar'        => $this->input->post('viajar_update'),
+                    'disponibilidad_horario'       => $this->input->post('horario_update'),
+                    'lugar_entrevista'             => $this->input->post('lugar_entrevista_update'),
+                    'zona_trabajo'                 => $this->input->post('zona_update'),
+                    'sueldo'                       => $this->input->post('tipo_sueldo_update'),
+                    'sueldo_adicional'             => $this->input->post('sueldo_adicional_completo'),
+                    'sueldo_minimo'                => $this->input->post('sueldo_minimo_update'),
+                    'sueldo_maximo'                => $this->input->post('sueldo_maximo_update'),
+                    'tipo_pago_sueldo'             => $this->input->post('tipo_pago_update'),
+                    'tipo_prestaciones'            => $this->input->post('tipo_prestaciones_update'),
                     'tipo_prestaciones_superiores' => $this->input->post('superiores_update'),
-                    'otras_prestaciones' => $this->input->post('otras_prestaciones_update'),
-                    'experiencia' => $this->input->post('experiencia_update'),
-                    'actividades' => $this->input->post('actividades_update'),
-                );
+                    'otras_prestaciones'           => $this->input->post('otras_prestaciones_update'),
+                    'experiencia'                  => $this->input->post('experiencia_update'),
+                    'actividades'                  => $this->input->post('actividades_update'),
+                ];
                 $sectionSuccessMessage = 'Información del cargo actualizada correctamente';
             }
             if ($section == 'perfil') {
-                $req = array(
-                    'competencias' => $this->input->post('competencias'),
+                $req = [
+                    'competencias'  => $this->input->post('competencias'),
                     'observaciones' => $this->input->post('observaciones_update'),
-                );
+                ];
                 $sectionSuccessMessage = 'Información del perfil actualizada correctamente';
             }
             // Comprobar si $generales no está vacío
-            if (!empty($generales)) {
+            if (! empty($generales)) {
                 // Si $generales no está vacío, se ha editado datos de facturación y generales
                 /*  var_dump($generales);
                 var_dump($domicilios);
@@ -1766,16 +1823,16 @@ class Reclutamiento extends CI_Controller
                     // Si la transacción falló, revertir los cambios y mostrar un mensaje de error
                     $this->db->trans_rollback();
 
-                    $msj = array(
+                    $msj = [
                         'codigo' => 0,
-                        'msg' => 'Error al procesar la transacción',
-                    );
+                        'msg'    => 'Error al procesar la transacción',
+                    ];
                 } else {
                     // Si la transacción se completó correctamente, mostrar un mensaje de éxito
-                    $msj = array(
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => $sectionSuccessMessage,
-                    );
+                        'msg'    => $sectionSuccessMessage,
+                    ];
                 }
             } else {
                 // Si $generales está vacío, solo se ha editado la orden
@@ -1784,10 +1841,10 @@ class Reclutamiento extends CI_Controller
                 $this->reclutamiento_model->updateOrder($req, $this->input->post('id_requisicion'));
 
                 // Mostrar un mensaje de éxito
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => $sectionSuccessMessage,
-                );
+                    'msg'    => $sectionSuccessMessage,
+                ];
             }
 
         }
@@ -1801,20 +1858,20 @@ class Reclutamiento extends CI_Controller
         if (isset($_FILES["archivo"]["name"])) {
             $extensionArchivo = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
             if ($extensionArchivo == 'csv') {
-                $date = date('Y-m-d H:i:s');
+                $date       = date('Y-m-d H:i:s');
                 $id_usuario = $this->session->userdata('id');
 
-                $rows = [];
-                $file = $_FILES["archivo"];
-                $tmp = $file["tmp_name"];
+                $rows     = [];
+                $file     = $_FILES["archivo"];
+                $tmp      = $file["tmp_name"];
                 $filename = $file["name"];
-                $size = $file["size"];
+                $size     = $file["size"];
 
                 if ($size < 0) {
-                    $msj = array(
+                    $msj = [
                         'codigo' => 0,
-                        'msg' => 'Seleccione un archivo .csv válido',
-                    );
+                        'msg'    => 'Seleccione un archivo .csv válido',
+                    ];
                 } else {
                     $handle = fopen($tmp, "r");
                     while (($data = fgetcsv($handle)) !== false) {
@@ -1827,15 +1884,15 @@ class Reclutamiento extends CI_Controller
                     $total = count($rows);
 
                     if ($total <= 0) {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 0,
-                            'msg' => 'El archivo esta vacío',
-                        );
+                            'msg'    => 'El archivo esta vacío',
+                        ];
                     } else {
-                        $errorMessages = '';
+                        $errorMessages   = '';
                         $successMessages = 'Registros agregados de la(s) fila(s):<br> ';
-                        $i = 0;
-                        $rowsAdded = 0;
+                        $i               = 0;
+                        $rowsAdded       = 0;
                         foreach ($rows as $r) {
                             // Las columnas abarcan los indices del 1-9
 
@@ -1845,15 +1902,15 @@ class Reclutamiento extends CI_Controller
                                     if (preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[2]) &&
                                         preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[3]) &&
                                         preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[4])) { // Evalua nombres propios aceptando minusculas al principio
-                                        $nombre = strtoupper($r[2]);
-                                        $paterno = strtoupper($r[3]);
-                                        $materno = strtoupper($r[4]);
+                                        $nombre    = strtoupper($r[2]);
+                                        $paterno   = strtoupper($r[3]);
+                                        $materno   = strtoupper($r[4]);
                                         $existName = $this->reclutamiento_model->getBolsaTrabajoByName($nombre, $paterno, $materno, $id_portal);
                                         if ($existName == null) {
                                             $existPhone = $this->reclutamiento_model->getBolsaTrabajoByPhone($r[5], $id_portal);
                                             if (preg_match("/^[\d]{2}[-]?[\d]{4}[-]?[\d]{4}$/", trim($r[5])) && $existPhone == null) { //Numero de telefono con formato 00-0000-0000 o 0000000000
-                                                if (strlen($r[6]) > 0 && strlen($r[6]) <= 128) { //Area de interes con limite
-                                                    if (strlen($r[7]) > 0 && strlen($r[7]) <= 30) { //Localizacion del aspirante
+                                                if (strlen($r[6]) > 0 && strlen($r[6]) <= 128) {                                           //Area de interes con limite
+                                                    if (strlen($r[7]) > 0 && strlen($r[7]) <= 30) {                                            //Localizacion del aspirante
                                                         $existContact = $this->funciones_model->getMediosContactoByName($r[8]);
 
                                                         if (isset($existContact)) {
@@ -1868,19 +1925,19 @@ class Reclutamiento extends CI_Controller
                                                                 $fecha = date('Y-m-d H:i:s');
                                                             }
 
-                                                            $data = array(
-                                                                'creacion' => $fecha,
-                                                                'edicion' => $fecha,
-                                                                'id_portal' => $id_portal,
-                                                                'id_usuario' => $idUsuario,
-                                                                'nombre' => strtoupper($r[2]),
-                                                                'paterno' => strtoupper($r[3]),
-                                                                'materno' => strtoupper($r[4]),
-                                                                'domicilio' => strtoupper($r[7]),
-                                                                'telefono' => trim($r[5]),
+                                                            $data = [
+                                                                'creacion'       => $fecha,
+                                                                'edicion'        => $fecha,
+                                                                'id_portal'      => $id_portal,
+                                                                'id_usuario'     => $idUsuario,
+                                                                'nombre'         => strtoupper($r[2]),
+                                                                'paterno'        => strtoupper($r[3]),
+                                                                'materno'        => strtoupper($r[4]),
+                                                                'domicilio'      => strtoupper($r[7]),
+                                                                'telefono'       => trim($r[5]),
                                                                 'medio_contacto' => $existContact->nombre,
-                                                                'area_interes' => $r[6],
-                                                            );
+                                                                'area_interes'   => $r[6],
+                                                            ];
                                                             $this->reclutamiento_model->addBolsaTrabajo($data);
                                                             $successMessages .= ($i + 2) . ',';
                                                             $i++;
@@ -1928,64 +1985,64 @@ class Reclutamiento extends CI_Controller
 
                         }
                         if ($errorMessages == '') {
-                            $msj = array(
+                            $msj = [
                                 'codigo' => 1,
-                                'msg' => 'Los registros del archivo fueron cargados al sistema correctamente<br>' . substr($successMessages, 0, -1),
-                            );
+                                'msg'    => 'Los registros del archivo fueron cargados al sistema correctamente<br>' . substr($successMessages, 0, -1),
+                            ];
                         }
                         if ($errorMessages != '' && $rowsAdded == 0) {
                             $response = 'No se agregaron registros del archivo ';
-                            $msj = array(
+                            $msj      = [
                                 'codigo' => 0,
-                                'msg' => 'Finalizó la carga pero se encontraron algunos errores en los siguientes registros:<br>' . $errorMessages . '<br>' . $response,
-                            );
+                                'msg'    => 'Finalizó la carga pero se encontraron algunos errores en los siguientes registros:<br>' . $errorMessages . '<br>' . $response,
+                            ];
                         }
                         if ($errorMessages != '' && $rowsAdded > 0) {
                             $response = substr($successMessages, 0, -1);
-                            $msj = array(
+                            $msj      = [
                                 'codigo' => 2,
-                                'msg' => 'Finalizó la carga pero se encontraron algunos errores en los siguientes registros:<br>' . $errorMessages . '<br>' . $response,
-                            );
+                                'msg'    => 'Finalizó la carga pero se encontraron algunos errores en los siguientes registros:<br>' . $errorMessages . '<br>' . $response,
+                            ];
                         }
                     }
                 }
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => 'Seleccione un archivo .csv válido',
-                );
+                    'msg'    => 'Seleccione un archivo .csv válido',
+                ];
             }
         } else {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => 'Seleccione un archivo .csv válido',
-            );
+                'msg'    => 'Seleccione un archivo .csv válido',
+            ];
         }
         echo json_encode($msj);
     }
     public function deleteUserOrder()
     {
         $this->reclutamiento_model->deleteUserOrder($this->input->post('id'));
-        $msj = array(
+        $msj = [
             'codigo' => 1,
-            'msg' => 'Se ha eliminado el usuario de la requsición correctamente',
-        );
+            'msg'    => 'Se ha eliminado el usuario de la requsición correctamente',
+        ];
         echo json_encode($msj);
     }
     public function deleteOrder()
     {
         $id_usuario = $this->session->userdata('id');
-        $datos = array(
-            'edicion' => date('Y-m-d H:i:s'),
-            'id_usuario' => $id_usuario,
-            'eliminado' => 1,
+        $datos      = [
+            'edicion'          => date('Y-m-d H:i:s'),
+            'id_usuario'       => $id_usuario,
+            'eliminado'        => 1,
             'comentario_final' => $this->input->post('comentario'),
-        );
+        ];
         $this->reclutamiento_model->editarRequisicion($datos, $this->input->post('id'));
-        $msj = array(
+        $msj = [
             'codigo' => 1,
-            'msg' => 'Requisition deleted successfully',
-        );
+            'msg'    => 'Requisition deleted successfully',
+        ];
         echo json_encode($msj);
     }
     public function updateApplicant()
@@ -2029,75 +2086,75 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             $idRol = $this->session->userdata('idrol');
 
             if ($section == 'personal') {
 
-                $edad = calculaEdad($this->input->post('fecha_nacimiento_update'));
-                $bolsa = array(
-                    'edicion' => date('Y-m-d H:i:s'),
-                    'nombre' => $this->input->post('nombre_update'),
-                    'paterno' => $this->input->post('paterno_update'),
-                    'materno' => $this->input->post('materno_update'),
-                    'domicilio' => $this->input->post('domicilio_update'),
-                    'edad' => $edad,
+                $edad  = calculaEdad($this->input->post('fecha_nacimiento_update'));
+                $bolsa = [
+                    'edicion'          => date('Y-m-d H:i:s'),
+                    'nombre'           => $this->input->post('nombre_update'),
+                    'paterno'          => $this->input->post('paterno_update'),
+                    'materno'          => $this->input->post('materno_update'),
+                    'domicilio'        => $this->input->post('domicilio_update'),
+                    'edad'             => $edad,
                     'fecha_nacimiento' => $this->input->post('fecha_nacimiento_update'),
-                    'telefono' => $this->input->post('telefono_update'),
-                    'nacionalidad' => $this->input->post('nacionalidad_update'),
-                    'civil' => $this->input->post('civil_update'),
-                    'dependientes' => $this->input->post('dependientes_update'),
-                    'grado_estudios' => $this->input->post('escolaridad_update'),
-                );
+                    'telefono'         => $this->input->post('telefono_update'),
+                    'nacionalidad'     => $this->input->post('nacionalidad_update'),
+                    'civil'            => $this->input->post('civil_update'),
+                    'dependientes'     => $this->input->post('dependientes_update'),
+                    'grado_estudios'   => $this->input->post('escolaridad_update'),
+                ];
 
                 if ($idRol != 6) {
                     $bolsa['id_usuario'] = $this->session->userdata('id');
                 }
                 $sectionSuccessMessage = 'Datos personales actualizados correctamente';
-                $aspirante = array(
+                $aspirante             = [
                     'edicion' => date('Y-m-d H:i:s'),
 
-                );
+                ];
                 if ($idRol != 6) {
                     $aspirante['id_usuario'] = $this->session->userdata('id');
                 }
                 $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($bolsa, $this->input->post('id_bolsa'));
             }
             if ($section == 'salud') {
-                $bolsa = array(
-                    'salud' => $this->input->post('salud_update'),
+                $bolsa = [
+                    'salud'      => $this->input->post('salud_update'),
                     'enfermedad' => $this->input->post('enfermedad_update'),
-                    'deporte' => $this->input->post('deporte_update'),
-                    'metas' => $this->input->post('metas_update'),
-                );
+                    'deporte'    => $this->input->post('deporte_update'),
+                    'metas'      => $this->input->post('metas_update'),
+                ];
                 $sectionSuccessMessage = 'Información de la salud y vida social actualizadas correctamente';
             }
             if ($section == 'conocimiento') {
-                $bolsa = array(
-                    'idiomas' => $this->input->post('idiomas_update'),
+                $bolsa = [
+                    'idiomas'  => $this->input->post('idiomas_update'),
                     'maquinas' => $this->input->post('maquinas_update'),
                     'software' => $this->input->post('software_update'),
-                );
+                ];
                 $sectionSuccessMessage = 'Información de conocimiento y habilidades actualizada correctamente';
             }
             if ($section == 'intereses') {
-                $bolsa = array(
+                $bolsa = [
                     'medio_contacto' => $this->input->post('medio_contacto_update'),
-                    'area_interes' => $this->input->post('area_interes_update'),
+                    'area_interes'   => $this->input->post('area_interes_update'),
                     'sueldo_deseado' => $this->input->post('sueldo_update'),
                     'otros_ingresos' => $this->input->post('otros_ingresos_update'),
-                    'viajar' => $this->input->post('viajar_update'),
-                    'trabajar' => $this->input->post('trabajar_update'),
-                );
+                    'viajar'         => $this->input->post('viajar_update'),
+                    'trabajar'       => $this->input->post('trabajar_update'),
+                ];
                 $sectionSuccessMessage = 'Información de los intereses actualizada correctamente';
-                $aspirante = array(
-                    'edicion' => date('Y-m-d H:i:s'),
+                $aspirante             = [
+                    'edicion'        => date('Y-m-d H:i:s'),
                     'medio_contacto' => $this->input->post('medio_contacto_update'),
-                );
+                ];
 
                 if ($idRol != 6) {
                     $aspirante['id_usuario'] = $this->session->userdata('id');
@@ -2105,10 +2162,10 @@ class Reclutamiento extends CI_Controller
                 $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($aspirante, $this->input->post('id_bolsa'));
             }
             $this->reclutamiento_model->editBolsaTrabajo($bolsa, $this->input->post('id_bolsa'));
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => $sectionSuccessMessage,
-            );
+                'msg'    => $sectionSuccessMessage,
+            ];
         }
         echo json_encode($msj);
     }
@@ -2123,39 +2180,39 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
-            $aspirante = array(
-                'edicion' => date('Y-m-d H:i:s'),
+            $aspirante = [
+                'edicion'         => date('Y-m-d H:i:s'),
                 'sueldo_acordado' => $this->input->post('sueldo_acordado'),
-                'fecha_ingreso' => $this->input->post('fecha_ingreso'),
-                'pago' => $this->input->post('pago'),
-            );
+                'fecha_ingreso'   => $this->input->post('fecha_ingreso'),
+                'pago'            => $this->input->post('pago'),
+            ];
             if ($this->session->userdata('id_rol') != 6) {
                 $aspirante['id_usuario'] = $this->session->userdata('id');
             }
             $this->reclutamiento_model->editarAspirante($aspirante, $this->input->post('id_aspirante'));
             if ($this->input->post('garantia') != '') {
-                $garantia = array(
-                    'creacion' => date('Y-m-d H:i:s'),
+                $garantia = [
+                    'creacion'     => date('Y-m-d H:i:s'),
                     'id_aspirante' => $this->input->post('id_aspirante'),
-                    'descripcion' => $this->input->post('garantia'),
-                );
+                    'descripcion'  => $this->input->post('garantia'),
+                ];
                 if ($this->session->userdata('id_rol') != 6) {
                     $garantia['id_usuario'] = $this->session->userdata('id');
                 }
 
                 $this->reclutamiento_model->addWarrantyApplicant($garantia);
             }
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Información de ingreso actualizada correctamente',
-            );
+                'msg'    => 'Información de ingreso actualizada correctamente',
+            ];
         }
         echo json_encode($msj);
     }
@@ -2164,7 +2221,7 @@ class Reclutamiento extends CI_Controller
     /*----------------------------------------*/
     public function getDetailsOrderById()
     {
-        $id = $this->input->post('id');
+        $id  = $this->input->post('id');
         $res = $this->reclutamiento_model->getDetailsOrderById($id);
         echo json_encode($res);
     }
@@ -2173,14 +2230,14 @@ class Reclutamiento extends CI_Controller
     {
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario = $this->session->userdata('id');
-            $condicion = 'A.id_usuario';
+            $condicion  = 'A.id_usuario';
         } else {
             $id_usuario = 0;
-            $condicion = 'A.id_usuario >';
+            $condicion  = 'A.id_usuario >';
         }
-        $req['recordsTotal'] = $this->reclutamiento_model->getAspirantesRequisicionesTotal($id_usuario, $condicion);
+        $req['recordsTotal']    = $this->reclutamiento_model->getAspirantesRequisicionesTotal($id_usuario, $condicion);
         $req['recordsFiltered'] = $this->reclutamiento_model->getAspirantesRequisicionesTotal($id_usuario, $condicion);
-        $req['data'] = $this->reclutamiento_model->getAspirantesRequisiciones($id_usuario, $condicion);
+        $req['data']            = $this->reclutamiento_model->getAspirantesRequisiciones($id_usuario, $condicion);
         $this->output->set_output(json_encode($req));
     }
     public function subirCVReqAspirante()
@@ -2190,15 +2247,15 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
         $id_req_aspirante = $this->input->post('id_aspirante');
-        $msj = array();
+        $msj              = [];
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
-            if (!empty($_FILES['id_cv']['name'])) {
+            if (! empty($_FILES['id_cv']['name'])) {
                 // Consultar si hay un CV previamente subido para este aspirante
                 $cv_anterior = $this->reclutamiento_model->traerNombreCV($id_req_aspirante);
 
@@ -2215,47 +2272,47 @@ class Reclutamiento extends CI_Controller
                 $_FILES['file'] = $_FILES['id_cv'];
 
                 // Configura las preferencias de carga del archivo
-                $config['upload_path'] = './_docs/';
+                $config['upload_path']   = './_docs/';
                 $config['allowed_types'] = 'pdf|jpeg|jpg|png';
-                $config['file_name'] = $id_req_aspirante . "_CV." . pathinfo($_FILES['id_cv']['name'], PATHINFO_EXTENSION);
+                $config['file_name']     = $id_req_aspirante . "_CV." . pathinfo($_FILES['id_cv']['name'], PATHINFO_EXTENSION);
 
                 $this->load->library('upload', $config);
 
                 if ($this->upload->do_upload('file')) {
-                    $data = $this->upload->data();
-                    $documento = array(
-                        'creacion' => date('Y-m-d H:i:s'),
-                        'edicion' => date('Y-m-d H:i:s'),
+                    $data      = $this->upload->data();
+                    $documento = [
+                        'creacion'                 => date('Y-m-d H:i:s'),
+                        'edicion'                  => date('Y-m-d H:i:s'),
                         'id_requisicion_aspirante' => $id_req_aspirante,
-                        'id_tipo_documento' => 16,
-                        'archivo' => $data['file_name'], // Nombre del archivo
-                    );
+                        'id_tipo_documento'        => 16,
+                        'archivo'                  => $data['file_name'], // Nombre del archivo
+                    ];
 
                     $registroExitoso = $this->candidato_model->registrarDocumento($documento);
 
                     if ($registroExitoso) {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 1,
-                            'msg' => 'El archivo se subió correctamente',
-                        );
+                            'msg'    => 'El archivo se subió correctamente',
+                        ];
                     } else {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 0,
-                            'msg' => 'Ocurrio un problema  intentelo  mas  tarde ',
-                        );
+                            'msg'    => 'Ocurrio un problema  intentelo  mas  tarde ',
+                        ];
                     }
                 } else {
                     $error = $this->upload->display_errors();
-                    $msj = array(
+                    $msj   = [
                         'codigo' => 0,
-                        'msg' => 'Error al cargar el archivo: ' . $error,
-                    );
+                        'msg'    => 'Error al cargar el archivo: ' . $error,
+                    ];
                 }
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => 'No se seleccionó ningún archivo para cargar',
-                );
+                    'msg'    => 'No se seleccionó ningún archivo para cargar',
+                ];
             }
         }
 
@@ -2270,21 +2327,21 @@ class Reclutamiento extends CI_Controller
         // echo " aqui  el id  de la requisicion ".$id_requisicion ;
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario = $this->session->userdata('id');
-            $condicion = 'A.id_usuario';
+            $condicion  = 'A.id_usuario';
         } else {
             $id_usuario = 0;
-            $condicion = 'A.id_usuario >';
+            $condicion  = 'A.id_usuario >';
         }
-        $req['recordsTotal'] = $this->reclutamiento_model->getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id_requisicion);
+        $req['recordsTotal']    = $this->reclutamiento_model->getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id_requisicion);
         $req['recordsFiltered'] = $this->reclutamiento_model->getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id_requisicion);
-        $req['data'] = $this->reclutamiento_model->getAspirantesPorRequisicion($id_usuario, $condicion, $id_requisicion);
+        $req['data']            = $this->reclutamiento_model->getAspirantesPorRequisicion($id_usuario, $condicion, $id_requisicion);
         $this->output->set_output(json_encode($req));
 
     }
 
     public function getHistorialAspirante()
     {
-        $id = $this->input->post('id');
+        $id      = $this->input->post('id');
         $tipo_id = $this->input->post('tipo_id');
         if ($tipo_id == 'aspirante') {
             $campo = 'id_aspirante';
@@ -2306,14 +2363,14 @@ class Reclutamiento extends CI_Controller
     {
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario = $this->session->userdata('id');
-            $condicion = 'A.id_usuario';
+            $condicion  = 'A.id_usuario';
         } else {
             $id_usuario = 0;
-            $condicion = 'A.id_usuario >';
+            $condicion  = 'A.id_usuario >';
         }
-        $req['recordsTotal'] = $this->reclutamiento_model->getAspirantesRequisicionesFinalizadasTotal($id_usuario, $condicion);
+        $req['recordsTotal']    = $this->reclutamiento_model->getAspirantesRequisicionesFinalizadasTotal($id_usuario, $condicion);
         $req['recordsFiltered'] = $this->reclutamiento_model->getAspirantesRequisicionesFinalizadasTotal($id_usuario, $condicion);
-        $req['data'] = $this->reclutamiento_model->getAspirantesRequisicionesFinalizadas($id_usuario, $condicion);
+        $req['data']            = $this->reclutamiento_model->getAspirantesRequisicionesFinalizadas($id_usuario, $condicion);
         $this->output->set_output(json_encode($req));
     }
 
@@ -2322,26 +2379,26 @@ class Reclutamiento extends CI_Controller
         $id_requisicion = $_GET['id'];
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario = $this->session->userdata('id');
-            $condicion = 'A.id_usuario';
+            $condicion  = 'A.id_usuario';
         } else {
             $id_usuario = 0;
-            $condicion = 'A.id_usuario >';
+            $condicion  = 'A.id_usuario >';
         }
-        $req['recordsTotal'] = $this->reclutamiento_model->getAspirantesPorRequisicionesFinalizadasTotal($id_usuario, $condicion, $id_requisicion);
+        $req['recordsTotal']    = $this->reclutamiento_model->getAspirantesPorRequisicionesFinalizadasTotal($id_usuario, $condicion, $id_requisicion);
         $req['recordsFiltered'] = $this->reclutamiento_model->getAspirantesPorRequisicionesFinalizadasTotal($id_usuario, $condicion, $id_requisicion);
-        $req['data'] = $this->reclutamiento_model->getAspirantesPorRequisicionesFinalizadas($id_usuario, $condicion, $id_requisicion);
+        $req['data']            = $this->reclutamiento_model->getAspirantesPorRequisicionesFinalizadas($id_usuario, $condicion, $id_requisicion);
         $this->output->set_output(json_encode($req));
     }
     public function getBolsaTrabajoById()
     {
-        $id = $this->input->post('id');
+        $id  = $this->input->post('id');
         $res = $this->reclutamiento_model->getBolsaTrabajoById($id);
         echo json_encode($res);
     }
 
     public function getEmpleosByIdBolsaTrabajo()
     {
-        $id = $this->input->post('id');
+        $id              = $this->input->post('id');
         $data['empleos'] = $this->reclutamiento_model->getEmpleosByIdBolsaTrabajo($id);
         if ($data['empleos']) {
             echo json_encode($data['empleos']);
@@ -2352,7 +2409,7 @@ class Reclutamiento extends CI_Controller
 
     public function getHistorialBolsaTrabajo()
     {
-        $id = $this->input->post('id');
+        $id                = $this->input->post('id');
         $data['registros'] = $this->reclutamiento_model->getHistorialBolsaTrabajo($id);
         if ($data['registros']) {
             echo json_encode($data['registros']);
@@ -2374,7 +2431,7 @@ class Reclutamiento extends CI_Controller
 
     public function getTestsByOrder()
     {
-        $id = $this->input->post('id');
+        $id                = $this->input->post('id');
         $data['registros'] = $this->reclutamiento_model->getTestsByOrder($id);
         if ($data['registros']) {
             echo json_encode($data['registros']);
@@ -2388,7 +2445,7 @@ class Reclutamiento extends CI_Controller
         //Dependiendo el rol del usuario se veran todas o sus propias requisiciones
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario = $this->session->userdata('id');
-            $res = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
+            $res        = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
         } else {
             $res = $this->reclutamiento_model->getAllOrdersInProcess();
         }
@@ -2397,14 +2454,14 @@ class Reclutamiento extends CI_Controller
 
     public function getDetailsApplicantById()
     {
-        $id = $this->input->post('id');
+        $id  = $this->input->post('id');
         $res = $this->reclutamiento_model->getBolsaTrabajoById($id);
         echo json_encode($res);
     }
 
     public function getWarrantyApplicant()
     {
-        $id = $this->input->post('id');
+        $id  = $this->input->post('id');
         $res = $this->reclutamiento_model->getWarrantyApplicant($id);
         if ($res != null) {
             echo json_encode($res);

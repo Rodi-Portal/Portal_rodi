@@ -391,6 +391,18 @@ class Reclutamiento_model extends CI_Model
         $this->db->trans_commit();
         return true;
     }
+    
+    public function registrarNuevaAccion($datos)
+    {
+        $this->db->insert('cat_accion_requisicion', $datos);
+        // Devuelve el ID de la fila insertada
+        return $this->db->insert_id();
+    }
+    public function eliminarMovimiento($id){
+        $this->db->where('id', $id);
+        return $this->db->delete('requisicion_historial'); 
+
+    }
 
     public function addApplicant($datos)
     {
@@ -671,7 +683,7 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as nombre_cliente, CL.clave, CL.id as id_cliente, R.puesto , H.id as idHistorial, R.numero_vacantes")
+            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as nombre_cliente, CL.clave, CL.id as id_cliente, R.puesto , H.id as idHistorial, R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
             ->from('requisicion_aspirante as A')
             ->join('requisicion as R', 'R.id = A.id_requisicion')
             ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
@@ -722,7 +734,7 @@ class Reclutamiento_model extends CI_Model
 
         $this->db
             ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(DATCL.nombre,' ',DATCL.paterno) as usuario, CL.nombre as empresa,R.puesto,
-			R.numero_vacantes")
+			R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
             ->from('requisicion_aspirante as A')
             ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
             ->join('requisicion as R', 'R.id = A.id_requisicion')

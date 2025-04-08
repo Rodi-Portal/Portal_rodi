@@ -54,6 +54,7 @@ $route['candidato_conclusion/createPDF'] = 'Candidato_Conclusion/createPDF';
 
 $route['proceso/(:num)'] = 'Empleados/showEmpleados/$1';
 $route['procesoFormer/(:num)'] = 'Empleados/showExEmpleados/$1';
+$route['Cliente_General/getEmpleadosInternos/(:num)'] = 'Cliente_General/getEmpleadosInternos/$1';
 
 
 $route['default_controller'] = 'login';

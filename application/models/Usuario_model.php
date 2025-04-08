@@ -260,10 +260,13 @@ class Usuario_model extends CI_Model
     public function getPermisos($id)
     {
         $id_portal = $this->session->userdata('idPortal');
+        $id_usuario = $this->session->userdata('id');
         $this->db
             ->select('C.id As id_cliente, C.nombre as nombreCliente, C.icono, C.url, C.creacion, D.telefono, D.correo, D.correo')
             ->from('cliente as C')
             ->join('datos_generales AS D','D.id = C.id_datos_generales', 'left')
+            ->join('usuario_permiso AS UP','C.id = UP.id_cliente')
+            ->where('UP.id_usuario', $id_usuario )
             ->where('C.id_portal', $id_portal)
             ->order_by('C.nombre', 'ASC');
 

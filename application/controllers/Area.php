@@ -269,8 +269,9 @@ class Area extends CI_Controller
         // Obtener datos de la sesión
         $idPortal = $this->session->userdata('idPortal');
         $portal = $this->session->userdata('nombrePortal');
+        $portal = explode(' ', $portal)[0];
         $archivo = $idPortal . '_' . $portal;
-        $nombre_archivo = trim($archivo);
+        $nombre_archivo =trim($archivo);
         // Configuración para la carga de archivo
         $config['upload_path'] = FCPATH . '_logosPortal/'; // Ruta completa
         $config['allowed_types'] = 'pdf|jpg|jpeg|png'; // Tipos de archivo permitidos

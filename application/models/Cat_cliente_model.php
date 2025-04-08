@@ -190,9 +190,9 @@ class Cat_cliente_model extends CI_Model{
         $permiso = [
             'id_usuario' => $cliente['id_usuario'],
             'id_cliente' => $idCliente,
-            'cliente' => strtoupper($cliente['nombre']),
+            
         ];
-        $this->db->insert("permiso", $permiso);
+        $this->db->insert("usuario_permiso", $permiso);
 
         // Crear usuario del cliente
         $usuario_cliente = [
@@ -215,7 +215,11 @@ class Cat_cliente_model extends CI_Model{
 
         // La transacción fue exitosa, completarla
         $this->db->trans_commit();
-        if($this->session->userdata('idPortal')==1 ){
+
+        $modulos =  $this->obtenerModulosPortalPorId($this->session->userdata('idPortal'));
+
+
+        if($modulos['reclu'] == 1  && $modulos['pre'] == 1){
                 // Envía el correo electrónico después} de completar la transacción
                 $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode);
         }
@@ -229,7 +233,14 @@ class Cat_cliente_model extends CI_Model{
         return false;
     }
   }
+public function obtenerModulosPortalPorId($id) {
+        $this->db->select('reclu, pre, emp, former');
+        $this->db->from('portal');
+        $this->db->where('id', $id);
+        $query = $this->db->get();
 
+        return $query->row_array(); // Devuelve un array asociativo con los datos
+    }
 
   function addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos){
     try {
