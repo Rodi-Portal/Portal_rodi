@@ -2323,25 +2323,27 @@ class Cronjobs extends CI_Controller
             // Asunto
             $mail->isHTML(true);
             $mail->CharSet = 'UTF-8';
-            $mail->Subject = 'Notificación TalentSafe Control';
+            $mail->Subject = '🔔 Notificación TalentSafe Control';
 
-            // Cuerpo del mensaje con los módulos
-            $mensaje = "
-          <h3>Excelente día,</h3>
-          <p>Te recordamos que tienes algunos  archivos por  vencer en tu sucursal: " . $nombrecliente . " en los siguientes módulos:</p>
-          <ul>";
-
-            // Agregar los módulos seleccionados al mensaje
-
-            // Agregar los módulos seleccionados al mensaje
-            if (! empty($modulos)) {
-                $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
-            }
-
-            $mensaje .= "</ul>
-          <p>Por favor ingresa a <a href='https://portal.talentsafecontrol.com' target='_blank'>TalentSafeControl</a> y realiza las actualizaciones pertinentes.</p>
-          <p>Saludos cordiales,<br>El equipo de TalentSafeControl</p>";
-
+            $mensaje = '
+            <div style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: auto; color: #333;">
+              <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #1a73e8; margin-top: 0;">📌 Recordatorio Importante</h2>
+                <p style="font-size: 16px;">Hola,</p>
+                <p style="font-size: 16px;">Este es un recordatorio de que tienes <strong>archivos por vencer</strong> en tu sucursal <strong>' . $nombrecliente . '</strong> en los siguientes módulos:</p>
+            
+                <ul style="font-size: 16px; padding-left: 20px; color: #444;">
+                  ' . ( !empty($modulos) ? implode('', $modulos) : '<li>No hay módulos registrados.</li>') . '
+                </ul>
+            
+                <p style="font-size: 16px;">Ingresa a tu cuenta en <a href="https://portal.talentsafecontrol.com" target="_blank" style="color: #1a73e8; text-decoration: none;">TalentSafe Control</a> para realizar las actualizaciones necesarias.</p>
+            
+                <p style="font-size: 16px;">Gracias por tu atención.</p>
+                <p style="font-size: 16px; margin-bottom: 0;">Atentamente,</p>
+                <p style="font-size: 16px; font-weight: bold; color: #1a73e8;">Equipo TalentSafe Control</p>
+              </div>
+            </div>';
+            
             $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
 
             // Enviar el correo
