@@ -309,7 +309,7 @@ class Cronjobs extends CI_Controller
     public function actualizarCampo()
     {
         // Definir los datos a actualizar
-      $respuesta = $this->cronjobs_model->actualizarCampoExcluyendoPortal1();
+        $respuesta = $this->cronjobs_model->actualizarCampoExcluyendoPortal1();
 
         // Verificar si se actualizó alguna fila
     }
@@ -2140,22 +2140,26 @@ class Cronjobs extends CI_Controller
         // Cerrar la conexión cURL
         curl_close($ch);
 
-        // Decodificar la respuesta JSON
+                                             // Decodificar la respuesta JSON
         return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
     }
 
-    public function enviar_notificaciones_cron_job()
+    public function enviar_notificaciones_cron_job($token = null)
     {
-        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
-            show_404(); // o mostrar acceso no autorizado
+        // Verifica si el token proporcionado es correcto
+        $token_valido = 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO';
+
+        // Si el token no es válido, muestra un 404 o un mensaje de acceso no autorizado
+        if ($token !== $token_valido) {
+            show_error('Acceso no autorizado', 403); // Código 403: Acceso prohibido
             return;
         }
         // Horarios específicos para ejecución del cron job
         $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
-    
+
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones_por_horarios($horarios_cron);
-    
+
         // Filtra los registros por los horarios predefinidos
         $registros_filtrados = [];
         foreach ($registros as $registro) {
@@ -2164,79 +2168,79 @@ class Cronjobs extends CI_Controller
                 $registros_filtrados[] = $registro;
             }
         }
-    
+
         if (empty($registros_filtrados)) {
             echo "<script>console.log('No hay registros para procesar en este horario del cron job.');</script>";
             return;
         }
-    
+
         foreach ($registros_filtrados as $registro) {
             // Obtener estado del empleado desde la API
             $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente);
-    
+
             if ($estado && ($estado['statusDocuments'] === 'rojo' || $estado['statusCursos'] === 'rojo' || $estado['statusEvaluaciones'] === 'rojo')) {
-    
+
                 $modulos = [];
-    
+
                 if ($registro->cursos == 1 && $estado['statusCursos'] === 'rojo') {
                     $modulos[] = "<li>Cursos</li>";
                 }
-    
+
                 if ($registro->evaluaciones == 1 && $estado['statusEvaluaciones'] === 'rojo') {
                     $modulos[] = "<li>Evaluaciones</li>";
                 }
-    
+
                 if ($registro->expediente == 1 && $estado['statusDocuments'] === 'rojo') {
                     $modulos[] = "<li>Expediente</li>";
                 }
-    
-                if (!empty($modulos)) {
+
+                if (! empty($modulos)) {
                     // Enviar correos
                     if ($registro->correo == 1) {
                         $correos = array_unique(array_filter([$registro->correo1, $registro->correo2]));
-                        if (!empty($correos)) {
+                        if (! empty($correos)) {
                             $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
                         }
                     }
-    
+
                     // Enviar WhatsApp
                     if ($registro->whatsapp == 1) {
                         $telefonos = array_filter([
-                            !empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
-                            !empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
+                            ! empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
+                            ! empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
                         ]);
-    
+
                         $submodulos = implode(", ", array_map(function ($modulo) {
                             return strip_tags($modulo);
                         }, $modulos));
-    
-                        if (!empty($telefonos)) {
+
+                        if (! empty($telefonos)) {
                             $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
                         }
-    
+
                         echo "<script>console.log('Enviando WhatsApp para ID: {$registro->id}', " . json_encode($telefonos) . ");</script>";
                     }
                 }
-    
+
                 echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
             }
         }
         echo "Notificaciones procesadas correctamente.";
     }
 
-    public function enviar_whatsapp($telefonos, $portal , $sucursal, $submodulos, $template)
+    public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
     {
         $api_url = API_URL;
-        $url = $api_url . 'send-notification';
+        $url     = $api_url . 'send-notification';
 
         // Asegurarse de que $telefonos sea un array
-        if (!is_array($telefonos)) {
+        if (! is_array($telefonos)) {
             $telefonos = [$telefonos]; // Convierte a array si no lo es
         }
 
         // Filtra valores vacíos o no válidos
         $telefonos = array_filter($telefonos, function ($telefono) {
-            return !empty($telefono) && is_string($telefono); // Acepta solo cadenas no vacías
+            return ! empty($telefono) && is_string($telefono); // Acepta solo cadenas no vacías
         });
 
         // Verifica si hay teléfonos válidos
@@ -2246,13 +2250,13 @@ class Cronjobs extends CI_Controller
         }
 
         foreach ($telefonos as $telefono) {
-           
+
             $payload = [
-                'phone' => $telefono,
-                'template' => $template,
+                'phone'          => $telefono,
+                'template'       => $template,
                 'nombre_cliente' => $portal,
-                'submodulo' => $submodulos,
-                'sucursales' => $sucursal, // Cambiar si tienes el dato de sucursales
+                'submodulo'      => $submodulos,
+                'sucursales'     => $sucursal, // Cambiar si tienes el dato de sucursales
             ];
 
             // Inicializa cURL
@@ -2288,7 +2292,7 @@ class Cronjobs extends CI_Controller
             } else {
                 $error_message = $result['message'] ?? 'Error desconocido';
                 log_message('info', 'Enviando WhatsApp a: ' . implode(', ', $telefonos));
-              }
+            }
         }
     }
 
@@ -2299,14 +2303,14 @@ class Cronjobs extends CI_Controller
         $mail = $this->phpmailer_lib->load();
 
         try {
-            // Configuración del servidor SMTP
-            $mail->isSMTP(); // Establecer el envío usando SMTP
-            $mail->Host = 'mail.talentsafecontrol.com'; // Servidor SMTP
-            $mail->SMTPAuth = true;
-            $mail->Username = 'soporte@talentsafecontrol.com';
-            $mail->Password = 'FQ{[db{}%ja-';
+                                                              // Configuración del servidor SMTP
+            $mail->isSMTP();                                  // Establecer el envío usando SMTP
+            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'soporte@talentsafecontrol.com';
+            $mail->Password   = 'FQ{[db{}%ja-';
             $mail->SMTPSecure = 'ssl';
-            $mail->Port = 465; // Puerto SMTP
+            $mail->Port       = 465; // Puerto SMTP
 
             // Remitente
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
@@ -2330,7 +2334,7 @@ class Cronjobs extends CI_Controller
             // Agregar los módulos seleccionados al mensaje
 
             // Agregar los módulos seleccionados al mensaje
-            if (!empty($modulos)) {
+            if (! empty($modulos)) {
                 $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
             }
 
