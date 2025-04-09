@@ -122,6 +122,11 @@ class Notificacion extends CI_Controller
 
     public function enviar_notificaciones_cron_job()
     {
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+            show_404(); // o mostrar acceso no autorizado
+            return;
+        }
+        
         // Horarios específicos para ejecución del cron job
         $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
     
