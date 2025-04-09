@@ -2115,6 +2115,34 @@ class Cronjobs extends CI_Controller
         print_r($data);
     }
 
+    public function obtener_estado_empleado($id_portal, $id_cliente)
+    {
+        $api_url = API_URL;
+        // URL del endpoint
+        $url = $api_url . 'empleados/status?id_portal=' . $id_portal . '&id_cliente=' . $id_cliente;
+
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configuración de la solicitud
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si hubo un error
+        if (curl_errno($ch)) {
+            echo 'Error al obtener estado del empleado: ' . curl_error($ch);
+            return null;
+        }
+
+        // Cerrar la conexión cURL
+        curl_close($ch);
+
+        // Decodificar la respuesta JSON
+        return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
+    }
 
     public function enviar_notificaciones_cron_job()
     {
@@ -2123,7 +2151,7 @@ class Cronjobs extends CI_Controller
         $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
     
         $this->load->model('Notificacion_model');
-        $registros = $this->Notificacion_model->get_notificaciones_por_horarios();
+        $registros = $this->Notificacion_model->get_notificaciones_por_horarios($horarios_cron);
     
         // Filtra los registros por los horarios predefinidos
         $registros_filtrados = [];
@@ -2191,5 +2219,129 @@ class Cronjobs extends CI_Controller
             }
         }
         echo "Notificaciones procesadas correctamente.";
+    }
+
+    public function enviar_whatsapp($telefonos, $portal , $sucursal, $submodulos, $template)
+    {
+        $api_url = API_URL;
+        $url = $api_url . 'send-notification';
+
+        // Asegurarse de que $telefonos sea un array
+        if (!is_array($telefonos)) {
+            $telefonos = [$telefonos]; // Convierte a array si no lo es
+        }
+
+        // Filtra valores vacíos o no válidos
+        $telefonos = array_filter($telefonos, function ($telefono) {
+            return !empty($telefono) && is_string($telefono); // Acepta solo cadenas no vacías
+        });
+
+        // Verifica si hay teléfonos válidos
+        if (empty($telefonos)) {
+            log_message('error', 'No se proporcionaron números de teléfono válidos para enviar WhatsApp.');
+            return;
+        }
+
+        foreach ($telefonos as $telefono) {
+           
+            $payload = [
+                'phone' => $telefono,
+                'template' => $template,
+                'nombre_cliente' => $portal,
+                'submodulo' => $submodulos,
+                'sucursales' => $sucursal, // Cambiar si tienes el dato de sucursales
+            ];
+
+            // Inicializa cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+
+            // Ejecuta la solicitud
+            $response = curl_exec($ch);
+
+            // Maneja errores de cURL
+            if (curl_errno($ch)) {
+                log_message('error', 'Error de cURL: ' . curl_error($ch));
+                curl_close($ch);
+                continue;
+            }
+
+            // Cierra cURL
+            curl_close($ch);
+
+            // Decodifica la respuesta
+            $result = json_decode($response, true);
+
+            // Manejo de la respuesta
+            if (isset($result['status']) && $result['status'] === 'success') {
+                log_message('info', 'WhatsApp enviado correctamente a ' . $telefono);
+            } else {
+                $error_message = $result['message'] ?? 'Error desconocido';
+                log_message('info', 'Enviando WhatsApp a: ' . implode(', ', $telefonos));
+              }
+        }
+    }
+
+/*correos  para  notificaciones */
+    public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
+    {
+        $this->load->library('phpmailer_lib');
+        $mail = $this->phpmailer_lib->load();
+
+        try {
+            // Configuración del servidor SMTP
+            $mail->isSMTP(); // Establecer el envío usando SMTP
+            $mail->Host = 'mail.talentsafecontrol.com'; // Servidor SMTP
+            $mail->SMTPAuth = true;
+            $mail->Username = 'soporte@talentsafecontrol.com';
+            $mail->Password = 'FQ{[db{}%ja-';
+            $mail->SMTPSecure = 'ssl';
+            $mail->Port = 465; // Puerto SMTP
+
+            // Remitente
+            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
+
+            // Destinatarios
+            foreach ($destinatarios as $correo) {
+                $mail->addAddress($correo); // Agrega el destinatario
+            }
+
+            // Asunto
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Notificación TalentSafe Control';
+
+            // Cuerpo del mensaje con los módulos
+            $mensaje = "
+          <h3>Excelente día,</h3>
+          <p>Te recordamos que tienes algunos  archivos por  vencer en tu sucursal: " . $nombrecliente . " en los siguientes módulos:</p>
+          <ul>";
+
+            // Agregar los módulos seleccionados al mensaje
+
+            // Agregar los módulos seleccionados al mensaje
+            if (!empty($modulos)) {
+                $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
+            }
+
+            $mensaje .= "</ul>
+          <p>Por favor ingresa a <a href='https://portal.talentsafecontrol.com' target='_blank'>TalentSafeControl</a> y realiza las actualizaciones pertinentes.</p>
+          <p>Saludos cordiales,<br>El equipo de TalentSafeControl</p>";
+
+            $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
+
+            // Enviar el correo
+            $mail->send();
+            echo "<script>console.log('Correo enviado a: {$correo}');</script>";
+        } catch (Exception $e) {
+            echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
+        }
     }
 }

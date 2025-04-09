@@ -54,17 +54,32 @@ class Notificacion_model extends CI_Model
     // Filtra las notificaciones por horarios
     public function get_notificaciones_por_horarios($horarios)
     {
-        $this->db->select('*');
-        $this->db->from('notificaciones_empleados');
-        $this->db->where('notificacionesActivas', 1);
-        $this->db->where('status', 1); // Filtrar solo los activos
-        $this->db->like('horarios', $horarios);
+        $this->db->select('ne.*, c.nombre, p.nombre AS nombrePortal');
+        $this->db->from('notificaciones_empleados AS ne');
+        $this->db->join('cliente as c', 'c.id = ne.id_cliente', 'left');
+        $this->db->join('portal as P', 'P.id = ne.id_portal', 'left');
+        $this->db->where('ne.notificacionesActivas', 1);
+        $this->db->where('ne.status', 1); // Filtrar por registros activos
+    
+        // Filtra por correo o whatsapp activos
         $this->db->group_start()
             ->where('correo', 1)
             ->or_where('whatsapp', 1)
-            ->group_end(); // Verifica que el horario esté incluido
+            ->group_end();
+    
+        // Si se proporcionan horarios, se agregan a la consulta con or_like()
+        if (!empty($horarios)) {
+            $this->db->group_start(); // Agrupamos los LIKEs
+            foreach ($horarios as $horario) {
+                $this->db->or_like('ne.horarios', $horario); // Aplicamos or_like a la columna 'horarios'
+            }
+            $this->db->group_end();
+        }
+    
+        // Ejecutar la consulta
         $query = $this->db->get();
-        return $query->result(); // Retorna los registros filtrados
+        return $query->result(); // Retorna los registros obtenidos
     }
+    
 
 }
