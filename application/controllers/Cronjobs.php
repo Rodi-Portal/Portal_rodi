@@ -2114,4 +2114,81 @@ class Cronjobs extends CI_Controller
 
         print_r($data);
     }
+
+
+    public function enviar_notificaciones_cron_job()
+    {
+        
+        // Horarios específicos para ejecución del cron job
+        $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
+    
+        $this->load->model('Notificacion_model');
+        $registros = $this->Notificacion_model->get_notificaciones_por_horarios();
+    
+        // Filtra los registros por los horarios predefinidos
+        $registros_filtrados = [];
+        foreach ($registros as $registro) {
+            $horarios = explode(', ', $registro->horarios);
+            if (array_intersect($horarios_cron, $horarios)) {
+                $registros_filtrados[] = $registro;
+            }
+        }
+    
+        if (empty($registros_filtrados)) {
+            echo "<script>console.log('No hay registros para procesar en este horario del cron job.');</script>";
+            return;
+        }
+    
+        foreach ($registros_filtrados as $registro) {
+            // Obtener estado del empleado desde la API
+            $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente);
+    
+            if ($estado && ($estado['statusDocuments'] === 'rojo' || $estado['statusCursos'] === 'rojo' || $estado['statusEvaluaciones'] === 'rojo')) {
+    
+                $modulos = [];
+    
+                if ($registro->cursos == 1 && $estado['statusCursos'] === 'rojo') {
+                    $modulos[] = "<li>Cursos</li>";
+                }
+    
+                if ($registro->evaluaciones == 1 && $estado['statusEvaluaciones'] === 'rojo') {
+                    $modulos[] = "<li>Evaluaciones</li>";
+                }
+    
+                if ($registro->expediente == 1 && $estado['statusDocuments'] === 'rojo') {
+                    $modulos[] = "<li>Expediente</li>";
+                }
+    
+                if (!empty($modulos)) {
+                    // Enviar correos
+                    if ($registro->correo == 1) {
+                        $correos = array_unique(array_filter([$registro->correo1, $registro->correo2]));
+                        if (!empty($correos)) {
+                            $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
+                        }
+                    }
+    
+                    // Enviar WhatsApp
+                    if ($registro->whatsapp == 1) {
+                        $telefonos = array_filter([
+                            !empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
+                            !empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
+                        ]);
+    
+                        $submodulos = implode(", ", array_map(function ($modulo) {
+                            return strip_tags($modulo);
+                        }, $modulos));
+    
+                        if (!empty($telefonos)) {
+                            $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
+                        }
+    
+                        echo "<script>console.log('Enviando WhatsApp para ID: {$registro->id}', " . json_encode($telefonos) . ");</script>";
+                    }
+                }
+    
+                echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
+            }
+        }
+    }
 }
