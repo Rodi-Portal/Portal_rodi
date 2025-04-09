@@ -2190,5 +2190,6 @@ class Cronjobs extends CI_Controller
                 echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
             }
         }
+        echo "Notificaciones procesadas correctamente.";
     }
 }
