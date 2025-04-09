@@ -54,7 +54,7 @@ class Notificacion_model extends CI_Model
     // Filtra las notificaciones por horarios
     public function get_notificaciones_por_horarios($horarios)
     {
-        $this->db->select('ne.*, c.nombre, p.nombre AS nombrePortal');
+        $this->db->select('ne.*, c.nombre, P.nombre AS nombrePortal');
         $this->db->from('notificaciones_empleados AS ne');
         $this->db->join('cliente as c', 'c.id = ne.id_cliente', 'left');
         $this->db->join('portal as P', 'P.id = ne.id_portal', 'left');
@@ -63,8 +63,8 @@ class Notificacion_model extends CI_Model
     
         // Filtra por correo o whatsapp activos
         $this->db->group_start()
-            ->where('correo', 1)
-            ->or_where('whatsapp', 1)
+            ->where('ne.correo', 1)
+            ->or_where('ne.whatsapp', 1)
             ->group_end();
     
         // Si se proporcionan horarios, se agregan a la consulta con or_like()
