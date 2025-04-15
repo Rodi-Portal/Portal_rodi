@@ -32,11 +32,19 @@
         <h5 class="text-center" id="titulo_paso"></h5>
         <form id="formPaso1">
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8">
 
               <label for="nombre">Nombre de la Sucursal *</label>
               <input type="text" class="form-control" data-field="Nombre del Cliente" data-required="required"
                 id="nombre" name="nombre" placeholder="Ingrese el nombre del cliente"
+                onkeyup="this.value=this.value.toUpperCase()" required>
+              <br>
+            </div>
+            <div class="col-md-4">
+
+              <label for="empleados">Numero Maximo de empleados *</label>
+              <input type="number" class="form-control" data-field="Numero Maximo de empleados" data-required="required"
+                id="empleados" name="empleados" placeholder="Numero maximo de empleados
                 onkeyup="this.value=this.value.toUpperCase()" required>
               <br>
             </div>
@@ -50,7 +58,7 @@
               <br>
             </div>
             <div class="col-md-6">
-              <label for="correo">Correo *</label>
+              <label for="correo">Correo </label>
               <input type="text" class="form-control" data-field="Correo" id="correo" name="correo"
                  placeholder="Ingrese el correo electrónico">
               <br>
@@ -67,7 +75,7 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <label for="password" id="passLabel">Generar contraseña *</label>
+              <label for="password" id="passLabel">Generar contraseña </label>
               <div class="input-group">
                 <input type="password" class="form-control" data-field="Contraseña" name="password" id="password"
                    readonly>

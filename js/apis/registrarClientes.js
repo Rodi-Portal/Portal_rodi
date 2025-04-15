@@ -1,20 +1,149 @@
 var baseUrl = document.getElementById('base_url').value;
+var pag = 1; // Global para control de pasos
 
 function registrarCliente() {
-  // Resto de tu código...
-
-  // Llamada AJAX para obtener el token y cargar países, estados y ciudades
-  var auth_token = "MUJkuDQTBwg6L_OLJghlvf5LDwdas3Tnm5EaF3Kny_7GIUXTah_7nbuE-K15HdxxTxo";
-
-  // Agrega la lógica para cargar países, estados y ciudades aquí
-  cargarPaisesEstadosCiudades(auth_token);
-  $("#password").show();
-  $("#generarPass").show();
-  $("#passLabel").show();
+  $("#password, #generarPass, #passLabel").show();
+  $('#newModal').modal('show'); // <- MUY IMPORTANTE
   resetModal();
-
-  
 }
+
+function resetModal() {
+  // Reset al cerrar modal
+  $("#newModal, #accesoModal").off("hidden.bs.modal").on("hidden.bs.modal", function() {
+    $(this).find("input, select, textarea").val("");
+    $(this).find("#msj_error").hide();
+    $("#idSubcliente").val("");
+  });
+
+  // Mostrar paso inicial al abrir modal
+  $('#newModal').off('shown.bs.modal').on('shown.bs.modal', function() {
+    $("#titulo_paso").text('Información Sucursal');
+    $("#btnContinuar span.text").text('Continuar');
+    $("#btnRegresar, #paso2, #paso3").prop('disabled', false);
+    pag = 1;
+  });
+
+  // Botón continuar
+  $('#btnContinuar').off().on('click', function() {
+    var formulario = document.getElementById('formPaso' + pag);
+    var todoCorrecto = true;
+
+    // Validar campos requeridos
+    for (var i = 0; i < formulario.length; i++) {
+      var campo = formulario[i];
+      campo.classList.remove('is-invalid');
+
+      if (['text', 'number', 'textarea', 'select-one'].includes(campo.type)) {
+        if (campo.getAttribute("data-required") === 'required' && (!campo.value.trim() || campo.value == 0)) {
+          campo.classList.add('is-invalid');
+          Swal.fire({
+            icon: 'error',
+            title: 'Hubo un problema',
+            html: 'El campo <b>' + campo.getAttribute("data-field") + '</b> no es válido',
+            width: '50em',
+            confirmButtonText: 'Cerrar'
+          });
+          todoCorrecto = false;
+          break;
+        }
+      }
+    }
+
+    if (!todoCorrecto) return;
+
+    // Transiciones entre pasos
+    if (pag === 1) {
+      $("#btnRegresar").prop('disabled', true);
+      transicionPaso('formPaso1', 'formPaso2', 'Información de Contacto', 'barra1', '#paso2');
+    } else if (pag === 2) {
+      transicionPaso('formPaso2', 'formPaso3', 'Domicilio', 'barra2', '#paso3');
+      $("#btnContinuar span.text").text('Finalizar');
+      $("#btnRegresar").prop('disabled', false);
+    } else if (pag === 3) {
+      // Recolectar datos
+      let formData = $('#formPaso1, #formPaso2, #formPaso3').serializeArray();
+      $("#btnRegresar").prop('disabled', false);
+      let datos = {};
+      formData.forEach(item => {
+        datos[item.name] = item.value.trim() === '' ? null : item.value;
+      });
+
+      datos['currentPage'] = $('#currentPage').val();
+
+      $.ajax({
+        url: baseUrl,
+        type: 'post',
+        data: datos,
+        beforeSend: () => $('.loader').show(),
+        success: function(res) {
+          setTimeout(() => $('.loader').fadeOut(), 200);
+          var data = JSON.parse(res);
+          if (data.codigo === 1) {
+            $("#newModal").modal('hide');
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: data.msg,
+              showConfirmButton: true
+            }).then(() => window.location.reload());
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Hubo un problema',
+              html: data.msg,
+              width: '50em',
+              confirmButtonText: 'Cerrar'
+            });
+          }
+        }
+      });
+    }
+
+    if (pag < 3) pag++;
+  });
+
+  // Botón regresar
+  $('#btnRegresar').off().on('click', function() {
+    if (pag === 2) {
+      transicionPaso('formPaso2', 'formPaso1', 'Información Sucursal', 'barra1', '#paso2', true);
+      $("#btnContinuar span.text").text('Continuar');
+    } else if (pag === 3) {
+      transicionPaso('formPaso3', 'formPaso2', 'Información de Contacto', 'barra2', '#paso3', true);
+      $("#btnContinuar span.text").text('Continuar');
+    }
+    if (pag > 1) pag--;
+  });
+
+  // Reset completo al cerrar
+  $('#newModal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
+    $(this).find("input, select, textarea").val('');
+    $("#titulo_paso").text('Información Sucursal');
+    $("#btnRegresar, #paso2, #paso3").prop('disabled', true);
+    $("#btnContinuar span.text").text('Continuar');
+    $("#formPaso1").removeClass('hidden').addClass('block');
+    $("#formPaso2, #formPaso3").addClass('hidden');
+    $("#barra1, #barra2").removeClass('barra_espaciadora_on').addClass('barra_espaciadora_off');
+    pag = 1;
+  });
+}
+
+function transicionPaso(actualId, siguienteId, nuevoTitulo, barraId, pasoBtnSelector, esRegreso = false) {
+  $('#' + actualId).removeClass().addClass('animate__animated animate__fadeOut');
+  setTimeout(() => {
+    $('#' + actualId).addClass('hidden');
+    $('#' + siguienteId).removeClass().addClass('animate__animated animate__fadeInUp');
+  }, 500);
+
+  $('#titulo_paso').text(nuevoTitulo);
+  if (esRegreso) {
+    $(pasoBtnSelector).prop('disabled', true);
+    $('#' + barraId).removeClass('barra_espaciadora_on').addClass('barra_espaciadora_off');
+  } else {
+    $(pasoBtnSelector).prop('disabled', false);
+    $('#' + barraId).removeClass('barra_espaciadora_off').addClass('barra_espaciadora_on');
+  }
+}
+
 
 function cargarPaisesEstadosCiudades(auth_token) {
   $.ajax({
@@ -273,188 +402,5 @@ function cargarDatosDomicilioGeneral(datos) {
     }
   });
 }
-
-
-function resetModal() {
-  $("#newModal").on("hidden.bs.modal", function() {
-    $("#newModal input,#newModal select").val("");
-    $("#newModal #msj_error").css('display', 'none');
-    $("#idSubcliente").val("");
-    $(".modal-title").text("Agregar nueva Sucursal");
-    $("#guardar").attr('value', 'nuevo');
-  });
-
-  $("#accesoModal").on("hidden.bs.modal", function() {
-    $("#accesoModal input, #accesoModal select").val("");
-    $("#accesoModal #msj_error").css('display', 'none');
-    $("#idSubcliente").val("");
-  });
-
-  var pag = 1;
-
-  $('#newModal').on('shown.bs.modal', function(e) {
-    $("#newModal #titulo_paso").text('Informacíon Sucursal');
-    $("#newModal #btnContinuar span.text").text('Continuar');
-    $("#newModal #btnRegresar, #newModal #paso2, #newModal #paso3").prop('disabled', true);
-  });
-
-  $('#newModal #btnContinuar').on('click', function() {
-    var formulario_actual = document.getElementById('formPaso' + pag);
-    var todoCorrecto = true;
-    var formulario = formulario_actual;
-    for (var i = 0; i < formulario.length; i++) {
-      if (formulario[i].type == 'text' || formulario[i].type == 'number' || formulario[i].type == 'textarea' ||
-        formulario[i].type == 'select-one') {
-        if (formulario[i].getAttribute("data-required") == 'required') {
-          if (formulario[i].value == null || formulario[i].value == '' || formulario[i].value == 0 || formulario[i]
-            .value.length == 0 || /^\s*$/.test(formulario[i].value)) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Hubo un problema',
-              html: 'El campo <b>' + formulario[i].getAttribute("data-field") + '</b> no es válido',
-              width: '50em',
-              confirmButtonText: 'Cerrar'
-            })
-            todoCorrecto = false;
-          }
-        }
-      }
-    }
-    if (todoCorrecto == true) {
-      if (pag == 1) {
-        document.getElementById('formPaso1').className = "animate__animated animate__fadeOut ";
-        setTimeout(function() {
-          document.getElementById('formPaso1').className = "hidden";
-          document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
-        }, 500)
-        $("#newModal #titulo_paso").text('Informacíon de Contacto');
-        $("#newModal #btnRegresar, #newModal #paso2").prop('disabled', false);
-        document.getElementById('barra1').classList.remove('barra_espaciadora_off');
-        document.getElementById('barra1').className += ' barra_espaciadora_on';
-      }
-      if (pag == 2) {
-        document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
-        setTimeout(function() {
-          document.getElementById('formPaso2').className = "hidden";
-          document.getElementById('formPaso3').className = "animate__animated animate__fadeInUp";
-        }, 500)
-        $("#newModal #titulo_paso").text('Domicilio');
-        $("#newModal #paso3").prop('disabled', false);
-        document.getElementById('barra2').classList.remove('barra_espaciadora_off');
-        document.getElementById('barra2').className += ' barra_espaciadora_on';
-        $("#newModal #btnContinuar span.text").text('Finalizar');
-      }
-      if (pag == 3) {
-
-        let formData = $('#formPaso1, #formPaso2, #formPaso3').serializeArray();
-
-        // Construir objeto de datos
-        let datos = {};
-
-        // Obtener datos del primer formulario
-        $('#formPaso1, #formPaso2, #formPaso3').find(':input').each(function() {
-          if ($(this).val() === '') {
-            // Si el campo está vacío, asignarle el valor null
-            datos[$(this).attr('name')] = null;
-          } else {
-            // Si no está vacío, asignarle el valor del campo
-            datos[$(this).attr('name')] = $(this).val();
-          }
-        });
-
-        // Agregar currentPage si es necesario
-        datos['currentPage'] = $('#currentPage').val();
-        $.ajax({
-          url: baseUrl,
-          type: 'post',
-          data: datos,
-          beforeSend: function() {
-            $('.loader').css("display", "block");
-          },
-          success: function(res) {
-            setTimeout(function() {
-              $('.loader').fadeOut();
-            }, 200);
-            var data = JSON.parse(res);
-            if (data.codigo === 1) {
-              $("#newModal").modal('hide');
-              Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: data.msg,
-                showConfirmButton: true,
-               
-              }).then(function() {
-                // Recargar la página después de que el mensaje de éxito desaparezca
-                window.location.reload();
-              });
-
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Hubo un problema',
-                html: data.msg,
-                width: '50em',
-                confirmButtonText: 'Cerrar',
-               
-              })
-            }
-          },
-          complete: function() {
-            // Volver a habilitar el botón
-          }
-        });
-      }
-      if (pag == 1 || pag == 2)
-        pag++;
-    }
-  });
-
-  $('#newModal #btnRegresar').on('click', function() {
-    if (pag == 2) {
-      document.getElementById('formPaso2').className = "animate__animated animate__fadeOut ";
-      setTimeout(function() {
-        document.getElementById('formPaso2').className = "hidden";
-        document.getElementById('formPaso1').className = "animate__animated animate__fadeInUp";
-      }, 500)
-      $("#newModal #titulo_paso").text('Informacíon Sucursal');
-      $("#newModal #btnRegresar, #newModal #paso2").prop('disabled', true);
-      document.getElementById('barra1').classList.remove('barra_espaciadora_on');
-      document.getElementById('barra1').className += ' barra_espaciadora_off';
-      $("#newModal #btnContinuar span.text").text('Continuar');
-      pag--;
-    }
-    if (pag == 3) {
-    
-      document.getElementById('formPaso3').className = "animate__animated animate__fadeOut ";
-      setTimeout(function() {
-        document.getElementById('formPaso3').className = "hidden";
-        document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
-      }, 500)
-      $("#newModal #titulo_paso").text('Informacíon de Contacto');
-      $("#newModal #paso3").prop('disabled', true);
-      document.getElementById('barra2').classList.remove('barra_espaciadora_on');
-      document.getElementById('barra2').className += ' barra_espaciadora_off';
-      $("#newModal #btnContinuar span.text").text('Continuar');
-      pag--;
-    }
-  });
-
-  $('#newModal').on('hidden.bs.modal', function(e) {
-    $("#newModalinput, #newModalselect, #newModaltextarea").val('');
-    document.getElementById('formPaso1').className = "block";
-    document.getElementById('formPaso2').className = "hidden";
-    document.getElementById('formPaso3').className = "hidden";
-    $("#newModal#titulo_paso").text('Informacíon Sucursal');
-    $("#newModal#btnRegresar, #newModal#paso2").prop('disabled', true);
-    document.getElementById('barra1').classList.remove('barra_espaciadora_on');
-    document.getElementById('barra1').className += ' barra_espaciadora_off';
-    document.getElementById('barra2').classList.remove('barra_espaciadora_on');
-    document.getElementById('barra2').className += ' barra_espaciadora_off';
-    $("#newModal#btnContinuar span.text").text('Continuar');
-    pag = 1;
-  });
-}
-
 
 // Llama a la función resetModal cuando sea necesario

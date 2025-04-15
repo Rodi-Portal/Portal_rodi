@@ -34,6 +34,7 @@ class Cat_Cliente extends CI_Controller
         $this->form_validation->set_rules('clave', 'Clave', 'trim|required|max_length[3]');
         $this->form_validation->set_rules('correo', 'Correo', 'trim|valid_email');
         $this->form_validation->set_rules('password', 'Contraseña', 'trim');
+        $this->form_validation->set_rules('empleados', 'Maximo empleados', 'trim');
         $this->form_validation->set_rules('pais_name', 'País', 'trim');
         $this->form_validation->set_rules('state_name', 'Estado', 'trim');
         $this->form_validation->set_rules('ciudad_name', 'Ciudad', 'trim');
@@ -113,11 +114,18 @@ class Cat_Cliente extends CI_Controller
                 'id_portal' => $this->session->userdata('idPortal'),
                 'nombre' => strtoupper($this->input->post('nombre')),
                 'clave' => $this->input->post('clave'),
+                'max_colaboradores'=> $this->input->post('empleados'),
                 'icono' => '<i class="fas fa-user-tie"></i>',
                 'id_datos_generales' => null,
                 'id_domicilios' => null,
                 'id_datos_facturacion' => null,
             );
+
+           /* echo '<pre>';
+            print_r($datos_cliente);
+            echo '</pre>';
+            die();
+            */
             $nombreCliente = $this->input->post('nombre');
             $claveCliente = $this->input->post('clave');
             $idCliente = $this->input->post('idCliente');
@@ -136,6 +144,7 @@ class Cat_Cliente extends CI_Controller
                         'id_usuario' => $id_usuario,
                         'nombre' => strtoupper($this->input->post('nombre')),
                         'clave' => $this->input->post('clave'),
+                        'max_colaboradores'=> $this->input->post('empleados'),
                         'id_datos_generales' => $this->input->post('idGenerales'),
                         'id_domicilios' => $this->input->post('idDomicilios'),
                         'id_datos_facturacion' => $this->input->post('idFacturacion'),

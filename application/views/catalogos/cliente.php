@@ -10,7 +10,7 @@
 
       <div class="col-sm-12 col-md-3">
         <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newModal"
-          onclick="registrarCliente(this)">
+          onclick="registrarCliente()">
           <span class="icon text-white-50">
             <i class="fas fa-user-tie"></i>
           </span>
@@ -262,7 +262,7 @@ $(document).ready(function() {
         // Generales
         $("#nombre").val(data.nombre);
         $("#clave").val(data.clave);
-
+        $("#empleados").val(data.max_colaboradores);
         // Domicilio
         $("#item-details-countryValue").val(data.pais);
         $("#item-details-stateValue").val(data.estado);
