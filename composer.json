@@ -18,7 +18,8 @@
 		"phpoffice/phpspreadsheet": "^1.18",
     "pusher/pusher-php-server": "^7.2",
 		"brainfoolong/cryptojs-aes-php": "^2.1",
-		"firebase/php-jwt": "^6.11"
+		"firebase/php-jwt": "^6.11",
+		"endroid/qr-code": "^5.1"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"

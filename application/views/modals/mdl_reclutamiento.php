@@ -790,6 +790,31 @@
     </div>
   </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="modalGenerarLink" tabindex="-1" role="dialog" aria-labelledby="modalLinkLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLinkLabel">Link generado</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body text-center">
+        <div id="linkGenerado" class="mb-3" style="font-size: 14px; word-break: break-word;"></div>
+        <div id="qrGenerado"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 
 <div class="modal fade" id="nuevaRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">

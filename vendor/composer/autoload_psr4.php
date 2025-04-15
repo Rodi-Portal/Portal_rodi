@@ -33,7 +33,10 @@ return array(
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
+    'Endroid\\QrCode\\' => array($vendorDir . '/endroid/qr-code/src'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
+    'DASPRiD\\Enum\\' => array($vendorDir . '/dasprid/enum/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
+    'BaconQrCode\\' => array($vendorDir . '/bacon/bacon-qr-code/src'),
 );

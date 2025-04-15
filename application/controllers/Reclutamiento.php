@@ -1,6 +1,10 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-
+require_once FCPATH . 'vendor/autoload.php'; // Asegúrate de que la ruta sea correcta
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 class Reclutamiento extends CI_Controller
 {
 
@@ -757,39 +761,36 @@ class Reclutamiento extends CI_Controller
             $idRol            = $this->session->userdata('idrol');
             $estatusProceso   = $this->input->post('estatus_proceso');
             $estatusAspirante = $this->input->post('estatus_aspirante');
-            $notificacion = 0;
+            $notificacion     = 0;
             // Determinar estatus final
             if ($estatusProceso == 3) {
                 $estatus_final = 'CANCELADO';
-                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+                $status        = ! empty($accion[1]) ? $accion[1] : $otra_accion;
             } elseif ($estatusProceso == 2) {
-                $estatus_final = NULL;
-                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+                $estatus_final = null;
+                $status        = ! empty($accion[1]) ? $accion[1] : $otra_accion;
             } elseif ($estatusProceso == 1) {
                 $estatus_final = 'COMPLETADO';
-                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+                $status        = ! empty($accion[1]) ? $accion[1] : $otra_accion;
 
             } else {
-                $estatus_final = NULL;
-                $status = ! empty($accion[1]) ? $accion[1] : $otra_accion;
+                $estatus_final = null;
+                $status        = ! empty($accion[1]) ? $accion[1] : $otra_accion;
 
             }
 
-           
-           
-                if(!empty($otra_accion)){
+            if (! empty($otra_accion)) {
                 $datos_nuevaAccion = [
-                    'creacion'         => $date,
-                    'edicion'          => $date,
-                    'id_usuario'       => $id_usuario,
-                    'id_portal'        => $id_portal,
-                    'descripcion'      => $otra_accion,
+                    'creacion'    => $date,
+                    'edicion'     => $date,
+                    'id_usuario'  => $id_usuario,
+                    'id_portal'   => $id_portal,
+                    'descripcion' => $otra_accion,
                 ];
 
                 $nuevaAccionResult = $this->reclutamiento_model->registrarNuevaAccion($datos_nuevaAccion);
 
             }
-            
 
             $datos_accion = [
                 'creacion'         => $date,
@@ -801,7 +802,6 @@ class Reclutamiento extends CI_Controller
                 'descripcion'      => $comentario,
             ];
 
-           
             $data_aspirante = [
                 'edicion'      => $date,
 
@@ -1026,7 +1026,6 @@ class Reclutamiento extends CI_Controller
     public function eliminarRegistro()
     {
         $id = $this->input->post('id');
-      
 
         if ($id) {
 
@@ -2480,4 +2479,95 @@ class Reclutamiento extends CI_Controller
             echo json_encode($this->reclutamiento_model->matchCliente($term));
         }
     }
+
+    public function generar_o_mostrar_link() {
+        $id_portal = $this->session->userdata('idPortal');
+        $logo         = $this->session->userdata('logo'); // Asegúrate de que 'logo' esté en la sesión
+        $NombrePortal = $this->session->userdata('nombrePortal'); // Obtener 'NombrePortal' de la sesión
+        $usuario_id   = $this->session->userdata('id'); // ID del usuario, de la sesión
+        // Buscar el registro en la base de datos
+        $registro = $this->reclutamiento_model->obtener_por_portal($id_portal);
+
+        $logo = !empty($logo) ? $logo : 'portal_icon.png';
+        // Si ya existe, devolver el link y el QR
+        if ($registro) {
+            echo json_encode(['link' => $registro->link, 'qr' => $registro->qr]);
+            return;
+        }
+        $errores = [];
+
+        if (empty($logo)) {
+            $errores[] = 'logo';
+        }
+        if (empty($id_portal)) {
+            $errores[] = 'id_portal';
+        }
+        if (empty($NombrePortal)) {
+            $errores[] = 'NombrePortal';
+        }
+        if (empty($usuario_id)) {
+            $errores[] = 'usuario_id';
+        }
+        
+        if (!empty($errores)) {
+            echo json_encode([
+                'error' => 'Datos de sesión faltantes: ' . implode(', ', $errores)
+            ]);
+            return;
+        }
+
+        $issued_at       = time(); // Tiempo actual
+        $expiration_time = $issued_at + 10800; // Expiración de 3 horas (10800 segundos)
+        $payload         = [
+            "sub"         => $usuario_id, // ID del usuario
+            "logo"        => $logo, // Logo del portal
+            "idPortal"    => $id_portal, // ID del portal
+            "NombrePortal"=> $NombrePortal, // Nombre del portal
+            "exp"         => $expiration_time, // Tiempo de expiración del token
+        ];
+
+        $private_key = $this->config->item('jwt_private_key'); // Asegúrate de tener configurada la clave privada
+
+        // Generar el JWT con la clave privada (si se usa RS256) o clave secreta
+        $jwt = JWT::encode($payload, $private_key, 'RS256'); 
+
+        $link = LINKASPIRANTES.'?token=' . $jwt;
+
+         
+     
+
+        // Generar el QR en formato base64
+        $qr_base64 = $this->generar_qr_base64($link);
+        date_default_timezone_set('America/Mexico_City');
+
+        // Guardar el registro en la base de datos
+       $this->reclutamiento_model->guardar([
+            'id_portal'  => $id_portal,
+            'link'       => $link,
+            'qr'         => $qr_base64,
+            'creacion' => date('Y-m-d H:i:s'),
+            'edicion' => date('Y-m-d H:i:s'),
+
+        ]);
+
+        // Devolver el link y el QR generados
+        echo json_encode(['link' => $link, 'qr' => $qr_base64]);
+    }
+
+    private function generar_qr_base64($text) {
+        // Crear el código QR usando la librería Endroid
+        $qrCode = new QrCode($text);
+        $qrCode->setSize(300);
+        $qrCode->setMargin(10);
+
+        // Usar el writer para generar el QR como imagen PNG
+        $writer = new PngWriter();
+
+        // Generar la imagen PNG
+        $imageString = $writer->write($qrCode)->getString();
+
+        // Convertir la imagen a base64 y retornarla
+        return 'data:image/png;base64,' . base64_encode($imageString);
+    }
+
 }

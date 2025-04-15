@@ -18,13 +18,13 @@
           </button>
         </div>
         <?php
-if ($this->session->userdata('idrol') == 4) {
-    $disabled = 'disabled';
-    $textTitle = 'title="No posees permiso para esta acción"';
-} else {
-    $disabled = '';
-    $textTitle = '';
-}?>
+            if ($this->session->userdata('idrol') == 4) {
+                $disabled = 'disabled';
+                $textTitle = 'title="No posees permiso para esta acción"';
+            } else {
+                $disabled = '';
+                $textTitle = '';
+            }?>
         <div class="mb-3 float-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
           <button type="button" id="btnOpenAssignToUser" class="btn btn-primary btn-icon-split float-right mr-2"
             onclick="openAssignToUser()" <?php echo $disabled; ?>>
@@ -34,6 +34,7 @@ if ($this->session->userdata('idrol') == 4) {
             <span class="text">Asignar Requisicion</span>
           </button>
         </div>
+       
       </div>
     </div>
   </section>

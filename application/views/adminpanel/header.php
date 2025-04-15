@@ -69,7 +69,7 @@
 
   <?php $idRol = $this->session->userdata('idrol');
   $logo          = $this->session->userdata('logo'); ?>
-  <?php /*$token = $this->session->userdata('jwt_token'); 
+<?php /*$token = $this->session->userdata('jwt_token'); 
 
 echo $token  */?>
   <!-- Page Wrapper -->
@@ -85,12 +85,41 @@ echo $token  */?>
         <img style="max-width: 220px; max-height: 150px;"
           src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>" alt="Logo">
       </a>
-
       <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
       <br><br>
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
+      <?php if ($idRol == 1 || $idRol == 6) {?>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
+          aria-expanded="true" aria-controls="collapseUsuario">
+          <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
+          <span class="mr-2 d-none d-lg-inline text-white font-weight-bold" style="font-size: 14px; margin-left: 10px">
+            <?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?>
+          </span>
+        </a>
 
+        <div id="collapseUsuario" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <?php if ($idRol == 1 || $idRol == 6) {?>
+            <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
+              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              Actualizar Logo
+            </a>
+            <a class="collapse-item" href="<?php echo base_url(); ?>Area/pasarela">
+              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              Pago/Suscripción
+            </a>
+            <?php }?>
+            <a class="collapse-item" href="<?php echo base_url(); ?>Login/logout">
+              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              Cerrar sesión
+            </a>
+          </div>
+        </div>
+      </li>
+      <?php }?>
+      <hr class="sidebar-divider my-0">
       <!-- Menú principal -->
       <li class="nav-item active">
         <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>">
@@ -210,7 +239,7 @@ echo $token  */?>
 
       <!-- Catalogos -->
       <?php
-      if (in_array(5, $submenus) ||  ($idRol == 1 || $idRol == 6 || $idRol == 9)) {?>
+      if (in_array(5, $submenus) || ($idRol == 1 || $idRol == 6 || $idRol == 9)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
@@ -220,17 +249,17 @@ echo $token  */?>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-            if ($idRol == 1 || $idRol == 6 || $idRol == 9){?>
+            if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
               Administradores</a>
             <?php
             }?>
-            <?php
-          if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
+<?php
+if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
-            <?php
+<?php
 
     if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
@@ -246,7 +275,7 @@ echo $token  */?>
         </div>
       </li>
       <?php }
-      if ($portal == 1 && ($idRol == 1 || $idRol == 6))  {?>
+      if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
       <?php }?>
@@ -320,26 +349,32 @@ echo $token  */?>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoNotificaciones">
               <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-bell fa-fw"></i>
+                <i class="fas fa-bell fa-fw" style="color:rgb(255, 42, 0);"></i>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
               <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
                 <h6 class="dropdown-header">Notificaciones</h6>
-                <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto;"></div>
+                <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto; color: red"></div>
               </div>
             </li>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
-              <a class="nav-link icono-dorado" href="#" role="button" data-toggle="modal" data-target="#modalKey"
-                data-bs-toggle="tooltip" data-bs-placement="top" title="proveedores  destacados">
-                <i class="fas fa-key fa-fw icono-dorado"></i> <!-- Icono de llave -->
-              </a>
-            </li>
+  <a class="nav-link icono-dorado text-center" href="#" role="button" data-toggle="modal"
+     data-target="#modalKey" data-bs-toggle="tooltip" data-bs-placement="top" title="Proveedores destacados"
+     style="line-height: 1.2; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0;">
+
+    <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Proveedores</div>
+    <i class="fas fa-key fa-fw icono-dorado" style="font-size: 20px; margin: 0; padding: 0;"></i>
+    <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Destacados</div>
+
+  </a>
+</li>
+
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -352,7 +387,7 @@ echo $token  */?>
                 <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <?php if ($idRol == 1  || $idRol == 6 ) {?>
+                <?php if ($idRol == 1 || $idRol == 6) {?>
                 <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Actualizar Logo
@@ -640,12 +675,52 @@ echo $token  */?>
                       </div>
                     </a>
                   </div>
-                  <!-- Valor H -->
+                  <!-- Torreto H -->
+                  <div class="col-md-4 modal-key-col">
+                    <a href="https://www.torreto-consultores.com/" target="_blank" style="text-decoration: none;">
+                      <div class="modal-key-card">
+                        <div class="modal-key-card-header modal-key-card-valorh">
+                          Torreto
+                        </div>
+                        <!-- Contenedor para la imagen de fondo -->
+                        <div class="modal-key-card-body" style="position: relative;">
+                          <!-- Imagen de fondo con opacidad que no se repite -->
+                          <div style="
+                              position: absolute;
+                              top: 0; left: 0; right: 0; bottom: 0;
+                              background-image: url('<?php echo base_url("img/torreto.png"); ?>');
+                              background-size: contain;
+                              background-position: center;
+                              background-repeat: no-repeat;
+                              opacity: 0.9;
+                              z-index: 1;">
+                          </div>
+                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
+
+                        </div>
+                        <div class="modal-key-card-footer">
+                          <p class="modal-key-card-text" style="z-index: 2; font-size: 0.8rem;">Torreto Consultore</p>
+                          Planeación de estrategias legales corporativas, fiscales y administrativas.
+
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+
+                </div>
+                <div class="row text-center">
+
+
+
+
+
+
+                  <!-- Sindicato-->
                   <div class="col-md-4 modal-key-col">
                     <a href="https://stteccimm.mx/" target="_blank" style="text-decoration: none;">
                       <div class="modal-key-card">
                         <div class="modal-key-card-header modal-key-card-valorh">
-                        STTECCIM
+                          STTECCIM
                         </div>
                         <!-- Contenedor para la imagen de fondo -->
                         <div class="modal-key-card-body" style="position: relative;">
@@ -656,16 +731,16 @@ echo $token  */?>
                     opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
                           <!-- Contenido de texto que no se ve afectado por la opacidad -->
                           <p class="modal-key-card-text" style="z-index: 2; font-size: 0.8rem;">🏳TU SINDICATO DE
-                          CONFIANZA🏳</p>
+                            CONFIANZA🏳</p>
                         </div>
                         <div class="modal-key-card-footer">
-                        Una balanza en PRO de las necesidades del empresario y de sus colaboradores.
+                          Una balanza en PRO de las necesidades del empresario y de sus colaboradores.
 
                         </div>
                       </div>
                     </a>
                   </div>
-                 
+
                 </div>
               </div>
               <div class="modal-footer modal-key-footer">

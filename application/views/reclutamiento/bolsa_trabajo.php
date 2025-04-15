@@ -28,14 +28,14 @@
             </span>
             <span class="text">Nueva Requisicion</span>
           </button>
-          <?php 
-                if ($this->session->userdata('idrol') == 4) {
-                    $disabled = 'disabled'; 
-                    $textTitle = 'title="You do not have permission for this action"';
-                } else {
-                    $disabled = ''; 
-                    $textTitle = '';
-                } ?>
+          <?php
+              if ($this->session->userdata('idrol') == 4) {
+                  $disabled  = 'disabled';
+                  $textTitle = 'title="You do not have permission for this action"';
+              } else {
+                  $disabled  = '';
+                  $textTitle = '';
+          }?>
           <button type="button" id="btnAssignCandidate" class="btn btn-navy btn-icon-split" onclick="openAssignToUser()"
             <?php echo $disabled; ?>>
             <span class="icon text-white-50">
@@ -45,7 +45,22 @@
           </button>
         </div>
       </div>
+
     </div>
+    <?php if ($this->session->userdata('idrol') == 1){ ?>
+    <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
+      <button type="button" id="btnOpenAssignToUser" class="btn"
+        style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
+        data-toggle="modal" data-target="#modalGenerarLink" <?php echo $disabled; ?>>
+
+        <span class="icon text-white-50">
+          <i class="fas fa-user-edit" style="color: #000;"></i>
+        </span>
+        <span class="text">Generar Link</span>
+      </button>
+    </div>
+    <?php } ?>
+
   </section>
   <br>
   <div>
@@ -83,20 +98,21 @@
         <option value="Bloqueado">Estatus Bloqueado</option>
       </select>
     </div>
-    <?php $isDisabled = ($this->session->userdata('idrol') == 4)? 'isDisabled' : ''; ?>
+    <?php $isDisabled = ($this->session->userdata('idrol') == 4) ? 'isDisabled' : ''; ?>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
-      <select name="asignar" id="asignar" class="form-control <?php echo $isDisabled ?>" title="Select">
+      <select name="asignar" id="asignar"
+        class="form-control                                                                                                                                               <?php echo $isDisabled ?>"
+        title="Select">
         <option value="0">ATodosll</option>
         <?php
-        if ($usuarios_asignacion) {
-          foreach ($usuarios_asignacion as $row) { ?>
+            if ($usuarios_asignacion) {
+            foreach ($usuarios_asignacion as $row) {?>
         <option value="<?php echo $row->id; ?>"><?php echo $row->usuario; ?></option>
-        <?php 
-          }
-        }else{ ?>
+        <?php }
+        } else {?>
         <option value="">Sin Usuario Asignado</option>
-        <?php } ?>
+        <?php }?>
       </select>
     </div>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
@@ -104,14 +120,13 @@
       <select name="area_interes_search" id="area_interes_search" class="form-control">
         <option value="">Todas</option>
         <?php
-        if ($areas_interes) {
-          foreach ($areas_interes as $row) { ?>
+            if ($areas_interes) {
+            foreach ($areas_interes as $row) {?>
         <option value="<?php echo $row->area_interes; ?>"><?php echo $row->area_interes; ?></option>
-        <?php 
-          }
-        }else{ ?>
+        <?php }
+        } else {?>
         <option value="">No hay áreas de interés registradas</option>
-        <?php } ?>
+        <?php }?>
       </select>
     </div>
     <div class="col-sm-12 col-md-3 col-lg-3 mb-1">
@@ -119,14 +134,13 @@
       <select name="buscador" id="buscador" class="form-control">
         <option value="0">Encontrar</option>
         <?php
-        if ($registros_asignacion) {
-          foreach ($registros_asignacion as $row) { ?>
-        <option value="<?php echo $row->id; ?>"><?php echo '#'.$row->id.' '.$row->nombreCompleto; ?></option>
-        <?php 
-          }
-        }else{ ?>
+            if ($registros_asignacion) {
+            foreach ($registros_asignacion as $row) {?>
+        <option value="<?php echo $row->id; ?>"><?php echo '#' . $row->id . ' ' . $row->nombreCompleto; ?></option>
+        <?php }
+        } else {?>
         <option value="">No hay aspirantes registrados </option>
-        <?php } ?>
+        <?php }?>
       </select>
     </div>
   </div>
@@ -141,70 +155,79 @@
 
   <div class="">
     <div id="seccionTarjetas">
-      <?php 
-     
-			if($registros){
-  
+      <?php
 
-				echo '<div class="row mb-3">';
-				foreach($registros as $r){
-          
-          
-					date_default_timezone_set('America/Mexico_City');
-					$hoy = date('Y-m-d H:i:s');
-					// $fechaRegistro = new DateTime($r->creacion); 
-					// $diaActual = new DateTime($hoy);
-					// $dif = $diaActual->diff($fechaRegistro);
-					// $transcurrido = ($dif->days <= 0)? 'Hoy':'Hace '.$dif->days.' días';
-          $fecha_registro = fechaTexto($r->creacion,'espanol');
-					$color_estatus = ''; $disabled_bloqueo = ''; $disabled_comentario = ''; $text_estatus = '';  $desbloquear_aspirante = '';
-          if($r->status == 0){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_negativa'; $text_estatus = 'Estatus: <b>Bloqueado <br></b>';
-            $disabled_bloqueo = 'isDisabled'; $disabled_comentario = 'isDisabled';
-            $desbloquear_aspirante = '<a href="javascript:void(0)" class="btn btn-success  text-lg unlockButton" onclick="confirmarDesbloqueo()" data-toggle="tooltip" title="Desbloquear"><i class="fas fa-lock-open"></i></a>';
-					}
-					if($r->status == 1){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-            $text_estatus = 'Estatus: <b>En espera <br></b>';
-            if($r->status == 0){
-              $color_estatus = 'req_negativa';
-            }
-            if($r->status == 4){
-              $color_estatus = 'req_positivo';
-            }
-            if($r->status == 2){
-              $color_estatus = 'req_activa';
-            }
-            if($r->status == 3){
-              $color_estatus = 'req_preventiva';
-            }
-					}
-          if($r->status == 2){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_activa'; $text_estatus = 'Estatus: <b>En proceso de reclutamiento<br></b>';
-            $disabled_comentario = 'isDisabled';
-					}
-          if($r->status == 3 ){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_preventiva'; $text_estatus = 'Estatus: <b>Preventivo Revisar Historial<br></b>';
-            $disabled_comentario = 'isDisabled';
-					}
-          if($r->status == 4){
-						$botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar'.$r->id.'" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('.$r->id.',\''.$r->nombre.'\',\''.$r->paterno.'\',\''.$r->materno.'\',\''.$r->telefono.'\',\''.$r->medio_contacto.'\',\''.$r->area_interes.'\',\''.$r->domicilio.'\')"><i class="fas fa-play-circle"></i></a>';
-						$color_estatus = 'req_positivo'; $text_estatus = 'Estatus: <b>Listo para preempleo<br></b>'; 
-            $disabled_comentario = 'isDisabled';
-					}
-          $usuario = (empty($r->usuario))? 'Sin asignar' : $r->usuario;
-          $area_interes = ($r->area_interes === '' || $r->area_interes === null)? 'No registrado' : $r->area_interes;
-          $domicilio = ($r->domicilio === '' || $r->domicilio === null)? 'No registrado' : $r->domicilio;
-          $totalApplicants = count($registros);
-          $moveApplicant = ($totalApplicants > 1)? '' : 'offset-4';
-					?>
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-5 <?php echo $moveApplicant ?>">
+          if ($registros) {
+
+              echo '<div class="row mb-3">';
+              foreach ($registros as $r) {
+
+                  date_default_timezone_set('America/Mexico_City');
+                  $hoy = date('Y-m-d H:i:s');
+                  // $fechaRegistro = new DateTime($r->creacion);
+                  // $diaActual = new DateTime($hoy);
+                  // $dif = $diaActual->diff($fechaRegistro);
+                  // $transcurrido = ($dif->days <= 0)? 'Hoy':'Hace '.$dif->days.' días';
+                  $fecha_registro        = fechaTexto($r->creacion, 'espanol');
+                  $color_estatus         = '';
+                  $disabled_bloqueo      = '';
+                  $disabled_comentario   = '';
+                  $text_estatus          = '';
+                  $desbloquear_aspirante = '';
+                  if ($r->status == 0) {
+                      $botonProceso          = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
+                      $color_estatus         = 'req_negativa';
+                      $text_estatus          = 'Estatus: <b>Bloqueado <br></b>';
+                      $disabled_bloqueo      = 'isDisabled';
+                      $disabled_comentario   = 'isDisabled';
+                      $desbloquear_aspirante = '<a href="javascript:void(0)" class="btn btn-success  text-lg unlockButton" onclick="confirmarDesbloqueo()" data-toggle="tooltip" title="Desbloquear"><i class="fas fa-lock-open"></i></a>';
+                  }
+                  if ($r->status == 1) {
+                      $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
+                      $text_estatus = 'Estatus: <b>En espera <br></b>';
+                      if ($r->status == 0) {
+                          $color_estatus = 'req_negativa';
+                      }
+                      if ($r->status == 4) {
+                          $color_estatus = 'req_positivo';
+                      }
+                      if ($r->status == 2) {
+                          $color_estatus = 'req_activa';
+                      }
+                      if ($r->status == 3) {
+                          $color_estatus = 'req_preventiva';
+                      }
+                  }
+                  if ($r->status == 2) {
+                      $botonProceso        = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
+                      $color_estatus       = 'req_activa';
+                      $text_estatus        = 'Estatus: <b>En proceso de reclutamiento<br></b>';
+                      $disabled_comentario = 'isDisabled';
+                  }
+                  if ($r->status == 3) {
+                      $botonProceso        = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
+                      $color_estatus       = 'req_preventiva';
+                      $text_estatus        = 'Estatus: <b>Preventivo Revisar Historial<br></b>';
+                      $disabled_comentario = 'isDisabled';
+                  }
+                  if ($r->status == 4) {
+                      $botonProceso        = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
+                      $color_estatus       = 'req_positivo';
+                      $text_estatus        = 'Estatus: <b>Listo para preempleo<br></b>';
+                      $disabled_comentario = 'isDisabled';
+                  }
+                  $usuario         = (empty($r->usuario)) ? 'Sin asignar' : $r->usuario;
+                  $area_interes    = ($r->area_interes === '' || $r->area_interes === null) ? 'No registrado' : $r->area_interes;
+                  $domicilio       = ($r->domicilio === '' || $r->domicilio === null) ? 'No registrado' : $r->domicilio;
+                  $totalApplicants = count($registros);
+                  $moveApplicant   = ($totalApplicants > 1) ? '' : 'offset-4';
+              ?>
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center">
-          <div class="card-header <?php echo $color_estatus; ?>" id="req_header<?php echo $r->id;?>">
-            <b><?php echo '#'.$r->id.' '.$r->nombreCompleto; ?></b>
+          <div
+            class="card-header                                                                                                                               <?php echo $color_estatus; ?>"
+            id="req_header<?php echo $r->id; ?>">
+            <b><?php echo '#' . $r->id . ' ' . $r->nombreCompleto; ?></b>
           </div>
           <div class="card-body">
             <h5 class="card-title">Área de interés: <br><b><?php echo $area_interes; ?></b></h5>
@@ -214,41 +237,41 @@
             <div class="row">
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Ver detalles"
-                  onclick="verDetalles(<?php echo $r->id;?>)"><i class="fas fa-info-circle"></i></a>
+                  onclick="verDetalles(<?php echo $r->id; ?>)"><i class="fas fa-info-circle"></i></a>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip" title="Ver empleos"
-                  onclick="verEmpleos(<?php echo $r->id;?>,'<?php echo $r->nombreCompleto ?>')"><i
+                  onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo $r->nombreCompleto ?>')"><i
                     class="fas fa-user-tie"></i></a>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip"
                   title="Historial de movimientos"
-                  onclick="verHistorialMovimientos(<?php echo $r->id;?>,'<?php echo $r->nombreCompleto ?>')"><i
+                  onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo $r->nombreCompleto ?>')"><i
                     class="fas fa-history"></i></a>
               </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id?>">
+              <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id ?>">
                 <?php echo $botonProceso; ?>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <?php if ($r->status == 0): ?>
                 <a href="javascript:void(0)" class="btn btn-success text-lg unlockButton"
-                  onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo $r->nombreCompleto ?>',<?php echo $r->id;?>)"
+                  onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo $r->nombreCompleto ?>',<?php echo $r->id; ?>)"
                   data-toggle="tooltip" title="Desbloquear persona"><i class="fas fa-lock-open"></i></a>
                 <?php else: ?>
                 <a href="javascript:void(0)" class="btn btn-danger text-lg"
-                  onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo $r->nombreCompleto ?>',<?php echo $r->id;?>)"
+                  onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo $r->nombreCompleto ?>',<?php echo $r->id; ?>)"
                   data-toggle="tooltip" title="Bloquear persona"><i class="fas fa-ban"></i></a>
                 <?php endif; ?>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip"
                   title="Editar aspirante"
-                  onclick="openUpdateApplicant(<?php echo $r->id;?>,'<?php echo $r->nombreCompleto ?>')"><i
+                  onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo $r->nombreCompleto ?>')"><i
                     class="fas fa-edit"></i></a>
               </div>
               <!-- <div class="col-2">
-                    <a href="javascript:void(0)" class="btn btn-warning text-lg <?php //echo $disabled_comentario ?>" data-toggle="tooltip" title="Registrar comentario previo a reclutar" onclick="verHistorialBolsaTrabajo(<?php //echo $r->id;?>,'<?php //echo $r->nombreCompleto ?>')"><i class="fas fa-exclamation-circle"></i></a>
+                    <a href="javascript:void(0)" class="btn btn-warning text-lg                                                                                                                                                                                                                                                                                                                             <?php //echo $disabled_comentario ?>" data-toggle="tooltip" title="Registrar comentario previo a reclutar" onclick="verHistorialBolsaTrabajo(<?php //echo $r->id;?>,'<?php //echo $r->nombreCompleto ?>')"><i class="fas fa-exclamation-circle"></i></a>
                   </div> -->
             </div>
             <div class="alert alert-secondary text-center mt-3" id="divUsuario<?php echo $r->id; ?>">
@@ -260,13 +283,12 @@
           </div>
         </div>
       </div>
-      <?php 
-				}
-				echo '</div>';
-			}else{  ?>
+      <?php
+          }
+              echo '</div>';
+      } else {?>
       <h3 class="text-center">Actualmente no hay aspirantes registrados.</h3>
-      <?php 
-      } ?>
+      <?php }?>
     </div>
     <div id="tarjeta_detalle" class="hidden mb-5">
       <div class="alert alert-info text-center" id="nombre_completo"></div>
@@ -397,16 +419,14 @@
                   </div>
                   <select class="custom-select" id="civil_update" name="civil_update">
                     <option value="">Seleciona</option>
-                    <?php 
-                  if($civiles){
-                    foreach($civiles as $row){ ?>
+                    <?php
+                        if ($civiles) {
+                        foreach ($civiles as $row) {?>
                     <option value="<?php echo $row->id ?>"><?php echo $row->nombre ?></option>
-                    <?php 
-                    }
-                  }else{ ?>
+                    <?php }
+                    } else {?>
                     <option value="">Sin registros de estado civil..</option>
-                    <?php 
-                  } ?>
+                    <?php }?>
                   </select>
                 </div>
               </div>
@@ -429,16 +449,14 @@
                   </div>
                   <select class="custom-select" id="escolaridad_update" name="escolaridad_update">
                     <option value="">Select</option>
-                    <?php 
-                  if($grados){
-                    foreach($grados as $row){ ?>
+                    <?php
+                        if ($grados) {
+                        foreach ($grados as $row) {?>
                     <option value="<?php echo $row->id ?>"><?php echo $row->nombre ?></option>
-                    <?php 
-                    }
-                  }else{ ?>
+                    <?php }
+                    } else {?>
                     <option value="">No education records available.</option>
-                    <?php 
-                  } ?>
+                    <?php }?>
                   </select>
                 </div>
               </div>
@@ -548,16 +566,14 @@
                   </div>
                   <select class="custom-select" id="medio_contacto_update" name="medio_contacto_update">
                     <option value="">Select</option>
-                    <?php 
-                  if($medios){
-                    foreach($medios as $row){ ?>
+                    <?php
+                        if ($medios) {
+                        foreach ($medios as $row) {?>
                     <option value="<?php echo $row->nombre ?>"><?php echo $row->nombre ?></option>
-                    <?php 
-                    }
-                  }else{ ?>
+                    <?php }
+                    } else {?>
                     <option value="">No records of contact sources.</option>
-                    <?php 
-                  } ?>
+                    <?php }?>
                   </select>
                 </div>
               </div>
@@ -1131,7 +1147,31 @@
     });
   }
 
+  $('#modalGenerarLink').on('shown.bs.modal', function() {
+    // Limpia contenido previo
+    $('#linkGenerado').html("Cargando...");
+    $('#qrGenerado').html("");
 
+    $.ajax({
+      url: '<?php echo base_url("Reclutamiento/generar_o_mostrar_link")?>',
+      method: 'POST',
+      dataType: 'json',
+      success: function(response) {
+        if (response.link) {
+          $('#linkGenerado').html(`<a href="${response.link}" target="_blank">${response.link}</a>`);
+
+          // Muestra el QR generado desde el backend
+          $('#qrGenerado').html(
+            `<img src="${response.qr}" alt="QR" class="img-fluid mt-2" style="max-width: 150px;" />`);
+        } else {
+          $('#linkGenerado').html("No se pudo generar el link.");
+        }
+      },
+      error: function() {
+        $('#linkGenerado').html("Error al procesar la solicitud.");
+      }
+    });
+  });
 
   function nuevaRequisicion() {
     $('#nuevaRequisicionModal').modal('show')
@@ -1162,7 +1202,7 @@
   //* Carga de aspirantes masivos de acuerdo a CSV
   function descargarFormato() {
     // Ruta del archivo a descargar
-    let url = '<?php echo base_url().'_docs/CargarAspirantes.csv'; ?>';
+    let url = '<?php echo base_url() . '_docs/CargarAspirantes.csv'; ?>';
 
     // Realizar solicitud para descargar el archivo
     fetch(url)

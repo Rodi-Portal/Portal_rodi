@@ -24,7 +24,7 @@ class Reclutamiento_model extends CI_Model
             ->order_by('R.id', $sort);
 
         // Verifica si hay un filtro y lo aplica si existe
-        if (!empty($filter) && isset($filterOrder)) {
+        if (! empty($filter) && isset($filterOrder)) {
             $this->db->where($filterOrder, $filter);
         }
 
@@ -134,12 +134,12 @@ class Reclutamiento_model extends CI_Model
             if ($query->num_rows() > 0) {
                 return $query->result();
             } else {
-                return array(); // Devuelve un array vacío en lugar de FALSE
+                return []; // Devuelve un array vacío en lugar de FALSE
             }
         } catch (Exception $e) {
             // Manejar el error
             log_message('error', 'Error en getAllOrdersInProcess(): ' . $e->getMessage());
-            return array(); // Devuelve un array vacío en caso de error
+            return []; // Devuelve un array vacío en caso de error
         }
     }
     public function getAllApplicants($id_usuario, $condition)
@@ -258,7 +258,7 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         // Asegúrate de que el valor de $id_portal es correcto
-        if (!$id_portal) {
+        if (! $id_portal) {
             return null; // O manejar el caso según sea necesario
         }
 
@@ -294,7 +294,7 @@ class Reclutamiento_model extends CI_Model
     /*----------------------------------------*/
     public function cambiarStatusrequisicion($id, $status)
     {
-        if (!$id || empty($status)) {
+        if (! $id || empty($status)) {
             // Verificar si se proporcionan los datos necesarios
             return "Error: Datos insuficientes para la actualización.";
         }
@@ -324,14 +324,14 @@ class Reclutamiento_model extends CI_Model
     public function reactivarRequisicion($id, $id_usuario)
     {
         // Obtener los datos de la requisición con el ID proporcionado
-        $requisicion = $this->db->get_where('requisicion', array('id' => $id))->row_array();
+        $requisicion = $this->db->get_where('requisicion', ['id' => $id])->row_array();
 
-        // Generar una copia de la requisición con un nuevo ID
-        unset($requisicion['id']); // Eliminar el ID para generar un nuevo ID automático
+                                                  // Generar una copia de la requisición con un nuevo ID
+        unset($requisicion['id']);                // Eliminar el ID para generar un nuevo ID automático
         $requisicion['id_usuario'] = $id_usuario; // Establecer el nuevo ID de usuario
-        $requisicion['status'] = 1; // Establecer el estado activo
-        // Puedes establecer el comentario final aquí si lo necesitas
-        $requisicion['comentario_final'] = ''; // Por ejemplo, establecer un comentario vacío
+        $requisicion['status']     = 1;           // Establecer el estado activo
+                                                  // Puedes establecer el comentario final aquí si lo necesitas
+        $requisicion['comentario_final'] = '';    // Por ejemplo, establecer un comentario vacío
 
         // Insertar la nueva requisición en la tabla
         $this->db->insert('requisicion', $requisicion);
@@ -391,16 +391,17 @@ class Reclutamiento_model extends CI_Model
         $this->db->trans_commit();
         return true;
     }
-    
+
     public function registrarNuevaAccion($datos)
     {
         $this->db->insert('cat_accion_requisicion', $datos);
         // Devuelve el ID de la fila insertada
         return $this->db->insert_id();
     }
-    public function eliminarMovimiento($id){
+    public function eliminarMovimiento($id)
+    {
         $this->db->where('id', $id);
-        return $this->db->delete('requisicion_historial'); 
+        return $this->db->delete('requisicion_historial');
 
     }
 
@@ -436,7 +437,7 @@ class Reclutamiento_model extends CI_Model
             ->from('requisicion_aspirante as A')
             ->where('id', $id_aspirante);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -489,7 +490,7 @@ class Reclutamiento_model extends CI_Model
         echo "Aquí la nueva requisición: ";
         var_dump($req);
         die();*/
-        $id_portal = $this->session->userdata('idPortal');
+        $id_portal        = $this->session->userdata('idPortal');
         $req['id_portal'] = $id_portal;
 
         $this->db->trans_start();
@@ -530,7 +531,6 @@ class Reclutamiento_model extends CI_Model
         }
     }
 
-
     public function traerNombreCV($id)
     {
         // Ejecuta la consulta para obtener el nombre del archivo
@@ -542,11 +542,11 @@ class Reclutamiento_model extends CI_Model
         // Verifica si se encontraron resultados
         if ($query->num_rows() > 0) {
             // Obtiene el nombre del archivo
-            $row = $query->row();
+            $row           = $query->row();
             $nombreArchivo = $row->archivo;
             return $nombreArchivo;
         } else {
-            // Si no se encontraron resultados, devuelve NULL o un mensaje de error, según sea necesario
+                         // Si no se encontraron resultados, devuelve NULL o un mensaje de error, según sea necesario
             return null; // O devuelve un mensaje de error
         }
     }
@@ -1104,9 +1104,26 @@ class Reclutamiento_model extends CI_Model
             foreach ($query->result_array() as $row) {
                 $new_row['value'] = $row['id'];
                 $new_row['label'] = $row['nombre'];
-                $row_set[] = $new_row; //build an array
+                $row_set[]        = $new_row; //build an array
             }
             return $row_set; //format the array into json data
         }
+    }
+
+    public function obtener_por_portal($id_portal)
+    {
+        return $this->db->get_where('link_portal', ['id_portal' => $id_portal])->row();
+    }
+
+    public function guardar($data)
+    {
+        $this->db->insert('link_portal', $data);
+        return $this->db->insert_id();
+    }
+
+    public function actualizar($id_portal, $data)
+    {
+        $this->db->where('id_portal', $id_portal);
+        $this->db->update('link_portal', $data);
     }
 }
