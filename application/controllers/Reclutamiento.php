@@ -2517,13 +2517,13 @@ class Reclutamiento extends CI_Controller
         }
 
         $issued_at       = time(); // Tiempo actual
-        $expiration_time = $issued_at + 10800; // Expiración de 3 horas (10800 segundos)
+        //$expiration_time = $issued_at + 10800; // Expiración de 3 horas (10800 segundos)
         $payload         = [
             "sub"         => $usuario_id, // ID del usuario
             "logo"        => $logo, // Logo del portal
             "idPortal"    => $id_portal, // ID del portal
             "NombrePortal"=> $NombrePortal, // Nombre del portal
-            "exp"         => $expiration_time, // Tiempo de expiración del token
+            //"exp"         => $expiration_time, // Tiempo de expiración del token
         ];
 
         $private_key = $this->config->item('jwt_private_key'); // Asegúrate de tener configurada la clave privada
