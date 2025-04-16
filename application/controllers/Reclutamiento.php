@@ -2479,82 +2479,102 @@ class Reclutamiento extends CI_Controller
             echo json_encode($this->reclutamiento_model->matchCliente($term));
         }
     }
-
-    public function generar_o_mostrar_link() {
+    public function verificar_archivos_existentes()
+    {
         $id_portal = $this->session->userdata('idPortal');
-        $logo         = $this->session->userdata('logo'); // Asegúrate de que 'logo' esté en la sesión
-        $NombrePortal = $this->session->userdata('nombrePortal'); // Obtener 'NombrePortal' de la sesión
-        $usuario_id   = $this->session->userdata('id'); // ID del usuario, de la sesión
-        // Buscar el registro en la base de datos
-        $registro = $this->reclutamiento_model->obtener_por_portal($id_portal);
 
-        $logo = !empty($logo) ? $logo : 'portal_icon.png';
-        // Si ya existe, devolver el link y el QR
-        if ($registro) {
-            echo json_encode(['link' => $registro->link, 'qr' => $registro->qr]);
+        $registro = $this->cat_portales_model->getLogoAviso($id_portal);
+        if (! $registro) {
+            echo json_encode([]);
             return;
         }
-        $errores = [];
 
+        echo json_encode([
+            'logo'  => $registro->logo ?? null,
+            'aviso' => $registro->aviso ?? null,
+            'link'  => $registro->link ?? null,
+            'qr'    => $registro->qr ?? null,
+        ]);
+    }
+    public function generar_o_mostrar_link()
+    {
+        $id_portal    = $this->session->userdata('idPortal');
+        $logo         = $this->session->userdata('logo') ?? 'portal_icon.png';
+        $aviso         = $this->session->userdata('aviso') ?? 'AvisoPrivacidadTalentSafeControl-V1.0.pdf';
+        $NombrePortal = $this->session->userdata('nombrePortal');
+        $usuario_id   = $this->session->userdata('id');
+
+        // Validar datos de sesión
+        $errores = [];
         if (empty($logo)) {
             $errores[] = 'logo';
         }
+
         if (empty($id_portal)) {
             $errores[] = 'id_portal';
         }
+
         if (empty($NombrePortal)) {
             $errores[] = 'NombrePortal';
         }
+
         if (empty($usuario_id)) {
             $errores[] = 'usuario_id';
         }
-        
-        if (!empty($errores)) {
-            echo json_encode([
-                'error' => 'Datos de sesión faltantes: ' . implode(', ', $errores)
-            ]);
+
+        if (! empty($errores)) {
+            echo json_encode(['error' => 'Datos de sesión faltantes: ' . implode(', ', $errores)]);
             return;
         }
 
-        $issued_at       = time(); // Tiempo actual
-        //$expiration_time = $issued_at + 10800; // Expiración de 3 horas (10800 segundos)
-        $payload         = [
-            "sub"         => $usuario_id, // ID del usuario
-            "logo"        => $logo, // Logo del portal
-            "idPortal"    => $id_portal, // ID del portal
-            "NombrePortal"=> $NombrePortal, // Nombre del portal
-            //"exp"         => $expiration_time, // Tiempo de expiración del token
+        // Crear el payload para el JWT
+        $payload = [
+            "sub"          => $usuario_id,
+            "logo"         => $logo,
+            "aviso"        => $aviso,
+            "idPortal"     => $id_portal,
+            "NombrePortal" => $NombrePortal,
         ];
 
-        $private_key = $this->config->item('jwt_private_key'); // Asegúrate de tener configurada la clave privada
+        $private_key = $this->config->item('jwt_private_key');
+        $jwt         = JWT::encode($payload, $private_key, 'RS256');
+        $link        = LINKASPIRANTES . '?token=' . $jwt;
 
-        // Generar el JWT con la clave privada (si se usa RS256) o clave secreta
-        $jwt = JWT::encode($payload, $private_key, 'RS256'); 
-
-        $link = LINKASPIRANTES.'?token=' . $jwt;
-
-         
-     
-
-        // Generar el QR en formato base64
+        // Generar QR en base64
         $qr_base64 = $this->generar_qr_base64($link);
         date_default_timezone_set('America/Mexico_City');
 
-        // Guardar el registro en la base de datos
-       $this->reclutamiento_model->guardar([
-            'id_portal'  => $id_portal,
-            'link'       => $link,
-            'qr'         => $qr_base64,
-            'creacion' => date('Y-m-d H:i:s'),
-            'edicion' => date('Y-m-d H:i:s'),
+        // Datos a guardar o actualizar
+        $data = [
+            'id_portal' => $id_portal,
+            'link'      => $link,
+            'qr'        => $qr_base64,
+            'creacion'  => date('Y-m-d H:i:s'),
+            'edicion'   => date('Y-m-d H:i:s'),
+        ];
 
+        // Verificar si ya existe el registro
+        $registro = $this->reclutamiento_model->obtener_por_portal($id_portal);
+        if ($registro) {
+            // Actualizar si ya existe
+            $this->reclutamiento_model->actualizar($id_portal, $data);
+            $mensaje = 'Link actualizado correctamente.';
+        } else {
+            // Guardar si no existe
+            $this->reclutamiento_model->guardarLink($data);
+            $mensaje = 'Link generado correctamente.';
+        }
+
+        // Devolver link, QR y mensaje
+        echo json_encode([
+            'link'    => $link,
+            'qr'      => $qr_base64,
+            'mensaje' => $mensaje,
         ]);
-
-        // Devolver el link y el QR generados
-        echo json_encode(['link' => $link, 'qr' => $qr_base64]);
     }
 
-    private function generar_qr_base64($text) {
+    private function generar_qr_base64($text)
+    {
         // Crear el código QR usando la librería Endroid
         $qrCode = new QrCode($text);
         $qrCode->setSize(300);

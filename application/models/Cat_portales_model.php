@@ -540,4 +540,18 @@ class Cat_portales_model extends CI_Model
         return $query->row_array();
     }
 
+    public function getLogoAviso($id_portal)
+    {
+        $this->db->select("P.logo, P.aviso, L.link, L.qr")
+            ->from('portal AS P')
+            ->join("link_portal L", "L.id_portal = P.id")
+            ->where('L.status', 1)
+            ->where('P.status', 1)
+            ->where('P.id', $id_portal); // Filtra por el ID del portal
+    
+        $query = $this->db->get();
+    
+        return $query->row(); // 👈 Esto es lo que te faltaba
+    }
+
 }

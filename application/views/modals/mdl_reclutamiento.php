@@ -1,9 +1,13 @@
 <?php
     header('Content-Type: text/html; charset=utf-8');
-
+   $idRol = $this->session->userdata('idrol');
+    $logo          = $this->session->userdata('logo');
+    $aviso_actual  = $this->session->userdata('aviso');
+    $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
+?>
     // Esto te mostrará el contenido de $reqs
 
-?>
+
 <div class="modal fade" id="nuevoAspiranteModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -791,30 +795,54 @@
   </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="modalGenerarLink" tabindex="-1" role="dialog" aria-labelledby="modalLinkLabel" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="modalGenerarLink" tabindex="-1" role="dialog" aria-labelledby="modalGenerarLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="modalLinkLabel">Link generado</h5>
+        <h5 class="modal-title" id="modalGenerarLabel">Generar o Actualizar Link del Portal</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
-      <div class="modal-body text-center">
-        <div id="linkGenerado" class="mb-3" style="font-size: 14px; word-break: break-word;"></div>
-        <div id="qrGenerado"></div>
+      <div class="modal-body">
+        <!-- Logo actual -->
+        <div class="mb-3 text-center">
+          <label><strong>Logo Actual:</strong></label><br>
+          <img id="logoActual" src="<?= base_url('assets/img/logo-default.png') ?>" alt="Logo" style="max-height: 80px;">
+        </div>
+
+        <!-- Aviso actual -->
+        <div class="mb-3 text-center">
+          <label><strong>Aviso de Privacidad:</strong></label><br>
+
+          <a id="linkAviso"  href="<?php echo base_url('Avance/ver_aviso/'.$archivo ); ?>" target="_blank">
+          Ver documento</a>
+        </div>
+
+        <!-- Link generado -->
+        <div class="mb-3">
+          <label><strong>Link Generado:</strong></label>
+          <div id="linkGenerado" class="text-break">Cargando...</div>
+        </div>
+
+        <!-- QR generado -->
+        <div class="mb-3 text-center">
+          <label><strong>Código QR:</strong></label>
+          <div id="qrGenerado"></div>
+        </div>
       </div>
 
       <div class="modal-footer">
+        <button type="button" id="btnGenerarLink" class="btn btn-primary">Generar / Actualizar Link</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
       </div>
 
     </div>
   </div>
 </div>
-
 
 
 <div class="modal fade" id="nuevaRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">
