@@ -47,9 +47,9 @@
       </div>
 
     </div>
-    <?php if ($this->session->userdata('idrol') == 1){ ?>
+    <?php if ($this->session->userdata('idrol') == 1) {?>
     <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
-      <button type="button" id="btnOpenAssignToUser" class="btn"
+      <button type="button" id="generarLink" class="btn"
         style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
         data-toggle="modal" data-target="#modalGenerarLink" <?php echo $disabled; ?>>
 
@@ -59,7 +59,7 @@
         <span class="text">Generar Link</span>
       </button>
     </div>
-    <?php } ?>
+    <?php }?>
 
   </section>
   <br>
@@ -102,7 +102,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                               <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                                                                                                           <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">ATodosll</option>
         <?php
@@ -225,7 +225,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center">
           <div
-            class="card-header                                                                                                                               <?php echo $color_estatus; ?>"
+            class="card-header                                                                                                                                                                                                                                                       <?php echo $color_estatus; ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $r->nombreCompleto; ?></b>
           </div>
@@ -271,7 +271,7 @@
                     class="fas fa-edit"></i></a>
               </div>
               <!-- <div class="col-2">
-                    <a href="javascript:void(0)" class="btn btn-warning text-lg                                                                                                                                                                                                                                                                                                                             <?php //echo $disabled_comentario ?>" data-toggle="tooltip" title="Registrar comentario previo a reclutar" onclick="verHistorialBolsaTrabajo(<?php //echo $r->id;?>,'<?php //echo $r->nombreCompleto ?>')"><i class="fas fa-exclamation-circle"></i></a>
+                    <a href="javascript:void(0)" class="btn btn-warning text-lg                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         <?php //echo $disabled_comentario ?>" data-toggle="tooltip" title="Registrar comentario previo a reclutar" onclick="verHistorialBolsaTrabajo(<?php //echo $r->id;?>,'<?php //echo $r->nombreCompleto ?>')"><i class="fas fa-exclamation-circle"></i></a>
                   </div> -->
             </div>
             <div class="alert alert-secondary text-center mt-3" id="divUsuario<?php echo $r->id; ?>">
@@ -1146,32 +1146,102 @@
       }
     });
   }
-
-  $('#modalGenerarLink').on('shown.bs.modal', function() {
-    // Limpia contenido previo
+  $('#modalGenerarLink').on('show.bs.modal', function() {
     $('#linkGenerado').html("Cargando...");
     $('#qrGenerado').html("");
 
     $.ajax({
-      url: '<?php echo base_url("Reclutamiento/generar_o_mostrar_link")?>',
-      method: 'POST',
+      url: '<?php echo base_url("Reclutamiento/verificar_archivos_existentes"); ?>',
+      type: 'POST',
       dataType: 'json',
       success: function(response) {
+        //console.log("🚀 ~ $ ~ response:", response)
+        // Mostrar logo
+        const logoSrc = response.logo ?
+          "<?php echo base_url('_logosPortal/'); ?>" + response.logo :
+          "<?php echo base_url('_logosPortal/portal_icon.png'); ?>";
+        $('#logoActual').attr('src', logoSrc);
+
+        // Mostrar aviso
+        const avisoHref = response.aviso ?
+          "<?php echo base_url('Avance/ver/'); ?>" + encodeURIComponent(response.aviso) :
+          "<?php echo base_url('Avance/ver/AvisoPrivacidadTalentSafeControl-V1.0.pdf'); ?>";
+
+        // Link generado
         if (response.link) {
           $('#linkGenerado').html(`<a href="${response.link}" target="_blank">${response.link}</a>`);
-
-          // Muestra el QR generado desde el backend
-          $('#qrGenerado').html(
-            `<img src="${response.qr}" alt="QR" class="img-fluid mt-2" style="max-width: 150px;" />`);
         } else {
-          $('#linkGenerado').html("No se pudo generar el link.");
+          $('#linkGenerado').html("Aún no se ha generado un link.");
+        }
+
+        // QR generado
+        if (response.qr) {
+          $('#qrGenerado').html(`<img src="${response.qr}" alt="QR" style="max-width: 150px;">`);
         }
       },
       error: function() {
-        $('#linkGenerado').html("Error al procesar la solicitud.");
+        $('#linkGenerado').html("Error al obtener datos del portal.");
       }
     });
   });
+
+
+  // Botón para generar o actualizar link y QR
+  $('#btnGenerarLink').on('click', function() {
+    Swal.fire({
+      icon: 'warning',
+      title: '¿Estás seguro?',
+      text: 'El link y el código QR anteriores quedarán obsoletos. ¿Deseas continuar?',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, continuar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si el usuario confirma, ejecutar AJAX
+        $.ajax({
+          url: '<?php echo base_url("Reclutamiento/generar_o_mostrar_link") ?>',
+          type: 'POST',
+          dataType: 'json',
+          success: function(response) {
+            if (response.link) {
+              $('#linkGenerado').html(`<a href="${response.link}" target="_blank">${response.link}</a>`);
+              $('#qrGenerado').html(`<img src="${response.qr}" alt="QR" style="max-width: 150px;">`);
+
+              Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: response.mensaje || 'Link generado/actualizado correctamente.',
+              }).then(() => {
+                $('#modalGenerarLink').modal('show');
+              });
+
+            } else if (response.error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.error,
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo generar el link.',
+              });
+            }
+          },
+          error: function() {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error en la generación del link.',
+            });
+          }
+        });
+      }
+    });
+  });
+
+
 
   function nuevaRequisicion() {
     $('#nuevaRequisicionModal').modal('show')

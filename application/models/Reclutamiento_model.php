@@ -1115,10 +1115,16 @@ class Reclutamiento_model extends CI_Model
         return $this->db->get_where('link_portal', ['id_portal' => $id_portal])->row();
     }
 
-    public function guardar($data)
+    public function guardarLink($data)
     {
         $this->db->insert('link_portal', $data);
         return $this->db->insert_id();
+    }
+
+    public function actualizarPortal($id_portal, $data)
+    {
+        $this->db->where('id', $id_portal);
+        $this->db->update('portal', $data);
     }
 
     public function actualizar($id_portal, $data)

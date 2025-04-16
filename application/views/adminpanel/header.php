@@ -67,9 +67,16 @@
 <body id="page-top">
   <!-- JavaScript -->
 
-  <?php $idRol = $this->session->userdata('idrol');
-  $logo          = $this->session->userdata('logo'); ?>
-<?php /*$token = $this->session->userdata('jwt_token'); 
+  <?php
+
+      $idRol        = $this->session->userdata('idrol');
+      $logo         = $this->session->userdata('logo');
+      $aviso_actual = $this->session->userdata('aviso');
+      $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
+  ?>
+
+
+  <?php /*$token = $this->session->userdata('jwt_token'); 
 
 echo $token  */?>
   <!-- Page Wrapper -->
@@ -105,6 +112,10 @@ echo $token  */?>
             <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
               <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
               Actualizar Logo
+            </a>
+            <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateAvisoModal">
+              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              Aviso de Privacidad
             </a>
             <a class="collapse-item" href="<?php echo base_url(); ?>Area/pasarela">
               <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -254,12 +265,12 @@ echo $token  */?>
               Administradores</a>
             <?php
             }?>
-<?php
+            <?php
 if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
-<?php
+            <?php
 
     if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
@@ -353,7 +364,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -364,16 +375,16 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
               </div>
             </li>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
-  <a class="nav-link icono-dorado text-center" href="#" role="button" data-toggle="modal"
-     data-target="#modalKey" data-bs-toggle="tooltip" data-bs-placement="top" title="Proveedores destacados"
-     style="line-height: 1.2; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0;">
+              <a class="nav-link icono-dorado text-center" href="#" role="button" data-toggle="modal"
+                data-target="#modalKey" data-bs-toggle="tooltip" data-bs-placement="top" title="Proveedores destacados"
+                style="line-height: 1.2; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0;">
 
-    <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Proveedores</div>
-    <i class="fas fa-key fa-fw icono-dorado" style="font-size: 20px; margin: 0; padding: 0;"></i>
-    <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Destacados</div>
+                <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Proveedores</div>
+                <i class="fas fa-key fa-fw icono-dorado" style="font-size: 20px; margin: 0; padding: 0;"></i>
+                <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Destacados</div>
 
-  </a>
-</li>
+              </a>
+            </li>
 
 
             <div class="topbar-divider d-none d-sm-block"></div>
@@ -449,6 +460,49 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 <button type="button" id="saveLogo" class="btn btn-primary">Guardar Logo</button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="updateAvisoModal" tabindex="-1" role="dialog"
+          aria-labelledby="updateAvisoModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <form id="form_aviso" enctype="multipart/form-data">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Actualizar Aviso de Privacidad</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="avisoPrivacidad">Selecciona el archivo PDF:</label>
+                    <input type="file" class="form-control-file" id="avisoPrivacidad" name="aviso"
+                      accept="application/pdf">
+                  </div>
+
+                  <div
+                    class="alert                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
+                    <?php echo $aviso_actual
+                        ? 'Archivo actual:'
+                    : 'No se encontró un aviso cargado. Se usará este  aviso por defecto:' ?>
+
+
+                    <a href="<?php echo base_url('Avance/ver_aviso/'.$archivo ); ?>" target="_blank">
+                      Ver aviso
+                    </a>
+
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -914,6 +968,48 @@ if(in_array(38, $submenus)){ ?>
                   );
                 }
               });
+            }
+          });
+        });
+        $('#form_aviso').submit(function(e) {
+          e.preventDefault(); // Evitar el envío por defecto del formulario
+
+          var formData = new FormData(this); // Obtener los datos del formulario
+
+          $.ajax({
+            url: '<?php echo base_url('Avance/guardar_aviso'); ?>',
+            type: 'POST',
+            data: formData,
+            processData: false, // No procesar los datos
+            contentType: false, // No establecer tipo de contenido
+            success: function(response) {
+              var res = JSON.parse(response);
+
+              // Mostrar Swal.fire en función de la respuesta
+              if (res.status == 'success') {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Éxito',
+                  text: res.message
+                }).then(function() {
+                  // Cerrar el modal
+                  $('#miModal').modal('hide'); // Asumiendo que tu modal tiene el ID "miModal"
+
+                  // Limpiar el formulario
+                  $('#form_aviso')[0].reset(); // Limpiar el formulario
+
+                  // Realizar otras acciones si es necesario, por ejemplo, recargar alguna parte de la página o actualizar datos
+                  // Si necesitas actualizar el modal con los nuevos datos, puedes hacerlo aquí también.
+                  location
+                .reload(); // Recargar la página o actualizar el contenido dinámico si es necesario
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: res.message
+                });
+              }
             }
           });
         });

@@ -68,6 +68,7 @@ class Login extends CI_Controller
                     "idPortal" => $usuario->idPortal,
                     "nombrePortal" => $usuario->nombrePortal,
                     "logo" => $usuario->logo,
+                    "aviso"=> $usuario->aviso,
 
                 );
                 if ($usuario->id_rol == 1 || $usuario->id_rol == 6) {

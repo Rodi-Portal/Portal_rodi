@@ -12,10 +12,16 @@ class Cat_UsuarioInternos extends CI_Controller
         }
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
+        $this->load->library('encryption');
+
     }
 
     public function index()
     {
+        
+        $aviso_actual = $this->session->userdata('aviso');
+       
+
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;

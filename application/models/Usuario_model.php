@@ -103,6 +103,7 @@ class Usuario_model extends CI_Model
             P.nombre as nombrePortal,
             P.bloqueado,
             P.logo,
+            P.aviso,
             P.id as idPortal')
             ->from('usuarios_portal as U')
             ->join('rol as R', 'R.id = U.id_rol')
