@@ -2529,12 +2529,14 @@ class Reclutamiento extends CI_Controller
 
         // Crear el payload para el JWT
         $payload = [
-            "sub"          => $usuario_id,
+            "idUsuario"   => $usuario_id,
             "logo"         => $logo,
             "aviso"        => $aviso,
             "idPortal"     => $id_portal,
             "NombrePortal" => $NombrePortal,
         ];
+
+      
 
         $private_key = $this->config->item('jwt_private_key');
         $jwt         = JWT::encode($payload, $private_key, 'RS256');
