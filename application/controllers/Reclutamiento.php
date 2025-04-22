@@ -2500,7 +2500,7 @@ class Reclutamiento extends CI_Controller
     {
         $id_portal    = $this->session->userdata('idPortal');
         $logo         = $this->session->userdata('logo') ?? 'portal_icon.png';
-        $aviso         = $this->session->userdata('aviso') ?? 'AvisoPrivacidadTalentSafeControl-V1.0.pdf';
+        $aviso         = $this->session->userdata('aviso') ?? 'AV_TL_V1.pdf';
         $NombrePortal = $this->session->userdata('nombrePortal');
         $usuario_id   = $this->session->userdata('id');
 
