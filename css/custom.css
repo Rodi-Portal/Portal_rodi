@@ -6,9 +6,12 @@
 body, p, h1, h2, h3, h4, h5, h6, table{
 color: #000000 !important; 
 }
-body, p, h1, h2, h3, h4, h5, h6{
+.sidebar {
+  margin-left: 0 !important;
+}
+ p, h1, h2, h3, h4, h5, h6{
   
-  margin-left: 20px;;/* Sobrescribe el color de texto */
+  margin-left: 20px;/* Sobrescribe el color de texto */
   }
 /*Boton Perszonalizado*/
 .icono-dorado {
@@ -18,7 +21,6 @@ body, p, h1, h2, h3, h4, h5, h6{
 .icono-dorado:hover {
   color: darkgoldenrod !important;; /* Color dorado más oscuro al pasar el mouse */
 }
-
 /* Aumentar la especificidad */
 .btn.btn-navy {
   background-color: #003366; /* Azul marino */
@@ -702,7 +704,6 @@ color: white;
   display: block;
 }
 
-
 /* Style the checkmark/indicator */
 .container_checkbox .checkmark:after {
   left: 9px;
@@ -1226,6 +1227,10 @@ color: white;
   background-color: #58c4f5 !important; /* Azul claro */
   color: white;
 }
+.former-actividades-btn {
+  background-color: #bb67bb !important; /* Azul claro */
+  color: white;
+}
 .bg-neutral {
   background-color: #f4f7f6; /* Gris claro elegante */
   color: #333; /* Texto oscuro */
@@ -1367,18 +1372,4 @@ color: white;
   flex: 1; /* Para que ambos div ocupen el mismo espacio */
   max-width: 50%; /* Asegura que no sobrepasen la mitad */
   overflow: auto; /* Para manejar contenido extenso */
-}
-
-
-#modalAsignarSucursalUsuariosInternos {
-  display: none;
-  z-index: 1050 !important;
-}
-
-.modal-backdrop {
-  z-index: 1040 !important;
-}
-
-#modalAsignarSucursalUsuariosInternos .modal-content {
-  z-index: 1060 !important;
 }

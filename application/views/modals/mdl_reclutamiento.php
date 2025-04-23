@@ -5,7 +5,7 @@
     $aviso_actual  = $this->session->userdata('aviso');
     $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
 ?>
-    // Esto te mostrará el contenido de $reqs
+   
 
 
 <div class="modal fade" id="nuevoAspiranteModal" role="dialog" data-backdrop="static" data-keyboard="false">
