@@ -100,25 +100,35 @@ echo $token  */?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
           aria-expanded="true" aria-controls="collapseUsuario">
-          <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
-          <span class="mr-2 d-none d-lg-inline text-white font-weight-bold" style="font-size: 14px; margin-left: 10px">
-            <?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?>
-          </span>
+          <div class="d-flex align-items-center">
+            <!-- Columna de la imagen -->
+            <div>
+              <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png"
+                style="width: 40px; height: 40px;">
+            </div>
+
+            <!-- Columna del texto -->
+            <div class="ml-3">
+              <span class="d-none d-lg-inline text-white font-weight-bold" style="font-size: 14px;">
+                <?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?>
+              </span>
+            </div>
+          </div>
         </a>
 
         <div id="collapseUsuario" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
-              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              <i class="fas fa-image fa-sm fa-fw mr-2 text-gray-400"></i>
               Actualizar Logo
             </a>
             <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateAvisoModal">
-              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              <i class="fas fa-user-shield fa-sm fa-fw mr-2 text-gray-400"></i>
               Aviso de Privacidad
             </a>
             <a class="collapse-item" href="<?php echo base_url(); ?>Area/pasarela">
-              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
               Pago/Suscripción
             </a>
             <?php }?>
@@ -203,25 +213,6 @@ echo $token  */?>
         </a>
         <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <!--a class="collapse-item" href="< ?php echo site_url('Reporte/index') ?>">Reportes</a>
-           < ?php
-              if(in_array(27, $submenus)){ ?>
-            <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Estudios"
-              href="< ?php echo site_url('Reporte/listado_estudios_index') ?>">Listado de Estudios</a>
-            < ?php
-							}
-							if(in_array(26, $submenus)){ ?>
-            <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Doping Finalizados"
-              href="< ?php echo site_url('Reporte/listado_clientes_index') ?>">Doping Finalizados</a>
-            < ?php
-							}
-							if(in_array(13, $submenus)){ ?>
-            <a class="collapse-item" href="< ?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
-            < ?php
-							}  */
-							if(in_array(16, $submenus)){ ?>
-            <a class="collapse-item" href="< ?php echo site_url('Reporte/listado_doping_index') ?>">Listado de Doping</a-->
-
             <?php
             if (in_array(25, $submenus)) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
@@ -266,13 +257,13 @@ echo $token  */?>
             <?php
             }?>
             <?php
-if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
+            if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
             <?php
 
-    if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
+            if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
             <?php
             }?>
@@ -352,6 +343,14 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                     Exempleados
                   </div>
                 </a>
+                <a id="former-actividades-btn" href="#" class="btn custom-btn former-actividades-btn">
+                  <div class="module-label">Módulo</div>
+                  <div class="btn-content">
+                    <!-- Contenedor para el ícono y texto -->
+                    <i class="fas fa-calendar-alt"></i> <!-- Icono de FontAwesome para Former employee -->
+                    Actividades
+                  </div>
+                </a>
 
               </div>
             </li>
@@ -390,31 +389,31 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <div class="topbar-divider d-none d-sm-block"></div>
 
             <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
+            <!--li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small"
-                  style="font-size: 12px;"><?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
-                <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
+                  style="font-size: 12px;">< ?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?></span>
+                <img class="img-profile rounded-circle" src="< ?php echo base_url(); ?>img/user.png">
               </a>
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <?php if ($idRol == 1 || $idRol == 6) {?>
+                < ?php if ($idRol == 1 || $idRol == 6) {?>
                 <a class="dropdown-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Actualizar Logo
                 </a>
-                <a class="dropdown-item" href="<?php echo base_url(); ?>Area/pasarela">
+                <a class="dropdown-item" href="< ? php echo base_url(); ?>Area/pasarela">
 
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Suscripción
                 </a>
-                <?php }?>
-                <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
+                < ?php }?>
+                <a class="dropdown-item" href="< ?php echo base_url(); ?>Login/logout">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   Cerrar sesión
                 </a>
               </div>
-            </li>
+            </li -->
           </ul>
         </nav>
 
@@ -811,95 +810,9 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
 
         <!-- End of Topbar -->
 
-        <?php
-            /*
-<!-- Doping -->
-<?php
-if (in_array(3, $submenus)) {?>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDoping"
-            aria-expanded="true" aria-controls="collapseDoping">
-            <i class="fas fa-fw fa-eye-dropper"></i>
-            <span>Doping</span>
-          </a>
-          <div id="collapseDoping" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-              <?php
-if (in_array(4, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Doping/indexGenerales') ?>">Registros generales</a>
-              <?php
-}
-if (in_array(23, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Doping/indexPendientes') ?>">Registros pendientes</a>
-              <?php
-}
-if (in_array(24, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Doping/indexFinalizados') ?>">Finalizados</a>
-              <?php
-}?>
-            </div>
-          </div>
-        </li>
-        <?php }?>
+        
+            
 
-        <!-- Laboratorio -->
-        <?php
-if (in_array(20, $submenus)) {?>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLab" aria-expanded="true"
-            aria-controls="collapseLab">
-            <i class="fas fa-flask"></i>
-            <span>Laboratorio</span>
-          </a>
-          <div id="collapseLab" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-              <?php
-if (in_array(22, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Medico/index') ?>">Examen médico</a>
-              <?php
-}
-if (in_array(32, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Covid/index') ?>">Pruebas COVID</a>
-              <?php
-}
-if (in_array(21, $submenus)) {?>
-              <a class="collapse-item" href="<?php echo site_url('Laboratorio/sanguineo') ?>">Grupo sanguíneo</a>
-              <?php
-}?>
-            </div>
-          </div>
-        </li>
-        <?php }?>
-        */
-        ?>
-        <!-- Control -->
-        <?php /*
-if (in_array(17, $submenus)) {?>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseControl"
-            aria-expanded="true" aria-controls="collapseControl">
-            <i class="fas fa-cogs"></i>
-            <span>Control</span>
-          </a>
-          <div id="collapseControl" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-              <!--a class="collapse-item" href="<?php //echo site_url('Reporte/index') ?>">Control</a-->
-              <?php /*
-if(in_array(32, $submenus)){ ?>
-              <a class="collapse-item" href="<?php echo site_url('Reporte/sla_ingles_index') ?>">SLA Inglés</a>
-              <?php
-}
-if(in_array(38, $submenus)){ ?>
-              <a class="collapse-item" href="<?php echo site_url('Reporte/listado_doping_index') ?>">Listado de
-                Doping</a>
-              <?php
-} ?>
-            </div>
-          </div>
-        </li>
-        <?php
-}
- */?>
 
         <script>
         document.getElementById('fileLogo').addEventListener('change', function(event) {
@@ -917,7 +830,18 @@ if(in_array(38, $submenus)){ ?>
           }
         });
 
-
+        document.addEventListener("DOMContentLoaded", function() {
+          document.getElementById("former-actividades-btn").addEventListener("click", function(e) {
+            e.preventDefault(); // Prevenir comportamiento por defecto del enlace
+            Swal.fire({
+              icon: 'info',
+              title: 'Módulo en desarrollo',
+              text: 'Este módulo estará disponible próximamente. Actualmente se encuentra en desarrollo.',
+              confirmButtonText: 'Entendido',
+              confirmButtonColor: '#3085d6'
+            });
+          });
+        });
 
         // Funcionalidad para eliminar el logo usando AJAX
         $("#deleteLogo").on("click", function() {
@@ -1001,7 +925,7 @@ if(in_array(38, $submenus)){ ?>
                   // Realizar otras acciones si es necesario, por ejemplo, recargar alguna parte de la página o actualizar datos
                   // Si necesitas actualizar el modal con los nuevos datos, puedes hacerlo aquí también.
                   location
-                .reload(); // Recargar la página o actualizar el contenido dinámico si es necesario
+                    .reload(); // Recargar la página o actualizar el contenido dinámico si es necesario
                 });
               } else {
                 Swal.fire({

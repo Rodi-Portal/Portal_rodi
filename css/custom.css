@@ -6,9 +6,12 @@
 body, p, h1, h2, h3, h4, h5, h6, table{
 color: #000000 !important; 
 }
-body, p, h1, h2, h3, h4, h5, h6{
+.sidebar {
+  margin-left: 0 !important;
+}
+ p, h1, h2, h3, h4, h5, h6{
   
-  margin-left: 20px;;/* Sobrescribe el color de texto */
+  margin-left: 20px;/* Sobrescribe el color de texto */
   }
 /*Boton Perszonalizado*/
 .icono-dorado {
@@ -1222,6 +1225,10 @@ color: white;
 /* Color para el botón de Exempleados */
 .former-employment-btn {
   background-color: #58c4f5 !important; /* Azul claro */
+  color: white;
+}
+.former-actividades-btn {
+  background-color: #bb67bb !important; /* Azul claro */
   color: white;
 }
 .bg-neutral {

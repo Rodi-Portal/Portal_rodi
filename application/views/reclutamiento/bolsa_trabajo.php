@@ -47,7 +47,7 @@
       </div>
 
     </div>
-    <?php if ($this->session->userdata('idrol') == 1) {?>
+    <?php if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {?>
     <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
       <button type="button" id="generarLink" class="btn"
         style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
