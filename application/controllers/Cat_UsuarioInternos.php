@@ -435,4 +435,26 @@ class Cat_UsuarioInternos extends CI_Controller
         echo json_encode($resultado);
     }
 
+    public function eliminarPermiso() {
+        // Obtener los parámetros de la solicitud POST
+        $id_usuario = $this->input->post('id_usuario');
+        $id_cliente = $this->input->post('id_cliente');
+
+        // Validar que los parámetros estén presentes
+        if (empty($id_usuario) || empty($id_cliente)) {
+            echo json_encode(['status' => 'error', 'message' => 'Datos incompletos']);
+            return;
+        }
+
+        // Llamar al modelo para eliminar el permiso
+        $resultado =  $this->cat_usuario_model->eliminarPermiso($id_usuario, $id_cliente);
+
+        // Responder con éxito o error
+        if ($resultado) {
+            echo json_encode(['status' => 'success', 'message' => 'Permiso eliminado exitosamente']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo eliminar el permiso']);
+        }
+    }
+
 }

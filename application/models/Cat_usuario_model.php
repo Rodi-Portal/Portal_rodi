@@ -383,6 +383,19 @@ class Cat_usuario_model extends CI_Model
         ];
     }
     
+    public function eliminarPermiso($id_usuario, $id_cliente) {
+        // Eliminar el registro de la tabla usuario_permiso
+        $this->db->where('id_usuario', $id_usuario);
+        $this->db->where('id_cliente', $id_cliente);
+        $this->db->delete('usuario_permiso');
+
+        // Verificar si la eliminación fue exitosa
+        if ($this->db->affected_rows() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 }
