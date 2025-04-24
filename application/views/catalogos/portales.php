@@ -175,9 +175,9 @@ $(document).ready(function() {
               data + ')"><i class="fas fa-user-check"></i></a> ';
           } else {
 
-              modulosPre =
+            modulosPre =
               '<a href="javascript:void(0)" data-toggle="tooltip" title="Pre-Employment" id="moduloPre" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarPreEmpleo\', ' +
-             data+ ')"><i class="fas fa-user-check"></i></a> ';
+              data + ')"><i class="fas fa-user-check"></i></a> ';
           }
 
           // Modulo de Empleo
@@ -245,15 +245,16 @@ $(document).ready(function() {
       },
 
       {
-        title: 'Suscripcion',
-        data: 'numero_usuarios_portal',
+        title: 'Suscripción',
+        data: null, // Esto permite usar todo el objeto completo en 'full'
         bSortable: false,
-        "width": "15%",
-        mRender: function(data, type, full) {
-          if (data == 0) {
+        width: '15%',
+        render: function(data, type, full) {
+          if (full.numero_usuarios_portal == 0) {
             return 'Sin registro de accesos';
           } else {
-            return '<h5>' + full.paquete +'</h5><br> Cuenta con ' + data + ' registro(s) de acceso';
+            return '<h5>' + (full.paquete ?? 'Sin paquete') + '</h5><br> Cuenta con ' + full
+              .numero_usuarios_portal + ' registro(s) de acceso';
           }
         }
       },
@@ -666,50 +667,47 @@ function uploadFile(event, idPortal) {
 }
 // funcion  para    activar  y desactivar modulos  a los portales
 function handleModuloClick(accion, id) {
-    // Realizar la solicitud AJAX
-    $.ajax({
-        url: '<?php echo base_url('Cat_Portales/editModulos'); ?>',
-        type: 'POST',
-        data: {
-            accion: accion,
-            id: id
-        },
-        success: function(response) {
-            var data = JSON.parse(response);
-            console.log("🚀 ~ handleModuloClick ~ data:", data.codigo )
+  // Realizar la solicitud AJAX
+  $.ajax({
+    url: '<?php echo base_url('Cat_Portales/editModulos'); ?>',
+    type: 'POST',
+    data: {
+      accion: accion,
+      id: id
+    },
+    success: function(response) {
+      var data = JSON.parse(response);
+      //console.log("🚀 ~ handleModuloClick ~ data:", data.codigo)
 
-            if (data.mensaje.codigo == 1) {
-              recargarTable();
+      if (data.mensaje.codigo == 1) {
+        recargarTable();
 
-                // Mostrar el mensaje recibido desde el controlador
-                Swal.fire({
-                    title: 'Succes',
-                    text: data.mensaje.msg, // Asegúrate de que tu controlador devuelva un mensaje
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-            } else {
-                // Manejar el caso cuando la actualización no fue exitosa
-                Swal.fire({
-                    title: 'Advertencia',
-                    text: data.msj || 'No se pudo realizar la acción.',
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                });
-            }
-        },
-        error: function(xhr, status, error) {
-            // Mostrar un mensaje de error
-            Swal.fire({
-                title: 'Error',
-                text: 'Ocurrió un error. Intenta nuevamente.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    });
+        // Mostrar el mensaje recibido desde el controlador
+        Swal.fire({
+          title: 'Succes',
+          text: data.mensaje.msg, // Asegúrate de que tu controlador devuelva un mensaje
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        // Manejar el caso cuando la actualización no fue exitosa
+        Swal.fire({
+          title: 'Advertencia',
+          text: data.msj || 'No se pudo realizar la acción.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+      }
+    },
+    error: function(xhr, status, error) {
+      // Mostrar un mensaje de error
+      Swal.fire({
+        title: 'Error',
+        text: 'Ocurrió un error. Intenta nuevamente.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
+  });
 }
-
-
-
 </script>

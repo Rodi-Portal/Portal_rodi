@@ -32,7 +32,7 @@
         <h5 class="text-center" id="titulo_paso"></h5>
         <form id="formPaso1">
           <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-7">
 
               <label for="nombre">Nombre del Portal *</label>
               <input type="text" class="form-control" data-field="Nombre de la Sucursal" data-required="required"
@@ -40,10 +40,28 @@
                 onkeyup="this.value=this.value.toUpperCase()" required>
               <br>
             </div>
-            <div class="col-md-3">
-              <label for="accesos">Accesos *</label>
-              <input type="number" class="form-control" data-field="Numero de accesos" data-required="required"
-                id="accesos" name="accesos" value=5>
+            <div class="col-md-5">
+
+              <label for="paquete">Selecciona un paquete:</label>
+              <select name="paquete" id="paquete" class="form-control">
+                <option value="1">
+                  TalentSafe Light - $80 USD/mes (1 usuario) - Usuario extra: $50 USD
+                </option>
+                <option value="2">
+                  TalentSafe Standard - $130 USD/mes (5 usuarios) - Usuario extra: $50 USD
+                </option>
+                <option value="3">
+                  TalentSafe Plus - $250 USD/mes (5 usuarios) - Usuario extra: $50 USD
+                </option>
+                <option value="4">
+                  TalentSafe Platinum - $1000 USD/mes (20 usuarios) - Usuario extra: $50 USD
+                </option>
+                <option value="5">
+                  TalentSafe from Crol - $0 USD/mes (1 usuario) - Acceso limitado
+                </option>
+              </select>
+
+
               <br>
             </div>
           </div>
@@ -221,7 +239,7 @@
 
       </div>
       <div class="modal-footer custom_modal_footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 
         <button type="button" class="btn btn-primary btn-icon-split" id="btnRegresar">
           <span class="icon text-white-50">
@@ -251,33 +269,42 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-
       <div class="modal-body">
         <div>
-
         </div>
         <div class="alert alert-info">Este formulario está diseñado para editar la información general del portal.
         </div>
-
         <h5 class="text-center" id="titulo_paso"></h5>
         <form id="formEditar">
           <div class="row">
-            <div class="col-md-9">
-
+            <div class="col-md-7">
               <label for="nombre">Nombre del Portal *</label>
               <input type="text" class="form-control" data-field="Nombre del Sucursal" data-required="required"
                 id="nombrePortal_edit" name="nombrePortal_edit" placeholder="Ingrese el nombre de la Sucursal"
                 onkeyup="this.value=this.value.toUpperCase()" required>
-
             </div>
-            <div class="col-md-3">
-              <label for="accesos">Accesos *</label>
-              <input type="number" class="form-control" data-field="Numero de accesos" data-required="required"
-                id="accesosEdit" name="accesosEdit">
-
+            <div class="col-md-5">
+              <label for="paquete_edit">Selecciona un paquete:</label>
+              <select name="paquete_edit" id="paquete_edit" class="form-control">
+                <option value="1">
+                  TalentSafe Light - $80 USD/mes (1 usuario) - Usuario extra: $50 USD
+                </option>
+                <option value="2">
+                  TalentSafe Standard - $130 USD/mes (5 usuarios) - Usuario extra: $50 USD
+                </option>
+                <option value="3">
+                  TalentSafe Plus - $250 USD/mes (5 usuarios) - Usuario extra: $50 USD
+                </option>
+                <option value="4">
+                  TalentSafe Platinum - $1000 USD/mes (20 usuarios) - Usuario extra: $50 USD
+                </option>
+                <option value="5">
+                  TalentSafe from Crol - $0 USD/mes (1 usuario) - Acceso limitado
+                </option>
+              </select>
+              <br>
             </div>
           </div>
-
           <div class="row">
             <div class="col-md-4">
               <input type="hidden" class="form-control" id="idPortalE" name="idPortalE">
@@ -340,8 +367,8 @@
             <div class="col-md-12">
               <br>
               <label for="uso_cfdi">Uso de CFDI</label>
-              <input type="text" class="form-control" id="uso_cfdi_edit" name="uso_cfdi_edit" placeholder="Ingrese el uso de CFDI"
-                value="Gastos Generales" onkeyup="capitalizeFirstLetter(event)">
+              <input type="text" class="form-control" id="uso_cfdi_edit" name="uso_cfdi_edit"
+                placeholder="Ingrese el uso de CFDI" value="Gastos Generales" onkeyup="capitalizeFirstLetter(event)">
               <br>
             </div>
           </div>
@@ -377,8 +404,8 @@
             </div>
             <div class="col-md-6">
               <label for="colonia">Colonia</label>
-              <input type="text" class="form-control" id="colonia_edit" name="colonia_edit" placeholder="Ingrese la colonia"
-                onkeyup="capitalizeFirstLetter(event)">
+              <input type="text" class="form-control" id="colonia_edit" name="colonia_edit"
+                placeholder="Ingrese la colonia" onkeyup="capitalizeFirstLetter(event)">
               <br>
             </div>
           </div>
@@ -405,7 +432,8 @@
             </div>
             <div class="col-md-3 mx-auto">
               <label for="cp">Codigo Postal</label>
-              <input type="number" class="form-control" id="numero_cp_edit" name="numero_cp_edit" placeholder="Ingrese el codigo postal">
+              <input type="number" class="form-control" id="numero_cp_edit" name="numero_cp_edit"
+                placeholder="Ingrese el codigo postal">
               <br>
             </div>
           </div>
@@ -414,7 +442,7 @@
 
       </div>
       <div class="modal-footer custom_modal_footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 
         <button type="button" class="btn btn-success btn-icon-split ml-auto" id="btnActualizar">
           <span class="text">Actualizar</span>
@@ -567,7 +595,7 @@
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
       <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-success" onclick="crearAccesoClientes()">Guardar</button>
       </div>
     </div>
@@ -601,12 +629,12 @@ $(document).ready(function() {
   let pag = 1; // Variable para controlar el paso actual del formulario
 
   // Manejo de eventos para ocultar el modal
-  $('#newPortal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+  $('#newPortal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
     $(this).find('.modal-title').text('Nuevo Portal');
     resetModal();
   });
 
-  $('#editPortal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+  $('#editPortal').off('hidden.bs.modal').on('hidden.bs.modal', function() {
     $(this).find('.modal-title').text('Editar Portal');
   });
 
@@ -649,9 +677,12 @@ $(document).ready(function() {
 
     if (todoCorrecto) {
       if (pag === 1) {
-        transitionForm('formPaso1', 'formPaso2', 'Informacíon de Contacto', 'Continuar', ['#btnRegresar', '#paso2'], 'barra_espaciadora_on', 'barra_espaciadora_off');
+        transitionForm('formPaso1', 'formPaso2', 'Informacíon de Contacto', 'Continuar', ['#btnRegresar',
+          '#paso2'
+        ], 'barra_espaciadora_on', 'barra_espaciadora_off');
       } else if (pag === 2) {
-        transitionForm('formPaso2', 'formPaso3', 'Domicilio', 'Finalizar', ['#paso3'], 'barra_espaciadora_on', 'barra_espaciadora_off');
+        transitionForm('formPaso2', 'formPaso3', 'Domicilio', 'Finalizar', ['#paso3'], 'barra_espaciadora_on',
+          'barra_espaciadora_off');
       } else if (pag === 3) {
         submitForm();
       }
@@ -664,14 +695,16 @@ $(document).ready(function() {
   // Manejo de evento para el botón "Regresar"
   $('#newPortal #btnRegresar').off('click').on('click', function() {
     if (pag === 2) {
-      transitionForm('formPaso2', 'formPaso1', 'Informacíon Cliente', 'Continuar', [], 'barra_espaciadora_off', 'barra_espaciadora_on');
+      transitionForm('formPaso2', 'formPaso1', 'Informacíon Cliente', 'Continuar', [], 'barra_espaciadora_off',
+        'barra_espaciadora_on');
     } else if (pag === 3) {
-      transitionForm('formPaso3', 'formPaso2', 'Informacíon de Contacto', 'Continuar', [], 'barra_espaciadora_off', 'barra_espaciadora_on');
+      transitionForm('formPaso3', 'formPaso2', 'Informacíon de Contacto', 'Continuar', [],
+        'barra_espaciadora_off', 'barra_espaciadora_on');
     }
     if (pag > 1) pag--;
   });
 
-  function transitionForm(fromId, toId, title, continueText, enabledButtons,        removeClass, addClass) {
+  function transitionForm(fromId, toId, title, continueText, enabledButtons, removeClass, addClass) {
     document.getElementById(fromId).className = "animate__animated animate__fadeOut";
     setTimeout(function() {
       document.getElementById(fromId).className = "hidden";
@@ -816,12 +849,11 @@ function generarPassword() {
     }
   });
 }
+
 function capitalizeFirstLetter(event) {
   const input = event.target;
   const value = input.value;
   // Solo capitaliza la primera letra y pone el resto en minúsculas
   input.value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
-
-
 </script>

@@ -17,7 +17,7 @@ class Usuario_model extends CI_Model
             ->where('u.status', 1)
             ->where('u.eliminado', 0);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -27,7 +27,7 @@ class Usuario_model extends CI_Model
             ->select('password')
             ->from('datos_generales')
             ->where('correo', $correo);
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
 
         if ($resultado) {
@@ -76,7 +76,7 @@ class Usuario_model extends CI_Model
 
             ->where('D.correo', $correo);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
 
         if ($resultado) {
@@ -113,7 +113,7 @@ class Usuario_model extends CI_Model
             ->where('U.status', 1)
             ->where('U.eliminado', 0);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
 
         if ($resultado) {
@@ -121,93 +121,6 @@ class Usuario_model extends CI_Model
         } else {
             return false; // Devolver falso si el usuario no se encuentra en la base de datos
         }
-    }
-
-    public function existeUsuarioSandbox($correo)
-    {
-        $this->db
-            ->select('*')
-            ->from('usuarios_sandbox')
-            ->where('correo', $correo);
-
-        $consulta = $this->db->get();
-        $resultado = $consulta->row();
-
-        if ($resultado) {
-            return 1; // Devolver los datos del usuario si existe
-        } else {
-            return 0; // Devolver falso si el usuario no se encuentra en la base de datos
-        }
-    }
-    public function existeUsuarioSandbox1($correo)
-    {
-        $this->db
-            ->select('*')
-            ->from('usuarios_sandbox')
-            ->where('correo', $correo);
-
-        $consulta = $this->db->get();
-        $resultado = $consulta->row();
-
-        if ($resultado) {
-            return $resultado; // Devolver los datos del usuario si existe
-        } else {
-            return []; // Devolver falso si el usuario no se encuentra en la base de datos
-        }
-    }
-
-    public function registroUsuarioSandbox($datos)
-    {
-        // Insertar los datos en la tabla usuarios_sandbox
-        $this->db->insert('usuarios_sandbox', $datos);
-    
-        // Obtener el ID del último registro insertado
-        $insert_id = $this->db->insert_id();
-    
-        // Verificar si se realizó la inserción correctamente
-        if ($insert_id) {
-            // Consultar el registro recién insertado
-           
-                return $insert_id; // Devolver el registro completo como un objeto
-        
-        }
-    
-        // Retornar 0 si no se realizó la inserción
-        return 0;
-    }
-
-    public function existeUsuarioSanbox($correo)
-    {
-        $this->db
-            ->select('U.*')
-            ->from('usuarios_sandbox as U')
-            ->where('U.correo', $correo);
-        
-
-        $consulta = $this->db->get();
-        $resultado = $consulta->row();
-
-        if ($resultado) {
-            return $resultado; // Devolver los datos del usuario si existe
-        } else {
-            return false; // Devolver falso si el usuario no se encuentra en la base de datos
-        }
-    }
-    public function incrementarVisita($id, $data)
-    {
-        // Asegúrate de que $data es un array y $id es un entero válido
-
-        // Actualizar la fila con el ID especificado
-        $this->db->where('id', $id);
-        $this->db->update('usuarios_sandbox', $data);
-
-        // Verificar si la actualización fue exitosa
-        if ($this->db->affected_rows() > 0) {
-            return true;
-        } else {
-            return false;
-        }
-
     }
 //TODO: pendiente  de revisar  esta  consulta   ya  que
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
@@ -215,30 +128,30 @@ class Usuario_model extends CI_Model
     {
         $this->db
             ->select('UCL.id,
-             CL.id as  id_cliente, 
+             CL.id as  id_cliente,
              DG.correo,
              DG.nombre,
              DG.paterno,
              DG.id as idDatos,
-             DG.verificacion, 
-             DG.password,  
-             UCL.id_cliente, 
-             UCL.espectador, 
+             DG.verificacion,
+             DG.password,
+             UCL.id_cliente,
+             UCL.espectador,
              CL.nombre as cliente,
-             UCL.logueado as loginBD, 
-             UCL.privacidad, 
-             CL.ingles, 
+             UCL.logueado as loginBD,
+             UCL.privacidad,
+             CL.ingles,
              CL.id_portal,
              P.bloqueado')
             ->from('usuarios_clientes as UCL')
             ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
             ->join('cliente  as CL', ' CL.id = UCL. id_cliente')
-            ->join('portal AS P', 'P.id = CL.id_portal' )
+            ->join('portal AS P', 'P.id = CL.id_portal')
             ->where('DG.correo', $correo)
             ->where('CL.status', 1)
             ->where('CL.eliminado', 0);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -254,20 +167,34 @@ class Usuario_model extends CI_Model
             ->where('u.status', 1)
             ->where('u.eliminado', 0);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
-    public function getPermisos($id)
+    public function getPermisos()
     {
-        $id_portal = $this->session->userdata('idPortal');
+        $id_portal  = $this->session->userdata('idPortal');
         $id_usuario = $this->session->userdata('id');
+
         $this->db
-            ->select('C.id As id_cliente, C.nombre as nombreCliente, C.icono, C.url, C.creacion, D.telefono, D.correo, D.correo')
-            ->from('cliente as C')
-            ->join('datos_generales AS D','D.id = C.id_datos_generales', 'left')
-            ->join('usuario_permiso AS UP','C.id = UP.id_cliente')
-            ->where('UP.id_usuario', $id_usuario )
+            ->select('
+            C.id AS id_cliente,
+            C.nombre AS nombreCliente,
+            C.icono,
+            C.url,
+            C.creacion,
+            D.telefono,
+            D.correo,
+            CONCAT_WS(" ", DG.nombre," ", DG.paterno) AS nombre_usuario,
+            R.nombre AS rol_usuario 
+        ')
+            ->from('cliente AS C')
+            ->join('datos_generales AS D', 'D.id = C.id_datos_generales', 'left')
+            ->join('usuario_permiso AS UP', 'C.id = UP.id_cliente')
+            ->join('usuarios_portal AS UPo', 'UPo.id = UP.id_usuario')
+            ->join('datos_generales AS DG', 'DG.id = UPo.id_datos_generales', 'left') // datos del usuario
+            ->join('rol AS R', 'R.id = UPo.id_rol', 'left')
+            ->where('UP.id_usuario', $id_usuario)
             ->where('C.id_portal', $id_portal)
             ->order_by('C.nombre', 'ASC');
 
@@ -278,6 +205,7 @@ class Usuario_model extends CI_Model
             return false;
         }
     }
+
     public function getPermisosSubclientes($id)
     {
         $this->db
@@ -327,7 +255,7 @@ class Usuario_model extends CI_Model
             ->from('usuario as u')
             ->where('u.id', $id_usuario);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -338,7 +266,7 @@ class Usuario_model extends CI_Model
             ->from('usuario as u')
             ->where('u.id', $id_usuario);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -349,7 +277,7 @@ class Usuario_model extends CI_Model
             ->from('usuario_cliente as u')
             ->where('u.id', $id_usuario);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -360,7 +288,7 @@ class Usuario_model extends CI_Model
             ->from('usuario_subcliente as u')
             ->where('u.id', $id_usuario);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -475,7 +403,7 @@ class Usuario_model extends CI_Model
             ->from('usuarios_portal')
             ->where('id', $id_usuario);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -490,7 +418,7 @@ class Usuario_model extends CI_Model
             ->where('u.id', $id)
             ->where('u.password', $pass);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -504,7 +432,7 @@ class Usuario_model extends CI_Model
             ->where('u.id', $id)
             ->where('u.password', $pass);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -516,7 +444,7 @@ class Usuario_model extends CI_Model
             ->where('u.id', $id)
             ->where('u.password', $pass);
 
-        $consulta = $this->db->get();
+        $consulta  = $this->db->get();
         $resultado = $consulta->row();
         return $resultado;
     }
@@ -582,4 +510,6 @@ class Usuario_model extends CI_Model
             return false;
         }
     }
+
+   
 }

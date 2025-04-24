@@ -31,9 +31,9 @@ class Cat_Portales extends CI_Controller
         $this->form_validation->set_rules('nombrePortal', 'Nombre del Portal', 'required');
 
         // Define las demás reglas de validación
-        $this->form_validation->set_rules('accesos', 'Accesos', 'trim|required|max_length[3]');
         $this->form_validation->set_rules('correo', 'Correo', 'trim|required|valid_email');
         $this->form_validation->set_rules('password', 'Contraseña', 'trim|required');
+        $this->form_validation->set_rules('paquete', 'Paquete', 'trim|required');
         $this->form_validation->set_rules('pais_name', 'País', 'trim');
         $this->form_validation->set_rules('state_name', 'Estado', 'trim');
         $this->form_validation->set_rules('ciudad_name', 'Ciudad', 'trim');
@@ -105,6 +105,7 @@ class Cat_Portales extends CI_Controller
                 'creacion' => $date,
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
+                'id_paquete' => $this->input->post('paquete'),
                 'nombre' => strtoupper($this->input->post('nombrePortal')),
                 'id_usuario_portal' => null,
                 'id_domicilios' => null,
@@ -185,8 +186,8 @@ class Cat_Portales extends CI_Controller
 
         // Define la regla de validación con los parámetros como un arreglo
         $this->form_validation->set_rules('nombrePortal_edit', 'Nombre del Portal', 'required');
-        $this->form_validation->set_rules('accesosEdit', 'Número de accesos', 'required');
         $this->form_validation->set_rules('idPortalE', 'Identificador  del Portal', 'required');
+        $this->form_validation->set_rules('paquete_edit', 'Paquete no seleccionado', 'required');
         // Define las demás reglas de validación
 
         $this->form_validation->set_rules('pais_edit', 'País', 'trim');
@@ -254,6 +255,7 @@ class Cat_Portales extends CI_Controller
             $datos_portal = array(
                 'edicion' => $date,
                 'id_usuario' => $id_usuario,
+                'id_paquete' => $this->input->post('paquete_edit'),
                 'nombre' => strtoupper($this->input->post('nombrePortal_edit')),
                 'id_usuario_portal' => $this->input->post('idUsuarioPortalE'),
                 'id_domicilios' => $this->input->post('idDomiciliosE'),

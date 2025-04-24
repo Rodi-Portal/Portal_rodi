@@ -1,6 +1,6 @@
 
 <div class="container-fluid">
-<h2>Módulo de Empleados</h2>
+<h2>Módulo de Exmpleados</h2>
   <p>En este módulo podrás consultar los empleados que ya no están activos. Se muestra un listado de tus areas, departamentos o  sucursales, al seleccionar uno, podrás ver el listado de exempleados. Desde ahí podrás gestionar sus registros de manera clara, ágil y eficiente.</p>
 
   <table id="processTable" class="display" style="width: 100%;">

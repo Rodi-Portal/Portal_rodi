@@ -184,7 +184,7 @@ echo $token  */?>
       <!-- Divider -->
       <hr class="sidebar-divider">
       <li class="nav-item">
-        <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
+        <a id="former-employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="nav-link ">
           <i class="fas fa-user-times"></i>
           <span>Empleados</span>
         </a>
