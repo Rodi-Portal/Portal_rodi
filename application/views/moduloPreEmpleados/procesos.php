@@ -99,4 +99,57 @@ $(document).ready(function() {
     $('#sidebar').toggleClass('hidden'); // Alternar la clase 'hidden'
   });
 });
+$(document).on('click', '.eliminar-permiso', function(e) {
+  e.preventDefault();
+
+  var id_usuario = $(this).data('id_usuario');
+  var id_cliente = $(this).data('id_cliente');
+
+  // Mostrar confirmación usando SweetAlert
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Enviar solicitud de eliminación al servidor
+      $.ajax({
+        url: '<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>',
+        method: 'POST',
+        data: {
+          id_usuario: id_usuario,
+          id_cliente: id_cliente
+        },
+        success: function(response) {
+          var data = JSON.parse(response);
+          if (data.status === 'success') {
+            Swal.fire(
+              'Eliminado',
+              'El permiso ha sido eliminado exitosamente.',
+              'success'
+            );
+            location.reload(); // Recargar la página para actualizar los datos
+          } else {
+            Swal.fire(
+              'Error',
+              data.message,
+              'error'
+            );
+          }
+        },
+        error: function() {
+          Swal.fire(
+            'Error',
+            'Ocurrió un error al intentar eliminar el permiso.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+});
 </script>
