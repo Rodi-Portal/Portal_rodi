@@ -5,23 +5,23 @@
       <h2>Administradores del Sistema</h2>
     </div>
     <?php $idRol = $this->session->userdata('idrol'); ?>
-<?php if ($idRol == 1 || $idRol == 6): ?>
-  <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
-    <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
-      <span class="icon text-white-50">
-        <i class="fas fa-user-tie"></i>
-      </span>
-      <span class="text">Crear Usuario</span>
-    </a>
-    <p> </p>
-    <a href="#" class="btn btn-primary btn-icon-split" onclick="AsignarSucursalUsuarioInterno()">
-      <span class="icon text-white-50">
-        <i class="fas fa-user-tie"></i>
-      </span>
-      <span class="text">Asignar Usuario</span>
-    </a>
-  </div>
-<?php endif; ?>
+    <?php if ($idRol == 1 || $idRol == 6): ?>
+    <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
+      <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
+        <span class="icon text-white-50">
+          <i class="fas fa-user-tie"></i>
+        </span>
+        <span class="text">Crear Usuario</span>
+      </a>
+      <p> </p>
+      <a href="#" class="btn btn-primary btn-icon-split" onclick="AsignarSucursalUsuarioInterno()">
+        <span class="icon text-white-50">
+          <i class="fas fa-user-tie"></i>
+        </span>
+        <span class="text">Asignar Usuario</span>
+      </a>
+    </div>
+    <?php endif; ?>
 
   </div>
   <div>
@@ -143,11 +143,11 @@
 
 
 <script>
-var idRol = Number('<?php echo (int)$this->session->userdata('idrol'); ?>');
+var idRol = Number('<?php echo (int) $this->session->userdata('idrol'); ?>');
 console.log("🚀 ~ idRol:", idRol)
 var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
 let rolesVisibles = [1, 6];
-let mostrarColumna = rolesVisibles.includes(idRol); 
+let mostrarColumna = rolesVisibles.includes(idRol);
 $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
@@ -161,7 +161,7 @@ $(document).ready(function() {
     "serverSide": false,
     "ajax": url,
     "columns": [{
-      
+
         title: 'id',
         data: 'id',
         visible: false
@@ -274,7 +274,7 @@ $(document).ready(function() {
             full.correo + '" data-id="' + full.id_datos_generales +
             '"><i class="fas fa-sync-alt" style="font-size: 16px;"></i></a> ';
 
-          if (full.id_rol == 1 || full.id_rol == 6 ) {
+          if (full.id_rol == 1 || full.id_rol == 6) {
             return editar + credenciales;
           } else {
             return editar + accion + eliminar + credenciales;
@@ -419,41 +419,76 @@ function enviarCredenciales(valor1, valor2) {
 /*********************************************************************************/
 /*--------------LLAMADO DEL BOTON REGISTRO USUARIO INTERNOS----------------------------*/
 function BotonRegistroUsuarioInterno() {
-  // Mostrar el botón de Generar contraseña al agregar un nuevo usuario
-  $("#divGenerarPassword").css('display', 'block');
-  $("#ocultar-en-editar").css('display', 'block');
-  $("#labelOcultar").css('display', 'block');
-
   $.ajax({
-    url: '<?php echo base_url('Cat_UsuarioInternos/getActivos'); ?>',
+    url: '<?php echo base_url('Cat_UsuarioInternos/verificarLimiteUsuarios'); ?>',
     type: 'post',
+    dataType: 'json',
     beforeSend: function() {
       $('.loader').css("display", "block");
     },
     success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
+      $('.loader').fadeOut();
 
-      $("#btnGuardar").text("Guardar");
-      $("#btnGuardar").off("click").on("click", function() {
-        registroUsuariosInternos(); // Llama a la función con el ID del usuario
-      });
-      $('#formAccesoUsuariosinternos')[0].reset();
-      $('#nuevoAccesoUsuariosInternos').modal('show');
-
-      // Mover el foco al primer campo del formulario para mejorar la accesibilidad
-      $("#nombre").focus();
+      if (res.supera_limite) {
+        Swal.fire({
+          title: 'Límite de usuarios alcanzado',
+          html: 'Los usuarios disponibles para tu suscripción ya están completos.<br>¿Deseas agregar uno más por un costo mensual adicional de <b>$50 USD</b>?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, aceptar costo extra',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Segunda confirmación
+            Swal.fire({
+              title: 'Confirmación final',
+              html: 'Estás a punto de generar un cobro adicional que se reflejará en tu próxima factura.<br><b>¿Deseas continuar?</b>',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Sí, continuar',
+              cancelButtonText: 'Volver'
+            }).then((secondResult) => {
+              if (secondResult.isConfirmed) {
+                mostrarModalRegistroUsuario();
+              }
+            });
+          }
+        });
+      } else {
+        mostrarModalRegistroUsuario();
+      }
+    },
+    error: function() {
+      $('.loader').fadeOut();
+      Swal.fire('Error', 'No se pudo verificar el límite de usuarios.', 'error');
     }
   });
 }
 
+
+function mostrarModalRegistroUsuario() {
+  // Mostrar los elementos del formulario
+  $("#divGenerarPassword").css('display', 'block');
+  $("#ocultar-en-editar").css('display', 'block');
+  $("#labelOcultar").css('display', 'block');
+
+  $("#btnGuardar").text("Guardar");
+  $("#btnGuardar").off("click").on("click", function() {
+    registroUsuariosInternos();
+  });
+
+  $('#formAccesoUsuariosinternos')[0].reset();
+  $('#nuevoAccesoUsuariosInternos').modal('show');
+  $("#nombre").focus();
+}
+
+
 // Cerrar modal y liberar foco
-$('#nuevoAccesoUsuariosInternos').on('hidden.bs.modal', function () {
+$('#nuevoAccesoUsuariosInternos').on('hidden.bs.modal', function() {
   document.activeElement.blur();
 });
 
-  // Función de registro de usuario
+// Función de registro de usuario
 function registroUsuariosInternos() {
   let datos = $('#formAccesoUsuariosinternos').serialize();
   $.ajax({
@@ -462,12 +497,12 @@ function registroUsuariosInternos() {
     data: datos,
     beforeSend: function() {
       $('.loader').css("display", "block");
-      $("#btnGuardar").prop("disabled", true);  // Desactivar el botón durante la solicitud
+      $("#btnGuardar").prop("disabled", true); // Desactivar el botón durante la solicitud
     },
     success: function(res) {
       setTimeout(function() {
         $('.loader').fadeOut();
-        $("#btnGuardar").prop("disabled", false);  // Rehabilitar el botón después de la respuesta
+        $("#btnGuardar").prop("disabled", false); // Rehabilitar el botón después de la respuesta
       }, 200);
       var data = JSON.parse(res);
 
@@ -482,7 +517,7 @@ function registroUsuariosInternos() {
           timer: 2500
         });
 
-        $('#formAccesoUsuariosinternos')[0].reset();  // Limpia el formulario
+        $('#formAccesoUsuariosinternos')[0].reset(); // Limpia el formulario
       } else {
         $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'block').html(data.msg);
       }
@@ -497,7 +532,7 @@ let sucursalesSeleccionadas = [];
 
 function AsignarSucursalUsuarioInterno() {
   $.ajax({
-    url: '<?php echo base_url("Cat_UsuarioInternos/getUsuarios");?>',
+    url: '<?php echo base_url("Cat_UsuarioInternos/getUsuarios"); ?>',
     type: 'POST',
     dataType: 'json',
     beforeSend: function() {
@@ -514,7 +549,7 @@ function AsignarSucursalUsuarioInterno() {
 
       // Cargar sucursales
       $.ajax({
-        url: '<?php echo base_url("Cat_UsuarioInternos/getSucursales");?>',
+        url: '<?php echo base_url("Cat_UsuarioInternos/getSucursales"); ?>',
         type: 'POST',
         dataType: 'json',
         success: function(res) {
@@ -636,7 +671,7 @@ $("#btnGuardarSucursal").on("click", function() {
   let idsUsuarios = usuariosSeleccionados.map(u => u.id);
   let idsSucursales = sucursalesSeleccionadas.map(s => s.id);
   $.ajax({
-    url: '<?php echo base_url("Cat_UsuarioInternos/asignarSucursal");?>',
+    url: '<?php echo base_url("Cat_UsuarioInternos/asignarSucursal"); ?>',
     type: 'POST',
     data: {
       usuarios: idsUsuarios,

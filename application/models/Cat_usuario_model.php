@@ -346,5 +346,43 @@ class Cat_usuario_model extends CI_Model
         return $this->db->trans_status();
     }
 
+    public function verificarLimiteUsuariosPortal($id_portal) {
+        // Obtener el id_paquete del portal
+        $this->db->select('id_paquete');
+        $this->db->from('portal');
+        $this->db->where('id', $id_portal);
+        $queryPortal = $this->db->get();
+    
+        if ($queryPortal->num_rows() == 0) {
+            return ['error' => true, 'mensaje' => 'Portal no encontrado'];
+        }
+    
+        $id_paquete = $queryPortal->row()->id_paquete;
+    
+        // Obtener el límite de usuarios del paquete
+        $this->db->select('usuarios');
+        $this->db->from('paquetestalentsafe');
+        $this->db->where('id', $id_paquete);
+        $queryPaquete = $this->db->get();
+    
+        if ($queryPaquete->num_rows() == 0) {
+            return ['error' => true, 'mensaje' => 'Paquete no encontrado'];
+        }
+    
+        $limite = (int) $queryPaquete->row()->usuarios;
+    
+        // Contar usuarios activos del portal
+        $this->db->from('usuarios_portal');
+        $this->db->where('id_portal', $id_portal);
+        $this->db->where('status', 1); // Asumimos que status 1 es activo
+        $total_activos = $this->db->count_all_results();
+    
+        return [
+            'error' => false,
+            'supera_limite' => $total_activos >= $limite
+        ];
+    }
+    
+
 
 }

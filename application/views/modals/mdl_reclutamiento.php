@@ -1,11 +1,11 @@
 <?php
     header('Content-Type: text/html; charset=utf-8');
-   $idRol = $this->session->userdata('idrol');
-    $logo          = $this->session->userdata('logo');
-    $aviso_actual  = $this->session->userdata('aviso');
+    $idRol        = $this->session->userdata('idrol');
+    $logo         = $this->session->userdata('logo');
+    $aviso_actual = $this->session->userdata('aviso');
     $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
 ?>
-   
+
 
 
 <div class="modal fade" id="nuevoAspiranteModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -796,7 +796,8 @@
 </div>
 <!-- Modal -->
 <!-- Modal -->
-<div class="modal fade" id="modalGenerarLink" tabindex="-1" role="dialog" aria-labelledby="modalGenerarLabel" aria-hidden="true">
+<div class="modal fade" id="modalGenerarLink" tabindex="-1" role="dialog" aria-labelledby="modalGenerarLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
 
@@ -811,15 +812,17 @@
         <!-- Logo actual -->
         <div class="mb-3 text-center">
           <label><strong>Logo Actual:</strong></label><br>
-          <img id="logoActual" src="<?= base_url('assets/img/logo-default.png') ?>" alt="Logo" style="max-height: 80px;">
+          <img id="logoActual" src="<?php echo base_url('_logosPortal/' . $this->session->userdata('logo'))?>"
+            alt="Logo" style="max-height: 80px;"
+            onerror="this.onerror=null; this.src='<?php echo base_url('_logosPortal/portal_icon.png')?>';">
         </div>
 
         <!-- Aviso actual -->
         <div class="mb-3 text-center">
           <label><strong>Aviso de Privacidad:</strong></label><br>
 
-          <a id="linkAviso"  href="<?php echo base_url('Avance/ver_aviso/'.$archivo ); ?>" target="_blank">
-          Ver documento</a>
+          <a id="linkAviso" href="<?php echo base_url('Avance/ver_aviso/' . $archivo); ?>" target="_blank">
+            Ver documento</a>
         </div>
 
         <!-- Link generado -->

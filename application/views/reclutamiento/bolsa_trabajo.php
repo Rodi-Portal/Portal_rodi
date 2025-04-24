@@ -1155,9 +1155,7 @@
       type: 'POST',
       dataType: 'json',
       success: function(response) {
-        // Mostrar logo
-        const logoSrc = "<?php echo base_url('_logosPortal/'.$this->session->userdata('logo')); ?>";
-        $('#logoActual').attr('src', logoSrc);
+        
 
         // Mostrar aviso
         const avisoHref = response.aviso ?
