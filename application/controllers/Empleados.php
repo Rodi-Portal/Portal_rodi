@@ -23,11 +23,8 @@ public function index()
     // Obtiene los submenús y otros datos necesarios
     $data['submenus'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
     $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-    $data['permisos'] =  $this->usuario_model->getPermisos();
-  /* echo '<pre>'; 
-   print_r($data['permisos']);
-   echo'</pre>';
-    die(); */
+    $data['permisos'] =  $this->usuario_model->getPermisos(true);
+  
     $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
     foreach ($data['submodulos'] as $row) {
@@ -73,7 +70,7 @@ public function showEmpleados($id)
     // Obtiene los submenús y otros datos necesarios
     $data['submenus'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
     $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-    $data['permisos'] = $this->usuario_model->getPermisos();
+    $data['permisos'] = $this->usuario_model->getPermisos(true);
     $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
     foreach ($data['submodulos'] as $row) {
@@ -172,7 +169,7 @@ public function showEmpleados($id)
     // Obtiene los submenús y otros datos necesarios
     $data['submenus'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
     $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-    $data['permisos'] = $this->usuario_model->getPermisos();
+    $data['permisos'] = $this->usuario_model->getPermisos(true);
     $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
     foreach ($data['submodulos'] as $row) {
@@ -220,7 +217,7 @@ public function showExEmpleados($id)
     // Obtiene los submenús y otros datos necesarios
     $data['submenus'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
     $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-    $data['permisos'] = $this->usuario_model->getPermisos();
+    $data['permisos'] = $this->usuario_model->getPermisos(true);
     $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
     foreach ($data['submodulos'] as $row) {
