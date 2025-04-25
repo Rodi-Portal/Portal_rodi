@@ -21,10 +21,10 @@ class Cliente_General extends Custom_Controller
             $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
             if ($data['permisos']) {
                 foreach ($data['permisos'] as $p) {
-                    if ($p->id_cliente == $id_cliente) {
-                        $data['cliente'] = $p->nombreCliente;
+                    if ($p['id_cliente'] == $id_cliente) {
+                        $data['cliente'] = $p['nombreCliente'];
                     }
-                }
+                } 
             }
             $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
             foreach ($data['submodulos'] as $row) {
