@@ -315,47 +315,57 @@ class Avance extends CI_Controller
         exit;
     }
     public function guardar_aviso()
-{
-    // Obtener el identificador que quieres usar en el nombre del archivo
-    $dato = $this->session->userdata('idPortal'); // Ejemplo: 'TalentSafeControl'
-    $nombre_final = $dato . '_avisoPrivacidad.pdf';
+    {
+                                                              // Obtener el identificador que quieres usar en el nombre del archivo
+        $dato         = $this->session->userdata('idPortal'); // Ejemplo: 'TalentSafeControl'
+        $nombre_final = $dato . '_avisoPrivacidad.pdf';
 
-    $config['upload_path']   = './_avisosPortal/';
-    $config['allowed_types'] = 'pdf';
-    $config['max_size']      = 5120; // 5 MB
-    $config['file_name']     = $nombre_final;
-    $config['overwrite']     = TRUE; // Sobrescribir si ya existe
+        $config['upload_path']   = './_avisosPortal/';
+        $config['allowed_types'] = 'pdf';
+        $config['max_size']      = 5120; // 5 MB
+        $config['file_name']     = $nombre_final;
+        $config['overwrite']     = true; // Sobrescribir si ya existe
 
-    $this->load->library('upload', $config);
+        $this->load->library('upload', $config);
 
-    if (!$this->upload->do_upload('aviso')) {
-        // Error al subir
-        $error = $this->upload->display_errors();
-        // Retornar un mensaje de error con un swal.fire
-        $response = array(
-            'status' => 'error',
-            'message' => 'Error al subir el aviso: ' . $error
-        );
-        echo json_encode($response);
-    } else {
-        // Subido y renombrado
-        $this->session->set_userdata('aviso', $nombre_final);
-        
-        $data = array(
-            'aviso' => $nombre_final,  // Nombre del archivo PDF
-            'edicion' => date('Y-m-d H:i:s') // Fecha actual de creación
-        );
+        if (! $this->upload->do_upload('aviso')) {
+            // Error al subir
+            $error = $this->upload->display_errors();
+            // Retornar un mensaje de error con un swal.fire
+            $response = [
+                'status'  => 'error',
+                'message' => 'Error al subir el aviso: ' . $error,
+            ];
+            echo json_encode($response);
+        } else {
+            // Subido y renombrado
+            $this->session->set_userdata('aviso', $nombre_final);
 
-        $this->cat_portales_model->editModulos($data, $dato);
-        
-        // Retornar un mensaje de éxito con un swal.fire
-        $response = array(
-            'status' => 'success',
-            'message' => 'Aviso guardado como: ' . $nombre_final
-        );
-        echo json_encode($response);
+            $data = [
+                'aviso'   => $nombre_final,       // Nombre del archivo PDF
+                'edicion' => date('Y-m-d H:i:s'), // Fecha actual de creación
+            ];
+
+            $this->cat_portales_model->editModulos($data, $dato);
+
+            // Retornar un mensaje de éxito con un swal.fire
+            $response = [
+                'status'  => 'success',
+                'message' => 'Aviso guardado como: ' . $nombre_final,
+            ];
+            echo json_encode($response);
+        }
     }
-}
 
+    // application/controllers/Proveedores.php
+
+    public function get_proveedores()
+    {
+        // Obtener los proveedores desde el modelo
+        $proveedores = $this->avance_model->get_proveedores();
+
+        // Devolver los datos en formato JSON
+        echo json_encode($proveedores);
+    }
 
 }

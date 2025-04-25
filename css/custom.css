@@ -13,6 +13,11 @@ color: #000000 !important;
   
   margin-left: 20px;/* Sobrescribe el color de texto */
   }
+
+  .custom-header {
+    background-color: #1E88E5 !important; /* Azul diferente */
+    color: #ffffff !important;
+  }
 /*Boton Perszonalizado*/
 .icono-dorado {
   color: gold !important; /* Color dorado */
@@ -1092,7 +1097,6 @@ color: white;
 }
 
 .modal-key-card-body {
-  background-image: url('<?php echo base_url(); ?>img/portal_icon.png');
   background-size: cover; /* Hace que la imagen cubra todo el contenedor */
   background-position: center; /* Centra la imagen */
   background-repeat: no-repeat; /* Previene la repetición de la imagen */

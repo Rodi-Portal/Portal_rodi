@@ -66,6 +66,9 @@
 
 <body id="page-top">
   <!-- JavaScript -->
+  <div id="rutas" data-baseimg="<?php echo base_url('img/provedores');?>"
+    data-imgdefault="<?php echo base_url('_logosPortal/portal_icon.png');?>">
+  </div>
 
   <?php
 
@@ -257,13 +260,13 @@ echo $token  */?>
             <?php
             }?>
             <?php
-            if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
+if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
             <?php
 
-            if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
+    if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
             <?php
             }?>
@@ -363,7 +366,7 @@ echo $token  */?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -483,13 +486,13 @@ echo $token  */?>
                   </div>
 
                   <div
-                    class="alert                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
+                    class="alert                                                                                                                                                                                                                                                                                                                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
                     <?php echo $aviso_actual
                         ? 'Archivo actual:'
                     : 'No se encontró un aviso cargado. Se usará este  aviso por defecto:' ?>
 
 
-                    <a href="<?php echo base_url('Avance/ver_aviso/'.$archivo ); ?>" target="_blank">
+                    <a href="<?php echo base_url('Avance/ver_aviso/' . $archivo); ?>" target="_blank">
                       Ver aviso
                     </a>
 
@@ -505,316 +508,85 @@ echo $token  */?>
           </div>
         </div>
 
-
+        <!-- Modal -->
         <div class="modal fade" id="modalKey" tabindex="-1" role="dialog" aria-labelledby="modalKeyLabel"
           aria-hidden="true">
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content modal-key-content">
-              <div class="modal-header modal-key-header">
-                <h5 class="modal-title modal-title-modal-key-title-blanco" id="modalKeyLabel">Proveedores Destacados
-                </h5>
-                <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+            <div class="modal-header custom-header" >
+            <h5 class="modal-title" id="modalKeyLabel" style="color: #ffffff !important;">Proveedores Destacados</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body modal-key-body">
-                <p class="modal-key-intro">
-                  Estas compañías hermanas destacan por su excelencia y profesionalismo, apoyando nuestras operaciones.
-                </p>
-                <div class="row text-center">
-
-                  <!-- CROL -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.crol.mx/#portada" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-croll">
-                          CROL
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/crol.png');
-                    background-size: 150px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Recursos Contables</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Soluciones contables avanzadas.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                  <!-- GA -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.ga-solutionsgroup.com/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-ga">
-                          GA Safety
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative; ">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 50px; left: 0; right: 0; bottom: 0;
-                            background-image: url('<?php echo base_url(); ?>img/provedores/GA.png');
-                            background-size: 100px; background-position: center;
-                            opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Gestión Integral de
-                            Riesgos</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Soluciones avanzadas en seguridad laboral.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                  <!-- Rodi -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.rodi.com.mx" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          RODI
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 100px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/Rodi.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">
-                            Reclutamiento, BGV, psicometrías y antidoping.
-                          </p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Especialistas en soluciones de talento humano a nivel Latinoamérica.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-
-
-                  <!-- Asesoría Jurídica -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.ejemplo.com" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-juridica">
-                          Asesoría Jurídica
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/nadaaun.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.4; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Consultoría Jurídica
-                          </p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Orientación legal confiable.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                  <!-- Fiscalista -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="#" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-fiscalista">
-                          Fiscalista
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 80px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/nada.png');
-                    background-size: 90px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Nómina, Timbrado y
-                            Declaración de Impuestos</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Servicios fiscales de alta calidad.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                  <!-- Dr. Clinic -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://doctorclinic.com.mx/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-clinic">
-                          Dr. Clinic
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/drclinic.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.7; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Exámenes Médicos
-                            Detallados</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Cuidado médico especializado.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-
-                </div>
-                <div class="row text-center">
-                  <!-- CINCEL -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.cincel.digital/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-cincel">
-                          CINCEL
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/cincel.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Firmas Electrónicas</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Soluciones digitales innovadoras.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-
-                  <!-- Valor H -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="http://www.valorh.com.mx/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          ValorH
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/valorh.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Evaluaciones</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Fomentando un ambiente laboral positivo.
-                          Clima Laboral.
-                          Desempeño.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-                  <!-- Torreto H -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.torreto-consultores.com/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          Torreto
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="
-                              position: absolute;
-                              top: 0; left: 0; right: 0; bottom: 0;
-                              background-image: url('<?php echo base_url("img/torreto.png"); ?>');
-                              background-size: contain;
-                              background-position: center;
-                              background-repeat: no-repeat;
-                              opacity: 0.9;
-                              z-index: 1;">
-                          </div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-
-                        </div>
-                        <div class="modal-key-card-footer">
-                          <p class="modal-key-card-text" style="z-index: 2; font-size: 0.8rem;">Torreto Consultore</p>
-                          Planeación de estrategias legales corporativas, fiscales y administrativas.
-
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                </div>
-                <div class="row text-center">
-
-
-
-
-
-
-                  <!-- Sindicato-->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://stteccimm.mx/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          STTECCIM
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/stteccimm.png');
-                    background-size: 50px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="z-index: 2; font-size: 0.8rem;">🏳TU SINDICATO DE
-                            CONFIANZA🏳</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Una balanza en PRO de las necesidades del empresario y de sus colaboradores.
-
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
+              <div class="modal-body">
+                <div class="row text-center" id="proveedores-container">
+                  <!-- Los proveedores se cargarán aquí mediante AJAX -->
                 </div>
               </div>
-              <div class="modal-footer modal-key-footer">
-                <button type="button" class="btn modal-key-btn-close" data-dismiss="modal">Cerrar</button>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
               </div>
             </div>
           </div>
         </div>
 
+        <!--Modal Formulario  para  provedores Destacados -->
+        <div class="modal fade" id="modalFormulario" tabindex="-1" role="dialog" aria-labelledby="modalFormularioLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <form id="formContactoProveedor">
+              <div class="modal-header custom-header">
+              <h5 class="modal-title" id="modalFormularioLabel" style="color: #ffffff !important;">Solicitar contacto</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p id="textoProveedorSeleccionado"></p>
+                  <input type="hidden" id="proveedorId" name="proveedor_id">
 
-        <!-- RutasVue-->
-        <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
+                  <div class="form-group">
+                    <label for="nombreContacto">Nombre de contacto</label>
+                    <input type="text" class="form-control" id="nombreContacto" name="nombre_contacto" required>
+                  </div>
 
+                  <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                  </div>
 
-        <!-- End of Topbar -->
+                  <div class="form-group">
+                    <label for="correo">Correo electrónico</label>
+                    <input type="email" class="form-control" id="correo" name="correo" required>
+                  </div>
 
-        
-            
+                  <div class="form-group">
+                    <label for="descripcion">Descripción de la solicitud</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+                  </div>
 
+                  <div class="alert alert-info">
+                    Estos datos serán enviados a la empresa para que puedan ponerse en contacto contigo.
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
 
         <script>
+        const rutasEl = document.getElementById('rutas');
+        const rutaBaseImagen = rutasEl.dataset.baseimg;
+        const rutaImagenDefault = rutasEl.dataset.imgdefault;
+
+
+        // funcionalidad  para   Actualizar el logo en vista
         document.getElementById('fileLogo').addEventListener('change', function(event) {
           const file = event.target.files[0];
           if (file && file.type.startsWith('image')) {
@@ -830,6 +602,7 @@ echo $token  */?>
           }
         });
 
+        // Aviso  modulo Actividades  en construccion
         document.addEventListener("DOMContentLoaded", function() {
           document.getElementById("former-actividades-btn").addEventListener("click", function(e) {
             e.preventDefault(); // Prevenir comportamiento por defecto del enlace
@@ -895,6 +668,7 @@ echo $token  */?>
             }
           });
         });
+        // Funcionalidad cargar Aviso usando AJAX
         $('#form_aviso').submit(function(e) {
           e.preventDefault(); // Evitar el envío por defecto del formulario
 
@@ -1001,6 +775,111 @@ echo $token  */?>
           }
         });
 
+        // Funcionalidad para cargar los proveedores cuando se abre el modal
+        $('#modalKey').on('shown.bs.modal', function() {
+          $.ajax({
+            url: '<?php echo site_url('Avance/get_proveedores'); ?>',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              $('#proveedores-container').empty();
+
+              const colores = [
+                '#98FD52', '#FB8C00', '#3949AB', '#43A047', '#6D4C41', '#00897B',
+                '#8E24AA', '#5E35B1', '#1976D2', '#E53935', '#00ACC1', '#D81B60',
+                '#FCF890', '#FDD835', '#C0CA33'
+              ];
+
+              $.each(data, function(index, proveedor) {
+                const colorFondo = colores[index % colores.length];
+
+                // Reemplazo en descripcion1 con banderitas
+                let texto = proveedor.descripcion1 || "";
+                texto = texto.replace("[flag]", "🏳️ ").replace("[/flag]", " 🏳️");
+
+                const imagenUrl = proveedor.imagen && proveedor.imagen !== '' ?
+                  `${rutaBaseImagen}/${proveedor.imagen}` :
+                  `${rutaImagenDefault}`;
+
+                var proveedorCard = `
+                <div class="col-md-4 modal-key-col">
+                  <a href="#"
+                    class="btn-contactar"
+                    data-nombre="${proveedor.nombre}"
+                    data-url="${proveedor.url1}"
+                    data-id="${proveedor.id}"
+                    data-toggle="modal"
+                    data-target="#modalFormulario">
+                    
+                  
+                <div class="modal-key-card">
+                  <div class="modal-key-card-header" style="background-color: ${colorFondo}; color: #fff;">
+                    ${proveedor.nombre}
+                  </div>
+                <div class="modal-key-card-body" style="position: relative; padding: 0; margin: 0;">
+                    <div style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-image: url('${imagenUrl}');
+                        background-size: 140px;
+                        background-position: center center;
+                        background-repeat: no-repeat;
+                        opacity: 0.9;
+                        z-index: 1;">
+                    </div>
+                </div>
+                        <div class="modal-key-card-footer"><strong>${texto}</strong></div>
+                        <div class="modal-key-card-footer"><p>${proveedor.descripcion}</p></div>
+                </div>
+                </a>
+              </div>
+              `;
+
+                $('#proveedores-container').append(proveedorCard);
+              });
+            },
+            error: function(xhr, status, error) {
+              console.error("Error al cargar los proveedores: " + error);
+            }
+          });
+        });
+
+
+
+
+        // Abrir  formulario  de  contacto proveedores destacados
+        $(document).on('click', '.btn-contactar', function(e) {
+          e.preventDefault();
+
+          const nombre = $(this).data('nombre');
+          const id = $(this).data('id');
+          const url = $(this).data('url');
+
+          $('#textoProveedorSeleccionado').text(`Estás contactando a: ${nombre}`);
+          $('#proveedorId').val(id);
+        });
+
+        // enviar  formulario Proveedores destacados
+        $('#formContactoProveedor').on('submit', function(e) {
+          e.preventDefault();
+
+          $.ajax({
+            url: '<?php echo base_url('proveedores/enviar_contacto') ?>',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(res) {
+              alert('¡Solicitud enviada con éxito!');
+              $('#modalFormulario').modal('hide');
+              $('#formContactoProveedor')[0].reset();
+            },
+            error: function() {
+              alert('Ocurrió un error. Intenta más tarde.');
+            }
+          });
+        });
         // Al hacer clic en el botón
         $('#enviarNotificacionesBtn').on('click', function() {
           $.ajax({
