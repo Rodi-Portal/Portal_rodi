@@ -244,7 +244,7 @@ echo $token  */?>
 
       <!-- Catalogos -->
       <?php
-      if (in_array(5, $submenus) || ($idRol == 1 || $idRol == 6 || $idRol == 9)) {?>
+      if (in_array(5, $submenus) || ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 11 || $idRol == 4)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
@@ -254,13 +254,13 @@ echo $token  */?>
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-            if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
+            if ($idRol == 1 || $idRol == 6 || $idRol == 9 ) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
               Administradores</a>
             <?php
             }?>
             <?php
-if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
+if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 11) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
@@ -800,16 +800,16 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 const imagenUrl = proveedor.imagen && proveedor.imagen !== '' ?
                   `${rutaBaseImagen}/${proveedor.imagen}` :
                   `${rutaImagenDefault}`;
-
+// cambiar <a href="  a #  para que se muestre  el formulario modalFormulario
                 var proveedorCard = `
                 <div class="col-md-4 modal-key-col">
-                  <a href="#"
+                  <a href="${proveedor.url1}" 
                     class="btn-contactar"
                     data-nombre="${proveedor.nombre}"
                     data-url="${proveedor.url1}"
                     data-id="${proveedor.id}"
                     data-toggle="modal"
-                    data-target="#modalFormulario">
+                    data-target="#">
                     
                   
                 <div class="modal-key-card">

@@ -2,7 +2,7 @@
 
  <link rel="stylesheet" href="<?php echo base_url('public/vue/css/cssEmpleados.css'); ?>">
  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
- <?php if ($this->session->userdata('idrol') == 11 || $this->session->userdata('idrol') == 4) {?>
+ <?php if ($this->session->userdata('idrol') == 4) {?>
  <div class="seccion" id="seccion1">
    <h3 style="text-align: center; font-size: 2em; color: blue;">
      No tienes acceso a este módulo
