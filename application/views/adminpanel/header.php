@@ -99,7 +99,7 @@ echo $token  */?>
       <br><br>
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
-      <?php if ($idRol == 1 || $idRol == 6) {?>
+     
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
           aria-expanded="true" aria-controls="collapseUsuario">
@@ -142,7 +142,7 @@ echo $token  */?>
           </div>
         </div>
       </li>
-      <?php }?>
+     
       <hr class="sidebar-divider my-0">
       <!-- Menú principal -->
       <li class="nav-item active">
