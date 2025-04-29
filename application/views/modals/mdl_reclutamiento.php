@@ -78,13 +78,13 @@
             </div>
             <div class="col-sm-12 col-md-4">
               <label>Teléfono *</label>
-              <input type="text" id="telefono" name="telefono" class="form-control">
+              <input type="number" id="telefono1" name="telefono1" class="form-control">
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
               <label>Correo*</label>
-              <input type="text" id="correo" name="correo" class="form-control">
+              <input type="mail" id="correo1" name="correo1" class="form-control">
               <input type="hidden" id="idAspirante" name="idAspirante">
               <input type="hidden" id="idBolsa" name="idBolsa">
 
