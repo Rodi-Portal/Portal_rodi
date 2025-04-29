@@ -554,7 +554,7 @@ class Reclutamiento extends CI_Controller
         $this->form_validation->set_rules('domicilio', 'Localización o domicilio', 'required|trim');
         $this->form_validation->set_rules('area_interes', 'Área de interés', 'required|trim');
         $this->form_validation->set_rules('medio', 'Medio de contacto', 'required|trim');
-        $this->form_validation->set_rules('telefono', 'Teléfono', 'required|trim|max_length[16]');
+        $this->form_validation->set_rules('telefono', 'Teléfono', 'trim|max_length[16]');
         $this->form_validation->set_rules('correo', 'Correo', 'trim|valid_email');
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
