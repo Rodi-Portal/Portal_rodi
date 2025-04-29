@@ -641,7 +641,7 @@ class Reclutamiento extends CI_Controller
                         'id_bolsa_trabajo' => $id_bolsa_trabajo,
                         'id_requisicion'   => $req,
                         'correo'           => $correo,
-                        'telefono'         => $telefono,
+                        
                         'cv'               => $nombre_archivo,
                         'status'           => 'Registrado',
                     ];
