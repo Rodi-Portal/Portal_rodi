@@ -107,7 +107,7 @@ class Reclutamiento extends CI_Controller
 
             $getFilter   = $_GET['filter'];
             $filterOrder = '';
-            if ($getFilter == 'COMPLETA' || $getFilter == 'EXPRESS') {
+            if ($getFilter == 'COMPLETA' || $getFilter == 'INTERNA') {
                 $filter      = $getFilter;
                 $filterOrder = 'R.tipo';
             }
@@ -225,7 +225,7 @@ class Reclutamiento extends CI_Controller
         }
         if (isset($_GET['filter'])) {
             $getFilter = $_GET['filter'];
-            if ($getFilter == 'COMPLETA' || $getFilter == 'EXPRESS') {
+            if ($getFilter == 'COMPLETA' || $getFilter == 'INTERNA') {
                 $filter      = $getFilter;
                 $filterOrder = 'R.tipo';
             }
@@ -1431,7 +1431,7 @@ class Reclutamiento extends CI_Controller
             $req = [
                 'creacion'               => $date,
                 'edicion'                => $date,
-                'tipo'                   => 'EXPRESS',
+                'tipo'                   => 'INTERNA',
                 'id_usuario'             => $id_usuario,
                 'id_cliente'             => $id_cliente,
                 'puesto'                 => $this->input->post('puesto_req') ?? null,

@@ -73,25 +73,23 @@ class Cat_UsuarioInternos extends CI_Controller
 /************************************EDITAR USUARIO INTERNO*****************************************/
     public function editarUsuarioControlador()
     {
-        $this->form_validation->set_rules('nombre', 'Nombre', 'required|trim');
-        $this->form_validation->set_rules('paterno', 'Paterno', 'required|trim');
-        $this->form_validation->set_rules('correo', 'Correo', 'required|trim|valid_email');
-        $this->form_validation->set_rules('telefono', 'telefono', 'required|is_unique[datos_generales.telefono]');
+        $this->form_validation->set_rules('nombreaUsuarioInterno', 'Nombre', 'required|trim');
+        $this->form_validation->set_rules('paternoUsuarioInterno', 'Paterno', 'required|trim');
+        $this->form_validation->set_rules('correoUsuarioInterno', 'Correo', 'required|trim|valid_email');
+        $this->form_validation->set_rules('telefonoaUsuarioInterno', 'telefono', 'required|is_unique[datos_generales.telefono]');
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
         $id_usuario = $this->session->userdata('id');
         date_default_timezone_set('America/Mexico_City');
         $date     = date('Y-m-d H:i:s');
-        $nombre   = $this->input->post('nombre');
-        $paterno  = $this->input->post('paterno');
-        $materno  = $this->input->post('materno');
-        $id_rol   = $this->input->post('id_rol');
-        $correo   = $this->input->post('correo');
-        $telefono = $this->input->post('telefono');
-        if (! $id_rol) {
-            $id_rol = $this->session->userdata('idrol');
-        }
+        $nombre   = $this->input->post('nombreUsuarioInterno');
+        $paterno  = $this->input->post('paternoUsuarioInterno');
+        $materno  = $this->input->post('maternoUsuarioInterno');
+        $id_rol   = $this->input->post('id_rolUsuarioInterno');
+        $correo   = $this->input->post('correoUsuarioInterno');
+        $telefono = $this->input->post('telefonoUsuarioInterno');
+        
         // $uncode_password = $this->input->post('password');
         // $base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
         // $password = md5($base.$uncode_password);
@@ -104,7 +102,7 @@ class Cat_UsuarioInternos extends CI_Controller
             'id_usuario' => $id_usuario,
             'id_rol'     => $id_rol,
         ];
-        $this->session->set_userdata('idrol', $id_rol);
+        //$this->session->set_userdata('idrol', $id_rol);
         $datosGenerales = [
             'nombre'   => $nombre,
             'paterno'  => $paterno,
@@ -131,6 +129,11 @@ class Cat_UsuarioInternos extends CI_Controller
             $result = $this->cat_usuario_model->editUsuario($idUsuario, $usuariosInternos, $idDatos, $datosGenerales);
             // echo "aqui el resultado : ".$result;
             if ($result) {
+                $idUsuarioSession = $this->session->userdata('id');
+                if($idUsuarioSession == $idUsuario ){
+                $this->session->set_userdata('idrol', $id_rol);
+                }
+
                 $msj = [
                     'codigo' => 1,
                     'msg'    => 'success',
@@ -157,13 +160,13 @@ class Cat_UsuarioInternos extends CI_Controller
     //---------LIGADA A LA FUNCION DE registroUsuariosInternos DEL CATALOGO USUARIOS_INTERNOS
     public function addUsuarioInterno()
     {
-        $this->form_validation->set_rules('nombre', 'nombre', 'required');
-        $this->form_validation->set_rules('paterno', 'paterno', 'required');
-        $this->form_validation->set_rules('materno', 'materno');
-        $this->form_validation->set_rules('id_rol', 'id_rol', 'required');
-        $this->form_validation->set_rules('telefono', 'telefono', 'required|is_unique[datos_generales.telefono]');
+        $this->form_validation->set_rules('nombreUsuarioInterno', 'nombre', 'required');
+        $this->form_validation->set_rules('paternoUsuarioInterno', 'paterno', 'required');
+        $this->form_validation->set_rules('maternoUsuarioInterno', 'materno');
+        $this->form_validation->set_rules('id_rolUsuarioInterno', 'id_rol', 'required');
+        $this->form_validation->set_rules('telefonoUsuarioInterno', 'telefono', 'required|is_unique[datos_generales.telefono]');
 
-        $this->form_validation->set_rules('correo', 'Correo', 'required|valid_email|is_unique[datos_generales.correo]');
+        $this->form_validation->set_rules('correoUsuarioInterno', 'Correo', 'required|valid_email|is_unique[datos_generales.correo]');
         $this->form_validation->set_rules('password1', 'Contraseña', 'required');
 
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
@@ -182,15 +185,15 @@ class Cat_UsuarioInternos extends CI_Controller
             $id_usuario = $this->session->userdata('id');
             date_default_timezone_set('America/Mexico_City');
             $date            = date('Y-m-d H:i:s');
-            $nombre          = $this->input->post('nombre');
-            $paterno         = $this->input->post('paterno');
-            $materno         = $this->input->post('materno');
-            $id_rol          = $this->input->post('id_rol');
-            $correo          = $this->input->post('correo');
-            $telefono        = $this->input->post('telefono');
+            $nombre          = $this->input->post('nombreUsuarioInterno');
+            $paterno         = $this->input->post('paternoUsuarioInterno');
+            $materno         = $this->input->post('maternoUsuarioInterno');
+            $id_rol          = $this->input->post('id_rolUsuarioInterno');
+            $correo          = $this->input->post('correoUsuarioInterno');
+            $telefono        = $this->input->post('telefonoUsuarioInterno');
             $uncode_password = $this->input->post('password1');
             $password        = password_hash($uncode_password, PASSWORD_BCRYPT, ['cost' => 12]);
-            $idUsuario       = $this->input->post('id_usuario');
+            $idUsuario       = $this->input->post('idUsuarioInterno');
 
             $UsuariosPortal = [
                 'creacion'      => $date,

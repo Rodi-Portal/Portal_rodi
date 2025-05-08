@@ -114,7 +114,7 @@ class Cat_usuario_model extends CI_Model
             $this->db
                 ->where('id', $id)
                 ->update('usuarios_portal', $usuario);
-
+                $this->db->trans_commit();
             return "Solo usuarios actualizados";
         }
     }

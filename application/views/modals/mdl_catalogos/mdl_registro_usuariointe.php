@@ -16,21 +16,22 @@
            
             <div class="col-md-4">
               <label>Nombre *</label>
-              <input type="text" class="form-control" name="nombre" id="nombre" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control" name="nombreUsuarioInterno" id="nombreUsuarioInterno" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-md-4">
               <label>Apellido Paterno *</label>
-              <input type="text" class="form-control" name="paterno" id="paterno" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+              <input type="text" class="form-control" name="paternoUsuarioInterno" id="paternoUsuarioInterno" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-md-4">
               <label>Tipo de rol *</label>
-              <select class="form-control" id="id_rol" name="id_rol">
+              <select class="form-control" id="id_rolUsuarioInterno" name="id_rolUsuarioInterno">
                <option value="">Selecciona un rol</option>
+
                <option value="6">Administrador</option>
                <option value="9">Gerente</option>
-               <option value="9">RRHH</option>
+               <option value="10">RRHH</option>
                 <option value="4">Reclutadora</option>
                 <option value="11">Coordinador  reclutamiento </option>
                 <option value="13">Visor</option>
@@ -42,12 +43,12 @@
            
             <div class="col-6">
             <label for="telefono">Telefono *</label>
-              <input type="text" class="form-control" name="telefono" id="telefono">
+              <input type="text" class="form-control" name="telefonoUsuarioInterno" id="telefonoUsuarioInterno">
               <br>
             </div>
             <div class="col-6">
               <label>Correo *</label>
-              <input type="text" class="form-control" name="correo" id="correo">
+              <input type="text" class="form-control" name="correoUsuarioInterno" id="correoUsuarioInterno">
               <br>
             </div>
           </div>
