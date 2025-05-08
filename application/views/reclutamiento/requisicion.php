@@ -14,7 +14,7 @@
             <span class="icon text-white-50">
               <i class="far fa-file-alt"></i>
             </span>
-            <span class="text">Requisicion Expres</span>
+            <span class="text">Requisicion Interna</span>
           </button>
         </div>
         <?php
@@ -67,7 +67,7 @@
       <select name="filtrar" id="filtrar" class="form-control">
         <option value="">Seleccionar</option>
         <option value="COMPLETA">Requisición COMPLETA (registrada por externo)</option>
-        <option value="EXPRESS">Requisición EXPRESA</option>
+        <option value="INTERNA">Requisición Interna</option>
         <option value="En espera">Estado pendiente</option>
         <option value="En proceso">Estado en proceso de reclutamiento</option>
       </select>
@@ -113,7 +113,7 @@ if ($requisiciones) {
             $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequisicion(' . $r->id . ',\'' . $r->nombre . '\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
             $text_estatus = 'Estatus: <b>En espera</b>';
             $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
-            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Delete Requisition" onclick="openDeleteOrder(' . $r->id . ',\'' . $r->nombre . '\')"><i class="fas fa-trash"></i></a>';
+            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Eliminar Requisición" onclick="openDeleteOrder(' . $r->id . ',\'' . $r->nombre . '\')"><i class="fas fa-trash"></i></a>';
         }
         if ($r->status == 2) {
             $botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar' . $r->id . '"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequisicion(' . $r->id . ',\'' . $r->nombre . '\', \'detener\')"><i class="fas fa-stop"></i></a>';
@@ -121,9 +121,9 @@ if ($requisiciones) {
             $text_estatus = 'Estatus: <b>En proceso de reclutamiento</b>';
             $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos(' . $r->id . ',\'' . $r->nombre . '\')"><i class="fas fa-file-alt"></i></a>';
 
-            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Delete Requisition"><i class="fas fa-trash"></i></a>';
+            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Eliminar Requisición"><i class="fas fa-trash"></i></a>';
         }
-        $usuario = (empty($r->usuario)) ? 'Requisition Without Changes<br>' : 'Úlltimo movimiento: <b>' . $r->usuario . '</b><br>';
+        $usuario = (empty($r->usuario)) ? 'Requisición sin cambios<br>' : 'Úlltimo movimiento: <b>' . $r->usuario . '</b><br>';
         $data['users'] = $this->reclutamiento_model->getUsersOrder($r->id);
         if (!empty($data['users'])) {
             $usersAssigned = 'Usuario Asignado:<br>';
@@ -131,7 +131,7 @@ if ($requisiciones) {
                 if ($this->session->userdata('idrol') == 4) {
                     $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $user->usuario . '</b></div>';
                 } else {
-                    $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><a href="javascript:void(0)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Remove User from Requisition" onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $user->usuario . '\')"><i class="fas fa-user-times"></i></a> <b>' . $user->usuario . '</b></div>';
+                    $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><a href="javascript:void(0)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Eliminar Usuario  de la Requisición" onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $user->usuario . '\')"><i class="fas fa-user-times"></i></a> <b>' . $user->usuario . '</b></div>';
                 }
 
             }
@@ -139,7 +139,7 @@ if ($requisiciones) {
             $usersAssigned = 'No Asignada aun';
         }
         unset($data['users']);
-        $btnExpress = ($r->tipo == 'EXPRESS') ? '<a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Edit EXPRESS Requisition" onclick="openUpdateOrder(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->nombre . '\',\'' . $r->puesto . '\')"><i class="fas fa-edit"></i></a>' : '<a href="javascript:void(0)" class="btn btn-primary text-lg isDisabled" data-toggle="tooltip" title="Edit EXPRESS Requisition"><i class="fas fa-edit"></i></a>';
+        $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA') ? '<a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Edit Editar Requisición" onclick="openUpdateOrder(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->nombre . '\',\'' . $r->puesto . '\')"><i class="fas fa-edit"></i></a>' : '<a href="javascript:void(0)" class="btn btn-primary text-lg isDisabled" data-toggle="tooltip" title="Editar  Requisición Interna"><i class="fas fa-edit"></i></a>';
         //total de requisiciones para saber si fue buscada una en particular y colocarla enmedio de la vista
         $totalOrders = count($requisiciones);
         $moveOrder = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';

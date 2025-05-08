@@ -144,7 +144,6 @@
 
 <script>
 var idRol = Number('<?php echo (int) $this->session->userdata('idrol'); ?>');
-console.log("🚀 ~ idRol:", idRol)
 var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
 let rolesVisibles = [1, 6];
 let mostrarColumna = rolesVisibles.includes(idRol);
@@ -267,7 +266,7 @@ $(document).ready(function() {
           let eliminar =
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo" data-id="' + data +
             '" data-referente="' + full.referente +
-            '" data-action="eliminar"><i class="fas fa-trash" style="font-size: 16px;"></i></a> ';
+            '" data-action="eliminarUsuario"><i class="fas fa-trash" style="font-size: 16px;"></i></a> ';
 
           let credenciales =
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_amarillo" data-correo="' +
@@ -303,23 +302,25 @@ $(document).ready(function() {
     /*****Devuelve los valores registrados para editarlos DESDE EL BOTON EDITAR**************/
 
     rowCallback: function(row, data) {
+   
 
       $("a#editar", row).bind('click', () => {
         $("#idUsuarioInterno").val(data.id_usuario);
         $("#idDatosGenerales").val(data.id_datos_generales);
         $("#titulo_nuevo_modal").text("Editar Usuario");
-        $("#nombre").val(data.nombre);
-        $("#paterno").val(data.paterno);
-        if (data.id_rol == 9) {
-          $("#id_rol").val(data.id_rol);
-          $("#id_rol").prop('disabled', true);
+        $("#nombreUsuarioInterno").val(data.nombre);
+        $("#paternoUsuarioInterno").val(data.paterno);
+      
+        if (<?php echo  $this->session->userdata('idrol'); ?> != 6) {
+          $("#id_rolUsuarioInterno").val(data.id_rol);
+          $("#id_rolUsuarioInterno").prop('disabled', true);
 
         } else {
-          $("#id_rol").val(data.id_rol);
+          $("#id_rolUsuarioInterno").val(data.id_rol);
 
         }
-        $("#correo").val(data.correo);
-        $("#telefono").val(data.telefono);
+        $("#correoUsuarioInterno").val(data.correo);
+        $("#telefonoUsuarioInterno").val(data.telefono);
         // Se oculta el botón de Generar contraseña en modo de edición
         $('#ocultar-en-editar').hide();
         $("#divGenerarPassword").hide();
@@ -361,11 +362,11 @@ $(document).ready(function() {
     mostrarMensajeConfirmacion(status === 'activar' ? 'Activar usuario' : 'Desactivar usuario', referente, id);
   });
 
-  $(document).on('click', '.fa-trash', function() {
-    var id = $(this).data('id');
-    var referente = $(this).data('referente');
-    mostrarMensajeConfirmacion('Eliminar usuario', referente, id);
-  });
+  $(document).on('click', 'a[data-action="eliminarUsuario"]', function() {
+  var id = $(this).data('id');
+  var referente = $(this).data('referente');
+  mostrarMensajeConfirmacion('eliminarUsuario', referente, id); 
+});
 
   $(document).on('click', '.fa-sync-alt', function() {
     var correo = $(this).data('correo');
@@ -380,7 +381,7 @@ $(document).ready(function() {
 
 /****************************FUNCION***EDITAR*****************************************/
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
-  if (accion == "eliminar usuario") {
+  if (accion == "eliminarUsuario") {
     $('#titulo_mensaje').text('Eliminar usuario');
     $('#mensaje').html('¿Desea eliminar al usuario <b>' + valor1 + '</b>?');
     $('#btnConfirmar').attr("onclick", "botonesAccionesUsuario('eliminar'," + valor2 + ")");
@@ -479,7 +480,7 @@ function mostrarModalRegistroUsuario() {
 
   $('#formAccesoUsuariosinternos')[0].reset();
   $('#nuevoAccesoUsuariosInternos').modal('show');
-  $("#nombre").focus();
+  $("#nombreUsuarioInterno").focus();
 }
 
 
@@ -736,8 +737,7 @@ function editarUsuarios() {
           timer: 2500
         });
 
-        $('#formAccesoUsuariosinternos')[0]
-          .reset(); // Se limpian nuevamente los campos de registro después de guardar
+        $('#formAccesoUsuariosinternos')[0].reset();// Se limpian nuevamente los campos de registro después de guardar
       } else {
         $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'block').html(data.msg);
       }

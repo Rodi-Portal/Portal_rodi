@@ -41,7 +41,7 @@
             <span class="icon text-white-50">
               <i class="fas fa-user-edit"></i>
             </span>
-            <span class="text">Assign Candidate</span>
+            <span class="text">Asignar Aspirante</span>
           </button>
         </div>
       </div>
