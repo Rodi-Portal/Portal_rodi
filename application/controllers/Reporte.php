@@ -1965,6 +1965,7 @@ class Reporte extends CI_Controller
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
+
     public function exportar_excel()
     {
         $portal = $this->session->userdata('idPortal');
@@ -1977,27 +1978,24 @@ class Reporte extends CI_Controller
         $puesto       = $this->input->post('puesto');
         $departamento = $this->input->post('departamento');
 
-        // Iniciar base query desde empleados
-            $this->db->select("
-            empleados.id as id_empleado,
-            CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
-            empleados.telefono AS Telefono,
-            empleados.correo AS Correo,
-            empleados.departamento AS Area/Departamento,
-            empleados.puesto AS Puesto,
-            empleados.rfc AS RFC,
-            empleados.nss AS NSS,
-            empleados.curp AS CURP,
-            empleados.fecha_nacimiento Fecha_Nacimiento,
-            empleado_campos_extra.nombre as campo_nombre,
-            empleado_campos_extra.valor as campo_valor
-        ");
+        $this->db->select("
+        empleados.id,
+        empleados.id_empleado,
+        empleados.id_domicilio_empleado,
+        CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
+        empleados.telefono AS Telefono,
+        empleados.correo AS Correo,
+        empleados.departamento AS Area_Departamento,
+        empleados.puesto AS Puesto,
+        empleados.rfc AS RFC,
+        empleados.nss AS NSS,
+        empleados.curp AS CURP,
+        empleados.fecha_nacimiento AS Fecha_Nacimiento
+    ");
         $this->db->from('empleados');
-        $this->db->join('empleado_campos_extra', 'empleado_campos_extra.id_empleado = empleados.id', 'left');
         $this->db->where('empleados.status', 1);
         $this->db->where('empleados.eliminado', 0);
 
-        // Filtros
         if ($sucursal) {
             $this->db->where('empleados.id_cliente', $sucursal);
         } else {
@@ -2010,219 +2008,199 @@ class Reporte extends CI_Controller
         }
 
         if ($puesto) {
-            $this->db->where('puesto', $puesto);
+            $this->db->where('empleados.puesto', $puesto);
         }
 
         if ($departamento) {
-            $this->db->where('departamento', $departamento);
+            $this->db->where('empleados.departamento', $departamento);
         }
 
-        // JOINs dinámicos por módulo
-        foreach ($campos as $tabla) {
-            switch ($tabla) {
-                case 'medical_info':
-                    $this->db->join('medical_info', 'medical_info.id_empleado = empleados.id', 'left');
-                    $this->db->select('
-                    medical_info.peso AS Peso,
-                    medical_info.edad AS Edad,
-                    medical_info.alergias_medicamentos AS Alergias_Medicamentos,
-                    medical_info.alergias_alimentos AS Alergias_Alimentos,
-                    medical_info.enfermedades_cronicas AS Enfermedades_Cronicas,
-                    medical_info.cirugias AS Cirugias,
-                    medical_info.tipo_sangre AS Tipo_Sangre,
-                    medical_info.contacto_emergencia AS Contacto_Emergencia,
-                    medical_info.medicamentos_frecuentes AS Medicamentos_Frecuentes,
-                    medical_info.lesiones AS Lesiones,
-                    medical_info.otros_padecimientos AS Otros_Padecimientos,
-                    medical_info.otros_padecimientos2 AS Condiciones_Adicionales
-                ');
-                    break;
+        $query     = $this->db->get();
+        $empleados = $query->result_array();
 
-                case 'laborales_empleado':
-                    $this->db->join('laborales_empleado', 'laborales_empleado.id_empleado = empleados.id', 'left');
-                    $this->db->select('
-                    laborales_empleado.tipo_contrato AS Tipo_Contrato,
-                    laborales_empleado.otro_tipo_contrato AS Tipo_Contrato_Otro,
-                    laborales_empleado.tipo_regimen Tipo_Regimen,
-                    laborales_empleado.tipo_jornada AS Tipo_Jornada,
-                    laborales_empleado.horas_dia AS Horas_Trabajo,
-                    laborales_empleado.grupo_nomina AS Grupo_Nomina,
-                    laborales_empleado.periodicidad_pago AS Periodicidad_Pago,
-                    laborales_empleado.tipo_nomina AS Tipo_Nomina,
-                    laborales_empleado.dias_descanso AS Dias_Descanso,
-                    laborales_empleado.infonavit AS Infonavit,
-                    laborales_empleado.vacaciones_disponibles AS Vacaciones_Disponibles,
-                    laborales_empleado.sueldo_diario AS Sueldo_Diario,
-                    laborales_empleado.sueldo_mes AS Sueldo_Mes,
-                    laborales_empleado.pago_dia_festivo AS Pago_Dia_Festivo,
-                    laborales_empleado.pago_hora_extra AS Pago_Hora_Extra,
-                    laborales_empleado.dias_aguinaldo AS Dias_Aguinaldo,
-                    laborales_empleado.prima_vacacional AS Prima_Vacacional,
-                    laborales_empleado.descuento_ausencia
-                ');
-                    break;
+        foreach ($empleados as &$empleado) {
+            $id = $empleado['id'];
 
-                case 'documents_empleado':
-                    $this->db->join('documents_empleado', 'documents_empleado.employee_id = empleados.id', 'left');
-                    $this->db->join('document_options', 'document_options.id = documents_empleado.id_opcion', 'left');
-                    $this->db->select('
-                    documents_empleado.name AS documento_subido,
-                    documents_empleado.description AS descripcion,
-                    documents_empleado.expiry_date,
-                    documents_empleado.status,
-                    document_options.name AS tipo_documento,
-                    document_options.type AS tipo_archivo
-                ');
-                    break;
-
-                case 'exams_empleados':
-                    $this->db->join('exams_empleados', 'exams_empleados.employee_id = empleados.id', 'left');
-                    $this->db->join('options', 'options.id = exams_empleados.id_opcion', 'left');
-                    $this->db->select('
-                    exams_empleados.name AS nombre_examen,
-                    exams_empleados.expiry_date,
-                    exams_empleados.status,
-                    exams_empleados.description,
-                    options.name AS tipo_examen,
-                    options.type AS categoria_examen
-                ');
-                    break;
-
-                case 'cursos_empleados':
-                    $this->db->join('cursos_empleados', 'cursos_empleados.employee_id = empleados.id', 'left');
-                    $this->db->select('cursos_empleados.nombre_curso, cursos_empleados.fecha_inicio');
-                    break;
-
-                case 'domicilios_empleados':
-                    $this->db->join('domicilios_empleados', 'domicilios_empleados.id = empleados.id_domicilio_empleados', 'left');
-                    $this->db->select('domicilios_empleados.calle, domicilios_empleados.colonia');
-                    break;
+            // Campos extra
+            $campos_extra = $this->db
+                ->select('nombre, valor')
+                ->from('empleado_campos_extra')
+                ->where('id_empleado', $id)
+                ->get()
+                ->result_array();
+            foreach ($campos_extra as $campo) {
+                $empleado[$campo['nombre']] = $campo['valor'];
             }
-        }
+            if (in_array('domicilios_empleados', $campos) && ! empty($empleado['id_domicilio_empleado'])) {
+                $domicilio = $this->db
+                    ->select('pais, estado, ciudad, calle, colonia, cp, num_int, num_ext')
+                    ->from('domicilios_empleados')
+                    ->where('id', $empleado['id_domicilio_empleado'])
+                    ->get()
+                    ->row_array();
 
-        $query      = $this->db->get();
-        $raw_result = $query->result_array();
+                $partes = [];
+                foreach (['pais', 'estado', 'ciudad', 'colonia', 'calle', 'num_int', 'num_ext'] as $campo) {
+                    if (! empty($domicilio[$campo])) {
+                        $texto = strtoupper($campo) . ': ' . $domicilio[$campo];
 
-        // PROCESAMIENTO DE CAMPOS EXTRA EN COLUMNAS
-        $pivotData    = [];
-        $extraHeaders = [];
+                        // Insertar salto de línea después de ciudad
+                        if ($campo === 'colonia') {
+                            $texto .= "\n"; // o "<br>" si es HTML
+                        }
 
-        foreach ($raw_result as $row) {
-            $id = $row['id_empleado'];
-
-            if (! isset($pivotData[$id])) {
-                $pivotData[$id] = $row;
+                        $partes[] = $texto;
+                    }
+                }
+                $empleado['Domicilio'] = implode(', ', $partes);
             }
-
-            // Campo extra como columna
-            if (! empty($row['campo_nombre'])) {
-                $pivotData[$id][$row['campo_nombre']] = $row['campo_valor'];
-                $extraHeaders[$row['campo_nombre']]   = true;
-            }
-
-            // Documento combinado
-            if (! empty($row['documento_subido'])) {
-                $combined = "Documento: {$row['documento_subido']}\n";
-                $combined .= "Descripción: {$row['descripcion']}\n";
-                $combined .= "Expira: {$row['expiry_date']}\n";
-                $combined .= "Estado: {$row['status']}\n";
-                $combined .= "Tipo: {$row['tipo_documento']}\n";
-                $combined .= "Archivo: {$row['tipo_archivo']}";
-                $pivotData[$id]['Documento Info'] = $combined;
-
-                unset(
-                    $pivotData[$id]['documento_subido'],
-                    $pivotData[$id]['descripcion'],
-                    $pivotData[$id]['expiry_date'],
-                    $pivotData[$id]['status'],
-                    $pivotData[$id]['tipo_documento'],
-                    $pivotData[$id]['tipo_archivo']
-                );
-            }
-        }
-
-        // Rellenar valores vacíos
-        foreach ($pivotData as &$row) {
-            foreach ($extraHeaders as $header => $_) {
-                if (! isset($row[$header])) {
-                    $row[$header] = '';
+            // Información médica
+            if (in_array('medical_info', $campos)) {
+                $med = $this->db->from('medical_info')->where('id_empleado', $id)->get()->row_array();
+                if ($med) {
+                    foreach ($med as $k => $v) {
+                        if (! in_array($k, ['id', 'creacion', 'edicion', 'id_empleado'])) {
+                            $empleado["Med_" . ucfirst($k)] = $v;
+                        }
+                    }
                 }
             }
-            if (! isset($row['Documento Info'])) {
-                $row['Documento Info'] = '';
-            }
-        }
-        foreach ($pivotData as &$row) {
-            unset($row['campo_nombre'], $row['campo_valor']);
-        }
-        unset($row);
 
-        // Convertimos a array final
-        $finalData = array_values($pivotData);
-
-        //// ✅ ELIMINAR COLUMNAS VACÍAS
-        $columnas_usadas = [];
-        foreach ($finalData as $row) {
-            foreach ($row as $key => $value) {
-                if (! empty($value)) {
-                    $columnas_usadas[$key] = true;
+            // Información laboral
+            if (in_array('laborales_empleado', $campos)) {
+                $lab = $this->db->from('laborales_empleado')->where('id_empleado', $id)->get()->row_array();
+                if ($lab) {
+                    foreach ($lab as $k => $v) {
+                        if (! in_array($k, ['id', 'id_empleado'])) {
+                            $empleado["Lab_" . ucfirst($k)] = $v;
+                        }
+                    }
                 }
             }
-        }
 
-        // Limpiar columnas vacías
-        foreach ($finalData as &$row) {
-            foreach ($row as $key => $_) {
-                if (! isset($columnas_usadas[$key])) {
-                    unset($row[$key]);
+            // Documentos
+            if (in_array('documents_empleado', $campos)) {
+                $docs = $this->db
+                    ->select('documents_empleado.name, description, expiry_date, status, document_options.name AS tipo_documento')
+                    ->from('documents_empleado')
+                    ->join('document_options', 'document_options.id = documents_empleado.id_opcion', 'left')
+                    ->where('employee_id', $id)
+                    ->get()
+                    ->result_array();
+
+                $empleado['Documentos'] = '';
+                if (! empty($docs)) {
+                    foreach ($docs as $doc) {
+                        $empleado['Documentos'] .= "Nombre: {$doc['tipo_documento']}\nDescripción: {$doc['description']}\nExpira: {$doc['expiry_date']}\n\n";
+                    }
                 }
             }
-        }
-        unset($row);
 
-        // GENERAR EXCEL
+            // Exámenes
+            if (in_array('exams_empleados', $campos)) {
+                $exams = $this->db
+                    ->select('exams_empleados.name, expiry_date, description, options.name AS tipo_examen')
+                    ->from('exams_empleados')
+                    ->join('exams_options AS options', 'options.id = exams_empleados.id_opcion', 'left')
+                    ->where('employee_id', $id)
+                    ->get()
+                    ->result_array();
+
+                $empleado['Examenes'] = '';
+                if (! empty($exams)) {
+                    foreach ($exams as $exam) {
+                        $empleado['Examenes'] .= "Tipo: {$exam['tipo_examen']}\nDescripción: {$exam['description']}\nExpira: {$exam['expiry_date']}\n\n";
+                    }
+                }
+            }
+
+            // Cursos
+            if (in_array('cursos_empleados', $campos)) {
+                $cursos = $this->db
+                    ->select('C.name, C.expiry_date, C.description, C.id_opcion_curso, options.name AS oname')
+                    ->from('cursos_empleados AS C')
+                    ->join('cursos_options AS options', 'options.id = C.id_opcion_curso', 'left')
+                    ->where('employee_id', $id)
+                    ->get()
+                    ->result_array();
+
+                $empleado['Cursos'] = '';
+                if (! empty($cursos)) {
+                    foreach ($cursos as $curso) {
+                        $nombre = empty($curso['id_opcion_curso']) ? $curso['name'] : $curso['oname'];
+                        $empleado['Cursos'] .= "Nombre: {$nombre}\nDescripción: {$curso['description']}\nExpira: {$curso['expiry_date']}\n\n";
+                    }
+                }
+            }
+
+            // Domicilio
+
+            unset($empleado['id_domicilio_empleado']);
+        }
+
+        // Generar Excel una sola vez
+        $finalData = $empleados;
+
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet       = $spreadsheet->getActiveSheet();
 
         if (! empty($finalData)) {
             $headers = array_keys($finalData[0]);
-            $sheet->fromArray($headers, null, 'A1');
 
-            // Aplicar estilo a cabeceras (fila 1)
+            // Eliminar columnas vacías
+            $columnas_vacias = [];
+            foreach ($headers as $header) {
+                $vacia = true;
+                foreach ($finalData as $empleado) {
+                    if (! empty($empleado[$header])) {
+                        $vacia = false;
+                        break;
+                    }
+                }
+                if ($vacia) {
+                    $columnas_vacias[] = $header;
+                }
+            }
+
+            foreach ($finalData as &$empleado) {
+                foreach ($columnas_vacias as $col) {
+                    unset($empleado[$col]);
+                }
+            }
+
+            $headers        = array_keys($finalData[0]);
+            $column_aliases = [];
+            foreach ($headers as $header) {
+                $column_aliases[$header] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $header)));
+            }
+
+            $sheet->fromArray(array_values($column_aliases), null, 'A1');
+
+            $colCount    = count($headers);
             $headerStyle = [
-                'font'      => [
-                    'bold'  => true,
-                    'color' => ['rgb' => 'FFFFFF'],
-                    'size'  => 14,
-                ],
-                'fill'      => [
-                    'fillType'   => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '1F4E78'], // Azul marino
-                ],
-                'alignment' => [
-                    'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
-                    'wrapText'   => true,
-                ],
+                'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 12],
+                'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '1F4E78']],
+                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER, 'wrapText' => true],
             ];
 
-            $colCount = count($headers);
             for ($col = 0; $col < $colCount; $col++) {
                 $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
                 $sheet->getStyle($colLetter . '1')->applyFromArray($headerStyle);
-                $sheet->getColumnDimension($colLetter)->setAutoSize(true); // Auto ajuste
+                $sheet->getColumnDimension($colLetter)->setAutoSize(true);
             }
 
-            // Datos
             $rowIndex = 2;
             foreach ($finalData as $row) {
-                $sheet->fromArray(array_values($row), null, 'A' . $rowIndex);
-
-                for ($col = 0; $col < $colCount; $col++) {
-                    $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
-                    $sheet->getStyle($colLetter . $rowIndex)->getAlignment()->setWrapText(true); // Ajuste de texto
+                $rowData = [];
+                foreach ($headers as $header) {
+                    $valor     = isset($row[$header]) && trim($row[$header]) !== '' ? $row[$header] : '-';
+                    $rowData[] = $valor;
                 }
-
+                $sheet->fromArray($rowData, null, 'A' . $rowIndex);
+                for ($col = 0; $col < count($headers); $col++) {
+                    $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
+                    $sheet->getStyle($colLetter . $rowIndex)->getAlignment()->setWrapText(true);
+                }
                 $rowIndex++;
             }
         }
@@ -2231,10 +2209,10 @@ class Reporte extends CI_Controller
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header("Content-Disposition: attachment;filename=\"$filename\"");
         header('Cache-Control: max-age=0');
+
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save('php://output');
         exit;
-
     }
 
     public function reporteProcesoReclutamiento()

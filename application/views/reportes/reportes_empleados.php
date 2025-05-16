@@ -22,6 +22,14 @@
           <!-- Campos a incluir -->
           <div class="form-group">
             <label><strong>Selecciona la información a incluir:</strong></label>
+              <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="campos[]" value="empleado_campos_extra" id="extra">
+              <label class="form-check-label" for="extra">Campos extra</label>
+            </div>
+              <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="campos[]" value="domicilios_empleados" id="extra">
+              <label class="form-check-label" for="extra">Domicilio</label>
+            </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" name="campos[]" value="medical_info" id="medical_info">
               <label class="form-check-label" for="medical_info">Información médica</label>
@@ -35,10 +43,7 @@
               <input class="form-check-input" type="checkbox" name="campos[]" value="exams_empleados" id="exams">
               <label class="form-check-label" for="exams">Exámenes</label>
             </div>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="campos[]" value="empleado_campos_extra" id="extra">
-              <label class="form-check-label" for="extra">Campos extra</label>
-            </div>
+          
             <div class="form-check">
               <input class="form-check-input" type="checkbox" name="campos[]" value="documents_empleado" id="docs">
               <label class="form-check-label" for="docs">Documentos</label>
