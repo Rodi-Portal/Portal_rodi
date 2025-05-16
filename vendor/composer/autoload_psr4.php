@@ -37,6 +37,7 @@ return array(
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'DASPRiD\\Enum\\' => array($vendorDir . '/dasprid/enum/src'),
+    'Composer\\Pcre\\' => array($vendorDir . '/composer/pcre/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
     'BaconQrCode\\' => array($vendorDir . '/bacon/bacon-qr-code/src'),
 );

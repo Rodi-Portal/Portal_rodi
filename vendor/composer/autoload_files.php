@@ -28,7 +28,6 @@ return array(
     '6124b4c8570aa390c21fafd04a26c69f' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     '320cde22f66dd4f5d3fd621d3e88b98f' => $vendorDir . '/symfony/polyfill-ctype/bootstrap.php',
     '5c70426340c07411ceee79728a2304a8' => $vendorDir . '/vonage/nexmo-bridge/src/autoload.php',
-    '2cffec82183ee1cea088009cef9a6fc3' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
     '3109cb1a231dcd04bee1f9f620d46975' => $vendorDir . '/paragonie/sodium_compat/autoload.php',
     'db356362850385d08a5381de2638b5fd' => $vendorDir . '/mpdf/mpdf/src/functions.php',
 );

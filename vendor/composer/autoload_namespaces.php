@@ -9,5 +9,4 @@ return array(
     'phpDocumentor' => array($vendorDir . '/phpdocumentor/reflection-docblock/src'),
     'org\\bovigo\\vfs' => array($vendorDir . '/mikey179/vfsStream/src/main/php'),
     'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
-    'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
 );

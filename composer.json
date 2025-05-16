@@ -15,7 +15,7 @@
 		"nexmo/client": "^2.0",
 		"setasign/fpdi": "^2.1",
 		"mpdf/mpdf": "^8.2",
-		"phpoffice/phpspreadsheet": "^1.18",
+		"phpoffice/phpspreadsheet": "^4.2",
     "pusher/pusher-php-server": "^7.2",
 		"brainfoolong/cryptojs-aes-php": "^2.1",
 		"firebase/php-jwt": "^6.11",

@@ -29,7 +29,6 @@ class ComposerStaticInitc3380031e29ee5c9d5acc32057d1c37c
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '5c70426340c07411ceee79728a2304a8' => __DIR__ . '/..' . '/vonage/nexmo-bridge/src/autoload.php',
-        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '3109cb1a231dcd04bee1f9f620d46975' => __DIR__ . '/..' . '/paragonie/sodium_compat/autoload.php',
         'db356362850385d08a5381de2638b5fd' => __DIR__ . '/..' . '/mpdf/mpdf/src/functions.php',
     );
@@ -104,6 +103,7 @@ class ComposerStaticInitc3380031e29ee5c9d5acc32057d1c37c
         ),
         'C' => 
         array (
+            'Composer\\Pcre\\' => 14,
             'Complex\\' => 8,
         ),
         'B' => 
@@ -238,6 +238,10 @@ class ComposerStaticInitc3380031e29ee5c9d5acc32057d1c37c
         array (
             0 => __DIR__ . '/..' . '/dasprid/enum/src',
         ),
+        'Composer\\Pcre\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/pcre/src',
+        ),
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
@@ -268,13 +272,6 @@ class ComposerStaticInitc3380031e29ee5c9d5acc32057d1c37c
             'Prophecy\\' => 
             array (
                 0 => __DIR__ . '/..' . '/phpspec/prophecy/src',
-            ),
-        ),
-        'H' => 
-        array (
-            'HTMLPurifier' => 
-            array (
-                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
             ),
         ),
     );

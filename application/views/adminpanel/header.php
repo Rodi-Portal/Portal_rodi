@@ -203,7 +203,7 @@ echo $token  */?>
 
       <!-- Reportes -->
       <?php
-          $portal = $this->session->userdata('idPortal');
+     $portal = $this->session->userdata('idPortal');
       if (in_array(9, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
@@ -214,17 +214,22 @@ echo $token  */?>
         <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-            if (in_array(25, $submenus)) {?>
+            if ($idRol == 1 || $idRol == 6 )  {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
               href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes de sucursales</a>
             <?php
                 }
-                if (in_array(29, $submenus)) {?>
+                 if ($idRol == 1 || $idRol == 6)  {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Procesos de Reclutamiento.</a>
             <?php
             }?>
+              <?php if ($idRol == 1 || $idRol == 6) {?>
+                 <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
+              title="Proceso de reclutamiento"
+              href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
+        <?php }?>
           </div>
         </div>
       </li>
