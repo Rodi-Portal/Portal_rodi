@@ -3585,10 +3585,7 @@ class Candidato extends Custom_Controller
 
         // Decodificar la respuesta JSON
         $data = json_decode($response, true);
-echo'<pre>'; 
-print_r($data);
-echo'</pre>';
-die();
+
         // Generar la salida
         $salida = '<div class="row">';
         $salida .= '<div class="col-md-12">';
