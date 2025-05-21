@@ -3595,7 +3595,7 @@ class Candidato extends Custom_Controller
                 $salida .= '<p style="padding-right: 5px;"><b>' . $txt_fecha . '</b> ' . $row['fecha'] . '</p>';
                 $salida .= '<p><b>' . $txt_comentario . '</b> ' . $row['comentarios'] . '</p>';
                 $salida .= ($row['adjunto'] != "")
-                ? "<a href='" . base_url() . "_adjuntos/" . $row['adjunto'] . "' target='_blank' style='margin-bottom: 10px;text-align:center;'>" . $txt_imagen . "</a><hr>"
+                ? "<a href='" . $api_base_url . "_adjuntos/" . $row['adjunto'] . "' target='_blank' style='margin-bottom: 10px;text-align:center;'>" . $txt_imagen . "</a><hr>"
                 : "<hr>";
             }
         } else {
