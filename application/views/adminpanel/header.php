@@ -203,7 +203,7 @@ echo $token  */?>
 
       <!-- Reportes -->
       <?php
-     $portal = $this->session->userdata('idPortal');
+          $portal = $this->session->userdata('idPortal');
       if (in_array(9, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
@@ -214,22 +214,22 @@ echo $token  */?>
         <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-            if ($idRol == 1 || $idRol == 6 )  {?>
+            if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
               href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes de sucursales</a>
             <?php
                 }
-                 if ($idRol == 1 || $idRol == 6)  {?>
+                if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Procesos de Reclutamiento.</a>
             <?php
             }?>
-              <?php if ($idRol == 1 || $idRol == 6) {?>
-                 <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
+<?php if ($idRol == 1 || $idRol == 6) {?>
+            <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
-        <?php }?>
+            <?php }?>
           </div>
         </div>
       </li>
@@ -261,14 +261,14 @@ echo $token  */?>
               Administradores</a>
             <?php
             }?>
-            <?php
-            if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
+<?php
+if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
-            <?php
+<?php
 
-            if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
+    if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
             <?php
             }?>
@@ -368,7 +368,7 @@ echo $token  */?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -488,13 +488,13 @@ echo $token  */?>
                   </div>
 
                   <div
-                    class="alert                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
+                    class="alert                                                                                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
                     <?php echo $aviso_actual
                         ? 'Archivo actual:'
                     : 'No se encontró un aviso cargado. Se usará este  aviso por defecto:' ?>
 
 
-                    <a href="<?php echo base_url('Avance/ver_aviso/'.$archivo ); ?>" target="_blank">
+                    <a href="<?php echo base_url('Avance/ver_aviso/' . $archivo); ?>" target="_blank">
                       Ver aviso
                     </a>
 
@@ -529,28 +529,80 @@ echo $token  */?>
                 <div class="row text-center">
 
                   <!-- CROL -->
+                  <!-- Tarjeta que abre el modal -->
                   <div class="col-md-4 modal-key-col">
-                    <a href="https://www.crol.mx/#portada" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-croll">
-                          CROL
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/crol.png');
-                    background-size: 150px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Recursos Contables</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Soluciones contables avanzadas.
-                        </div>
+                    <div class="modal-key-card" data-toggle="modal" data-target="#contactoModal"
+                      style="cursor:pointer;">
+                      <div class="modal-key-card-header modal-key-card-croll">
+                        CROL ERP
                       </div>
-                    </a>
+                      <div class="modal-key-card-body" style="position: relative;">
+                        <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+        background-image: url('<?php echo base_url(); ?>img/provedores/crol.png');
+        background-size: 150px; background-position: center;
+        opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
+                        <p class="modal-key-card-text" style="position: relative; z-index: 2;">Recursos Contables</p>
+                      </div>
+                      <div class="modal-key-card-footer">
+                        Soluciones contables avanzadas.
+                      </div>
+                    </div>
                   </div>
+
+                  <!-- Modal de contacto -->
+               <!-- Modal Estilizado -->
+<!-- Modal Estilizado con Enlace -->
+<div class="modal fade" id="contactoModal" tabindex="-1" role="dialog" aria-labelledby="contactoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content border-0 shadow-lg rounded-lg">
+      <form id="formContacto">
+        <!-- Encabezado con logo -->
+        <div class="modal-header border-0 flex-column text-center bg-light">
+          <img src="<?php echo base_url(); ?>img/provedores/crol.png" alt="CROL" style="width: 120px; margin-bottom: 10px;">
+          <h5 class="modal-title w-100 font-weight-bold" id="contactoModalLabel">Formulario de Contacto</h5>
+          <button type="button" class="close position-absolute" style="right: 15px; top: 15px;" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <!-- Cuerpo del modal -->
+        <div class="modal-body px-4 pb-4 pt-2">
+          <div class="form-group">
+            <label for="nombre" class="font-weight-bold">Nombre completo</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" required>
+          </div>
+          <div class="form-group">
+            <label for="empresa" class="font-weight-bold">Empresa</label>
+            <input type="text" class="form-control" id="empresa" name="empresa">
+          </div>
+          <div class="form-group">
+            <label for="telefono" class="font-weight-bold">Teléfono</label>
+            <input type="tel" class="form-control" id="telefono" name="telefono">
+          </div>
+          <div class="form-group">
+            <label for="correo" class="font-weight-bold">Correo electrónico</label>
+            <input type="email" class="form-control" id="correo" name="correo" required>
+          </div>
+          <div class="form-group">
+            <label for="descripcion" class="font-weight-bold">Descripción de la solicitud</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required></textarea>
+          </div>
+        </div>
+
+        <!-- Pie del modal -->
+        <div class="modal-footer border-0 px-4 pb-4 flex-column">
+          <button type="submit" class="btn btn-primary btn-block font-weight-bold">Enviar solicitud</button>
+          <a href="https://www.crol.mx/#portada" target="_blank" class="mt-3 text-center text-primary" style="text-decoration: underline;">
+            Visitar sitio de CROL
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
 
                   <!-- GA -->
                   <div class="col-md-4 modal-key-col">
@@ -815,8 +867,8 @@ echo $token  */?>
 
         <!-- End of Topbar -->
 
-        
-            
+
+
 
 
         <script>
