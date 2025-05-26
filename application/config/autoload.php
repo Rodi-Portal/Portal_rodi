@@ -198,6 +198,5 @@ $autoload['model'] = array(
     'visita_model',
     'covid_model',
     'empleados_model',
-    'proveedores_model',
 
 );
