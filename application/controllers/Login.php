@@ -60,7 +60,7 @@ class Login extends CI_Controller
             if($otro != null || $otro != ""){
               $medio_llegada = $otro;  
             }
-
+ 
             $existeCorreo = $this->usuario_model->existeUsuarioSandbox($correo);
             if ($existeCorreo != 0) {
                 $response = [
