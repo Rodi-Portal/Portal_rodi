@@ -68,12 +68,14 @@
   <!-- JavaScript -->
 
   <?php
-
-      $idRol        = $this->session->userdata('idrol');
-      $logo         = $this->session->userdata('logo');
-      $aviso_actual = $this->session->userdata('aviso');
+      $CI           = &get_instance();
+      $idRol        = $CI->session->userdata('idrol');
+      $logo         = $CI->session->userdata('logo');
+      $aviso_actual = $CI->session->userdata('aviso');
       $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
+
   ?>
+
 
 
   <?php /*$token = $this->session->userdata('jwt_token'); 
@@ -225,7 +227,7 @@ echo $token  */?>
               href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Procesos de Reclutamiento.</a>
             <?php
             }?>
-<?php if ($idRol == 1 || $idRol == 6) {?>
+            <?php if ($idRol == 1 || $idRol == 6) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
@@ -261,12 +263,12 @@ echo $token  */?>
               Administradores</a>
             <?php
             }?>
-<?php
+            <?php
 if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
             <?php
             }?>
-<?php
+            <?php
 
     if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
             <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
@@ -368,7 +370,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -379,14 +381,13 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
               </div>
             </li>
             <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
-              <a class="nav-link icono-dorado text-center" href="#" role="button" data-toggle="modal"
-                data-target="#modalKey" data-bs-toggle="tooltip" data-bs-placement="top" title="Proveedores destacados"
+              <a id="btnAbrirProveedores" class="nav-link icono-dorado text-center" href="#" role="button"
+                title="Proveedores destacados"
                 style="line-height: 1.2; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0;">
 
-                <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Proveedores</div>
-                <i class="fas fa-key fa-fw icono-dorado" style="font-size: 20px; margin: 0; padding: 0;"></i>
-                <div style="font-size: 9px; font-weight: bold; color: #000; margin: 0; padding: 0;">Destacados</div>
-
+                <div style="font-size: 9px; font-weight: bold; color: #000;">Proveedores</div>
+                <i class="fas fa-key fa-fw icono-dorado" style="font-size: 20px;"></i>
+                <div style="font-size: 9px; font-weight: bold; color: #000;">Destacados</div>
               </a>
             </li>
 
@@ -488,7 +489,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                   </div>
 
                   <div
-                    class="alert                                                                                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
+                    class="alert                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
                     <?php echo $aviso_actual
                         ? 'Archivo actual:'
                     : 'No se encontró un aviso cargado. Se usará este  aviso por defecto:' ?>
@@ -511,351 +512,73 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
         </div>
 
 
-        <div class="modal fade" id="modalKey" tabindex="-1" role="dialog" aria-labelledby="modalKeyLabel"
-          aria-hidden="true">
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content modal-key-content">
-              <div class="modal-header modal-key-header">
-                <h5 class="modal-title modal-title-modal-key-title-blanco" id="modalKeyLabel">Proveedores Destacados
+        <!-- Modal Principal: Nuestros Proveedores Destacados -->
+        <div class="modal fade" id="modalKey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header bg-blue text-white fw-bold">
+                <h5 class="modal-title" id="exampleModalLabel" style="color: white !important; font-size: 1.8rem;">
+                  Nuestros Proveedores Destacados
                 </h5>
-                <button type="button" class="close modal-key-close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal"
+                  aria-label="Cerrar"></button>
               </div>
-              <div class="modal-body modal-key-body">
-                <p class="modal-key-intro">
-                  Estas compañías hermanas destacan por su excelencia y profesionalismo, apoyando nuestras operaciones.
-                </p>
-                <div class="row text-center">
-
-                  <!-- CROL -->
-                  <!-- Tarjeta que abre el modal -->
-                  <div class="col-md-4 modal-key-col">
-                    <div class="modal-key-card" data-toggle="modal" data-target="#contactoModal"
-                      style="cursor:pointer;">
-                      <div class="modal-key-card-header modal-key-card-croll">
-                        CROL ERP
-                      </div>
-                      <div class="modal-key-card-body" style="position: relative;">
-                        <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-        background-image: url('<?php echo base_url(); ?>img/provedores/crol.png');
-        background-size: 150px; background-position: center;
-        opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                        <p class="modal-key-card-text" style="position: relative; z-index: 2;">Recursos Contables</p>
-                      </div>
-                      <div class="modal-key-card-footer">
-                        Soluciones contables avanzadas.
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Modal de contacto -->
-               <!-- Modal Estilizado -->
-<!-- Modal Estilizado con Enlace -->
-<div class="modal fade" id="contactoModal" tabindex="-1" role="dialog" aria-labelledby="contactoModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content border-0 shadow-lg rounded-lg">
-      <form id="formContacto">
-        <!-- Encabezado con logo -->
-        <div class="modal-header border-0 flex-column text-center bg-light">
-          <img src="<?php echo base_url(); ?>img/provedores/crol.png" alt="CROL" style="width: 120px; margin-bottom: 10px;">
-          <h5 class="modal-title w-100 font-weight-bold" id="contactoModalLabel">Formulario de Contacto</h5>
-          <button type="button" class="close position-absolute" style="right: 15px; top: 15px;" data-dismiss="modal" aria-label="Cerrar">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <!-- Cuerpo del modal -->
-        <div class="modal-body px-4 pb-4 pt-2">
-          <div class="form-group">
-            <label for="nombre" class="font-weight-bold">Nombre completo</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
-          </div>
-          <div class="form-group">
-            <label for="empresa" class="font-weight-bold">Empresa</label>
-            <input type="text" class="form-control" id="empresa" name="empresa">
-          </div>
-          <div class="form-group">
-            <label for="telefono" class="font-weight-bold">Teléfono</label>
-            <input type="tel" class="form-control" id="telefono" name="telefono">
-          </div>
-          <div class="form-group">
-            <label for="correo" class="font-weight-bold">Correo electrónico</label>
-            <input type="email" class="form-control" id="correo" name="correo" required>
-          </div>
-          <div class="form-group">
-            <label for="descripcion" class="font-weight-bold">Descripción de la solicitud</label>
-            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required></textarea>
+              <div class="modal-body">
+                <div class="row" id="contenedor-proveedores">
+                  <!-- Aquí se insertarán los proveedores destacados dinámicamente con JavaScript -->
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Pie del modal -->
-        <div class="modal-footer border-0 px-4 pb-4 flex-column">
-          <button type="submit" class="btn btn-primary btn-block font-weight-bold">Enviar solicitud</button>
-          <a href="https://www.crol.mx/#portada" target="_blank" class="mt-3 text-center text-primary" style="text-decoration: underline;">
-            Visitar sitio de CROL
-          </a>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 
-
-
-                  <!-- GA -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.ga-solutionsgroup.com/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-ga">
-                          GA Safety
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative; ">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 50px; left: 0; right: 0; bottom: 0;
-                            background-image: url('<?php echo base_url(); ?>img/provedores/GA.png');
-                            background-size: 100px; background-position: center;
-                            opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Gestión Integral de
-                            Riesgos</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Soluciones avanzadas en seguridad laboral.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                  <!-- Rodi -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.rodi.com.mx" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          RODI
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 100px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/Rodi.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">
-                            Reclutamiento, BGV, psicometrías y antidoping.
-                          </p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Especialistas en soluciones de talento humano a nivel Latinoamérica.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-
-
-                  <!-- Asesoría Jurídica -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.ejemplo.com" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-juridica">
-                          Asesoría Jurídica
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/nadaaun.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.4; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Consultoría Jurídica
-                          </p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Orientación legal confiable.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                  <!-- Fiscalista -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="#" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-fiscalista">
-                          Fiscalista
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 80px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/nada.png');
-                    background-size: 90px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Nómina, Timbrado y
-                            Declaración de Impuestos</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Servicios fiscales de alta calidad.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-                  <!-- Dr. Clinic -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://doctorclinic.com.mx/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-clinic">
-                          Dr. Clinic
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/drclinic.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.7; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Exámenes Médicos
-                            Detallados</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Cuidado médico especializado.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
-
+        <!-- Modal Global Reutilizable para Contacto -->
+        <div class="modal fade" id="modalContactoGlobal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form id="formContacto" method="post">
+                <div class="modal-header" id="modalHeaderGlobal" style="background-color: #000;">
+                  <img src="" alt="" id="modalImagenGlobal" style="max-height: 50px; margin-right: 10px;">
+                  <h5 class="modal-title text-white" id="modalTituloGlobal">Contacto</h5>
+                  <button type="button" class="btn-close btn-close-white" data-dismiss="modal"
+                    aria-label="Cerrar"></button>
                 </div>
-                <div class="row text-center">
-                  <!-- CINCEL -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.cincel.digital/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-cincel">
-                          CINCEL
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/cincel.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Firmas Electrónicas</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Soluciones digitales innovadoras.
-                        </div>
-                      </div>
-                    </a>
+
+                <div class="modal-body">
+                  <input type="hidden" name="proveedor_id" id="inputProveedorId">
+
+                  <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" class="form-control" name="nombre" required>
                   </div>
 
-
-                  <!-- Valor H -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="http://www.valorh.com.mx/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          ValorH
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/valorh.png');
-                    background-size: 100px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="position: relative; z-index: 2;">Evaluaciones</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Fomentando un ambiente laboral positivo.
-                          Clima Laboral.
-                          Desempeño.
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-                  <!-- Torreto H -->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://www.torreto-consultores.com/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          Torreto
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="
-                              position: absolute;
-                              top: 0; left: 0; right: 0; bottom: 0;
-                              background-image: url('<?php echo base_url("img/torreto.png"); ?>');
-                              background-size: contain;
-                              background-position: center;
-                              background-repeat: no-repeat;
-                              opacity: 0.9;
-                              z-index: 1;">
-                          </div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-
-                        </div>
-                        <div class="modal-key-card-footer">
-                          <p class="modal-key-card-text" style="z-index: 2; font-size: 0.8rem;">Torreto Consultore</p>
-                          Planeación de estrategias legales corporativas, fiscales y administrativas.
-
-                        </div>
-                      </div>
-                    </a>
+                  <div class="form-group">
+                    <label>Empresa / Organización</label>
+                    <input type="text" class="form-control" name="empresa">
                   </div>
 
+                  <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" class="form-control" name="correo" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Teléfono con lada</label>
+                    <input type="tel" class="form-control" name="telefono">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Descripción de la solicitud</label>
+                    <textarea class="form-control" name="descripcion" rows="3" required></textarea>
+                  </div>
                 </div>
-                <div class="row text-center">
 
-
-
-
-
-
-                  <!-- Sindicato-->
-                  <div class="col-md-4 modal-key-col">
-                    <a href="https://stteccimm.mx/" target="_blank" style="text-decoration: none;">
-                      <div class="modal-key-card">
-                        <div class="modal-key-card-header modal-key-card-valorh">
-                          STTECCIM
-                        </div>
-                        <!-- Contenedor para la imagen de fondo -->
-                        <div class="modal-key-card-body" style="position: relative;">
-                          <!-- Imagen de fondo con opacidad que no se repite -->
-                          <div style="position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
-                    background-image: url('<?php echo base_url(); ?>img/provedores/stteccimm.png');
-                    background-size: 50px; background-position: center;
-                    opacity: 0.9; z-index: 1; background-repeat: no-repeat;"></div>
-                          <!-- Contenido de texto que no se ve afectado por la opacidad -->
-                          <p class="modal-key-card-text" style="z-index: 2; font-size: 0.8rem;">🏳TU SINDICATO DE
-                            CONFIANZA🏳</p>
-                        </div>
-                        <div class="modal-key-card-footer">
-                          Una balanza en PRO de las necesidades del empresario y de sus colaboradores.
-
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Enviar</button>
                 </div>
-              </div>
-              <div class="modal-footer modal-key-footer">
-                <button type="button" class="btn modal-key-btn-close" data-dismiss="modal">Cerrar</button>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -872,6 +595,165 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
 
 
         <script>
+        $(document).on('click', '.open-contacto', function(e) {
+          e.preventDefault();
+
+          const id = $(this).data('id');
+          const nombre = $(this).data('nombre');
+          const color = $(this).data('color') || '#333';
+          const imagen = $(this).data('imagen') || '<?php echo base_url("img/portal_icon.png"); ?>';
+
+          const modal = $('#modalContactoGlobal');
+
+          // Asignar valores en el modal
+          modal.find('#modalHeaderGlobal').css('background-color', color);
+          modal.find('#modalTituloGlobal').text('Contacto ' + nombre);
+          modal.find('#modalImagenGlobal').attr('src', imagen).attr('alt', nombre);
+          modal.find('#inputProveedorId').val(id);
+
+          modal.modal('show');
+        });
+
+
+        $('#btnAbrirProveedores').on('click', function(e) {
+          e.preventDefault();
+
+          // Spinner o loader
+          $('#modalKey .modal-body').html('<div class="text-center py-5">Cargando proveedores...</div>');
+
+          // AJAX para cargar proveedores
+          $.ajax({
+            url: '<?php echo base_url("Proveedor/destacados"); ?>',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              let html = '<div class="row">';
+
+              data.forEach(function(prov) {
+                const color = prov.color || '#333';
+                const imagen = prov.imagen || '<?php echo base_url("img/portal_icon.png"); ?>';
+
+                // Botón sitio web
+                const btnSitio = prov.url1 ?
+                  `<a href="${prov.url1}" target="_blank" class="btn btn-link text-primary" title="Sitio web">
+            <i class="fas fa-globe fa-lg"></i>
+          </a>` : '';
+
+                // Botón WhatsApp
+                const btnWhats = prov.url2 ?
+                  `<a href="${prov.url2}" target="_blank" class="btn btn-link text-success" title="WhatsApp">
+            <i class="fab fa-whatsapp fa-lg"></i>
+          </a>` : '';
+
+                // Botón contacto (teléfono o correo)
+                let btnContacto = '';
+                if ((prov.telefono && prov.telefono.length > 0) || (prov.correo && prov.correo.length > 0)) {
+                  btnContacto = `
+                <button class="btn btn-link text-info open-contacto"
+                  data-id="${prov.id}"
+                  data-nombre="${prov.nombre}"
+                  data-color="${color}"
+                  data-imagen="${imagen}"
+                  title="Formulario de Contacto">
+                  <i class="fas fa-envelope fa-lg"></i>
+                </button>`;
+                }
+
+                html += `
+          <div class="col-12 col-md-6 col-lg-4 mb-4">
+            <div class="card shadow border-0 h-100">
+              <div class="card-header text-white text-center fw-bold" style="background-color:${color}; font-size: 1.8rem;">
+                ${prov.nombre.toUpperCase()}
+              </div>
+
+              <div class="card-body text-center">
+                <img src="${imagen}" alt="${prov.nombre}" class="img-fluid my-3" style="max-height: 60px;">
+                <p class="mb-1"><strong>${prov.descripcion1}</strong></p>
+                <p class="mb-2 text-muted">${prov.descripcion}</p>
+              </div>
+
+              <div class="card-footer d-flex justify-content-center gap-3">
+                ${btnContacto}
+                ${btnSitio}
+                ${btnWhats}
+              </div>
+            </div>
+          </div>`;
+              });
+
+              html += '</div>';
+              $('#modalKey .modal-body').html(html);
+              $('#modalKey').modal('show');
+            },
+            error: function() {
+              $('#modalKey .modal-body').html(
+                '<div class="text-danger text-center py-5">Error al cargar proveedores.</div>');
+              $('#modalKey').modal('show');
+            }
+          });
+        });
+
+
+        $(document).ready(function() {
+          $('#formContacto').on('submit', function(e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const btn = form.find('button[type="submit"]');
+            btn.prop('disabled', true).text('Enviando...');
+
+            $.ajax({
+              url: '<?php echo base_url("Proveedor/enviar"); ?>',
+              method: 'POST',
+              data: form.serialize(),
+              dataType: 'json',
+              success: function(res) {
+                if (res.status === 'success') {
+                  Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: res.message,
+                    confirmButtonText: 'Aceptar'
+                  });
+
+                  form[0].reset();
+                } else if (res.status === 'validation_error') {
+                  let errores = '';
+                  for (let campo in res.errors) {
+                    errores += `• ${res.errors[campo]}\n`;
+                  }
+
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Faltan datos requeridos',
+                    text: errores,
+                    confirmButtonText: 'Corregir'
+                  });
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error inesperado al enviar el formulario.',
+                  });
+                }
+              },
+              error: function() {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Fallo en el servidor',
+                  text: 'No se pudo enviar. Verifica tu conexión e intenta de nuevo.',
+                });
+              },
+              complete: function() {
+                btn.prop('disabled', false).text('Enviar');
+              }
+            });
+          });
+
+        });
+
+
+
         document.getElementById('fileLogo').addEventListener('change', function(event) {
           const file = event.target.files[0];
           if (file && file.type.startsWith('image')) {

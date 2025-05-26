@@ -908,7 +908,7 @@
         }, 200);
         if (res.length > 0) {
           let data = JSON.parse(res);
-          console.log("🚀 ~ openAddApplicant ~ res:", res)
+          //console.log("🚀 ~ openAddApplicant ~ res:", res)
           for (let i = 0; i < data.length; i++) {
             let optionText = '#' + data[i]['id'] + ' ' + data[i]['nombre'] + ' - ' + data[i]['puesto'] +
               ' - Vacantes: ' + data[i]['numero_vacantes'];
@@ -940,8 +940,8 @@
     datos.append('nombre', $("#nombre").val());
     datos.append('paterno', $("#paterno").val());
     datos.append('materno', $("#materno").val());
-    datos.append('correo', $("#correo").val());
-    datos.append('telefono', $("#telefono").val());
+    datos.append('correo', $("#correo1").val());
+    datos.append('telefono', $("#telefono1").val());
     datos.append('medio', $("#medio").val());
     datos.append('area_interes', $("#area_interes").val());
     datos.append('domicilio', $("#domicilio").val());
