@@ -208,7 +208,7 @@ function changeDataTable(url) {
             if (full.idCandidato != null && full.idCandidato != '') {
               acciones = '<b>ESE finalizado</b>';
             } else {
-              acciones = iniciar_socio +
+              acciones = iniciar_socio + ingreso +
                 '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
                 '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
             }
@@ -216,7 +216,7 @@ function changeDataTable(url) {
             if (full.status_final != 'CANCELADO') {
               acciones = iniciar_socio + ingreso +
 
-                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +'<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
             }
           }
 
@@ -245,7 +245,7 @@ function changeDataTable(url) {
         bSortable: false,
         width: "10%",
         render: function(data, type, row) {
-          console.log("🚀 ~ changeDataTable ~ row:", row)
+         // console.log("🚀 ~ changeDataTable ~ row:", row)
           if (row.status_final !== null && row.status_final !== "") {
             return row.status_final;
           } else if (row.status != null && row.status != "") {
@@ -316,8 +316,8 @@ if (!data.status_final || data.status_final.trim() === "") {
         $('#domicilio').val(data.domicilio);
         $('#area_interes').val(data.area_interes);
         $('#medio').val(data.medio_contacto);
-        $('#telefono').val(data.telefono);
-        $('#correo').val(data.correo);
+        $('#telefono1').val(data.telefono);
+        $('#correo1').val(data.correo);
 
         if (data.cv != null) {
           $('#cv_previo').html('<small><b> (CV previo: </b></small><a href="<?php echo base_url(); ?>_docs/' +
@@ -507,14 +507,15 @@ function addApplicant() {
   datos.append('nombre', $("#nombre").val());
   datos.append('paterno', $("#paterno").val());
   datos.append('materno', $("#materno").val());
-  datos.append('correo', $("#correo").val());
-  datos.append('telefono', $("#telefono").val());
+  datos.append('correo', $("#correo1").val());
+  datos.append('telefono', $("#telefono1").val());
   datos.append('medio', $("#medio").val());
   datos.append('area_interes', $("#area_interes").val());
   datos.append('domicilio', $("#domicilio").val());
   // datos.append("cv", cv);
   datos.append("id_aspirante", $("#idAspirante").val());
   datos.append("id_bolsa_trabajo", $("#idBolsa").val());
+   
 
   $.ajax({
     url: '<?php echo base_url('Reclutamiento/addApplicant'); ?>',
