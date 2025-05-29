@@ -30,15 +30,15 @@
              
              if($idRol == 6 || $idRol == 1){ ?>
             <a href="#" class="eliminar-permiso" data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
-              data-id_cliente="<?php echo $p['id_cliente']; ?>"  title="Eliminar acceso a esta sucursal">
-              <i class="fa fa-trash" style="color: red; float: right"></i> 
+              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal">
+              <i class="fa fa-trash" style="color: red; float: right"></i>
             </a>
             <?php } ?>
           </li>
           <?php endforeach; ?>
         </td>
 
-        <td>
+        <td data-order="<?php echo $p['empleados_activos']; ?>">
           <li>Numero maximo: <?php echo $p['max']; ?></li>
           <li> Empleados : <?php echo $p['empleados_activos']; ?></li>
           <li> Exempleados : <?php echo $p['empleados_inactivos']; ?></li>
@@ -97,64 +97,67 @@
 
 <script>
 $(document).ready(function() {
-  $('#processTable').DataTable();
+  $('#processTable').DataTable({
+    order: [
+      [3, 'desc']
+    ] // Índice 3 = cuarta columna, "Empleados"
+  });
   $('#sidebarToggle').on('click', function() {
     $('#sidebar').toggleClass('hidden'); // Alternar la clase 'hidden'
   });
 });
 
 $(document).on('click', '.eliminar-permiso', function(e) {
-    e.preventDefault();
-    
-    var id_usuario = $(this).data('id_usuario');
-    var id_cliente = $(this).data('id_cliente');
-    
-    // Mostrar confirmación usando SweetAlert
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Enviar solicitud de eliminación al servidor
-            $.ajax({
-                url: '<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>',
-                method: 'POST',
-                data: {
-                    id_usuario: id_usuario,
-                    id_cliente: id_cliente
-                },
-                success: function(response) {
-                    var data = JSON.parse(response);
-                    if (data.status === 'success') {
-                        Swal.fire(
-                            'Eliminado',
-                            'El permiso ha sido eliminado exitosamente.',
-                            'success'
-                        );
-                        location.reload(); // Recargar la página para actualizar los datos
-                    } else {
-                        Swal.fire(
-                            'Error',
-                            data.message,
-                            'error'
-                        );
-                    }
-                },
-                error: function() {
-                    Swal.fire(
-                        'Error',
-                        'Ocurrió un error al intentar eliminar el permiso.',
-                        'error'
-                    );
-                }
-            });
-        }
-    });
-});
+  e.preventDefault();
 
+  var id_usuario = $(this).data('id_usuario');
+  var id_cliente = $(this).data('id_cliente');
+
+  // Mostrar confirmación usando SweetAlert
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Enviar solicitud de eliminación al servidor
+      $.ajax({
+        url: '<?php echo site_url("Cat_usuarioInternos/eliminarPermiso"); ?>',
+        method: 'POST',
+        data: {
+          id_usuario: id_usuario,
+          id_cliente: id_cliente
+        },
+        success: function(response) {
+          var data = JSON.parse(response);
+          if (data.status === 'success') {
+            Swal.fire(
+              'Eliminado',
+              'El permiso ha sido eliminado exitosamente.',
+              'success'
+            );
+            location.reload(); // Recargar la página para actualizar los datos
+          } else {
+            Swal.fire(
+              'Error',
+              data.message,
+              'error'
+            );
+          }
+        },
+        error: function() {
+          Swal.fire(
+            'Error',
+            'Ocurrió un error al intentar eliminar el permiso.',
+            'error'
+          );
+        }
+      });
+    }
+  });
+});
 </script>
