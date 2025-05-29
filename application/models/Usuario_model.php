@@ -299,7 +299,7 @@ class Usuario_model extends CI_Model
             ->join('rol AS R', 'R.id = UPo.id_rol', 'left')
             ->where('C.id_portal', $id_portal)
             ->where_in('C.id', $clientes)
-            ->order_by('empleados_activos', 'DESC');
+    ->order_by('(SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 1)', 'DESC'); // 👈 Así sí funciona
 
 
         // Si el parámetro $filtrar_roles es true, excluimos los roles 4 y 11
