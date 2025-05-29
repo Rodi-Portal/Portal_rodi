@@ -97,7 +97,11 @@
 
 <script>
 $(document).ready(function() {
-  $('#processTable').DataTable();
+  $('#processTable').DataTable({
+    order: [
+      [3, 'desc']
+    ] // Índice 3 = cuarta columna, "Empleados"
+  });
   $('#sidebarToggle').on('click', function() {
     $('#sidebar').toggleClass('hidden'); // Alternar la clase 'hidden'
   });
