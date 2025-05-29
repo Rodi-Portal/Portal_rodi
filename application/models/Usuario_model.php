@@ -298,14 +298,16 @@ class Usuario_model extends CI_Model
             ->join('datos_generales AS DG', 'DG.id = UPo.id_datos_generales', 'left') // datos usuario
             ->join('rol AS R', 'R.id = UPo.id_rol', 'left')
             ->where('C.id_portal', $id_portal)
-            ->where_in('C.id', $clientes);
+            ->where_in('C.id', $clientes)
+            ->order_by('empleados_activos', 'DESC');
+
 
         // Si el parámetro $filtrar_roles es true, excluimos los roles 4 y 11
         if ($filtrar_roles) {
             $this->db->where_not_in('UPo.id_rol', [4, 11]);
         }
 
-        $this->db->order_by('C.nombre', 'ASC');
+        //$this->db->order_by('C.nombre', 'ASC');
 
         $query  = $this->db->get();
         $result = $query->result();
