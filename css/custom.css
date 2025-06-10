@@ -1377,3 +1377,7 @@ color: white;
   max-width: 50%; /* Asegura que no sobrepasen la mitad */
   overflow: auto; /* Para manejar contenido extenso */
 }
+.custom-btn.active {
+  background-color: #007bff; /* o el color de hover que uses */
+  color: white;
+}

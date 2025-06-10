@@ -33,32 +33,39 @@
           <div>
 
           </div>
-          <div class="alert alert-info">¡Bienvenido , por favor revisa y completa todos los datos solicitados en este
-            formulario. Este paso se realiza una única vez.
+          <div class="alert alert-info">¡Bienvenido!
+
+            Por favor, revisa y completa todos los datos solicitados en este formulario. Esta información se solicita
+            una sola vez y es necesaria para poder generar requisiciones en nuestra plataforma.
+
+            Una vez ingresados, estos datos se cargarán automáticamente cada vez que solicites una nueva requisición,
+            por lo que no tendrás que volver a completarlos.
+
+            Gracias por tu colaboración.
           </div>
 
           <h5 class="text-center" id="titulo_paso"></h5>
           <form id="formPaso1" method="post" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-12">
+                <h5 class="mt-4 mb-3 text-primary font-weight-bold">Datos del Cliente</h5>
+                <hr style="border-top: 1px solid #ccc;">
 
                 <label for="nombre">Nombre del cliente *</label>
-                <input type="text" class="form-control" data-field="Nombre del Cliente" 
-                  id="nombre" name="nombre" disabled>
+                <input type="text" class="form-control" data-field="Nombre del Cliente" id="nombre" name="nombre"
+                  disabled>
                 <br>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6">
                 <label for="clave">Clave *</label>
-                <input type="text" class="form-control" data-field="Clave" id="clave" name="clave"
-                disabled>
+                <input type="text" class="form-control" data-field="Clave" id="clave" name="clave" disabled>
                 <br>
               </div>
               <div class="col-md-6">
                 <label for="correo">Correo</label>
-                <input type="text" class="form-control" data-field="Correo" id="correo" name="correo"
-                disabled>
+                <input type="text" class="form-control" data-field="Correo" id="correo" name="correo" disabled>
                 <br>
               </div>
             </div>
@@ -86,7 +93,11 @@
 
 
             </div>
+            <h5 class="mt-4 mb-3 text-primary font-weight-bold">Contacto</h5>
+            <hr style="border-top: 1px solid #ccc;">
+
             <div class="row">
+
               <div class="col-md-6">
                 <label for="nombre_contacto">Nombre Contacto</label>
                 <input type="text" class="form-control" id="nombre_contacto" name="nombre_contacto"
@@ -100,6 +111,7 @@
                 <br>
               </div>
             </div>
+            <h5 class="mt-4 mb-3 text-primary font-weight-bold">Datos Fiscales</h5>
             <hr style="border-top: 1px solid #ccc;">
             <div class="row">
               <div class="col-md-6">
@@ -158,6 +170,9 @@
             <div class="row">
 
             </div>
+            <h5 class="mt-4 mb-3 text-primary font-weight-bold">Domicilio</h5>
+            <hr style="border-top: 1px solid #ccc;">
+
             <div class="row">
               <div class="col-md-6">
                 <label for="item-details-countryValue">País</label>
@@ -220,7 +235,8 @@
 
         </div>
         <div class="modal-footer custom_modal_footer">
-
+<div class="alert alert-info">
+          </div>
           <button type="button" class="btn btn-success btn-icon-split" id="btnContinuar">
             <span class="text">Guardar</span>
             <span class="icon text-white-50">
@@ -289,7 +305,7 @@
     });
 
     $('#btnContinuar').click(function() {
-  
+
       // Verifica si se ha seleccionado un archivo
       if ($('#archivo').get(0).files.length === 0) {
         Swal.fire({
@@ -324,7 +340,7 @@
               if (result.isConfirmed) {
                 // Cerrar el modal si es necesario
                 $('#clientModal').modal('hide');
-                location.reload(); 
+                location.reload();
               }
             });
           } else {

@@ -14,25 +14,23 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="<?php echo base_url(); ?>img/favicon.jpg" sizes="64x64">
 
-  <!-- Fonts -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Poppins:wght@600&display=swap" rel="stylesheet">
   <link
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
     rel="stylesheet">
 
   <!-- Font Awesome -->
-  <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <script src="https://kit.fontawesome.com/fdf6fee49b.js" crossorigin="anonymous"></script>
 
   <!-- Bootstrap -->
-  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     crossorigin="anonymous">
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
 
   <!-- Select2 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
   <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
 
@@ -57,7 +55,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
   </script>
 
-
   <!-- Easing Plugin -->
   <script src="<?php echo base_url(); ?>vendor/jquery-easing/jquery.easing.min.js"></script>
 
@@ -67,16 +64,16 @@
   <!-- SweetAlert2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.all.min.js"></script>
 
-
-
   <!-- DataTables JS -->
   <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 
+  <!-- InputMask -->
   <script src="<?php echo base_url(); ?>js/input-mask/jquery.inputmask.js"></script>
   <script src="<?php echo base_url(); ?>js/input-mask/jquery.inputmask.date.extensions.js"></script>
   <script src="<?php echo base_url(); ?>js/input-mask/jquery.inputmask.extensions.js"></script>
 </head>
+
 
 
 <body id="page-top">
@@ -225,7 +222,7 @@ echo '</pre>';*/
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                           <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                              <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -261,29 +258,20 @@ echo '</pre>';*/
 
           <ul class="navbar-nav d-flex flex-row w-100">
             <li class="nav-item custom-menu" style="flex: 1;">
-              <a class="btn custom-btn" href="javascript:void(0)" onclick="showSection('panel-inicio')">
+              <a class="btn custom-btn" href="javascript:void(0)" data-section="panel-inicio"
+                onclick="showSection('panel-inicio')">
                 <i class="fas fa-list-ol"></i>
                 <span class="d-none d-md-inline">Requisiciones</span>
               </a>
 
-              <a class="btn custom-btn" href="javascript:void(0)" onclick="showSection('seccion-bgv')">
+              <a class="btn custom-btn" href="javascript:void(0)" data-section="seccion-bgv"
+                onclick="showSection('seccion-bgv')">
                 <i class="fas fa-chart-line"></i>
                 <span class="d-none d-md-inline">Candidatos BGV</span>
               </a>
             </li>
             <!--//TODO: boton para en un futuro poder ver las requisiciones finalizadas actualmente sin funcionamiento -->
-            <!--li class="nav-item">
-        <a class="nav-link text-light active" href="javascript:void(0)" onclick="openHistory()">
-          <i class="fas fa-history"></i>
-          <span class="d-none d-md-inline">< ?php echo $translations['menu_historial_candidatos']; ?></span>
-        </a>
-      </li -->
-            <!-- <li class="nav-item">
-        <a class="nav-link text-light active" href="javascript:void(0)" onclick="openUsers()">
-          <i class="fas fa-users"></i>
-          <span class="d-none d-md-inline">< ?php //echo $translations['menu_usuarios']; ?></span>
-        </a>
-      </li> -->
+
 
           </ul>
         </nav>
@@ -400,9 +388,9 @@ echo '</pre>';*/
                     let acciones =
                       '<div class="text-center"><div class="btn-group dropstart"><button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button><ul class="dropdown-menu"><li><a href="javascript:void(0)" data-toggle="tooltip" title="Progress messages" onclick="viewMessages(' +
                       data + ',' + idioma +
-                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
+                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
                       data +
-                      ')" class="dropdown-item"><i class="fas fa-folder"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
+                      ')" class="dropdown-item"><i class="fas fa-folder"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
                     return acciones
                   }
                 },
@@ -701,64 +689,6 @@ echo '</pre>';*/
           }
         }
 
-        function openDetailss(requisicion_id) {
-          $('.div-candidato').removeClass('card-proceso-active');
-          $('#div-candidato' + requisicion_id).addClass('card-proceso-active');
-          $.ajax({
-            url: '<?php echo base_url('Cliente/get_requisicion_details'); ?>',
-            method: 'POST',
-            data: {
-              'requisicion_id': requisicion_id,
-            },
-            beforeSend: function() {
-              $('.loader').css("display", "block");
-            },
-            success: function(res) {
-
-              let data = JSON.parse(res);
-              let tbody = '';
-              data.data.forEach(function(resp) {
-
-                let cvLink = (resp.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
-                  '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' :
-                  '<button type="button" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + resp
-                  .id_ra +
-                  ')">Cargar CV/Solicitud</button>';
-                tbody += '<tr>';
-                tbody += '<td>' + resp.id + '</td>';
-                tbody += '<td>' + resp.nombre_aspirante + '</td>';
-                tbody += '<td>' + resp.medio_contacto + '</td>';
-                tbody += '<td>';
-                tbody += '<div class="btn-group">';
-                tbody +=
-                  '<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
-                tbody += 'Acciones';
-                tbody += '</button>';
-                tbody += '<ul class="dropdown-menu">';
-                tbody +=
-                  '<li><button type="button" class="dropdown-item" id="ver_historial" onclick="verHistorial(' +
-                  resp.id_ra + ', \'' + resp.nombre_aspirante +
-                  '\')">Movimientos del Aspirante</button></li>';
-                tbody +=
-                  '<li><button type="button" class="dropdown-item comentarios-reclutador-btn"  onclick="verHistorialMovimientos(\'' +
-                  resp.nombre_aspirante + '\', \'' + resp.id_ra + '\')">Comentarios Reclutador</button>';
-                tbody +=
-                  '<li>' + cvLink + '</li>';
-                // Agrega más opciones de modales dentro del dropdown según necesites
-                tbody += '</ul>';
-                tbody += '</div>';
-                tbody += '</td>';
-              });
-              $('#dataTable tbody').html(tbody);
-              $('#dataTable').DataTable(); // Inicializa el DataTable
-              setTimeout(function() {
-                $('.loader').fadeOut();
-              }, 200);
-            }
-          });
-
-        }
-
         function openProcedures() {
           // Recargar la página
           window.location.reload();
@@ -778,18 +708,18 @@ echo '</pre>';*/
         // Cargar ambas secciones al principio
         $(document).ready(function() {
           $('.dropdown-toggle').dropdown();
-
-          // Ocultar todas las secciones dinámicas al inicio
           $('.dynamic-section').hide();
 
-          // Cargar la sección 'panel-inicio' y mostrarla después de su carga
-          loadSection('panel-inicio', "<?php echo base_url('Dashboard/client'); ?>", {}, function() {
-            showSection('panel-inicio'); // Mostrar solo esta después de cargar
+          $.get("<?php echo base_url('Dashboard/client'); ?>", function(response) {
+            $('#panel-inicio').html(response).show();
+            $('.custom-btn[data-section="panel-inicio"]').addClass('active'); // Activa el botón inicial
           });
 
-          // Cargar la sección 'seccion-bgv' pero sin mostrarla
-          loadSection('seccion-bgv', "<?php echo base_url('Cliente_General/indexCliente'); ?>");
+          $.get("<?php echo base_url('Cliente_General/indexCliente'); ?>", function(response) {
+            $('#seccion-bgv').html(response);
+          });
         });
+
 
         // Función para cargar contenido en las secciones
         function loadSection(sectionIdToShow, url, data = {}, callback = null) {
@@ -816,11 +746,11 @@ echo '</pre>';*/
 
         // Función para mostrar la sección
         function showSection(sectionIdToShow) {
-          // Ocultar todas las secciones
           $('.dynamic-section').hide();
-
-          // Mostrar la sección seleccionada
           $('#' + sectionIdToShow).show();
+
+          $('.custom-btn').removeClass('active');
+          $('.custom-btn[data-section="' + sectionIdToShow + '"]').addClass('active');
         }
 
 

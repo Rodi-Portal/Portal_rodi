@@ -11,6 +11,24 @@ print_r($procesosActuales);
 echo '</pre>';*/
     $cliente = $procesosActuales[0] ?? null;
 ?>
+<div class="alert alert-info fs-4">
+
+
+  En esta sección podrás dar de alta tus requisiciones haciendo clic en el botón <strong>"Agregar una Nueva
+    Requisición"</strong>.
+  Una vez creadas, se mostrarán listadas en esta misma área.
+
+  <br>
+  Puedes hacer clic sobre cualquier requisición para ver si hay algún avance o candidato asignado.
+  Esta información aparecerá en el apartado derecho de la pantalla.
+
+  <br>
+  Por favor, asegúrate de completar toda la información solicitada al registrar una requisición.
+  Estos datos solo se te solicitarán una vez y se cargarán automáticamente en futuras solicitudes.
+
+  <br>
+  ¡Gracias por tu colaboración!
+</div>
 
 
 <div class="loader" style="display: none;"></div>
@@ -33,53 +51,54 @@ echo '</pre>';*/
   <div class="d-flex justify-content-center flex-column flex-md-row flex-lg-row mt-5 panel-inicio">
     <div class="card shadow div1 flex-fill">
       <div class="card-body">
-        <div class="d-flex flex-column flex-sm-row  align-items-baseline">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
           <?php $totalRequisiciones = (! empty($procesosActuales)) ? count($procesosActuales) : 0?>
-          <h4 class="text-wrap">
-            <?php echo $translations['proceso_titulo'] . ': <b>' . $totalRequisiciones . '</b>' ?></h4>
+          <h3 class="text-wrap ">
+            <?php echo $translations['proceso_titulo'] . ': <b>' . $totalRequisiciones . '</b>' ?></h3>
+
+          <button type="button" class="btn btn-primary btn-sm fs-4 py-3 px-4" onclick="loadPageInSection()">
+            <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
+          </button>
+
         </div>
 
-        <button type="button" class="btn btn-primary btn-sm" onclick="loadPageInSection()">
-          <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
-        </button>
+
+
         <hr>
         <div>
-          <h5 style="font-weight: bold;">
-            <i class="fas fa-arrow-down"></i> Haz "clic" sobre alguna de tus requisiciones, para ver los aspirantes
-            registrados para la misma.
-          </h5>
+
 
 
         </div>
 
         <hr>
         <?php if (! empty($procesosActuales)) {
-                  foreach ($procesosActuales as $proceso) {
-                      $idioma = ($proceso->ingles == 1) ? 'ingles' : 'espanol';
-                      $status = ($proceso->statusReq > 1) ?
-                      '<label>' . $translations['proceso_status'] . ': <b>Iniciada</b></label><br>' :
-                      '<label>' . $translations['proceso_status'] . ': <b>Pendiente</b></label><br>';
+                foreach ($procesosActuales as $proceso) {
+                    $idioma = ($proceso->ingles == 1) ? 'ingles' : 'espanol';
+                    $status = ($proceso->statusReq > 1) ?
+                    '<label>' . $translations['proceso_status'] . ': <b>Iniciada</b></label><br>' :
+                    '<label>' . $translations['proceso_status'] . ': <b>Pendiente</b></label><br>';
 
-                      $observaciones = ($proceso->ingles == 1) ?
-                      '<small>Observations: <b>' . $proceso->observaciones . '</b></small><br>' :
-                      '<small>Observaciones: <b>' . $proceso->observaciones . '</b></small><br>';
+                    $observaciones = ($proceso->ingles == 1) ?
+                    '<small>Observations: <b>' . $proceso->observaciones . '</b></small><br>' :
+                    '<small>Observaciones: <b>' . $proceso->observaciones . '</b></small><br>';
 
-                      $numeroVacantes = ($proceso->ingles == 1) ?
-                      '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>' :
-                      '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>';
+                    $numeroVacantes = ($proceso->ingles == 1) ?
+                    '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>' :
+                    '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>';
 
-                      $zona = ($proceso->ingles == 1) ?
-                      '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>' :
-                      '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>';
+                    $zona = ($proceso->ingles == 1) ?
+                    '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>' :
+                    '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>';
 
-                      $experiencia = ($proceso->ingles == 1) ?
-                      '<div class="experiencia" style="max-width: 400px;">' .
-                      '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' .
-                      '</div>' :
-                      '<div class="experiencia" style="max-width: 400px;">' .
-                      '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' .
-                          '</div>';
-                  ?>
+                    $experiencia = ($proceso->ingles == 1) ?
+                    '<div class="experiencia" style="max-width: 400px;">' .
+                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' .
+                    '</div>' :
+                    '<div class="experiencia" style="max-width: 400px;">' .
+                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' .
+                        '</div>';
+                ?>
         <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
           <div class="card-title" onclick="openDetails(<?php echo $proceso->idReq ?>)">
             <h4 id="vacanteMessage">Haz clic aquí para consultar el estado de tu vacante.</h4>
@@ -101,8 +120,8 @@ echo '</pre>';*/
         </div>
         <hr>
         <?php
-              }
-          } else {?>
+            }
+        } else {?>
         <div class="card">
           <div class="card-body text-center">
             <?php echo $translations['proceso_sin_candidatos'] ?>
