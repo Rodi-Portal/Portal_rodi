@@ -22,13 +22,13 @@ $lang['guardar_modal_nuevo_candidato'] = "Guardar";
 $lang['cerrar_modal_nuevo_candidato'] = "Cancelar";
 
 $lang['menu_historial_candidatos'] = "Historial de requisiciones";
-$lang['menu_inicio_candidatos'] = "Requisiciones ";
+$lang['menu_inicio_candidatos'] = "Requisiciónes ";
 $lang['menu_usuarios'] = "Usuarios";
-$lang['accion_nueva_requisicion'] = "Agregar una Nueva Requisicion";
+$lang['accion_nueva_requisicion'] = "Agregar Nueva Requisición";
 $lang['accion_nuevo_candidato_examenes'] = "Registrar exámenes para un nuevo candidato";
 
 
-$lang['proceso_titulo'] = "Requisiciones en proceso";
+$lang['proceso_titulo'] = "Requisiciónes en proceso";
 $lang['proceso_sin_candidatos'] = "No hay requisiciones";
 $lang['proceso_titulo_subcliente'] = "Proveedor/Subcliente";
 $lang['proceso_status'] = "Estatus";
@@ -36,4 +36,4 @@ $lang['proceso_accion_editar'] = "Editar";
 $lang['proceso_accion_ver_comentarios'] = "Comentarios de reclutador";
 $lang['proceso_accion_archivos'] = "Archivos del candidato";
 $lang['proceso_fecha_registro'] = "Registrada";
-$lang['proceso_ver_detalles'] = "Aspirantes  asignados (selecciona una  requisicion)";
+$lang['proceso_ver_detalles'] = "Aspirantes  asignados (selecciona una  requisición)";
