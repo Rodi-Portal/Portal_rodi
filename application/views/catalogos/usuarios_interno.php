@@ -302,7 +302,7 @@ $(document).ready(function() {
     /*****Devuelve los valores registrados para editarlos DESDE EL BOTON EDITAR**************/
 
     rowCallback: function(row, data) {
-   
+
 
       $("a#editar", row).bind('click', () => {
         $("#idUsuarioInterno").val(data.id_usuario);
@@ -310,8 +310,8 @@ $(document).ready(function() {
         $("#titulo_nuevo_modal").text("Editar Usuario");
         $("#nombreUsuarioInterno").val(data.nombre);
         $("#paternoUsuarioInterno").val(data.paterno);
-      
-        if (<?php echo  $this->session->userdata('idrol'); ?> != 6) {
+
+        if (<?php echo $this->session->userdata('idrol'); ?> != 6) {
           $("#id_rolUsuarioInterno").val(data.id_rol);
           $("#id_rolUsuarioInterno").prop('disabled', true);
 
@@ -363,14 +363,14 @@ $(document).ready(function() {
   });
 
   $(document).on('click', 'a[data-action="eliminarUsuario"]', function() {
-  var id = $(this).data('id');
-  var referente = $(this).data('referente');
-  mostrarMensajeConfirmacion('eliminarUsuario', referente, id); 
-});
+    var id = $(this).data('id');
+    var referente = $(this).data('referente');
+    mostrarMensajeConfirmacion('eliminarUsuario', referente, id);
+  });
 
   $(document).on('click', '.fa-sync-alt', function() {
-    var correo = $(this).data('correo');
-    var idDatosGenerales = $(this).data('id');
+    var correo = $(this).closest('a').data('correo'); // data-correo
+    var idDatosGenerales = $(this).closest('a').data('id'); // data-id
     enviarCredenciales(correo, idDatosGenerales);
   });
   $(window).on('resize', function() {
@@ -737,7 +737,8 @@ function editarUsuarios() {
           timer: 2500
         });
 
-        $('#formAccesoUsuariosinternos')[0].reset();// Se limpian nuevamente los campos de registro después de guardar
+        $('#formAccesoUsuariosinternos')[0]
+      .reset(); // Se limpian nuevamente los campos de registro después de guardar
       } else {
         $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'block').html(data.msg);
       }
