@@ -355,7 +355,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                   <div class="btn-content">
                     <!-- Contenedor para el ícono y texto -->
                     <i class="fas fa-calendar-alt"></i> <!-- Icono de FontAwesome para Former employee -->
-                    Actividades
+                    Comunicación
                   </div>
                 </a>
 
