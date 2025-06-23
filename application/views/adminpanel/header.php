@@ -350,7 +350,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                     Exempleados
                   </div>
                 </a>
-                <a id="former-actividades-btn" href="#" class="btn custom-btn former-actividades-btn">
+                <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion') ?>" class="btn custom-btn former-actividades-btn">
                   <div class="module-label">Módulo</div>
                   <div class="btn-content">
                     <!-- Contenedor para el ícono y texto -->
@@ -586,13 +586,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
 
         <!-- RutasVue-->
         <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
-
-
         <!-- End of Topbar -->
-
-
-
-
 
         <script>
         $(document).on('click', '.open-contacto', function(e) {
@@ -693,7 +687,6 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
           });
         });
 
-
         $(document).ready(function() {
           $('#formContacto').on('submit', function(e) {
             e.preventDefault();
@@ -752,8 +745,6 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
 
         });
 
-
-
         document.getElementById('fileLogo').addEventListener('change', function(event) {
           const file = event.target.files[0];
           if (file && file.type.startsWith('image')) {
@@ -769,7 +760,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
           }
         });
 
-        document.addEventListener("DOMContentLoaded", function() {
+       /* document.addEventListener("DOMContentLoaded", function() {
           document.getElementById("former-actividades-btn").addEventListener("click", function(e) {
             e.preventDefault(); // Prevenir comportamiento por defecto del enlace
             Swal.fire({
@@ -780,7 +771,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
               confirmButtonColor: '#3085d6'
             });
           });
-        });
+        }); */
 
         // Funcionalidad para eliminar el logo usando AJAX
         $("#deleteLogo").on("click", function() {

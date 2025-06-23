@@ -28,14 +28,14 @@
             (<?php echo htmlspecialchars($usuario['id_usuario'], ENT_QUOTES, 'UTF-8'); ?>)
             <!-- Icono de papelera para eliminar el permiso -->
             <?php
-             $idRol = $this->session->userdata('idrol');
-             
-             if($idRol == 6 || $idRol == 1){ ?>
+                $idRol = $this->session->userdata('idrol');
+
+            if ($idRol == 6 || $idRol == 1) {?>
             <a href="#" class="eliminar-permiso" data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
-              data-id_cliente="<?php echo $p['id_cliente']; ?>"  title="Eliminar acceso a esta sucursal">
+              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal">
               <i class="fa fa-trash" style="color: red; float: right"></i>
             </a>
-            <?php } ?>
+            <?php }?>
           </li>
           <?php endforeach; ?>
         </td>
@@ -46,7 +46,7 @@
           <li> Exempleados : <?php echo $p['empleados_inactivos']; ?></li>
         </td>
         <td>
-          <a href="<?php echo site_url('procesoFormer/' . $p['id_cliente']); ?>" class="btn btn-primary">Ver Ex
+          <a href="<?php echo site_url('procesoFormer/' . $p['id_cliente']); ?>" class="btn-ver-empleados">Ver Ex
             empleados</a>
         </td>
       </tr>
@@ -62,37 +62,51 @@
 </div>
 
 <style>
-.container-fluid {
-  width: 100%;
-  /* Full width */
-  padding: 20px;
-  /* Internal padding */
-  box-sizing: border-box;
-  /* Include padding in width */
+.modulo-titulo {
+  font-size: 28px;
+  font-weight: bold;
+  color: #58c4f5;
+  /* Cambiado a azul claro */
+  margin-bottom: 10px;
 }
 
-#processTable {
-  width: 100%;
-  /* Make the table full width */
-  border-collapse: collapse;
-  /* Ensure borders collapse */
+#processTable thead {
+  background: linear-gradient(to right, #58c4f5, #31a5d3) !important;
+  /* Azul degradado */
+  color: white;
+  text-align: center;
 }
 
 #processTable th,
 #processTable td {
-  border: 1px solid #ddd;
-  /* Add borders to table cells */
-  padding: 8px;
-  /* Add padding inside cells */
+  vertical-align: top;
   text-align: left;
-  /* Align text to the left */
+  padding: 10px;
 }
 
-#processTable th {
-  background-color: #f2f2f2;
-  /* Header background color */
+#processTable tbody tr:hover {
+  background-color: #e8f7fe;
+  /* Azul muy claro para hover */
+}
+
+.btn-ver-empleados,
+.former-employment-btn {
+  background: linear-gradient(to right, #58c4f5, #31a5d3);
+  /* Botón azul con degradado */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
   font-weight: bold;
-  /* Bold header text */
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s ease;
+}
+
+.btn-ver-empleados:hover,
+.former-employment-btn:hover {
+  background: linear-gradient(45deg, #2fa6cf, #007ca8);
+  /* Efecto hover más intenso */
 }
 </style>
 
