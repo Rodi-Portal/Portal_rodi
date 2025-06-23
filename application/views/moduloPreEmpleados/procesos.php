@@ -43,7 +43,7 @@
         </td>
         <td><?php echo isset($p['creacion']) ? htmlspecialchars($p['creacion'], ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
         <td>
-          <a href="<?php echo site_url(htmlspecialchars($p['url'], ENT_QUOTES, 'UTF-8')); ?>" class="btn btn-primary">Ver procesos</a>
+          <a href="<?php echo site_url(htmlspecialchars($p['url'], ENT_QUOTES, 'UTF-8')); ?>" class="btn-ver-empleados">Ver procesos</a>
         </td>
       </tr>
       <?php endif; ?>
@@ -58,38 +58,48 @@
 </div>
 
 <style>
-.container-fluid {
-  width: 100%;
-  /* Full width */
-  padding: 20px;
-  /* Internal padding */
-  box-sizing: border-box;
-  /* Include padding in width */
+.modulo-titulo {
+  font-size: 28px;
+  font-weight: bold;
+  color: #9fda64; /* Verde claro */
+  margin-bottom: 10px;
 }
 
-#processTable {
-  width: 100%;
-  /* Make the table full width */
-  border-collapse: collapse;
-  /* Ensure borders collapse */
+#processTable thead {
+  background: linear-gradient(to right, #9fda64, #7eb94f) !important; /* Degradado verde */
+  color: white;
+  text-align: center;
 }
 
 #processTable th,
 #processTable td {
-  border: 1px solid #ddd;
-  /* Add borders to table cells */
-  padding: 8px;
-  /* Add padding inside cells */
+  vertical-align: top;
   text-align: left;
-  /* Align text to the left */
+  padding: 10px;
 }
 
-#processTable th {
-  background-color: #f2f2f2;
-  /* Header background color */
-  font-weight: bold;
-  /* Bold header text */
+#processTable tbody tr:hover {
+  background-color: #f3fbec; /* Verde muy claro para hover */
 }
+
+.btn-ver-empleados,
+.pre-employment-btn {
+  background: linear-gradient(to right, #9fda64, #7eb94f); /* Botón con degradado verde */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.3s ease;
+}
+
+.btn-ver-empleados:hover,
+.pre-employment-btn:hover {
+  background: linear-gradient(45deg, #8ecf55, #6ca93c); /* Hover más intenso */
+}
+
 </style>
 
 <script>
@@ -97,59 +107,6 @@ $(document).ready(function() {
   $('#processTable').DataTable();
   $('#sidebarToggle').on('click', function() {
     $('#sidebar').toggleClass('hidden'); // Alternar la clase 'hidden'
-  });
-});
-$(document).on('click', '.eliminar-permiso', function(e) {
-  e.preventDefault();
-
-  var id_usuario = $(this).data('id_usuario');
-  var id_cliente = $(this).data('id_cliente');
-
-  // Mostrar confirmación usando SweetAlert
-  Swal.fire({
-    title: '¿Estás seguro?',
-    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-    reverseButtons: true
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Enviar solicitud de eliminación al servidor
-      $.ajax({
-        url: '<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>',
-        method: 'POST',
-        data: {
-          id_usuario: id_usuario,
-          id_cliente: id_cliente
-        },
-        success: function(response) {
-          var data = JSON.parse(response);
-          if (data.status === 'success') {
-            Swal.fire(
-              'Eliminado',
-              'El permiso ha sido eliminado exitosamente.',
-              'success'
-            );
-            location.reload(); // Recargar la página para actualizar los datos
-          } else {
-            Swal.fire(
-              'Error',
-              data.message,
-              'error'
-            );
-          }
-        },
-        error: function() {
-          Swal.fire(
-            'Error',
-            'Ocurrió un error al intentar eliminar el permiso.',
-            'error'
-          );
-        }
-      });
-    }
   });
 });
 </script>

@@ -1,15 +1,15 @@
 <div class="container-fluid">
-  <h2>Modulo de Empleados</h2>
-  <p>En este módulo podrás consultar un listado de tus areas, departamentos o sucursales. Al seleccionar uno, accederás
-    al listado de empleados asociados y podrás gestionar sus datos y procesos de manera eficiente.</p>
-  <table id="processTable" class="display" style="width: 100%;">
+  <h2 class="modulo-titulo">Módulo de Comunicacion</h2>
+  <p>En este módulo podrás consultar un listado de tus sucursales, áreas o departamentos, según la estructura definida por tu organización. Al seleccionar una entidad, accederás al módulo de comunicación correspondiente, donde podrás gestionar y compartir información clave con los colaboradores asociados.</p>
+
+  <table id="processTable" class="table table-striped table-hover display" style="width:100%;">
     <thead>
       <tr>
-        <th style="text-align: center">Sucursal </th>
-        <th style="text-align: center">Correo Electrónico</th>
-        <th style="text-align: center">Usuarios con acceso a sucursal</th>
-        <th style="text-align: center">Empleados</th>
-        <th style="text-align: center">Acciones</th>
+        <th>Sucursal</th>
+        <th>Correo Electrónico</th>
+        <th>Usuarios con acceso</th>
+        <th>Empleados</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -17,46 +17,45 @@
       <?php foreach ($permisos as $p): ?>
       <?php if (isset($p['nombreCliente']) && isset($p['url'])): ?>
       <tr>
-        <td><?php echo htmlspecialchars($p['nombreCliente'], ENT_QUOTES, 'UTF-8'); ?></td>
-        <td><?php echo isset($p['correo']) ? htmlspecialchars($p['correo'], ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
-        <td><?php foreach ($p['usuarios'] as $usuario): ?>
-          <li>
-            <?php echo htmlspecialchars($usuario['nombre_completo'], ENT_QUOTES, 'UTF-8'); ?>
-            (<?php echo htmlspecialchars($usuario['rol'], ENT_QUOTES, 'UTF-8'); ?>)
-            (<?php echo htmlspecialchars($usuario['id_usuario'], ENT_QUOTES, 'UTF-8'); ?>)
-            <!-- Icono de papelera para eliminar el permiso -->
-            <?php
-             $idRol = $this->session->userdata('idrol');
-             
-             if($idRol == 6 || $idRol == 1){ ?>
-            <a href="#" class="eliminar-permiso" data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
-              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal">
-              <i class="fa fa-trash" style="color: red; float: right"></i>
-            </a>
-            <?php } ?>
-          </li>
-          <?php endforeach; ?>
-        </td>
-
-        <td data-order="<?php echo $p['empleados_activos']; ?>">
-          <li>Numero maximo: <?php echo $p['max']; ?></li>
-          <li> Empleados : <?php echo $p['empleados_activos']; ?></li>
-          <li> Exempleados : <?php echo $p['empleados_inactivos']; ?></li>
+        <td><?= htmlspecialchars($p['nombreCliente'], ENT_QUOTES, 'UTF-8') ?></td>
+        <td><?= isset($p['correo']) ? htmlspecialchars($p['correo'], ENT_QUOTES, 'UTF-8') : 'N/A' ?></td>
+        <td>
+          <ul style="padding-left: 16px;">
+            <?php foreach ($p['usuarios'] as $usuario): ?>
+            <li>
+              <?= htmlspecialchars($usuario['nombre_completo'], ENT_QUOTES, 'UTF-8') ?>
+              (<?= htmlspecialchars($usuario['rol'], ENT_QUOTES, 'UTF-8') ?>)
+              (<?= htmlspecialchars($usuario['id_usuario'], ENT_QUOTES, 'UTF-8') ?>)
+              <?php
+              $idRol = $this->session->userdata('idrol');
+              if($idRol == 6 || $idRol == 1): ?>
+              <a href="#" class="eliminar-permiso" data-id_usuario="<?= $usuario['id_usuario'] ?>" data-id_cliente="<?= $p['id_cliente'] ?>" title="Eliminar acceso a esta sucursal">
+                <i class="fa fa-trash-alt" style="color: red;"></i>
+              </a>
+              <?php endif; ?>
+            </li>
+            <?php endforeach; ?>
+          </ul>
         </td>
         <td>
-          <a href="<?php echo site_url('proceso/' . $p['id_cliente']); ?>" class="btn-ver-empleados">Ver Empleados</a>
+          <ul style="padding-left: 16px;">
+            <li><strong>Máximo:</strong> <?= $p['max'] ?></li>
+            <li><strong>Activos:</strong> <?= $p['empleados_activos'] ?></li>
+            <li><strong>Inactivos:</strong> <?= $p['empleados_inactivos'] ?></li>
+          </ul>
+        </td>
+        <td>
+          <a href="<?= site_url('comunicacion/' . $p['id_cliente']) ?>" class="btn-ver-empleados">Entrar</a>
         </td>
       </tr>
-
       <?php endif; ?>
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="6">No hay clientes registrados.</td>
+        <td colspan="5">No hay clientes registrados.</td>
       </tr>
       <?php endif; ?>
     </tbody>
-
   </table>
 </div>
 
@@ -64,12 +63,12 @@
 .modulo-titulo {
   font-size: 28px;
   font-weight: bold;
-  color: #2e86c1; /* Azul profundo */
+  color: #bb67bb;
   margin-bottom: 10px;
 }
 
 #processTable thead {
-  background: linear-gradient(to right, #2e86c1, #1b4f72) !important; /* Azul degradado */
+background: linear-gradient(to right, rgb(226, 37, 226), rgba(187, 103, 187, 0.6));
   color: white;
   text-align: center;
 }
@@ -82,12 +81,11 @@
 }
 
 #processTable tbody tr:hover {
-  background-color: #e2eff8; /* Azul claro para hover */
+  background-color: #f1f5ff;
 }
 
-.btn-ver-empleados,
-.employment-btn {
-  background: linear-gradient(to right, #2e86c1, #1b4f72); /* Botón con degradado azul profundo */
+.btn-ver-empleados {
+background: linear-gradient(to right, #bb67bb, #a057a0);
   color: white;
   border: none;
   padding: 8px 14px;
@@ -98,18 +96,18 @@
   transition: background 0.3s ease;
 }
 
-.btn-ver-empleados:hover,
-.employment-btn:hover {
-  background: linear-gradient(45deg, #1f618d, #154360); /* Hover más oscuro */
+.btn-ver-empleados:hover {
+  background: linear-gradient(45deg, #0b5ed7, #0bb3d9);
 }
-
 </style>
+
 
 <script>
 $(document).ready(function() {
   $('#processTable').DataTable({
     order: [
-      [3, 'desc']
+      [3, 'desc'],
+      responsive: true
     ] // Índice 3 = cuarta columna, "Empleados"
   });
   $('#sidebarToggle').on('click', function() {
