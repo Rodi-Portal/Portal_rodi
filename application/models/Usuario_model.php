@@ -384,9 +384,14 @@ class Usuario_model extends CI_Model
 
     public function forgotenPass($datos, $id)
     {
-        $this->db
-            ->where('id', $id)
-            ->update('datos_generales', $datos);
+        $this->db->where('id', $id);
+        $this->db->update('datos_generales', $datos);
+
+        if ($this->db->affected_rows() > 0) {
+            return true; // Actualización exitosa
+        } else {
+            return false; // No se actualizó nada (quizá el id no existe o los datos son iguales)
+        }
     }
     public function getAnalistasActivos()
     {
