@@ -2147,7 +2147,7 @@ class Cronjobs extends CI_Controller
     public function enviar_notificaciones_cron_job($token = null)
     {
         // Verifica si el token proporcionado es correcto
-        $token_valido = 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO';
+        $token_valido = 'EAARSazMqqR0BPOYkd4jDCSxk45aynI3yqJOnWZAebp9rnVkrPFm0MLHtbkWZBult1OawF7VYCriHLshsUCmEZAPWKaeGuuX1lNJnT4llb0dDqDHoGTmGLZCUVcs9NJiqtmkauxYG5euwf953FzcgYgCgGB91ruwZAXO9krJ3hKqLx9w5ppBg6OqtJVOXZBpwZDZD';
 
         // Si el token no es válido, muestra un 404 o un mensaje de acceso no autorizado
         if ($token !== $token_valido) {

@@ -27,18 +27,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
  </script>
  <style>
-  html, body, .seccion, #app {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  .seccion {
-    display: flex;
-    flex-direction: column;
-  }
-  #app {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
+ html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-y: auto; /* Esto permite scroll */
+}
+
+.seccion {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#app {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+  
 </style>
