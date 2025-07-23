@@ -2117,9 +2117,9 @@ class Reporte extends CI_Controller
             // Cursos
             if (in_array('cursos_empleados', $campos)) {
                 $cursos = $this->db
-                    ->select('C.name, C.expiry_date, C.description, C.id_opcion_curso, options.name AS oname')
+                    ->select('C.name, C.expiry_date, C.description, C.id_opcion, options.name AS oname')
                     ->from('cursos_empleados AS C')
-                    ->join('cursos_options AS options', 'options.id = C.id_opcion_curso', 'left')
+                    ->join('cursos_options AS options', 'options.id = C.id_opcion', 'left')
                     ->where('employee_id', $id)
                     ->get()
                     ->result_array();
@@ -2127,7 +2127,7 @@ class Reporte extends CI_Controller
                 $empleado['Cursos'] = '';
                 if (! empty($cursos)) {
                     foreach ($cursos as $curso) {
-                        $nombre = empty($curso['id_opcion_curso']) ? $curso['name'] : $curso['oname'];
+                        $nombre = empty($curso['id_opcion']) ? $curso['name'] : $curso['oname'];
                         $empleado['Cursos'] .= "Nombre: {$nombre}\nDescripción: {$curso['description']}\nExpira: {$curso['expiry_date']}\n\n";
                     }
                 }
