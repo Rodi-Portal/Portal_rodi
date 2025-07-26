@@ -112,7 +112,7 @@
         <p class="precio-total"><strong>Precio Total:</strong> <span
             class="pasarela-data">$<?php echo number_format($cobro, 2) ?> USD</span></p>
         <?php endif; ?>
-        <?php else: ?>
+<?php else: ?>
         <!-- Si no hay datos -->
         <div class="pasarela-alert">
           No hay datos disponibles para este cliente.
@@ -202,7 +202,7 @@
       <div class="modal-content">
         <!-- Encabezado del modal -->
         <div class="modal-header-pagos">
-          <h5 class="modal-title">Generar Pago - <?php echo $datos_pago->nombre_paquete ?? 'Paquete'; ?></h5>
+          <h5 class="modal-title">Generar Pago -                                                 <?php echo $datos_pago->nombre_paquete ?? 'Paquete'; ?></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
@@ -267,26 +267,31 @@
           </thead>
           <tbody>
             <?php if (isset($historial_pagos) && ! empty($historial_pagos)): ?>
-            <?php foreach ($historial_pagos as $pago): ?>
+<?php foreach ($historial_pagos as $pago): ?>
             <tr>
               <td><?php echo htmlspecialchars($pago->payment_request_id ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
               <td>
                 <?php
-                  if (! empty($pago->mes)) {
-                      $fecha = DateTime::createFromFormat('Y-m-d', $pago->mes);
-                      if ($fecha) {
-                          // Formateador con idioma español
-                          $fmt = new IntlDateFormatter('es_ES', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-                          // Sobrescribimos el patrón para mostrar solo mes y año
-                          $fmt->setPattern('MMMM yyyy');
-                          echo ucfirst($fmt->format($fecha)); // ucfirst para mayúscula inicial
-                      } else {
-                          echo '-';
-                      }
-                  } else {
-                      echo '-';
-                  }
-              ?>
+                    if (! empty($pago->mes)) {
+                        $fecha = DateTime::createFromFormat('Y-m-d', $pago->mes);
+                        if ($fecha) {
+                            // Mapeo manual de meses en español
+                            $meses = [
+                                1 => 'Enero', 2       => 'Febrero', 3  => 'Marzo', 4      => 'Abril',
+                                5 => 'Mayo', 6        => 'Junio', 7    => 'Julio', 8      => 'Agosto',
+                                9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre',
+                            ];
+
+                            $mesNum = (int) $fecha->format('n'); // número de mes 1-12
+                            $anio   = $fecha->format('Y');       // año completo
+                            echo $meses[$mesNum] . ' ' . $anio;  // ejemplo: Julio 2025
+                        } else {
+                            echo '-';
+                        }
+                    } else {
+                        echo '-';
+                    }
+                ?>
               </td>
               <td>
                 <?php
@@ -314,7 +319,7 @@
               <td><?php echo htmlspecialchars($pago->referencia ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
             </tr>
             <?php endforeach; ?>
-            <?php else: ?>
+<?php else: ?>
             <tr>
               <td colspan="5" class="text-center">No hay historial de pagos disponible.</td>
             </tr>
@@ -423,9 +428,9 @@ function confirmarPago(parametro) {
 document.addEventListener('DOMContentLoaded', function() {
 
   // Precio base mensual desde PHP
-  const precioMensual = <?php echo $datos_pago->precio ?? 999; ?>;
-  const cobroProporcional = <?php echo $cobro ?? 999; ?>;
-  const cobroMensualFijo = <?php echo $cobro_mes ?? 999; ?>;
+  const precioMensual =                        <?php echo $datos_pago->precio ?? 999; ?>;
+  const cobroProporcional =                            <?php echo $cobro ?? 999; ?>;
+  const cobroMensualFijo =                           <?php echo $cobro_mes ?? 999; ?>;
   const mesActual = "<?php echo date('Y-m') ?>";
 
   // Array para guardar los meses seleccionados dinámicamente
