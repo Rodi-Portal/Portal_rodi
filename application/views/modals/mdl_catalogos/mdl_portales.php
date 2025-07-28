@@ -622,6 +622,60 @@
     </div>
   </div>
 </div>
+<!-- Modal de Registro de Pagos -->
+<div class="modal fade" id="modalRegistrarPagos" tabindex="-1" role="dialog" aria-labelledby="tituloModalPagos"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 style="color: white !important;" id="tituloModalPagos">Registrar Pago</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="formRegistrarPago">
+        <div class="modal-body">
+
+          <!-- Input oculto para el ID -->
+          <input type="hidden" id="id_portal_pago" name="id_portal">
+
+          <!-- Aquí puedes agregar más campos -->
+          <div class="form-group">
+            <label for="monto">Monto del Pago</label>
+            <input type="number" class="form-control" id="monto" name="monto" placeholder="Ingrese el monto" required>
+          </div>
+
+          <div class="form-group">
+            <label for="fecha_pago">Fecha de Pago</label>
+            <input type="date" class="form-control" id="fecha_pago" name="fecha_pago" required>
+          </div>
+
+          <div class="form-group">
+            <label>Seleccionar Mes(es)</label>
+            <div id="contenedorMeses" class="d-flex flex-wrap">
+              <!-- Aquí se mostrarán los botones -->
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="fecha_pago">Comentarios</label>
+            <input type="text" class="form-control" id="comentarios" name="comentarios" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Guardar Pago</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+
+
 <input type="hidden" id="base_url" value="<?php echo base_url('Cat_Cliente/setCliente'); ?>">
 
 <script>
@@ -832,6 +886,51 @@ $('#editPortal #btnActualizar').on('click', function() {
     }
   });
 });
+$('#formRegistrarPago').on('submit', function(e) {
+  e.preventDefault();
+
+  const datos = $(this).serializeArray();
+
+  datos.push({
+    name: 'meses',
+    value: JSON.stringify(mesesSeleccionados)
+  });
+
+  $.ajax({
+    type: 'POST',
+    url: '<?php echo base_url('Cat_Portales/guardarPago'); ?>',
+    data: datos,
+    dataType: 'json',
+    success: function(response) {
+      if (response.status === 'success') {
+        $('#modalRegistrarPagos').modal('hide');
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: response.message,
+          timer: 2000,
+          showConfirmButton: false
+        });
+        // Aquí puedes recargar tu tabla o limpiar campos si quieres
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: response.message
+        });
+      }
+    },
+    error: function(xhr, status, error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al guardar el pago (fallo de conexión o del servidor).'
+      });
+    }
+  });
+});
+
+
 
 function generarPassword() {
   $.ajax({

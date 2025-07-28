@@ -91,14 +91,14 @@ echo $token  */?>
               $logo = 'logo_nuevo.png';
       }?>
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
-        <img style="max-width: 220px; max-height: 150px;"
+        <img style="max-width: 220px; max-height: 150px; background: white;"
           src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>" alt="Logo">
       </a>
       <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
       <br><br>
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
-      <?php if ($idRol == 1 || $idRol == 6) {?>
+      <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9|| $idRol == 10) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
           aria-expanded="true" aria-controls="collapseUsuario">

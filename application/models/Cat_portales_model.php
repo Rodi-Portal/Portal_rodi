@@ -96,6 +96,8 @@ class Cat_portales_model extends CI_Model
       P.pre,
       P.emp,
       P.former,
+      P.com,
+      P.com360,
       PAQ.nombre_paquete AS paquete,
       F.id AS idFac,
       F.razon_social,

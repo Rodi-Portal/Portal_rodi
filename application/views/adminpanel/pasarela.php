@@ -1,3 +1,98 @@
+<?php if (! empty($cargar_recursos)): ?>
+
+    <!-- ✅ Estilos primero -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <!-- FontAwesome -->
+    <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+
+    <!-- SB Admin 2 -->
+    <?php echo link_tag("css/sb-admin-2.min.css"); ?>
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
+
+    <!-- Bootstrap Select y Select2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+
+    <!-- Estilos personalizados -->
+    <?php echo link_tag("css/custom.css"); ?>
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- ✅ Scripts después -->
+    <!-- jQuery -->
+    <script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Bundle (incluye Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery Easing -->
+    <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <!-- Bootstrap Select -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- (Opcional) Chart.js si lo usas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script src="<?php echo base_url() ?>js/chart.min.js"></script> -->
+
+
+<!-- otros recursos -->
+
+<a
+  href="<?php echo base_url(); ?>Login/logout"
+  style="
+    display:inline-block;
+    background-color:#d9534f;
+    color:#fff;
+    font-weight:bold;
+    padding:10px 18px;
+    border-radius:8px;
+    text-decoration:none;
+    font-family:'Segoe UI', Tahoma, sans-serif;
+    font-size:15px;
+    box-shadow:0 4px 8px rgba(0,0,0,0.1);
+    transition:all 0.3s ease;
+  "
+  onmouseover="this.style.backgroundColor='#c9302c'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+  onmouseout="this.style.backgroundColor='#d9534f'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';"
+>
+  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400" style="margin-right:6px;"></i>
+  Cerrar sesión
+</a>
+ <a class="sidebar-brand d-flex align-items-center justify-content-center">
+        <img style="max-width: 220px; max-height: 150px;"
+          src="<?php echo base_url(); ?>_logosPortal/logo_nuevo.png" alt="Logo">
+      </a>
+ <div class="alert alert-danger text-center" role="alert" style="margin:10px; font-weight:600;">
+    <i class="fas fa-exclamation-triangle"></i>
+    Tu suscripción a <strong>TalentSafe</strong> ha expirado. Por favor realiza tu pago cuanto antes generando un link de pago.
+    <br>Después de pagarlo, regresa aquí y confírmalo en el botón correspondiente. De esta manera tus accesos quedarán habilitados nuevamente.
+    <br>También puedes comunicarte al <strong>(52) 3334 54 2877</strong> vía llamada o WhatsApp de <strong>L‑V de 8 am a 6 pm</strong> para cualquier duda o aclaración.
+  </div>
+<?php endif; ?>
+
 <!-- ========================================================= -->
 <!-- 🔹 Encabezado principal -->
 <!-- ========================================================= -->

@@ -7,7 +7,7 @@ class Cat_Portales extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('id')) {
+        if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
 
@@ -59,67 +59,67 @@ class Cat_Portales extends CI_Controller
         $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del cliente ya existe en la base de datos.');
 
         // Validación de formulario
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
 
             $id_usuario = $this->session->userdata('id');
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date            = date('Y-m-d H:i:s');
             $uncode_password = $this->input->post('password');
-            $password = password_hash($uncode_password, PASSWORD_BCRYPT);
+            $password        = password_hash($uncode_password, PASSWORD_BCRYPT);
 
-            $datos_generales = array(
-                'nombre' => ($this->input->post('nombre_contacto') !== '') ? $this->input->post('nombre_contacto') : null,
-                'paterno' => ($this->input->post('apellido_contacto') !== '') ? $this->input->post('apellido_contacto') : null,
-                'correo' => ($this->input->post('correo') !== '') ? $this->input->post('correo') : null,
+            $datos_generales = [
+                'nombre'   => ($this->input->post('nombre_contacto') !== '') ? $this->input->post('nombre_contacto') : null,
+                'paterno'  => ($this->input->post('apellido_contacto') !== '') ? $this->input->post('apellido_contacto') : null,
+                'correo'   => ($this->input->post('correo') !== '') ? $this->input->post('correo') : null,
                 'telefono' => ($this->input->post('telefono') !== '') ? $this->input->post('telefono') : null,
                 'password' => $password,
-            );
+            ];
 
-            $datos_domicilios = array(
-                'pais' => ($this->input->post('pais_name') !== '') ? $this->input->post('pais_name') : null,
-                'estado' => ($this->input->post('state_name') !== '') ? $this->input->post('state_name') : null,
-                'ciudad' => ($this->input->post('ciudad_name') !== '') ? $this->input->post('ciudad_name') : null,
-                'colonia' => ($this->input->post('colonia') !== '') ? $this->input->post('colonia') : null,
-                'calle' => ($this->input->post('calle') !== '') ? $this->input->post('calle') : null,
+            $datos_domicilios = [
+                'pais'     => ($this->input->post('pais_name') !== '') ? $this->input->post('pais_name') : null,
+                'estado'   => ($this->input->post('state_name') !== '') ? $this->input->post('state_name') : null,
+                'ciudad'   => ($this->input->post('ciudad_name') !== '') ? $this->input->post('ciudad_name') : null,
+                'colonia'  => ($this->input->post('colonia') !== '') ? $this->input->post('colonia') : null,
+                'calle'    => ($this->input->post('calle') !== '') ? $this->input->post('calle') : null,
                 'exterior' => ($this->input->post('numero_exterior') !== '') ? $this->input->post('numero_exterior') : null,
                 'interior' => ($this->input->post('numero_interior') !== '') ? $this->input->post('numero_interior') : null,
-                'cp' => ($this->input->post('numero_cp') !== '') ? $this->input->post('numero_cp') : null,
-            );
+                'cp'       => ($this->input->post('numero_cp') !== '') ? $this->input->post('numero_cp') : null,
+            ];
 
-            $datos_factura = array(
+            $datos_factura = [
                 'razon_social' => ($this->input->post('razon_social') !== '') ? $this->input->post('razon_social') : null,
-                'rfc' => ($this->input->post('rfc') !== '') ? $this->input->post('rfc') : null,
-                'regimen' => ($this->input->post('regimen') !== '') ? $this->input->post('regimen') : null,
-                'forma_pago' => ($this->input->post('forma_pago') !== '') ? $this->input->post('forma_pago') : null,
-                'metodo_pago' => ($this->input->post('metodo_pago') !== '') ? $this->input->post('metodo_pago') : null,
-                'uso_cfdi' => ($this->input->post('uso_cfdi') !== '') ? $this->input->post('uso_cfdi') : null,
-            );
+                'rfc'          => ($this->input->post('rfc') !== '') ? $this->input->post('rfc') : null,
+                'regimen'      => ($this->input->post('regimen') !== '') ? $this->input->post('regimen') : null,
+                'forma_pago'   => ($this->input->post('forma_pago') !== '') ? $this->input->post('forma_pago') : null,
+                'metodo_pago'  => ($this->input->post('metodo_pago') !== '') ? $this->input->post('metodo_pago') : null,
+                'uso_cfdi'     => ($this->input->post('uso_cfdi') !== '') ? $this->input->post('uso_cfdi') : null,
+            ];
 
-            $datos_portal = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_paquete' => $this->input->post('paquete'),
-                'nombre' => strtoupper($this->input->post('nombrePortal')),
-                'id_usuario_portal' => null,
-                'id_domicilios' => null,
+            $datos_portal = [
+                'creacion'             => $date,
+                'edicion'              => $date,
+                'id_usuario'           => $id_usuario,
+                'id_paquete'           => $this->input->post('paquete'),
+                'nombre'               => strtoupper($this->input->post('nombrePortal')),
+                'id_usuario_portal'    => null,
+                'id_domicilios'        => null,
                 'id_datos_facturacion' => null,
-            );
+            ];
 
-            $datos_cliente = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => null,
-                'nombre' => strtoupper($this->input->post('nombrePortal')).'-Internal',
-                'id_domicilios' => null,
+            $datos_cliente = [
+                'creacion'             => $date,
+                'edicion'              => $date,
+                'id_usuario'           => null,
+                'nombre'               => strtoupper($this->input->post('nombrePortal')) . '-Internal',
+                'id_domicilios'        => null,
                 'id_datos_facturacion' => null,
-            );
+            ];
 
             /*
             echo '<pre>';
@@ -133,8 +133,8 @@ class Cat_Portales extends CI_Controller
 
             $existe = $this->cat_portales_model->existePortal($this->input->post('nombrePortal'));
 
-            $idPortal = ($this->input->post('idPortal') !== '') ? $this->input->post('idPortal') : null;
-            $correo = ($this->input->post('correo') !== '') ? $this->input->post('correo') : null;
+            $idPortal    = ($this->input->post('idPortal') !== '') ? $this->input->post('idPortal') : null;
+            $correo      = ($this->input->post('correo') !== '') ? $this->input->post('correo') : null;
             $idGenerales = ($this->input->post('idGenerales') !== '') ? $this->input->post('idGenerales') : null;
 
             if ($existe == 0) {
@@ -142,10 +142,10 @@ class Cat_Portales extends CI_Controller
                 $existeCorreo = $this->generales_model->correoExiste($correo);
 
                 if ($existeCorreo !== 0) {
-                    $msj = array(
+                    $msj = [
                         'codigo' => 2,
-                        'msg' => 'El correo proporcionado ya existe',
-                    );
+                        'msg'    => 'El correo proporcionado ya existe',
+                    ];
                     echo json_encode($msj);
                     return; // Detener el flujo del código ya que hay un error
                 }
@@ -154,26 +154,26 @@ class Cat_Portales extends CI_Controller
 
                 if ($idCliente > 0) {
 
-                    $msj = array(
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => 'Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
-                    );
+                        'msg'    => 'Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
+                    ];
                     echo json_encode($msj);
                     return;
                 } else {
-                    $msj = array(
+                    $msj = [
                         'codigo' => 0,
-                        'msg' => 'Error  al registrar al sucursal',
-                    );
+                        'msg'    => 'Error  al registrar al sucursal',
+                    ];
                     echo json_encode($msj);
                     return;
                 }
 
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 2,
-                    'msg' => 'El nombre del Portal ya  existe, este  tiene  que  ser unico, prueba  con otro nombre por favor',
-                );
+                    'msg'    => 'El nombre del Portal ya  existe, este  tiene  que  ser unico, prueba  con otro nombre por favor',
+                ];
             }
         }
         echo json_encode($msj);
@@ -211,60 +211,60 @@ class Cat_Portales extends CI_Controller
         $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del sucursal ya existe en la base de datos.');
 
         // Validación de formulario
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
 
             $id_usuario = $this->session->userdata('id');
             date_default_timezone_set('America/Mexico_City');
             $date = date('Y-m-d H:i:s');
 
-            $datos_domicilios = array(
-                'pais' => $this->input->post('pais_edit'),
-                'estado' => $this->input->post('estado_edit'),
-                'ciudad' => $this->input->post('ciudad_edit'),
-                'colonia' => $this->input->post('colonia_edit'),
-                'calle' => $this->input->post('calle_edit'),
+            $datos_domicilios = [
+                'pais'     => $this->input->post('pais_edit'),
+                'estado'   => $this->input->post('estado_edit'),
+                'ciudad'   => $this->input->post('ciudad_edit'),
+                'colonia'  => $this->input->post('colonia_edit'),
+                'calle'    => $this->input->post('calle_edit'),
                 'exterior' => $this->input->post('numero_exterior_edit'),
                 'interior' => $this->input->post('numero_interior_edit'),
-                'cp' => $this->input->post('numero_cp_edit'),
-            );
+                'cp'       => $this->input->post('numero_cp_edit'),
+            ];
 
             $datos_domicilios = array_filter($datos_domicilios, function ($value) {
                 return $value !== '';
             });
 
-            $datos_factura = array(
+            $datos_factura = [
                 'razon_social' => $this->input->post('razon_social_edit'),
-                'rfc' => $this->input->post('rfc_edit'),
-                'regimen' => $this->input->post('regimen_edit'),
-                'forma_pago' => $this->input->post('forma_pago_edit'),
-                'metodo_pago' => $this->input->post('metodo_pago_edit'),
-                'uso_cfdi' => $this->input->post('uso_cfdi_edit'),
-            );
+                'rfc'          => $this->input->post('rfc_edit'),
+                'regimen'      => $this->input->post('regimen_edit'),
+                'forma_pago'   => $this->input->post('forma_pago_edit'),
+                'metodo_pago'  => $this->input->post('metodo_pago_edit'),
+                'uso_cfdi'     => $this->input->post('uso_cfdi_edit'),
+            ];
 
             // Filtrar el arreglo para eliminar valores vacíos y nulos
             $datos_factura = array_filter($datos_factura, function ($value) {
-                return !empty($value);
+                return ! empty($value);
             });
 
-            $datos_portal = array(
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_paquete' => $this->input->post('paquete_edit'),
-                'nombre' => strtoupper($this->input->post('nombrePortal_edit')),
-                'id_usuario_portal' => $this->input->post('idUsuarioPortalE'),
-                'id_domicilios' => $this->input->post('idDomiciliosE'),
+            $datos_portal = [
+                'edicion'              => $date,
+                'id_usuario'           => $id_usuario,
+                'id_paquete'           => $this->input->post('paquete_edit'),
+                'nombre'               => strtoupper($this->input->post('nombrePortal_edit')),
+                'id_usuario_portal'    => $this->input->post('idUsuarioPortalE'),
+                'id_domicilios'        => $this->input->post('idDomiciliosE'),
                 'id_datos_facturacion' => $this->input->post('idFacturacionE'),
-                'usuarios_permitidos' => $this->input->post('accesosEdit'),
-            );
+                'usuarios_permitidos'  => $this->input->post('accesosEdit'),
+            ];
 
             $datos_portal = array_filter($datos_portal, function ($value) {
-                return !empty($value);
+                return ! empty($value);
             });
 
             /*
@@ -283,27 +283,27 @@ class Cat_Portales extends CI_Controller
 
                     $this->cat_portales_model->editPortal($idPortal, $datos_portal, $datos_factura, $datos_domicilios);
 
-                    $msj = array(
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => 'El portal ha sido actualizado exitosamente.',
-                    );
+                        'msg'    => 'El portal ha sido actualizado exitosamente.',
+                    ];
                     echo json_encode($msj);
                     return;
                 } else {
 
-                    $msj = array(
+                    $msj = [
                         'codigo' => 0,
-                        'msg' => 'Error  al actualizar  el Portal. ',
-                    );
+                        'msg'    => 'Error  al actualizar  el Portal. ',
+                    ];
                     echo json_encode($msj);
                     return;
                 }
 
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 2,
-                    'msg' => 'El nombre del Portal ya  existe, este  tiene  que  ser unico, prueba  con otro nombre por favor',
-                );
+                    'msg'    => 'El nombre del Portal ya  existe, este  tiene  que  ser unico, prueba  con otro nombre por favor',
+                ];
             }
         }
         echo json_encode($msj);
@@ -311,25 +311,25 @@ class Cat_Portales extends CI_Controller
     public function index()
     {
 
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
         // $datos['estados'] = $this->funciones_model->getEstados();
-        $datos['tipos_bloqueo'] = $this->funciones_model->getTiposBloqueo();
+        $datos['tipos_bloqueo']    = $this->funciones_model->getTiposBloqueo();
         $datos['tipos_desbloqueo'] = $this->funciones_model->getTiposDesbloqueo();
-        $datos['modals'] = $this->load->view('modals/mdl_catalogos/mdl_portales', '', true);
+        $datos['modals']           = $this->load->view('modals/mdl_catalogos/mdl_portales', '', true);
 
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
 
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -363,9 +363,9 @@ class Cat_Portales extends CI_Controller
 
             // Construir la respuesta JSON
             $response = [
-                'recordsTotal' => $recordsTotal,
+                'recordsTotal'    => $recordsTotal,
                 'recordsFiltered' => $recordsFiltered,
-                'data' => $data,
+                'data'            => $data,
             ];
 
             // Enviar la respuesta JSON
@@ -385,59 +385,59 @@ class Cat_Portales extends CI_Controller
         header('Content-Type: application/json');
 
         if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $fileTmpPath = $_FILES['file']['tmp_name'];
-            $fileName = $_FILES['file']['name'];
-            $fileSize = $_FILES['file']['size'];
-            $fileType = $_FILES['file']['type'];
-            $fileNameCmps = explode(".", $fileName);
+            $fileTmpPath   = $_FILES['file']['tmp_name'];
+            $fileName      = $_FILES['file']['name'];
+            $fileSize      = $_FILES['file']['size'];
+            $fileType      = $_FILES['file']['type'];
+            $fileNameCmps  = explode(".", $fileName);
             $fileExtension = strtolower(end($fileNameCmps));
 
-            $allowedExtensions = array('jpg', 'jpeg', 'png', 'pdf');
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
             if (in_array($fileExtension, $allowedExtensions)) {
                 $maxFileSize = 5 * 1024 * 1024; // 5MB
                 if ($fileSize <= $maxFileSize) {
                     $randomFileName = bin2hex(random_bytes(7));
-                    $idPortal = isset($_POST['idPortal']) ? $_POST['idPortal'] : '';
-                    $newFileName = $idPortal . "_" . $randomFileName . "." . $fileExtension;
+                    $idPortal       = isset($_POST['idPortal']) ? $_POST['idPortal'] : '';
+                    $newFileName    = $idPortal . "_" . $randomFileName . "." . $fileExtension;
 
                     $uploadFileDir = './_portal_files/';
-                    if (!is_dir($uploadFileDir)) {
+                    if (! is_dir($uploadFileDir)) {
                         mkdir($uploadFileDir, 0755, true);
                     }
                     $dest_path = $uploadFileDir . $newFileName;
 
                     if (move_uploaded_file($fileTmpPath, $dest_path)) {
 
-                        $portal = array(
+                        $portal = [
                             'cons' => $newFileName,
-                        );
+                        ];
 
                         $res = $this->cat_portales_model->editPortal($idPortal, $portal);
 
                         if ($res) {
-                            echo json_encode(array('codigo' => 1, 'mensaje' => 'Constancia cargada exitosamente.'));
+                            echo json_encode(['codigo' => 1, 'mensaje' => 'Constancia cargada exitosamente.']);
                         } else {
                             unlink($dest_path);
-                            echo json_encode(array('codigo' => 0, 'mensaje' => 'No se pudo  subir  la  constancia  intenta  nuevamente.'));
+                            echo json_encode(['codigo' => 0, 'mensaje' => 'No se pudo  subir  la  constancia  intenta  nuevamente.']);
                         }
 
                     } else {
-                        echo json_encode(array('codigo' => 0, 'mensaje' => 'No se pudo cargar el  archivo en el  directorio de destino.'));
+                        echo json_encode(['codigo' => 0, 'mensaje' => 'No se pudo cargar el  archivo en el  directorio de destino.']);
                     }
                 } else {
-                    echo json_encode(array('codigo' => 0, 'mensaje' => 'El tamaño del archivo excede el límite permitido.'));
+                    echo json_encode(['codigo' => 0, 'mensaje' => 'El tamaño del archivo excede el límite permitido.']);
                 }
             } else {
-                echo json_encode(array('codigo' => 0, 'mensaje' => 'Tipo de archivo no permitido.'));
+                echo json_encode(['codigo' => 0, 'mensaje' => 'Tipo de archivo no permitido.']);
             }
         } else {
-            echo json_encode(array('codigo' => 0, 'mensaje' => 'No se ha subido ningún archivo.'));
+            echo json_encode(['codigo' => 0, 'mensaje' => 'No se ha subido ningún archivo.']);
         }
     }
 
     public function getClientesPorId()
     {
-        $portal = $this->session->userdata('idPortal');
+        $portal     = $this->session->userdata('idPortal');
         $cliente_id = $this->input->get('cliente_id');
 
         try {
@@ -448,11 +448,11 @@ class Cat_Portales extends CI_Controller
             $this->output->set_content_type('application/json');
 
             // Verificar si se encontraron datos de clientes
-            if (!empty($data)) {
+            if (! empty($data)) {
                 // Construir la respuesta JSON
                 $response = [
                     'success' => true,
-                    'data' => $data,
+                    'data'    => $data,
                 ];
             } else {
                 // Construir la respuesta JSON si no se encontraron datos
@@ -483,101 +483,106 @@ class Cat_Portales extends CI_Controller
         // Define la regla de validación con los parámetros como un arreglo
         $this->form_validation->set_rules('accion', '', 'required');
         $this->form_validation->set_rules('id', '', 'required');
-       
 
         // Define los mensajes de error personalizados
         $this->form_validation->set_message('required', 'Algo salio  mal  intenta   nuevcamente ');
-     
 
         // Validación de formulario
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             $accion = $this->input->post('accion');
-            $id = $this->input->post('id');
+            $id     = $this->input->post('id');
 
             switch ($accion) {
                 case 'DesactivarReclutamiento':
                     $campo = 'reclu';
                     $valor = 0;
                     break;
-            
+
                 // You can add more cases here
                 case 'DesactivarPreEmpleo':
                     $campo = 'pre';
                     $valor = 0;
                     break;
-                    // You can add more cases here
+                // You can add more cases here
                 case 'DesactivarEmpleo':
                     $campo = 'emp';
                     $valor = 0;
                     break;
-                    // You can add more cases here
+                // You can add more cases here
                 case 'DesactivarExEmpleado':
                     $campo = 'former';
                     $valor = 0;
                     break;
-                    // You can add more cases here
+                case 'DesactivarCom':
+                    $campo = 'com';
+                    $valor = 0;
+                    break;
+                // You can add more cases here
+                case 'DesactivarCom360':
+                    $campo = 'com360';
+                    $valor = 0;
+                    break;
+                // You can add more cases here
                 case 'ActivarReclutamiento':
                     $campo = 'reclu';
                     $valor = 1;
                     break;
-                    // You can add more cases here
+                // You can add more cases here
                 case 'ActivarPreEmpleo':
                     $campo = 'pre';
                     $valor = 1;
                     break;
-                    // You can add more cases here
+                // You can add more cases here
                 case 'ActivarEmpleo':
                     $campo = 'emp';
                     $valor = 1;
                     break;
-                    // You can add more cases here
+                // You can add more cases here
                 case 'ActivarExEmpleado':
                     $campo = 'former';
                     $valor = 1;
                     break;
-               
+                case 'ActivarCom':
+                    $campo = 'com';
+                    $valor = 1;
+                    break;
+                // You can add more cases here
+                case 'ActivarCom360':
+                    $campo = 'com360';
+                    $valor = 1;
+                    break;
+
             }
 
+            $data = [
+                $campo => $valor,
+            ];
 
-
-            $data = array(
-                $campo => $valor,  
-            );
-                /*
-            echo '<pre>';
-            print_r($data);
-            echo '</pre>';
-            echo ' aqui el id'.$id;
-            die();*/
             // Lógica para activar/desactivar el módulo basado en la acción
             // Supón que se procesó correctamente
 
-
             $res = $this->cat_portales_model->editModulos($data, $id);
-            
-           
 
-            if($res == 1){
-                $msj = array(
+            if ($res == 1) {
+                $msj = [
                     'codigo' => 1,
-                    'msg' => "Se Cambio el estatus del modulo Correctamente ",
-                );
+                    'msg'    => "Se Cambio el estatus del modulo Correctamente ",
+                ];
 
-            }else{
-                $msj = array(
+            } else {
+                $msj = [
                     'codigo' => 0,
-                    'msg' => "Error  al intetntar   cambiar  el  estatus  del modulo,  por favor  intentalo mas  tarde =(...",
-                );
+                    'msg'    => "Error  al intetntar   cambiar  el  estatus  del modulo,  por favor  intentalo mas  tarde =(...",
+                ];
 
             }
 
-            
             // Responder con JSON
             echo json_encode(['mensaje' => $msj]);
         }
@@ -606,116 +611,116 @@ class Cat_Portales extends CI_Controller
         if ($this->form_validation->run() == false) {
             // Validación fallida
 
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
             echo json_encode($msj);
             return;
         }
         date_default_timezone_set('America/Mexico_City');
         $date = date('Y-m-d H:i:s');
         // Configuración de carga de archivo
-        if (!empty($_FILES['archivo'])) {
+        if (! empty($_FILES['archivo'])) {
             $error = 0;
-            $rfc = $this->input->post('rfc');
+            $rfc   = $this->input->post('rfc');
             /* echo '<pre>';
             print_r($_FILES['archivo']);
             echo '</pre>';
             die();*/
             // Define new $_FILES array - $_FILES['file']
-            $_FILES['file']['name'] = $_FILES['archivo']['name'];
-            $_FILES['file']['type'] = $_FILES['archivo']['type'];
+            $_FILES['file']['name']     = $_FILES['archivo']['name'];
+            $_FILES['file']['type']     = $_FILES['archivo']['type'];
             $_FILES['file']['tmp_name'] = $_FILES['archivo']['tmp_name'];
-            $_FILES['file']['error'] = $_FILES['archivo']['error'];
-            $_FILES['file']['size'] = $_FILES['archivo']['size'];
+            $_FILES['file']['error']    = $_FILES['archivo']['error'];
+            $_FILES['file']['size']     = $_FILES['archivo']['size'];
             // Set preference
-            $config['upload_path'] = './_const/';
+            $config['upload_path']   = './_const/';
             $config['allowed_types'] = 'pdf|jpeg|jpg|png';
-            $config['max_size'] = '2048'; // max_size in kb
-            $cadena = substr(md5(time()), 0, 16);
+            $config['max_size']      = '2048'; // max_size in kb
+            $cadena                  = substr(md5(time()), 0, 16);
             //$tipo = $this->candidato_model->getTipoDoc($tipo_documento);
             //$tipoArchivo = str_replace(' ','',$tipo->nombre);
-            $extension = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
+            $extension           = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
             $config['file_name'] = $rfc . '_' . $cadena;
-            $nombre_archivo = $rfc . '_' . $cadena . '.' . $extension;
+            $nombre_archivo      = $rfc . '_' . $cadena . '.' . $extension;
             //Load upload library
             $this->load->library('upload', $config);
             $this->upload->initialize($config);
             // File upload
-            if (!$this->upload->do_upload('file')) {
+            if (! $this->upload->do_upload('file')) {
                 $error++;
 
             } else {
 
                 // Get the uploaded file path
-                $uploaded_data = $this->upload->data();
+                $uploaded_data      = $this->upload->data();
                 $uploaded_file_path = $uploaded_data['full_path'];
-                $idCliente = $this->input->post('idCliente');
+                $idCliente          = $this->input->post('idCliente');
 
-                $idGenerales = $this->input->post('idGenerales');
+                $idGenerales    = $this->input->post('idGenerales');
                 $nombre_cliente = $this->input->post('nombre');
-                $clave_cliente = $this->input->post('clave');
+                $clave_cliente  = $this->input->post('clave');
 
-                $idDatosGenerales = $this->input->post('idGenerales');
-                $telefono = $this->input->post('telefono');
-                $nombre_contacto = $this->input->post('nombre_contacto');
+                $idDatosGenerales  = $this->input->post('idGenerales');
+                $telefono          = $this->input->post('telefono');
+                $nombre_contacto   = $this->input->post('nombre_contacto');
                 $apellido_contacto = $this->input->post('apellido_contacto');
 
                 $idFacturacion = $this->input->post('idFacturacion');
-                $razon_social = $this->input->post('razon_social');
-                $rfc = $this->input->post('rfc');
-                $regimen = $this->input->post('regimen');
-                $forma_pago = $this->input->post('forma_pago');
-                $metodo_pago = $this->input->post('metodo_pago');
-                $uso_cfdi = $this->input->post('uso_cfdi');
+                $razon_social  = $this->input->post('razon_social');
+                $rfc           = $this->input->post('rfc');
+                $regimen       = $this->input->post('regimen');
+                $forma_pago    = $this->input->post('forma_pago');
+                $metodo_pago   = $this->input->post('metodo_pago');
+                $uso_cfdi      = $this->input->post('uso_cfdi');
 
-                $idDomicilios = $this->input->post('idDomicilios');
-                $pais = $this->input->post('pais_name');
-                $estado = $this->input->post('state_name');
-                $ciudad = $this->input->post('ciudad_name');
-                $colonia = $this->input->post('colonia');
-                $calle = $this->input->post('calle');
+                $idDomicilios    = $this->input->post('idDomicilios');
+                $pais            = $this->input->post('pais_name');
+                $estado          = $this->input->post('state_name');
+                $ciudad          = $this->input->post('ciudad_name');
+                $colonia         = $this->input->post('colonia');
+                $calle           = $this->input->post('calle');
                 $numero_exterior = $this->input->post('numero_exterior');
                 $numero_interior = $this->input->post('numero_interior');
-                $cp = $this->input->post('numero_cp');
+                $cp              = $this->input->post('numero_cp');
 
-                $dataClientes = array(
-                    'edicion' => $date,
-                    'constancia_cliente' => $nombre_archivo,
+                $dataClientes = [
+                    'edicion'              => $date,
+                    'constancia_cliente'   => $nombre_archivo,
                     'id_datos_facturacion' => $idFacturacion,
-                    'id_domicilios' => $idDomicilios,
-                    'id_datos_generales' => $idDatosGenerales,
+                    'id_domicilios'        => $idDomicilios,
+                    'id_datos_generales'   => $idDatosGenerales,
 
-                );
+                ];
 
-                $dataFacturacion = array(
+                $dataFacturacion = [
                     'razon_social' => $razon_social,
-                    'rfc' => $rfc,
-                    'regimen' => $regimen,
-                    'forma_pago' => $forma_pago,
-                    'metodo_pago' => $metodo_pago,
-                    'uso_cfdi' => $uso_cfdi,
+                    'rfc'          => $rfc,
+                    'regimen'      => $regimen,
+                    'forma_pago'   => $forma_pago,
+                    'metodo_pago'  => $metodo_pago,
+                    'uso_cfdi'     => $uso_cfdi,
 
-                );
+                ];
 
-                $dataDomicilios = array(
-                    'pais' => $pais,
-                    'estado' => $estado,
-                    'ciudad' => $ciudad,
-                    'colonia' => $colonia,
-                    'calle' => $calle,
+                $dataDomicilios = [
+                    'pais'     => $pais,
+                    'estado'   => $estado,
+                    'ciudad'   => $ciudad,
+                    'colonia'  => $colonia,
+                    'calle'    => $calle,
                     'exterior' => $numero_exterior,
                     'interior' => $numero_interior,
-                    'cp' => $cp,
+                    'cp'       => $cp,
 
-                );
+                ];
 
-                $dataGenerales = array(
-                    'nombre' => $nombre_contacto,
-                    'paterno' => $apellido_contacto,
+                $dataGenerales = [
+                    'nombre'   => $nombre_contacto,
+                    'paterno'  => $apellido_contacto,
                     'telefono' => $telefono,
-                );
+                ];
 
                 /* echo '<pre>';
                 print_r($dataGenerales);
@@ -725,10 +730,10 @@ class Cat_Portales extends CI_Controller
                 $result = $this->cat_cliente_model->editCliente($idCliente, $dataClientes, $dataFacturacion, $dataDomicilios, $dataGenerales);
 
                 if ($result) {
-                    $msj = array(
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => 'Los  Datos  y  el archivo  fueron almacenados  correctamente :)',
-                    );
+                        'msg'    => 'Los  Datos  y  el archivo  fueron almacenados  correctamente :)',
+                    ];
                     echo json_encode($msj);
                     return;
 
@@ -737,10 +742,10 @@ class Cat_Portales extends CI_Controller
                     if ($uploaded_file_path && file_exists($uploaded_file_path)) {
                         unlink($uploaded_file_path);
                     }
-                    $msj = array(
+                    $msj = [
                         'codigo' => 2,
-                        'msg' => 'Hubo un problema al actualizar los datos, por favor inténtalo nuevamente',
-                    );
+                        'msg'    => 'Hubo un problema al actualizar los datos, por favor inténtalo nuevamente',
+                    ];
                     echo json_encode($msj);
                     return;
                 }
@@ -748,23 +753,23 @@ class Cat_Portales extends CI_Controller
             }
 
             if ($error == 0) {
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'Success',
-                );
+                    'msg'    => 'Success',
+                ];
 
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => 'Error  al   cargar  el archivo  intentalo nuevamente  x.x ',
-                );
+                    'msg'    => 'Error  al   cargar  el archivo  intentalo nuevamente  x.x ',
+                ];
             }
 
         } else {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => 'Por  favor   sube  tu archivo en el apartado  correspondiente ',
-            );
+                'msg'    => 'Por  favor   sube  tu archivo en el apartado  correspondiente ',
+            ];
 
         }
 
@@ -778,11 +783,11 @@ class Cat_Portales extends CI_Controller
 
     public function status()
     {
-        $msj = array();
+        $msj        = [];
         $id_usuario = $this->session->userdata('id');
-        $date = date('Y-m-d H:i:s');
-        $idPortal = $this->input->post('idPortal');
-        $accion = $this->input->post('accion');
+        $date       = date('Y-m-d H:i:s');
+        $idPortal   = $this->input->post('idPortal');
+        $accion     = $this->input->post('accion');
 
         // var_dump("esta es la accion :  ".$accion."  Este es el id del cliente :  ".$idPortal);
         /* if ($accion == "desactivar") {
@@ -817,11 +822,11 @@ class Cat_Portales extends CI_Controller
         }*/
         if ($accion == "eliminar") {
 
-            $cliente = array(
-                'edicion' => $date,
+            $cliente = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'eliminado' => 1,
-            );
+                'eliminado'  => 1,
+            ];
             /*
             // ver  que traen las variables
             echo "usuarioCliente: ";
@@ -835,60 +840,60 @@ class Cat_Portales extends CI_Controller
             $this->cat_cliente_model->editCliente($idPortal, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioCliente($idPortal, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioSubcliente($idPortal, $cliente);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Sucursal eliminado correctamente',
-            );
+                'msg'    => 'Sucursal eliminado correctamente',
+            ];
         }
 
         if ($accion == "bloquear") {
-            $portal = array(
-                'edicion' => $date,
+            $portal = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'bloqueado' => 1,
-            );
+                'bloqueado'  => 1,
+            ];
             $this->cat_portales_model->editPortal($idPortal, $portal);
 
-            $data_bloqueo = array(
-                'creacion' => $date,
-                'id_usuario' => $id_usuario,
-                'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_portal' => $idPortal,
+            $data_bloqueo = [
+                'creacion'            => $date,
+                'id_usuario'          => $id_usuario,
+                'descripcion'         => $this->input->post('opcion_descripcion'),
+                'id_portal'           => $idPortal,
                 'bloqueo_subclientes' => $this->input->post('bloquear_subclientes'),
-                'tipo' => 'BLOQUEO',
-                'mensaje' => $this->input->post('mensaje_comentario'),
-            );
+                'tipo'                => 'BLOQUEO',
+                'mensaje'             => $this->input->post('mensaje_comentario'),
+            ];
             $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Sucursal bloqueada correctamente',
-            );
+                'msg'    => 'Sucursal bloqueada correctamente',
+            ];
         }
 
         if ($accion == "desbloquear") {
-            $portal = array(
-                'edicion' => $date,
+            $portal = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'bloqueado' => 0,
-            );
+                'bloqueado'  => 0,
+            ];
             $this->cat_portales_model->editPortal($idPortal, $portal);
 
         }
 
-        $data_bloqueo = array(
-            'creacion' => $date,
-            'id_usuario' => $id_usuario,
-            'descripcion' => $this->input->post('opcion_descripcion'),
-            'id_portal' => $idPortal,
+        $data_bloqueo = [
+            'creacion'            => $date,
+            'id_usuario'          => $id_usuario,
+            'descripcion'         => $this->input->post('opcion_descripcion'),
+            'id_portal'           => $idPortal,
             'bloqueo_subclientes' => 'NO',
-            'tipo' => 'DESBLOQUEO',
-            'status' => 0,
-        );
+            'tipo'                => 'DESBLOQUEO',
+            'status'              => 0,
+        ];
         $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
-        $msj = array(
+        $msj = [
             'codigo' => 1,
-            'msg' => 'Sucursal desbloqueada correctamente',
-        );
+            'msg'    => 'Sucursal desbloqueada correctamente',
+        ];
 
         echo json_encode($msj);
     }
@@ -917,16 +922,16 @@ class Cat_Portales extends CI_Controller
         // Verificar si se encontraron datos del cliente
         if ($clienteData) {
             // Preparar los datos del cliente para enviarlos como respuesta
-            $response = array(
+            $response = [
                 'success' => true,
-                'data' => $clienteData,
-            );
+                'data'    => $clienteData,
+            ];
         } else {
             // Si no se encontraron datos del cliente, enviar un mensaje de error
-            $response = array(
+            $response = [
                 'success' => false,
-                'error' => 'No se encontraron datos para el cliente seleccionado.',
-            );
+                'error'   => 'No se encontraron datos para el cliente seleccionado.',
+            ];
         }
 
         // Devolver la respuesta en formato JSON
@@ -945,45 +950,45 @@ class Cat_Portales extends CI_Controller
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
         $this->form_validation->set_message('is_unique', 'El %s ya esta registrado');
         $this->form_validation->set_message('valid_email', 'El campo %s debe ser un correo válido');
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             $id_usuario = $this->session->userdata('id');
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $nombre = $this->input->post('nombre');
-            $paterno = $this->input->post('paterno');
-            $telefono = ($this->input->post('telefono') !== null) ? $this->input->post('telefono') : null;
-            $privacidad = $this->input->post('privacidad');
-            $correo = $this->input->post('correo_cliente_name');
+            $date            = date('Y-m-d H:i:s');
+            $nombre          = $this->input->post('nombre');
+            $paterno         = $this->input->post('paterno');
+            $telefono        = ($this->input->post('telefono') !== null) ? $this->input->post('telefono') : null;
+            $privacidad      = $this->input->post('privacidad');
+            $correo          = $this->input->post('correo_cliente_name');
             $uncode_password = $this->input->post('password_name');
             $hashed_password = password_hash($uncode_password, PASSWORD_BCRYPT);
 
-            $idPortal = $this->input->post('cliente');
+            $idPortal   = $this->input->post('cliente');
             $espectador = $this->input->post('tipo_usuario');
 
-            $usuarioCliente = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_cliente' => $idPortal,
+            $usuarioCliente = [
+                'creacion'           => $date,
+                'edicion'            => $date,
+                'id_usuario'         => $id_usuario,
+                'id_cliente'         => $idPortal,
                 'id_datos_generales' => null,
-                'espectador' => $espectador,
-                'privacidad' => $privacidad,
-            );
-            $usuarioClienteDatos = array(
+                'espectador'         => $espectador,
+                'privacidad'         => $privacidad,
+            ];
+            $usuarioClienteDatos = [
 
                 'telefono' => $telefono,
-                'nombre' => $nombre,
-                'paterno' => $paterno,
-                'correo' => $correo,
+                'nombre'   => $nombre,
+                'paterno'  => $paterno,
+                'correo'   => $correo,
                 'password' => $hashed_password,
 
-            );
+            ];
 
             $this->cat_cliente_model->addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos);
 
@@ -991,23 +996,23 @@ class Cat_Portales extends CI_Controller
             if ($dataCliente->ingles == 1) {
                 $existe_cliente = $this->cat_cliente_model->checkPermisosByCliente($idPortal);
                 if ($existe_cliente == 0) {
-                    $url = "Cliente_General/index/" . $idPortal;
-                    $cliente = array(
+                    $url     = "Cliente_General/index/" . $idPortal;
+                    $cliente = [
                         'url' => $url,
-                    );
+                    ];
                     $this->cat_cliente_model->editCliente($idPortal, $cliente);
-                    $permiso = array(
+                    $permiso = [
                         'id_usuario' => $id_usuario,
-                        'cliente' => $dataCliente->nombre,
+                        'cliente'    => $dataCliente->nombre,
                         'id_cliente' => $idPortal,
-                    );
+                    ];
                     $this->cat_cliente_model->addPermiso($permiso);
                 }
             }
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -1030,26 +1035,91 @@ class Cat_Portales extends CI_Controller
     {
         $id_usuario = $this->session->userdata('id');
         date_default_timezone_set('America/Mexico_City');
-        $date = date('Y-m-d H:i:s');
+        $date             = date('Y-m-d H:i:s');
         $idUsuarioCliente = $this->input->post('idUsuarioCliente');
-        $accion = $this->input->post('accion');
+        $accion           = $this->input->post('accion');
 
         if ($accion == 'eliminar') {
             $this->cat_cliente_model->deleteAccesoUsuarioCliente($idUsuarioCliente);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Usuario eliminado correctamente',
-            );
+                'msg'    => 'Usuario eliminado correctamente',
+            ];
         }
         if ($accion == 'credenciales') {
             $this->generales_model->editDatosGenerales();
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Usuario eliminado correctamente',
-            );
+                'msg'    => 'Usuario eliminado correctamente',
+            ];
         }
 
         echo json_encode($msj);
+    }
+
+    public function obtener_meses_disponibles()
+    {
+        $id_portal = $this->input->post('id_portal');
+        $meses     = $this->area_model->getMesesDisponibles($id_portal);
+
+        echo json_encode($meses);
+    }
+    public function guardarPago()
+    {
+        // 1. Obtener los datos del POST
+        $idUsuario   = $this->session->userdata('id');
+        $id_portal   = $this->input->post('id_portal');
+        $monto       = $this->input->post('monto');
+        $fecha_pago  = $this->input->post('fecha_pago');
+        $comentarios = $this->input->post('comentarios');
+        $meses_json  = $this->input->post('meses');
+
+        // 2. Validación básica
+        if (! $id_portal || ! $monto || ! $fecha_pago || ! $meses_json) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => 'error',
+                    'message' => 'Faltan datos obligatorios.',
+                ]));
+        }
+
+        // 3. Decodificar los meses
+        $meses       = json_decode($meses_json, true);
+        $montoPorMes = round($monto / count($meses), 2);
+        if (empty($meses)) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => 'error',
+                    'message' => 'No se seleccionaron meses.',
+                ]));
+        }
+        $numeros     = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $requeest_id = $numeros . '-int9845123-' . $idUsuario;
+        // 4. Insertar un registro por cada mes
+        foreach ($meses as $mes) {
+            $data = [
+                'id_portal'          => $id_portal,
+                'payment_request_id' => $requeest_id,
+                'mes'                => $mes,
+                'monto'              => $montoPorMes,
+                'estado'             => 'pagado',
+                'fecha_pago'         => $fecha_pago,
+                'comentarios_pago'   => $comentarios,
+                'created_at'         => date('Y-m-d H:i:s'), // opcional
+            ];
+
+            $this->db->insert('pagos_mensuales', $data); // cambia 'pagos' por el nombre real de tu tabla
+        }
+
+        // 5. Respuesta de éxito
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'status'  => 'success',
+                'message' => 'Pago(s) registrado(s) correctamente.',
+            ]));
     }
 
 }
