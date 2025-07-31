@@ -214,7 +214,6 @@ class Usuario_model extends CI_Model
             ->where_in('C.id', $clientes)
             ->order_by('empleados_activos', 'DESC');
 
-
         // Si el parámetro $filtrar_roles es true, excluimos los roles 4 y 11
         if ($filtrar_roles) {
             $this->db->where_not_in('UPo.id_rol', [4, 11]);
@@ -249,14 +248,100 @@ class Usuario_model extends CI_Model
             $clientesAgrupados[$id]['usuarios'][] = [
                 'nombre_completo' => trim("{$row->nombre} {$row->paterno} "),
                 'rol'             => $row->rol_usuario,
-                'id_usuario'           => $row->id_usuario,
+                'id_usuario'      => $row->id_usuario,
             ];
         }
 
         // Retornar como array simple (sin IDs como clave)
         return array_values($clientesAgrupados);
     }
+    public function getPermisos2($filtrar_roles = false)
+    {
+        $id_portal  = $this->session->userdata('idPortal');
+        $id_usuario = $this->session->userdata('id');
 
+        // Clientes a los que el usuario tiene acceso
+        $this->db
+            ->select('C.id')
+            ->from('cliente AS C')
+            ->join('usuario_permiso AS UP', 'UP.id_cliente = C.id')
+            ->where('UP.id_usuario', $id_usuario);
+        $clientes = array_column($this->db->get()->result_array(), 'id');
+        if (empty($clientes)) {
+            return [];
+        }
+
+        // Ahora traemos todos los usuarios por esos clientes
+        $this->db
+            ->select('
+            C.id AS id_cliente,
+            C.nombre AS nombreCliente,
+            C.icono,
+            C.url,
+            C.creacion,
+            C.max_colaboradores,
+            D.telefono,
+            D.correo,
+            DOM.pais,
+            DOM.estado,
+            DOM.ciudad,
+            DG.nombre,
+            DG.paterno,
+            UPo.id AS id_usuario,
+            R.nombre AS rol_usuario,
+            (SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 1) AS empleados_activos,
+            (SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 2 ) AS empleados_inactivos')
+            ->from('cliente AS C')
+            ->join('datos_generales AS D', 'D.id = C.id_datos_generales', 'left') // datos cliente
+            ->join('domicilios AS DOM', 'DOM.id = C.id_domicilios', 'left')       // datos cliente
+            ->join('usuario_permiso AS UP', 'C.id = UP.id_cliente')
+            ->join('usuarios_portal AS UPo', 'UPo.id = UP.id_usuario')
+            ->join('datos_generales AS DG', 'DG.id = UPo.id_datos_generales', 'left') // datos usuario
+            ->join('rol AS R', 'R.id = UPo.id_rol', 'left')
+            ->where('C.id_portal', $id_portal)
+            ->where_in('C.id', $clientes)
+            ->order_by('empleados_activos', 'DESC');
+
+        // Si el parámetro $filtrar_roles es true, excluimos los roles 4 y 11
+        if ($filtrar_roles) {
+            $this->db->where_not_in('UPo.id_rol', [4, 11]);
+        }
+
+        //$this->db->order_by('C.nombre', 'ASC');
+
+        $query  = $this->db->get();
+        $result = $query->result();
+
+        // Agrupamos por cliente
+        $clientesAgrupados = [];
+        foreach ($result as $row) {
+            $id = $row->id_cliente;
+            if (! isset($clientesAgrupados[$id])) {
+                $clientesAgrupados[$id] = [
+                    'id_cliente'          => $row->id_cliente,
+                    'nombreCliente'       => $row->nombreCliente,
+                    'telefono'            => $row->telefono,
+                    'correo'              => $row->correo,
+                    'max'                 => $row->max_colaboradores,
+                    'empleados_activos'   => $row->empleados_activos,
+                    'empleados_inactivos' => $row->empleados_inactivos,
+                    'estado'              => $row->estado,
+                    'pais'                => $row->pais,
+                    'ciudad'              => $row->ciudad,
+                    'usuarios'            => [],
+                ];
+            }
+
+            $clientesAgrupados[$id]['usuarios'][] = [
+                'nombre_completo' => trim("{$row->nombre} {$row->paterno} "),
+                'rol'             => $row->rol_usuario,
+                'id_usuario'      => $row->id_usuario,
+            ];
+        }
+
+        // Retornar como array simple (sin IDs como clave)
+        return array_values($clientesAgrupados);
+    }
     public function getPermisosSubclientes($id)
     {
         $this->db

@@ -72,11 +72,20 @@ class Area extends CI_Controller
         die(); */
 
         // Cargar vistas
-        $headerView = $this->load->view('adminpanel/header', $data, true);
-        $View       = $this->load->view('adminpanel/pasarela', $data, true);
+        $notPago = $this->session->userdata('notPago');
 
-        echo $headerView;
+        if ($notPago === 'pendiente_en_plazo' || $notPago === 'pagado') {
+            // Solo cargar el header si el estado de pago es válido
+            $headerView = $this->load->view('adminpanel/header', $data, true);
+            echo $headerView;
+        }else{
+            $data['cargar_recursos'] = true;
+        }
+
+// Siempre cargar la vista principal
+        $View = $this->load->view('adminpanel/pasarela', $data, true);
         echo $View;
+
     }
     public function calcularCobroMensualFijo($id_portal)
     {

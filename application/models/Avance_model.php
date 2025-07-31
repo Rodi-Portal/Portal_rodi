@@ -95,4 +95,38 @@ class Avance_model extends CI_Model
         return null; // no hay pago registrado para ese mes
     }
 
+    public function verificarPagoMesActual($id_portal)
+    {
+        $primerDiaMes = date('Y-m-01');
+
+        $this->db->where('id_portal', $id_portal);
+        $this->db->where('mes', $primerDiaMes);
+        $query = $this->db->get('pagos_mensuales');
+
+        if ($query->num_rows() === 0) {
+            // ⚠️ No hay registro para este mes → se considera pendiente de crear
+            return 'sin_registro';
+        }
+
+        $pago = $query->row();
+
+        if ($pago->estado === 'pagado' && ! empty($pago->fecha_pago)) {
+            // ✅ Ya pagado
+            return 'pagado';
+        }
+
+        if ($pago->estado === 'pendiente' && empty($pago->fecha_pago)) {
+            // 🔎 Está pendiente, evaluamos plazo
+            $diaActual = (int) date('d');
+            if ($diaActual >= 1 && $diaActual <= 5) {
+                return 'pendiente_en_plazo';
+            } else {
+                return 'pendiente_fuera_plazo';
+            }
+        }
+
+        // Si llegamos aquí, estado raro
+        return 'otro_estado';
+    }
+
 }

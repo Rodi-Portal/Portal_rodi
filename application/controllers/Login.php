@@ -281,7 +281,7 @@ class Login extends CI_Controller
 
                 // Otras variables de sesión que necesites
                 $usuario_data = [
-                    "id"  => $usuario->id,
+                    "id"       => $usuario->id,
                     "new_pass" => 1,
 
                 ];
@@ -337,10 +337,10 @@ class Login extends CI_Controller
         // Depuración
         // echo "Valor inicial de ver: $ver, id: $id<br>";
 
-        if ($ver >= 0 && $ver < 10) {
+        if ($ver >= 0 && $ver < 15) {
             $ver = $ver + 1;
             //echo "Nuevo valor de ver: $ver<br>"; // Depuración
-        } else if ($ver == 10 || $ver > 10) {
+        } else if ($ver == 15 || $ver > 10) {
             $ver = 0;
             // echo "Valor de ver reiniciado a: $ver<br>"; // Depuración
         }
@@ -359,12 +359,26 @@ class Login extends CI_Controller
 
         switch ($tipo_acceso) {
             case 'usuario':
-                $rol = $this->session->userdata('idrol');
-                if ($rol == 1 || $rol == 6 || $rol == 9 || $rol == 10) {
-                    redirect('Cat_UsuarioInternos/index');
-                    break;
+                $rol       = $this->session->userdata('idrol');
+                $id_portal = $this->session->userdata('idPortal');
+
+                $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
+                $this->session->set_userdata('notPago', $resultadoPago);
+
+                if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
+
+                    // ✅ Puede continuar normalmente
+                    if ($rol == 1 || $rol == 6 || $rol == 9 || $rol == 10) {
+
+                        redirect('Cat_UsuarioInternos/index');
+                        break;
+                    } else {
+                        redirect('Dashboard/index');
+                        break;
+                    }
                 } else {
-                    redirect('Dashboard/index');
+                    // ❌ Cualquier otro caso: sin registro o pendiente fuera de plazo
+                    redirect('Area/pasarela');
                     break;
                 }
 
@@ -420,13 +434,29 @@ class Login extends CI_Controller
 
                 switch ($tipo_acceso) {
                     case 'usuario':
-                        $rol = $this->session->userdata('idrol');
-                        if (in_array($rol, [1, 6, 9])) {
-                            redirect('Cat_UsuarioInternos/index');
+                        $rol       = $this->session->userdata('idrol');
+                        $id_portal = $this->session->userdata('idPortal');
+
+                        $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
+                        $this->session->set_userdata('notPago', $resultadoPago);
+
+                        if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
+
+                            // ✅ Puede continuar normalmente
+                            if ($rol == 1 || $rol == 6 || $rol == 9 || $rol == 10) {
+
+                                redirect('Cat_UsuarioInternos/index');
+                                break;
+                            } else {
+                                redirect('Dashboard/index');
+                                break;
+                            }
                         } else {
-                            redirect('Dashboard/index');
+                            // ❌ Cualquier otro caso: sin registro o pendiente fuera de plazo
+                            redirect('Area/pasarela');
+                            break;
                         }
-                        break;
+                       
                     case 'visitador':
                         redirect('Dashboard/visitador_panel');
                         break;
