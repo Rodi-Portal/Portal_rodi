@@ -14,7 +14,7 @@
  <div class="seccion" id="seccion1">
    <div id="app" data-your-value="<?php echo $this->session->userdata('idPortal'); ?>"
      data-your-user-value="<?php echo $this->session->userdata('id'); ?>"
-     data-your-client-value="<?php echo $cliente_id; ?>"
+     data-your-client-value='<?php echo json_encode($cliente_id); ?>'
      data-your-rol-value="<?php echo $this->session->userdata('idrol'); ?>"></div>
  </div>
  <?php }?>
@@ -27,11 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
  </script>
  <style>
- html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-y: auto; /* Esto permite scroll */
+  overflow-y: auto;
+  /* Esto permite scroll */
 }
 
 .seccion {
@@ -46,6 +48,4 @@ document.addEventListener('DOMContentLoaded', () => {
   display: flex;
   flex-direction: column;
 }
-
-  
-</style>
+ </style>

@@ -9,107 +9,128 @@ class Checkout_Clip extends CI_Controller
     // Función para generar el pago, llamada desde AJAX
     public function generarPago()
     {
-        $id_portal = $this->session->userdata('idPortal'); 
-      // Obtener los datos enviados mediante AJAX
-        $amount    = $this->input->post('amount');
-        if ($id_portal == 1) {
-            $currency = "MXN";
-        } else { // Ejemplo: 100.5
-            $currency = $this->input->post('currency');
-        }                                                 // Ejemplo: "MXN"
-        $description = $this->input->post('description'); // Ejemplo: "Compra de ejemplo"
+        $id_portal   = $this->session->userdata('idPortal');
+        $amount      = $this->input->post('amount');        // total del cobro
+        $currency    = $this->input->post('currency');      // ejemplo: MXN
+        $description = $this->input->post('description');   // descripción
+        $meses       = $this->input->post('mesesPorPagar'); // array con fechas tipo Y-m-d
 
         // Llamar a la API de PayClip para generar el enlace de pago
-        $linkPago = $this->createPayclipLink($amount, $currency, $description);
-        // Verificar si hay algún error en la respuesta
+        $linkPago = $this->createPayclipLink($amount, 'USD', $description);
+
+        // Verificar resultado
         if ($linkPago == 0) {
-            // Si la respuesta es un mensaje de error, retornamos una respuesta de error
             echo json_encode([
                 'status'   => 'error',
                 'linkPago' => $linkPago,
             ]);
-        } else {
-            // Si la respuesta es válida, retornamos los datos correctos
-            echo json_encode([
-                'status'   => 'success',
-                'linkPago' => $linkPago,
-            ]);
+            return;
         }
+
+        // ✅ Si llegamos aquí, el link de pago se generó con éxito
+        // ✅ Ahora registramos cada mes en la base de datos como pendiente
+
+        // IMPORTANTE: verifica que $meses venga como array. Si viene como string separada por comas, conviértelo:
+        if (! is_array($meses)) {
+            $meses = explode(',', $meses); // si llega como "2025-08-01,2025-09-01,2025-10-01"
+        }
+
+        // Normaliza fechas (por si acaso tienen espacios)
+        $meses = array_map('trim', $meses);
+
+        // Guarda los registros en la tabla
+        $this->load->model('Avance_model');
+        $this->avance_model->crearRegistrosPagoMultiple($id_portal, $meses, $amount / count($meses), $linkPago);
+
+        // Respuesta final
+        echo json_encode([
+            'status'   => 'success',
+            'linkPago' => $linkPago,
+        ]);
     }
 
     // Función para llamar a la API de Payclip y generar el enlace de pago
     private function createPayclipLink($amount, $currency, $description)
     {
-
+        // 🔹 Obtener portal
         $id_portal = $this->session->userdata('idPortal');
-        if ($id_portal == null || $id_portal == '') {
-
+        if (empty($id_portal)) {
             return 'Error en la comunicación con Payclip';
         }
+
+        // 🔹 Endpoint de Payclip
         $url = 'https://api.payclip.com/v2/checkout';
 
+        // 🔹 Construir el cuerpo de la solicitud
         $body = json_encode([
             'amount'               => (float) $amount,
             'currency'             => $currency,
             'purchase_description' => $description,
-            "payment_method_types" => [
+            'payment_method_types' => [
                 "debit",
                 "credit",
                 "cash",
                 "bank_transfer",
             ],
             'redirection_url'      => [
-                'success' => 'https://sandbox.talentsafecontrol.com/',
-                'error'   => 'https://dev.rodi.com.mx/',
-                'default' => 'https://my-website.com/redirection/default',
+                'success' => REDIRECT_SUCCESS,
+                'error'   => REDIRECT_ERROR,
+                'default' => REDIRECT_DEFAULT,
             ],
         ]);
 
+        // 🔹 Encabezados
         $headers = [
             "Authorization: " . KEY_CLIP,
             'Accept: application/json',
             'Content-Type: application/json',
         ];
 
-        log_message('error', 'Enviando datos a Payclip: ' . $body);
-
+   
+        // 🔹 Llamada a la API
         $response = $this->makeCurlRequest($url, $body, $headers);
 
+        // 🔹 Verificar si hubo respuesta
         if (! $response) {
             return 'Error en la comunicación con Payclip';
         }
-        $id_portal = $this->session->userdata('idPortal');
 
-        // Verificar si la respuesta contiene los datos esperados
-        if (isset($response['payment_request_url'])) {
+      
 
-            $linkPago = [
-                'payment_request_id'  => $response['payment_request_id'],
-                'object_type'         => $response['object_type'],
-                'status'              => $response['status'],
-                'last_status_message' => $response['last_status_message'],
-                'created_at'          => $response['created_at'],
-                'payment_request_url' => $response['payment_request_url'],
-                'qr_image_url'        => $response['qr_image_url'],
-                'api_version'         => $response['api_version'],
-                'expires_at'          => $response['expires_at'],
-                'modified_at'         => $response['modified_at'],
-                'id_portal'           => $id_portal,
-            ];
-
-            $respuesta = $this->area_model->insertarLinkPago($linkPago);
-
-            if ($respuesta != null) {
-                return 1;
-
-            } else {
-                return 0;
-            }
-
+        // 🔹 Verificar que la respuesta contenga la URL de pago
+        if (! isset($response['payment_request_url'])) {
+        
+            return 'Error: respuesta inválida de Payclip';
         }
 
-        // Si no está presente, devolver un mensaje de error
+        // 🔹 Construir arreglo para guardar en BD
+        $linkPago = [
+            'payment_request_id'  => $response['payment_request_id'] ?? '',
+            'object_type'         => $response['object_type'] ?? '',
+            'status'              => $response['status'] ?? '',
+            'last_status_message' => $response['last_status_message'] ?? '',
+            'created_at'          => $response['created_at'] ?? date('Y-m-d H:i:s'),
+            'payment_request_url' => $response['payment_request_url'] ?? '',
+            'qr_image_url'        => $response['qr_image_url'] ?? '',
+            'api_version'         => $response['api_version'] ?? '',
+            'expires_at'          => $response['expires_at'] ?? '',
+            'modified_at'         => $response['modified_at'] ?? null,
+            'id_portal'           => $id_portal,
+        ];
 
+       
+
+        // 🔹 Insertar en base de datos
+        $resultado = $this->area_model->insertarLinkPago($linkPago);
+
+        if ($resultado) {
+             $this->db->where('id_portal', $id_portal);
+             $this->db->where('id <>', $resultado); // asumimos que la tabla link_pago tiene PK id
+             $this->db->delete('link_pago');
+            return $response['payment_request_id'];
+        } else {
+            return 0;
+        }
     }
 
     // Función para realizar la solicitud cURL
@@ -212,14 +233,13 @@ class Checkout_Clip extends CI_Controller
 
                 // Lógica para insertar en la base de datos
                 $datos_pago = [
-                    'id_portal'          => $id_portal,
+                    'estado'             =>'pagado',
                     'fecha_pago'         => $fecha_pago,
-                    'monto'              => $data['amount'] . ' ' . $data['currency'],
                     'payment_request_id' => $data['payment_request_id'],
                     'link_status'        => $data['payment_request_url'],
                     'referencia'         => $data['receipt_no'],
                     'status'             => $status,
-                    'created_at'         => $creacion,
+                   
                 ];
 
                 $link_validado = $this->area_model->validarPago($datos_pago);

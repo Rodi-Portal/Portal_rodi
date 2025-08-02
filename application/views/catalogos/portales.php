@@ -152,7 +152,7 @@ $(document).ready(function() {
         title: 'Modulos',
         data: 'idPortal',
         bSortable: false,
-        "width": "10%",
+        "width": "12%",
         mRender: function(data, type, full) {
           // Modulo de Reclutamiento
           let modulosReclu = '';
@@ -204,8 +204,39 @@ $(document).ready(function() {
               '<a href="javascript:void(0)" data-toggle="tooltip" title="Former Employee" id="moduloFormer" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarExEmpleado\', ' +
               data + ')"><i class="fas fa-user-slash"></i></a> ';
           }
+          let modulosCom = '';
+          if (full.com == 1) {
+            modulosCom =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar Comunicación" id="moduloCom" class="fa-tooltip icono_datatable icono_verde" onclick="handleModuloClick(\'DesactivarCom\', ' +
+              data + ')">' +
+              '<i class="fas fa-comments"></i>' +
+              '</a> ';
+          } else {
+            modulosCom =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar Comunicación" id="moduloCom" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarCom\', ' +
+              data + ')">' +
+              '<i class="fas fa-comments"></i>' +
+              '</a> ';
+          }
 
-          return modulosReclu + modulosPre + modulosEmpleo + modulosFormer;
+          let modulosCom360 = '';
+          if (full.com360 == 1) {
+            modulosCom360 =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar Comunicación 360" id="moduloCom360" class="fa-tooltip icono_datatable icono_verde" onclick="handleModuloClick(\'DesactivarCom360\', ' +
+              data + ')">' +
+              '<i class="fas fa-globe"></i>' + // Comunicación 360°
+              '</a> ';
+          } else {
+            modulosCom360 =
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar Comunicación 360" id="moduloCom360" class="fa-tooltip icono_datatable icono_rojo" onclick="handleModuloClick(\'ActivarCom360\', ' +
+              data + ')">' +
+              '<i class="fas fa-globe"></i>' +
+              '</a> ';
+          }
+
+
+
+          return modulosReclu + modulosPre + modulosEmpleo + modulosFormer + modulosCom + modulosCom360;
         }
       },
       {
@@ -264,7 +295,8 @@ $(document).ready(function() {
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-
+          let pagos =
+            '<a id="pagos" href="javascript:void(0)" data-toggle="tooltip" title="Pagos" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-credit-card"></i></a> ';
           let editar =
             '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a> ';
           let eliminar =
@@ -280,7 +312,7 @@ $(document).ready(function() {
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear portal" id="bloquear_portal" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear portal" id="desbloquear_portal" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> ';
 
-          return editar + acceso + bloqueo + eliminar;
+          return pagos + editar + acceso + bloqueo + eliminar;
           //  antesreturn editar + accion + bloqueo + acceso +  eliminar;
         }
       }
@@ -349,6 +381,10 @@ $(document).ready(function() {
       });
       $("a#eliminar", row).bind('click', () => {
         mostrarMensajeConfirmacion('eliminar portal', data.nombre, data.idPortal)
+      });
+
+      $("a#pagos", row).bind('click', () => {
+        registrarPagos(data.nombre, data.idPortal)
       });
       $("a#acceso", row).bind('click', () => {
         $(".nombreCliente").text(data.nombre);
@@ -505,6 +541,70 @@ $(document).ready(function() {
     tabla.columns.adjust().draw();
   });
 });
+
+
+function registrarPagos(nombre_portal, id_portal) {
+  $('#tituloModalPagos').text('Registrar Pago para: ' + nombre_portal);
+  $('#id_portal_pago').val(id_portal);
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  const fechaActual = `${yyyy}-${mm}-${dd}`;
+
+  // Asigna la fecha al input
+  $('#fecha_pago').val(fechaActual);
+
+  // Limpia los botones previos
+  $('#contenedorMeses').html('');
+
+  // AJAX para obtener los meses
+  $.ajax({
+    type: 'POST',
+    url: '<?php echo base_url('Cat_Portales/obtener_meses_disponibles'); ?>',
+    data: {
+      id_portal: id_portal
+    },
+    dataType: 'json',
+    success: function(meses) {
+      if (meses.length > 0) {
+        $('#contenedorMeses').html(''); // Limpia antes de agregar
+
+        meses.forEach(function(mes) {
+          const btn = `
+          <div class="col-6 col-md-3">
+            <button type="button"
+                    class="btn btn-outline-primary btn-block mb-2 mes-boton"
+                    data-fecha="${mes.fecha}"
+                    data-nombre="${mes.nombre_mes}">
+              ${mes.nombre_mes}
+            </button>
+          </div>`;
+          $('#contenedorMeses').append(btn);
+        });
+      } else {
+        $('#contenedorMeses').html('<p>No hay meses disponibles.</p>');
+      }
+    }
+
+  });
+
+  $('#modalRegistrarPagos').modal('show');
+}
+let mesesSeleccionados = [];
+
+$(document).on('click', '.mes-boton', function() {
+  const fecha = $(this).data('fecha');
+
+  if ($(this).hasClass('active')) {
+    $(this).removeClass('active');
+    mesesSeleccionados = mesesSeleccionados.filter(m => m !== fecha);
+  } else {
+    $(this).addClass('active');
+    mesesSeleccionados.push(fecha);
+  }
+});
+
 
 
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {

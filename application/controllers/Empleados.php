@@ -65,6 +65,7 @@ class Empleados extends CI_Controller
         echo $scriptsView; // Mostrar scripts si es necesario
         echo $View;        // Mostrar el contenido del módulo de empleados
     }
+
     public function showEmpleados($id)
     {
         // Obtiene los submenús y otros datos necesarios
@@ -262,15 +263,28 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']  = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos']  = $this->usuario_model->getPermisos(true);
+        $data['permisos']  = $this->usuario_model->getPermisos2(true);
 
-        $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $data['submodulos']       = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $data['columnas_fijas']   = ['Sucursal', 'Empleados', 'Usuarios con acceso', 'Acciones'];
+        $data['columnas_ocultas'] = ['id_cliente', 'max', 'usuarios', 'empleados_activos', 'nombreCliente', 'empleados_inactivos'];
 
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
+        $idUsuario        = $this->session->userdata('id');
+        $idCliente        = $this->session->userdata('idCliente');
+        $idPortal         = $this->session->userdata('idPortal');
 
+        // Obtener configuración guardada del usuario
+        $configColumnas = $this->comunicacion_model->getColumnasConfiguracion($idUsuario, $idCliente, $idPortal);
+
+        // Columnas seleccionadas por el usuario (puede ser null si no tiene)
+        $data['columnas_usuario'] = $configColumnas['seleccionadas'];
+
+        // Columnas disponibles: como ya vienen en permisos, los asignamos para que la vista los use
+        $data['columnas_disponibles'] = array_keys($data['permisos'][0] ?? []);
         // Obtiene configuraciones
         $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
@@ -293,7 +307,10 @@ class Empleados extends CI_Controller
             // Si no hay módulos, carga una vista de error o una descripción
             $View = $this->load->view('moduloComunicacion/descripcion_modulo', $data, true);
         }
-
+        /*
+         echo'<pre>';
+        echo print_r($data);
+        echo'</pre>'; */
         // Cargar las vistas en variables
         $headerView  = $this->load->view('adminpanel/header', $data, true);
         $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
@@ -305,9 +322,31 @@ class Empleados extends CI_Controller
         echo $View;        // Mostrar el contenido del módulo de empleados
     }
 
-    public function showComunicacion($id)
+    public function showComunicacion($id = null)
     {
-        // Obtiene los submenús y otros datos necesarios
+        // Revisión: ¿vienen IDs por POST?
+        $post_ids = $this->input->post('ids');
+
+        if (! empty($post_ids)) {
+            // Si vienen por POST
+            if (is_array($post_ids)) {
+                $cliente_ids = $post_ids;
+            } else {
+                $cliente_ids = explode(',', $post_ids);
+            }
+        } elseif (! empty($id)) {
+            // Si vienen por parámetro en la URL
+            if (strpos($id, ',') !== false) {
+                $cliente_ids = explode(',', $id);
+            } else {
+                $cliente_ids = [$id];
+            }
+        } else {
+            // Si no se recibió nada, manejar como error o array vacío
+            $cliente_ids = [];
+        }
+
+        // Datos base
         $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
         $data['permisos']   = $this->usuario_model->getPermisos(true);
@@ -318,39 +357,31 @@ class Empleados extends CI_Controller
         }
         $data['submenus'] = $items;
 
-        // Obtiene configuraciones
-        $config             = $this->funciones_model->getConfiguraciones();
-        $data['version']    = $config->version_sistema;
-        $data['cliente_id'] = $id;
-        // Verifica si el módulo de exempleados está habilitado
+        // Configuración general
+        $config              = $this->funciones_model->getConfiguraciones();
+        $data['version']     = $config->version_sistema;
+        $data['cliente_id'] = $cliente_ids;
+
+        // Verificación del módulo
         $res = $this->cat_portales_model->getModulos();
-
         if (! empty($res)) {
-                            // Accede directamente a la fila
-            $modulo = $res; // getModulos devuelve solo una fila como array
-
-            // Verifica el valor de exempleados
-            if ($modulo['com'] == 1) {
-                // Carga la vista correspondiente para el módulo de exempleados
+            if ($res['com'] == 1) {
                 $View = $this->load->view('moduloComunicacion/indexComunicacion', $data, true);
             } else {
-                // Si el módulo no está habilitado, carga una vista de descripción
                 $View = $this->load->view('moduloComunicacion/descripcion_modulo', $data, true);
             }
         } else {
-            // Si no hay módulos, carga una vista de error o una descripción
             $View = $this->load->view('moduloComunicacion/descripcion_modulo', $data, true);
         }
 
-        // Cargar las vistas en variables
+        // Vistas generales
         $headerView  = $this->load->view('adminpanel/header', $data, true);
         $scriptsView = $this->load->view('adminpanel/scripts', $modales, true);
         $footerView  = $this->load->view('adminpanel/footer', [], true);
 
-        // Mostrar las vistas
         echo $headerView;
-        echo $scriptsView; // Mostrar scripts si es necesario
-        echo $View;        // Mostrar el contenido del módulo de exempleados
+        echo $scriptsView;
+        echo $View;
     }
 
 }
