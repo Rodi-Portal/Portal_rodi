@@ -2114,4 +2114,244 @@ class Cronjobs extends CI_Controller
 
         print_r($data);
     }
+
+ public function obtener_estado_empleado($id_portal, $id_cliente)
+    {
+        $api_url = API_URL;
+        // URL del endpoint
+        $url = $api_url . 'empleados/status?id_portal=' . $id_portal . '&id_cliente=' . $id_cliente;
+
+        // Inicializar cURL
+        $ch = curl_init();
+
+        // Configuración de la solicitud
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Ejecutar la solicitud y obtener la respuesta
+        $response = curl_exec($ch);
+
+        // Verificar si hubo un error
+        if (curl_errno($ch)) {
+            echo 'Error al obtener estado del empleado: ' . curl_error($ch);
+            return null;
+        }
+
+        // Cerrar la conexión cURL
+        curl_close($ch);
+
+                                             // Decodificar la respuesta JSON
+        return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
+    }
+
+    public function enviar_notificaciones_cron_job($token = null)
+    {
+        // Verifica si el token proporcionado es correcto
+        $token_valido = 'EAARSazMqqR0BPOYkd4jDCSxk45aynI3yqJOnWZAebp9rnVkrPFm0MLHtbkWZBult1OawF7VYCriHLshsUCmEZAPWKaeGuuX1lNJnT4llb0dDqDHoGTmGLZCUVcs9NJiqtmkauxYG5euwf953FzcgYgCgGB91ruwZAXO9krJ3hKqLx9w5ppBg6OqtJVOXZBpwZDZD';
+
+        // Si el token no es válido, muestra un 404 o un mensaje de acceso no autorizado
+        if ($token !== $token_valido) {
+            show_error('Acceso no autorizado', 403); // Código 403: Acceso prohibido
+            return;
+        }
+        // Horarios específicos para ejecución del cron job
+        $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
+
+        $this->load->model('Notificacion_model');
+        $registros = $this->Notificacion_model->get_notificaciones_por_horarios($horarios_cron);
+
+        // Filtra los registros por los horarios predefinidos
+        $registros_filtrados = [];
+        foreach ($registros as $registro) {
+            $horarios = explode(', ', $registro->horarios);
+            if (array_intersect($horarios_cron, $horarios)) {
+                $registros_filtrados[] = $registro;
+            }
+        }
+
+        if (empty($registros_filtrados)) {
+            echo "<script>console.log('No hay registros para procesar en este horario del cron job.');</script>";
+            return;
+        }
+
+        foreach ($registros_filtrados as $registro) {
+            // Obtener estado del empleado desde la API
+            $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente);
+
+            if ($estado && ($estado['statusDocuments'] === 'rojo' || $estado['statusCursos'] === 'rojo' || $estado['statusEvaluaciones'] === 'rojo')) {
+
+                $modulos = [];
+
+                if ($registro->cursos == 1 && $estado['statusCursos'] === 'rojo') {
+                    $modulos[] = "<li>Cursos</li>";
+                }
+
+                if ($registro->evaluaciones == 1 && $estado['statusEvaluaciones'] === 'rojo') {
+                    $modulos[] = "<li>Evaluaciones</li>";
+                }
+
+                if ($registro->expediente == 1 && $estado['statusDocuments'] === 'rojo') {
+                    $modulos[] = "<li>Expediente</li>";
+                }
+
+                if (! empty($modulos)) {
+                    // Enviar correos
+                    if ($registro->correo == 1) {
+                        $correos = array_unique(array_filter([$registro->correo1, $registro->correo2]));
+                        if (! empty($correos)) {
+                            $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
+                        }
+                    }
+
+                    // Enviar WhatsApp
+                    if ($registro->whatsapp == 1) {
+                        $telefonos = array_filter([
+                            ! empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
+                            ! empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
+                        ]);
+
+                        $submodulos = implode(", ", array_map(function ($modulo) {
+                            return strip_tags($modulo);
+                        }, $modulos));
+
+                        if (! empty($telefonos)) {
+                            $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
+                        }
+
+                        echo "<script>console.log('Enviando WhatsApp para ID: {$registro->id}', " . json_encode($telefonos) . ");</script>";
+                    }
+                }
+
+                echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
+            }
+        }
+        echo "Notificaciones procesadas correctamente.";
+    }
+
+    public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
+    {
+        $api_url = API_URL;
+        $url     = $api_url . 'send-notification';
+
+        // Asegurarse de que $telefonos sea un array
+        if (! is_array($telefonos)) {
+            $telefonos = [$telefonos]; // Convierte a array si no lo es
+        }
+
+        // Filtra valores vacíos o no válidos
+        $telefonos = array_filter($telefonos, function ($telefono) {
+            return ! empty($telefono) && is_string($telefono); // Acepta solo cadenas no vacías
+        });
+
+        // Verifica si hay teléfonos válidos
+        if (empty($telefonos)) {
+            log_message('error', 'No se proporcionaron números de teléfono válidos para enviar WhatsApp.');
+            return;
+        }
+
+        foreach ($telefonos as $telefono) {
+
+            $payload = [
+                'phone'          => $telefono,
+                'template'       => $template,
+                'nombre_cliente' => $portal,
+                'submodulo'      => $submodulos,
+                'sucursales'     => $sucursal, // Cambiar si tienes el dato de sucursales
+            ];
+
+            // Inicializa cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+
+            // Ejecuta la solicitud
+            $response = curl_exec($ch);
+
+            // Maneja errores de cURL
+            if (curl_errno($ch)) {
+                log_message('error', 'Error de cURL: ' . curl_error($ch));
+                curl_close($ch);
+                continue;
+            }
+
+            // Cierra cURL
+            curl_close($ch);
+
+            // Decodifica la respuesta
+            $result = json_decode($response, true);
+
+            // Manejo de la respuesta
+            if (isset($result['status']) && $result['status'] === 'success') {
+                log_message('info', 'WhatsApp enviado correctamente a ' . $telefono);
+            } else {
+                $error_message = $result['message'] ?? 'Error desconocido';
+                log_message('info', 'Enviando WhatsApp a: ' . implode(', ', $telefonos));
+            }
+        }
+    }
+
+/*correos  para  notificaciones */
+    public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
+    {
+        $this->load->library('phpmailer_lib');
+        $mail = $this->phpmailer_lib->load();
+
+        try {
+                                                              // Configuración del servidor SMTP
+            $mail->isSMTP();                                  // Establecer el envío usando SMTP
+            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'soporte@talentsafecontrol.com';
+            $mail->Password   = 'FQ{[db{}%ja-';
+            $mail->SMTPSecure = 'ssl';
+            $mail->Port       = 465; // Puerto SMTP
+
+            // Remitente
+            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
+
+            // Destinatarios
+            foreach ($destinatarios as $correo) {
+                $mail->addAddress($correo); // Agrega el destinatario
+            }
+
+            // Asunto
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = '🔔 Notificación TalentSafe Control';
+
+            $mensaje = '
+            <div style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: auto; color: #333;">
+              <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #1a73e8; margin-top: 0;">📌 Recordatorio Importante</h2>
+                <p style="font-size: 16px;">Hola,</p>
+                <p style="font-size: 16px;">Este es un recordatorio de que tienes <strong>archivos por vencer</strong> en tu sucursal <strong>' . $nombrecliente . '</strong> en los siguientes módulos:</p>
+            
+                <ul style="font-size: 16px; padding-left: 20px; color: #444;">
+                  ' . ( !empty($modulos) ? implode('', $modulos) : '<li>No hay módulos registrados.</li>') . '
+                </ul>
+            
+                <p style="font-size: 16px;">Ingresa a tu cuenta en <a href="https://portal.talentsafecontrol.com" target="_blank" style="color: #1a73e8; text-decoration: none;">TalentSafe Control</a> para realizar las actualizaciones necesarias.</p>
+            
+                <p style="font-size: 16px;">Gracias por tu atención.</p>
+                <p style="font-size: 16px; margin-bottom: 0;">Atentamente,</p>
+                <p style="font-size: 16px; font-weight: bold; color: #1a73e8;">Equipo TalentSafe Control</p>
+              </div>
+            </div>';
+            
+            $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
+
+            // Enviar el correo
+            $mail->send();
+            echo "<script>console.log('Correo enviado a: {$correo}');</script>";
+        } catch (Exception $e) {
+            echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
+        }
+    }
+                
 }
