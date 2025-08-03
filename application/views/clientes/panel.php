@@ -748,19 +748,21 @@
     </nav -->
   <div class="alert alert-info fs-4">
 
-  En esta sección podrás ver los candidatos que se encuentran en proceso de estudio socioeconómico (BGV).
+    En esta sección podrás ver los candidatos que se encuentran en proceso de estudio socioeconómico (BGV).
 
-  <br>
-  En la columna de <strong>Acciones</strong> podrás consultar mensajes con los avances del estudio, el estatus de los distintos procesos involucrados y los documentos cargados para ese fin.
+    <br>
+    En la columna de <strong>Acciones</strong> podrás consultar mensajes con los avances del estudio, el estatus de los
+    distintos procesos involucrados y los documentos cargados para ese fin.
 
-  <br>
-  También podrás descargar los exámenes aplicados (si corresponde), como <strong>antidoping, psicometría y examen médico</strong>.
-  Además, tendrás la opción de descargar un <strong>reporte final</strong> del estudio realizado al candidato.
+    <br>
+    También podrás descargar los exámenes aplicados (si corresponde), como <strong>antidoping, psicometría y examen
+      médico</strong>.
+    Además, tendrás la opción de descargar un <strong>reporte final</strong> del estudio realizado al candidato.
 
-  <br>
-  Te recomendamos revisar constantemente esta sección para mantenerte al tanto del progreso de cada candidato.
+    <br>
+    Te recomendamos revisar constantemente esta sección para mantenerte al tanto del progreso de cada candidato.
 
-</div>
+  </div>
 
 </header>
 <div class="loader" style="display: none;"></div>
@@ -779,35 +781,32 @@
 
 
 <div id="listado">
-  <div class="card shadow mb-4">
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary"></h6>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table id="tabla" class="table table-hover table-bordered" id="dataTable" width="100%" cellspacing="0">
 
-
-        </table>
+  <div class="card-header py-3">
+    <div class="form-group row justify-content-center align-items-center mb-0">
+      <label for="tipoFiltro" class="col-form-label font-weight-bold mr-2">Mostrar candidatos:</label>
+      <div>
+        <select id="tipoFiltro" class="form-control">
+          <option value="externo">Candidatos enviados a RODI para pruebas y estudios</option>
+          <option value="interno" selected>Candidatos registrados con un proceso interno </option>
+        </select>
       </div>
     </div>
   </div>
+
+  <div class="card-body">
+    <div class="table-responsive">
+      <table id="tabla" class="table table-hover table-bordered" width="100%" cellspacing="0" style="display: none;">
+      </table>
+      <table id="tablaInternos" class="table table-hover table-bordered" width="100%" cellspacing="0"
+        style="display: none;"></table>
+    </div>
+  </div>
+</div>
 </div>
 <!-- jQuery -->
 
-
-<!-- Bootstrap JS Bundle -->
-<!--script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous">
-  </script>
-
-  -- DataTables JS >
-  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
-
-  <-- SweetAlert 2 JS ->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
-
-  <!-- InputMask JS -->
+<!-- InputMask JS -->
 <script src="<?php echo base_url(); ?>js/input-mask/jquery.inputmask.js"></script>
 <script src="<?php echo base_url(); ?>js/input-mask/jquery.inputmask.date.extensions.js"></script>
 <script src="<?php echo base_url(); ?>js/input-mask/jquery.inputmask.extensions.js"></script>
@@ -815,49 +814,6 @@
 
 
 <script>
-function finishSession() {
-  let timerInterval;
-  setTimeout(() => {
-    Swal.fire({
-      title: 'Do you want to keep your session?',
-      showClass: {
-        popup: 'animate__animated animate__fadeInDown'
-      },
-      hideClass: {
-        popup: 'animate__animated animate__fadeOutUp'
-      },
-      html: 'Your session will end in <strong></strong> seconds<br/><br/>',
-      showDenyButton: true,
-      confirmButtonText: 'Keep me logged in',
-      denyButtonText: 'Logout',
-      timer: 30000,
-      timerProgressBar: true,
-      didOpen: () => {
-        //Swal.showLoading(),
-        timerInterval = setInterval(() => {
-          Swal.getHtmlContainer().querySelector('strong')
-            .textContent = (Swal.getTimerLeft() / 1000)
-            .toFixed(0)
-        }, 100)
-      },
-      willClose: () => {
-        clearInterval(timerInterval)
-      },
-      allowOutsideClick: false
-    }).then((result) => {
-      if (result.isConfirmed) {
-        finishSession();
-      } else if (result.isDenied || result.dismiss === Swal.DismissReason.timer) {
-        fetch('<?php echo base_url('Login/logout'); ?>')
-          .then(response => {
-            return location.reload()
-          })
-      }
-    })
-  }, 7200000);
-}
-finishSession();
-
 var id = '<?php echo $this->session->userdata('id') ?>';
 var id_cliente1 = '<?php echo $this->session->userdata('idcliente') ?>';
 console.log("🚀 ~ id_cliente1:", id_cliente1)
@@ -873,6 +829,21 @@ let url_form = '<?php echo base_url() . "Form/external?fid="; ?>';
 
 var extras = [];
 $(document).ready(function() {
+
+  $('#tipoFiltro').on('change', function() {
+    const tipo = $(this).val();
+    if (tipo === 'externo') {
+      $('#tablaInternos').hide();
+      $('#tabla').show();
+      changeDatatable(urlFiltrada);
+    } else if (tipo === 'interno') {
+      $('#tabla').hide();
+      $('#tablaInternos').show();
+      const urlInternos = '<?php echo base_url("Cliente_General/getEmpleadosInternos/") ?>' + id_cliente1;
+      loadInternos(urlInternos);
+    }
+  });
+  $('#tipoFiltro').trigger('change');
   $('.tipo_fecha').inputmask('dd/mm/yyyy', {
     'placeholder': 'dd/mm/yyyy'
   });
@@ -950,469 +921,133 @@ $(document).ready(function() {
       }
     });
   });
-
-  $("#subcliente").change(function() {
-    var subcliente = $(this).val();
-    if (subcliente != "") {
-      $('#proceso').prop('disabled', false);
-      $('#proceso').empty();
-      $('#proceso').append($("<option selected></option>").attr("value", 1).text("ESE Español"));
-      $('#antidoping').val('');
-      $("#examen").prop('disabled', true);
-      $('#examen').val('');
-    } else {
-      $('#proceso').empty();
-      $('#proceso').append($("<option selected></option>").attr("value", "").text("Selecciona"));
-      $('#antidoping').val('');
-      $('#examen').val('');
-      $('#proceso').prop('disabled', true);
-      $("#examen").prop('disabled', true);
-    }
-  });
-  $('#antidoping').change(function() {
-    var opcion = $(this).val();
-    var id_subcliente = $("#subcliente").val();
-
-    subcliente = (id_subcliente == '') ? NULL : id_subcliente;
-    if (opcion == 1) {
-      $("#examen").prop('disabled', false);
-      $.ajax({
-        url: '<?php echo base_url('Doping/getPaqueteSubcliente'); ?>',
-        method: 'POST',
-        data: {
-          'id_subcliente': subcliente,
-          'id_cliente': id_cliente,
-          'id_proyecto': 0
-        },
-        beforeSend: function() {
-          $('.loader').css("display", "block");
-        },
-        success: function(res) {
-          setTimeout(function() {
-            $('.loader').fadeOut();
-          }, 200);
-          if (res != "") {
-            $('#examen').val(res);
-            $("#examen").prop('disabled', false);
-            $("#examen").addClass('obligado');
-          } else {
-            $('#examen').val('');
-            $("#examen").prop('disabled', false);
-            $("#examen").addClass('obligado');
-          }
-        }
-      });
-    } else {
-      $("#examen").val('');
-      $("#examen").prop('disabled', true);
-    }
-  })
-  $("#previos").change(function() {
-    var previo = $(this).val();
-    if (previo != 0) {
-      //$('.div_check').css('display','none');
-      //$('.div_info_check').css('display','none');
-      $.ajax({
-        url: '<?php echo base_url('Candidato_Seccion/getDetallesProyectoPrevio'); ?>',
-        method: 'POST',
-        data: {
-          'id_previo': previo
-        },
-        success: function(res) {
-          $('#detalles_previo').empty();
-          $('#detalles_previo').html(res);
-        }
-      });
-      //TODO: Automatizar el valor dinamico de los examenes doping ligados al proceso
-      if (id == 178 || id == 201) {
-        $.ajax({
-          url: '<?php echo base_url('Doping/getExamenDopingByProceso'); ?>',
-          method: 'POST',
-          data: {
-            'id_previo': previo
-          },
-          async: false,
-          success: function(res) {
-            $('#examen_registro').empty();
-            $('#examen_registro').html(res);
-          }
-        });
-      }
-      //TODO: Automatizar el valor dinamico de los examenes doping ligados al cliente
-      if (id == 60 || id == 188 || id == 209 || id == 225 || id == 226 || id == 254 || id ==
-        255 || id == 257) {
-        $.ajax({
-          url: '<?php echo base_url('Doping/getExamenDopingByCliente'); ?>',
-          method: 'POST',
-          data: {
-            'id_cliente': id
-          },
-          async: false,
-          success: function(res) {
-            $('#examen_registro').empty();
-            $('#examen_registro').html(res);
-          }
-        });
-      }
-      // Checa en la tabla cliente_control si el cliente tiene predefinido examenes u otros valores
-      $.ajax({
-        url: '<?php echo base_url('Cliente/getControlesById'); ?>',
-        method: 'POST',
-        data: {
-          'id_cliente': id
-        },
-        async: false,
-        success: function(res) {
-          if (res != null) {
-            let data = JSON.parse(res);
-            if (data !== null && Object.keys(data).length !== 0) {
-              if (data.psicometria == 1) {
-                $('#examen_psicometrico').val(1)
-              }
-            }
-          }
-        }
-      });
-    } else {
-      //$('.div_check').css('display','flex');
-      //$('.div_info_check').css('display','block');
-      $('#detalles_previo').empty();
-    }
-  });
-  $("#estado").change(function() {
-    var id_estado = $(this).val();
-    if (id_estado != "") {
-      $.ajax({
-        url: '<?php echo base_url('Funciones/getMunicipios'); ?>',
-        method: 'POST',
-        data: {
-          'id_estado': id_estado
-        },
-        dataType: "text",
-        success: function(res) {
-          $('#municipio').prop('disabled', false);
-          $('#municipio').html(res);
-        }
-      });
-    } else {
-      $('#municipio').prop('disabled', true);
-      $('#municipio').append($("<option selected></option>").attr("value", "").text(
-        "Selecciona"));
-    }
-  });
-  $('[data-toggle="tooltip"]').tooltip();
-  $(".aplicar_todo").change(function() {
-    var id = $(this).attr('id');
-    var aux = id.split('aplicar_todo');
-    var num = aux[1];
-    var valor = $('#' + id).val();
-    switch (valor) {
-      case "-1":
-        $(".performance" + num).val("No proporciona");
-        break;
-      case "0":
-        $(".performance" + num).val("No proporciona");
-        break;
-      case "1":
-        $(".performance" + num).val("Excelente");
-        break;
-      case "2":
-        $(".performance" + num).val("Bueno");
-        break;
-      case "3":
-        $(".performance" + num).val("Regular");
-        break;
-      case "4":
-        $(".performance" + num).val("Insuficiente");
-        break;
-      case "5":
-        $(".performance" + num).val("Muy mal");
-        break;
-    }
-  });
-  $(".aplicar_all").change(function() {
-    var id = $(this).attr('id');
-    var aux = id.split('aplicar_all');
-    var num = aux[1];
-    var valor = $('#' + id).val();
-    switch (valor) {
-      case "-1":
-        $(".caracteristica" + num).val("Not provided");
-        break;
-      case "0":
-        $(".caracteristica" + num).val("Not provided");
-        break;
-      case "1":
-        $(".caracteristica" + num).val("Excellent");
-        break;
-      case "2":
-        $(".caracteristica" + num).val("Good");
-        break;
-      case "3":
-        $(".caracteristica" + num).val("Regular");
-        break;
-      case "4":
-        $(".caracteristica" + num).val("Bad");
-        break;
-      case "5":
-        $(".caracteristica" + num).val("Very Bad");
-        break;
-    }
-  });
-  $(".solo_numeros").on("input", function() {
-    var valor = $(this).val();
-    $(this).val(valor.replace(/[^0-9]/g, ''));
-  });
-  $("#previos_hcl").change(function() {
-    var previo = $(this).val();
-    if (previo != 0) {
-      $.ajax({
-        url: '<?php echo base_url('Candidato/getDetallesProyectoPrevio'); ?>',
-        method: 'POST',
-        data: {
-          'id_previo': previo
-        },
-        success: function(res) {
-          var parte = res.split('@@');
-          $('#detalles_previo_hcl').empty();
-          $('#detalles_previo_hcl').html(parte[0]);
-          $('#pais_previo_hcl').prop('disabled', false);
-          $('#pais_previo_hcl').empty();
-          $('#pais_previo_hcl').html(parte[1]);
-          //$('#pais_previo').append($('<option></option>').attr('value','Mexico').text('Mexico'));
-        }
-      });
-    } else {
-      $('#detalles_previo_hcl').empty();
-    }
-  });
-  $("#opcion_registro_hcl").change(function() {
-    var opcion = $(this).val();
-    $('.div_info_project').css('display', 'block');
-    $('.div_project').css('display', 'flex');
-    $('.div_info_test').css('display', 'block');
-    $('.div_test').css('display', 'flex');
-    $("#newModal #msj_error").css('display', 'none');
-    if (opcion == 1) {
-      $('.div_check_hcl').css('display', 'none');
-      $('.div_info_check').css('display', 'none');
-      $('.div_info_extra').css('display', 'none');
-      $('.div_extra').css('display', 'none');
-    }
-    if (opcion == 0) {
-      $('.div_previo').css('display', 'flex');
-      $('.div_info_previo').css('display', 'block');
-      $('.div_check_hcl').css('display', 'flex');
-      $('.div_info_check').css('display', 'block');
-      $('.div_info_extra').css('display', 'block');
-      $('.div_extra').css('display', 'flex');
-    }
-    if (opcion == '') {
-      $('.div_previo').css('display', 'none');
-      $('.div_info_previo').css('display', 'none');
-      $('.div_check_hcl').css('display', 'none');
-      $('.div_info_check').css('display', 'none');
-      $('.div_info_project').css('display', 'none');
-      $('.div_project').css('display', 'none');
-      $('.div_info_test').css('display', 'none');
-      $('.div_test').css('display', 'none');
-      $('.div_info_extra').css('display', 'none');
-      $('.div_extra').css('display', 'none');
-    }
-  });
-  $("#region_hcl").change(function() {
-    var region = $(this).val();
-    if (region != '') {
-      $.ajax({
-        url: '<?php echo base_url('Candidato/getSeccionesRegion'); ?>',
-        method: 'POST',
-        data: {
-          'region': region
-        },
-        success: function(res) {
-          var secciones = JSON.parse(res);
-          $('.valor_dinamico').val('');
-          $('.valor_dinamico').empty();
-          //$('.valor_dinamico').append($('<option selected></option>').attr('value','').text('Select'));
-          $('.valor_dinamico').prop('disabled', false);
-          $('#ref_profesionales_registro_hcl').val(0);
-          $('#ref_personales_registro_hcl').val(0);
-          $('#ref_academicas_registro_hcl').val(0);
-          //Distribuye las secciones en su correspondiente select
-          for (var i = 0; i < secciones.length; i++) {
-            if (secciones[i]['tipo_seccion'] == 'Global Search') {
-              $('#global_registro_hcl').append($('<option></option>').attr(
-                'value', secciones[i]['id']).text(secciones[i][
-                'descripcion_ingles'
-              ]));
-            }
-            /*if(secciones[i]['tipo_seccion'] == 'Verificacion Documentos'){
-            	$('#identidad_registro').append($('<option></option>').attr('value',secciones[i]['id']).text(secciones[i]['descripcion_ingles']));
-            } */
-            ////if(secciones[i]['tipo_seccion'] == 'Referencias Laborales'){
-            if (secciones[i]['id'] == 16) {
-              $('#empleos_registro_hcl').append($('<option></option>').attr(
-                'value', secciones[i]['id']).text(secciones[i][
-                'descripcion_ingles'
-              ]));
-            }
-            //if(secciones[i]['tipo_seccion'] == 'Estudios'){
-            if (secciones[i]['id'] == 3) {
-              $('#estudios_registro_hcl').append($('<option></option>').attr(
-                'value', secciones[i]['id']).text(secciones[i][
-                'descripcion_ingles'
-              ]));
-            }
-            if (secciones[i]['tipo_seccion'] == 'Domicilios') {
-              $('#domicilios_registro_hcl').append($('<option></option>')
-                .attr('value', secciones[i]['id']).text(secciones[i][
-                  'descripcion_ingles'
-                ]));
-            }
-            if (secciones[i]['tipo_seccion'] == 'Credito') {
-              $('#credito_registro_hcl').append($('<option></option>').attr(
-                'value', secciones[i]['id']).text(secciones[i][
-                'descripcion_ingles'
-              ]));
-            }
-          }
-          //Empleos
-          $('#empleos_registro_hcl').append($('<option></option>').attr('value',
-            0).attr("selected", "selected").text('N/A'));
-          $('#empleos_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '3 years').text('3 years'));
-          $('#empleos_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '5 years').text('5 years'));
-          $('#empleos_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '7 years').text('7 years'));
-          $('#empleos_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '10 years').text('10 years'));
-          $('#empleos_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', 'All').text('All'));
-          $('#empleos_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '0').attr("selected", "selected").text('N/A'));
-          //Criminales
-          $('#criminal_registro_hcl').append($('<option></option>').attr('value',
-            1).text('Apply'));
-          $('#criminal_registro_hcl').append($('<option></option>').attr('value',
-            0).attr("selected", "selected").text('N/A'));
-          $('#criminal_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '3 years').text('3 years'));
-          $('#criminal_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '5 years').text('5 years'));
-          $('#criminal_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '7 years').text('7 years'));
-          $('#criminal_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '10 years').text('10 years'));
-          $('#criminal_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '0').attr("selected", "selected").text('N/A'));
-          //Domicilios
-          $('#domicilios_registro_hcl').append($('<option></option>').attr(
-            'value', 0).attr("selected", "selected").text('N/A'));
-          $('#domicilios_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '3 years').text('3 years'));
-          $('#domicilios_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '5 years').text('5 years'));
-          $('#domicilios_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '7 years').text('7 years'));
-          $('#domicilios_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '10 years').text('10 years'));
-          $('#domicilios_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '0').attr("selected", "selected").text('N/A'));
-          //Credito
-          $('#credito_registro_hcl').append($('<option></option>').attr('value',
-            0).attr("selected", "selected").text('N/A'));
-          $('#credito_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '3 years').text('3 years'));
-          $('#credito_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '5 years').text('5 years'));
-          $('#credito_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '7 years').text('7 years'));
-          $('#credito_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '10 years').text('10 years'));
-          $('#credito_tiempo_registro_hcl').append($('<option></option>').attr(
-            'value', '0').attr("selected", "selected").text('N/A'));
-          //Estudios
-          $('#estudios_registro_hcl').append($('<option></option>').attr('value',
-            0).attr("selected", "selected").text('N/A'));
-          //Identidad
-          $('#identidad_registro_hcl').append($('<option></option>').attr('value',
-            1).text('Apply'));
-          $('#identidad_registro_hcl').append($('<option></option>').attr('value',
-            0).attr("selected", "selected").text('N/A'));
-          //Globales
-          $('#global_registro_hcl').append($('<option></option>').attr('value', 0)
-            .attr("selected", "selected").text('N/A'));
-          //Migracion
-          $('#migracion_registro_hcl').append($('<option></option>').attr('value',
-            1).text('Apply'));
-          $('#migracion_registro_hcl').append($('<option></option>').attr('value',
-            0).attr("selected", "selected").text('N/A'));
-          //Prohibited parties list
-          $('#prohibited_registro_hcl').append($('<option></option>').attr(
-            'value', 1).text('Apply'));
-          $('#prohibited_registro_hcl').append($('<option></option>').attr(
-            'value', 0).attr("selected", "selected").text('N/A'));
-          //Age check
-          $('#edad_registro_hcl').append($('<option></option>').attr('value', 1)
-            .text('Apply'));
-          $('#edad_registro_hcl').append($('<option></option>').attr('value', 0)
-            .attr("selected", "selected").text('N/A'));
-          //Motor vehicle records
-          $('#mvr_registro_hcl').append($('<option></option>').attr('value', 1)
-            .text('Apply'));
-          $('#mvr_registro_hcl').append($('<option></option>').attr('value', 0)
-            .attr("selected", "selected").text('N/A'));
-          //CURP
-          $('#curp_registro_hcl').append($('<option></option>').attr('value', 1)
-            .text('Apply'));
-          $('#curp_registro_hcl').append($('<option></option>').attr('value', 0)
-            .attr("selected", "selected").text('N/A'));
-        }
-      });
-      if (region == 'International') {
-        $('#pais_registro_hcl').prop('disabled', false);
-        $('#pais_registro_hcl').val('');
-        $('#pais_registr_hclo').find('option[value="México"]').remove()
-        $('#mvr_registro_hcl').val(0);
-      } else {
-        $('#pais_registro_hcl').prop('disabled', true);
-        //$('#pais_registro').val('México');
-        $('#pais_registro_hcl').append($('<option></option>').attr('value', 'México').attr(
-          "selected", "selected").text('Mexico'));
-      }
-      $('#proyecto_registro_hcl').prop('disabled', false);
-    } else {
-      $('#pais_registro_hcl').prop('disabled', true);
-      $('#pais_registro_hcl').val('');
-      $('#proyecto_registro_hcl').prop('disabled', true);
-      $('#proyecto_registro_hcl').val('');
-      $('.valor_dinamico').val('');
-      $('.valor_dinamico').empty();
-      $('.valor_dinamico').prop('disabled', true);
-      $('#ref_profesionales_registro_hcl').val(0);
-      $('#ref_personales_registro_hcl').val(0);
-      $('#ref_academicas_registro_hcl').val(0);
-    }
-  });
-  $('#extra_registro_hcl').change(function() {
-    var id = $(this).val();
-    if (id != '') {
-      if (!extras.includes(id)) {
-        var txt = $("#extra_registro_hcl option:selected").text();
-        extras.push(id);
-        //$("#extra_registro option[value='"+id+"']").remove();
-        $('#div_docs_extras').append($('<div id="div_extra' + id +
-          '" class="extra_agregado mb-1 d-flex justify-content-start"><h5 class="mr-5">Document added: <b>' +
-          txt +
-          '</b></h5><button type="button" class="btn btn-danger btn-sm" onclick="eliminarExtra(' +
-          id + ',\'' + txt + '\')">X</button></div>'));
-      }
-    }
-  })
-
-  changeDatatable(urlFiltrada);
 });
+
+function loadInternos(url1) {
+
+  $.ajax({
+    url: url1,
+    dataType: 'json',
+    success: function(response) {
+      // Verificar que 'data' sea un array antes de mapear
+      var formattedData = Array.isArray(response.data) ? response.data.map(function(item) {
+        // Concatenación de nombre, paterno y materno
+        var nombreCompleto = [item.nombre, item.paterno, item.materno].filter(Boolean).join(' ');
+
+        return {
+          id: item.id || '',
+          nombreCompleto: nombreCompleto, // Columna concatenada
+          creacion: item.creacion || '',
+          correo: item.correo || '',
+          telefono: item.telefono || '',
+          documentos: item.documentos || '', // Aquí puedes añadir lógica para manejar documentos
+          examenes: item.examenes || '' // Aquí puedes añadir lógica para manejar exámenes
+        };
+      }) : [];
+      // Destruir la tabla anterior si ya existe
+      $('#tabla').empty();
+      if ($.fn.DataTable.isDataTable('#tabla')) {
+        $('#tabla').DataTable().clear().destroy();
+      }
+      // Inicializar DataTable para Internos
+      $('#tablaInternos').DataTable({
+        "pageLength": 10,
+        "order": [0, "desc"],
+        "stateSave": false,
+        "serverSide": false,
+        "destroy": true,
+        "data": formattedData,
+        "language": {
+          "emptyTable": "No hay candidatos internos disponibles",
+          "zeroRecords": "No se encontraron coincidencias",
+          "infoEmpty": "Mostrando 0 a 0 de 0 registros"
+        },
+        "columns": [{
+            title: 'ID',
+            data: 'id',
+            "width": "10%",
+            className: 'text-center' // Centrado de contenido
+          },
+          {
+            title: 'Nombre',
+            data: 'nombreCompleto',
+            "width": "20%",
+            className: 'text-center',
+            mRender: function(data, type, full) {
+              return full.nombreCompleto +
+                '<br><br>'
+                //<button class="btn btn-success btn-sm" onclick="confirmAction(' +
+              //  full.id + ')">Enviar a Empleados</button>';
+              // reclutador;
+            } // Centrado de contenido
+          }, // Columna concatenada
+          {
+            title: 'Fecha Alta',
+            data: 'creacion',
+            "width": "15%",
+            className: 'text-center' // Centrado de contenido
+          },
+          {
+            title: 'Correo y Teléfono',
+            data: function(row) {
+              return row.correo + '<br>' + row.telefono;
+            },
+            "width": "25%",
+            className: 'text-center' // Centrado de contenido
+          },
+          {
+            title: 'Documentos',
+            data: null,
+            "width": "15%",
+            className: 'text-center', // Centrado de contenido
+
+            render: function(data, type, row) {
+              // Crear botones para los documentos
+              return '<button class="btn btn-info btn-sm" onclick="cargarDocumentosPanelClienteInterno(' +
+                row.id +
+                ', \'' + row.nombreCompleto + '\', 1)">' +
+                '<i class="fa fa-eye"></i></button>';
+            }
+          },
+         {
+            title: 'Exámenes',
+            data: null,
+            "width": "15%",
+            className: 'text-center', // Centrado de contenido
+            render: function(data, type, row) {
+              // Botón para los exámenes
+              return '<div style="display: flex; justify-content: center; align-items: center;">' +
+                '<button class="btn btn-primary btn-sm" onclick="cargarDocumentosPanelClienteInterno(' +
+                row.id +
+                ', \'' + row.nombreCompleto + '\', 2)">' +
+                '<i class="fa fa-syringe"></i></button>' +
+                '</div>';
+
+            }
+          },
+         /* {
+            title: 'Eliminar',
+            data: 'id',
+            width: "10%",
+            className: 'text-center',
+            render: function(data, type, row) {
+              return `<button class="btn btn-link text-danger "
+                    onclick="eliminarCandidato(${data})"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="Eliminar candidato">
+                <i class="fas fa-trash fa-lg"></i>
+            </button> `;
+            }
+          },*/
+        ]
+      });
+    },
+    error: function(xhr, status, error) {
+      console.error("Error en la petición AJAX de Internos:", status, error);
+    }
+  });
+}
 
 function changeDatatable(url1) {
   $.ajax({
@@ -1434,7 +1069,10 @@ function changeDatatable(url1) {
         return item;
       });
 
-
+  $('#tablaInternos').empty();
+      if ($.fn.DataTable.isDataTable('#tablaInternos')) {
+        $('#tablaInternos').DataTable().clear().destroy();
+      }
       // Inicializar DataTable con los datos formateados
       $('#tabla').DataTable({
         "pageLength": 10,
@@ -1442,7 +1080,12 @@ function changeDatatable(url1) {
         "stateSave": true,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
-        "data": formattedData, // Usar los datos formateados
+        "data": formattedData,
+        "language": {
+          "emptyTable": "No hay candidatos enviados a RODI disponibles",
+          "zeroRecords": "No se encontraron coincidencias",
+          "infoEmpty": "Mostrando 0 a 0 de 0 registros"
+        }, // Usar los datos formateados
         "columns": [{
             title: 'Candidato',
             data: 'candidato',
@@ -2594,6 +2237,176 @@ function changeDatatable(url1) {
   });
 }
 
+function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
+  $("#employee_id").val(id);
+  $("#idCandidatoDocsInterno").val(id);
+  $(".nombreCandidato").text(nombre);
+  $("#nameCandidatoInterno").val(nombre);
+  $("#origen").val(origen);
+
+
+
+  $.ajax({
+    url: '<?php echo base_url('Candidato/getDocumentosPanelClienteInterno1'); ?>',
+    type: 'post',
+    data: {
+      'id_candidato': id,
+      'prefijo': id + "_" + nombre,
+      'origen': origen
+    },
+    success: function(res) {
+      $("#tablaDocsInterno").html(res);
+    }
+  });
+
+  $("#docsModalInterno").modal("show");
+}
+function subirDocInterno() {
+  var origen = $("#origen").val();
+  var nombreCandidato = $("#nameCandidatoInterno").val();
+  var id = $("#employee_id").val();
+
+  var data = new FormData();
+  var modal = $("#docsModalInterno");
+
+  var docInput = modal.find("#documentoInterno")[0];
+  if (docInput.files.length === 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Selecciona un archivo',
+      text: 'Por favor, elige un archivo antes de subirlo.',
+      timer: 2500
+    });
+    return;
+  }
+  var doc = docInput.files[0];
+  var id_portal = "<?php echo $this->session->userdata('idPortal') ?>";
+
+  // Agregar los datos esperados por el backend
+  data.append('employee_id', id);
+  data.append('name', modal.find("#nombre_archivoInterno").val());
+  data.append('description', null);
+  data.append('expiry_date', '');
+  data.append('expiry_reminder', modal.find("#recordatorioExpiracion").val() || "");
+  data.append('file', doc);
+  data.append('status', 1);
+  data.append('id_portal', id_portal);
+  data.append('origen', origen);
+
+  // Determinar la carpeta y la URL de destino
+  var carpeta = (origen == 1) ? '_documentEmpleado' : '_examEmpleado';
+  data.append('carpeta', carpeta);
+
+  $.ajax({
+    url: "<?php echo site_url('Avance/subirDocumentoInterno'); ?>", // Este es el endpoint de tu controlador CodeIgniter
+    method: "POST",
+    data: data,
+    contentType: false,
+    cache: false,
+    processData: false,
+    beforeSend: function() {
+      $('.loader').css("display", "block");
+    },
+    success: function(res) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+
+      var data = (typeof res === "string") ? JSON.parse(res) : res;
+
+      if (data.message) {
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: data.message,
+          showConfirmButton: false,
+          timer: 2500
+        });
+
+        // Limpiar campos del formulario
+        let modal = $("#docsModalInterno");
+        modal.find("#documentoInterno").val("");
+        modal.find("#tablaDocsInterno").empty();
+        modal.find("#nombre_archivoInterno").val("");
+
+        // Recargar documentos
+        cargarDocumentosPanelClienteInterno(id, nombreCandidato, origen);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data.error || 'No se pudo subir el documento.',
+          timer: 2500
+        });
+      }
+    },
+    error: function(jqXHR) {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+
+      let errorMessage = "Error en la solicitud.";
+
+      if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+        errorMessage = jqXHR.responseJSON.error;
+      } else if (jqXHR.status === 413) {
+        errorMessage = "El archivo es demasiado grande.";
+      } else if (jqXHR.status === 500) {
+        errorMessage = "Error interno del servidor.";
+      }
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorMessage,
+        timer: 2500
+      });
+    }
+  });
+}
+
+function finishSession() {
+  let timerInterval;
+  setTimeout(() => {
+    Swal.fire({
+      title: 'Do you want to keep your session?',
+      showClass: {
+        popup: 'animate__animated animate__fadeInDown'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOutUp'
+      },
+      html: 'Your session will end in <strong></strong> seconds<br/><br/>',
+      showDenyButton: true,
+      confirmButtonText: 'Keep me logged in',
+      denyButtonText: 'Logout',
+      timer: 30000,
+      timerProgressBar: true,
+      didOpen: () => {
+        //Swal.showLoading(),
+        timerInterval = setInterval(() => {
+          Swal.getHtmlContainer().querySelector('strong')
+            .textContent = (Swal.getTimerLeft() / 1000)
+            .toFixed(0)
+        }, 100)
+      },
+      willClose: () => {
+        clearInterval(timerInterval)
+      },
+      allowOutsideClick: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        finishSession();
+      } else if (result.isDenied || result.dismiss === Swal.DismissReason.timer) {
+        fetch('<?php echo base_url('Login/logout'); ?>')
+          .then(response => {
+            return location.reload()
+          })
+      }
+    })
+  }, 7200000);
+}
+finishSession();
 
 
 $("#opcion_registro").change(function() {
@@ -3388,6 +3201,7 @@ if (mm < 10) {
   mm = '0' + mm;
 }
 </script>
+
 </body>
 
 </html>

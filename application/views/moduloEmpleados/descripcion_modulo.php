@@ -1,99 +1,140 @@
+<style>
+  .empleado-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #1f2937;
+  }
 
-    <style>
-        .employee-body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .employee-container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .employee-title {
-            text-align: center;
-            color: #d9534f;
-        }
-        .employee-section {
-            margin: 20px 0;
-        }
-        .employee-card {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-        }
-        .employee-card i {
-            font-size: 24px;
-            margin-right: 10px;
-            color: #d9534f;
-        }
-        .employee-contact {
-            background: #d9534f;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-    </style>
+  .empleado-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #0ea5e9;
+    margin-bottom: 1rem;
+  }
 
+  .empleado-section {
+    margin-top: 20px;
+  }
 
-<div class="employee-container">
-    <h1 class="employee-title">Employee Module</h1>
-    <p>This module allows you to manage employee records and track essential documents and evaluations. Below are the main sections included in this module:</p>
+  .empleado-card {
+    background: #f1f5f9;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
 
-    <div class="employee-section">
-        <h2>Employee File</h2>
+  .empleado-card i {
+    font-size: 28px;
+    color: #0ea5e9;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
 
-        <div class="employee-card">
-            <i class="fas fa-folder-open"></i>
-            <div>
-                <h3>Registration and Documentation</h3>
-                <p>Register employees and upload personal documents like contracts and proof of residence. Set expiration reminders for each document.</p>
-            </div>
-        </div>
+  .empleado-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #1e293b;
+  }
 
-        <div class="employee-card">
-            <i class="fas fa-calendar-alt"></i>
-            <div>
-                <h3>Candidate Information</h3>
-                <p>Manage comprehensive candidate information, including personal, medical, vacation, and sick leave details.</p>
-            </div>
-        </div>
+  .empleado-card p {
+    margin: 5px 0 0 0;
+    color: #475569;
+    font-size: 0.95rem;
+  }
+
+  .empleado-contacto {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #0ea5e9;
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  .empleado-contacto a {
+    color: white;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .empleado-card {
+      flex-direction: column;
+    }
+
+    .empleado-card i {
+      margin-bottom: 8px;
+    }
+  }
+</style>
+
+<div class="empleado-container">
+  <h1 class="empleado-title">Módulo de Empleados</h1>
+  <p>
+    Este módulo te permite gestionar expedientes de empleados y dar seguimiento a documentos y evaluaciones clave.
+    A continuación se describen las principales secciones incluidas:
+  </p>
+
+  <div class="empleado-section">
+    <h2>Expediente del Empleado</h2>
+
+    <div class="empleado-card">
+      <i class="fas fa-folder-open"></i>
+      <div>
+        <h3>Registro y Documentación</h3>
+        <p>
+          Registra a los empleados y carga documentos personales como contratos y comprobantes de domicilio.
+          Configura recordatorios para vencimientos.
+        </p>
+      </div>
     </div>
 
-    <div class="employee-section">
-        <h2>Courses and Training</h2>
-        <div class="employee-card">
-            <i class="fas fa-graduation-cap"></i>
-            <div>
-                <h3>Training Records</h3>
-                <p>Keep track of courses and training sessions that employees have completed, including their expiration dates.</p>
-            </div>
-        </div>
+    <div class="empleado-card">
+      <i class="fas fa-calendar-alt"></i>
+      <div>
+        <h3>Información General</h3>
+        <p>
+          Administra datos como información personal, médica, vacaciones, incapacidades y otros detalles importantes.
+        </p>
+      </div>
     </div>
+  </div>
 
-    <div class="employee-section">
-        <h2>Evaluations</h2>
-        <div class="employee-card">
-            <i class="fas fa-check-circle"></i>
-            <div>
-                <h3>Performance Assessments</h3>
-                <p>Upload evidence of evaluations and surveys that employees have participated in to measure workplace climate and performance.</p>
-            </div>
-        </div>
+  <div class="empleado-section">
+    <h2>Cursos y Capacitación</h2>
+    <div class="empleado-card">
+      <i class="fas fa-graduation-cap"></i>
+      <div>
+        <h3>Historial de Formación</h3>
+        <p>
+          Da seguimiento a los cursos y capacitaciones realizadas por los empleados, incluyendo fechas de vencimiento.
+        </p>
+      </div>
     </div>
+  </div>
 
-    <div class="employee-contact">
-        <p>For more information about the Employee Module, please contact our support team:</p>
-        <p><strong>Email:</strong> <a href="mailto:bramirez@talentsafecontrol.com" style="color: white;">bramirez@talentsafecontrol.com</a></p>
+  <div class="empleado-section">
+    <h2>Evaluaciones</h2>
+    <div class="empleado-card">
+      <i class="fas fa-check-circle"></i>
+      <div>
+        <h3>Evaluaciones de Desempeño</h3>
+        <p>
+          Carga evidencias de evaluaciones y encuestas realizadas para medir el clima laboral y el rendimiento del personal.
+        </p>
+      </div>
     </div>
+  </div>
+
+  <div class="empleado-contacto">
+    <p>¿Necesitas ayuda con este módulo? Contacta a nuestro equipo de soporte:</p>
+    <p><strong>Correo:</strong> <a href="mailto:bramirez@talentsafecontrol.com">bramirez@talentsafecontrol.com</a></p>
+  </div>
 </div>
-
-

@@ -211,7 +211,7 @@ class Dashboard extends CI_Controller
         } else {
             // Verificar si todos los campos están completos y redirigir
             if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
-                $this->load->view('clientes/header_clientes');
+                $this->load->view('clientes/header_clientes', $data);
                 $this->load->view('adminpanel/footer', [], true);
              
             } else {

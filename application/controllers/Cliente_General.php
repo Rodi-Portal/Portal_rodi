@@ -24,7 +24,7 @@ class Cliente_General extends Custom_Controller
                     if ($p['id_cliente'] == $id_cliente) {
                         $data['cliente'] = $p['nombreCliente'];
                     }
-                } 
+                }
             }
             $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
             foreach ($data['submodulos'] as $row) {
@@ -2223,6 +2223,9 @@ class Cliente_General extends Custom_Controller
                 break;
             case 4:
                 $view = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);
+                break;
+            case 5:
+                $view = $this->load->view('moduloComunicacion/descripcion_modulo', $data, true);
                 break;
             default:
                 $view = "Módulo no encontrado.";
