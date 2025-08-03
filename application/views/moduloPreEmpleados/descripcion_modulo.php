@@ -1,100 +1,133 @@
+<style>
+  .preempleo-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #1f2937;
+  }
 
-    <style>
-        .preemployment-body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .preemployment-container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .preemployment-title {
-            text-align: center;
-            color: #d9534f; /* Red color for the title */
-        }
-        .preemployment-section {
-            margin: 20px 0;
-        }
-        .preemployment-card {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-        }
-        .preemployment-card i {
-            font-size: 24px;
-            margin-right: 10px;
-            color: #d9534f; /* Icon color */
-        }
-        .preemployment-contact {
-            background: #d9534f;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-    </style>
+  .preempleo-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #0ea5e9;
+    margin-bottom: 1rem;
+  }
 
+  .preempleo-section {
+    margin-top: 20px;
+  }
 
-<div class="preemployment-container">
-    <h1 class="preemployment-title">Pre-Employment Module</h1>
-    <p>In this module, users can upload their candidates for various assessments. Please note that these assessments incur an additional cost and will be conducted by RODI Perintex Sa de CV. Results will be available in real-time and in a digital format.</p>
+  .preempleo-card {
+    background: #f1f5f9;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
 
-    <div class="preemployment-section">
-        <h2>Available Assessments</h2>
+  .preempleo-card i {
+    font-size: 28px;
+    color: #0ea5e9;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
 
-        <div class="preemployment-card">
-            <i class="fas fa-user-check"></i>
-            <div>
-                <h3>Employment Screening (ESE)</h3>
-                <p>Conduct a comprehensive Employment Screening Evaluation to assess the qualifications and suitability of candidates.</p>
-            </div>
-        </div>
+  .preempleo-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #1e293b;
+  }
 
-        <div class="preemployment-card">
-            <i class="fas fa-shield-alt"></i>
-            <div>
-                <h3>Background Verification (BGV)</h3>
-                <p>Perform a thorough background check to verify the history and credentials of potential hires.</p>
-            </div>
-        </div>
+  .preempleo-card p {
+    margin: 5px 0 0 0;
+    color: #475569;
+    font-size: 0.95rem;
+  }
 
-        <div class="preemployment-card">
-            <i class="fas fa-brain"></i>
-            <div>
-                <h3>Psychometric Testing</h3>
-                <p>Utilize psychometric tests to evaluate candidates' mental capabilities and behavioral style.</p>
-            </div>
-        </div>
+  .preempleo-contacto {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #0ea5e9;
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+  }
 
-        <div class="preemployment-card">
-            <i class="fas fa-stethoscope"></i>
-            <div>
-                <h3>Medical Examination</h3>
-                <p>Administer a complete medical examination to ensure candidates meet health standards for employment.</p>
-            </div>
-        </div>
+  .preempleo-contacto a {
+    color: white;
+    text-decoration: underline;
+  }
 
-        <div class="preemployment-card">
-            <i class="fas fa-syringe"></i>
-            <div>
-                <h3>Drug Testing</h3>
-                <p>Conduct drug tests to ensure candidates are compliant with company policies and regulations.</p>
-            </div>
-        </div>
+  @media (max-width: 600px) {
+    .preempleo-card {
+      flex-direction: column;
+    }
+
+    .preempleo-card i {
+      margin-bottom: 8px;
+    }
+  }
+</style>
+
+<div class="preempleo-container">
+  <h1 class="preempleo-title">Módulo de Preempleo</h1>
+  <p>
+    En este módulo podrás registrar candidatos para la aplicación de diferentes evaluaciones. Estas pruebas tienen un costo adicional y serán aplicadas por RODI Perintex S.A. de C.V.
+    Los resultados estarán disponibles en tiempo real y en formato digital.
+  </p>
+
+  <div class="preempleo-section">
+    <h2>Evaluaciones Disponibles</h2>
+
+    <div class="preempleo-card">
+      <i class="fas fa-user-check"></i>
+      <div>
+        <h3>Evaluación de Preselección (ESE)</h3>
+        <p>Evalúa las competencias, habilidades y perfil general del candidato para su posible incorporación.</p>
+      </div>
     </div>
 
-    <div class="preemployment-contact">
-        <p>For more information on assessments and costs, please contact our support team:</p>
-        <p><strong>Email:</strong> <a href="mailto:bramirez@talentsafecontrol.com" style="color: white;">bramirez@talentsafecontrol.com</a></p>
+    <div class="preempleo-card">
+      <i class="fas fa-shield-alt"></i>
+      <div>
+        <h3>Verificación de Antecedentes (BGV)</h3>
+        <p>Realiza una revisión completa del historial y credenciales del candidato.</p>
+      </div>
     </div>
+
+    <div class="preempleo-card">
+      <i class="fas fa-brain"></i>
+      <div>
+        <h3>Pruebas Psicométricas</h3>
+        <p>Aplicación de instrumentos para evaluar capacidades cognitivas y estilo de comportamiento.</p>
+      </div>
+    </div>
+
+    <div class="preempleo-card">
+      <i class="fas fa-stethoscope"></i>
+      <div>
+        <h3>Examen Médico</h3>
+        <p>Examen clínico general para asegurar que el candidato cumple con los requisitos de salud.</p>
+      </div>
+    </div>
+
+    <div class="preempleo-card">
+      <i class="fas fa-syringe"></i>
+      <div>
+        <h3>Prueba Antidopaje</h3>
+        <p>Evalúa el cumplimiento del candidato con la política de consumo de sustancias.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="preempleo-contacto">
+    <p>Para más información sobre las evaluaciones y sus costos, contacta a nuestro equipo de soporte:</p>
+    <p><strong>Correo:</strong> <a href="mailto:bramirez@talentsafecontrol.com">bramirez@talentsafecontrol.com</a></p>
+  </div>
 </div>
-

@@ -1884,8 +1884,8 @@ class Candidato extends Custom_Controller
 
             foreach ($response_data['documentos'] as $doc) {
                 $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
-                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'])) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameDocument']) . '</a></td>';
-                $salida .= '<td>' . htmlspecialchars($doc['optionName']) . '</td>';
+                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'])) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno']) . '</a></td>';
+                $salida .= '<td>' . htmlspecialchars(isset($doc['nameDocument']) ? $doc['nameDocument'] : '') . '</td>';
                 $salida .= '<td>' . htmlspecialchars($doc['upload_date']) . '</td>';
                 $salida .= '<td>
                 <button onclick="eliminarArchivoInterno(' . $doc["id"] . ', \'' . $doc["nameDocument"] . '\', ' . $id . ', \'' . $origen . '\')"
@@ -1893,8 +1893,7 @@ class Candidato extends Custom_Controller
                              <i class="fa fa-trash"></i>
                          </button>
              </td>';
- 
-            
+
                 $salida .= '</tr>';
             }
 
@@ -1936,7 +1935,188 @@ class Candidato extends Custom_Controller
 
         }
     }
+
     public function getDocumentos()
+    {
+        $id_candidato           = $this->input->post('id_candidato');
+        $data['docs_candidato'] = $this->candidato_model->getDocumentacionCandidato($id_candidato);
+        $salida                 = '';
+        if ($data['docs_candidato']) {
+            $salida .= '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th width="40%" scope="col">Nombre archivo</th>';
+            $salida .= '<th scope="col">Tipo archivo</th>';
+            $salida .= '<th scope="col">Acción</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            foreach ($data['docs_candidato'] as $doc) {
+                $salida .= '<tr id="fila' . $doc->id . '">';
+                $salida .= '<th><a href="' . base_url() . '_docs/' . $doc->archivo . '" target="_blank" style="word-break: break-word;">' . $doc->archivo . '</a></th>';
+                $salida .= '<th>' . $doc->tipo . '</th>';
+                $salida .= '<th><a href="javascript:void(0);"  data-toggle="tooltip" title="Eliminar documento" class="fa-tooltip icono_datatable" onclick="eliminarArchivo(' . $doc->id . ',\'' . $doc->archivo . '\',' . $id_candidato . ')"><i class="fas fa-trash"></i></a></th>';
+
+            }
+            $salida .= '</tr></tbody></table>';
+        } else {
+            $salida = '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th scope="col">Nombre archivo</th>';
+            $salida .= '<th scope="col">Tipo archivo</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            $salida .= '<tr>';
+            $salida .= '<th class="text-center" colspan="2">Sin documentos subidos</th>';
+            $salida .= '</tr>';
+            $salida .= '</tbody>';
+            $salida .= '</table>';
+        }
+
+        echo $salida;
+    }
+
+    public function getDocumentosPanelClienteInterno1()
+    {
+        $id     = $this->input->post('id_candidato');
+        $origen = $this->input->post('origen');
+
+        // Verificar si ID y origen están definidos
+        if (empty($id) || empty($origen)) {
+            echo json_encode(['codigo' => 0, 'msg' => 'ID o origen no proporcionado']);
+            return;
+        }
+
+        // Configurar la URL del endpoint según el origen
+        $api_base_url = API_URL;
+        if ($origen == 1) {
+            $url  = $api_base_url . "documents/" . $id;
+            $path = '_documentEmpleado/';
+        } elseif ($origen == 2) {
+            $url  = $api_base_url . "exam/" . $id; // URL diferente para origen 2
+            $path = '_examEmpleado/';
+        } else {
+            echo json_encode(['codigo' => 0, 'msg' => 'Origen no válido']);
+            return;
+        }
+
+        // Inicializar cURL
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPGET, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ]);
+
+        // Ejecutar la solicitud
+        $response = curl_exec($ch);
+
+        // Verificar errores en cURL
+        if ($response === false) {
+            $error_msg = curl_error($ch);
+            echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
+            curl_close($ch);
+            return;
+        }
+
+        // Verificar el código HTTP
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_status !== 200) {
+            echo '<table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Archivo</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Fecha de carga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="text-center" colspan="3">No documents yet</td></tr>
+                    </tbody>
+                </table>';
+            return;
+        }
+
+        // Decodificar la respuesta JSON
+        $response_data = json_decode($response, true);
+
+        // Construir la tabla de salida
+        $salida = '';
+        if (! empty($response_data['documentos']) && is_array($response_data['documentos'])) {
+            $salida .= '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th width="40%" scope="col">Archivo</th>';
+            $salida .= '<th scope="col">Nombre</th>';
+            $salida .= '<th scope="col">Fecha de carga</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+
+           foreach ($response_data['documentos'] as $doc) {
+                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
+                
+                // Archivo real (nameDocument)
+                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'] ?? '')) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno'] ?? '') . '</a></td>';
+
+                // Categoría o tipo de documento
+                $salida .= '<td>' . htmlspecialchars($doc['nameDocument'] ?? '') . '</td>';
+
+                // Fecha de carga
+                $salida .= '<td>' . htmlspecialchars($doc['upload_date'] ?? '') . '</td>';
+
+                // Botón eliminar
+               
+
+                $salida .= '</tr>';
+            }
+
+
+            $salida .= '</tbody></table>';
+        } else {
+            $salida = '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th scope="col">File name</th>';
+            $salida .= '<th scope="col">Category</th>';
+            $salida .= '<th scope="col">Upload Date</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            $salida .= '<tr>';
+            $salida .= '<td class="text-center" colspan="3">No documents yet</td>';
+            $salida .= '</tr>';
+            $salida .= '</tbody></table>';
+        }
+
+        // Mostrar la salida
+        echo $salida;
+    }
+
+    public function downloadDocumentosPanelCliente1()
+    {
+        if (isset($_POST['idCandidatoDocs'])) {
+            $id_candidato = $_POST['idCandidatoDocs'];
+            $this->load->library('zip');
+            $documentos = $this->candidato_model->getDocumentacion($id_candidato);
+            //if($documentos){
+            foreach ($documentos as $doc) {
+                if ($doc->id_tipo_documento == 3 || $doc->id_tipo_documento == 8 || $doc->id_tipo_documento == 9 || $doc->id_tipo_documento == 14 || $doc->id_tipo_documento == 45) {
+                    $this->zip->read_file('_docs/' . $doc->archivo);
+                }
+
+            }
+            $this->zip->download(time() . '.zip');
+
+        }
+    }
+
+    public function getDocumentos1()
     {
         $id_candidato           = $this->input->post('id_candidato');
         $data['docs_candidato'] = $this->candidato_model->getDocumentacionCandidato($id_candidato);
@@ -2336,24 +2516,24 @@ class Candidato extends Custom_Controller
         $archivo      = $this->input->post('archivo');
         $id_candidato = $this->input->post('id_candidato');
         $origen       = $this->input->post('origen');
-    
+
         // Determinar el directorio según el origen
         $directorio = '';
         if ($origen == 1) {
             $directorio = './_documentEmpleado/';
-            $tabla = 'documents_empleado';
+            $tabla      = 'documents_empleado';
         } elseif ($origen == 2) {
             $directorio = './_examEmpleado/';
-            $tabla = 'exams_empleados';
+            $tabla      = 'exams_empleados';
         } else {
             $directorio = './_docs/'; // Directorio por defecto
         }
-    
+
         $existe = 0;
         if ($id !== null && $archivo !== null) {
             // Obtener lista de archivos en el directorio seleccionado
             $aux = directory_map($directorio);
-    
+
             for ($i = 0; $i < count($aux); $i++) {
                 $indice = explode('_', $aux[$i]);
                 if ($indice[0] === $id_candidato) {
@@ -2361,14 +2541,14 @@ class Candidato extends Custom_Controller
                     break;
                 }
             }
-    
+
             if ($existe == 1) {
                 // Verificar si el archivo existe antes de eliminarlo
                 $rutaArchivo = $directorio . $archivo;
                 if (file_exists($rutaArchivo)) {
                     unlink($rutaArchivo);
                 }
-    
+
                 // Eliminar el registro en la base de datos
                 $this->candidato_model->eliminarDocCandidatoInterno($id, $tabla);
                 $msj = [
@@ -2389,16 +2569,15 @@ class Candidato extends Custom_Controller
                 'msg'    => 'error',
             ];
         }
-    
+
         echo json_encode($msj);
     }
-    
 
     public function eliminarCandidatoInterno()
     {
         $idCandidato = $this->input->post('id');
 
-        if (!$idCandidato) {
+        if (! $idCandidato) {
             echo json_encode(['codigo' => 0, 'mensaje' => 'ID de candidato no recibido']);
             return;
         }
@@ -2439,7 +2618,6 @@ class Candidato extends Custom_Controller
 
         echo json_encode(['codigo' => 1, 'mensaje' => 'Candidato eliminado correctamente']);
     }
-
 
     public function eliminarReferenciaLaboral()
     {

@@ -2224,6 +2224,9 @@ class Cliente_General extends Custom_Controller
             case 4:
                 $view = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);
                 break;
+            case 5:
+                $view = $this->load->view('moduloComunicacion/descripcion_modulo', $data, true);
+                break;
             default:
                 $view = "Módulo no encontrado.";
                 break;

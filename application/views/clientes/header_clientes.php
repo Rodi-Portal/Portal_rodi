@@ -24,9 +24,10 @@
   <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
   <script src="https://kit.fontawesome.com/fdf6fee49b.js" crossorigin="anonymous"></script>
 
-  <!-- Bootstrap -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    crossorigin="anonymous">
+  <!-- Bootstrap 4.5.2 -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <!-- Bootstrap Select -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
 
   <!-- Select2 -->
@@ -40,31 +41,28 @@
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
 
-  <!-- Animations -->
+  <!-- Animaciones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
-  <!-- Custom CSS -->
+  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>css/custom.css">
   <?php echo link_tag("css/sb-admin-2.min.css"); ?>
 
   <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-    crossorigin="anonymous"></script>
+  <script src="<?php echo base_url(); ?>js/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap JS (bundle incluye Popper.js) -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
-  </script>
-
-  <!-- Easing Plugin -->
+  <!-- jQuery Easing -->
   <script src="<?php echo base_url(); ?>vendor/jquery-easing/jquery.easing.min.js"></script>
 
-  <!-- Select2 JS -->
+  <!-- Select2 -->
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-  <!-- SweetAlert2 JS -->
+  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.all.min.js"></script>
 
-  <!-- DataTables JS -->
+  <!-- DataTables -->
   <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 
@@ -76,19 +74,17 @@
 
 
 
+
+
 <body id="page-top">
   <!-- JavaScript -->
   <?php
-      /*echo $modalCliente;
-echo '<pre>';
-print_r($cliente);
-echo '</pre>';*/
-      $id_cliente = $this->session->userdata('idcliente');
-      /*echo '<pre>';
-echo $procesosActuales[0]->url;
-print_r($procesosActuales);
-echo '</pre>';*/
-
+      echo $modals ;
+      $CI           = &get_instance();
+      $id_cliente   = $CI->session->userdata('idcliente');
+      $logo         = $CI->session->userdata('logo');
+      $aviso_actual = $CI->session->userdata('aviso');
+      $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
   ?>
 
   <!-- Page Wrapper -->
@@ -97,29 +93,45 @@ echo '</pre>';*/
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
+      <?php if ($logo == null) {
+              $logo = 'logo_nuevo.png';
+      }?>
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
-
-        <img width="100px" src="<?php echo base_url(); ?>img/portal_icon.png" alt="Logo">
-
-
+        <img style="max-width: 220px; max-height: 150px; background: white;"
+          src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>" alt="Logo">
       </a>
-      <h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
+
       <hr class="sidebar-divider my-0">
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
+          aria-expanded="true" aria-controls="collapseUsuario">
+          <div class="d-flex align-items-center">
+            <!-- Columna de la imagen -->
+            <div>
+              <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png"
+                style="width: 40px; height: 40px;">
+            </div>
 
-
-      <!-- Divider -->
-      <hr class="sidebar-divider my-0">
-
-      <!-- Menú principal -->
-      <li class="nav-item active">
-        <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span>
+            <!-- Columna del texto -->
+            <div class="ml-3">
+              <span class="d-none d-lg-inline text-white font-weight-bold" style="font-size: 14px;">
+                <?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?>
+              </span>
+            </div>
+          </div>
         </a>
-      </li>
 
+        <div id="collapseUsuario" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="<?php echo base_url(); ?>Login/logout">
+              <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+              Cerrar sesión
+            </a>
+          </div>
+        </div>
+      </li>
       <!-- Divider -->
-      <hr class="sidebar-divider">
+
 
       <!-- Manual de Usuario -->
 
@@ -188,29 +200,37 @@ echo '</pre>';*/
               <div class="button-container">
                 <a id="recruitment-btn" href="javascript:void(0);"
                   onclick="loadSection('seccion-recruitment', '<?php echo site_url('Cliente_General/descripcionesCliente/1'); ?>')"
-                  class="btn custom-btn">
+                  class="btn custom-btn recruitment-btn">
                   <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
                   Reclutamiento
                 </a>
                 <a id="pre-employment-btn" href="javascript:void(0);"
                   onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')"
-                  class="btn custom-btn">
+                  class="btn custom-btn pre-employment-btn">
                   <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
                   Preempleo
                 </a>
                 <a id="employment-btn" href="javascript:void(0);"
                   onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')"
-                  class="btn custom-btn">
+                  class="btn custom-btn employment-btn">
                   <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
                   Empleados
                 </a>
                 <a id="former-employees-btn" href="javascript:void(0);"
                   onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')"
-                  class="btn custom-btn">
+                  class="btn custom-btn former-employment-btn">
                   <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
                   Exempleados
                 </a>
-
+                <a id="communication-btn" href="javascript:void(0);"
+                  onclick="loadSection('seccion-communication', '<?php echo site_url('Cliente_General/descripcionesCliente/5'); ?>')"
+                  class="btn custom-btn former-actividades-btn">
+                  <div class="module-label">Módulo</div>
+                  <div class="btn-content">
+                    <i class="fas fa-calendar-alt"></i>
+                    Comunicación
+                  </div>
+                </a>
               </div>
             </li>
 
@@ -222,7 +242,7 @@ echo '</pre>';*/
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                              <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -235,22 +255,37 @@ echo '</pre>';*/
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
-            <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+            <!-- Nav Item - Alerts -->
+            <li class="nav-item dropdown no-arrow mx-1" id="iconoNotificaciones">
+              <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="font-size: 12px;">
-                  <?php echo $this->session->userdata('nombre') . " " . $this->session->userdata('paterno'); ?>
-                </span>
-                <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png">
+                <i class="fas fa-bell fa-fw" style="color:rgb(255, 42, 0);"></i>
+                <?php if (isset($contadorNotificaciones)) {
+                    $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
+                <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
+                  style="display:   <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                <?php
+                }?>
               </a>
-              <div class="dropdown-menu dropdown-menu-end shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="<?php echo base_url(); ?>Login/logout">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Cerrar sesión
-                </a>
+              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="alertsDropdown">
+                <h6 class="dropdown-header">Notificaciones</h6>
+                <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto; color: red"></div>
               </div>
             </li>
+            <li class="nav-item dropdown no-arrow mx-1" id="iconoLlave">
+              <a id="btnAbrirProveedores" class="nav-link icono-dorado text-center" href="#" role="button"
+                title="Proveedores destacados"
+                style="line-height: 1.2; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0;">
+
+                <div style="font-size: 9px; font-weight: bold; color: #000;">Proveedores</div>
+                <i class="fas fa-key fa-fw icono-dorado" style="font-size: 20px;"></i>
+                <div style="font-size: 9px; font-weight: bold; color: #000;">Destacados</div>
+              </a>
+            </li>
+
+
+            <div class="topbar-divider d-none d-sm-block"></div>
           </ul>
         </nav>
 
@@ -267,7 +302,7 @@ echo '</pre>';*/
               <a class="btn custom-btn" href="javascript:void(0)" data-section="seccion-bgv"
                 onclick="showSection('seccion-bgv')">
                 <i class="fas fa-chart-line"></i>
-                <span class="d-none d-md-inline">Candidatos BGV</span>
+                <span class="d-none d-md-inline">Candidatos Pruebas</span>
               </a>
             </li>
             <!--//TODO: boton para en un futuro poder ver las requisiciones finalizadas actualmente sin funcionamiento -->
@@ -275,6 +310,73 @@ echo '</pre>';*/
 
           </ul>
         </nav>
+                <!-- Modal Principal: Nuestros Proveedores Destacados -->
+        <div class="modal fade" id="modalKey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header bg-blue text-white fw-bold">
+                <h5 class="modal-title" id="exampleModalLabel" style="color: white !important; font-size: 1.8rem;">
+                  Nuestros Proveedores Destacados
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal"
+                  aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row" id="contenedor-proveedores">
+                  <!-- Aquí se insertarán los proveedores destacados dinámicamente con JavaScript -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Modal Global Reutilizable para Contacto -->
+        <div class="modal fade" id="modalContactoGlobal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form id="formContacto" method="post">
+                <div class="modal-header" id="modalHeaderGlobal" style="background-color: #000;">
+                  <img src="" alt="" id="modalImagenGlobal" style="max-height: 50px; margin-right: 10px;">
+                  <h5 class="modal-title text-white" id="modalTituloGlobal">Contacto</h5>
+                  <button type="button" class="btn-close btn-close-white" data-dismiss="modal"
+                    aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                  <input type="hidden" name="proveedor_id" id="inputProveedorId">
+
+                  <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" class="form-control" name="nombre" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Empresa / Organización</label>
+                    <input type="text" class="form-control" name="empresa">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email" class="form-control" name="correo" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Teléfono con lada</label>
+                    <input type="tel" class="form-control" name="telefono">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Descripción de la solicitud</label>
+                    <textarea class="form-control" name="descripcion" rows="3" required></textarea>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
 
         <div id="panel-agregar-candidato" class="dynamic-section" style="display: none;"></div>
         <div id="seccion-bgv" class="dynamic-section" style="display: none;"></div>
@@ -284,11 +386,10 @@ echo '</pre>';*/
         <div id="seccion-pre-employment" class="dynamic-section"></div>
         <div id="seccion-employees" class="dynamic-section"></div>
         <div id="seccion-former-employees" class="dynamic-section"></div>
+        <div id="seccion-communication" class="dynamic-section"></div>
+
         <script>
         let base_url = '<?php echo base_url() ?>'
-
-
-
         let url_listado = '<?php echo base_url('Cliente/get_candidates'); ?>';
         let url_psicometria = '<?php echo base_url(); ?>_psicometria/';
         let url_clinico = '<?php echo base_url(); ?>_clinico/';
@@ -313,6 +414,160 @@ echo '</pre>';*/
           })
           localStorage.removeItem('candidatoRegistrado');
         }
+         $(document).on('click', '.open-contacto', function(e) {
+          e.preventDefault();
+
+          const id = $(this).data('id');
+          const nombre = $(this).data('nombre');
+          const color = $(this).data('color') || '#333';
+          const imagen = $(this).data('imagen') || '<?php echo base_url("img/portal_icon.png"); ?>';
+
+          const modal = $('#modalContactoGlobal');
+
+          // Asignar valores en el modal
+          modal.find('#modalHeaderGlobal').css('background-color', color);
+          modal.find('#modalTituloGlobal').text('Contacto ' + nombre);
+          modal.find('#modalImagenGlobal').attr('src', imagen).attr('alt', nombre);
+          modal.find('#inputProveedorId').val(id);
+
+          modal.modal('show');
+        });
+
+        $('#btnAbrirProveedores').on('click', function(e) {
+          e.preventDefault();
+
+          // Spinner o loader
+          $('#modalKey .modal-body').html('<div class="text-center py-5">Cargando proveedores...</div>');
+
+          // AJAX para cargar proveedores
+          $.ajax({
+            url: '<?php echo base_url("Proveedor/destacados"); ?>',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              let html = '<div class="row">';
+
+              data.forEach(function(prov) {
+                const color = prov.color || '#333';
+                const imagen = prov.imagen || '<?php echo base_url("img/portal_icon.png"); ?>';
+
+                // Botón sitio web
+                const btnSitio = prov.url1 ?
+                  `<a href="${prov.url1}" target="_blank" class="btn btn-link text-primary" title="Sitio web">
+            <i class="fas fa-globe fa-lg"></i>
+          </a>` : '';
+
+                // Botón WhatsApp
+                const btnWhats = prov.url2 ?
+                  `<a href="${prov.url2}" target="_blank" class="btn btn-link text-success" title="WhatsApp">
+            <i class="fab fa-whatsapp fa-lg"></i>
+          </a>` : '';
+
+                // Botón contacto (teléfono o correo)
+                let btnContacto = '';
+                if ((prov.telefono && prov.telefono.length > 0) || (prov.correo && prov.correo.length > 0)) {
+                  btnContacto = `
+                <button class="btn btn-link text-info open-contacto"
+                  data-id="${prov.id}"
+                  data-nombre="${prov.nombre}"
+                  data-color="${color}"
+                  data-imagen="${imagen}"
+                  title="Formulario de Contacto">
+                  <i class="fas fa-envelope fa-lg"></i>
+                </button>`;
+                }
+
+                html += `
+          <div class="col-12 col-md-6 col-lg-4 mb-4">
+            <div class="card shadow border-0 h-100">
+              <div class="card-header text-white text-center fw-bold" style="background-color:${color}; font-size: 1.8rem;">
+                ${prov.nombre.toUpperCase()}
+              </div>
+
+              <div class="card-body text-center">
+                <img src="${imagen}" alt="${prov.nombre}" class="img-fluid my-3" style="max-height: 60px;">
+                <p class="mb-1"><strong>${prov.descripcion1}</strong></p>
+                <p class="mb-2 text-muted">${prov.descripcion}</p>
+              </div>
+
+              <div class="card-footer d-flex justify-content-center gap-3">
+                ${btnContacto}
+                ${btnSitio}
+                ${btnWhats}
+              </div>
+            </div>
+          </div>`;
+              });
+
+              html += '</div>';
+              $('#modalKey .modal-body').html(html);
+              $('#modalKey').modal('show');
+            },
+            error: function() {
+              $('#modalKey .modal-body').html(
+                '<div class="text-danger text-center py-5">Error al cargar proveedores.</div>');
+              $('#modalKey').modal('show');
+            }
+          });
+        });
+
+        $(document).ready(function() {
+          $('#formContacto').on('submit', function(e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const btn = form.find('button[type="submit"]');
+            btn.prop('disabled', true).text('Enviando...');
+
+            $.ajax({
+              url: '<?php echo base_url("Proveedor/enviar"); ?>',
+              method: 'POST',
+              data: form.serialize(),
+              dataType: 'json',
+              success: function(res) {
+                if (res.status === 'success') {
+                  Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: res.message,
+                    confirmButtonText: 'Aceptar'
+                  });
+
+                  form[0].reset();
+                } else if (res.status === 'validation_error') {
+                  let errores = '';
+                  for (let campo in res.errors) {
+                    errores += `• ${res.errors[campo]}\n`;
+                  }
+
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Faltan datos requeridos',
+                    text: errores,
+                    confirmButtonText: 'Corregir'
+                  });
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error inesperado al enviar el formulario.',
+                  });
+                }
+              },
+              error: function() {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Fallo en el servidor',
+                  text: 'No se pudo enviar. Verifica tu conexión e intenta de nuevo.',
+                });
+              },
+              complete: function() {
+                btn.prop('disabled', false).text('Enviar');
+              }
+            });
+          });
+
+        });
 
         function openHistory() {
           //$('#lista_candidatos').DataTable().destroy();
@@ -388,9 +643,9 @@ echo '</pre>';*/
                     let acciones =
                       '<div class="text-center"><div class="btn-group dropstart"><button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button><ul class="dropdown-menu"><li><a href="javascript:void(0)" data-toggle="tooltip" title="Progress messages" onclick="viewMessages(' +
                       data + ',' + idioma +
-                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
+                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i> <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
                       data +
-                      ')" class="dropdown-item"><i class="fas fa-folder"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
+                      ')" class="dropdown-item"><i class="fas fa-folder"></i><?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
                     return acciones
                   }
                 },
@@ -501,7 +756,6 @@ echo '</pre>';*/
               }
             });
         }
-
         // escuchador  para   comentarios
         function descargarCV() {}
 
@@ -693,7 +947,6 @@ echo '</pre>';*/
           // Recargar la página
           window.location.reload();
         }
-
         // Función que carga una sección y la muestra
         function loadPageInSection() {
           var id_cliente = <?php echo $id_cliente; ?>;
@@ -704,7 +957,6 @@ echo '</pre>';*/
             }
           );
         }
-
         // Cargar ambas secciones al principio
         $(document).ready(function() {
           $('.dropdown-toggle').dropdown();
