@@ -136,7 +136,7 @@ $(document).on('click', '.eliminar-permiso', function(e) {
     if (result.isConfirmed) {
       // Enviar solicitud de eliminación al servidor
       $.ajax({
-        url: '<?php echo site_url("Cat_usuarioInternos/eliminarPermiso"); ?>',
+        url: '<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>',
         method: 'POST',
         data: {
           id_usuario: id_usuario,
