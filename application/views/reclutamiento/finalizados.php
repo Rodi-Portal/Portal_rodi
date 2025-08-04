@@ -94,20 +94,24 @@ $(document).ready(function() {
 function changeDataTable(url) {
   $('#tabla').DataTable({
     "pageLength": 25,
-    //"pagingType": "simple",
     "order": [0, "desc"],
     "stateSave": true,
     "serverSide": false,
     "bDestroy": true,
     "ajax": url,
-    "columns": [{
+    "columns": [
+      {
         title: '#',
         data: 'id',
         bSortable: false,
         "width": "3%",
         mRender: function(data, type, full) {
 
+          if(data != null){
           return data;
+          }else{
+          return 'N/A';
+          }
         }
       },
       {
@@ -116,7 +120,12 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
-          return data + '<br><small><b>(' + full.usuario + ')</b></small>';
+             if(data != null){
+        
+          }else{
+          data = 'Sin Aspirantes registrads'
+          }
+          return mostrarDato(data) + '<br><small><b>(' + mostrarDato(full.usuario) + ')</b></small>';
         }
       },
       {
@@ -125,41 +134,28 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
-          return '#' + full.id_requisicion + ' ' + data;
+          return '#' + mostrarDato(full.id_requisicion) + ' ' + mostrarDato(data);
         }
       },
       {
         title: 'Puesto',
         data: 'puesto',
         bSortable: false,
-        "width": "12%"
+        "width": "12%",
+        mRender: function(data, type, full) {
+          return mostrarDato(data);
+        }
       },
       {
         title: 'Accion',
         data: 'id',
         bSortable: false,
         "width": "8%",
-
         mRender: function(data, type, full) {
-
-          var cv = (full.cv != null) ? '<a href="<?php echo base_url(); ?>_docs/' + full.cv +
-            '" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' :
+          var cv = (full.cv != null && full.cv != "") ? 
+            '<a href="<?php echo base_url(); ?>_docs/' + full.cv + '" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' :
             '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
-
-          if (full.status_final == null) {
-            return cv;
-          }
-          //TODO: revisar  que se agrega  y a¿que se quita   de esta  seccion  fue  remplazada por la de arriba
-          /*
-          mRender: function(data, type, full){
-						var cv = (full.cv != null)? '<a href="< ?php echo base_url(); ?>_docs/'+full.cv+'" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' : '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
-						var historial = '<a href="javascript:void(0)" id="ver_historial" class="fa-tooltip icono_datatable"><i class="fas fa-history"></i></a> ';
-						if(full.status_final == null){
-            	return cv+'<a href="javascript:void(0)" id="editar_aspirante" class="fa-tooltip icono_datatable"><i class="fas fa-user-edit"></i></a> <a href="javascript:void(0)" id="accion" class="fa-tooltip icono_datatable"><i class="fas fa-plus-circle"></i></a> ';;
-						}*/
-          else {
-            return cv;
-          }
+          return cv;
         }
       },
       {
@@ -168,7 +164,12 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-          return '<b>' + data + '<b>';
+              if(data != null){
+        
+          }else{
+          data = 'Sin estatus registrado';
+          }
+          return '<b>' + data + '</b>';
         }
       },
       {
@@ -178,17 +179,16 @@ function changeDataTable(url) {
         "width": "10%",
         mRender: function(data, type, full) {
           var estatus = (data == 3) ? 'TERMINADA' : 'CANCELADA';
-          return '<b>' + estatus + '<b>';
+          return '<b>' + mostrarDato(estatus) + '</b>';
         }
       },
-
       {
         title: 'Comentario Final.',
         data: 'comentario_final',
         bSortable: false,
         "width": "17%",
         mRender: function(data, type, full) {
-          return '<b>' + data + '<b>';
+          return '<b>' + mostrarDato(data) + '</b>';
         }
       }
     ],
@@ -278,7 +278,12 @@ function changeDataTable(url) {
 
   });
 }
-
+function mostrarDato(valor) {
+  if (valor === undefined || valor === null || valor === "") {
+    return "No Disponible";
+  }
+  return valor;
+}
 function reactivarsRequisicion() {
   var datos = new FormData();
   datos.append('id', $("#reactivar_req").val());

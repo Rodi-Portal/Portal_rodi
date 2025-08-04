@@ -801,22 +801,24 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, CL.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes, C.id_aspirante as idCandidato, C.status_bgc, R.comentario_final, R.status as statusReq")
-            ->from('requisicion_aspirante as A')
-            ->join('requisicion as R', 'R.id = A.id_requisicion')
-            ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
+            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, CL.nombre as empresa, R.puesto, H.id as idHistorial, R.numero_vacantes, C.id_aspirante as idCandidato, C.status_bgc, R.comentario_final, R.status as statusReq, R.id as id_requisicion")
+            ->from('requisicion as R')
             ->join('cliente as CL', 'CL.id = R.id_cliente')
             ->join('datos_generales as GENCL', 'GENCL.id = CL.id_datos_generales')
             ->join('requisicion_historial as H', 'H.id_requisicion = R.id', 'left')
-            ->join('usuarios_portal as USER', 'USER.id = A.id_usuario')
+            ->join('requisicion_aspirante as A', 'A.id_requisicion = R.id', 'left') // ¡Aquí va el LEFT JOIN!
+            ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo', 'left')
+            ->join('usuarios_portal as USER', 'USER.id = A.id_usuario', 'left')
             ->join('candidato as C', 'C.id_aspirante = A.id', 'left')
             ->where('R.id_portal', $id_portal)
-            ->where('A.eliminado', 0)
+        // Puedes filtrar por usuario/reclutador o lo que necesites (asegúrate de que aplique bien aunque A sea null)
             ->where_in('R.status', [0, 3])
-            ->where($condicion, $id_usuario)
-            ->group_by('A.id')
-            ->order_by('A.id', 'DESC')
-            ->order_by('A.id_requisicion', 'DESC');
+            ->group_by('R.id')
+            ->order_by('R.id', 'DESC');
+
+        if ($condicion && $id_usuario) {
+            $this->db->where($condicion, $id_usuario);
+        }
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -825,6 +827,7 @@ class Reclutamiento_model extends CI_Model
             return false;
         }
     }
+
     public function getAspirantesRequisicionesFinalizadasTotal($id_usuario, $condicion)
     {
         $id_portal = $this->session->userdata('idPortal');
