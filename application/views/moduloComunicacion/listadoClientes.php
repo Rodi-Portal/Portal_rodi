@@ -272,7 +272,7 @@ $(document).ready(function() {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        $.post('<?php echo site_url("Cat_usuarioInternos/eliminarPermiso"); ?>', {
+        $.post('<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>', {
             id_usuario,
             id_cliente
           })
