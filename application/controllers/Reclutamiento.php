@@ -159,7 +159,7 @@ class Reclutamiento extends CI_Controller
         $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
 
         //Obtiene los usuarios con id rol 4 y 11 que pertencen a reclutadores y coordinadores de reclutadores
-        $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11]);
+        $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11, 6, 9 ,10]);
         $info['registros_asignacion'] = $this->reclutamiento_model->getRequisicionesActivas();
         $info['acciones']             = $this->funciones_model->getAccionesRequisicion();
         if ($this->session->userdata('idrol') == 4) {
