@@ -4,7 +4,7 @@ require_once FCPATH . 'vendor/autoload.php'; // Asegúrate de que la ruta sea co
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+
 class Reclutamiento extends CI_Controller
 {
 
@@ -641,7 +641,7 @@ class Reclutamiento extends CI_Controller
                         'id_bolsa_trabajo' => $id_bolsa_trabajo,
                         'id_requisicion'   => $req,
                         'correo'           => $correo,
-                        
+
                         'cv'               => $nombre_archivo,
                         'status'           => 'Registrado',
                     ];
@@ -985,20 +985,53 @@ class Reclutamiento extends CI_Controller
             }
             //Termina o finaliza Requisicion
             if ($estatus_final == 3) {
-                $status             = 'status';
-                $acciones           = ['FINALIZADO', 'COMPLETADO', 'ESE FINALIZADO'];
-                $sin_registro_socio = 0;
-                $num_aspirantes     = $this->reclutamiento_model->getVacantesCubiertasTotal($id_requisicion, $acciones);
-                $requisicion        = $this->reclutamiento_model->getRequisionById($id_requisicion);
-                if ($num_aspirantes >= $requisicion->numero_vacantes) {
-                    $data['candidatos'] = $this->reclutamiento_model->getCandidatosByRequisicion($id_requisicion);
+                $status         = 'status';
+                $acciones       = ['FINALIZADO', 'COMPLETADO', 'ESE FINALIZADO'];
+                $faltantes      = [];
+                $num_aspirantes = $this->reclutamiento_model->getVacantesCubiertasTotal($id_requisicion, $acciones);
+                $requisicion    = $this->reclutamiento_model->getRequisionById($id_requisicion);
+
+                // Candidatos completos
+                $candidatos_completos = [];
+                $faltantes_candidatos = [];
+
+                $data['candidatos'] = $this->reclutamiento_model->getCandidatosByRequisicion($id_requisicion);
+                if ($data['candidatos']) {
                     foreach ($data['candidatos'] as $row) {
-                        if ($row->id_aspirante == null || $row->id_aspirante == '') {
-                            $sin_registro_socio = 1;
-                            break;
+                        $nombre = (isset($row->nombre) && trim($row->nombre) !== '') ? $row->nombre : null;
+                        if (is_null($nombre)) {
+                            continue;
+                        }
+
+                        $completo = true;
+                        if (empty($row->sueldo)) {
+                            $completo = false;
+                        }
+
+                        if (empty($row->fecha_ingreso)) {
+                            $completo = false;
+                        }
+
+                        if ($completo) {
+                            $candidatos_completos[] = $row;
+                        } else {
+                            $msg = [];
+                            if (empty($row->sueldo)) {
+                                $msg[] = "no tiene registrado el sueldo acordado.";
+                            }
+
+                            if (empty($row->fecha_ingreso)) {
+                                $msg[] = "no tiene registrada la fecha de ingreso.";
+                            }
+
+                            $faltantes_candidatos[] = "El candidato <b>$nombre</b> " . implode(' ', $msg);
                         }
                     }
+                }
 
+                // ¿Hay suficientes completos?
+                if (count($candidatos_completos) >= $requisicion->numero_vacantes) {
+                    // Puedes cerrar la requisición
                     $datos = [
                         'edicion'          => $date,
                         $status            => $estatus_final,
@@ -1012,14 +1045,23 @@ class Reclutamiento extends CI_Controller
                         'codigo' => 1,
                         'msg'    => 'La requisición fue terminada correctamente',
                     ];
-
                 } else {
+                    // Faltan candidatos completos
+                    $faltan      = $requisicion->numero_vacantes - count($candidatos_completos);
+                    $faltantes   = [];
+                    $faltantes[] = "Faltan $faltan vacantes por cubrir con candidatos completos.";
+                    // Solo muestra los faltantes de los que no están completos
+                    $faltantes = array_merge($faltantes, $faltantes_candidatos);
+
                     $msj = [
-                        'codigo' => 0,
-                        'msg'    => 'Se debe cumplir el numero de vacantes, el registro del sueldo acordado y fecha de ingreso al empleo',
+                        'codigo'    => 0,
+                        'msg'       => 'No se puede cerrar la requisición porque falta información:',
+                        'faltantes' => $faltantes,
                     ];
                 }
             }
+
+            // ... (tus otros bloques if para cancelar/eliminar/editar, igual que antes) ...
         }
         echo json_encode($msj);
     }
@@ -2501,7 +2543,7 @@ class Reclutamiento extends CI_Controller
     {
         $id_portal    = $this->session->userdata('idPortal');
         $logo         = $this->session->userdata('logo') ?? 'portal_icon.png';
-        $aviso         = $this->session->userdata('aviso') ?? 'AV_TL_V1.pdf';
+        $aviso        = $this->session->userdata('aviso') ?? 'AV_TL_V1.pdf';
         $NombrePortal = $this->session->userdata('nombrePortal');
         $usuario_id   = $this->session->userdata('id');
 
@@ -2530,14 +2572,12 @@ class Reclutamiento extends CI_Controller
 
         // Crear el payload para el JWT
         $payload = [
-            "idUsuario"   => $usuario_id,
+            "idUsuario"    => $usuario_id,
             "logo"         => $logo,
             "aviso"        => $aviso,
             "idPortal"     => $id_portal,
             "NombrePortal" => $NombrePortal,
         ];
-
-      
 
         $private_key = $this->config->item('jwt_private_key');
         $jwt         = JWT::encode($payload, $private_key, 'RS256');

@@ -978,9 +978,10 @@ class Reclutamiento_model extends CI_Model
     public function getCandidatosByRequisicion($id_requisicion)
     {
         $this->db
-            ->select("C.id,C.id_aspirante")
+            ->select("C.id, C.id_aspirante, CONCAT(B.nombre, ' ', B.paterno) AS nombre, R.sueldo_acordado as sueldo, R.fecha_ingreso")
             ->from('requisicion_aspirante as R')
             ->join('candidato as C', 'C.id_aspirante = R.id', 'left')
+            ->join('bolsa_trabajo as B', 'R.id_bolsa_trabajo = B.id', 'inner')
             ->where('R.id_requisicion', $id_requisicion);
 
         $query = $this->db->get();

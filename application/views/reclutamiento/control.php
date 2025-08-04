@@ -717,17 +717,38 @@ function guardarEstatusRequisicion() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
-      var data = JSON.parse(res);
+
+      let data;
+      try {
+        data = JSON.parse(res);
+      } catch (e) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en el servidor',
+          html: "<b>Respuesta inesperada del servidor:</b><br><pre style='text-align:left'>" + res + "</pre>",
+          width: '50em'
+        });
+        console.error("Respuesta AJAX no es JSON:", res);
+        return;
+      }
+
       if (data.codigo === 1) {
         $("#estatusRequisicionModal").modal('hide')
-        recargarTable()
+        recargarTable();
         Swal.fire({
           position: 'center',
           icon: 'success',
           title: data.msg,
           showConfirmButton: false,
           timer: 2500
-        })
+        });
+      } else if (data.codigo === 0 && data.faltantes) {
+        Swal.fire({
+          icon: 'error',
+          title: data.msg,
+          html: '<ul style="text-align:left">' + data.faltantes.map(f => `<li>${f}</li>`).join('') + '</ul>',
+          confirmButtonText: 'Cerrar'
+        });
       } else {
         Swal.fire({
           icon: 'error',
@@ -735,11 +756,12 @@ function guardarEstatusRequisicion() {
           html: data.msg,
           width: '50em',
           confirmButtonText: 'Cerrar'
-        })
+        });
       }
     }
   });
 }
+
 
 function registrarCandidato() {
   var datos = new FormData();
