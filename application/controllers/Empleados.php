@@ -256,7 +256,7 @@ class Empleados extends CI_Controller
         echo $headerView;
         echo $scriptsView; // Mostrar scripts si es necesario
         echo $View;        // Mostrar el contenido del módulo de exempleados
-    }
+    }    
 
     public function comunicacion()
     {
@@ -267,7 +267,7 @@ class Empleados extends CI_Controller
 
         $data['submodulos']       = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $data['columnas_fijas']   = ['Sucursal', 'Empleados', 'Usuarios con acceso', 'Acciones'];
-        $data['columnas_ocultas'] = ['id_cliente', 'max', 'usuarios', 'empleados_activos', 'nombreCliente', 'empleados_inactivos'];
+        $data['columnas_ocultas'] = ['id_cliente','correo' , 'max', 'usuarios', 'empleados_activos', 'nombreCliente', 'empleados_inactivos'];
 
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
