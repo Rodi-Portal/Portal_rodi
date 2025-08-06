@@ -1,15 +1,15 @@
 <?php
-$columnas_visibles = [];
-$indices_dinamicas = [];
-$col_idx = 2; // 0=checkbox, 1=Sucursal, 2=primer dinámica
+    $columnas_visibles = [];
+    $indices_dinamicas = [];
+    $col_idx           = 2; // 0=checkbox, 1=Sucursal, 2=primer dinámica
 
-foreach ($columnas_disponibles as $col) {
-    if (!in_array($col, $columnas_fijas) && !in_array($col, $columnas_ocultas)) {
-        $columnas_visibles[] = $col;
-        $indices_dinamicas[] = $col_idx;
-        $col_idx++;
+    foreach ($columnas_disponibles as $col) {
+        if (! in_array($col, $columnas_fijas) && ! in_array($col, $columnas_ocultas)) {
+            $columnas_visibles[] = $col;
+            $indices_dinamicas[] = $col_idx;
+            $col_idx++;
+        }
     }
-}
 ?>
 
 <div class="container-fluid">
@@ -43,15 +43,29 @@ foreach ($columnas_disponibles as $col) {
       </tr>
       <tr>
         <th></th>
-        <th><input type="text" class="form-control form-control-sm" placeholder="Buscar Sucursal"></th>
+        <th>
+          <input type="text" class="form-control form-control-sm" placeholder="Buscar Sucursal" autocomplete="off"
+            name="search_sucursal_<?php echo uniqid(); ?>" readonly onfocus="this.removeAttribute('readonly');">
+        </th>
         <?php foreach ($columnas_visibles as $col): ?>
-        <th><input type="text" class="form-control form-control-sm"
-            placeholder="Buscar<?php echo htmlspecialchars($col); ?>"></th>
+        <th>
+          <input type="text" class="form-control form-control-sm"
+            placeholder="Buscar                          <?php echo htmlspecialchars($col); ?>" autocomplete="off"
+            name="search_<?php echo uniqid(); ?>" readonly onfocus="this.removeAttribute('readonly');">
+        </th>
         <?php endforeach; ?>
-        <th><input type="text" class="form-control form-control-sm" placeholder="Buscar Usuarios"></th>
-        <th><input type="text" class="form-control form-control-sm" placeholder="Buscar Empleados"></th>
+        <th>
+          <input type="text" class="form-control form-control-sm" placeholder="Buscar Usuarios" autocomplete="off"
+            name="search_usuarios_<?php echo uniqid(); ?>" readonly onfocus="this.removeAttribute('readonly');">
+        </th>
+        <th>
+          <input type="text" class="form-control form-control-sm" placeholder="Buscar Empleados" autocomplete="off"
+            name="search_empleados_<?php echo uniqid(); ?>" readonly onfocus="this.removeAttribute('readonly');">
+        </th>
         <th></th>
       </tr>
+
+
     </thead>
 
     <tbody>
@@ -136,7 +150,7 @@ foreach ($columnas_disponibles as $col) {
           </button>
         </div>
         <div class="modal-body">
-          <?php if (!empty($indices_dinamicas)): ?>
+          <?php if (! empty($indices_dinamicas)): ?>
           <?php foreach ($indices_dinamicas as $key => $idx): ?>
           <div class="form-check">
             <input class="form-check-input column-toggle" type="checkbox" value="<?php echo $idx; ?>"
@@ -323,9 +337,11 @@ $(document).ready(function() {
   text-decoration: none;
   transition: background 0.3s ease;
 }
+
 .form-check-label {
   text-transform: uppercase;
 }
+
 .btn-ver-empleados:hover {
   background: linear-gradient(45deg, #0b5ed7, #0bb3d9);
 }
@@ -460,6 +476,4 @@ $(document).ready(function() {
 .form-check {
   margin-bottom: 10px;
 }
-
-
 </style>
