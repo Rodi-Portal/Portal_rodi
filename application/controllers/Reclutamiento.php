@@ -2225,7 +2225,7 @@ class Reclutamiento extends CI_Controller
                     $bolsa['id_usuario'] = $this->session->userdata('id');
                 }
                 // --- CONSERVAR LOS DATOS DE EXTRAS ---
-               
+
                 $sectionSuccessMessage = 'Datos personales actualizados correctamente';
             }
 
@@ -2612,6 +2612,7 @@ class Reclutamiento extends CI_Controller
         $aviso        = $this->session->userdata('aviso') ?? 'AV_TL_V1.pdf';
         $NombrePortal = $this->session->userdata('nombrePortal');
         $usuario_id   = $this->session->userdata('id');
+        $tipo_bolsa   = (int) $this->session->userdata('tipo_bolsa');
 
         // Validar datos de sesión
         $errores = [];
@@ -2647,10 +2648,8 @@ class Reclutamiento extends CI_Controller
 
         $private_key = $this->config->item('jwt_private_key');
         $jwt         = JWT::encode($payload, $private_key, 'RS256');
-        $tipo_bolsa = $this->session->userdata('tipo_bolsa');
-       
-       
-        if ($tipo_bolsa == 1) {
+
+        if ($tipo_bolsa === 1) {
             $link = LINKASPIRANTESNUEVO . '?token=' . $jwt;
         } else {
             $link = LINKASPIRANTES . '?token=' . $jwt;
