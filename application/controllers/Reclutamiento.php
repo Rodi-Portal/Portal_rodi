@@ -2180,7 +2180,7 @@ class Reclutamiento extends CI_Controller
                 if ($idRol != 6) {
                     $bolsa['id_usuario'] = $this->session->userdata('id');
                 }
-                $sectionSuccessMessage = 'Datos personales (extras y normales) actualizados correctamente';
+                $sectionSuccessMessage = 'Informacion actualizada correctamente';
             } else {
                 // --- Validación y update de campos normales ---
                 $this->form_validation->set_rules('nombre_update', 'Nombre(s)', 'required|trim');
