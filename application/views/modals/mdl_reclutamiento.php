@@ -1715,7 +1715,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form action="<?php echo site_url('documentos_aspirantes/subir') ?>" class="dropzone" id="tablaDropzone"
+        <form action="<?php echo base_url('Documentos_Aspirantes/subir') ?>" class="dropzone" id="tablaDropzone"
           enctype="multipart/form-data">
           <input type="hidden" id="id_aspirante" name="id_aspirante" value="">
 
@@ -1784,7 +1784,7 @@
         <h5 class="modal-title">Reemplazar documento</h5>
       </div>
       <div class="modal-body">
-        <form id="frmReemplazo" action="<?php echo site_url('documentos_aspirantes/actualizar') ?>"
+        <form id="frmReemplazo" action="<?php echo base_url('Documentos_Aspirantes/actualizar') ?>"
           enctype="multipart/form-data">
           <input type="hidden" name="id_doc" id="id_doc">
           <div class="form-group">
@@ -1836,7 +1836,7 @@ $('#modalCargaArchivos').on('shown.bs.modal', function() {
   }
 
   dz = new Dropzone("#tablaDropzone", {
-    url: "<?php echo site_url('documentos_aspirantes/subir') ?>", // MISMA que el action del form
+    url: "<?php echo base_url('Documentos_Aspirantes/subir') ?>", // MISMA que el action del form
     paramName: "file", // CI3 recibirá $_FILES['file']
     autoProcessQueue: false,
     uploadMultiple: true,

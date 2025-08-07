@@ -514,7 +514,7 @@ function mostrarFormularioActualizarDocs(id) {
 
   // 2) Pide los documentos del aspirante
   $.ajax({
-    url: `<?php echo site_url('documentos_aspirantes/lista/')?>${id}`,
+    url: `<?php echo base_url('Documentos_Aspirantes/lista/')?>${id}`,
     type: 'GET',
     dataType: 'json',
     success: function(docs) {

@@ -870,7 +870,7 @@
           $('#msgSinDocs').hide();
 
           $.ajax({
-            url: `<?php echo site_url('documentos_aspirantes/lista'); ?>/${idBolsa}`,
+            url: `<?php echo base_url('Documentos_Aspirantes/lista'); ?>/${idBolsa}`,
             dataType: 'json',
             success: function(docs) {
 
@@ -906,7 +906,7 @@
           const idDoc = $(this).data('id');
           const nombre = $(this).data('nombre');
 
-          fetch(`<?php echo site_url('documentos_aspirantes/stream');?>/${idDoc}`)
+          fetch(`<?php echo base_url('Documentos_Aspirantes/stream');?>/${idDoc}`)
             .then(r => r.blob())
             .then(blob => {
               const url = URL.createObjectURL(blob);
