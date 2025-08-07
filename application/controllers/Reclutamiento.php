@@ -159,7 +159,7 @@ class Reclutamiento extends CI_Controller
         $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
 
         //Obtiene los usuarios con id rol 4 y 11 que pertencen a reclutadores y coordinadores de reclutadores
-        $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11, 6, 9 ,10]);
+        $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11, 6, 9, 10]);
         $info['registros_asignacion'] = $this->reclutamiento_model->getRequisicionesActivas();
         $info['acciones']             = $this->funciones_model->getAccionesRequisicion();
         if ($this->session->userdata('idrol') == 4) {
@@ -477,7 +477,11 @@ class Reclutamiento extends CI_Controller
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
         $vista['modals']   = $this->load->view('modals/mdl_reclutamiento', $info, true);
-
+        /*
+        echo'<pre>'; 
+        print_r($info['registros']);
+        echo'</pre>';
+        die(); */
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
         if (! empty($notificaciones)) {
             $contador = 0;
@@ -2089,128 +2093,186 @@ class Reclutamiento extends CI_Controller
     }
     public function updateApplicant()
     {
-        $section = $this->input->post('section');
+        // $section determina qué tipo de actualización
+        $section  = $this->input->post('section');
+        $id_bolsa = $this->input->post('id_bolsa');
+        $idRol    = $this->session->userdata('idrol');
+
         if ($section == 'personal') {
-            $this->form_validation->set_rules('nombre_update', 'Nombre(s)', 'required|trim');
-            $this->form_validation->set_rules('paterno_update', 'Primer apellido', 'required|trim');
-            $this->form_validation->set_rules('materno_update', 'Segundo apellido', 'trim');
-            $this->form_validation->set_rules('domicilio_update', 'Domicilio', 'required|trim');
-            $this->form_validation->set_rules('fecha_nacimiento_update', 'Fecha de nacimiento', 'required|trim');
-            $this->form_validation->set_rules('telefono_update', 'Teléfono', 'required|trim|max_length[16]');
-            $this->form_validation->set_rules('nacionalidad_update', 'Nacionalidad', 'required|trim');
-            $this->form_validation->set_rules('civil_update', 'Estado civil', 'required|trim');
-            $this->form_validation->set_rules('dependientes_update', 'Personas que dependan del aspirante', 'required|trim');
-            $this->form_validation->set_rules('escolaridad_update', 'Grado máximo de estudios', 'required|trim');
+            $post         = $this->input->post();
+            $vienenExtras = false;
+            foreach ($post as $k => $v) {
+                if (strpos($k, 'extra_') === 0) {
+                    $vienenExtras = true;
+                    break;
+                }
+            }
 
-        }
-        if ($section == 'salud') {
-            $this->form_validation->set_rules('salud_update', '¿Cómo es su estado de salud actual?', 'required|trim');
-            $this->form_validation->set_rules('enfermedad_update', '¿Padece de alguna enfermedad crónica?', 'required|trim');
-            $this->form_validation->set_rules('deporte_update', '¿Practica algún deporte?', 'required|trim');
-            $this->form_validation->set_rules('metas_update', '¿Cuáles son sus metas en la vida?', 'required|trim');
-        }
-        if ($section == 'conocimiento') {
-            $this->form_validation->set_rules('idiomas_update', 'Idiomas que domina', 'required|trim');
-            $this->form_validation->set_rules('maquinas_update', 'Máquinas de oficina o taller que maneje', 'required|trim');
-            $this->form_validation->set_rules('software_update', 'Software que conoce', 'required|trim');
-        }
-        if ($section == 'intereses') {
-            $this->form_validation->set_rules('medio_contacto_update', '¿Cómo se enteró de RODI?', 'required|trim');
-            $this->form_validation->set_rules('area_interes_update', '¿Qué área es de su interés?', 'required|trim');
-            $this->form_validation->set_rules('sueldo_update', '¿Qué sueldo desea percibir?', 'required|trim');
-            $this->form_validation->set_rules('otros_ingresos_update', '¿Tiene otros ingresos?', 'required|trim');
-            $this->form_validation->set_rules('viajar_update', '¿Tiene disponibilidad para viajar?', 'required|trim');
-            $this->form_validation->set_rules('trabajar_update', '¿Qué fecha o en qué momento podría presentarse a trabajar?', 'required|trim');
-        }
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
-        $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+            if ($vienenExtras) {
+                // --- Validación manual ---
+                $requeridos = ['nombre', 'fecha_nacimiento', 'telefono', 'direccion'];
+                $faltantes  = [];
+                foreach ($requeridos as $campo) {
+                    if (empty($post['extra_' . $campo])) {
+                        $faltantes[] = ucfirst(str_replace('_', ' ', $campo));
+                    }
+                }
+                if (! empty($post['extra_correo']) && ! filter_var($post['extra_correo'], FILTER_VALIDATE_EMAIL)) {
+                    $faltantes[] = "Correo válido";
+                }
+                if (count($faltantes)) {
+                    $msj = [
+                        'codigo' => 0,
+                        'msg'    => 'Faltan campos obligatorios: ' . implode(', ', $faltantes),
+                    ];
+                    echo json_encode($msj);
+                    return;
+                }
 
-        if ($this->form_validation->run() == false) {
-            $msj = [
-                'codigo' => 0,
-                'msg'    => validation_errors(),
-            ];
-        } else {
-            $idRol = $this->session->userdata('idrol');
+                // --- Construir $bolsa con datos desde extras ---
+                $extras = [];
+                foreach ($post as $key => $value) {
+                    if (strpos($key, 'extra_') === 0) {
+                        $campo          = substr($key, 6);
+                        $extras[$campo] = $value;
+                    }
+                }
 
-            if ($section == 'personal') {
+                // Nombre y apellidos
+                $nombre_completo = isset($extras['nombre']) ? trim($extras['nombre']) : '';
+                $nombre_split    = explode(' ', $nombre_completo, 2);
+                $nombre          = isset($nombre_split[0]) ? $nombre_split[0] : '';
+                $paterno         = isset($nombre_split[1]) ? $nombre_split[1] : '';
+                $materno         = isset($extras['materno']) ? $extras['materno'] : null;
 
-                $edad  = calculaEdad($this->input->post('fecha_nacimiento_update'));
+                // Otros campos
+                $fecha_nacimiento = isset($extras['fecha_nacimiento']) ? $extras['fecha_nacimiento'] : null;
+                $telefono         = isset($extras['telefono']) ? $extras['telefono'] : null;
+                $correo           = isset($extras['correo']) ? $extras['correo'] : null;
+
+                // Domicilio
+                $partes_domicilio = [];
+                if (! empty($extras['domicilio'])) {
+                    $partes_domicilio[] = $extras['domicilio'];
+                }
+
+                if (! empty($extras['direccion'])) {
+                    $partes_domicilio[] = $extras['direccion'];
+                }
+
+                if (! empty($extras['estado'])) {
+                    $partes_domicilio[] = $extras['estado'];
+                }
+
+                $domicilio = implode(', ', $partes_domicilio);
+
+                // Construye el array para update
+                $bolsa = [
+                    'edicion'          => date('Y-m-d H:i:s'),
+                    'nombre'           => $nombre,
+                    'paterno'          => $paterno,
+                    'materno'          => $materno,
+                    'fecha_nacimiento' => $fecha_nacimiento,
+                    'telefono'         => $telefono,
+                    'domicilio'        => $domicilio,
+                    'extras'           => json_encode($extras, JSON_UNESCAPED_UNICODE),
+                ];
+                if ($idRol != 6) {
+                    $bolsa['id_usuario'] = $this->session->userdata('id');
+                }
+                $sectionSuccessMessage = 'Datos personales (extras y normales) actualizados correctamente';
+            } else {
+                // --- Validación y update de campos normales ---
+                $this->form_validation->set_rules('nombre_update', 'Nombre(s)', 'required|trim');
+                $this->form_validation->set_rules('paterno_update', 'Primer apellido', 'required|trim');
+                $this->form_validation->set_rules('materno_update', 'Segundo apellido', 'trim');
+                $this->form_validation->set_rules('domicilio_update', 'Domicilio', 'required|trim');
+                $this->form_validation->set_rules('fecha_nacimiento_update', 'Fecha de nacimiento', 'required|trim');
+                $this->form_validation->set_rules('telefono_update', 'Teléfono', 'required|trim|max_length[16]');
+                $this->form_validation->set_rules('nacionalidad_update', 'Nacionalidad', 'required|trim');
+                $this->form_validation->set_rules('civil_update', 'Estado civil', 'required|trim');
+                $this->form_validation->set_rules('dependientes_update', 'Personas que dependan del aspirante', 'required|trim');
+                $this->form_validation->set_rules('escolaridad_update', 'Grado máximo de estudios', 'required|trim');
+                $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
+                $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
+                $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
+                $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+
+                if ($this->form_validation->run() == false) {
+                    $msj = [
+                        'codigo' => 0,
+                        'msg'    => validation_errors(),
+                    ];
+                    echo json_encode($msj);
+                    return;
+                }
+
+                // --- Aquí armamos $bolsa SOLO con los campos normales ---
                 $bolsa = [
                     'edicion'          => date('Y-m-d H:i:s'),
                     'nombre'           => $this->input->post('nombre_update'),
                     'paterno'          => $this->input->post('paterno_update'),
                     'materno'          => $this->input->post('materno_update'),
-                    'domicilio'        => $this->input->post('domicilio_update'),
-                    'edad'             => $edad,
                     'fecha_nacimiento' => $this->input->post('fecha_nacimiento_update'),
                     'telefono'         => $this->input->post('telefono_update'),
+                    'domicilio'        => $this->input->post('domicilio_update'),
                     'nacionalidad'     => $this->input->post('nacionalidad_update'),
                     'civil'            => $this->input->post('civil_update'),
                     'dependientes'     => $this->input->post('dependientes_update'),
                     'grado_estudios'   => $this->input->post('escolaridad_update'),
                 ];
-
                 if ($idRol != 6) {
                     $bolsa['id_usuario'] = $this->session->userdata('id');
                 }
+                // --- CONSERVAR LOS DATOS DE EXTRAS ---
+               
                 $sectionSuccessMessage = 'Datos personales actualizados correctamente';
-                $aspirante             = [
-                    'edicion' => date('Y-m-d H:i:s'),
+            }
 
-                ];
-                if ($idRol != 6) {
-                    $aspirante['id_usuario'] = $this->session->userdata('id');
-                }
-                $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($bolsa, $this->input->post('id_bolsa'));
-            }
-            if ($section == 'salud') {
-                $bolsa = [
-                    'salud'      => $this->input->post('salud_update'),
-                    'enfermedad' => $this->input->post('enfermedad_update'),
-                    'deporte'    => $this->input->post('deporte_update'),
-                    'metas'      => $this->input->post('metas_update'),
-                ];
-                $sectionSuccessMessage = 'Información de la salud y vida social actualizadas correctamente';
-            }
-            if ($section == 'conocimiento') {
-                $bolsa = [
-                    'idiomas'  => $this->input->post('idiomas_update'),
-                    'maquinas' => $this->input->post('maquinas_update'),
-                    'software' => $this->input->post('software_update'),
-                ];
-                $sectionSuccessMessage = 'Información de conocimiento y habilidades actualizada correctamente';
-            }
-            if ($section == 'intereses') {
-                $bolsa = [
-                    'medio_contacto' => $this->input->post('medio_contacto_update'),
-                    'area_interes'   => $this->input->post('area_interes_update'),
-                    'sueldo_deseado' => $this->input->post('sueldo_update'),
-                    'otros_ingresos' => $this->input->post('otros_ingresos_update'),
-                    'viajar'         => $this->input->post('viajar_update'),
-                    'trabajar'       => $this->input->post('trabajar_update'),
-                ];
-                $sectionSuccessMessage = 'Información de los intereses actualizada correctamente';
-                $aspirante             = [
-                    'edicion'        => date('Y-m-d H:i:s'),
-                    'medio_contacto' => $this->input->post('medio_contacto_update'),
-                ];
-
-                if ($idRol != 6) {
-                    $aspirante['id_usuario'] = $this->session->userdata('id');
-                }
-                $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($aspirante, $this->input->post('id_bolsa'));
-            }
-            $this->reclutamiento_model->editBolsaTrabajo($bolsa, $this->input->post('id_bolsa'));
-            $msj = [
-                'codigo' => 1,
-                'msg'    => $sectionSuccessMessage,
-            ];
+            // ACTUALIZA
+            $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($bolsa, $id_bolsa);
         }
+
+        // Las demás secciones (salud, conocimiento, intereses) igual que ya lo tienes...
+        if ($section == 'salud') {
+            $bolsa = [
+                'salud'      => $this->input->post('salud_update'),
+                'enfermedad' => $this->input->post('enfermedad_update'),
+                'deporte'    => $this->input->post('deporte_update'),
+                'metas'      => $this->input->post('metas_update'),
+            ];
+            $sectionSuccessMessage = 'Información de la salud y vida social actualizadas correctamente';
+            $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
+        }
+        if ($section == 'conocimiento') {
+            $bolsa = [
+                'idiomas'  => $this->input->post('idiomas_update'),
+                'maquinas' => $this->input->post('maquinas_update'),
+                'software' => $this->input->post('software_update'),
+            ];
+            $sectionSuccessMessage = 'Información de conocimiento y habilidades actualizada correctamente';
+            $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
+        }
+        if ($section == 'intereses') {
+            $bolsa = [
+                'medio_contacto' => $this->input->post('medio_contacto_update'),
+                'area_interes'   => $this->input->post('area_interes_update'),
+                'sueldo_deseado' => $this->input->post('sueldo_update'),
+                'otros_ingresos' => $this->input->post('otros_ingresos_update'),
+                'viajar'         => $this->input->post('viajar_update'),
+                'trabajar'       => $this->input->post('trabajar_update'),
+            ];
+            $sectionSuccessMessage = 'Información de los intereses actualizada correctamente';
+            $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
+        }
+
+        $msj = [
+            'codigo' => 1,
+            'msg'    => $sectionSuccessMessage,
+        ];
         echo json_encode($msj);
     }
+
     public function updateWarrantyApplicant()
     {
         $this->form_validation->set_rules('sueldo_acordado', 'Sueldo acordado', 'required|trim');
@@ -2435,6 +2497,10 @@ class Reclutamiento extends CI_Controller
     {
         $id  = $this->input->post('id');
         $res = $this->reclutamiento_model->getBolsaTrabajoById($id);
+        /* echo'<pre>';
+        print_r($res);
+        echo'</pre>';
+        die();*/
         echo json_encode($res);
     }
 
@@ -2581,7 +2647,14 @@ class Reclutamiento extends CI_Controller
 
         $private_key = $this->config->item('jwt_private_key');
         $jwt         = JWT::encode($payload, $private_key, 'RS256');
-        $link        = LINKASPIRANTES . '?token=' . $jwt;
+        $tipo_bolsa = $this->session->userdata('tipo_bolsa');
+       
+       
+        if ($tipo_bolsa == 1) {
+            $link = LINKASPIRANTESNUEVO . '?token=' . $jwt;
+        } else {
+            $link = LINKASPIRANTES . '?token=' . $jwt;
+        }
 
         // Generar QR en base64
         $qr_base64 = $this->generar_qr_base64($link);

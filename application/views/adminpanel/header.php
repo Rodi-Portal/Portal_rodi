@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <!--meta name="csrf-token" content="{{ csrf_token() }}" -->
   <title>Panel de Control | RODI</title>
 
   <!-- Favicon -->
@@ -27,6 +27,8 @@
   <!-- Select Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <!-- Dropzone CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
   <!-- CSS -->
   <?php echo link_tag("css/custom.css"); ?>
 
@@ -35,6 +37,7 @@
 
   <!-- Animate CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
 
   <!-- JavaScript -->
   <script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
@@ -45,7 +48,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- Incluir Bootstrap Select JS -->
+  <!-- Dropzone JS (debe ir después de jQuery y Bootstrap JS) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 
   <!-- Page Level Plugins -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -53,6 +57,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+  <!-- Dropzone JS -->
 
   <!-- FullCalendar (Descomentado si se necesita) -->
   <!--<link href='< ?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
@@ -98,7 +103,7 @@ echo $token  */?>
       <br><br>
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
-      <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9|| $idRol == 10) {?>
+      <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
           aria-expanded="true" aria-controls="collapseUsuario">
@@ -216,7 +221,7 @@ echo $token  */?>
         <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php
-            if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10  ) {?>
+            if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
             <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
               href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes de sucursales</a>
             <?php
@@ -287,6 +292,9 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
       if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
+
+      <button id="enviarCvsBtn">Enviar CVS</button>
+      <div id="resultados2"></div>
       <?php }?>
 
       <!-- ?php
@@ -350,7 +358,8 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                     Exempleados
                   </div>
                 </a>
-                <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion') ?>" class="btn custom-btn former-actividades-btn">
+                <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion') ?>"
+                  class="btn custom-btn former-actividades-btn">
                   <div class="module-label">Módulo</div>
                   <div class="btn-content">
                     <!-- Contenedor para el ícono y texto -->
@@ -370,7 +379,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -489,7 +498,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                   </div>
 
                   <div
-                    class="alert                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
+                    class="alert                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
                     <?php echo $aviso_actual
                         ? 'Archivo actual:'
                     : 'No se encontró un aviso cargado. Se usará este  aviso por defecto:' ?>
@@ -641,7 +650,8 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
 
                 // Botón contacto (teléfono o correo)
                 let btnContacto = '';
-                if ((prov.telefono && prov.telefono.length > 0) || (prov.correo && prov.correo.length > 0)) {
+                if ((prov.telefono && prov.telefono.length > 0) || (prov.correo && prov.correo.length >
+                    0)) {
                   btnContacto = `
                 <button class="btn btn-link text-info open-contacto"
                   data-id="${prov.id}"
@@ -760,18 +770,18 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
           }
         });
 
-       /* document.addEventListener("DOMContentLoaded", function() {
-          document.getElementById("former-actividades-btn").addEventListener("click", function(e) {
-            e.preventDefault(); // Prevenir comportamiento por defecto del enlace
-            Swal.fire({
-              icon: 'info',
-              title: 'Módulo en desarrollo',
-              text: 'Este módulo estará disponible próximamente. Actualmente se encuentra en desarrollo.',
-              confirmButtonText: 'Entendido',
-              confirmButtonColor: '#3085d6'
-            });
-          });
-        }); */
+        /* document.addEventListener("DOMContentLoaded", function() {
+           document.getElementById("former-actividades-btn").addEventListener("click", function(e) {
+             e.preventDefault(); // Prevenir comportamiento por defecto del enlace
+             Swal.fire({
+               icon: 'info',
+               title: 'Módulo en desarrollo',
+               text: 'Este módulo estará disponible próximamente. Actualmente se encuentra en desarrollo.',
+               confirmButtonText: 'Entendido',
+               confirmButtonColor: '#3085d6'
+             });
+           });
+         }); */
 
         // Funcionalidad para eliminar el logo usando AJAX
         $("#deleteLogo").on("click", function() {
@@ -943,6 +953,27 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             },
             error: function(xhr, status, error) {
               console.log("Error: " + error); // Si ocurre algún error
+            }
+          });
+        });
+
+        $('#enviarCvsBtn').on('click', function() {
+          $.ajax({
+            url: '<?php echo base_url("Tools/migrar_cv"); ?>',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+              if (response && response.mensajes) {
+                $('#resultados2').html(
+                  '<ul><li>' + response.mensajes.join('</li><li>') + '</li></ul>'
+                );
+              } else {
+                $('#resultados2').html('No se recibieron mensajes.');
+              }
+            },
+            error: function(xhr, status, error) {
+              console.log("Error: " + error);
+              $('#resultados2').html('⚠ Ocurrió un error al ejecutar la migración.');
             }
           });
         });

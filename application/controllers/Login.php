@@ -64,6 +64,7 @@ class Login extends CI_Controller
                     "id_data"      => $usuario->idDatos,
                     "loginBD"      => $usuario->loginBD,
                     "logueado"     => true,
+                    "tipo_bolsa"   => $usuario->tipo_bolsa,
                     "idPortal"     => $usuario->idPortal,
                     "nombrePortal" => $usuario->nombrePortal,
                     "logo"         => $usuario->logo,
@@ -456,7 +457,7 @@ class Login extends CI_Controller
                             redirect('Area/pasarela');
                             break;
                         }
-                       
+
                     case 'visitador':
                         redirect('Dashboard/visitador_panel');
                         break;

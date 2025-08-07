@@ -177,19 +177,18 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-          var cvLink = (full.cv != null) ?
-            '<a href="<?php echo base_url(); ?>_docs/' + full.cv +
-            '" target="_blank" class="dropdown-item" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-eye"></i> Ver CV/Solicitud</a>' +
+          var cvLink =
             '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.id +
-            ')" data-toggle="tooltip" title="Actualizar CV/Solicitud"><i class="fas fa-upload"></i> Actualizar CV/Solicitud</a>' :
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.id +
-            ')" data-toggle="tooltip" title="Cargar CV/Solicitud"><i class="fas fa-upload"></i> Cargar CV/Solicitud</a>';
+            ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
 
+          var actualizarDocs =
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' +
+            full.id +
+            ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>';
 
           var comentarios =
             '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id +
             ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
-
 
           var historial =
             '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
@@ -216,7 +215,8 @@ function changeDataTable(url) {
             if (full.status_final != 'CANCELADO') {
               acciones = iniciar_socio + ingreso +
 
-                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +'<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
+                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
             }
           }
 
@@ -226,26 +226,21 @@ function changeDataTable(url) {
             '<div class="dropdown-menu">' +
 
             acciones +
-
             historial +
             comentarios +
             cvLink +
-
-
-
+            actualizarDocs +
             '</div>' +
             '</div>';
         }
       },
-
-
       {
         title: 'Estatus actual',
         data: null, // Usamos `null` para poder controlar manualmente qué se muestra
         bSortable: false,
         width: "10%",
         render: function(data, type, row) {
-         // console.log("🚀 ~ changeDataTable ~ row:", row)
+          // console.log("🚀 ~ changeDataTable ~ row:", row)
           if (row.status_final !== null && row.status_final !== "") {
             return row.status_final;
           } else if (row.status != null && row.status != "") {
@@ -263,43 +258,42 @@ function changeDataTable(url) {
     },
     rowCallback: function(row, data) {
 
-
       //Color de estatus
       if (data.status_final == 'CANCELADO') {
-  $('td:eq(6)', row).css({
-    'background-color': '#f8d7da',
-    'color': '#721c24',
-     'font-weight': 'bold'
-  });
-}
-if (data.status_final == 'BLOQUEADO') {
-  $('td:eq(6)', row).css({
-    'background-color': '#f5c6cb',
-    'color': '#721c24',
-     'font-weight': 'bold'
-  });
-}
-if (data.status_final == 'FINALIZADO') {
-  $('td:eq(6)', row).css({
-    'background-color': '#d4edda',
-    'color': '#155724',
-     'font-weight': 'bold'
-  });
-}
-if (data.status_final == 'COMPLETADO') {
-  $('td:eq(6)', row).css({
-    'background-color': '#c3e6cb',
-    'color': '#155724',
-     'font-weight': 'bold'
-  });
-}
-if (!data.status_final || data.status_final.trim() === "") {
-  $('td:eq(6)', row).css({
-    'background-color': '#d1ecf1',
-    'color': '#0c5460',
-     'font-weight': 'bold'
-  });
-}
+        $('td:eq(6)', row).css({
+          'background-color': '#f8d7da',
+          'color': '#721c24',
+          'font-weight': 'bold'
+        });
+      }
+      if (data.status_final == 'BLOQUEADO') {
+        $('td:eq(6)', row).css({
+          'background-color': '#f5c6cb',
+          'color': '#721c24',
+          'font-weight': 'bold'
+        });
+      }
+      if (data.status_final == 'FINALIZADO') {
+        $('td:eq(6)', row).css({
+          'background-color': '#d4edda',
+          'color': '#155724',
+          'font-weight': 'bold'
+        });
+      }
+      if (data.status_final == 'COMPLETADO') {
+        $('td:eq(6)', row).css({
+          'background-color': '#c3e6cb',
+          'color': '#155724',
+          'font-weight': 'bold'
+        });
+      }
+      if (!data.status_final || data.status_final.trim() === "") {
+        $('td:eq(6)', row).css({
+          'background-color': '#d1ecf1',
+          'color': '#0c5460',
+          'font-weight': 'bold'
+        });
+      }
 
 
 
@@ -486,10 +480,85 @@ if (!data.status_final || data.status_final.trim() === "") {
   });
 }
 
-function mostrarFormularioCargaCV($id) {
-  // Muestra el modal para cargar el CV
-  $('#id_aspirante').val($id);
-  $('#modalCargaCV').modal('show');
+function mostrarFormularioCargaCV(id) {
+  console.log('mostrarFormularioCargaCV id:', id);
+  $('#id_aspirante').val(id);
+
+  /* ───── VALIDACIONES RÁPIDAS ───── */
+
+  // 1. ¿La librería Dropzone está cargada?
+  if (typeof window.Dropzone === 'undefined') {
+    Swal.fire('Ups…', 'La librería Dropzone no se cargó. Recarga la página.', 'error');
+    return;                               // ⛔ NO abras el modal
+  }
+
+  // 2. (Opcional) ¿Ya hay una cola en curso?
+  //    Evita abrir un segundo modal si el usuario está subiendo algo.
+  if (dz && dz.getQueuedFiles().length > 0) {
+    Swal.fire('Atención', 'Tienes archivos pendientes de subir.', 'warning');
+    return;                               // ⛔ NO abras el modal
+  }
+
+  /* ───── Todo OK → abre el modal ───── */
+  $('#modalCargaArchivos').modal('show');
+}
+
+const baseDocs = <?php echo json_encode(VERASPIRANTESDOCS);?>;
+
+function mostrarFormularioActualizarDocs(id) {
+  $('#id_aspirante').val(id); // por si luego lo necesitas
+  const $tbody = $('#tablaDocsModal tbody');
+
+  // 1) Limpia y muestra “Cargando…”
+  $tbody.html('<tr><td colspan="4" class="text-center">Cargando…</td></tr>');
+
+  // 2) Pide los documentos del aspirante
+  $.ajax({
+    url: `<?php echo site_url('documentos_aspirantes/lista/')?>${id}`,
+    type: 'GET',
+    dataType: 'json',
+    success: function(docs) {
+      if (!docs.length) {
+        $tbody.html('<tr><td colspan="4" class="text-center text-muted">Sin documentos</td></tr>');
+      } else {
+        let filas = '';
+        docs.forEach(d => {
+          filas += `
+            <tr>
+              <td>${d.nombre_personalizado}</td>
+              <td><a href="${baseDocs}${d.nombre_archivo}" target="_blank">${d.nombre_archivo}</a></td>
+              <td>${d.fecha_subida}</td>
+              <td>
+                <button class="btn btn-sm btn-info"
+                        data-toggle="tooltip" title="Reemplazar archivo"
+                        onclick="abrirModalReemplazo(${d.id}, '${d.nombre_personalizado.replace(/'/g,'&#39;')}')">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </td>
+            </tr>`;
+        });
+        $tbody.html(filas);
+        $('[data-toggle="tooltip"]').tooltip(); // re-inicializa tooltips
+      }
+
+      // 3) Finalmente muestra el modal
+      $('#modalActualizarArchivos').modal('show');
+    },
+    error: function() {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudieron cargar los documentos'
+      });
+      $('#modalActualizarArchivos').modal('hide');
+    }
+  });
+}
+
+function abrirModalReemplazo(idDoc, nombreActual) {
+  $('#id_doc').val(idDoc);
+  $('#nuevo_nombre').val(nombreActual);
+  $('#modalReemplazo').modal('show');
 }
 
 function openAddApplicant() {
@@ -515,7 +584,7 @@ function addApplicant() {
   // datos.append("cv", cv);
   datos.append("id_aspirante", $("#idAspirante").val());
   datos.append("id_bolsa_trabajo", $("#idBolsa").val());
-   
+
 
   $.ajax({
     url: '<?php echo base_url('Reclutamiento/addApplicant'); ?>',
@@ -596,55 +665,7 @@ function guardarComentario(id_bolsa) {
   });
 }
 
-function subirCVReqAspirante() {
-  var idAspirante = $('#id_aspirante').val();
-  // console.log("🚀 ~ subirCVReqAspirante ~ idAspirante:", idAspirante);
-  var idCV = $('#id_cv').val();
-  // console.log("🚀 ~ subirCVReqAspirante ~ idCV:", idCV);
 
-
-
-  var formData = new FormData($('#formularioCargaCV')[0]);
-
-  formData.append('id_aspirante', idAspirante);
-  formData.append('id_cv', idCV);
-
-  $.ajax({
-    url: '<?php echo base_url('Reclutamiento/subirCVReqAspirante'); ?>',
-    type: 'POST',
-    data: formData,
-    processData: false,
-    contentType: false,
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      var data = JSON.parse(res);
-      if (data.codigo === 1) {
-        $("#modalCargaCV").modal('hide');
-        recargarTable()
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: 'CV subido correctamente',
-          showConfirmButton: false,
-          timer: 2500
-        })
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al subir CV',
-          text: data.msg,
-          width: '50em',
-          confirmButtonText: 'Cerrar'
-        });
-      }
-    }
-  });
-}
 
 
 function guardarAccion() {

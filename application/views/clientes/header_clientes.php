@@ -79,7 +79,7 @@
 <body id="page-top">
   <!-- JavaScript -->
   <?php
-      echo $modals ;
+      echo $modals;
       $CI           = &get_instance();
       $id_cliente   = $CI->session->userdata('idcliente');
       $logo         = $CI->session->userdata('logo');
@@ -242,7 +242,7 @@
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -263,7 +263,7 @@
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:   <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                        <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -310,7 +310,7 @@
 
           </ul>
         </nav>
-                <!-- Modal Principal: Nuestros Proveedores Destacados -->
+        <!-- Modal Principal: Nuestros Proveedores Destacados -->
         <div class="modal fade" id="modalKey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -414,7 +414,7 @@
           })
           localStorage.removeItem('candidatoRegistrado');
         }
-         $(document).on('click', '.open-contacto', function(e) {
+        $(document).on('click', '.open-contacto', function(e) {
           e.preventDefault();
 
           const id = $(this).data('id');
@@ -465,7 +465,8 @@
 
                 // Botón contacto (teléfono o correo)
                 let btnContacto = '';
-                if ((prov.telefono && prov.telefono.length > 0) || (prov.correo && prov.correo.length > 0)) {
+                if ((prov.telefono && prov.telefono.length > 0) || (prov.correo && prov.correo.length >
+                    0)) {
                   btnContacto = `
                 <button class="btn btn-link text-info open-contacto"
                   data-id="${prov.id}"
@@ -643,7 +644,7 @@
                     let acciones =
                       '<div class="text-center"><div class="btn-group dropstart"><button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></button><ul class="dropdown-menu"><li><a href="javascript:void(0)" data-toggle="tooltip" title="Progress messages" onclick="viewMessages(' +
                       data + ',' + idioma +
-                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i> <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
+                      ')" class="dropdown-item"><i class="fas fa-comment-dots"></i>                                                                                                                                                                                                                                                                                                                                                                                                                                <?php echo $translations['proceso_accion_ver_comentarios'] ?> </a></li><li><a href="javascript:void(0)" data-toggle="tooltip" title="Files" onclick="viewFiles(' +
                       data +
                       ')" class="dropdown-item"><i class="fas fa-folder"></i><?php echo $translations['proceso_accion_archivos'] ?></a></li></ul></div></div>'
                     return acciones
@@ -862,6 +863,116 @@
             }
           });
         }
+        $(document).on('click', '.btnDocs', function() {
+          const idBolsa = $(this).data('id_ra');
+          //console.log("🚀 ~ idBolsa:", idBolsa)
+          const tbody = $('#tablaArchivos tbody').empty();
+          $('#msgSinDocs').hide();
+
+          $.ajax({
+            url: `<?php echo site_url('documentos_aspirantes/lista'); ?>/${idBolsa}`,
+            dataType: 'json',
+            success: function(docs) {
+
+              if (docs.length === 0) { // sin documentos
+                $('#msgSinDocs').show();
+              } else { // llena tabla
+                docs.forEach(d => {
+                  tbody.append(`
+            <tr>
+              <td>${d.nombre_personalizado}</td>
+              <td class="text-center">
+                <button class="btn btn-link text-primary btnVer"
+                        data-id="${d.id}"
+                        data-nombre="${d.nombre_personalizado}">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </td>
+            </tr>`);
+                });
+              }
+
+              $('#modalArchivos').modal('show'); // ya tenemos la info
+            },
+            error: () => alert('Error al cargar la lista de documentos')
+          });
+        });
+
+
+        // ─────────────────────────────────────────────────────────────
+        // 2) Clic en un archivo: pide el BINARIO y abre el visor
+        // ─────────────────────────────────────────────────────────────
+        $(document).on('click', '.btnVer', function() {
+          const idDoc = $(this).data('id');
+          const nombre = $(this).data('nombre');
+
+          fetch(`<?php echo site_url('documentos_aspirantes/stream');?>/${idDoc}`)
+            .then(r => r.blob())
+            .then(blob => {
+              const url = URL.createObjectURL(blob);
+              const tipo = blob.type || 'desconocido';
+              console.log('MIME:', tipo, 'URL:', url); // ← debug
+
+              $('#tituloVisor').text(nombre);
+              const wrap = $('#visorWrap').empty(); // contenedor limpio
+
+              /* ---------- PDF ---------- */
+              if (tipo === 'application/pdf') {
+                // Prueba primero con iframe (más compatible con blobs PDF)
+                $('<iframe>', {
+                  src: url + '#view=FitH', // ajusta ancho
+                  style: 'width:100%;height:100%;border:none;'
+                }).appendTo(wrap);
+
+                /* ---------- Imagen ---------- */
+              } else if (tipo.startsWith('image/')) {
+                $('<img>', {
+                  src: url,
+                  alt: nombre,
+                  style: 'width:100%;height:100%;object-fit:contain;'
+                }).appendTo(wrap);
+
+                /* ---------- Video ---------- */
+              } else if (tipo.startsWith('video/')) {
+                $('<video>', {
+                  src: url,
+                  controls: true,
+                  style: 'width:100%;height:100%;object-fit:contain;'
+                }).appendTo(wrap);
+
+                /* ---------- Cualquier otra cosa ---------- */
+              } else {
+                $('<iframe>', {
+                  src: url,
+                  style: 'width:100%;height:100%;border:none;'
+                }).appendTo(wrap);
+              }
+
+              $('#modalVisor').modal('show');
+            })
+            .catch(() => Swal.fire('Error', 'No se pudo abrir el documento', 'error'));
+        });
+
+        /* Libera memoria y limpia cuando se cierra */
+        $('#modalVisor').on('hidden.bs.modal', function() {
+          $('#visorWrap').empty();
+        });
+
+
+        // Libera memoria al cerrar
+        $('#modalVisor').on('hidden.bs.modal', function() {
+          $('#visorWrap').empty();
+        });
+
+
+        // Limpia y libera memoria al cerrar
+        $('#modalVisor').on('hidden.bs.modal', function() {
+          const src = $('#iframeVisor').attr('src');
+          if (src) {
+            URL.revokeObjectURL(src);
+          }
+          $('#iframeVisor').attr('src', '');
+        });
 
         function openDetails(requisicion_id) {
           if (window.innerWidth <= 768) {
@@ -888,13 +999,14 @@
               let tbody = '';
 
               data.data.forEach(function(resp) {
-                let cvLink = (resp.cv != null) ?
-                  '<a href="<?php echo base_url(); ?>_docs/' + resp.cv +
-                  '" target="_blank" class="btn btn-link text-primary" data-toggle="tooltip" title="Ver CV/Solicitud"><i class="fas fa-file-alt"></i></a>' :
-                  '<button type="button" class="btn btn-link text-primary" onclick="mostrarFormularioCargaCV(' +
-                  resp
-                  .id_ra +
-                  ')"><i class="fas fa-exclamation-circle"></i></button>';
+
+                let cvLink = `
+                    <button type="button"
+                            class="btn btn-link text-primary btnDocs"
+                            data-id_ra="${resp.id_ra}"
+                            title="Ver documentos">
+                      <i class="fas fa-file-alt"></i>
+                    </button>`;
 
 
                 tbody += '<tr>';
