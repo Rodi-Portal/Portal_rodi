@@ -30,11 +30,11 @@
   </div>
 </div>
 
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0-alpha1/css/bootstrap.min.css" rel="stylesheet">
+
 
 <!-- Bootstrap JS y Popper.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0-alpha1/js/bootstrap.min.js"></script>
+
 
 <!-- Tu código CSS adicional -->
 <!-- Estilos adicionales -->
