@@ -787,7 +787,7 @@ class Reclutamiento_model extends CI_Model
                 COALESCE(BT.paterno, ''), ' ',
                 COALESCE(BT.materno, '')
             )
-        ) as aspirante, CONCAT(DATCL.nombre,' ',DATCL.paterno) as usuario, CL.nombre as empresa,R.puesto,
+        ) as aspirante, CONCAT(DATCL.nombre,' ',DATCL.paterno) as usuario, CL.nombre as nombre_cliente, R.puesto,
 			R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
             ->from('requisicion_aspirante as A')
             ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')

@@ -69,10 +69,10 @@
               <select name="medio" id="medio" class="form-control obligado w-100">
                 <option value="">Selecciona</option>
                 <?php if ($medios != null): ?>
-                <?php foreach ($medios as $m): ?>
+<?php foreach ($medios as $m): ?>
                 <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
                 <?php endforeach; ?>
-                <?php endif; ?>
+<?php endif; ?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -429,7 +429,7 @@
                     if ($paises != null) {
                         foreach ($paises as $p) {
                         $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
-                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <option value="<?php echo $p->nombre; ?>"<?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
                     }
                     }
@@ -1766,6 +1766,7 @@
               <th>Nombre personalizado</th>
               <th>Archivo</th>
               <th>Fecha</th>
+               <th>Visible para Sucursal</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -1777,6 +1778,7 @@
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="modalReemplazo" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1813,7 +1815,9 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 
 <script>
 Dropzone.autoDiscover = false;
-let dz = null; // instancia global
+if (typeof dz === 'undefined') {
+  var dz = null;
+} // instancia global
 
 function mostrarFormularioCargaCV(id) {
   console.log('mostrarFormularioCargaCV id:', id);
@@ -1825,9 +1829,10 @@ $('#modalCargaArchivos').on('shown.bs.modal', function() {
   console.log('Modal abierto: inicializando Dropzone...');
 
   if (dz) {
-    console.log('[DZ] ya inicializada');
-    return;
+    dz.destroy(); // destruye la instancia anterior para permitir reinicializar
+    dz = null;
   }
+
 
   const form = document.getElementById('tablaDropzone');
   if (!form) {
@@ -1915,7 +1920,7 @@ $('#modalCargaArchivos').on('shown.bs.modal', function() {
         fallidos.forEach(f => dz.removeFile(f));
 
         //  👉  Si quieres limpiar TODOS (éxito + error), usa:
-          dz.removeAllFiles(true);
+        dz.removeAllFiles(true);
       });
     } else {
       $('#modalCargaArchivos').modal('hide');
