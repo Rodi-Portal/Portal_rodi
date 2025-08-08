@@ -489,37 +489,36 @@ function mostrarFormularioCargaCV(id) {
   // 1. ¿La librería Dropzone está cargada?
   if (typeof window.Dropzone === 'undefined') {
     Swal.fire('Ups…', 'La librería Dropzone no se cargó. Recarga la página.', 'error');
-    return;                               // ⛔ NO abras el modal
+    return; // ⛔ NO abras el modal
   }
 
   // 2. (Opcional) ¿Ya hay una cola en curso?
   //    Evita abrir un segundo modal si el usuario está subiendo algo.
   if (dz && dz.getQueuedFiles().length > 0) {
     Swal.fire('Atención', 'Tienes archivos pendientes de subir.', 'warning');
-    return;                               // ⛔ NO abras el modal
+    return; // ⛔ NO abras el modal
   }
 
   /* ───── Todo OK → abre el modal ───── */
   $('#modalCargaArchivos').modal('show');
 }
 
-const baseDocs = <?php echo json_encode(VERASPIRANTESDOCS);?>;
-
+if (typeof baseDocs === 'undefined') {
+  var baseDocs = <?php echo json_encode(VERASPIRANTESDOCS); ?>;
+}
 function mostrarFormularioActualizarDocs(id) {
-  $('#id_aspirante').val(id); // por si luego lo necesitas
+  $('#id_aspirante').val(id);
   const $tbody = $('#tablaDocsModal tbody');
 
-  // 1) Limpia y muestra “Cargando…”
-  $tbody.html('<tr><td colspan="4" class="text-center">Cargando…</td></tr>');
+  $tbody.html('<tr><td colspan="5" class="text-center">Cargando…</td></tr>');
 
-  // 2) Pide los documentos del aspirante
   $.ajax({
-    url: `<?php echo base_url('Documentos_Aspirantes/lista/')?>${id}`,
+    url: `<?php echo base_url('Documentos_Aspirantes/lista/') ?>${id}`,
     type: 'GET',
     dataType: 'json',
     success: function(docs) {
       if (!docs.length) {
-        $tbody.html('<tr><td colspan="4" class="text-center text-muted">Sin documentos</td></tr>');
+        $tbody.html('<tr><td colspan="5" class="text-center text-muted">Sin documentos</td></tr>');
       } else {
         let filas = '';
         docs.forEach(d => {
@@ -529,19 +528,62 @@ function mostrarFormularioActualizarDocs(id) {
               <td><a href="${baseDocs}${d.nombre_archivo}" target="_blank">${d.nombre_archivo}</a></td>
               <td>${d.fecha_subida}</td>
               <td>
+                <div class="form-check form-switch">
+                  <input class="form-check-input tipo-vista-switch"
+                        type="checkbox"
+                        data-id="${d.id}"
+                        ${d.tipo_vista == 1 ? 'checked' : ''}>
+                </div>
+              </td>
+              <td>
                 <button class="btn btn-sm btn-info"
                         data-toggle="tooltip" title="Reemplazar archivo"
                         onclick="abrirModalReemplazo(${d.id}, '${d.nombre_personalizado.replace(/'/g,'&#39;')}')">
                   <i class="fas fa-sync-alt"></i>
                 </button>
+                <button class="btn btn-sm btn-danger"
+                        data-toggle="tooltip" title="Eliminar archivo"
+                        onclick="eliminarArchivo(${d.id})">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
               </td>
             </tr>`;
         });
         $tbody.html(filas);
-        $('[data-toggle="tooltip"]').tooltip(); // re-inicializa tooltips
+
+        // Re-inicializa tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+
+        // Activa switch luego de dibujar filas
+        $('.tipo-vista-switch').off('change').on('change', function() {
+          const id = $(this).data('id');
+          const tipo_vista = $(this).is(':checked') ? 1 : 0;
+
+          $.ajax({
+            url: `<?php echo base_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>`,
+            type: 'POST',
+            data: { id, tipo_vista },
+            dataType: 'json',
+            success: resp => {
+              if (resp.ok) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Actualizado',
+                  text: 'Vista actualizada correctamente',
+                  timer: 1200,
+                  showConfirmButton: false
+                });
+              } else {
+                Swal.fire('Error', resp.message, 'error');
+              }
+            },
+            error: () => {
+              Swal.fire('Error', 'No se pudo actualizar la vista.', 'error');
+            }
+          });
+        });
       }
 
-      // 3) Finalmente muestra el modal
       $('#modalActualizarArchivos').modal('show');
     },
     error: function() {
@@ -551,6 +593,49 @@ function mostrarFormularioActualizarDocs(id) {
         text: 'No se pudieron cargar los documentos'
       });
       $('#modalActualizarArchivos').modal('hide');
+    }
+  });
+}
+
+
+
+function eliminarArchivo(id) {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Esta acción eliminará el archivo permanentemente.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then(result => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: `<?php echo base_url('Documentos_Aspirantes/eliminar') ?>`, // Ajusta la ruta si es diferente
+        type: 'POST',
+        data: {
+          id
+        },
+        dataType: 'json',
+        success: resp => {
+          if (resp.ok) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: resp.message,
+              timer: 1500,
+              showConfirmButton: false
+            });
+
+            // Recarga tabla si aplica
+            mostrarFormularioActualizarDocs($('#id_aspirante').val());
+          } else {
+            Swal.fire('Error', resp.message, 'error');
+          }
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo eliminar el archivo.', 'error');
+        }
+      });
     }
   });
 }

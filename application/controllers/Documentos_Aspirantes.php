@@ -29,7 +29,7 @@ class Documentos_Aspirantes extends CI_Controller
         }
 
         // Consulta: solo documentos no eliminados
-        $docs = $this->db->select('id, nombre_personalizado, nombre_archivo, fecha_subida')
+        $docs = $this->db->select('id, nombre_personalizado, nombre_archivo, fecha_subida, tipo_vista')
             ->from('documentos_aspirante')
             ->where('id_aspirante', $id_bolsa)
             ->where('eliminado', 0)
@@ -78,46 +78,93 @@ class Documentos_Aspirantes extends CI_Controller
     {
         $id_doc      = $this->input->post('id_doc');
         $nuevoNombre = $this->input->post('nuevo_nombre', true) ?? '';
+        $id_usuario  = $this->session->userdata('id');
         $doc         = $this->db->get_where('documentos_aspirante', ['id' => $id_doc, 'eliminado' => 0])->row();
-
         if (! $doc) {
             return $this->output_json(false, 'Documento no encontrado');
         }
 
-        /* ── subir nuevo archivo ────────────────────────── */
-        if (empty($_FILES['file']['name'])) {
-            return $this->output_json(false, 'Debes seleccionar un archivo');
+        $nuevoArchivo = null;
+
+        // 1. Si hay archivo, lo sube
+        if (! empty($_FILES['file']['name'])) {
+            $config = [
+                'upload_path'   => LINKASPIRANTESDOCS,
+                'allowed_types' => 'pdf|jpg|jpeg|png|gif|bmp|mp4|mov|avi|wmv|mkv|webm',
+                'max_size'      => 25600,
+                'encrypt_name'  => true,
+            ];
+            $this->load->library('upload', $config);
+
+            if (! $this->upload->do_upload('file')) {
+                return $this->output_json(false, strip_tags($this->upload->display_errors()));
+            }
+
+            $nuevoArchivo = $this->upload->data();
+
+            // Borrar el archivo anterior
+            $old = LINKASPIRANTESDOCS . $doc->nombre_archivo;
+            if (is_file($old)) {
+                unlink($old);
+            }
         }
 
-        $config = [
-            'upload_path'   => LINKASPIRANTESDOCS,
-            'allowed_types' => 'pdf|jpg|jpeg|png|gif|bmp',
-            'max_size'      => 25600,
-            'encrypt_name'  => true,
+        // 2. Prepara datos para update
+        $dataUpdate = [
+            'nombre_personalizado' => $nuevoNombre ?: $doc->nombre_personalizado,
+            'fecha_actualizacion'  => date('Y-m-d H:i:s'),
+            'id_usuario'           => $id_usuario,
         ];
-        $this->load->library('upload', $config);
 
-        if (! $this->upload->do_upload('file')) {
-            return $this->output_json(false, strip_tags($this->upload->display_errors()));
-        }
-        $data = $this->upload->data();
-
-        /* ── borrar físico anterior ─────────────────────── */
-        $old = LINKASPIRANTESDOCS . $doc->nombre_archivo;
-        if (is_file($old)) {
-            unlink($old);
+        if ($nuevoArchivo) {
+            $dataUpdate['nombre_archivo'] = $nuevoArchivo['file_name'];
+            $dataUpdate['tipo']           = strtolower(pathinfo($nuevoArchivo['file_name'], PATHINFO_EXTENSION));
         }
 
-        /* ── update BD ───────────────────────────────────── */
-        $this->db->where('id', $id_doc)
+        // 3. Ejecuta el update
+        $this->db->where('id', $id_doc)->update('documentos_aspirante', $dataUpdate);
+
+        return $this->output_json(true, 'Documento actualizado', $nuevoArchivo ?: []);
+    }
+    public function actualizar_tipo_vista()
+    {
+        $id         = $this->input->post('id');
+        $tipo_vista = $this->input->post('tipo_vista');
+
+        if (! is_numeric($id) || ! in_array($tipo_vista, ['0', '1'])) {
+            return $this->output_json(false, 'Datos inválidos');
+        }
+
+        $this->db->where('id', $id)
+            ->update('documentos_aspirante', ['tipo_vista' => $tipo_vista]);
+
+        return $this->output_json(true, 'Vista actualizada');
+    }
+
+    public function eliminar()
+    {
+        $id         = $this->input->post('id');
+        $id_usuario = $this->session->userdata('id');
+
+        if (! $id) {
+            return $this->output_json(false, 'ID no proporcionado');
+        }
+
+        $doc = $this->db->get_where('documentos_aspirante', ['id' => $id, 'eliminado' => 0])->row();
+
+        if (! $doc) {
+            return $this->output_json(false, 'Documento no encontrado o ya fue eliminado');
+        }
+
+        // Soft delete: solo marcar como eliminado
+        $this->db->where('id', $id)
             ->update('documentos_aspirante', [
-                'nombre_personalizado' => $nuevoNombre ?: $doc->nombre_personalizado,
-                'nombre_archivo'       => $data['file_name'],
-                'tipo'                 => strtolower(pathinfo($data['file_name'], PATHINFO_EXTENSION)),
-                'fecha_actualizacion'  => date('Y-m-d H:i:s'),
+                'eliminado'           => 1,
+                'fecha_actualizacion' => date('Y-m-d H:i:s'),
+                'id_usuario'          => $id_usuario,
             ]);
 
-        return $this->output_json(true, 'Documento actualizado', $data);
+        return $this->output_json(true, 'Documento eliminado correctamente');
     }
 
 /**
