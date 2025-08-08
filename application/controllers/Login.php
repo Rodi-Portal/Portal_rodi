@@ -148,6 +148,7 @@ class Login extends CI_Controller
                     "verificacion" => $usuario->verificacion,
                     "id_data"      => $usuario->idDatos,
                     "loginBD"      => $usuario->loginBD,
+                    "tipo_bolsa"   => $usuario->tipo_bolsa,
                     "logueado"     => true,
                     "idPortal"     => $usuario->idPortal,
                     "nombrePortal" => $usuario->nombrePortal,

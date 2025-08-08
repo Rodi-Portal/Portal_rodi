@@ -147,7 +147,13 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
+            ->select("B.*,  TRIM(
+            CONCAT(
+                B.nombre, ' ',
+                COALESCE(B.paterno, ''), ' ',
+                COALESCE(B.materno, '')
+            )
+        ) as nombreCompleto, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
             ->from('bolsa_trabajo as B')
             ->join('usuarios_portal as U', 'U.id = B.id_usuario', 'left')
             ->join('datos_generales as gen', 'gen.id = U.id_datos_generales', 'left')
@@ -166,16 +172,33 @@ class Reclutamiento_model extends CI_Model
     {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-            ->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
+            ->select("B.*, TRIM(
+            CONCAT(
+                B.nombre, ' ',
+                COALESCE(B.paterno, ''), ' ',
+                COALESCE(B.materno, '')
+            )
+        ) as nombreCompleto, CONCAT(gen.nombre,' ',gen.paterno) as usuario")
             ->from('bolsa_trabajo as B')
             ->join('usuarios_portal as U', 'U.id = B.id_usuario', 'left')
             ->join('datos_generales as gen', 'gen.id = U.id_datos_generales', 'left')
-            ->where('B.id_portal', $id_portal)
-            ->where($condition_area, $area)
-            ->where($filterApplicant, $filter)
-            ->where($condition_applicant, $id_applicant)
-            ->where($condition_user, $id_usuario)
-            ->order_by('B.id', $sort);
+            ->where('B.id_portal', $id_portal);
+
+        // Filtros dinámicos solo si vienen
+        if (! empty($condition_area) && ! empty($area)) {
+            $this->db->where($condition_area, $area);
+        }
+        if (! empty($filterApplicant) && ! empty($filter)) {
+            $this->db->where($filterApplicant, $filter);
+        }
+        if (! empty($condition_applicant) && ! empty($id_applicant)) {
+            $this->db->where($condition_applicant, $id_applicant);
+        }
+        if (! empty($condition_user) && ! empty($id_usuario)) {
+            $this->db->where($condition_user, $id_usuario);
+        }
+
+        $this->db->order_by('B.id', $sort);
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -184,21 +207,39 @@ class Reclutamiento_model extends CI_Model
             return false;
         }
     }
+
     public function getApplicantsByUser($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $id_usuario, $area, $condition_area)
     {
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto, CONCAT(GENUP.nombre,' ',GENUP.paterno) as usuario")
+            ->select("B.*,  TRIM(
+            CONCAT(
+                B.nombre, ' ',
+                COALESCE(B.paterno, ''), ' ',
+                COALESCE(B.materno, '')
+            )
+        ) as  nombreCompleto, CONCAT(GENUP.nombre,' ',GENUP.paterno) as usuario")
             ->from('bolsa_trabajo as B')
             ->join('usuarios_portal as U', 'U.id = B.id_usuario')
             ->join('datos_generales as GENUP', 'GENUP.id = U.id_usuario')
-            ->where('B.id_portal', $id_portal)
-            ->where($condition_area, $area)
-            ->where($filterApplicant, $filter)
-            ->where($condition_applicant, $id_applicant)
-            ->where('B.id_usuario', $id_usuario)
-            ->order_by('B.id', $sort);
+            ->where('B.id_portal', $id_portal);
+
+        // Aplica los filtros solo si llegan
+        if (! empty($condition_area) && ! empty($area)) {
+            $this->db->where($condition_area, $area);
+        }
+        if (! empty($filterApplicant) && ! empty($filter)) {
+            $this->db->where($filterApplicant, $filter);
+        }
+        if (! empty($condition_applicant) && ! empty($id_applicant)) {
+            $this->db->where($condition_applicant, $id_applicant);
+        }
+        if (! empty($id_usuario)) {
+            $this->db->where('B.id_usuario', $id_usuario);
+        }
+
+        $this->db->order_by('B.id', $sort);
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -207,6 +248,7 @@ class Reclutamiento_model extends CI_Model
             return false;
         }
     }
+
     public function getRequisicionesActivas()
     {
         $id_portal = $this->session->userdata('idPortal');
@@ -683,7 +725,13 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as nombre_cliente, CL.clave, CL.id as id_cliente, R.puesto , H.id as idHistorial, R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
+            ->select("A.*,  TRIM(
+            CONCAT(
+                BT.nombre, ' ',
+                COALESCE(BT.paterno, ''), ' ',
+                COALESCE(BT.materno, '')
+            )
+        ) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as nombre_cliente, CL.clave, CL.id as id_cliente, R.puesto , H.id as idHistorial, R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
             ->from('requisicion_aspirante as A')
             ->join('requisicion as R', 'R.id = A.id_requisicion')
             ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
@@ -733,7 +781,13 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(DATCL.nombre,' ',DATCL.paterno) as usuario, CL.nombre as empresa,R.puesto,
+            ->select("A.*, TRIM(
+            CONCAT(
+                BT.nombre, ' ',
+                COALESCE(BT.paterno, ''), ' ',
+                COALESCE(BT.materno, '')
+            )
+        ) as aspirante, CONCAT(DATCL.nombre,' ',DATCL.paterno) as usuario, CL.nombre as empresa,R.puesto,
 			R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
             ->from('requisicion_aspirante as A')
             ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
@@ -801,22 +855,30 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*, CONCAT(BT.nombre,' ',BT.paterno,' ',BT.materno) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, CL.nombre as empresa,R.puesto, H.id as idHistorial,R.numero_vacantes, C.id_aspirante as idCandidato, C.status_bgc, R.comentario_final, R.status as statusReq")
-            ->from('requisicion_aspirante as A')
-            ->join('requisicion as R', 'R.id = A.id_requisicion')
-            ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
+            ->select("A.*, TRIM(
+            CONCAT(
+                BT.nombre, ' ',
+                COALESCE(BT.paterno, ''), ' ',
+                COALESCE(BT.materno, '')
+            )
+        ) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, CL.nombre as empresa, R.puesto, H.id as idHistorial, R.numero_vacantes, C.id_aspirante as idCandidato, C.status_bgc, R.comentario_final, R.status as statusReq, R.id as id_requisicion")
+            ->from('requisicion as R')
             ->join('cliente as CL', 'CL.id = R.id_cliente')
             ->join('datos_generales as GENCL', 'GENCL.id = CL.id_datos_generales')
             ->join('requisicion_historial as H', 'H.id_requisicion = R.id', 'left')
-            ->join('usuarios_portal as USER', 'USER.id = A.id_usuario')
+            ->join('requisicion_aspirante as A', 'A.id_requisicion = R.id', 'left') // ¡Aquí va el LEFT JOIN!
+            ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo', 'left')
+            ->join('usuarios_portal as USER', 'USER.id = A.id_usuario', 'left')
             ->join('candidato as C', 'C.id_aspirante = A.id', 'left')
             ->where('R.id_portal', $id_portal)
-            ->where('A.eliminado', 0)
+        // Puedes filtrar por usuario/reclutador o lo que necesites (asegúrate de que aplique bien aunque A sea null)
             ->where_in('R.status', [0, 3])
-            ->where($condicion, $id_usuario)
-            ->group_by('A.id')
-            ->order_by('A.id', 'DESC')
-            ->order_by('A.id_requisicion', 'DESC');
+            ->group_by('R.id')
+            ->order_by('R.id', 'DESC');
+
+        if ($condicion && $id_usuario) {
+            $this->db->where($condicion, $id_usuario);
+        }
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -825,6 +887,7 @@ class Reclutamiento_model extends CI_Model
             return false;
         }
     }
+
     public function getAspirantesRequisicionesFinalizadasTotal($id_usuario, $condicion)
     {
         $id_portal = $this->session->userdata('idPortal');
@@ -845,7 +908,13 @@ class Reclutamiento_model extends CI_Model
     public function getAspirantesPorRequisicionesFinalizadas($id_usuario, $condicion, $id)
     {
         $id_portal = $this->session->userdata('idPortal');
-        $this->db->select("A.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as aspirante, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre as empresa, R.puesto, H.id as idHistorial, R.status as statusReq, R.comentario_final")
+        $this->db->select("A.*,  TRIM(
+            CONCAT(
+                B.nombre, ' ',
+                COALESCE(B.paterno, ''), ' ',
+                COALESCE(B.materno, '')
+            )
+        ) asaspirante, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre as empresa, R.puesto, H.id as idHistorial, R.status as statusReq, R.comentario_final")
             ->from('requisicion_aspirante as A')
             ->join('bolsa_trabajo as B', 'B.id = A.id_bolsa_trabajo')
             ->join('requisicion as R', 'R.id = A.id_requisicion')
@@ -889,7 +958,13 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("B.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto")
+            ->select("B.*, TRIM(
+            CONCAT(
+                B.nombre, ' ',
+                COALESCE(B.paterno, ''), ' ',
+                COALESCE(B.materno, '')
+            )
+        ) as nombreCompleto")
             ->from('bolsa_trabajo as B')
             ->where('B.id_portal', $id_portal)
             ->where('id', $id);
@@ -901,7 +976,13 @@ class Reclutamiento_model extends CI_Model
     {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-            ->select("E.*, CONCAT(B.nombre,' ',B.paterno,' ',B.materno) as nombreCompleto")
+            ->select("E.*, TRIM(
+            CONCAT(
+                B.nombre, ' ',
+                COALESCE(B.paterno, ''), ' ',
+                COALESCE(B.materno, '')
+            )
+        ) as nombreCompleto")
             ->from('bolsa_trabajo_historial_empleos as E')
             ->join('bolsa_trabajo as B', 'B.id = E.id_bolsa_trabajo')
             ->where('B.id_portal', $id_portal)
@@ -978,9 +1059,16 @@ class Reclutamiento_model extends CI_Model
     public function getCandidatosByRequisicion($id_requisicion)
     {
         $this->db
-            ->select("C.id,C.id_aspirante")
+            ->select("C.id, C.id_aspirante,  TRIM(
+            CONCAT(
+                B.nombre, ' ',
+                COALESCE(B.paterno, ''), ' ',
+                COALESCE(B.materno, '')
+            )
+        ) as  nombre, R.sueldo_acordado as sueldo, R.fecha_ingreso")
             ->from('requisicion_aspirante as R')
             ->join('candidato as C', 'C.id_aspirante = R.id', 'left')
+            ->join('bolsa_trabajo as B', 'R.id_bolsa_trabajo = B.id', 'inner')
             ->where('R.id_requisicion', $id_requisicion);
 
         $query = $this->db->get();

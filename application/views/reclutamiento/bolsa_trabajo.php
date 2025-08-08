@@ -48,10 +48,10 @@
 
     </div>
     <?php if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {?>
-    <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
+    <div class="mb-3 text-right" data-toggle="tooltip"<?php echo $textTitle; ?>>
       <button type="button" id="generarLink" class="btn"
         style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
-        data-toggle="modal" data-target="#modalGenerarLink" <?php echo $disabled; ?>>
+        data-toggle="modal" data-target="#modalGenerarLink"                                                            <?php echo $disabled; ?>>
 
         <span class="icon text-white-50">
           <i class="fas fa-user-edit" style="color: #000;"></i>
@@ -102,7 +102,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                           <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">ATodosll</option>
         <?php
@@ -154,85 +154,154 @@
   </a>
 
   <div class="">
+    <?php
+        if (! function_exists('obtenerDato')) {
+            function obtenerDato($r, $extras, $campo, $default = 'No registrado')
+            {
+                if (! empty($r->$campo)) {
+                    return $r->$campo;
+                }
+                if (is_string($extras)) {
+                    $extras = json_decode($extras, true);
+                }
+                if (is_array($extras) && isset($extras[$campo]) && $extras[$campo] !== '' && $extras[$campo] !== null) {
+                    return $extras[$campo];
+                }
+                return $default;
+            }
+        }
+
+        function obtenerPrimeroDisponible($r, $extras, $campos)
+        {
+            foreach ($campos as $campo) {
+                $valor = obtenerDato($r, $extras, $campo);
+                if (! empty($valor)) {
+                    return $valor;
+                }
+            }
+            return 'No registrado';
+        }
+    ?>
     <div id="seccionTarjetas">
       <?php
-
           if ($registros) {
-
               echo '<div class="row mb-3">';
               foreach ($registros as $r) {
-
                   date_default_timezone_set('America/Mexico_City');
-                  $hoy = date('Y-m-d H:i:s');
-                  // $fechaRegistro = new DateTime($r->creacion);
-                  // $diaActual = new DateTime($hoy);
-                  // $dif = $diaActual->diff($fechaRegistro);
-                  // $transcurrido = ($dif->days <= 0)? 'Hoy':'Hace '.$dif->days.' días';
+                  $hoy                   = date('Y-m-d H:i:s');
                   $fecha_registro        = fechaTexto($r->creacion, 'espanol');
                   $color_estatus         = '';
                   $disabled_bloqueo      = '';
                   $disabled_comentario   = '';
                   $text_estatus          = '';
                   $desbloquear_aspirante = '';
+
+                  // Detecta si es tipo "extras"
+                  $extras       = [];
+                  $esTipoExtras = false;
+                  if (! empty($r->extras)) {
+                      $extras       = json_decode($r->extras, true);
+                      $esTipoExtras = (is_array($extras) && count($extras) > 0);
+                  }
+
+                  // --- Datos principales ---
+                  $nombre         = obtenerDato($r, $extras, 'nombre', '');
+                  $paterno        = obtenerDato($r, $extras, 'paterno', '');
+                  $materno        = obtenerDato($r, $extras, 'materno', '');
+                  $nombreCompleto = trim($nombre . ' ' . $paterno . ' ' . $materno);
+                  $telefono       = obtenerDato($r, $extras, 'telefono');
+                 
+                  $medio_contacto = obtenerDato($r, $extras, 'medio_contacto');
+                  $area_interes   = obtenerDato($r, $extras, 'area_interes');
+                  $correo         = obtenerDato($r, $extras, 'correo', '');
+                  $domicilio      = obtenerPrimeroDisponible($r, $extras, ['direccion', 'estado']);
+                  $estado         = obtenerDato($r, $extras, 'estado', '');
+                  $direccion      = obtenerDato($r, $extras, 'direccion', '');
+                  $usuario        = (empty($r->usuario)) ? 'Sin asignar' : $r->usuario;
+
+                  // Normaliza nombre y paterno para envío
+                  if (empty($paterno) && ! empty($nombre) && strpos(trim($nombre), ' ') !== false) {
+                      // Si NO hay 'paterno', pero el nombre tiene más de una palabra
+                      $partes   = explode(' ', trim($nombre));
+                      $paterno1 = array_pop($partes);    // Última palabra como paterno
+                      $nombre1  = implode(' ', $partes); // El resto como nombre
+                  } else {
+                      $nombre1  = $nombre;
+                      $paterno1 = $paterno;
+                  }
+                  $materno1 = $materno;
+
+                  // Domicilio unificado para envío
+                  $partesDomicilio = [];
+                  if (! empty($domicilio)) {
+                      $partesDomicilio[] = $domicilio;
+                  }
+
+                  if (! empty($direccion)) {
+                      $partesDomicilio[] = $direccion;
+                  }
+
+                  if (! empty($estado)) {
+                      $partesDomicilio[] = $estado;
+                  }
+
+                  $domicilio1 = implode(', ', $partesDomicilio);
+                  // --- Definir el botón UNA SOLA VEZ ---
+                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('
+                  . $r->id . ',\''
+                  . addslashes($nombre1) . '\',\''
+                  . addslashes($paterno1) . '\',\''
+                  . addslashes($materno1) . '\',\''
+                  . addslashes($telefono) . '\',\''
+                  . addslashes($medio_contacto) . '\',\''
+                  . addslashes($area_interes) . '\',\''
+                  . addslashes($domicilio1) . '\',\''
+                  . addslashes($correo) . '\')"><i class="fas fa-play-circle"></i></a>';
+
+                  // --- Excepción para status 0: botón deshabilitado y otros cambios ---
                   if ($r->status == 0) {
                       $botonProceso          = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
                       $color_estatus         = 'req_negativa';
                       $text_estatus          = 'Estatus: <b>Bloqueado <br></b>';
                       $disabled_bloqueo      = 'isDisabled';
                       $disabled_comentario   = 'isDisabled';
-                      $desbloquear_aspirante = '<a href="javascript:void(0)" class="btn btn-success  text-lg unlockButton" onclick="confirmarDesbloqueo()" data-toggle="tooltip" title="Desbloquear"><i class="fas fa-lock-open"></i></a>';
-                  }
-                  if ($r->status == 1) {
-                      $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
-                      $text_estatus = 'Estatus: <b>En espera <br></b>';
-                      if ($r->status == 0) {
-                          $color_estatus = 'req_negativa';
-                      }
-                      if ($r->status == 4) {
-                          $color_estatus = 'req_positivo';
-                      }
-                      if ($r->status == 2) {
-                          $color_estatus = 'req_activa';
-                      }
-                      if ($r->status == 3) {
-                          $color_estatus = 'req_preventiva';
-                      }
-                  }
-                  if ($r->status == 2) {
-                      $botonProceso        = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
+                      $desbloquear_aspirante = '<a href="javascript:void(0)" class="btn btn-success text-lg unlockButton" onclick="confirmarDesbloqueo()" data-toggle="tooltip" title="Desbloquear"><i class="fas fa-lock-open"></i></a>';
+                  } elseif ($r->status == 1) {
+                      $color_estatus = 'req_espera';
+                      $text_estatus  = 'Estatus: <b>En espera <br></b>';
+                  } elseif ($r->status == 2) {
                       $color_estatus       = 'req_activa';
                       $text_estatus        = 'Estatus: <b>En proceso de reclutamiento<br></b>';
                       $disabled_comentario = 'isDisabled';
-                  }
-                  if ($r->status == 3) {
-                      $botonProceso        = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
+                  } elseif ($r->status == 3) {
                       $color_estatus       = 'req_preventiva';
                       $text_estatus        = 'Estatus: <b>Preventivo Revisar Historial<br></b>';
                       $disabled_comentario = 'isDisabled';
-                  }
-                  if ($r->status == 4) {
-                      $botonProceso        = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->paterno . '\',\'' . $r->materno . '\',\'' . $r->telefono . '\',\'' . $r->medio_contacto . '\',\'' . $r->area_interes . '\',\'' . $r->domicilio . '\')"><i class="fas fa-play-circle"></i></a>';
+                  } elseif ($r->status == 4) {
                       $color_estatus       = 'req_positivo';
                       $text_estatus        = 'Estatus: <b>Listo para preempleo<br></b>';
                       $disabled_comentario = 'isDisabled';
                   }
-                  $usuario         = (empty($r->usuario)) ? 'Sin asignar' : $r->usuario;
-                  $area_interes    = ($r->area_interes === '' || $r->area_interes === null) ? 'No registrado' : $r->area_interes;
-                  $domicilio       = ($r->domicilio === '' || $r->domicilio === null) ? 'No registrado' : $r->domicilio;
+
                   $totalApplicants = count($registros);
                   $moveApplicant   = ($totalApplicants > 1) ? '' : 'offset-4';
               ?>
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
-        <div class="card text-center">
+        <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                       <?php echo $color_estatus; ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                         <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
-            <b><?php echo '#' . $r->id . ' ' . $r->nombreCompleto; ?></b>
+            <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
           <div class="card-body">
+            <?php if ($esTipoExtras): ?>
+            <h5 class="card-text">Ubicación: <br><b><?php echo $estado . ', ' . $direccion; ?></b></h5>
+            <h5 class="card-title">Correo: <br><b><?php echo $correo; ?></b></h5>
+            <?php else: ?>
             <h5 class="card-title">Área de interés: <br><b><?php echo $area_interes; ?></b></h5>
             <h5 class="card-text">Ubicación: <br><b><?php echo $domicilio; ?></b></h5>
-            <h5 class="card-text">Teléfono: <b><?php echo $r->telefono; ?></b></h5>
+            <?php endif; ?>
+            <h5 class="card-text">Teléfono: <b><?php echo $telefono; ?></b></h5>
             <div class="alert alert-secondary text-center mt-3"><?php echo $text_estatus ?></div>
             <div class="row">
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
@@ -241,13 +310,13 @@
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip" title="Ver empleos"
-                  onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo $r->nombreCompleto ?>')"><i
+                  onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
                     class="fas fa-user-tie"></i></a>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip"
                   title="Historial de movimientos"
-                  onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo $r->nombreCompleto ?>')"><i
+                  onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
                     class="fas fa-history"></i></a>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id ?>">
@@ -256,26 +325,23 @@
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <?php if ($r->status == 0): ?>
                 <a href="javascript:void(0)" class="btn btn-success text-lg unlockButton"
-                  onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo $r->nombreCompleto ?>',<?php echo $r->id; ?>)"
+                  onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)"
                   data-toggle="tooltip" title="Desbloquear persona"><i class="fas fa-lock-open"></i></a>
                 <?php else: ?>
                 <a href="javascript:void(0)" class="btn btn-danger text-lg"
-                  onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo $r->nombreCompleto ?>',<?php echo $r->id; ?>)"
+                  onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)"
                   data-toggle="tooltip" title="Bloquear persona"><i class="fas fa-ban"></i></a>
                 <?php endif; ?>
               </div>
               <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
                 <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip"
                   title="Editar aspirante"
-                  onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo $r->nombreCompleto ?>')"><i
+                  onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
                     class="fas fa-edit"></i></a>
               </div>
-              <!-- <div class="col-2">
-                    <a href="javascript:void(0)" class="btn btn-warning text-lg                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         <?php //echo $disabled_comentario ?>" data-toggle="tooltip" title="Registrar comentario previo a reclutar" onclick="verHistorialBolsaTrabajo(<?php //echo $r->id;?>,'<?php //echo $r->nombreCompleto ?>')"><i class="fas fa-exclamation-circle"></i></a>
-                  </div> -->
             </div>
             <div class="alert alert-secondary text-center mt-3" id="divUsuario<?php echo $r->id; ?>">
-              <b><?php echo $usuario; ?></b>
+              <b><?php echo $usuario . ' utrututu'; ?></b>
             </div>
           </div>
           <div class="card-footer text-muted">
@@ -290,6 +356,12 @@
       <h3 class="text-center">Actualmente no hay aspirantes registrados.</h3>
       <?php }?>
     </div>
+
+
+
+
+
+
     <div id="tarjeta_detalle" class="hidden mb-5">
       <div class="alert alert-info text-center" id="nombre_completo"></div>
       <div class="card">
@@ -334,145 +406,152 @@
         </div>
       </div>
     </div>
+    <div id="detalle_extras_dinamico"></div>
+
     <div id="seccionEditarBolsa" class="hidden">
       <div class="alert alert-info text-center" id="nombreBolsa"></div>
       <div class="card mb-5">
         <h5 class="card-header text-center seccion">Personal Data</h5>
         <div class="card-body">
           <form id="formDatosPersonales">
-            <div class="row">
-              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Nombre(s) *</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <div id="form_campos_normales">
+              <div class="row">
+                <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                  <label>Nombre(s) *</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="nombre_update" name="nombre_update"
+                      onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
                   </div>
-                  <input type="text" class="form-control" id="nombre_update" name="nombre_update"
-                    onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                  <label>Apellido paterno*</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="paterno_update" name="paterno_update"
+                      onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                  <label>Apellido Materno</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="materno_update" name="materno_update"
+                      onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+                  </div>
                 </div>
               </div>
-              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Apellido paterno*</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+              <div class="row">
+                <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
+                  <label>Dirección *</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-home"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="domicilio_update" name="domicilio_update">
                   </div>
-                  <input type="text" class="form-control" id="paterno_update" name="paterno_update"
-                    onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                  <label>Fecha de nacimiento*</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                    </div>
+                    <input type="date" class="form-control" id="fecha_nacimiento_update" name="fecha_nacimiento_update">
+                  </div>
                 </div>
               </div>
-              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Apellido Materno</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+              <div class="row">
+                <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
+                  <label>Nationalidad *</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="telefono_update" name="telefono_update" maxlength="16">
                   </div>
-                  <input type="text" class="form-control" id="materno_update" name="materno_update"
-                    onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                  <label>Nacionalidad *</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="nacionalidad_update" name="nacionalidad_update">
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                  <label>Estado civil*</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <select class="custom-select" id="civil_update" name="civil_update">
+                      <option value="">Seleciona</option>
+                      <?php
+                          if ($civiles) {
+                          foreach ($civiles as $row) {?>
+                      <option value="<?php echo $row->id ?>"><?php echo $row->nombre ?></option>
+                      <?php }
+                      } else {?>
+                      <option value="">Sin registros de estado civil..</option>
+                      <?php }?>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
+                  <label>Dependientes del solicitante*</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="dependientes_update" name="dependientes_update">
+                  </div>
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
+                  <label>Nivel máximo de estudios. *</label>
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <select class="custom-select" id="escolaridad_update" name="escolaridad_update">
+                      <option value="">Select</option>
+                      <?php
+                          if ($grados) {
+                          foreach ($grados as $row) {?>
+                      <option value="<?php echo $row->id ?>"><?php echo $row->nombre ?></option>
+                      <?php }
+                      } else {?>
+                      <option value="">No se encontraron registros de educación.</option>
+                      <?php }?>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
-                <label>Dirección *</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-home"></i></span>
-                  </div>
-                  <input type="text" class="form-control" id="domicilio_update" name="domicilio_update">
-                </div>
-              </div>
-              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Fecha de nacimiento*</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                  </div>
-                  <input type="date" class="form-control" id="fecha_nacimiento_update" name="fecha_nacimiento_update">
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
-                <label>Nationality *</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
-                  </div>
-                  <input type="text" class="form-control" id="telefono_update" name="telefono_update" maxlength="16">
-                </div>
-              </div>
-              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Nacionalidad *</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
-                  </div>
-                  <input type="text" class="form-control" id="nacionalidad_update" name="nacionalidad_update">
-                </div>
-              </div>
-              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Estado civil*</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                  </div>
-                  <select class="custom-select" id="civil_update" name="civil_update">
-                    <option value="">Seleciona</option>
-                    <?php
-                        if ($civiles) {
-                        foreach ($civiles as $row) {?>
-                    <option value="<?php echo $row->id ?>"><?php echo $row->nombre ?></option>
-                    <?php }
-                    } else {?>
-                    <option value="">Sin registros de estado civil..</option>
-                    <?php }?>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-12 col-md-8 col-lg-8 mb-1">
-                <label>Dependientes del solicitante*</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
-                  </div>
-                  <input type="text" class="form-control" id="dependientes_update" name="dependientes_update">
-                </div>
-              </div>
-              <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Highest level of education. *</label>
-                <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                  </div>
-                  <select class="custom-select" id="escolaridad_update" name="escolaridad_update">
-                    <option value="">Select</option>
-                    <?php
-                        if ($grados) {
-                        foreach ($grados as $row) {?>
-                    <option value="<?php echo $row->id ?>"><?php echo $row->nombre ?></option>
-                    <?php }
-                    } else {?>
-                    <option value="">No education records available.</option>
-                    <?php }?>
-                  </select>
-                </div>
-              </div>
-            </div>
+            <div id="extras_update" style="display:none"></div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Save
-            Personal Information</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Guardar
+            información personal</button>
         </div>
       </div>
-      <div class="card mb-5">
-        <h5 class="card-header text-center seccion">Health and Social Life</h5>
+
+      <div class="card mb-5" id="form_campos_normales2">
+        <h5 class="card-header text-center seccion">Salud y vida social</h5>
         <div class="card-body">
           <form id="formSalud">
+
             <div class="row">
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>What is your current health status? *</label>
+                <label>¿Cuál es tu estado de salud actual? **</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
@@ -481,7 +560,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>Do you suffer from any chronic illness? *</label>
+                <label>¿Padeces alguna enfermedad crónica? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
@@ -492,7 +571,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>Do you practice any sports? *</label>
+                <label>¿Practicas algún deporte? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -501,7 +580,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-6 col-lg-6 mb-1">
-                <label>What are your goals in life? *</label>
+                <label>¿Cuáles son tus metas en la vida? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -511,17 +590,18 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('salud')">Save Health
-            and Social Life Information</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('salud')">Guardar
+            información de salud y vida social</button>
         </div>
       </div>
-      <div class="card mb-5">
-        <h5 class="card-header text-center seccion">Knowledge and Skills</h5>
+
+      <div class="card mb-5" id="form_campos_normales3">
+        <h5 class="card-header text-center seccion">Conocimientos y habilidades</h5>
         <div class="card-body">
           <form id="formConocimientos">
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Languages Spoken *</label>
+                <label>Idiomas que domina *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="far fa-clock"></i></span>
@@ -530,7 +610,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Office or Workshop Equipment Operated *</label>
+                <label>Equipo de oficina o taller que maneja *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="far fa-clock"></i></span>
@@ -539,7 +619,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Software Proficient In *</label>
+                <label>Software que maneja *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="far fa-clock"></i></span>
@@ -549,17 +629,17 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('conocimiento')">Save
-            Knowledge and Skills Information</button>
+          <button type="button" class="btn btn-success btn-block text-lg"
+            onclick="updateApplicant('conocimiento')">Guardar Información de conocimientos y habilidades</button>
         </div>
       </div>
-      <div class="card mb-5">
-        <h5 class="card-header text-center seccion">Interests</h5>
+      <div class="card mb-5" id="form_campos_normales4">
+        <h5 class="card-header text-center seccion">Intereses</h5>
         <div class="card-body">
           <form id="formIntereses">
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>How did you hear about TalentSafe? *</label>
+                <label>¿Cómo te enteraste de TalentSafe? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
@@ -572,13 +652,13 @@
                     <option value="<?php echo $row->nombre ?>"><?php echo $row->nombre ?></option>
                     <?php }
                     } else {?>
-                    <option value="">No records of contact sources.</option>
+                    <option value="">No hay registros de fuentes de contacto.</option>
                     <?php }?>
                   </select>
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>What area are you interested in? *</label>
+                <label>¿En qué área te interesa trabajar? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
@@ -587,7 +667,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>What salary do you wish to receive? *</label>
+                <label>¿Cuál es el salario que deseas recibir? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -598,7 +678,7 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Do you have any additional income? *</label>
+                <label>¿Percibes algún ingreso adicional? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
@@ -607,7 +687,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>Are you available to travel? *</label>
+                <label>¿Tienes disponibilidad para viajar? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -616,7 +696,7 @@
                 </div>
               </div>
               <div class="col-sm-12 col-md-4 col-lg-4 mb-1">
-                <label>What is your availability date to start? *</label>
+                <label>¿En qué fecha puedes comenzar a trabajar? *</label>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
@@ -626,11 +706,13 @@
               </div>
             </div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('intereses')">Save
-            Interests</button>
+          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('intereses')">Guardar
+            Intereses</button>
         </div>
       </div>
     </div>
+
+    <div id="extras_update" style="display:none"></div>
   </div>
   <!-- Sweetalert 2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
@@ -773,73 +855,132 @@
           $('.loader').fadeOut();
         }, 200);
         var dato = JSON.parse(res);
-        let f_nacimiento = '';
-        let edad = '';
-        if (dato['fecha_nacimiento'] === '' || dato['fecha_nacimiento'] === null) {
-          f_nacimiento = 'No registrado';
-          edad = 'No registrado';
-        } else {
-          f_nacimiento = fechaSimpleAFront(dato['fecha_nacimiento']);
-          edad = dato['edad'] + ' años';
+
+        // Detecta si tiene extras con info
+        var extras = {};
+        var esTipoExtras = false;
+        if (dato['extras'] && dato['extras'] !== "" && dato['extras'] !== null) {
+          try {
+            extras = typeof dato['extras'] === "string" ? JSON.parse(dato['extras']) : dato['extras'];
+            esTipoExtras = Object.keys(extras).length > 0;
+          } catch (e) {
+            extras = {};
+            esTipoExtras = false;
+          }
         }
+
         $('#btnBack').css('display', 'block');
-        $('#divFiltros').css('display', 'none')
+        $('#divFiltros').css('display', 'none');
         $('#seccionTarjetas').css('display', 'none');
-        $('#nombre_completo').html('<b>Detalles del aspirante <h3>#' + dato['id'] + ' ' + dato['nombreCompleto'] +
-          '</h3></b>')
-        //Personales
-        let area_interes = (dato['area_interes'] === '' || dato['area_interes'] === null) ? 'No registrado' :
-          dato['area_interes'];
-        $('#detalle_area_interes').html('Área de interés:<br><b>' + area_interes + '</b>')
-        $('#detalle_f_nacimiento').html('<b>Fecha de nacimiento: </b> ' + f_nacimiento)
-        $('#detalle_edad').html('<b>Edad: </b>' + edad)
-        let nacionalidad = (dato['nacionalidad'] === '' || dato['nacionalidad'] === null) ? 'No registrado' :
-          dato['nacionalidad'];
-        $('#detalle_nacionalidad').html('<b>Nacionalidad:</b> ' + nacionalidad)
-        let civil = (dato['civil'] === '' || dato['civil'] === null) ? 'No registrado' : dato['civil'];
-        $('#detalle_civil').html('<b>Estado civil:</b> ' + civil)
-        let dependientes = (dato['dependientes'] === '' || dato['dependientes'] === null) ? 'No registrado' :
-          dato['dependientes'];
-        $('#detalle_dependientes').html('<b>Dependientes:</b> ' + dependientes)
-        let grado_estudios = (dato['grado_estudios'] === '' || dato['grado_estudios'] === null) ?
-          'No registrado' : dato['grado_estudios'];
-        $('#detalle_grado_estudios').html('<b>Grado máximo de estudios:</b> ' + grado_estudios)
-        let sueldo_deseado = (dato['sueldo_deseado'] === '' || dato['sueldo_deseado'] === null) ?
-          'No registrado' : dato['sueldo_deseado'];
-        $('#detalle_sueldo_deseado').html('<b>Sueldo deseado:</b> ' + sueldo_deseado)
-        let otros_ingresos = (dato['otros_ingresos'] === '' || dato['otros_ingresos'] === null) ?
-          'No registrado' : dato['otros_ingresos'];
-        $('#detalle_otros_ingresos').html('<b>Otros ingresos:</b> ' + otros_ingresos)
-        let viajar = (dato['viajar'] === '' || dato['viajar'] === null) ? 'No registrado' : dato['viajar'];
-        $('#detalle_viajar').html('<b>¿Disponibilidad para viajar?:</b> ' + viajar)
-        let trabajar = (dato['trabajar'] === '' || dato['trabajar'] === null) ? 'No registrado' : dato[
-          'trabajar'];
-        $('#detalle_trabajar').html('<b>¿Cuándo podría presentarse a trabajar?:</b> ' + trabajar)
-        let domicilio = (dato['domicilio'] === '' || dato['domicilio'] === null) ? 'No registrado' : dato[
-          'domicilio'];
-        $('#detalle_domicilio').html('<b>Domicilio:</b><br> ' + domicilio)
-        let salud = (dato['salud'] === '' || dato['salud'] === null) ? 'No registrado' : dato['salud'];
-        $('#detalle_salud').html('<b>Estado de salud:</b> ' + salud)
-        let enfermedad = (dato['enfermedad'] === '' || dato['enfermedad'] === null) ? 'No registrado' : dato[
-          'enfermedad'];
-        $('#detalle_enfermedad').html('<b>Enfermedad crónica:</b> ' + enfermedad)
-        let deporte = (dato['deporte'] === '' || dato['deporte'] === null) ? 'No registrado' : dato['deporte'];
-        $('#detalle_deporte').html('<b>Deporte:</b> ' + deporte)
-        let metas = (dato['metas'] === '' || dato['metas'] === null) ? 'No registrado' : dato['metas'];
-        $('#detalle_metas').html('<b>Metas en la vida:</b> ' + metas)
-        $('#detalle_medio_contacto').html('<b>¿Cómo se enteró de RODI?:</b><br> ' + dato['medio_contacto'])
-        let idiomas = (dato['idiomas'] === '' || dato['idiomas'] === null) ? 'No registrado' : dato['idiomas'];
-        $('#detalle_idiomas').html('<b>Idiomas que domina:</b><br> ' + idiomas)
-        let maquinas = (dato['maquinas'] === '' || dato['maquinas'] === null) ? 'No registrado' : dato[
-          'maquinas'];
-        $('#detalle_maquinas').html('<b>Máquinas de oficina o taller que maneja:</b><br> ' + maquinas)
-        let software = (dato['software'] === '' || dato['software'] === null) ? 'No registrado' : dato[
-          'software'];
-        $('#detalle_software').html('<b>Software que conoce:</b><br> ' + software)
-        $('#tarjeta_detalle').css('display', 'block');
+
+        // ----------- DINÁMICO PARA EXTRAS -------------
+        if (esTipoExtras) {
+          $('#tarjeta_detalle').hide();
+          $('#detalle_extras_dinamico').show();
+
+          let html = `
+          <div class="card shadow-sm mt-4">
+            <div class="alert alert-info text-center">
+              <h5 class="mb-0">
+                <i class="fas fa-info-circle"></i>
+                <b>Detalles del aspirante</b>
+                <h3>#${dato['id']} ${dato['nombreCompleto'] || ''}</h3>
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="container-fluid">
+                <div class="row">
+                `;
+
+          // Transforma el objeto extras en un array de pares clave-valor, para poder hacer columnas
+          const entries = Object.entries(extras).filter(([key, _]) => key !== '_token');
+          const colsPerRow = 3; // Cambia a 3 si quieres 3 columnas
+
+          for (let i = 0; i < entries.length; i += colsPerRow) {
+            html += `<div class="w-100"></div>`; // Nueva fila
+            for (let j = i; j < i + colsPerRow && j < entries.length; j++) {
+              const [key, value] = entries[j];
+              let etiqueta = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+              let icono = '';
+              if (key.toLowerCase().includes('correo')) icono =
+                '<i class="fas fa-envelope-open-text text-secondary"></i> ';
+              if (key.toLowerCase().includes('direccion')) icono =
+                '<i class="fas fa-map-marker-alt text-danger"></i> ';
+              if (key.toLowerCase().includes('estado')) icono = '<i class="fas fa-map text-success"></i> ';
+              if (key.toLowerCase().includes('telefono')) icono =
+                '<i class="fas fa-phone-alt text-primary"></i> ';
+
+              html += `
+              <div class="col-md-4 col-sm-12 mb-3">
+                <div class="p-3 border rounded bg-light h-100">
+                  <div class="font-weight-bold">${icono}${etiqueta}</div>
+                  <div>${value}</div>
+                </div>
+              </div>
+              `;
+            }
+          }
+
+          html += `
+                </div>
+              </div>
+            </div>
+          </div>
+          `;
+
+          $('#detalle_extras_dinamico').html(html);
+        } else {
+          // ------------ VISTA NORMAL (tu código clásico) ---------------
+          $('#tarjeta_detalle').show(); // Muestra los detalles clásicos
+          $('#detalle_extras_dinamico').hide(); // <-- Oculta el dinámico si no aplica
+
+          let f_nacimiento = (dato['fecha_nacimiento'] === '' || dato['fecha_nacimiento'] === null) ?
+            'No registrado' :
+            fechaSimpleAFront(dato['fecha_nacimiento']);
+          let edad = (dato['edad'] === '' || dato['edad'] === null) ?
+            'No registrado' :
+            dato['edad'] + ' años';
+
+          $('#nombre_completo').html('<b>Detalles del aspirante <h3>#' + dato['id'] + ' ' + dato[
+            'nombreCompleto'] + '</h3></b>');
+          $('#detalle_area_interes').html('Área de interés:<br><b>' + (dato['area_interes'] || 'No registrado') +
+            '</b>');
+          $('#detalle_f_nacimiento').html('<b>Fecha de nacimiento: </b> ' + f_nacimiento);
+          $('#detalle_edad').html('<b>Edad: </b>' + edad);
+          $('#detalle_nacionalidad').html('<b>Nacionalidad:</b> ' + (dato['nacionalidad'] || 'No registrado'));
+          $('#detalle_civil').html('<b>Estado civil:</b> ' + (dato['civil'] || 'No registrado'));
+          $('#detalle_dependientes').html('<b>Dependientes:</b> ' + (dato['dependientes'] || 'No registrado'));
+          $('#detalle_grado_estudios').html('<b>Grado máximo de estudios:</b> ' + (dato['grado_estudios'] ||
+            'No registrado'));
+          $('#detalle_sueldo_deseado').html('<b>Sueldo deseado:</b> ' + (dato['sueldo_deseado'] ||
+            'No registrado'));
+          $('#detalle_otros_ingresos').html('<b>Otros ingresos:</b> ' + (dato['otros_ingresos'] ||
+            'No registrado'));
+          $('#detalle_viajar').html('<b>¿Disponibilidad para viajar?:</b> ' + (dato['viajar'] ||
+            'No registrado'));
+          $('#detalle_trabajar').html('<b>¿Cuándo podría presentarse a trabajar?:</b> ' + (dato['trabajar'] ||
+            'No registrado'));
+          $('#detalle_domicilio').html('<b>Domicilio:</b><br> ' + (dato['domicilio'] || 'No registrado'));
+          $('#detalle_salud').html('<b>Estado de salud:</b> ' + (dato['salud'] || 'No registrado'));
+          $('#detalle_enfermedad').html('<b>Enfermedad crónica:</b> ' + (dato['enfermedad'] || 'No registrado'));
+          $('#detalle_deporte').html('<b>Deporte:</b> ' + (dato['deporte'] || 'No registrado'));
+          $('#detalle_metas').html('<b>Metas en la vida:</b> ' + (dato['metas'] || 'No registrado'));
+          $('#detalle_medio_contacto').html('<b>¿Cómo se enteró de RODI?:</b><br> ' + (dato['medio_contacto'] ||
+            'No registrado'));
+          $('#detalle_idiomas').html('<b>Idiomas que domina:</b><br> ' + (dato['idiomas'] || 'No registrado'));
+          $('#detalle_maquinas').html('<b>Máquinas de oficina o taller que maneja:</b><br> ' + (dato[
+            'maquinas'] || 'No registrado'));
+          $('#detalle_software').html('<b>Software que conoce:</b><br> ' + (dato['software'] || 'No registrado'));
+          $('#tarjeta_detalle').css('display', 'block');
+          $('#detalle_extras_dinamico').html('');
+        }
+
+
       }
     });
   }
+
+
 
   function verEmpleos(id, nombreCompleto) {
     $(".nombreRegistro").text(nombreCompleto);
@@ -884,16 +1025,17 @@
     });
   }
 
-  function openAddApplicant(id, nombre, paterno, materno, telefono, medio, area_interes, domicilio) {
+  function openAddApplicant(id, nombre, paterno, materno, telefono, medio, area_interes, domicilio, correo) {
     $('#idBolsa').val(id);
     $('#nombre').val(nombre);
     $('#paterno').val(paterno);
     $('#materno').val(materno);
-    $('#telefono').val(telefono);
+    $('#telefono1').val(telefono);
     $('#medio').val(medio);
 
     $('#area_interes').val(area_interes);
     $('#domicilio').val(domicilio);
+    $('#correo1').val(correo);
     // Limpiar el select antes de agregar nuevas opciones
     $('#req_asignada').empty();
     $.ajax({
@@ -1155,7 +1297,7 @@
       type: 'POST',
       dataType: 'json',
       success: function(response) {
-        
+
 
         // Mostrar aviso
         const avisoHref = response.aviso ?
@@ -1325,38 +1467,107 @@
         setTimeout(function() {
           $('.loader').fadeOut();
         }, 200);
-        var dato = JSON.parse(res);
-        //Personales
-        $('#nombre_update').val(dato['nombre'])
-        $('#paterno_update').val(dato['paterno'])
-        $('#materno_update').val(dato['materno'])
-        $('#domicilio_update').val(dato['domicilio'])
-        let fecha = (dato['fecha_nacimiento'] !== null && dato['fecha_nacimiento'] !== '') ? dato[
-          'fecha_nacimiento'] : ''
-        $('#fecha_nacimiento_update').val(fecha)
-        $('#telefono_update').val(dato['telefono'])
-        $('#nacionalidad_update').val(dato['nacionalidad'])
-        $('#civil_update').val(dato['civil'])
-        $('#dependientes_update').val(dato['dependientes'])
-        $('#escolaridad_update').val(dato['grado_estudios'])
-        //Salud y Vida Social
-        $('#salud_update').val(dato['salud'])
-        $('#enfermedad_update').val(dato['enfermedad'])
-        $('#deporte_update').val(dato['deporte'])
-        $('#metas_update').val(dato['metas'])
-        //Conocimientos
-        $('#idiomas_update').val(dato['idiomas'])
-        $('#maquinas_update').val(dato['maquinas'])
-        $('#software_update').val(dato['software'])
-        //Intereses
-        $('#medio_contacto_update').val(dato['medio_contacto'])
-        $('#area_interes_update').val(dato['area_interes'])
-        $('#sueldo_update').val(dato['sueldo_deseado'])
-        $('#otros_ingresos_update').val(dato['otros_ingresos'])
-        $('#viajar_update').val(dato['viajar'])
-        $('#trabajar_update').val(dato['trabajar'])
 
-        $('#observaciones_update').val(dato['observaciones'])
+        var dato = JSON.parse(res);
+
+        // Detecta si hay datos en extras
+        var extras = {};
+        var esTipoExtras = false;
+        if (dato['extras'] && dato['extras'] !== "" && dato['extras'] !== null) {
+          try {
+            extras = typeof dato['extras'] === "string" ? JSON.parse(dato['extras']) : dato['extras'];
+            esTipoExtras = Object.keys(extras).length > 0;
+          } catch (e) {
+            extras = {};
+            esTipoExtras = false;
+          }
+        }
+
+        if (esTipoExtras) {
+          $('#form_campos_normales').hide();
+          $('#form_campos_normales2').hide();
+          $('#form_campos_normales3').hide();
+          $('#form_campos_normales4').hide();
+
+          let nombre = (dato['nombre'] || extras['nombre'] || '');
+          let paterno = (dato['paterno'] || extras['paterno'] || '');
+
+          if (paterno) {
+            nombre = nombre + ' ' + paterno;
+          }
+
+          const camposNormales = {
+            nombre: nombre, // ← Ya concatenado arriba
+            telefono: dato['telefono'] || extras['telefono'] || "",
+            fecha_nacimiento: dato['fecha_nacimiento'] || extras['fecha_nacimiento'] || ""
+          };
+
+          // Luego, añade todos los extras (sin sobrescribir los anteriores si existen)
+          const camposDinamicos = {
+            ...camposNormales
+          }; // Empieza con los normales
+
+          if (esTipoExtras) {
+            Object.keys(extras).forEach(function(key) {
+              if (key === '_token') return;
+              // Solo agrega si no existe ya en los normales
+              if (!camposDinamicos.hasOwnProperty(key)) {
+                camposDinamicos[key] = extras[key];
+              }
+            });
+          }
+
+          // Ahora genera TODOS los campos (normales + extras) dinámicamente:
+          let html = `<div class="row">`;
+          Object.keys(camposDinamicos).forEach(function(key) {
+            let etiqueta = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            html += `
+                    <div class="col-md-4 col-sm-12 mb-3">
+                      <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                          <label for="extra_${key}_update" class="font-weight-bold mb-2">${etiqueta}</label>
+                          <input type="text" class="form-control" name="extra_${key}" id="extra_${key}_update" value="${camposDinamicos[key] || ''}">
+                        </div>
+                      </div>
+                    </div>
+                  `;
+          });
+          html += `</div>`;
+
+          $('#extras_update').html(html).show();
+
+        } else {
+          $('#extras_update').hide();
+          $('#form_campos_normales').show();
+
+          // Tus setters clásicos
+          $('#nombre_update').val(dato['nombre']);
+          $('#paterno_update').val(dato['paterno']);
+          $('#materno_update').val(dato['materno']);
+          $('#domicilio_update').val(dato['domicilio']);
+          let fecha = (dato['fecha_nacimiento'] !== null && dato['fecha_nacimiento'] !== '') ? dato[
+            'fecha_nacimiento'] : ''
+          $('#fecha_nacimiento_update').val(fecha);
+          $('#telefono_update').val(dato['telefono']);
+          $('#nacionalidad_update').val(dato['nacionalidad']);
+          $('#civil_update').val(dato['civil']);
+          $('#dependientes_update').val(dato['dependientes']);
+          $('#escolaridad_update').val(dato['grado_estudios']);
+          $('#salud_update').val(dato['salud']);
+          $('#enfermedad_update').val(dato['enfermedad']);
+          $('#deporte_update').val(dato['deporte']);
+          $('#metas_update').val(dato['metas']);
+          $('#idiomas_update').val(dato['idiomas']);
+          $('#maquinas_update').val(dato['maquinas']);
+          $('#software_update').val(dato['software']);
+          $('#medio_contacto_update').val(dato['medio_contacto']);
+          $('#area_interes_update').val(dato['area_interes']);
+          $('#sueldo_update').val(dato['sueldo_deseado']);
+          $('#otros_ingresos_update').val(dato['otros_ingresos']);
+          $('#viajar_update').val(dato['viajar']);
+          $('#trabajar_update').val(dato['trabajar']);
+          $('#observaciones_update').val(dato['observaciones']);
+        }
       }
     });
     $('#btnBack').css('display', 'block');
@@ -1367,6 +1578,7 @@
     $('#btnNuevaRequisicion').addClass('isDisabled')
     $('#btnAsignarAspirante').addClass('isDisabled')
   }
+
 
   function updateApplicant(section) {
     let form = '';

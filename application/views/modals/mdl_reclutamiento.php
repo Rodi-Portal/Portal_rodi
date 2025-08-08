@@ -78,13 +78,13 @@
             </div>
             <div class="col-sm-12 col-md-4">
               <label>Teléfono *</label>
-              <input type="text" id="telefono" name="telefono" class="form-control">
+              <input type="text" id="telefono1" name="telefono1" class="form-control">
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
               <label>Correo*</label>
-              <input type="text" id="correo" name="correo" class="form-control">
+              <input type="mail" id="correo1" name="correo1" class="form-control">
               <input type="hidden" id="idAspirante" name="idAspirante">
               <input type="hidden" id="idBolsa" name="idBolsa">
 
@@ -100,31 +100,7 @@
   </div>
 </div>
 
-<!-- Modal para cargar CV -->
-<div class="modal fade" id="modalCargaCV" tabindex="-1" role="dialog" aria-labelledby="modalCargaCVLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalCargaCVLabel">Cargar CV/Solicitud</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span>&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Aquí coloca el formulario para cargar el CV -->
-        <form id="formularioCargaCV" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="cv">Selecciona tu CV/Solicitud:</label>
-            <input type="file" class="form-control-file" id="id_cv" name="id_cv" required>
-            <input type="hidden" class="form-control-file" id="id_aspirante" name="id_aspirante" required>
-          </div>
-          <!-- Agrega el atributo onclick para llamar a la función -->
-          <button type="button" class="btn btn-primary" onclick="subirCVReqAspirante()">Cargar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <div class="modal fade" id="nuevaAccionModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
@@ -812,9 +788,9 @@
         <!-- Logo actual -->
         <div class="mb-3 text-center">
           <label><strong>Logo Actual:</strong></label><br>
-          <img id="logoActual" src="<?php echo base_url('_logosPortal/' . $this->session->userdata('logo'))?>"
+          <img id="logoActual" src="<?php echo base_url('_logosPortal/' . $this->session->userdata('logo')) ?>"
             alt="Logo" style="max-height: 80px;"
-            onerror="this.onerror=null; this.src='<?php echo base_url('_logosPortal/portal_icon.png')?>';">
+            onerror="this.onerror=null; this.src='<?php echo base_url('_logosPortal/portal_icon.png') ?>';">
         </div>
 
         <!-- Aviso actual -->
@@ -1728,6 +1704,106 @@
     </div>
   </div>
 </div>
+<!-- Modal para cargar CV -->
+<div class="modal fade" id="modalCargaArchivos" tabindex="-1" role="dialog" aria-labelledby="modalCargaArchivosLabel">
+  <div class="modal-dialog" role="document" style="max-width:700px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Carga y nombra tus archivos</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="<?php echo base_url('Documentos_Aspirantes/subir') ?>" class="dropzone" id="tablaDropzone"
+          enctype="multipart/form-data">
+          <input type="hidden" id="id_aspirante" name="id_aspirante" value="">
+
+          <!-- ZONA DROPZONE: Aquí -->
+          <div class="dz-message text-center text-muted"
+            style="padding: 40px 0; border: 2px dashed #0087F7; background: #f4f8fb; border-radius:8px; margin-bottom: 20px;">
+            <i class="fas fa-cloud-upload-alt fa-3x mb-2" style="color:#0087F7"></i>
+            <h5>Arrastra archivos aquí o haz clic para seleccionarlos</h5>
+            <p>Puedes seleccionar varios archivos a la vez (PDF, imágenes, videos, etc.).</p>
+          </div>
+
+          <table class="table table-bordered" id="archivosTable">
+            <thead>
+              <tr>
+                <th>Archivo</th>
+                <th>Nombre personalizado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="dz-previews">
+              <!-- Dropzone coloca las filas aquí -->
+              <!-- <tr><td colspan="3"></td></tr> -->
+            </tbody>
+          </table>
+
+      </div>
+      <button type="button" class="btn btn-primary mt-2" id="btnSubirArchivos">Subir Archivos</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalActualizarArchivos" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Documentos del aspirante</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- oculto para reutilizarlo en reemplazos -->
+        <input type="hidden" id="id_aspirante">
+
+        <table class="table table-bordered" id="tablaDocsModal">
+          <thead>
+            <tr>
+              <th>Nombre personalizado</th>
+              <th>Archivo</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- filas AJAX -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modalReemplazo" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reemplazar documento</h5>
+      </div>
+      <div class="modal-body">
+        <form id="frmReemplazo" action="<?php echo base_url('Documentos_Aspirantes/actualizar') ?>"
+          enctype="multipart/form-data">
+          <input type="hidden" name="id_doc" id="id_doc">
+          <div class="form-group">
+            <label>Nombre personalizado</label>
+            <input type="text" class="form-control" name="nuevo_nombre" id="nuevo_nombre">
+          </div>
+          <div class="form-group">
+            <label>Nuevo archivo</label>
+            <input type="file" class="form-control-file" name="file" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnGuardarCambios">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 <script>
@@ -1736,6 +1812,261 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 </script>
 
 <script>
+Dropzone.autoDiscover = false;
+let dz = null; // instancia global
+
+function mostrarFormularioCargaCV(id) {
+  console.log('mostrarFormularioCargaCV id:', id);
+  $('#id_aspirante').val(id);
+  $('#modalCargaArchivos').modal('show');
+}
+
+$('#modalCargaArchivos').on('shown.bs.modal', function() {
+  console.log('Modal abierto: inicializando Dropzone...');
+
+  if (dz) {
+    console.log('[DZ] ya inicializada');
+    return;
+  }
+
+  const form = document.getElementById('tablaDropzone');
+  if (!form) {
+    console.error('No se encontró #tablaDropzone');
+    return;
+  }
+
+  dz = new Dropzone("#tablaDropzone", {
+    url: "<?php echo base_url('Documentos_Aspirantes/subir') ?>", // MISMA que el action del form
+    paramName: "file", // CI3 recibirá $_FILES['file']
+    autoProcessQueue: false,
+    uploadMultiple: true,
+    parallelUploads: 10,
+    maxFiles: 10,
+    acceptedFiles: ".pdf,image/*,video/*",
+    previewsContainer: "#dz-previews",
+    clickable: "#tablaDropzone .dz-message",
+    // ¡Empieza EXACTO con <tr>!
+    previewTemplate: `
+    <div style="display: table-row;" data-dz-preview class="dz-preview dz-file-preview align-middle">
+      <div style="display: table-cell; vertical-align: middle;">
+        <span data-dz-name></span>
+        <br>
+        <small class="text-muted" data-dz-size></small>
+      </div>
+      <div style="display: table-cell; vertical-align: middle;">
+        <input type="text" name="nombres_archivos[]" class="form-control" placeholder="Ejemplo: CV, Comprobante, etc." required>
+      </div>
+      <div style="display: table-cell; vertical-align: middle;">
+        <a href="javascript:void(0);" class="btn btn-danger btn-sm" data-dz-remove title="Eliminar">
+          <i class="fas fa-trash-alt"></i>
+        </a>
+      </div>
+    </div>
+  `
+  });
+
+  console.log('Dropzone inicializada:', dz);
+
+  dz.on("addedfile", function(file) {
+    console.log('[DZ] added:', file.name);
+  });
+
+  // Con uploadMultiple:true usa estos:
+  dz.on("sendingmultiple", function(files, xhr, formData) {
+    console.log('[DZ] sendingmultiple:', files.length);
+    const nombres = [];
+    document.querySelectorAll('input[name="nombres_archivos[]"]').forEach(i => nombres.push(i.value));
+    // Envía ambos nombres por compatibilidad con tu controlador actual
+    formData.append('id_bolsa', $('#id_aspirante').val());
+    formData.append('id_aspirante', $('#id_aspirante').val());
+    formData.append('nombres_archivos', JSON.stringify(nombres));
+  });
+
+  dz.on('successmultiple', (files, resp) => {
+    if (typeof resp === 'string') resp = JSON.parse(resp);
+
+    let huboErrores = false;
+    const errores = []; // ← aquí guardaremos los textos
+    const fallidos = [];
+    resp.data.forEach((r, idx) => {
+      const file = files[idx];
+
+      if (r.success) {
+        file.previewElement.classList.add('dz-success');
+      } else {
+        huboErrores = true;
+        errores.push(`${r.file}: ${r.error}`);
+        fallidos.push(file); // nombre + mensaje que devolviste
+        dz.emit('error', file, r.error);
+        dz.emit('complete', file);
+      }
+    });
+
+    if (huboErrores) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Carga parcial',
+        html: errores.join('<br>'),
+        customClass: {
+          popup: 'text-left'
+        }
+      }).then(() => {
+        //  🔻   Quita solo los que fallaron
+        fallidos.forEach(f => dz.removeFile(f));
+
+        //  👉  Si quieres limpiar TODOS (éxito + error), usa:
+          dz.removeAllFiles(true);
+      });
+    } else {
+      $('#modalCargaArchivos').modal('hide');
+      dz.removeAllFiles(true);
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'Todos los archivos cargados correctamente.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+  });
+
+
+  // 4xx / 5xx o error de red
+  dz.on('errormultiple', (_files, msg) => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error de servidor',
+      text: (typeof msg === 'string') ? msg : 'Intenta de nuevo o contacta a soporte.'
+    });
+  });
+
+
+  dz.on("errormultiple", function(files, errMsg) {
+    console.warn('[DZ] errormultiple:', errMsg);
+    $('#btnSubirArchivos').prop('disabled', false);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un problema al subir.Revisa  tu conexion de internet o Contacta  a Soporte de TalentSafe'
+    });
+  });
+});
+
+// Botón "Subir Archivos"
+$('#btnSubirArchivos').on('click', function() {
+  if (!dz) {
+    console.error('[DZ] no inicializada');
+    return;
+  }
+  // Validar nombres
+  const nombres = document.querySelectorAll('input[name="nombres_archivos[]"]');
+  for (let i = 0; i < nombres.length; i++) {
+    if (nombres[i].value.trim() === '') {
+      nombres[i].focus();
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nombre requerido',
+        text: 'Debes definir un nombre perzonalizado para cada archivo.'
+      });
+      return;
+    }
+  }
+
+  // Encola archivos en estado ADDED y procesa
+  const added = dz.getFilesWithStatus(Dropzone.ADDED);
+  if (added.length) dz.enqueueFiles(added);
+
+  const queued = dz.getQueuedFiles();
+  console.log('[DZ] queued:', queued.length);
+
+  if (queued.length) {
+    const $btn = $(this); // referencia al mismo botón
+    $btn.prop('disabled', true);
+
+    // callback que se ejecuta UNA sola vez y luego se desengancha
+    function habilitarDeNuevo() {
+      $btn.prop('disabled', false); // vuelve a habilitar
+      dz.off('queuecomplete', habilitarDeNuevo); // elimina el handler ⇒ “once”
+    }
+
+    dz.on('queuecomplete', habilitarDeNuevo); // registra el handler
+    dz.processQueue(); // dispara la subida
+  } else {
+    Swal.fire({
+      icon: 'info',
+      title: 'Sin archivos',
+      text: 'Carga al menos un archivo.'
+    });
+    return;
+  }
+
+});
+
+// Limpiar al cerrar el modal
+$('#modalCargaArchivos').on('hidden.bs.modal', function() {
+  if (dz) {
+    dz.removeAllFiles(true);
+    dz = null; // para re-inicializar limpio al volver a abrir
+  }
+  $('#dz-previews').empty();
+});
+
+
+$('#btnGuardarCambios').on('click', function() {
+
+  // 1. Empaquetar todo el formulario en FormData
+  const fd = new FormData(document.getElementById('frmReemplazo'));
+
+  // 2. Enviar vía AJAX
+  $.ajax({
+    url: $('#frmReemplazo').attr('action'), // «documentos_aspirantes/actualizar»
+    type: 'POST',
+    data: fd,
+    processData: false, // ← IMPORTANTE para FormData
+    contentType: false,
+    dataType: 'json',
+
+    success: resp => {
+
+      if (resp.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Documento actualizado',
+          timer: 1500,
+          showConfirmButton: false
+        });
+
+        // 2-a  Cerrar modales
+        $('#modalReemplazo').modal('hide');
+        $('#modalActualizarArchivos').modal('hide');
+
+        // 2-b  Refrescar la tabla SIN recargar página
+        if ($.fn.DataTable.isDataTable('#tablaDocsModal')) {
+          $('#tablaDocsModal').DataTable().ajax.reload(null, false);
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: resp.message
+        });
+      }
+    },
+
+    error: xhr => {
+      // Puedes mostrar el mensaje HTTP si lo necesitas:
+      // console.error(xhr.responseText);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'La petición falló.'
+      });
+    }
+  });
+
+});
+
+//////////////////////////////////////////////////////////////////////////////////
 document.getElementById('accion_aspirante').addEventListener('change', function() {
   var inputOtro = document.getElementById('otra_accion');
   if (this.value === 'otro') {
