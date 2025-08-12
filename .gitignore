@@ -28,6 +28,7 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /_clinico/*
 /_docs/*
 /_facturasdoping/*
+/_avisosPortal/*
 /_psicometria/*
 /_estudios/*
 /_beca/*
