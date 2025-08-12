@@ -397,6 +397,37 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="modalLinkRequisicion" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h5 class="modal-title">Links para formulario de Requisición</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="mb-2"><strong>Links generados</strong></div>
+        <div id="linksContainer" class="mb-3">
+          <em>Cargando…</em>
+        </div>
+
+      </div>
+      <input type="hidden" id="idClienteForLink">
+
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-outline-primary" id="btnGenerarLinkReq">
+          Generar/Actualizar
+        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- modal para bloquear al cliente -->
 <div class="modal fade" id="bloquearClienteModal" role="dialog" data-backdrop="static" data-keyboard="false">

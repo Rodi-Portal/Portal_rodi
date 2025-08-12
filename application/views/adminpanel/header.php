@@ -73,11 +73,13 @@
   <!-- JavaScript -->
 
   <?php
-      $CI           = &get_instance();
-      $idRol        = $CI->session->userdata('idrol');
-      $logo         = $CI->session->userdata('logo');
-      $aviso_actual = $CI->session->userdata('aviso');
-      $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
+      $CI                   = &get_instance();
+      $idRol                = $CI->session->userdata('idrol');
+      $logo                 = $CI->session->userdata('logo');
+      $aviso_actual         = $CI->session->userdata('aviso');
+      $terminos_condiciones = $CI->session->userdata('terminos');
+      $archivo              = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
+      $terminos             = $terminos_condiciones ? $terminos_condiciones : 'TM_TL_V1.pdf';
 
   ?>
 
@@ -379,7 +381,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -480,45 +482,109 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
         <!-- Modal -->
         <div class="modal fade" id="updateAvisoModal" tabindex="-1" role="dialog"
           aria-labelledby="updateAvisoModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <form id="form_aviso" enctype="multipart/form-data">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Actualizar Aviso de Privacidad</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header py-2">
+                <h5 class="modal-title">Documentos del portal</h5>
+                <button type="button" class="close" data-dismiss="modal"
+                  aria-label="Cerrar"><span>&times;</span></button>
+              </div>
+
+              <div class="modal-body">
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th style="width: 25%">Documento</th>
+                        <th>Actual / Por defecto</th>
+                        <th style="width: 35%">Cargar PDF</th>
+                        <th style="width: 20%">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- AVISO -->
+                      <tr id="row-aviso">
+                        <td><strong>Aviso para candidatos</strong></td>
+                        <td>
+                          <div id="estado-aviso" class="small"></div>
+                        </td>
+                        <td>
+                          <input type="file" id="file-aviso" accept="application/pdf" class="form-control-file">
+                        </td>
+                        <td class="text-nowrap">
+                          <!-- Guardar -->
+                  
+
+                          <button type="button" id="btn-save-aviso"
+                            class="btn btn-sm btn-link"
+                            data-toggle="tooltip" title="Guardar"
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
+                            <span class="fas fa-save"
+                              style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
+                              onmouseenter="this.style.transform='scale(1.1)';"
+                              onmouseleave="this.style.transform='none';">
+                            </span>
+                          </button>
+
+                          <!-- Eliminar -->
+                          <button type="button" id="btn-del-aviso"
+                            class="btn btn-sm btn-link"
+                            data-toggle="tooltip" title="Eliminar" disabled
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
+                            <span class="fas fa-trash-alt"
+                              style="font-size:2rem;color:#dc3545;margin-left: 25px">
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+
+                      <!-- TÉRMINOS -->
+                      <tr id="row-terminos">
+                        <td><strong>Términos y condiciones (requisiciones)</strong></td>
+                        <td>
+                          <div id="estado-terminos" class="small"></div>
+                        </td>
+                        <td>
+                          <input type="file" id="file-terminos" accept="application/pdf" class="form-control-file">
+                        </td>
+                        <td class="text-nowrap">
+                          <!-- Guardar -->
+                          <button type="button" id="btn-save-terminos" class="btn btn-sm btn-link" data-toggle="tooltip"
+                            title="Guardar"
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
+                            <span class="fas fa-save"
+                              style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
+                              onmouseenter="this.style.transform='scale(1.1)';"
+                              onmouseleave="this.style.transform='none';">
+                            </span>
+                          </button>
+
+                          <!-- Eliminar -->
+                          <button type="button" id="btn-del-terminos" class="btn btn-sm btn-link" data-toggle="tooltip"
+                            title="Eliminar" disabled
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
+                            <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545; margin-left: 25px">
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
 
-                <div class="modal-body">
-                  <div class="form-group">
-                    <label for="avisoPrivacidad">Selecciona el archivo PDF:</label>
-                    <input type="file" class="form-control-file" id="avisoPrivacidad" name="aviso"
-                      accept="application/pdf">
-                  </div>
-
-                  <div
-                    class="alert                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           <?php echo $aviso_actual ? 'alert-info' : 'alert-warning' ?>">
-                    <?php echo $aviso_actual
-                        ? 'Archivo actual:'
-                    : 'No se encontró un aviso cargado. Se usará este  aviso por defecto:' ?>
-
-
-                    <a href="<?php echo base_url('Avance/ver_aviso/' . $archivo); ?>" target="_blank">
-                      Ver aviso
-                    </a>
-
-                  </div>
-                </div>
-
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                  <button type="submit" class="btn btn-primary">Guardar</button>
+                <!-- Opcional: nota -->
+                <div class="text-muted small mt-2">
+                  Si no hay archivo cargado, se mostrará el documento por defecto.
                 </div>
               </div>
-            </form>
+
+              <div class="modal-footer py-2">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
           </div>
         </div>
+
 
 
         <!-- Modal Principal: Nuestros Proveedores Destacados -->
@@ -596,8 +662,166 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
         <!-- RutasVue-->
         <!--script src="< ?php echo base_url('public/vue/js/chunk-vendors.e32c3448.js'); ?>"></script -->
         <!-- End of Topbar -->
+        <script>
+        const DEFAULTS = {
+          aviso: 'AV_TL_V1.pdf',
+          terminos: 'TM_TL_V1.pdf'
+        };
+        const CSRF_NAME = '<?php echo $this->security->get_csrf_token_name();?>';
+        const CSRF_HASH = '<?php echo $this->security->get_csrf_hash();?>';
+        const VIEW_AVISO_BASE = '<?php echo base_url("Avance/ver_aviso/");?>';
+
+        function linkDoc(nombre) {
+          const safe = encodeURIComponent(nombre || '');
+          return `<a href="${VIEW_AVISO_BASE}${safe}" target="_blank">Ver documento</a>`;
+        }
+
+        function pintarEstado(tipo, actual, porDefecto) {
+          const has = !!actual;
+          const html = has ?
+            `Archivo actual: ${linkDoc(actual)}` :
+            `No hay archivo cargado. Se usará por defecto: ${linkDoc(porDefecto)}`;
+          const el = (tipo === 'aviso') ? $('#estado-aviso') : $('#estado-terminos');
+          el.html(html)
+            .removeClass('text-danger')
+            .toggleClass('text-muted', !has);
+          // habilitar/eliminar según haya actual
+          const delBtn = (tipo === 'aviso') ? $('#btn-del-aviso') : $('#btn-del-terminos');
+          delBtn.prop('disabled', !has);
+        }
+
+        function cargarDocumentos() {
+          // Trae nombres actuales desde backend
+          $.ajax({
+            url: '<?php echo base_url("Avance/documentos_info");?>',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              [CSRF_NAME]: CSRF_HASH
+            },
+            success: function(r) {
+              const aviso = r.aviso_actual ?? null;
+              const terminos = r.terminos_actual ?? null;
+              const defAviso = r.default_aviso || DEFAULTS.aviso;
+              const defTerm = r.default_terminos || DEFAULTS.terminos;
+
+              pintarEstado('aviso', aviso, defAviso);
+              pintarEstado('terminos', terminos, defTerm);
+            },
+            error: function() {
+              $('#estado-aviso, #estado-terminos').html(
+                '<span class="text-danger">Error al cargar estado.</span>');
+              $('#btn-del-aviso, #btn-del-terminos').prop('disabled', true);
+            }
+          });
+        }
+
+        // Abrir el modal → cargar estado
+        $('#updateAvisoModal').on('show.bs.modal', cargarDocumentos);
+
+        // Guardar (subir) — AVISO
+        $('#btn-save-aviso').on('click', function() {
+          const f = $('#file-aviso')[0].files[0];
+          if (!f) return Swal ? Swal.fire('Selecciona un PDF', '', 'warning') : alert('Selecciona un PDF');
+          subirDocumento('aviso', f);
+        });
+
+        // Guardar (subir) — TÉRMINOS
+        $('#btn-save-terminos').on('click', function() {
+          const f = $('#file-terminos')[0].files[0];
+          if (!f) return Swal ? Swal.fire('Selecciona un PDF', '', 'warning') : alert('Selecciona un PDF');
+          subirDocumento('terminos', f);
+        });
+
+        function subirDocumento(tipo, file) {
+          const fd = new FormData();
+          fd.append('tipo', tipo);
+          fd.append('archivo', file);
+          fd.append(CSRF_NAME, CSRF_HASH);
+
+          $.ajax({
+            url: '<?php echo base_url("Avance/documentos_guardar");?>',
+            type: 'POST',
+            data: fd,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            beforeSend: () => {
+              (tipo === 'aviso' ? $('#estado-aviso') : $('#estado-terminos')).html('Subiendo…');
+            },
+            success: function(r) {
+              if (r.error) {
+                Swal ? Swal.fire('Error', r.error, 'error') : alert(r.error);
+                return;
+              }
+              // limpiar input
+              (tipo === 'aviso' ? $('#file-aviso') : $('#file-terminos')).val('');
+              Swal ? Swal.fire('¡Guardado!', r.mensaje || 'Documento actualizado.', 'success') : alert(
+                'Documento actualizado.');
+              cargarDocumentos();
+            },
+            error: function() {
+              Swal ? Swal.fire('Error', 'No se pudo subir el documento.', 'error') : alert(
+                'No se pudo subir el documento.');
+              cargarDocumentos();
+            }
+          });
+        }
+
+        // Eliminar — AVISO
+        $('#btn-del-aviso').on('click', function() {
+          eliminarDocumento('aviso');
+        });
+
+        // Eliminar — TÉRMINOS
+        $('#btn-del-terminos').on('click', function() {
+          eliminarDocumento('terminos');
+        });
+
+        function eliminarDocumento(tipo) {
+          const go = () => {
+            $.ajax({
+              url: '<?php echo base_url("Avance/documentos_eliminar");?>',
+              type: 'POST',
+              dataType: 'json',
+              data: {
+                tipo: tipo,
+                [CSRF_NAME]: CSRF_HASH
+              },
+              success: function(r) {
+                if (r.error) {
+                  Swal ? Swal.fire('Error', r.error, 'error') : alert(r.error);
+                  return;
+                }
+                Swal ? Swal.fire('Eliminado', r.mensaje || 'Documento eliminado.', 'success') : alert(
+                  'Documento eliminado.');
+                cargarDocumentos();
+              },
+              error: function() {
+                Swal ? Swal.fire('Error', 'No se pudo eliminar.', 'error') : alert('No se pudo eliminar.');
+              }
+            });
+          };
+
+          if (window.Swal) {
+            Swal.fire({
+                icon: 'warning',
+                title: '¿Eliminar documento?',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+              })
+              .then(r => {
+                if (r.isConfirmed) go();
+              });
+          } else {
+            if (confirm('¿Eliminar documento?')) go();
+          }
+        }
+        </script>
 
         <script>
+        // tu visor sirve /Avance/ver/{archivo}
         $(document).on('click', '.open-contacto', function(e) {
           e.preventDefault();
 
@@ -835,6 +1059,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             }
           });
         });
+
         $('#form_aviso').submit(function(e) {
           e.preventDefault(); // Evitar el envío por defecto del formulario
 

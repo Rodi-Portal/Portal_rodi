@@ -22,7 +22,7 @@ class Cat_portales_model extends CI_Model
     {
         // Obtén el valor del portal desde la sesión
         $id_cliente = $this->session->userdata('idcliente');
-        $portal = $this->session->userdata('idPortal');
+        $portal     = $this->session->userdata('idPortal');
 
         try {
             // Construye la consulta
@@ -75,7 +75,7 @@ class Cat_portales_model extends CI_Model
 
         } catch (Exception $e) {
             // Registra y maneja cualquier excepción
-            log_message('error', 'Excepción en la consulta: ' . $e->getMessage());
+            //log_message('error', 'Excepción en la consulta: ' . $e->getMessage());
             return [];
         }
     }
@@ -148,7 +148,7 @@ class Cat_portales_model extends CI_Model
         $query = $this->db->get();
         // Loguear la consulta SQL generada
 
-        log_message('info', 'Consulta SQL en existe: ' . $this->db->last_query());
+        //log_message('info', 'Consulta SQL en existe: ' . $this->db->last_query());
         return $query->num_rows();
     }
 
@@ -161,105 +161,103 @@ class Cat_portales_model extends CI_Model
 
         $query = $this->db->get();
         // Loguear la consulta SQL generada
-        log_message('info', 'Consulta SQL en check: ' . $this->db->last_query());
+        //log_message('info', 'Consulta SQL en check: ' . $this->db->last_query());
         return $query->num_rows();
     }
 
     public function addPortal($portal, $datosFacturacion, $datosDomicilios, $datosGenerales, $uncode_password, $cliente)
-{
-    try {
-        // Iniciar la transacción
-        $this->db->trans_start();
+    {
+        try {
+            // Iniciar la transacción
+            $this->db->trans_start();
 
-        // Agregar los datos generales y obtener el ID
-        $id_datosGenerales = $this->generales_model->addDatosGenerales($datosGenerales);
-        if (!$id_datosGenerales) {
-            throw new Exception('Error al insertar datos generales');
-        }
+            // Agregar los datos generales y obtener el ID
+            $id_datosGenerales = $this->generales_model->addDatosGenerales($datosGenerales);
+            if (! $id_datosGenerales) {
+                throw new Exception('Error al insertar datos generales');
+            }
 
-        // Agregar los domicilios y obtener el ID
-        $id_domicilios = $this->generales_model->addDomicilios($datosDomicilios);
-        if (!$id_domicilios) {
-            throw new Exception('Error al insertar domicilios');
-        }
+            // Agregar los domicilios y obtener el ID
+            $id_domicilios = $this->generales_model->addDomicilios($datosDomicilios);
+            if (! $id_domicilios) {
+                throw new Exception('Error al insertar domicilios');
+            }
 
-        // Agregar los datos de facturación y obtener el ID
-        $id_datosFacturacion = $this->generales_model->addDatosFacturacion($datosFacturacion);
-        if (!$id_datosFacturacion) {
-            throw new Exception('Error al insertar datos de facturación');
-        }
+            // Agregar los datos de facturación y obtener el ID
+            $id_datosFacturacion = $this->generales_model->addDatosFacturacion($datosFacturacion);
+            if (! $id_datosFacturacion) {
+                throw new Exception('Error al insertar datos de facturación');
+            }
 
-        // Asignar los IDs obtenidos al portal
-        $portal['id_domicilios'] = $id_domicilios;
-        $portal['id_datos_facturacion'] = $id_datosFacturacion;
+            // Asignar los IDs obtenidos al portal
+            $portal['id_domicilios']        = $id_domicilios;
+            $portal['id_datos_facturacion'] = $id_datosFacturacion;
 
-        // Insertar el portal en la tabla correspondiente
-        $this->db->insert("portal", $portal);
-        $idPortal = $this->db->insert_id();
+            // Insertar el portal en la tabla correspondiente
+            $this->db->insert("portal", $portal);
+            $idPortal = $this->db->insert_id();
 
-        // Preparar datos para usuarios_portal
-        $usuario_portal = [
-            'id_portal' => $idPortal,
-            'creacion' => $portal['creacion'],
-            'edicion' => $portal['creacion'],
-            'id_usuario' => $portal['id_usuario'],
-            'id_datos_generales' => $id_datosGenerales,
-            'id_rol' => 6,
-        ];
+            // Preparar datos para usuarios_portal
+            $usuario_portal = [
+                'id_portal'          => $idPortal,
+                'creacion'           => $portal['creacion'],
+                'edicion'            => $portal['creacion'],
+                'id_usuario'         => $portal['id_usuario'],
+                'id_datos_generales' => $id_datosGenerales,
+                'id_rol'             => 6,
+            ];
 
-        // Insertar en usuarios_portal
-        $this->db->insert("usuarios_portal", $usuario_portal);
-        if ($this->db->affected_rows() <= 0) {
-            throw new Exception('Error al insertar en usuarios_portal: ' . print_r($this->db->error(), true));
-        }
-        $isUsuarioPortal = $this->db->insert_id();
+            // Insertar en usuarios_portal
+            $this->db->insert("usuarios_portal", $usuario_portal);
+            if ($this->db->affected_rows() <= 0) {
+                throw new Exception('Error al insertar en usuarios_portal: ' . print_r($this->db->error(), true));
+            }
+            $isUsuarioPortal = $this->db->insert_id();
 
-        // Actualizar el portal con el ID de usuario_portal
-        $data_portal = ['id_usuario_portal' => $isUsuarioPortal];
-        $this->editPortal($idPortal, $data_portal);
+            // Actualizar el portal con el ID de usuario_portal
+            $data_portal = ['id_usuario_portal' => $isUsuarioPortal];
+            $this->editPortal($idPortal, $data_portal);
 
-        // Preparar datos del cliente
-        $cliente['id_domicilios'] = $id_domicilios;
-        $cliente['id_datos_facturacion'] = $id_datosFacturacion;
-        $cliente['id_datos_generales'] = $id_datosGenerales;
-        $cliente['id_usuario'] = $isUsuarioPortal;
-        $cliente['clave'] = 'INT';
-        $cliente['id_portal'] = $idPortal;
+            // Preparar datos del cliente
+            $cliente['id_domicilios']        = $id_domicilios;
+            $cliente['id_datos_facturacion'] = $id_datosFacturacion;
+            $cliente['id_datos_generales']   = $id_datosGenerales;
+            $cliente['id_usuario']           = $isUsuarioPortal;
+            $cliente['clave']                = 'INT';
+            $cliente['id_portal']            = $idPortal;
 
-        // Insertar el cliente
-        $this->db->insert("cliente", $cliente);
-        if ($this->db->affected_rows() <= 0) {
-            throw new Exception('Error al insertar en cliente: ' . print_r($this->db->error(), true));
-        }
-        $idCliente = $this->db->insert_id();
-        $url = "Cliente_General/index/" . $idCliente;
-        $this->db->where('id', $idCliente)->update('cliente', ['url' => $url]);
+            // Insertar el cliente
+            $this->db->insert("cliente", $cliente);
+            if ($this->db->affected_rows() <= 0) {
+                throw new Exception('Error al insertar en cliente: ' . print_r($this->db->error(), true));
+            }
+            $idCliente = $this->db->insert_id();
+            $url       = "Cliente_General/index/" . $idCliente;
+            $this->db->where('id', $idCliente)->update('cliente', ['url' => $url]);
 
-        // Verificar si la transacción fue exitosa
-        if ($this->db->trans_status() === false) {
-            // Ocurrió un error durante la transacción, revertir los cambios
+            // Verificar si la transacción fue exitosa
+            if ($this->db->trans_status() === false) {
+                // Ocurrió un error durante la transacción, revertir los cambios
+                $this->db->trans_rollback();
+                return false;
+            }
+
+            // La transacción fue exitosa, completarla
+            $this->db->trans_commit();
+
+            // Envía el correo electrónico después de completar la transacción
+            $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode_password);
+
+            // Retornar el ID del cliente insertado
+            return $idPortal;
+
+        } catch (Exception $e) {
+            // Manejar la excepción si ocurre algún error
+            //log_message('error', 'Error en addPortal: ' . $e->getMessage());
             $this->db->trans_rollback();
             return false;
         }
-
-        // La transacción fue exitosa, completarla
-        $this->db->trans_commit();
-
-        // Envía el correo electrónico después de completar la transacción
-        $this->accesosUsuariosCorreo($datosGenerales['correo'], $uncode_password);
-
-        // Retornar el ID del cliente insertado
-        return $idPortal;
-
-    } catch (Exception $e) {
-        // Manejar la excepción si ocurre algún error
-        log_message('error', 'Error en addPortal: ' . $e->getMessage());
-        $this->db->trans_rollback();
-        return false;
     }
-}
-
-    
 
     public function addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos)
     {
@@ -285,7 +283,7 @@ class Cat_portales_model extends CI_Model
             // Transacción exitosa, retornar el ID del usuario insertado
             return $this->db->insert_id();
         } catch (Exception $e) {
-            log_message('error', 'Error en addUsuarioCliente: ' . $e->getMessage());
+            //log_message('error', 'Error en addUsuarioCliente: ' . $e->getMessage());
             return false;
         }
     }
@@ -305,17 +303,17 @@ class Cat_portales_model extends CI_Model
             $this->db->trans_start();
 
             // Editar los domicilios si se proporcionaron
-            if (!is_null($datosDomicilios) && !empty($datosDomicilios)) {
+            if (! is_null($datosDomicilios) && ! empty($datosDomicilios)) {
                 $this->generales_model->editDomicilios($portal['id_domicilios'], $datosDomicilios);
             }
 
             // Editar los datos de facturación si se proporcionaron
-            if (!is_null($datosFacturacion) && !empty($datosFacturacion)) {
+            if (! is_null($datosFacturacion) && ! empty($datosFacturacion)) {
                 $this->generales_model->editDatosFacturacion($portal['id_datos_facturacion'], $datosFacturacion);
             }
 
             // Actualizar el portal si se proporcionaron datos
-            if (!is_null($portal) && !empty($portal)) {
+            if (! is_null($portal) && ! empty($portal)) {
                 $this->db->where('id', $idPortal)->update('portal', $portal);
             }
 
@@ -332,7 +330,7 @@ class Cat_portales_model extends CI_Model
             return true;
         } catch (Exception $e) {
             // Manejar la excepción
-            log_message('error', 'Error en editPortal: ' . $e->getMessage());
+            //log_message('error', 'Error en editPortal: ' . $e->getMessage());
             return false;
         }
     }
@@ -484,12 +482,12 @@ class Cat_portales_model extends CI_Model
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
         $mail->isSMTP();
-        $mail->Host = 'mail.talentsafecontrol.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'soporte@talentsafecontrol.com';
-        $mail->Password = 'FQ{[db{}%ja-';
+        $mail->Host       = 'mail.talentsafecontrol.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'soporte@talentsafecontrol.com';
+        $mail->Password   = 'FQ{[db{}%ja-';
         $mail->SMTPSecure = 'ssl';
-        $mail->Port = 465;
+        $mail->Port       = 465;
 
         if ($correo !== null && $correo !== '') {
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
@@ -499,14 +497,14 @@ class Cat_portales_model extends CI_Model
         }
 
         $mail->Subject = $subject;
-        $mail->isHTML(true); // Enviar el correo como HTML
+        $mail->isHTML(true);      // Enviar el correo como HTML
         $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
-        $mail->Body = $message;
+        $mail->Body    = $message;
 
         if ($mail->send()) {
             return true;
         } else {
-            log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
+            //log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
             return false;
         }
     }
@@ -550,10 +548,98 @@ class Cat_portales_model extends CI_Model
             ->where('L.status', 1)
             ->where('P.status', 1)
             ->where('P.id', $id_portal); // Filtra por el ID del portal
-    
+
         $query = $this->db->get();
-    
+
         return $query->row(); // 👈 Esto es lo que te faltaba
+    }
+    public function getDocs($id_portal)
+    {
+        return $this->db->select('aviso, terminos')
+            ->from('portal')
+            ->where('id', (int) $id_portal)
+            ->get()->row();
+    }
+    public function updateDocs($id_portal, array $fields)
+    {
+        return $this->db->where('id', (int) $id_portal)->update('portal', $fields);
+    }
+
+    public function documentos_info()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id_portal = $this->session->userdata('idPortal');
+
+                                                               // Si ya tienes un método en el modelo que regresa 'aviso'
+        $row = $this->cat_portales_model->getDocs($id_portal); // debe devolver columna 'aviso' (o null)
+
+        $aviso_actual  = $row ? ($row->aviso ?? null) : null;
+        $default_aviso = 'AV_TL_V1.pdf'; // <-- tu default
+
+        $archivo_mostrar = $aviso_actual ?: $default_aviso;
+
+        echo json_encode([
+            'aviso_actual'  => $aviso_actual,    // null si no hay
+            'default_aviso' => $default_aviso,   // siempre
+            'aviso_mostrar' => $archivo_mostrar, // lo que se debe mostrar
+            'aviso_url'     => base_url('Avance/ver_aviso/' . rawurlencode($archivo_mostrar)),
+            'status'        => 'ok',
+        ]);
+    }
+
+    public function documentos_guardar()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id_portal = $this->session->userdata('idPortal');
+        $tipo      = $this->input->post('tipo'); // 'aviso'|'terminos'
+        if (! in_array($tipo, ['aviso', 'terminos'], true)) {echo json_encode(['error' => 'Tipo inválido']);return;}
+
+        if (empty($_FILES['archivo']['name'])) {echo json_encode(['error' => 'Selecciona un PDF']);return;}
+        if (mime_content_type($_FILES['archivo']['tmp_name']) !== 'application/pdf') {
+            echo json_encode(['error' => 'El archivo debe ser PDF']);return;
+        }
+
+        $dir = FCPATH . 'uploads/docs_portal/' . $id_portal . '/';
+        if (! is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+
+        $filename = $tipo . '_' . date('Ymd_His') . '.pdf';
+        if (! move_uploaded_file($_FILES['archivo']['tmp_name'], $dir . $filename)) {
+            echo json_encode(['error' => 'No se pudo mover el archivo']);return;
+        }
+
+        $this->cat_portales_model->updateDocs($id_portal, [$tipo => $filename]);
+
+        echo json_encode([
+            'status'  => 'success',
+            'mensaje' => ucfirst($tipo) . ' actualizado.',
+            'archivo' => $filename,
+        ]);
+    }
+
+    public function documentos_eliminar()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id_portal = $this->session->userdata('idPortal');
+        $tipo      = $this->input->post('tipo');
+        if (! in_array($tipo, ['aviso', 'terminos'], true)) {echo json_encode(['error' => 'Tipo inválido']);return;}
+
+        $row     = $this->cat_portales_model->getDocs($id_portal);
+        $current = $row ? ($row->{$tipo} ?? null) : null;
+        if (! $current) {echo json_encode(['error' => 'No hay archivo para eliminar']);return;}
+
+        $path = FCPATH . 'uploads/docs_portal/' . $id_portal . '/' . $current;
+        if (is_file($path)) {
+            @unlink($path);
+        }
+
+        $this->cat_portales_model->updateDocs($id_portal, [$tipo => null]);
+
+        echo json_encode(['status' => 'success', 'mensaje' => ucfirst($tipo) . ' eliminado.']);
     }
 
 }
