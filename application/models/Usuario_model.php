@@ -144,10 +144,13 @@ class Usuario_model extends CI_Model
              UCL.privacidad,
              CL.ingles,
              CL.id_portal,
-             P.bloqueado')
+             P.bloqueado,
+             P.tipo_bolsa,
+             LC.link')
             ->from('usuarios_clientes as UCL')
             ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
             ->join('cliente  as CL', ' CL.id = UCL. id_cliente')
+             ->join('links_clientes  as LC', ' CL.id = LC.id_cliente')
             ->join('portal AS P', 'P.id = CL.id_portal')
             ->where('DG.correo', $correo)
             ->where('CL.status', 1)

@@ -1175,33 +1175,109 @@ color: white;
   transform: scale(1.05);  /* Efecto de aumento al pasar el cursor */
 }
 
-.card-proceso {
-  width: 80%;
-  border: 2px solid #007bff;  /* Borde azul para distinguir cada card */
-  border-radius: 8px;  /* Bordes redondeados */
-  padding: 20px;  /* Espaciado interno */
-  margin-bottom: 20px;  /* Espaciado entre cards */
-  background-color: #f8f9fa;  /* Fondo claro */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Sombra sutil */
-  transition: all 0.3s ease;  /* Transición suave para los efectos */
-  cursor: pointer;  /* Cambiar el cursor a mano cuando pasa el mouse */
+/* Contenedor principal de la vacante */
+.vacante-card {
+  width: 95%;
+  background: #fff;
+  border: 1px solid #e4e8f1;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  transition: box-shadow .2s ease, transform .2s ease;
 }
+.vacante-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,.08); transform: translateY(-1px); }
 
-.card-proceso:hover {
-  border-color: #0056b3;  /* Cambiar el borde a azul más oscuro al pasar el mouse */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  /* Aumentar la sombra */
+/* Encabezado/botón de acción */
+.vacante-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9f5ee;
+  color: #0f5132;
+  border: 1px solid #198754;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  cursor: pointer;
 }
+.vacante-head:hover { background: #dff3ea; }
 
-.card-proceso:active {
-  border-color: #004085;  /* Cambiar el borde a un tono más oscuro cuando el card se hace clic */
-  transform: scale(0.98);  /* Efecto de reducción al hacer clic, simulando la acción */
+/* Título y estatus */
+.vacante-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
 }
-
-.card-title {
-  font-weight: bold;
+.vacante-nombre-label {
+  font-size: .9rem;
+  color: #6b7280; /* gris medio */
+  font-weight: 600;
+}
+.vacante-puesto {
   font-size: 1.2rem;
-  margin-bottom: 15px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: .2px;
+  text-transform: uppercase;
 }
+
+/* Estatus con color según valor */
+.vacante-status {
+  font-size: .95rem;
+  margin-bottom: 12px;
+}
+.vacante-status .tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.tag--iniciada  { background:#e8f3ff; color:#1d4ed8; border:1px solid #93c5fd; }
+.tag--pendiente { background:#fff7ed; color:#c2410c; border:1px solid #fdba74; }
+
+/* Grid de atributos (plan, método, etc.) */
+.vacante-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 6px 14px;
+  margin-bottom: 12px;
+}
+.kv-label {
+  font-size: .85rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+.kv-value {
+  font-size: .95rem;
+  color: #111827;
+  font-weight: 600;
+}
+.kv-value b { font-weight: 700; }
+
+/* Badges secundarios */
+.badge-soft {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-weight: 600;
+  margin-right: 8px;
+  margin-bottom: 6px;
+}
+
+/* Fechas al pie */
+.vacante-fechas {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: #6b7280;
+  font-size: .9rem;
+}
+.vacante-fechas .muted { color: #9ca3af; }
+
 /* agregando   estilos para  el cambio de logo   */
 /* Estilos básicos */
 #imagePreview {

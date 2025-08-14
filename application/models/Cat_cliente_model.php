@@ -16,6 +16,18 @@ class Cat_cliente_model extends CI_Model
         $query = $this->db->get();
         return $query->num_rows();
     }
+
+    public function traerClientes($portal)
+    {
+        $this->db
+            ->select("c.id")
+            ->from('cliente as c')
+            ->where('c.id_portal', $portal)
+            ->where('c.eliminado', 0);
+
+        $query = $this->db->get();
+        return $query->result();
+    }
     public function getClienteValido()
     {
         // Obtén el valor del portal desde la sesión
@@ -375,15 +387,15 @@ class Cat_cliente_model extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
-      public function getAccesossucursalesActivas($id_portal)
+    public function getAccesossucursalesActivas($id_portal)
     {
         $this->db
             ->select("cli.id as idCliente, cli.nombre")
             ->from("cliente AS cli")
             ->join("portal p", "p.id = cli.id_portal")
-          
+
             ->where("cli.eliminado", 0)
-        
+
             ->where("cli.id_portal", $id_portal); // más seguro
 
         $query = $this->db->get();

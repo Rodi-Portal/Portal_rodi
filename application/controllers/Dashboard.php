@@ -162,6 +162,7 @@ class Dashboard extends CI_Controller
     public function header_cliente()
     {
         $id_cliente           = $this->session->userdata('idcliente');
+        $tipo_bolsa           = $this->session->userdata('tipo_bolsa');
         $id_portal            = $this->session->userdata('idPortal');
         $ingles               = $this->session->userdata('ingles');
         $data['translations'] = $this->lang->language;
@@ -221,6 +222,8 @@ class Dashboard extends CI_Controller
     {
         $id_cliente = $this->session->userdata('idcliente');
         $ingles     = $this->session->userdata('ingles');
+        $tipo_bolsa = $this->session->userdata('tipo_bolsa');
+        $link     = $this->session->userdata('link');
 
         // Cargar el idioma
         if ($ingles == 1) {
@@ -230,10 +233,15 @@ class Dashboard extends CI_Controller
         }
 
         // Obtener datos del cliente
+        $data['link']     =  $link;
+        $data['tipo_bolsa']    = $tipo_bolsa;
         $data['translations']     = $this->lang->language;
         $modal['translations']    = $this->lang->language;
         $data['modals']           = $this->load->view('modals/clientes/mdl_panel', $modal, true);
+      
         $data['procesosActuales'] = $this->cliente_model->get_current_procedures2();
+
+        
         $datos['cliente']         = $this->cat_cliente_model->getClienteValido();
 
                                   // Verificar si hay campos vacíos

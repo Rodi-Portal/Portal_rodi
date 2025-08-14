@@ -72,10 +72,6 @@
   <script src="<?php echo base_url(); ?>js/input-mask/jquery.inputmask.extensions.js"></script>
 </head>
 
-
-
-
-
 <body id="page-top">
   <!-- JavaScript -->
   <?php
@@ -84,14 +80,13 @@
       $id_cliente   = $CI->session->userdata('idcliente');
       $logo         = $CI->session->userdata('logo');
       $aviso_actual = $CI->session->userdata('aviso');
-      $archivo      = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
-  ?>
+      $tipo_bolsa = $this->session->userdata('tipo_bolsa');
 
+  ?>
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
       <!-- Sidebar - Brand -->
       <?php if ($logo == null) {
               $logo = 'logo_nuevo.png';
@@ -100,7 +95,6 @@
         <img style="max-width: 220px; max-height: 150px; background: white;"
           src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>" alt="Logo">
       </a>
-
       <hr class="sidebar-divider my-0">
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
@@ -111,7 +105,6 @@
               <img class="img-profile rounded-circle" src="<?php echo base_url(); ?>img/user.png"
                 style="width: 40px; height: 40px;">
             </div>
-
             <!-- Columna del texto -->
             <div class="ml-3">
               <span class="d-none d-lg-inline text-white font-weight-bold" style="font-size: 14px;">
@@ -120,7 +113,6 @@
             </div>
           </div>
         </a>
-
         <div id="collapseUsuario" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="<?php echo base_url(); ?>Login/logout">
@@ -131,7 +123,6 @@
         </div>
       </li>
       <!-- Divider -->
-
 
       <!-- Manual de Usuario -->
 
@@ -151,7 +142,6 @@
           <i class="fas fa-users"></i> Reclutamiento
         </a>
 
-
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -160,7 +150,6 @@
           onclick="loadSection('seccion-pre-employment', '<?php echo site_url('Cliente_General/descripcionesCliente/2'); ?>')">
           <i class="fas fa-user-clock"></i> Preempleo
         </a>
-
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -169,7 +158,6 @@
           onclick="loadSection('seccion-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/3'); ?>')">
           <i class="fas fa-user-check"></i> Empleados
         </a>
-
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -178,9 +166,7 @@
           onclick="loadSection('seccion-former-employees', '<?php echo site_url('Cliente_General/descripcionesCliente/4'); ?>')">
           <i class="fas fa-user-times"></i> Exempleadoss
         </a>
-
       </li>
-
       <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
         <i class="fa fa-bars"></i>
       </button>
@@ -242,7 +228,7 @@
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:  <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -394,6 +380,7 @@
         let url_psicometria = '<?php echo base_url(); ?>_psicometria/';
         let url_clinico = '<?php echo base_url(); ?>_clinico/';
         let idioma = '<?php echo $this->session->userdata('ingles') ?>';
+      
         let id_cliente = '<?php echo $this->session->userdata('idcliente') ?>';
         let url_paises = '<?php echo base_url("Funciones/getPaises"); ?>'
         let url_subclientes = '<?php echo base_url("Subcliente/get_all"); ?>'

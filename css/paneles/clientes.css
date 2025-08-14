@@ -270,12 +270,7 @@ td{ vertical-align: middle !important; }
   align-self: auto;
   order: 0;
 }
-.card-proceso { padding: 5px; }
-.card-proceso:hover { background-color: #f2f6ff; }
-.card-proceso-active { background-color: #f2f6ff; border: 1px solid blue; border-radius: 10px; }
-.dropstart .dropdown-toggle::before { display: none !important; }
-.btn-acciones { top: 3%; right: 3%;}
-.div-candidato { cursor: pointer; }
+
 
 .step {
   display: flex;
@@ -297,6 +292,7 @@ td{ vertical-align: middle !important; }
   width: 100%;
   z-index: 0;
 }
+
 .step .step-item .step-item-link {
   color: #69707a;
   position: relative;

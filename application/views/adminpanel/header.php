@@ -105,7 +105,7 @@ echo $token  */?>
       <br><br>
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
-      <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+      <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10 || $idRol == 4) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
           aria-expanded="true" aria-controls="collapseUsuario">

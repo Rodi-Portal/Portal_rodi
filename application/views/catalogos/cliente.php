@@ -7,8 +7,15 @@
       <div class="col-sm-12 col-md-8">
         <h2>Administración de Sucursales</h1>
       </div>
-
-      <div class="col-sm-12 col-md-3">
+      <div class="col-sm-12 col-md-3 d-flex justify-content-between">
+        <?php if ($tipo_bolsa == 1) {?>
+        <a href="#" class="btn btn-info btn-icon-split mr-2" onclick="generarLinkstodos(event)">
+          <span class="icon text-white-50">
+            <i class="fas fa-user-tie"></i>
+          </span>
+          <span class="text">Crear/actualizar Links</span>
+        </a>
+        <?php }?>
         <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newModal"
           onclick="registrarCliente()">
           <span class="icon text-white-50">
@@ -17,6 +24,8 @@
           <span class="text">Crear Sucursal</span>
         </a>
       </div>
+
+
       <!-- div class="col-sm-12 col-md-2" style="display: none;">
         <a href="#" class="btn btn-primary btn-icon-split" onclick="registrarAccesoCliente()">
           <span class="icon text-white-50">
@@ -342,6 +351,7 @@ $(document).ready(function() {
       });
 
       function cargarLinks(idCliente) {
+        
         $('#linksContainer').html('<em>Cargando…</em>');
 
         $.ajax({
@@ -522,6 +532,8 @@ $(document).ready(function() {
         }, 200);
       }
 
+      
+
       function generarTabla(datos) {
         let salida = `<table class="table table-striped">
                     <thead>
@@ -640,6 +652,41 @@ $(document).ready(function() {
   });
 
 });
+function generarLinkstodos(e) {
+        if (e) e.preventDefault();
+
+        var $btn = $('#btnGenerarLinks');
+        var url = '<?php echo base_url('Cat_Cliente/generarLinksTodos'); ?>';
+
+        $.ajax({
+          url: url,
+          method: 'POST',
+          dataType: 'json',
+          // Si necesitas enviar datos, agrégalos aquí:
+          // data: { id_portal: '<?php echo $this->session->userdata('idPortal'); ?>' },
+          beforeSend: function() {
+            $btn.prop('disabled', true).addClass('disabled');
+          },
+          success: function(res) {
+            if (res && res.success) {
+              // Éxito (puedes usar SweetAlert si ya lo usas)
+              console.log('OK:', res);
+              alert(res.message || 'Proceso completado');
+              // Si quieres refrescar tabla/listado:
+              // location.reload();
+            } else {
+              alert(res?.message || 'No fue posible completar la operación.');
+            }
+          },
+          error: function(xhr) {
+            console.error('Error AJAX:', xhr.responseText || xhr.statusText);
+            alert('Ocurrió un error al procesar la solicitud.');
+          },
+          complete: function() {
+            $btn.prop('disabled', false).removeClass('disabled');
+          }
+        });
+      }
 
 function cargarDatosDomicilioGeneral(datos) {
   var auth_token = "MUJkuDQTBwg6L_OLJghlvf5LDwdas3Tnm5EaF3Kny_7GIUXTah_7nbuE-K15HdxxTxo";

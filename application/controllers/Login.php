@@ -153,6 +153,8 @@ class Login extends CI_Controller
                         "ingles"       => $cliente->ingles,
                         "espectador"   => $cliente->espectador,
                         "logueado"     => true,
+                        "tipo_bolsa"   => $cliente->tipo_bolsa,
+                        "link"        => $cliente->link,
                     ];
 
                     /*    echo '<pre>';
@@ -175,6 +177,8 @@ class Login extends CI_Controller
                         'ip'           => $_SERVER['REMOTE_ADDR'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'],
                         'ingreso'      => date('Y-m-d H:i:s'),
                     ];
+                    
+
                     $this->usuario_model->addSesion($sesion);
                     $ver = $cliente->verificacion;
                     if ($this->session->userdata('tipo') == 2) {
