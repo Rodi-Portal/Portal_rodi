@@ -838,7 +838,7 @@ function loadInternos(url1) {
             className: 'text-center',
             mRender: function(data, type, full) {
               return full.nombreCompleto +
-                '<br><br><button class="btn btn-success btn-sm" onclick="confirmAction(' +
+                '<br><br><button class="btn btn-success btn-sm" onclick="confirmActionInterno(' +
                 full.id + ')">Enviar a Empleados</button>';
               // reclutador;
             } // Centrado de contenido
@@ -2162,6 +2162,133 @@ function changeDatatable(url1) {
   });
 }
 
+// Llama a esta función con el ID del candidato
+function confirmActionInterno(id) {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Enviarás este candidato al módulo de Empleados.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, continuar',
+    cancelButtonText: 'No, cancelar',
+    reverseButtons: true
+  }).then((res) => {
+    if (!res.isConfirmed) return;
+    abrirModalSucursales(id);
+  });
+}
+
+// Abre el modal y carga sucursales por AJAX
+function abrirModalSucursales(idCandidato) {
+  const $modal  = $('#modalSucursal');
+  const $select = $('#sucursalSelect');
+  const $loader = $('#sucursalesLoader');
+  const $err    = $('#sucursalesError');
+
+  $select.empty().append('<option value="" selected disabled>— elige una sucursal —</option>');
+  $err.hide().text('');
+  $loader.show();
+
+  // OJO: Ajusta el controlador según el tuyo real (CandidatoEmpresa / Sucursal)
+  const urlSucursales = '<?php echo base_url('CandidatoEmpresa/getActivas'); ?>';
+
+  $.ajax({
+    url: urlSucursales,
+    method: 'GET',
+    dataType: 'json'
+  })
+  .done(function(resp) {
+    $loader.hide();
+
+    // Admite tanto {success:true,data:[...]} como un arreglo directo
+    const data = Array.isArray(resp) ? resp
+               : Array.isArray(resp?.data) ? resp.data
+               : [];
+
+    if (data.length === 0) {
+      $err.text('No hay sucursales disponibles.').show();
+      return;
+    }
+
+    // Tu backend devuelve { idCliente, nombre }
+    data.forEach(function(s) {
+      $select.append(
+        $('<option>', { value: s.idCliente, text: s.nombre })
+      );
+    });
+
+    // Abrir modal (Bootstrap 5)
+    const bsModal = new bootstrap.Modal($modal[0]);
+    bsModal.show();
+  })
+  .fail(function(xhr) {
+    $loader.hide();
+    $err.text(xhr.responseJSON?.message || 'Error al cargar sucursales.').show();
+  });
+
+  // Click en "Enviar a Empleados"
+  $('#btnEnviarEmpleado').off('click').on('click', function() {
+    const sucursalId = $select.val();
+    if (!sucursalId) {
+      $err.text('Selecciona una sucursal.').show();
+      return;
+    }
+
+    enviarInternoEmpleado(idCandidato, sucursalId).then(function() {
+      const inst = bootstrap.Modal.getInstance($modal[0]);
+      inst && inst.hide();
+    });
+  });
+}
+
+// POST final: id + sucursal_id
+function enviarInternoEmpleado(idCandidato, sucursalId) {
+  // Corrige el typo: Emplesa -> Empresa
+  const urlEnviar = '<?php echo base_url('CandidatoEmpresa/enviarInternoEmpleado'); ?>';
+
+  Swal.fire({
+    title: 'Procesando...',
+    text: 'Enviando candidato',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  return $.ajax({
+    url: urlEnviar,
+    method: 'POST',
+    dataType: 'json',
+    data: {
+      id: idCandidato,
+      sucursal_id: sucursalId
+    }
+  })
+  .done(function(data) {
+    if (data?.success) {
+      Swal.fire({
+        title: '¡Éxito!',
+        text: 'Candidato procesado correctamente.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
+      }).then(r => { if (r.isConfirmed) location.reload(); });
+    } else {
+      Swal.fire({
+        title: 'Error',
+        text: data?.error || 'Ocurrió un error al procesar el candidato.',
+        icon: 'error'
+      });
+    }
+  })
+  .fail(function(xhr) {
+    Swal.fire({
+      title: 'Error',
+      text: xhr.responseJSON?.message || 'Hubo un problema con la solicitud. Intenta de nuevo.',
+      icon: 'error'
+    });
+    console.error('Error al realizar la solicitud:', xhr);
+  });
+}
+
+
 function confirmAction(id) {
   // Muestra la alerta de confirmación con SweetAlert
   Swal.fire({
@@ -2174,7 +2301,9 @@ function confirmAction(id) {
     reverseButtons: true
   }).then((result) => {
     if (result.isConfirmed) {
+
       // Si el usuario confirma, realiza la solicitud AJAX
+
       var urlFiltrada = '<?php echo API_URL ?>candidato-send/' + id;
 
       $.ajax({
@@ -5472,71 +5601,76 @@ function eliminarArchivo(idDoc, archivo, id_candidato) {
     }
   });
 }
+
 function eliminarCandidato(idCandidato) {
-    // Primera confirmación
-    Swal.fire({
-        title: '¿Estás seguro?',
-        text: '¿Deseas eliminar al candidato y todos sus documentos relacionados?',
-        icon: 'warning',
+  // Primera confirmación
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: '¿Deseas eliminar al candidato y todos sus documentos relacionados?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminarlo',
+    cancelButtonText: 'No, cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Segunda confirmación
+      Swal.fire({
+        title: 'Confirmación final',
+        text: 'Esta acción es irreversible. ¿Realmente deseas eliminar al candidato?',
+        icon: 'error',
         showCancelButton: true,
-        confirmButtonText: 'Sí, eliminarlo',
+        confirmButtonText: 'Sí, eliminar definitivamente',
         cancelButtonText: 'No, cancelar',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Segunda confirmación
-            Swal.fire({
-                title: 'Confirmación final',
-                text: 'Esta acción es irreversible. ¿Realmente deseas eliminar al candidato?',
+      }).then((finalResult) => {
+        if (finalResult.isConfirmed) {
+          // Realizar solicitud AJAX
+          $.ajax({
+            url: '<?php echo base_url('Candidato/eliminarCandidatoInterno'); ?>',
+            method: 'POST',
+            data: {
+              'id': idCandidato
+            },
+            beforeSend: function() {
+              $('.loader').css("display", "block");
+            },
+            success: function(response) {
+              setTimeout(function() {
+                $('.loader').fadeOut();
+              }, 200);
+              var data = JSON.parse(response);
+              if (data.codigo === 1) {
+                Swal.fire({
+                  position: 'center',
+                  icon: 'success',
+                  title: 'Candidato eliminado correctamente',
+                  showConfirmButton: false,
+                  timer: 2500
+                });
+                $('#fila' + idCandidato).remove();
+              } else {
+                Swal.fire({
+                  position: 'center',
+                  icon: 'error',
+                  title: 'Hubo un problema al eliminar, intenta más tarde',
+                  showConfirmButton: false,
+                  timer: 2500
+                });
+              }
+            },
+            error: function() {
+              Swal.fire({
+                position: 'center',
                 icon: 'error',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar definitivamente',
-                cancelButtonText: 'No, cancelar',
-            }).then((finalResult) => {
-                if (finalResult.isConfirmed) {
-                    // Realizar solicitud AJAX
-                    $.ajax({
-                        url: '<?php echo base_url('Candidato/eliminarCandidatoInterno'); ?>',  
-                        method: 'POST',
-                        data: { 'id': idCandidato },
-                        beforeSend: function() {
-                            $('.loader').css("display", "block");
-                        },
-                        success: function(response) {
-                            setTimeout(function() { $('.loader').fadeOut(); }, 200);
-                            var data = JSON.parse(response);
-                            if (data.codigo === 1) {
-                                Swal.fire({
-                                    position: 'center',
-                                    icon: 'success',
-                                    title: 'Candidato eliminado correctamente',
-                                    showConfirmButton: false,
-                                    timer: 2500
-                                });
-                                $('#fila' + idCandidato).remove();
-                            } else {
-                                Swal.fire({
-                                    position: 'center',
-                                    icon: 'error',
-                                    title: 'Hubo un problema al eliminar, intenta más tarde',
-                                    showConfirmButton: false,
-                                    timer: 2500
-                                });
-                            }
-                        },
-                        error: function() {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'error',
-                                title: 'Error en la conexión con el servidor',
-                                showConfirmButton: false,
-                                timer: 2500
-                            });
-                        }
-                    });
-                }
-            });
+                title: 'Error en la conexión con el servidor',
+                showConfirmButton: false,
+                timer: 2500
+              });
+            }
+          });
         }
-    });
+      });
+    }
+  });
 }
 
 

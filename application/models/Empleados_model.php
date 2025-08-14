@@ -38,7 +38,6 @@ class Empleados_model extends CI_Model
 
         $query = $this->db->get();
 
-    
         if ($query->num_rows() > 0) {
             return $query->result();
 
@@ -55,7 +54,6 @@ class Empleados_model extends CI_Model
         }, $sucursales);
 
         // Solo para depuración (puedes quitar esto después)
-     
 
         // Realizar la consulta
         $this->db
@@ -65,7 +63,6 @@ class Empleados_model extends CI_Model
             ->order_by('id', 'ASC');
 
         $query = $this->db->get();
-        
 
         if ($query->num_rows() > 0) {
             return $query->result();
@@ -77,10 +74,8 @@ class Empleados_model extends CI_Model
     {
 
         // Extraer solo los IDs de las sucursales
-      
 
         // Solo para depuración (puedes quitar esto después)
-     
 
         // Realizar la consulta
         $this->db
@@ -90,7 +85,6 @@ class Empleados_model extends CI_Model
             ->order_by('id', 'ASC');
 
         $query = $this->db->get();
-        
 
         if ($query->num_rows() > 0) {
             return $query->result();
@@ -98,12 +92,23 @@ class Empleados_model extends CI_Model
             return false;
         }
     }
+
+    public function updateEmpleado($id, $data)
+    {
+        // Asegúrate de que $data sea un array asociativo con las columnas y valores
+        if (! empty($data) && is_array($data)) {
+            $this->db->where('id', $id);
+            return $this->db->update('empleados', $data);
+        }
+
+        return false; // Si $data está vacío o no es array
+    }
     /*
     echo '<pre>';
         print_r($query->result());
         echo '</pre>';
         die();
         
-    */ 
+    */
 
 }

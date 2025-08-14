@@ -11,9 +11,10 @@ class Reclutamiento_model extends CI_Model
     {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-            ->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre")
+            ->select("R.id as idReq,  R.creacion as creacionReq, RI.*, RI.telefono as telIntake, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre")
             ->from('requisicion as R')
             ->join('usuarios_portal as U', 'U.id = R.id_usuario', 'left')
+            ->join('requisicion_intake  as RI', 'RI.id = R.id_intake', 'left')
             ->join('datos_generales as GENUS', 'U.id_datos_generales = GENUS.id', 'left')
             ->join('cliente as CL', 'R.id_CLiente = CL.id', 'left')
             ->join('datos_generales as GENCL', 'CL.id_datos_generales = GENCL.id', 'left')
@@ -36,6 +37,7 @@ class Reclutamiento_model extends CI_Model
             return false;
         }
     }
+
     public function getOrdersByUser($id_usuario, $sort, $id_order, $condition_order)
     {
         $id_portal = $this->session->userdata('idPortal');
@@ -331,6 +333,23 @@ class Reclutamiento_model extends CI_Model
 
         return $consulta->row();
     }
+    public function get_active_links()
+    {
+        // Tomamos el idPortal de la sesión
+        $idPortal = (int) $this->session->userdata('idPortal');
+
+        // Consulta
+        $this->db->select('c.nombre, lc.link, lc.qr');
+        $this->db->from('cliente c');
+        $this->db->join('links_clientes lc', 'lc.id_cliente = c.id', 'inner');
+        $this->db->where('c.id_portal', $idPortal);
+        $this->db->order_by('c.nombre', 'ASC');
+
+        $query = $this->db->get();
+
+        // Retornamos resultado como arreglo
+        return $query->result_array();
+    }
     /*----------------------------------------*/
     /*    Acciones
     /*----------------------------------------*/
@@ -604,6 +623,65 @@ class Reclutamiento_model extends CI_Model
             ->where('id', $id)
             ->update('requisicion', $data);
     }
+    // application/models/Reclutamiento_model.php
+    public function updateIntakeByReq($idReq, array $data)
+    {
+        if (! $idReq) {
+            return false;
+        }
+
+        // Asegura el portal del usuario
+        $id_portal = $this->session->userdata('idPortal');
+
+        // 1) Busca el id_intake asociado a la requisición
+        $row = $this->db->select('R.id_intake')
+            ->from('requisicion AS R')
+            ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
+            ->where('R.id', $idReq)
+            ->where('CL.id_portal', $id_portal) // mismo criterio que usas en SELECTs
+            ->get()->row();
+
+        if (! $row) {
+            return false;
+        }
+
+        $idIntake = (int) $row->id_intake;
+        if (! $idIntake) {
+            // si no hay intake, no actualizamos (o podrías decidir crearlo)
+            return false;
+        }
+
+        // 2) Actualiza requisicion_intake
+        $this->db->trans_start();
+        $this->db->where('id', $idIntake)->update('requisicion_intake', $data);
+        $ok = $this->db->affected_rows() >= 0; // >=0 por si no cambió nada
+
+        // (Opcional) si quieres sincronizar algunos datos espejo:
+        // - puesto/plan en requisicion
+        // if (isset($data['plan']) && $data['plan'] !== '') {
+        //     $this->db->where('id', $idReq)->update('requisicion', ['puesto' => $data['plan']]);
+        // }
+
+        // - teléfono/email a datos_generales del cliente (hazlo con cuidado)
+        // $this->db->query("UPDATE datos_generales DG
+        //     JOIN cliente CL ON CL.id_datos_generales = DG.id
+        //     JOIN requisicion R ON R.id_cliente = CL.id
+        //     SET DG.telefono = COALESCE(?, DG.telefono),
+        //         DG.correo   = COALESCE(?, DG.correo)
+        //     WHERE R.id = ?",
+        //     [ $data['telefono'] ?? null, $data['email'] ?? null, $idReq ]
+        // );
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
+            log_message('error', 'updateIntakeByReq TX failed: ' . $this->db->last_query());
+            return false;
+        }
+
+        return $ok;
+    }
+
     public function updateOrderGenerales($data, $id)
     {
         $this->db
@@ -648,7 +726,7 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("RU.id, RU.id_requisicion, CONCAT(GEN.nombre,' ',GEN.paterno) as usuario")
+            ->select("RU.id , RU.id_requisicion, CONCAT(GEN.nombre,' ',GEN.paterno) as usuario")
             ->from('requisicion_usuario as RU')
             ->join('requisicion as R', 'RU.id_requisicion = R.id', 'left')
             ->join('usuarios_portal as U', 'U.id = RU.id_usuario', 'left')
@@ -700,6 +778,36 @@ class Reclutamiento_model extends CI_Model
         $consulta = $this->db->get();
         return $consulta->row();
     }
+
+    public function getDetailsOrderByIdIntake($id)
+    {
+        $id       = (int) $id; // por seguridad
+        $idPortal = $this->session->userdata('idPortal');
+
+        $this->db
+            ->select('
+            R.id AS idReq,
+            RI.*,
+            R.puesto,
+            R.creacion AS creacionR,
+            R.zona_trabajo,
+            R.experiencia,
+            CL.nombre AS nombre_c
+        ')
+            ->from('requisicion AS R')
+            ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
+            ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')
+            ->where('CL.id_portal', $idPortal)
+            ->where('R.eliminado', 0)
+            ->where('R.id', $id)
+        // si quieres asegurar que sea intake:
+            ->where('R.id_intake IS NOT NULL', null, false)
+        ;
+
+        $q = $this->db->get();
+        return $q->row();
+    }
+
     public function getHistorialAspirante($id, $campo)
     {
 

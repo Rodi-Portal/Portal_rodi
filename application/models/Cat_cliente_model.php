@@ -355,24 +355,39 @@ class Cat_cliente_model extends CI_Model
     }
     public function getAccesosClienteModal($id_cliente, $id_portal)
     {
-
         $this->db
-            ->select("cli.*, CONCAT(dup.nombre,' ',dup.paterno) as usuario, CONCAT(duc.nombre,' ',duc.paterno) as usuario_cliente, duc.correo as correo_usuario, uc.creacion as alta, uc.id as idUsuarioCliente, uc.privacidad")
+            ->select("cli.*,
+                  CONCAT(dup.nombre,' ',dup.paterno) AS usuario,
+                  CONCAT(duc.nombre,' ',duc.paterno) AS usuario_cliente,
+                  duc.correo AS correo_usuario,
+                  uc.creacion AS alta,
+                  uc.id AS idUsuarioCliente,
+                  uc.privacidad")
             ->from("cliente AS cli")
             ->join("usuarios_clientes uc", "uc.id_cliente = cli.id")
-            ->join("usuarios_portal u", "u.id = cli.id_portal")
-            ->join("datos_generales dup", "dup.id = u.id_datos_generales")
-            ->join("datos_generales duc", "duc.id = uc.id_datos_generales")
+            ->join("usuarios_portal u", "u.id = cli.id_portal", 'left')
+            ->join("datos_generales dup", "dup.id = u.id_datos_generales", 'left')
+            ->join("datos_generales duc", "duc.id = uc.id_datos_generales", 'left')
+            ->where("uc.eliminado", 0)
             ->where("cli.id", $id_cliente)
-            ->where("u.id", $id_portal);
+            ->where("cli.id_portal", $id_portal); // más seguro
 
         $query = $this->db->get();
+        return $query->result();
+    }
+      public function getAccesossucursalesActivas($id_portal)
+    {
+        $this->db
+            ->select("cli.id as idCliente, cli.nombre")
+            ->from("cliente AS cli")
+            ->join("portal p", "p.id = cli.id_portal")
+          
+            ->where("cli.eliminado", 0)
+        
+            ->where("cli.id_portal", $id_portal); // más seguro
 
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        $query = $this->db->get();
+        return $query->result();
     }
 
     public function editAccesoUsuarioCliente($idCliente, $usuario)

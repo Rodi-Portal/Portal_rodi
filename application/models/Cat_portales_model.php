@@ -642,4 +642,25 @@ class Cat_portales_model extends CI_Model
         echo json_encode(['status' => 'success', 'mensaje' => ucfirst($tipo) . ' eliminado.']);
     }
 
+     
+    public function getDatosPortal()
+    {
+        $id_portal = $this->session->userdata('idPortal');
+        $this->db
+            ->select("P.nombre as nombre_portal, DAT.telefono, DAT.correo")
+            ->from('portal as P')
+            ->join("usuarios_portal as UP", "UP.id = P.id_usuario_portal",'left')
+            ->join("datos_generales as DAT", "DAT.id = UP.id_datos_generales",'left')
+          
+            ->where('P.id', $id_portal);
+          
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        } else {
+            return false;
+        }
+    }
+
 }

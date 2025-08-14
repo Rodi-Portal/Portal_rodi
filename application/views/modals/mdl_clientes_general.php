@@ -575,6 +575,48 @@
 
 
 
+<!-- Modal: Elegir sucursal -->
+<div class="modal fade" id="modalSucursal" tabindex="-1" role="dialog" aria-labelledby="sucursalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document"> <!-- AQUI modal-lg -->
+    <div class="modal-content soft-shadow rounded-lg border-0">
+
+      <div class="modal-header modal-header-primary py-2">
+        <h6 class="modal-title mb-0" id="sucursalTitle">Selecciona la sucursal</h6>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body pt-3 pb-2">
+        <div id="sucursalesLoader" class="alert alert-light mb-3 d-none">
+          Cargando sucursales…
+        </div>
+
+        <div class="form-group">
+          <label for="sucursalSelect">Sucursal</label>
+          <select id="sucursalSelect" class="custom-select w-100" size="8">
+            <option selected disabled value="">— elige una sucursal —</option>
+          </select>
+          <small class="form-text text-muted">Este cambio actualizará al candidato en la sucursal seleccionada.</small>
+          <div id="sucursalesError" class="invalid-feedback d-block" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer py-2 border-0">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">
+          Cancelar
+        </button>
+        <button id="btnEnviarEmpleado" type="button" class="btn btn-primary btn-sm">
+          Enviar a Empleados
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
 
 
 

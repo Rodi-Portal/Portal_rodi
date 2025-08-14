@@ -207,7 +207,6 @@ class Requisicion extends CI_Controller
             $req = array(
                 'creacion' => $date,
                 'edicion' => $date,
-
                 'id_portal' => $id_portal,
                 'id_usuario_cliente' => $id_usuario,
                 'id_cliente' => $id_cliente,
