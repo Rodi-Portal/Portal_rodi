@@ -11,12 +11,12 @@ class Reclutamiento_model extends CI_Model
     {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-            ->select("R.id as idReq,  R.creacion as creacionReq, RI.*, RI.telefono as telIntake, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre")
+            ->select("R.id as idReq,  R.creacion as creacionReq, RI.*, RI.telefono as telIntake, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
             ->from('requisicion as R')
             ->join('usuarios_portal as U', 'U.id = R.id_usuario', 'left')
             ->join('requisicion_intake  as RI', 'RI.id = R.id_intake', 'left')
             ->join('datos_generales as GENUS', 'U.id_datos_generales = GENUS.id', 'left')
-            ->join('cliente as CL', 'R.id_CLiente = CL.id', 'left')
+            ->join('cliente as CL', 'R.id_cliente = CL.id', 'left')
             ->join('datos_generales as GENCL', 'CL.id_datos_generales = GENCL.id', 'left')
             ->where('CL.id_portal', $id_portal)
             ->where_in('R.status', [1, 2])
@@ -42,14 +42,14 @@ class Reclutamiento_model extends CI_Model
     {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
-            ->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario,      FAC.razon_social as nombre_comercial")
+            ->select("R.id as idReq,  R.creacion as creacionReq, RI.*, RI.telefono as telIntake, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario,      FAC.razon_social as nombre_comercial")
             ->from('requisicion as R')
+            ->join('requisicion_intake  as RI', 'RI.id = R.id_intake', 'left')
             ->join('usuarios_portal as U', 'U.id = R.id_usuario')
             ->join('cliente as CL', 'CL.id = R.id_cliente')
             ->join('datos_facturacion as FAC', 'FAC.id = CL.id_datos_facturacion')
             ->join('datos_generales  as GENCL ', 'GENCL.id = CL.id_datos_generales')
             ->join('requisicion_usuario as RU', 'RU.id_requisicion = R.id')
-
             ->join('datos_generales  as GENUS ', 'GENUS.id = U.id_datos_generales')
             ->where_in('R.status', [1, 2])
             ->where('RU.id_usuario', $id_usuario)
