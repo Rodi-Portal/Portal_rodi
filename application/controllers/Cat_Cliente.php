@@ -7,7 +7,7 @@ class Cat_Cliente extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('id')) {
+        if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
 
@@ -60,112 +60,112 @@ class Cat_Cliente extends CI_Controller
         $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del sucursal ya existe en la base de datos.');
 
         // Validación de formulario
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
 
             $id_usuario = $this->session->userdata('id');
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date            = date('Y-m-d H:i:s');
             $uncode_password = $this->input->post('password');
             if (empty($uncode_password)) {
                 // Genera una contraseña segura de 12 caracteres
-                $uncode_password = bin2hex(random_bytes(12)); 
+                $uncode_password = bin2hex(random_bytes(12));
             }
 
             $password = password_hash($uncode_password, PASSWORD_BCRYPT);
 
-            $datos_generales = array(
-                'nombre' => ($this->input->post('nombre_contacto') !== '') ? $this->input->post('nombre_contacto') : null,
-                'paterno' => ($this->input->post('apellido_contacto') !== '') ? $this->input->post('apellido_contacto') : null,
-                'correo' => ($this->input->post('correo') !== '') ? $this->input->post('correo') : null,
+            $datos_generales = [
+                'nombre'   => ($this->input->post('nombre_contacto') !== '') ? $this->input->post('nombre_contacto') : null,
+                'paterno'  => ($this->input->post('apellido_contacto') !== '') ? $this->input->post('apellido_contacto') : null,
+                'correo'   => ($this->input->post('correo') !== '') ? $this->input->post('correo') : null,
                 'telefono' => ($this->input->post('telefono') !== '') ? $this->input->post('telefono') : null,
                 'password' => $password,
-            );
+            ];
 
-            $datos_domicilios = array(
-                'pais' => ($this->input->post('pais_name') !== '') ? $this->input->post('pais_name') : null,
-                'estado' => ($this->input->post('state_name') !== '') ? $this->input->post('state_name') : null,
-                'ciudad' => ($this->input->post('ciudad_name') !== '') ? $this->input->post('ciudad_name') : null,
-                'colonia' => ($this->input->post('colonia') !== '') ? $this->input->post('colonia') : null,
-                'calle' => ($this->input->post('calle') !== '') ? $this->input->post('calle') : null,
+            $datos_domicilios = [
+                'pais'     => ($this->input->post('pais_name') !== '') ? $this->input->post('pais_name') : null,
+                'estado'   => ($this->input->post('state_name') !== '') ? $this->input->post('state_name') : null,
+                'ciudad'   => ($this->input->post('ciudad_name') !== '') ? $this->input->post('ciudad_name') : null,
+                'colonia'  => ($this->input->post('colonia') !== '') ? $this->input->post('colonia') : null,
+                'calle'    => ($this->input->post('calle') !== '') ? $this->input->post('calle') : null,
                 'exterior' => ($this->input->post('numero_exterior') !== '') ? $this->input->post('numero_exterior') : null,
                 'interior' => ($this->input->post('numero_interior') !== '') ? $this->input->post('numero_interior') : null,
-                'cp' => ($this->input->post('numero_cp') !== '') ? $this->input->post('numero_cp') : null,
-            );
+                'cp'       => ($this->input->post('numero_cp') !== '') ? $this->input->post('numero_cp') : null,
+            ];
 
-            $datos_factura = array(
+            $datos_factura = [
                 'razon_social' => ($this->input->post('razon_social') !== '') ? $this->input->post('razon_social') : null,
-                'rfc' => ($this->input->post('rfc') !== '') ? $this->input->post('rfc') : null,
-                'regimen' => ($this->input->post('regimen') !== '') ? $this->input->post('regimen') : null,
-                'forma_pago' => ($this->input->post('forma_pago') !== '') ? $this->input->post('forma_pago') : null,
-                'metodo_pago' => ($this->input->post('metodo_pago') !== '') ? $this->input->post('metodo_pago') : null,
-                'uso_cfdi' => ($this->input->post('uso_cfdi') !== '') ? $this->input->post('uso_cfdi') : null,
-            );
+                'rfc'          => ($this->input->post('rfc') !== '') ? $this->input->post('rfc') : null,
+                'regimen'      => ($this->input->post('regimen') !== '') ? $this->input->post('regimen') : null,
+                'forma_pago'   => ($this->input->post('forma_pago') !== '') ? $this->input->post('forma_pago') : null,
+                'metodo_pago'  => ($this->input->post('metodo_pago') !== '') ? $this->input->post('metodo_pago') : null,
+                'uso_cfdi'     => ($this->input->post('uso_cfdi') !== '') ? $this->input->post('uso_cfdi') : null,
+            ];
 
-            $datos_cliente = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_portal' => $this->session->userdata('idPortal'),
-                'nombre' => strtoupper($this->input->post('nombre')),
-                'clave' => $this->input->post('clave'),
-                'max_colaboradores'=> $this->input->post('empleados'),
-                'icono' => '<i class="fas fa-user-tie"></i>',
-                'id_datos_generales' => null,
-                'id_domicilios' => null,
+            $datos_cliente = [
+                'creacion'             => $date,
+                'edicion'              => $date,
+                'id_usuario'           => $id_usuario,
+                'id_portal'            => $this->session->userdata('idPortal'),
+                'nombre'               => strtoupper($this->input->post('nombre')),
+                'clave'                => $this->input->post('clave'),
+                'max_colaboradores'    => $this->input->post('empleados'),
+                'icono'                => '<i class="fas fa-user-tie"></i>',
+                'id_datos_generales'   => null,
+                'id_domicilios'        => null,
                 'id_datos_facturacion' => null,
-            );
+            ];
 
-           /* echo '<pre>';
+            /* echo '<pre>';
             print_r($datos_cliente);
             echo '</pre>';
             die();
             */
             $nombreCliente = $this->input->post('nombre');
-            $claveCliente = $this->input->post('clave');
-            $idCliente = $this->input->post('idCliente');
+            $claveCliente  = $this->input->post('clave');
+            $idCliente     = $this->input->post('idCliente');
 
-            $correo = $this->input->post('correo');
+            $correo      = $this->input->post('correo');
             $idGenerales = $this->input->post('idGenerales');
 
             $existe = $this->cat_cliente_model->existeCliente($this->input->post('nombre'), $this->input->post('clave'), $idCliente);
-            
+
             if ($existe == 0) {
                 $hayId = $this->cat_cliente_model->check($idCliente);
-               
+
                 if ($hayId > 0) {
-                    $datos_cliente = array(
-                        'edicion' => $date,
-                        'id_usuario' => $id_usuario,
-                        'nombre' => strtoupper($this->input->post('nombre')),
-                        'clave' => $this->input->post('clave'),
-                        'max_colaboradores'=> $this->input->post('empleados'),
-                        'id_datos_generales' => $this->input->post('idGenerales'),
-                        'id_domicilios' => $this->input->post('idDomicilios'),
+                    $datos_cliente = [
+                        'edicion'              => $date,
+                        'id_usuario'           => $id_usuario,
+                        'nombre'               => strtoupper($this->input->post('nombre')),
+                        'clave'                => $this->input->post('clave'),
+                        'max_colaboradores'    => $this->input->post('empleados'),
+                        'id_datos_generales'   => $this->input->post('idGenerales'),
+                        'id_domicilios'        => $this->input->post('idDomicilios'),
                         'id_datos_facturacion' => $this->input->post('idFacturacion'),
-                    );
+                    ];
 
                     $existeCorreo = $this->generales_model->correoExiste($correo, $idGenerales);
 
                     if ($existeCorreo !== 0) {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 2,
-                            'msg' => 'El correo proporcionado ya existe',
-                        );
+                            'msg'    => 'El correo proporcionado ya existe',
+                        ];
                         echo json_encode($msj);
                         return; // Detener el flujo del código ya que hay un error
                     }
                     $this->cat_cliente_model->editCliente($idCliente, $datos_cliente, $datos_factura, $datos_domicilios, $datos_generales);
-                    
-                    $msj = array(
+
+                    $msj = [
                         'codigo' => 1,
-                        'msg' => 'sucursal actualizada exitosamente',
-                    );
+                        'msg'    => 'sucursal actualizada exitosamente',
+                    ];
                     echo json_encode($msj);
                     return;
                 } else {
@@ -173,29 +173,29 @@ class Cat_Cliente extends CI_Controller
                     $existeCorreo = $this->generales_model->correoExiste($correo);
 
                     if ($existeCorreo !== 0) {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 2,
-                            'msg' => 'El correo proporcionado ya existe',
-                        );
+                            'msg'    => 'El correo proporcionado ya existe',
+                        ];
                         echo json_encode($msj);
                         return; // Detener el flujo del código ya que hay un error
                     }
 
-                    $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, $uncode_password );
+                    $idCliente = $this->cat_cliente_model->addCliente($datos_cliente, $datos_factura, $datos_domicilios, $datos_generales, $uncode_password);
 
                     if ($idCliente > 0) {
 
-                        $msj = array(
+                        $msj = [
                             'codigo' => 1,
-                            'msg' => 'Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
-                        );
+                            'msg'    => 'Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
+                        ];
                         echo json_encode($msj);
                         return;
                     } else {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 0,
-                            'msg' => 'Error  al registrar al sucursal',
-                        );
+                            'msg'    => 'Error  al registrar al sucursal',
+                        ];
                         echo json_encode($msj);
                         return;
                     }
@@ -203,10 +203,10 @@ class Cat_Cliente extends CI_Controller
                 }
 
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 2,
-                    'msg' => 'El nombre del sucursal y/o clave ya existe',
-                );
+                    'msg'    => 'El nombre del sucursal y/o clave ya existe',
+                ];
             }
         }
         echo json_encode($msj);
@@ -214,25 +214,25 @@ class Cat_Cliente extends CI_Controller
 
     public function index()
     {
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
         // $datos['estados'] = $this->funciones_model->getEstados();
-        $datos['tipos_bloqueo'] = $this->funciones_model->getTiposBloqueo();
+        $datos['tipos_bloqueo']    = $this->funciones_model->getTiposBloqueo();
         $datos['tipos_desbloqueo'] = $this->funciones_model->getTiposDesbloqueo();
-        $datos['modals'] = $this->load->view('modals/mdl_catalogos/mdl_cat_cliente', '', true);
+        $datos['modals']           = $this->load->view('modals/mdl_catalogos/mdl_cat_cliente', '', true);
 
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
 
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -268,15 +268,15 @@ class Cat_Cliente extends CI_Controller
 
             // Construir la respuesta JSON
             $response = [
-                'recordsTotal' => $recordsTotal,
+                'recordsTotal'    => $recordsTotal,
                 'recordsFiltered' => $recordsFiltered,
-                'data' => $data,
+                'data'            => $data,
             ];
 
             // Enviar la respuesta JSON
             $this->output->set_output(json_encode($response));
         } catch (Exception $e) {
-            log_message('error', 'Excepción en la función getClientes: ' . $e->getMessage());
+            //log_message('error', 'Excepción en la función getClientes: ' . $e->getMessage());
 
             // Configurar el tipo de contenido de la respuesta como JSON
             $this->output->set_content_type('application/json');
@@ -288,7 +288,7 @@ class Cat_Cliente extends CI_Controller
 
     public function getClientesPorId()
     {
-        $portal = $this->session->userdata('idPortal');
+        $portal     = $this->session->userdata('idPortal');
         $cliente_id = $this->input->get('cliente_id');
 
         try {
@@ -299,11 +299,11 @@ class Cat_Cliente extends CI_Controller
             $this->output->set_content_type('application/json');
 
             // Verificar si se encontraron datos de clientes
-            if (!empty($data)) {
+            if (! empty($data)) {
                 // Construir la respuesta JSON
                 $response = [
                     'success' => true,
-                    'data' => $data,
+                    'data'    => $data,
                 ];
             } else {
                 // Construir la respuesta JSON si no se encontraron datos
@@ -316,7 +316,7 @@ class Cat_Cliente extends CI_Controller
             // Enviar la respuesta JSON
             $this->output->set_output(json_encode($response));
         } catch (Exception $e) {
-            log_message('error', 'Excepción en la función getClientes: ' . $e->getMessage());
+            //log_message('error', 'Excepción en la función getClientes: ' . $e->getMessage());
 
             // Configurar el tipo de contenido de la respuesta como JSON
             $this->output->set_content_type('application/json');
@@ -329,7 +329,7 @@ class Cat_Cliente extends CI_Controller
 // Funcion para registrar Clientes Julio  2024
     public function guardarDatos()
     {
-       
+
         $this->form_validation->set_rules('razon_social', 'Razón Social', 'required');
         $this->form_validation->set_rules('telefono', 'Teléfono', 'required');
         $this->form_validation->set_rules('rfc', 'RFC', 'required');
@@ -349,176 +349,169 @@ class Cat_Cliente extends CI_Controller
         if ($this->form_validation->run() == false) {
             // Validación fallida
 
-            $msj = array(
-              'codigo' => 0,
-              'msg' => validation_errors(),
-          );
+            $msj = [
+                'codigo' => 0,
+                'msg'    => validation_errors(),
+            ];
             echo json_encode($msj);
             return;
         }
         date_default_timezone_set('America/Mexico_City');
-                $date = date('Y-m-d H:i:s');
+        $date = date('Y-m-d H:i:s');
         // Configuración de carga de archivo
-        if (!empty($_FILES['archivo'])) {
-          $error = 0;
-          $rfc = $this->input->post('rfc');
-         /* echo '<pre>';
+        if (! empty($_FILES['archivo'])) {
+            $error = 0;
+            $rfc   = $this->input->post('rfc');
+            /* echo '<pre>';
           print_r($_FILES['archivo']);
           echo '</pre>';
           die();*/
-                    // Define new $_FILES array - $_FILES['file']
-                    $_FILES['file']['name'] = $_FILES['archivo']['name'];
-                    $_FILES['file']['type'] = $_FILES['archivo']['type'];
-                    $_FILES['file']['tmp_name'] = $_FILES['archivo']['tmp_name'];
-                    $_FILES['file']['error'] = $_FILES['archivo']['error'];
-                    $_FILES['file']['size'] = $_FILES['archivo']['size'];
-                    // Set preference
-                    $config['upload_path'] = './_const/';
-                    $config['allowed_types'] = 'pdf|jpeg|jpg|png';
-                    $config['max_size'] = '2048'; // max_size in kb
-                    $cadena = substr(md5(time()), 0, 16);
-                    //$tipo = $this->candidato_model->getTipoDoc($tipo_documento);
-                    //$tipoArchivo = str_replace(' ','',$tipo->nombre);
-                    $extension = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
-                    $config['file_name'] =   $rfc.'_'.$cadena ;
-                    $nombre_archivo =   $rfc.'_'.$cadena .'.'. $extension;
-                    //Load upload library
-                    $this->load->library('upload', $config);
-                    $this->upload->initialize($config);
-                    // File upload
-                    if (!$this->upload->do_upload('file')) {
-                        $error++;
-                       
-                    } else {
+            // Define new $_FILES array - $_FILES['file']
+            $_FILES['file']['name']     = $_FILES['archivo']['name'];
+            $_FILES['file']['type']     = $_FILES['archivo']['type'];
+            $_FILES['file']['tmp_name'] = $_FILES['archivo']['tmp_name'];
+            $_FILES['file']['error']    = $_FILES['archivo']['error'];
+            $_FILES['file']['size']     = $_FILES['archivo']['size'];
+            // Set preference
+            $config['upload_path']   = './_const/';
+            $config['allowed_types'] = 'pdf|jpeg|jpg|png';
+            $config['max_size']      = '2048'; // max_size in kb
+            $cadena                  = substr(md5(time()), 0, 16);
+            //$tipo = $this->candidato_model->getTipoDoc($tipo_documento);
+            //$tipoArchivo = str_replace(' ','',$tipo->nombre);
+            $extension           = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
+            $config['file_name'] = $rfc . '_' . $cadena;
+            $nombre_archivo      = $rfc . '_' . $cadena . '.' . $extension;
+            //Load upload library
+            $this->load->library('upload', $config);
+            $this->upload->initialize($config);
+            // File upload
+            if (! $this->upload->do_upload('file')) {
+                $error++;
 
-                           // Get the uploaded file path
-                      $uploaded_data = $this->upload->data();
-                      $uploaded_file_path = $uploaded_data['full_path']; 
-                      $idCliente = $this->input->post('idCliente');
-                      
-                      
-                      $idGenerales = $this->input->post('idGenerales');
-                      $nombre_cliente = $this->input->post('nombre');
-                      $clave_cliente = $this->input->post('clave');
-                      
+            } else {
 
-                      $idDatosGenerales = $this->input->post('idGenerales');
-                      $telefono = $this->input->post('telefono');
-                      $nombre_contacto = $this->input->post('nombre_contacto');
-                      $apellido_contacto = $this->input->post('apellido_contacto');
+                // Get the uploaded file path
+                $uploaded_data      = $this->upload->data();
+                $uploaded_file_path = $uploaded_data['full_path'];
+                $idCliente          = $this->input->post('idCliente');
 
+                $idGenerales    = $this->input->post('idGenerales');
+                $nombre_cliente = $this->input->post('nombre');
+                $clave_cliente  = $this->input->post('clave');
 
-                      $idFacturacion = $this->input->post('idFacturacion');
-                      $razon_social = $this->input->post('razon_social');
-                      $rfc = $this->input->post('rfc');
-                      $regimen = $this->input->post('regimen');
-                      $forma_pago = $this->input->post('forma_pago');
-                      $metodo_pago = $this->input->post('metodo_pago');
-                      $uso_cfdi = $this->input->post('uso_cfdi');
+                $idDatosGenerales  = $this->input->post('idGenerales');
+                $telefono          = $this->input->post('telefono');
+                $nombre_contacto   = $this->input->post('nombre_contacto');
+                $apellido_contacto = $this->input->post('apellido_contacto');
 
-                      $idDomicilios = $this->input->post('idDomicilios');
-                      $pais = $this->input->post('pais_name');
-                      $estado = $this->input->post('state_name');
-                      $ciudad = $this->input->post('ciudad_name');
-                      $colonia = $this->input->post('colonia');
-                      $calle = $this->input->post('calle');
-                      $numero_exterior = $this->input->post('numero_exterior');
-                      $numero_interior = $this->input->post('numero_interior');
-                      $cp = $this->input->post('numero_cp');
+                $idFacturacion = $this->input->post('idFacturacion');
+                $razon_social  = $this->input->post('razon_social');
+                $rfc           = $this->input->post('rfc');
+                $regimen       = $this->input->post('regimen');
+                $forma_pago    = $this->input->post('forma_pago');
+                $metodo_pago   = $this->input->post('metodo_pago');
+                $uso_cfdi      = $this->input->post('uso_cfdi');
 
+                $idDomicilios    = $this->input->post('idDomicilios');
+                $pais            = $this->input->post('pais_name');
+                $estado          = $this->input->post('state_name');
+                $ciudad          = $this->input->post('ciudad_name');
+                $colonia         = $this->input->post('colonia');
+                $calle           = $this->input->post('calle');
+                $numero_exterior = $this->input->post('numero_exterior');
+                $numero_interior = $this->input->post('numero_interior');
+                $cp              = $this->input->post('numero_cp');
 
-                      $dataClientes= array(
-                        'edicion' => $date,
-                        'constancia_cliente' => $nombre_archivo,
-                        'id_datos_facturacion' =>$idFacturacion,
-                        'id_domicilios' => $idDomicilios,
-                        'id_datos_generales'=> $idDatosGenerales,
+                $dataClientes = [
+                    'edicion'              => $date,
+                    'constancia_cliente'   => $nombre_archivo,
+                    'id_datos_facturacion' => $idFacturacion,
+                    'id_domicilios'        => $idDomicilios,
+                    'id_datos_generales'   => $idDatosGenerales,
 
-                      );
+                ];
 
-                      $dataFacturacion = array(
-                        'razon_social'=> $razon_social,
-                        'rfc'=> $rfc,
-                        'regimen'=> $regimen,
-                        'forma_pago'=> $forma_pago,
-                        'metodo_pago'=> $metodo_pago,
-                        'uso_cfdi'=> $uso_cfdi,
+                $dataFacturacion = [
+                    'razon_social' => $razon_social,
+                    'rfc'          => $rfc,
+                    'regimen'      => $regimen,
+                    'forma_pago'   => $forma_pago,
+                    'metodo_pago'  => $metodo_pago,
+                    'uso_cfdi'     => $uso_cfdi,
 
-                      );
+                ];
 
-                      $dataDomicilios = array(
-                        'pais'=> $pais,
-                        'estado'=> $estado,
-                        'ciudad'=> $ciudad,
-                        'colonia'=> $colonia,
-                        'calle'=> $calle,
-                        'exterior'=> $numero_exterior,
-                        'interior'=> $numero_interior,
-                        'cp'=> $cp,
+                $dataDomicilios = [
+                    'pais'     => $pais,
+                    'estado'   => $estado,
+                    'ciudad'   => $ciudad,
+                    'colonia'  => $colonia,
+                    'calle'    => $calle,
+                    'exterior' => $numero_exterior,
+                    'interior' => $numero_interior,
+                    'cp'       => $cp,
 
-                      );
+                ];
 
-                      $dataGenerales = array(
-                        'nombre'=> $nombre_contacto,
-                        'paterno'=> $apellido_contacto,
-                        'telefono'=> $telefono,                    
-                      );
+                $dataGenerales = [
+                    'nombre'   => $nombre_contacto,
+                    'paterno'  => $apellido_contacto,
+                    'telefono' => $telefono,
+                ];
 
-                      /* echo '<pre>';
+                /* echo '<pre>';
                       print_r($dataGenerales);
                       echo '</pre>';
                       die();*/
-                      
-                      $result = $this->cat_cliente_model->editCliente($idCliente, $dataClientes, $dataFacturacion, $dataDomicilios, $dataGenerales);
 
-                      if($result) {
-                        $msj = array(
-                          'codigo' => 1,
-                          'msg' => 'Los  Datos  y  el archivo  fueron almacenados  correctamente :)',
-                      );
-                        echo json_encode($msj);
-                        return;
-                      
+                $result = $this->cat_cliente_model->editCliente($idCliente, $dataClientes, $dataFacturacion, $dataDomicilios, $dataGenerales);
 
-                      }else{
+                if ($result) {
+                    $msj = [
+                        'codigo' => 1,
+                        'msg'    => 'Los  Datos  y  el archivo  fueron almacenados  correctamente :)',
+                    ];
+                    echo json_encode($msj);
+                    return;
 
-                        if ($uploaded_file_path && file_exists($uploaded_file_path)) {
-                          unlink($uploaded_file_path);
-                      }
-                      $msj = array(
-                          'codigo' => 2,
-                          'msg' => 'Hubo un problema al actualizar los datos, por favor inténtalo nuevamente',
-                      );
-                      echo json_encode($msj);
-                      return;
-                  }
-                  
-                      
-              }
-              
+                } else {
+
+                    if ($uploaded_file_path && file_exists($uploaded_file_path)) {
+                        unlink($uploaded_file_path);
+                    }
+                    $msj = [
+                        'codigo' => 2,
+                        'msg'    => 'Hubo un problema al actualizar los datos, por favor inténtalo nuevamente',
+                    ];
+                    echo json_encode($msj);
+                    return;
+                }
+
+            }
+
             if ($error == 0) {
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'Success',
-                );
+                    'msg'    => 'Success',
+                ];
 
             } else {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => 'Error  al   cargar  el archivo  intentalo nuevamente  x.x ',
-                );
+                    'msg'    => 'Error  al   cargar  el archivo  intentalo nuevamente  x.x ',
+                ];
             }
 
         } else {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => 'Por  favor   sube  tu archivo en el apartado  correspondiente ',
-            );
+                'msg'    => 'Por  favor   sube  tu archivo en el apartado  correspondiente ',
+            ];
 
         }
 
         // Datos del formulario
-       
 
         echo json_encode($msj);
         return;
@@ -528,50 +521,50 @@ class Cat_Cliente extends CI_Controller
 
     public function status()
     {
-        $msj = array();
+        $msj        = [];
         $id_usuario = $this->session->userdata('id');
-        $date = date('Y-m-d H:i:s');
-        $idCliente = $this->input->post('idCliente');
-        $accion = $this->input->post('accion');
+        $date       = date('Y-m-d H:i:s');
+        $idCliente  = $this->input->post('idCliente');
+        $accion     = $this->input->post('accion');
 
         // var_dump("esta es la accion :  ".$accion."  Este es el id del cliente :  ".$idCliente);
         if ($accion == "desactivar") {
-            $cliente = array(
-                'edicion' => $date,
+            $cliente = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'status' => 0,
-            );
+                'status'     => 0,
+            ];
             $this->cat_cliente_model->editCliente($idCliente, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Sucursal inactivado correctamente',
-            );
+                'msg'    => 'Sucursal inactivado correctamente',
+            ];
         }
 
         if ($accion == "activar") {
-            $cliente = array(
-                'edicion' => $date,
+            $cliente = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'status' => 1,
-            );
+                'status'     => 1,
+            ];
             $this->cat_cliente_model->editCliente($idCliente, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
 
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Sucursal activado correctamente',
-            );
+                'msg'    => 'Sucursal activado correctamente',
+            ];
         }
         if ($accion == "eliminar") {
 
-            $cliente = array(
-                'edicion' => $date,
+            $cliente = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'eliminado' => 1,
-            );
+                'eliminado'  => 1,
+            ];
             /*
             // ver  que traen las variables
             echo "usuarioCliente: ";
@@ -585,96 +578,96 @@ class Cat_Cliente extends CI_Controller
             $this->cat_cliente_model->editCliente($idCliente, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioCliente($idCliente, $cliente);
             $this->cat_cliente_model->editAccesoUsuarioSubcliente($idCliente, $cliente);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Sucursal eliminado correctamente',
-            );
+                'msg'    => 'Sucursal eliminado correctamente',
+            ];
         }
 
         if ($accion == "bloquear") {
-            $cliente = array(
-                'edicion' => $date,
+            $cliente = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'bloqueado' => $this->input->post('opcion_motivo'),
-            );
+                'bloqueado'  => $this->input->post('opcion_motivo'),
+            ];
             $this->cat_cliente_model->editCliente($idCliente, $cliente);
 
             if ($this->input->post('bloquear_subclientes') === 'SI') {
                 $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idCliente);
                 if ($data['subclientes']) {
                     foreach ($data['subclientes'] as $row) {
-                        $subcliente = array(
-                            'edicion' => $date,
+                        $subcliente = [
+                            'edicion'    => $date,
                             'id_usuario' => $id_usuario,
-                            'bloqueado' => $this->input->post('opcion_motivo'),
-                        );
+                            'bloqueado'  => $this->input->post('opcion_motivo'),
+                        ];
                         $this->cat_subclientes_model->editar($subcliente, $row->id);
                         unset($subcliente);
                     }
                 }
             }
 
-            $dataBloqueos = array(
+            $dataBloqueos = [
                 'status' => 0,
-            );
+            ];
             $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idCliente);
 
-            $data_bloqueo = array(
-                'creacion' => $date,
-                'id_usuario' => $id_usuario,
-                'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_cliente' => $idCliente,
+            $data_bloqueo = [
+                'creacion'            => $date,
+                'id_usuario'          => $id_usuario,
+                'descripcion'         => $this->input->post('opcion_descripcion'),
+                'id_cliente'          => $idCliente,
                 'bloqueo_subclientes' => $this->input->post('bloquear_subclientes'),
-                'tipo' => 'BLOQUEO',
-                'mensaje' => $this->input->post('mensaje_comentario'),
-            );
+                'tipo'                => 'BLOQUEO',
+                'mensaje'             => $this->input->post('mensaje_comentario'),
+            ];
             $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Sucursal bloqueado correctamente',
-            );
+                'msg'    => 'Sucursal bloqueado correctamente',
+            ];
         }
 
         if ($accion == "desbloquear") {
-            $cliente = array(
-                'edicion' => $date,
+            $cliente = [
+                'edicion'    => $date,
                 'id_usuario' => $id_usuario,
-                'bloqueado' => 'NO',
-            );
+                'bloqueado'  => 'NO',
+            ];
             $this->cat_cliente_model->editCliente($idCliente, $cliente);
 
             $data['subclientes'] = $this->subcliente_model->getSubclientesByIdCliente($idCliente);
             if ($data['subclientes']) {
                 foreach ($data['subclientes'] as $row) {
-                    $subcliente = array(
-                        'edicion' => $date,
+                    $subcliente = [
+                        'edicion'    => $date,
                         'id_usuario' => $id_usuario,
-                        'bloqueado' => 'NO',
-                    );
+                        'bloqueado'  => 'NO',
+                    ];
                     $this->cat_subclientes_model->editarSubcliente($row->id, $subcliente);
                     unset($subcliente);
                 }
             }
 
-            $dataBloqueos = array(
+            $dataBloqueos = [
                 'status' => 0,
-            );
+            ];
             $this->cat_cliente_model->editHistorialBloqueos($dataBloqueos, $idCliente);
 
-            $data_bloqueo = array(
-                'creacion' => $date,
-                'id_usuario' => $id_usuario,
-                'descripcion' => $this->input->post('opcion_descripcion'),
-                'id_cliente' => $idCliente,
+            $data_bloqueo = [
+                'creacion'            => $date,
+                'id_usuario'          => $id_usuario,
+                'descripcion'         => $this->input->post('opcion_descripcion'),
+                'id_cliente'          => $idCliente,
                 'bloqueo_subclientes' => 'NO',
-                'tipo' => 'DESBLOQUEO',
-                'status' => 0,
-            );
+                'tipo'                => 'DESBLOQUEO',
+                'status'              => 0,
+            ];
             $this->cat_cliente_model->addHistorialBloqueos($data_bloqueo);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Sucursal desbloqueado correctamente',
-            );
+                'msg'    => 'Sucursal desbloqueado correctamente',
+            ];
         }
 
         echo json_encode($msj);
@@ -704,16 +697,16 @@ class Cat_Cliente extends CI_Controller
         // Verificar si se encontraron datos del cliente
         if ($clienteData) {
             // Preparar los datos del cliente para enviarlos como respuesta
-            $response = array(
+            $response = [
                 'success' => true,
-                'data' => $clienteData,
-            );
+                'data'    => $clienteData,
+            ];
         } else {
             // Si no se encontraron datos del cliente, enviar un mensaje de error
-            $response = array(
+            $response = [
                 'success' => false,
-                'error' => 'No se encontraron datos para el cliente seleccionado.',
-            );
+                'error'   => 'No se encontraron datos para el cliente seleccionado.',
+            ];
         }
 
         // Devolver la respuesta en formato JSON
@@ -732,45 +725,45 @@ class Cat_Cliente extends CI_Controller
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
         $this->form_validation->set_message('is_unique', 'El %s ya esta registrado');
         $this->form_validation->set_message('valid_email', 'El campo %s debe ser un correo válido');
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             $id_usuario = $this->session->userdata('id');
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $nombre = $this->input->post('nombre');
-            $paterno = $this->input->post('paterno');
-            $telefono = ($this->input->post('telefono') !== null) ? $this->input->post('telefono') : null;
-            $privacidad = $this->input->post('privacidad');
-            $correo = $this->input->post('correo_cliente_name');
+            $date            = date('Y-m-d H:i:s');
+            $nombre          = $this->input->post('nombre');
+            $paterno         = $this->input->post('paterno');
+            $telefono        = ($this->input->post('telefono') !== null) ? $this->input->post('telefono') : null;
+            $privacidad      = $this->input->post('privacidad');
+            $correo          = $this->input->post('correo_cliente_name');
             $uncode_password = $this->input->post('password_name');
             $hashed_password = password_hash($uncode_password, PASSWORD_BCRYPT);
 
-            $idCliente = $this->input->post('cliente');
+            $idCliente  = $this->input->post('cliente');
             $espectador = $this->input->post('tipo_usuario');
 
-            $usuarioCliente = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_cliente' => $idCliente,
+            $usuarioCliente = [
+                'creacion'           => $date,
+                'edicion'            => $date,
+                'id_usuario'         => $id_usuario,
+                'id_cliente'         => $idCliente,
                 'id_datos_generales' => null,
-                'espectador' => $espectador,
-                'privacidad' => $privacidad,
-            );
-            $usuarioClienteDatos = array(
+                'espectador'         => $espectador,
+                'privacidad'         => $privacidad,
+            ];
+            $usuarioClienteDatos = [
 
                 'telefono' => $telefono,
-                'nombre' => $nombre,
-                'paterno' => $paterno,
-                'correo' => $correo,
+                'nombre'   => $nombre,
+                'paterno'  => $paterno,
+                'correo'   => $correo,
                 'password' => $hashed_password,
 
-            );
+            ];
 
             $this->cat_cliente_model->addUsuarioClienteModel($usuarioCliente, $usuarioClienteDatos);
 
@@ -778,23 +771,23 @@ class Cat_Cliente extends CI_Controller
             if ($dataCliente->ingles == 1) {
                 $existe_cliente = $this->cat_cliente_model->checkPermisosByCliente($idCliente);
                 if ($existe_cliente == 0) {
-                    $url = "Cliente_General/index/" . $idCliente;
-                    $cliente = array(
+                    $url     = "Cliente_General/index/" . $idCliente;
+                    $cliente = [
                         'url' => $url,
-                    );
+                    ];
                     $this->cat_cliente_model->editCliente($idCliente, $cliente);
-                    $permiso = array(
+                    $permiso = [
                         'id_usuario' => $id_usuario,
-                        'cliente' => $dataCliente->nombre,
+                        'cliente'    => $dataCliente->nombre,
                         'id_cliente' => $idCliente,
-                    );
+                    ];
                     $this->cat_cliente_model->addPermiso($permiso);
                 }
             }
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -803,7 +796,7 @@ class Cat_Cliente extends CI_Controller
     {
 
         $id_cliente = $this->input->post('id_cliente');
-        $id_portal = $this->generales_model->getPortalCliente($id_cliente);
+        $id_portal  = $this->generales_model->getPortalCliente($id_cliente);
         // var_dump("Este  es el id del cliente: ".$id_cliente."Este  es el id del portal: ".$id_portal);
         $res = $this->cat_cliente_model->getAccesosClienteModal($id_cliente, $id_portal);
         if ($res) {
@@ -817,26 +810,181 @@ class Cat_Cliente extends CI_Controller
     {
         $id_usuario = $this->session->userdata('id');
         date_default_timezone_set('America/Mexico_City');
-        $date = date('Y-m-d H:i:s');
+        $date             = date('Y-m-d H:i:s');
         $idUsuarioCliente = $this->input->post('idUsuarioCliente');
-        $accion = $this->input->post('accion');
+        $accion           = $this->input->post('accion');
 
         if ($accion == 'eliminar') {
             $this->cat_cliente_model->deleteAccesoUsuarioCliente($idUsuarioCliente);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Usuario eliminado correctamente',
-            );
+                'msg'    => 'Usuario eliminado correctamente',
+            ];
         }
         if ($accion == 'credenciales') {
             $this->generales_model->editDatosGenerales();
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Usuario eliminado correctamente',
-            );
+                'msg'    => 'Usuario eliminado correctamente',
+            ];
         }
 
         echo json_encode($msj);
+    }
+
+    public function getLinks()
+    {
+        $cliente_id = $this->input->post('id_cliente', true); // TRUE => XSS clean
+
+        if (! $cliente_id) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['error' => 'ID de cliente inválido']));
+        }
+
+        try {
+            $data = $this->cat_cliente_model->getLinksCliente($cliente_id);
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data ?: []));
+        } catch (Throwable $e) { // mejor que Exception para PHP 7+
+            log_message('error', 'Excepción en getLinks: ' . $e->getMessage());
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([]));
+        }
+    }
+
+    public function generarLinkRequisicion()
+    {
+        $this->output->set_content_type('application/json');
+        $id_portal = $this->session->userdata('idPortal');
+        // Entrada
+        $id_cliente = (int) $this->input->post('id_cliente');
+        $terminos   = $this->cat_cliente_model->getTerminos($id_portal);
+        // Sesión
+        // echo $id_cliente.'  aqui andamos  ';
+        $logo         = $this->session->userdata('logo') ?? 'portal_icon.png';
+        $aviso        = $this->session->userdata('aviso') ?? 'AV_TL_V1.pdf';
+        $terminos     = $terminos->terminos ?? 'TM_TL_V1.pdf';
+        $NombrePortal = $this->session->userdata('nombrePortal');
+        $usuario_id   = $this->session->userdata('id');
+
+        // Validaciones mínimas
+        foreach (['id_cliente', 'id_portal', 'usuario_id', 'NombrePortal'] as $k) {
+            if (empty($$k)) {
+                echo json_encode(['error' => "Falta {$k}"]);return;
+            }
+        }
+
+        // Clave privada (PEM)
+        $private_key = $this->resolverClavePrivada();
+        if (! $private_key) {echo json_encode(['error' => 'No se pudo cargar la clave privada JWT']);return;}
+
+        // Payload (sin expiración)
+        $payload = [
+            'iat'          => time(),
+            'jti'          => bin2hex(random_bytes(16)),
+            'idUsuario'    => $usuario_id,
+            'idPortal'     => $id_portal,
+            'NombrePortal' => $NombrePortal,
+            'logo'         => $logo,
+            'aviso'        => $aviso,
+            'terminos'     => $terminos,
+            'idCliente'    => $id_cliente,
+        ];
+
+        // Firmar JWT RS256
+        $jwt = \Firebase\JWT\JWT::encode($payload, $private_key, 'RS256');
+        // DEBUG: inspeccionar el payload del token que acabas de firmar
+        list($h, $p, $s) = explode('.', $jwt);
+        $pl              = json_decode(base64_decode(strtr($p, '-_', '+/')), true);
+        log_message('info', 'JWT CI3 payload: idCliente=' . ($pl['idCliente'] ?? 'NULL') . ' jti=' . ($pl['jti'] ?? 'NULL'));
+        // URL del formulario (usa tu constante)
+        $formUrl = LINKNUEVAREQUISICION;
+        if (! $formUrl) {echo json_encode(['error' => 'Falta LINKNUEVAREQUISICION']);return;}
+
+        // 🔴 CLAVE: url-encodear el token
+        $link            = rtrim($formUrl, '/') . '?token=' . rawurlencode($jwt);
+        list($h, $p, $s) = explode('.', $jwt);
+        log_message('info', 'JWT CI3 lens H=' . strlen($h) . ' P=' . strlen($p) . ' S=' . strlen($s));
+
+        $privRes = openssl_pkey_get_private($private_key);
+        $det     = $privRes ? openssl_pkey_get_details($privRes) : null;
+        $pubDer  = $det['key'] ?? null;
+        log_message('info', 'CI3 pub_sha=' . ($pubDer ? substr(hash('sha256', $pubDer), 0, 16) : 'NULL'));
+        // QR base64
+        $qr_base64 = $this->_qr_base64($link);
+
+        // Upsert (si ya existe, actualizar)
+        $data = [
+            'id_cliente' => $id_cliente,
+            'link'       => $link,
+            'qr'         => $qr_base64,
+            'creacion'   => date('Y-m-d H:i:s'),
+            'edicion'    => date('Y-m-d H:i:s'),
+        ];
+        $ok = $this->cat_cliente_model->guardarLinkCliente($data);
+        if (! $ok) {echo json_encode(['error' => 'No se pudo guardar el link']);return;}
+
+        echo json_encode([
+            'link'    => $link,
+            'qr'      => $qr_base64,
+            'jti'     => $payload['jti'],
+            'idcli'   => $payload['idCliente'],
+            'sha'     => substr(hash('sha256', $jwt), 0, 16), // huella del token
+            'mensaje' => 'Link generado/actualizado correctamente.',
+        ]);
+
+    }
+
+/**
+ * Carga la clave privada desde config (PEM inline, base64 o ruta).
+ */
+    private function resolverClavePrivada()
+    {
+        $conf     = $this->config->item('jwt_private_key');      // ya puede ser el PEM por file_get_contents
+        $confPath = $this->config->item('jwt_private_key_path'); // opcional
+
+        if ($conf && strpos($conf, '-----BEGIN') !== false) {
+            return $conf;
+        }
+
+        if ($conf) {
+            $decoded = base64_decode($conf, true);
+            if ($decoded && strpos($decoded, '-----BEGIN') !== false) {
+                return $decoded;
+            }
+
+            if (is_file($conf)) {
+                $pem = @file_get_contents($conf);
+                if ($pem && strpos($pem, '-----BEGIN') !== false) {
+                    return $pem;
+                }
+
+            }
+        }
+
+        if ($confPath && is_file($confPath)) {
+            $pem = @file_get_contents($confPath);
+            if ($pem && strpos($pem, '-----BEGIN') !== false) {
+                return $pem;
+            }
+
+        }
+
+        return null;
+    }
+
+    private function _qr_base64($text)
+    {
+        $qrCode = new \Endroid\QrCode\QrCode($text);
+        $qrCode->setSize(300);
+        $qrCode->setMargin(10);
+        $writer = new \Endroid\QrCode\Writer\PngWriter();
+        $png    = $writer->write($qrCode)->getString();
+        return 'data:image/png;base64,' . base64_encode($png);
     }
 
 }

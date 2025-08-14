@@ -9,6 +9,16 @@
 
       <div class="col-sm-12 col-md-6 col-lg-6">
         <div class="mb-3 float-right">
+          <?php if ($this->session->userdata('tipo_bolsa') == 1) {?>
+          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2"
+            onclick="nuevaRequisicionIntake()">
+            <span class="icon text-white-50">
+              <i class="far fa-file-alt"></i>
+            </span>
+            <span class="text">Registrar Requisicion</span>
+          </button>
+
+          <?php } else {?>
           <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2"
             onclick="nuevaRequisicion()">
             <span class="icon text-white-50">
@@ -16,15 +26,16 @@
             </span>
             <span class="text">Requisicion Interna</span>
           </button>
+          <?php }?>
         </div>
         <?php
             if ($this->session->userdata('idrol') == 4) {
-                $disabled = 'disabled';
+                $disabled  = 'disabled';
                 $textTitle = 'title="No posees permiso para esta acción"';
             } else {
-                $disabled = '';
+                $disabled  = '';
                 $textTitle = '';
-            }?>
+        }?>
         <div class="mb-3 float-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
           <button type="button" id="btnOpenAssignToUser" class="btn btn-primary btn-icon-split float-right mr-2"
             onclick="openAssignToUser()" <?php echo $disabled; ?>>
@@ -34,7 +45,7 @@
             <span class="text">Asignar Requisicion</span>
           </button>
         </div>
-       
+
       </div>
     </div>
   </section>
@@ -78,12 +89,12 @@
         <option value="0">Todos</option>
         <?php
 
-if ($orders_search) {
-    foreach ($orders_search as $row) {?>
+            if ($orders_search) {
+            foreach ($orders_search as $row) {?>
         <option value="<?php echo $row->id; ?>">
           <?php echo '#' . $row->id . ' ' . $row->nombre . ' - ' . $row->puesto; ?></option>
         <?php }
-} else {?>
+        } else {?>
         <option value="">Sin requisiones registradas</option>
         <?php }?>
       </select>
@@ -100,103 +111,178 @@ if ($orders_search) {
 
   <div id="seccionTarjetas">
     <div id="tarjetas">
-      <?php
+      <?php if ($requisiciones): ?>
+      <div class="row mb-3">
+        <?php foreach ($requisiciones as $r):
+                $hoy            = date('Y-m-d H:i:s');
+                $fecha_registro = ! empty($r->creacionReq) ? fechaTexto($r->creacionReq, 'espanol') : '';
 
-if ($requisiciones) {
-    echo '<div class="row mb-3">';
-    foreach ($requisiciones as $r) {
-        $hoy = date('Y-m-d H:i:s');
-        $fecha_registro = fechaTexto($r->creacion, 'espanol');
-        $color_estatus = '';
-        $text_estatus = '';
-        if ($r->status == 1) {
-            $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Iniciar proceso" onclick="cambiarStatusRequisicion(' . $r->id . ',\'' . $r->nombre . '\', \'iniciar\')"><i class="fas fa-play-circle"></i></a>';
-            $text_estatus = 'Estatus: <b>En espera</b>';
-            $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Ver resultados de los candidatos"><i class="fas fa-file-alt"></i></a>';
-            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg" data-toggle="tooltip" title="Eliminar Requisición" onclick="openDeleteOrder(' . $r->id . ',\'' . $r->nombre . '\')"><i class="fas fa-trash"></i></a>';
-        }
-        if ($r->status == 2) {
-            $botonProceso = '<a href="javascript:void(0)" class="btn btn-danger text-lg" id="btnIniciar' . $r->id . '"  data-toggle="tooltip" title="Detener proceso" onclick="cambiarStatusRequisicion(' . $r->id . ',\'' . $r->nombre . '\', \'detener\')"><i class="fas fa-stop"></i></a>';
-            $color_estatus = 'req_activa';
-            $text_estatus = 'Estatus: <b>En proceso de reclutamiento</b>';
-            $botonResultados = '<a href="javascript:void(0)" class="btn btn-success text-lg" data-toggle="tooltip" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos(' . $r->id . ',\'' . $r->nombre . '\')"><i class="fas fa-file-alt"></i></a>';
+                // Intake vs clásica
+                $esIntake = (isset($r->tipo) && strtoupper($r->tipo) === 'SOLICITUD')
+                || ! empty($r->nombre_cliente) || ! empty($r->razon_social);
 
-            $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger text-lg isDisabled" data-toggle="tooltip" title="Eliminar Requisición"><i class="fas fa-trash"></i></a>';
-        }
-        $usuario = (empty($r->usuario)) ? 'Requisición sin cambios<br>' : 'Úlltimo movimiento: <b>' . $r->usuario . '</b><br>';
-        $data['users'] = $this->reclutamiento_model->getUsersOrder($r->id);
-        if (!empty($data['users'])) {
-            $usersAssigned = 'Usuario Asignado:<br>';
-            foreach ($data['users'] as $user) {
-                if ($this->session->userdata('idrol') == 4) {
-                    $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $user->usuario . '</b></div>';
+                if ($esIntake) {
+                    $empresa      = trim((string) ($r->nombre ?? ''));
+                    $comercial    = trim((string) ($r->razon_social ?? ''));
+                    $puestoCard   = ! empty($r->puesto) ? $r->puesto : ($r->plan ?? '');
+                    $telefonoCard = trim((string) ($r->telIntake ?? ''));
+                    $correoCard   = ! empty($r->email) ? trim((string) $r->email) : trim((string) ($r->correo ?? ''));
+                    $contactoCard = trim((string) ($r->nombre_cliente ?? ''));
                 } else {
-                    $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><a href="javascript:void(0)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Eliminar Usuario  de la Requisición" onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $user->usuario . '\')"><i class="fas fa-user-times"></i></a> <b>' . $user->usuario . '</b></div>';
+                    $empresa      = trim((string) ($r->nombre ?? ''));
+                    $comercial    = trim((string) ($r->nombre_comercial ?? ''));
+                    $puestoCard   = trim((string) ($r->puesto ?? ''));
+                    $telefonoCard = trim((string) ($r->telefono ?? ''));
+                    $correoCard   = trim((string) ($r->correo ?? ''));
+                    $contactoCard = trim((string) ($r->contacto ?? ''));
                 }
 
-            }
-        } else {
-            $usersAssigned = 'No Asignada aun';
-        }
-        unset($data['users']);
-        $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA') ? '<a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Edit Editar Requisición" onclick="openUpdateOrder(' . $r->id . ',\'' . $r->nombre . '\',\'' . $r->nombre . '\',\'' . $r->puesto . '\')"><i class="fas fa-edit"></i></a>' : '<a href="javascript:void(0)" class="btn btn-primary text-lg isDisabled" data-toggle="tooltip" title="Editar  Requisición Interna"><i class="fas fa-edit"></i></a>';
-        //total de requisiciones para saber si fue buscada una en particular y colocarla enmedio de la vista
-        $totalOrders = count($requisiciones);
-        $moveOrder = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
-        $nombres = (empty($r->nombre_comercial)) ? $r->nombre : $r->nombre . '<br>' . $r->nombre_comercial;
-        ?>
-      <div class="col-sm-12 col-md-4 col-lg-4 mb-5 <?php echo $moveOrder ?>">
-        <div class="card text-center tarjeta" id="<?php echo 'tarjeta' . $r->id; ?>">
-          <div class="card-header <?php echo $color_estatus; ?>">
-            <b><?php echo '#' . $r->id . ' ' . $nombres; ?></b>
-          </div>
-          <div class="card-body">
-            <h5 class="card-title"><b><?php echo $r->puesto; ?></b></h5>
-            <p class="card-text"><?php echo 'Vacantes: <b>' . $r->numero_vacantes; ?></b></p>
-            <p class="card-text">Contacto:
-              <br><b><?php echo $r->contacto . ' <br>' . $r->telefono . ' <br>' . $r->correo; ?></b>
-            </p>
-            <div class="alert alert-secondary text-center mt-3">Tipo:
-              <b><?php echo $r->tipo ?></b><br><b><?php echo $text_estatus ?></b>
+                $nombres  = empty($comercial) ? $empresa : ($empresa . '<br>' . $comercial);
+                $nombreJS = addslashes($empresa);
+
+                // Estatus / botones
+                $color_estatus = '';
+                $text_estatus  = '';
+                if ((int) $r->status === 1) {
+                    $botonProceso    = '<a href="javascript:void(0)" class="btn btn-success btn-ico" id="btnIniciar' . $r->idReq . '" title="Iniciar proceso" onclick="cambiarStatusRequisicion(' . $r->idReq . ',\'' . $nombreJS . '\', \'iniciar\')"><i class="fas fa-play-circle fa-fw"></i></a>';
+                    $text_estatus    = 'Estatus: <b>En espera</b>';
+                    $botonResultados = '<a href="javascript:void(0)" class="btn btn-success btn-ico isDisabled" title="Ver resultados de los candidatos"><i class="fas fa-file-alt fa-fw"></i></a>';
+                    $btnDelete       = '<a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Requisición" onclick="openDeleteOrder(' . $r->idReq . ',\'' . $nombreJS . '\')"><i class="fas fa-trash fa-fw"></i></a>';
+                }
+                if ((int) $r->status === 2) {
+                    $botonProceso    = '<a href="javascript:void(0)" class="btn btn-danger btn-ico" id="btnIniciar' . $r->idReq . '" title="Detener proceso" onclick="cambiarStatusRequisicion(' . $r->idReq . ',\'' . $nombreJS . '\', \'detener\')"><i class="fas fa-stop fa-fw"></i></a>';
+                    $color_estatus   = 'req_activa';
+                    $text_estatus    = 'Estatus: <b>En proceso de reclutamiento</b>';
+                    $botonResultados = '<a href="javascript:void(0)" class="btn btn-success btn-ico" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos(' . $r->idReq . ',\'' . $nombreJS . '\')"><i class="fas fa-file-alt fa-fw"></i></a>';
+                    $btnDelete       = '<a href="javascript:void(0)" class="btn btn-danger btn-ico isDisabled" title="Eliminar Requisición"><i class="fas fa-trash fa-fw"></i></a>';
+                }
+
+                // Usuarios asignados (dedupe)
+                $usuario       = (empty($r->usuario)) ? 'Requisición sin cambios<br>' : 'Úlltimo movimiento: <b>' . $r->usuario . '</b><br>';
+                $data['users'] = $this->reclutamiento_model->getUsersOrder($r->idReq);
+                if (! empty($data['users'])) {
+                    $usersAssigned = 'Usuario Asignado:<br>';
+                    $seen          = [];
+                    foreach ($data['users'] as $user) {
+                        if (isset($seen[$user->id])) {
+                            continue;
+                        }
+
+                        $seen[$user->id] = true;
+                        $nombreUsuario   = htmlspecialchars($user->usuario, ENT_QUOTES, 'UTF-8');
+                        if ($this->session->userdata('idrol') == 4) {
+                            $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $nombreUsuario . '</b></div>';
+                        } else {
+                            $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '">
+																								                  <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
+																								                     onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
+																								                     <i class="fas fa-user-times fa-fw"></i>
+																								                  </a> <b>' . $nombreUsuario . '</b></div>';
+                        }
+                    }
+                } else {
+                    $usersAssigned = 'No Asignada aun';
+                }
+                unset($data['users']);
+
+                // Botón editar
+                $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA')
+                ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar Requisición"
+																								                 onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
+																								                 <i class="fas fa-edit fa-fw"></i></a>'
+                : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar SOLICITUD" onclick="openUpdateOrderIntake(' . (int) $r->idReq . ')">
+																					                    <i class="fas fa-edit fa-fw"></i>
+																					                  </a>';
+
+                $totalOrders = count($requisiciones);
+                $moveOrder   = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
+            ?>
+        <div class="col-sm-12 col-md-4 col-lg-4 mb-5<?php echo $moveOrder ?>">
+          <div class="card text-center tarjeta" id="<?php echo 'tarjeta' . (int) $r->idReq; ?>">
+            <div
+              class="card-header	                                	                                	                                		                                	                                	                                	                                	                                	                                	                                	                                	                                		                                	                                	                                	                                	                                	                                	                                			                                   		                                   	                                   	                                    <?php echo $color_estatus; ?>">
+              <b><?php echo '#' . (int) $r->idReq . ' ' . $nombres; ?></b>
+              <?php if ($esIntake): ?><span class="badge badge-info ml-2">SOLUCITUD</span><?php endif; ?>
             </div>
-            <div class="row">
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <?php echo $btnExpress; ?>
+
+            <div class="card-body">
+              <h5 class="card-title"><b><?php echo $puestoCard; ?></b></h5>
+              <p class="card-text">Vacantes: <b><?php echo $r->numero_vacantes; ?></b></p>
+
+              <p class="card-text">Contacto:
+                <br><b><?php echo $contactoCard . ' <br>' . $telefonoCard . ' <br>' . $correoCard; ?></b>
+              </p>
+
+              <?php if ($esIntake): ?>
+              <div class="alert alert-info text-center mt-2 p-2">
+                <small>
+                  <?php if (! empty($r->plan)): ?>Plan:
+                  <b><?php echo htmlspecialchars($r->plan, ENT_QUOTES, 'UTF-8'); ?></b><?php endif; ?>
+                  <?php if (! empty($r->metodo_comunicacion)): ?> · Medio:
+                  <b><?php echo htmlspecialchars($r->metodo_comunicacion, ENT_QUOTES, 'UTF-8'); ?></b><?php endif; ?>
+                  <?php if (! empty($r->pais_empresa)): ?> · País:
+                  <b><?php echo htmlspecialchars($r->pais_empresa, ENT_QUOTES, 'UTF-8'); ?></b><?php endif; ?>
+                </small>
               </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="View Details"
-                  onclick="verDetalles(<?php echo $r->id; ?>)"><i class="fas fa-info-circle"></i></a>
+              <?php endif; ?>
+
+              <div class="alert alert-secondary text-center mt-3">
+                Tipo: <b><?php echo $r->tipo ?></b><br><?php echo $text_estatus ?>
               </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id ?>">
-                <?php echo $botonProceso; ?>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
+
+              <!-- Barra uniforme de botones -->
+              <div class="btnbar">
+                <?php echo $btnExpress;
+                if ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA') { ?>
+                <a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Ver detalles"
+                  onclick="verDetalles(<?php echo (int) $r->idReq ?>)">
+                  <i class="fas fa-info-circle fa-fw"></i>
+                </a>
+                <?php } else {?>
+
+                <a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Ver detalles"
+                  onclick="verDetallesIntake(<?php echo (int) $r->idReq ?>)">
+                  <i class="fas fa-info-circle fa-fw"></i>
+                </a>
+                <?php }?>
+
+                <span id="divIniciar<?php echo (int) $r->idReq ?>"><?php echo $botonProceso ?></span>
+                <?php if ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA') {?>
                 <form method="POST" action="<?php echo base_url('Reclutamiento/getOrderPDF'); ?>">
-                  <input type="hidden" name="idReq" value="<?php echo $r->id ?>">
-                  <button type="submit" class="btn btn-danger text-lg" data-toggle="tooltip"
-                    title="Descargar requisición en PDF"><i class="fas fa-file-pdf"></i></button>
+                  <input type="hidden" name="idReq" value="<?php echo (int) $r->idReq ?>">
+                  <button type="submit" class="btn btn-danger btn-ico" title="Descargar PDF">
+                    <i class="fas fa-file-pdf fa-fw"></i>
+                  </button>
                 </form>
+                <?php } else {?>
+                <form method="POST" action="<?php echo base_url('Reclutamiento/getOrderPDFIntake'); ?>">
+                  <input type="hidden" name="idReq" value="<?php echo (int) $r->idReq ?>">
+                  <button type="submit" class="btn btn-danger btn-ico" title="Descargar PDF">
+                    <i class="fas fa-file-pdf fa-fw"></i>
+                  </button>
+                </form>
+                <?php }?>
+                <?php echo $btnDelete ?>
               </div>
-              <!--div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                < ?php echo $botonResultados; ?>
-              </div -->
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <?php echo $btnDelete; ?>
+
+              <div class="alert alert-secondary text-left mt-3" id="divUsuario<?php echo (int) $r->idReq; ?>">
+                <?php echo $usuario . $usersAssigned; ?>
               </div>
             </div>
-            <div class="alert alert-secondary text-left mt-3" id="divUsuario<?php echo $r->id; ?>">
-              <?php echo $usuario . $usersAssigned; ?></div>
-          </div>
-          <div class="card-footer text-muted">
-            <?php echo $fecha_registro; ?>
+
+            <div class="card-footer text-muted">
+              <?php echo $fecha_registro; ?>
+            </div>
           </div>
         </div>
+        <?php endforeach; ?>
       </div>
-      <?php
-}
-    echo '</div>';
-}?>
+      <?php endif; ?>
     </div>
+
+
+
+    <!-- Detalle (sin cambios) -->
     <div id="tarjeta_detalle" class="hidden mb-5">
       <div class="alert alert-info text-center" id="empresa"></div>
       <div class="card">
@@ -217,6 +303,7 @@ if ($requisiciones) {
           </ul>
         </div>
         <div class="card-body">
+          <!-- ... (tu contenido de detalle tal cual) ... -->
           <div id="div_vacante" class="div_info">
             <h5 id="vacantes" class="text-center"><b></b></h5><br>
             <div class="row">
@@ -240,6 +327,7 @@ if ($requisiciones) {
             <h5 id="hab_informatica" class="text-center"><b></b></h5><br>
             <h5 id="causa" class="text-center"><b></b></h5>
           </div>
+
           <div id="div_cargo" class="div_info hidden">
             <div class="row">
               <div class="col-6">
@@ -266,10 +354,12 @@ if ($requisiciones) {
             <h5 id="experiencia" class="text-center"><b></b></h5><br>
             <h5 id="actividades" class="text-center"><b></b></h5><br>
           </div>
+
           <div id="div_perfil" class="div_info hidden">
             <h5 id="competencias" class="text-center"><b></b></h5><br><br>
             <h5 id="observaciones" class="text-center"><b></b></h5><br>
           </div>
+
           <div id="div_factura" class="div_info hidden">
             <div class="row">
               <div class="col-6">
@@ -291,6 +381,7 @@ if ($requisiciones) {
       </div>
     </div>
   </div>
+
   <div id="seccionEditarRequisicion" class="hidden">
     <div class="alert alert-info text-center" id="nombreRequisicion"></div>
     <div class="card mb-5">
@@ -1028,6 +1119,26 @@ if ($requisiciones) {
       </div>
     </div>
   </div>
+  <!-- EDITAR INTAKE (nuevo) -->
+  <div id="seccionEditarIntake" class="hidden">
+    <div id="nombreRequisicionIntake" class="mb-3"></div>
+
+    <form id="formIntakeUpdate">
+      <input type="hidden" name="idReq" id="idReqIntake">
+      <!-- si usas CSRF en CodeIgniter -->
+      <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>"
+        value="<?php echo $this->security->get_csrf_hash(); ?>">
+
+      <div id="intakeFieldset" class="intake-grid"></div>
+
+      <div class="mt-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <button type="button" class="btn btn-secondary" id="btnCancelarIntake">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+
 </div>
 
 <!-- Sweetalert 2 -->
@@ -1250,6 +1361,156 @@ function confirmarAccion(status) {
     });
   }
 }
+// Helpers reutilizables
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function NR(v) {
+  return (v === null || v === undefined || String(v).trim() === '') ? 'No registrado' : escapeHtml(v);
+}
+
+function fechaYMDaDMY(v) {
+  if (!v) return 'No registrado';
+  const m = String(v).match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : NR(v);
+}
+
+function siNo(v) {
+  const s = String(v || '').toLowerCase();
+  return s === 'si' ? 'Sí' : (s === 'no' ? 'No' : 'No registrado');
+}
+
+function verDetallesIntake(idIntake) {
+  // 1) Modal de carga
+  Swal.fire({
+    title: 'Cargando intake…',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+
+  $.ajax({
+    url: '<?php echo base_url('Reclutamiento/getDetailsOrderByIdIntake'); ?>',
+    type: 'post',
+    data: {
+      id: idIntake
+    },
+    success: function(res) {
+      let d;
+      try {
+        d = (typeof res === 'object') ? res : JSON.parse(res);
+      } catch (e) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Respuesta inválida del servidor.'
+        });
+        return;
+      }
+
+      // Bases para links
+      const baseMap = {
+        archivo_path: ('<?php echo LINKDOCREQUICICION; ?>').replace(/\/?$/, '/'),
+        terminos_file: ('<?php echo LINKAVISOS ?>').replace(/\/?$/, '/')
+      };
+      const isAbsUrl = v => /^https?:\/\//i.test(v || '');
+      const isAbsPath = v => (v || '').startsWith('/');
+
+      function link(key, fname, texto) {
+        if (!fname) return '—';
+        const safeText = escapeHtml(texto || fname);
+        const href = (isAbsUrl(fname) || isAbsPath(fname)) ? fname :
+          (baseMap[key] ? baseMap[key] + encodeURIComponent(fname) : '#');
+        return `<a href="${href}" target="_blank" rel="noopener">${safeText}</a>`;
+      }
+
+      const tituloH =
+        `# ${escapeHtml(d.idReq || d.id || idIntake)} ${escapeHtml(d.nombre_c || d.nombre_cliente || '')}`;
+
+      // HTML compacto por secciones (2 columnas)
+      const html = `
+        <style>
+          .intake-grid{display:grid;min-width: 700px;grid-template-columns:repeat(2,minmax(260px,1fr));gap:12px}
+          .intake-title{grid-column:1/-1;background:#0C9DD3;color:#fff;border-left:4px solid #38bdf8;
+                        padding:8px 10px;border-radius:6px;font-weight:700}
+          .intake-muted{color:#475569;font-size:.9rem}
+          .intake-full{grid-column:1/-1}
+        </style>
+
+        <div class="intake-grid">
+          <div class="intake-title">Datos de contacto</div>
+          <div><b>Nombre cliente:</b><br>${NR(d.nombre_cliente)}</div>
+          <div><b>Correo:</b><br>${NR(d.email)}</div>
+          <div><b>Teléfono:</b><br>${NR(d.telefono)}</div>
+          <div><b>Método contacto:</b><br>${NR(d.metodo_comunicacion)}</div>
+
+          <div class="intake-title">Empresa / Ubicación</div>
+          <div><b>Razón social:</b><br>${NR(d.razon_social)}</div>
+          <div><b>NIT/RFC:</b><br>${NR(d.nit)}</div>
+          <div><b>País:</b><br>${NR(d.pais_empresa)}${String(d.pais_empresa||'').toUpperCase()==='OTRO' && d.pais_otro ? ' ('+escapeHtml(d.pais_otro)+')' : ''}</div>
+          <div><b>Sitio web:</b><br>${d.sitio_web ? `<a href="${escapeHtml(d.sitio_web)}" target="_blank" rel="noopener">${escapeHtml(d.sitio_web)}</a>` : 'No registrado'}</div>
+          <div class="intake-full"><b>Actividad:</b><br>${NR(d.actividad)}</div>
+
+          <div class="intake-title">Plan y fechas</div>
+          <div><b>Plan:</b><br>${NR(d.puesto || d.plan)}</div>
+          <div><b>Fecha solicitud:</b><br>${fechaYMDaDMY(d.fecha_solicitud)}</div>
+          <div><b>Fecha inicio:</b><br>${fechaYMDaDMY(d.fecha_inicio)}</div>
+
+          <div class="intake-title">VoIP / CRM</div>
+          <div><b>¿Requiere VoIP?</b><br>${siNo(d.requiere_voip)}</div>
+          <div>${String(d.requiere_voip||'').toLowerCase()==='si'
+                ? `<b>Propiedad VoIP:</b><br>${NR(d.voip_propiedad)}`
+                : '&nbsp;'}</div>
+          <div class="intake-full">${String(d.requiere_voip||'').toLowerCase()==='si'
+                ? `<b>País/Ciudad VoIP:</b><br>${NR(d.voip_pais_ciudad)}`
+                : ''}</div>
+          <div><b>¿Usa CRM?</b><br>${siNo(d.usa_crm)}</div>
+          <div>${String(d.usa_crm||'').toLowerCase()==='si' ? `<b>CRM:</b><br>${NR(d.crm_nombre)}` : '&nbsp;'}</div>
+
+          <div class="intake-title">Requisitos / Notas</div>
+          <div class="intake-full"><b>Funciones:</b><br>${NR(d.funciones)}</div>
+          <div class="intake-full"><b>Requisitos:</b><br>${NR(d.requisitos)}</div>
+          <div class="intake-full"><b>Recursos:</b><br>${NR(d.recursos)}</div>
+          <div class="intake-full"><b>Observaciones:</b><br>${NR(d.observaciones)}</div>
+
+          <div class="intake-title">Documentos</div>
+          <div><b>Archivo cargado:</b><br>${d.archivo_path ? link('archivo_path', d.archivo_path, 'Abrir archivo') : '—'}</div>
+          <div><b>Términos:</b><br>${d.terminos_file ? link('terminos_file', d.terminos_file, 'Abrir documento') : '—'}</div>
+          <div><b>Términos aceptados:</b><br>${d.acepta_terminos==1 ? 'Aceptados' : (d.acepta_terminos==0 ? 'No aceptados' : '—')}</div>
+
+          <div class="intake-full intake-muted">
+            <b>Creado:</b> ${fechaYMDaDMY(d.creacionR || d.creacion)} &nbsp; | &nbsp; <b>Última edición:</b> ${fechaYMDaDMY(d.edicion)}
+          </div>
+        </div>
+      `;
+
+      Swal.fire({
+        title: tituloH,
+        html: html,
+        width: 900,
+        showCloseButton: true,
+        confirmButtonText: 'Cerrar',
+        focusConfirm: false
+      });
+    },
+    error: function(xhr) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: xhr.responseText || xhr.statusText || 'No se pudo obtener el intake.'
+      });
+    }
+  });
+}
+
 
 function verDetalles(id) {
   $.ajax({
@@ -1284,7 +1545,8 @@ function verDetalles(id) {
       $('#estatus_escolar').html('<b>Estatus académico:</b> ' + estatus_escolar)
       let carrera_requerida = dato['carrera_requerida'] ?? 'No registrado';
       $('#carrera').html('<b>Carrera requerida para el puesto:</b> ' + carrera_requerida)
-      let otros_estudios = (dato['otros_estudios'] === '' || dato['otros_estudios'] === null) ? 'No registrado' :
+      let otros_estudios = (dato['otros_estudios'] === '' || dato['otros_estudios'] === null) ?
+        'No registrado' :
         dato['otros_estudios'];
       $('#otros_estudios').html('<b>Otros estudios:</b> ' + otros_estudios)
       let idiomas = (dato['idiomas'] == '') ? 'No registrado' : dato['idiomas'] ?? 'No registrado';
@@ -1332,8 +1594,9 @@ function verDetalles(id) {
       let sueldo_min = (dato['sueldo_minimo'] == 0 || dato['sueldo_minimo'] === null) ? 'No registrado' : dato[
         'sueldo_minimo'];
       $('#sueldo_min').html('<b>Sueldo mínimo:</b> ' + sueldo_min)
-      let sueldo_maximo = (dato['sueldo_maximo'] == 0 || dato['sueldo_maximo'] === null) ? 'No registrado' : dato[
-        'sueldo_maximo'];
+      let sueldo_maximo = (dato['sueldo_maximo'] == 0 || dato['sueldo_maximo'] === null) ? 'No registrado' :
+        dato[
+          'sueldo_maximo'];
       $('#sueldo_max').html('<b>Sueldo máximo:</b> ' + sueldo_maximo)
       let sueldo_adicional = dato['sueldo_adicional'] ?? 'No registrado';
       $('#sueldo_adicional').html('<b>Sueldo adicional:</b> ' + sueldo_adicional)
@@ -1676,6 +1939,579 @@ function openUpdateOrder(id, nombre, nombre_comercial, puesto) {
   $('#btnOpenAssignToUser').addClass('isDisabled')
 }
 
+function openUpdateOrderIntake(id) {
+  $('#idReqIntake').val(id);
+
+  $.ajax({
+    url: '<?php echo base_url('Reclutamiento/getDetailsOrderByIdIntake'); ?>',
+    type: 'POST',
+    data: {
+      id: id,
+      '<?php echo $this->security->get_csrf_token_name(); ?>': '<?php echo $this->security->get_csrf_hash(); ?>'
+    },
+    beforeSend: function() {
+      $('.loader').show();
+    },
+    success: function(res) {
+      setTimeout(() => $('.loader').fadeOut(), 200);
+      const dato = typeof res === 'string' ? JSON.parse(res) : res || {};
+      console.log("🚀 ~ openUpdateOrderIntake ~ empresa:", dato)
+
+      // Encabezado
+      const cliente = dato.nombre_c || '';
+      const empresa = dato.nombre || '';
+      const comercial = dato.razon_social || '';
+      const puestoHdr = dato.puesto || dato.plan || '';
+      const nombres = (comercial ? `${empresa}<br>${comercial}` : empresa);
+      $('#nombreRequisicionIntake').html(`<h3># ${id} ${cliente}<br><b>${puestoHdr||''}</b></h3>`);
+
+      // Render dinámico
+      renderIntakeForm(dato);
+
+      // Mostrar sección INTAKE y ocultar lo demás
+      $('#divFiltros').hide();
+      $('#seccionTarjetas').addClass('hidden');
+      $('#seccionEditarRequisicion').hide(); // <- el de las requis normales
+      $('#btnBack').show();
+      $('#seccionEditarIntake').show();
+      $('#btnNuevaRequisicionCompleta, #btnNuevaRequisicion, #btnOpenAssignToUser').addClass('isDisabled');
+    },
+    error: function() {
+      $('.loader').fadeOut();
+      alert('No se pudieron cargar los datos de De la Solicitud.');
+    }
+  });
+}
+
+/** Construye el formulario de INTAKE en base a un esquema */
+function renderIntakeForm(dato, opts = {}) {
+  const cols = opts.cols || 3; // nº columnas (3 por fila)
+  const minWidth = opts.minWidth || 220;
+  const compact = !!opts.compact;
+  const theme = Object.assign({
+    titleBg: '#1152eaff', // fondo de títulos
+    titleColor: '#ffffff', // color de texto de títulos
+    titleBorder: '#38bdf8', // borde izquierdo de títulos
+    labelColor: '#111827', // color de etiquetas
+    labelBold: '700' // grosor de etiquetas
+  }, opts.theme || {});
+
+  const $wrap = $('#intakeFieldset').empty();
+  $wrap
+    .toggleClass('compact', compact)
+    .css({
+      display: 'grid',
+      gap: '12px', // Espaciado más cómodo
+      gridTemplateColumns: `repeat(${cols}, minmax(${minWidth}px, 1fr))`,
+      alignItems: 'start', // Mantiene los campos alineados arriba
+      padding: '15px', // Espacio interno
+      borderRadius: '6px', // Bordes redondeados sutiles
+      backgroundColor: '#fafafa', // Fondo suave para diferenciar la sección
+    });
+
+  const val = k => (dato && k in dato) ? (dato[k] ?? '') : '';
+
+  const toISODate = s => {
+    if (!s) return '';
+    const m = String(s).match(/^(\d{4})[-\/](\d{2})[-\/](\d{2})/);
+    if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+    const d = new Date(s);
+    if (isNaN(d)) return '';
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${mm}-${dd}`;
+  };
+
+  // === SOLO CAMPOS DISPONIBLES EN TU SELECT ACTUAL ===
+  const SECCIONES = [{
+      titulo: ' Identificación / Contacto ',
+      campos: [{
+          key: 'nombre_cliente',
+          label: 'NOMBRE DEL CLIENTE',
+          type: 'text',
+          required: true
+        },
+        {
+          key: 'razon_social',
+          label: 'RAZÓN SOCIAL',
+          type: 'text'
+        }, // de RI
+        {
+          key: 'email',
+          label: 'E-MAIL',
+          type: 'email'
+        },
+        {
+          key: 'telefono',
+          label: 'TELÉFONO',
+          type: 'tel'
+        },
+        {
+          key: 'sitio_web',
+          label: 'SITIO WEB',
+          type: 'url'
+        },
+        {
+          key: 'metodo_comunicacion',
+          label: 'MÉTODO DE COMUNICACIÓN PRINCIPAL',
+          type: 'select',
+          options: ['', 'E-MAIL', 'LLAMADA DE VOZ', 'WHATSAPP', 'OTRO']
+        },
+        {
+          key: 'actividad',
+          label: 'ACTIVIDAD DE LA EMPRESA',
+          type: 'text'
+        },
+        {
+          key: 'nit',
+          label: 'NÚMERO DE IDENTIFICACIÓN TRIBUTARIA',
+          type: 'text'
+        },
+        {
+          key: 'miembro_bni',
+          label: 'MIEMBRO BNI',
+          type: 'select',
+          options: ['', 'si', 'no']
+        },
+        {
+          key: 'referido',
+          label: 'REFERIDO',
+          type: 'text'
+        }
+      ]
+    },
+    {
+      titulo: 'Empresa / Ubicación',
+      campos: [{
+          key: 'pais_empresa',
+          label: 'PAIS EMPRESA',
+          type: 'select',
+          options: ['', 'CANADÁ',
+            'CHILE',
+            'COLOMBIA',
+            'COSTA RICA',
+            'EEUU',
+            'ESPAÑA',
+            'GUATEMALA',
+            'MEXICO',
+            'PERÚ',
+            'PUERTO RICO',
+            'REPUBLICA DOMINICANA',
+            'VENEZUELA',
+            'OTRO'
+          ]
+        },
+        {
+          key: 'pais_otro',
+          label: 'País (otro)',
+          type: 'text',
+          dependeDe: {
+            key: 'pais_empresa',
+            val: 'OTRO'
+          }
+        },
+        {
+          key: 'fecha_solicitud',
+          label: 'FECHA SOLICITUD ',
+          type: 'date'
+        },
+
+        {
+          key: 'fecha_inicio',
+          label: 'FECHA DE INICIO',
+          type: 'date'
+        },
+        {
+          key: 'plan',
+          label: 'PLAN',
+          type: 'select',
+          options: ['', 'ASISTENTE BÁSICO',
+            'ASISTENTE BÁSICO BILINGUE',
+            'AGENTE COMERCIAL/ADMINISTRATIVO',
+            'AGENTE COMERCIAL/ADMINISTRATIVO BILINGUE',
+            'GRADO TÉCNICO',
+            'GRADO TÉCNICO BILINGUE',
+            'GRADO PROFESIONAL',
+            'GRADO PROFESIONAL BILINGUE'
+          ]
+
+        },
+        {
+          key: 'horario',
+          label: 'HORARIO',
+          type: 'text'
+        },
+        {
+          key: 'sexo_preferencia',
+          label: 'SEXO  PREFERENCIA',
+          type: 'select',
+          options: ['', 'MASCULINO', 'FEMENINO', 'INDISTINTO']
+        },
+        {
+          key: 'rango_edad',
+          label: 'RANGO EDAD',
+          type: 'text',
+          placeholder: 'p.ej. 25-35'
+        }
+      ]
+    },
+    {
+      titulo: ' REQUISITOS  / FUNCIONES ',
+      campos: [{
+          key: 'funciones',
+          label: 'FUNCIONES A DESEMPEÑAR',
+          type: 'textarea'
+        },
+        {
+          key: 'requisitos',
+          label: 'REQUISITOS/HABILIDADES',
+          type: 'textarea'
+        },
+        {
+          key: 'recursos',
+          label: 'RECURSOS TÉCNICOS/PROGRAMAS A UTILIZAR ',
+          type: 'textarea'
+        },
+        /*{
+          key: 'experiencia',
+          label: 'Experiencia ',
+          type: 'textarea',
+            hidden: true
+
+        },*/
+        {
+          key: 'observaciones',
+          label: 'OBSERVACIONES',
+          type: 'textarea',
+
+        }
+      ]
+    },
+    {
+      titulo: 'VOIP / CRM ',
+      campos: [{
+          key: 'requiere_voip',
+          label: 'SERVICIO DE TELEFONÍA VoIP ADICIONAL?',
+          type: 'select',
+          options: ['', 'si', 'no']
+        },
+        {
+          key: 'voip_propiedad',
+          label: 'SERVICIO DE TELEFONÍA VoIP QUE USARÁ SU TELEOPERADOR',
+          type: 'select',
+          dependeDe: {
+            key: 'requiere_voip',
+            val: 'si'
+          },
+          options: ['', 'Telefonía propia', 'A través de Asistente Virtual Ok.com']
+        },
+        {
+          key: 'voip_pais_ciudad',
+          label: 'PAÍS/CIUDAD DE LA TELEFONÍA VoIP QUE REQUIERE',
+          type: 'text',
+          dependeDe: {
+            key: 'requiere_voip',
+            val: 'si'
+          }
+        },
+        {
+          key: 'usa_crm',
+          label: 'USO DE ALGÚN CRM?',
+          type: 'select',
+          options: ['', 'si', 'no']
+        },
+        {
+          key: 'crm_nombre',
+          label: 'NOMBRE CRM UTILIZADO',
+          type: 'text',
+          dependeDe: {
+            key: 'usa_crm',
+            val: 'si'
+          }
+        }
+      ]
+    },
+    /* {
+       titulo: 'Requisición ',
+       campos: [{
+           key: 'zona_trabajo',
+           label: 'Zona de trabajo',
+           type: 'text'
+         }
+
+       ]
+     },*/
+    {
+      titulo: 'DOCUMENTOS, SOLO LECTURA',
+      campos: [
+        /*   {
+             key: 'acepta_terminos',
+             label: 'TERMINOS  ACEPTADOS',
+             type: 'select',
+             options: [{
+                 label: '—',
+                 value: ''
+               },
+               {
+                 label: 'Aceptados',
+                 value: '1'
+               },
+               {
+                 label: 'No aceptados',
+                 value: '0'
+               }
+             ],
+             readonly: true
+           }, */
+        {
+          key: 'creacionR',
+          label: 'FECHA DE REGISTRO ',
+          type: 'text',
+          readonly: true
+        },
+        {
+          key: 'archivo_path',
+          label: 'ARCHIVOS CARGADOS',
+          type: 'link',
+          linkText: 'Abrir archivo',
+          hideWhenEmpty: true, // ← no se muestra si no hay valor
+          readonly: true
+        },
+        {
+          key: 'terminos_file',
+          label: 'DOCUMENTO DE TERMINOS Y CONDICIONES',
+          type: 'link',
+          linkText: 'Abrir archivo',
+          hideWhenEmpty: true, // ← no se muestra si no hay valor
+          readonly: true
+        },
+        /* {
+           key: 'edicion',
+           label: 'ULTIMA EDICION',
+           type: 'text',
+           readonly: true
+         },*/
+
+      ]
+    }
+  ];
+
+  // — helpers de render —
+  const renderTitulo = (texto) => {
+    $wrap.append(`
+      <div class="col-span-title" style="grid-column: 1 / -1; margin: 10px 0;">
+        <div style="
+          background: ${theme.titleBg};
+          color: ${theme.titleColor};
+          border-left: 4px solid ${theme.titleBorder};
+          padding: 6px 10px;
+          border-radius: 6px;
+          font-weight: 700;
+          font-size: 0.95rem;
+        ">
+          ${texto}
+        </div>
+      </div>
+    `);
+  };
+
+  const renderCampo = (f) => {
+    const show = !f.dependeDe || String(val(f.dependeDe.key)).toLowerCase() === String(f.dependeDe.val).toLowerCase();
+    const group = $('<div class="form-group"></div>').attr('data-key', f.key);
+    if (!show) group.hide();
+
+    // Label más estilizado
+    group.append(
+      `<label for="in_${f.key}" style="font-weight:600; font-size:0.95rem; margin-bottom:4px; display:block;">${f.label}${f.required?' *':''}</label>`
+    );
+
+    let $input;
+    switch (f.type) {
+      case 'textarea':
+        $input = $(
+          `<textarea class="form-control" id="in_${f.key}" name="${f.key}" rows="3" ${f.readonly?'readonly':''} style="padding:8px; border-radius:4px; border:1px solid #ccc; font-size:0.95rem;"></textarea>`
+        );
+        $input.val(val(f.key));
+        break;
+
+      case 'select':
+        $input = $(
+          `<select class="form-control" id="in_${f.key}" name="${f.key}" ${f.readonly?'disabled':''} style="padding:6px 8px; border-radius:4px; border:1px solid #ccc; font-size:0.95rem;"></select>`
+        );
+        (f.options || ['']).forEach(opt => {
+          const $o = $('<option></option>').attr('value', opt).text(opt === '' ? '-- Selecciona --' : opt);
+          if (String(val(f.key)).toLowerCase() === String(opt).toLowerCase()) $o.prop('selected', true);
+          $input.append($o);
+        });
+        break;
+
+      case 'date':
+        $input = $(
+          `<input type="date" class="form-control" id="in_${f.key}" name="${f.key}" ${f.readonly?'readonly':''} style="padding:6px 8px; border-radius:4px; border:1px solid #ccc; font-size:0.95rem;">`
+        );
+        $input.val(toISODate(val(f.key)));
+        break;
+      case 'link': {
+        const filename = val(f.key);
+
+        // 1) Mapa de bases por key (usa json_encode para que sean strings válidos en JS)
+        const baseMap = {
+          archivo_path: (<?php echo json_encode(LINKDOCREQUICICION) ?> || '').replace(/\/?$/, '/'),
+          terminos_file: (<?php echo json_encode(LINKAVISOS) ?> || '').replace(/\/?$/,
+            '/'), // define esta constante en CI3
+        };
+
+        // 2) Si el valor ya es URL absoluta o ruta absoluta, respétala tal cual
+        const isAbsUrl = v => /^https?:\/\//i.test(v || '');
+        const isAbsPath = v => (v || '').startsWith('/');
+
+        // 3) Fallbacks existentes
+        const hideWhenEmpty = !!f.hideWhenEmpty;
+        const emptyText = f.emptyText || 'Sin archivo cargado';
+        const emptyTag = f.emptyTag || 'span';
+        const emptyClass = f.emptyClass || 'text-muted';
+        const emptyHref = typeof f.emptyHref === 'function' ? f.emptyHref(dato) : (f.emptyHref || null);
+
+        if (filename) {
+          let url = '#';
+          if (isAbsUrl(filename) || isAbsPath(filename)) {
+            url = filename;
+          } else {
+            const base = baseMap[f.key] || ''; // ← toma la base según el key
+            url = base ? (base + encodeURIComponent(filename)) : '#';
+          }
+          $input = $(`<a id="in_${f.key}" target="_blank" rel="noopener"></a>`)
+            .attr('href', url)
+            .text(f.linkText || filename);
+        } else {
+          if (hideWhenEmpty) {
+            group.hide();
+            break;
+          }
+          if (emptyTag === 'a' && emptyHref) {
+            $input = $(`<a id="in_${f.key}" class="${emptyClass}" target="_blank" rel="noopener"></a>`)
+              .attr('href', emptyHref).text(emptyText);
+          } else if (emptyTag === 'button' && emptyHref) {
+            $input = $(`<a id="in_${f.key}" class="${emptyClass} btn btn-sm"></a>`)
+              .attr('href', emptyHref).text(emptyText);
+          } else {
+            $input = $(`<${emptyTag} id="in_${f.key}" class="${emptyClass}"></${emptyTag}>`).text(emptyText);
+          }
+        }
+        break;
+      }
+
+
+
+      default:
+        $input = $(
+          `<input type="${f.type||'text'}" class="form-control" id="in_${f.key}" name="${f.key}" ${f.readonly?'readonly':''} placeholder="${f.placeholder||''}" style="padding:6px 8px; border-radius:4px; border:1px solid #ccc; font-size:0.95rem;">`
+        );
+        $input.val(val(f.key));
+        break;
+    }
+
+    if (f.required) $input.prop('required', true);
+
+    // Dependencias
+    if (f.dependeDe) {
+      const master = f.dependeDe.key;
+      // Namespace único por dependiente:
+      const ns = '.dep_' + master + '_' + f.key;
+
+      // No usar .off() global por master; solo desata este handler específico si existe
+      $(document).off('change' + ns)
+        .on('change' + ns, '#in_' + master, function() {
+          const on = String($(this).val()).toLowerCase() === String(f.dependeDe.val).toLowerCase();
+          const $g = $('[data-key="' + f.key + '"]');
+          on ? $g.slideDown(120) : $g.slideUp(120);
+        });
+    }
+
+    group.append($input);
+    $wrap.append(group);
+  };
+
+
+  // — pintar —
+  SECCIONES.forEach(sec => {
+    renderTitulo(sec.titulo);
+    sec.campos.forEach(renderCampo);
+  });
+  $('#in_requiere_voip').trigger('change');
+  $('#in_usa_crm').trigger('change');
+  $('#in_pais_empresa').trigger('change');
+}
+
+
+
+/** Serializa el formulario de intake en un objeto */
+function serializeIntakeForm() {
+  const data = {};
+  $('#formIntakeUpdate').serializeArray().forEach(p => {
+    if (data[p.name] !== undefined) {
+      if (!Array.isArray(data[p.name])) data[p.name] = [data[p.name]];
+      data[p.name].push(p.value);
+    } else {
+      data[p.name] = p.value;
+    }
+  });
+  return data;
+}
+
+/** Guarda cambios de INTAKE (AJAX POST) */
+$(document).on('submit', '#formIntakeUpdate', function(e) {
+  e.preventDefault();
+  const payload = serializeIntakeForm();
+  $.ajax({
+    url: '<?php echo base_url('Reclutamiento/updateIntake'); ?>', // <-- ajusta a tu ruta real
+    type: 'POST',
+    data: payload,
+    beforeSend: function() {
+      $('.loader').show();
+    },
+    success: function(r) {
+      $('.loader').fadeOut();
+      try {
+        r = (typeof r === 'string') ? JSON.parse(r) : r;
+      } catch (e) {}
+      if (r && r.success) {
+        (window.Swal ? Swal.fire('Guardado', 'Cambios guardados', 'success') : alert('Cambios guardados'));
+      } else {
+        (window.Swal ? Swal.fire('Atención', (r && r.msg) || 'No se pudo guardar', 'warning') : alert(
+          'No se pudo guardar'));
+      }
+    },
+    error: function() {
+      $('.loader').fadeOut();
+      (window.Swal ? Swal.fire('Error', 'Error al guardar', 'error') : alert('Error al guardar'));
+    }
+  });
+});
+
+/** Botón cancelar (vuelve a las tarjetas) */
+$(document).on('click', '#btnCancelarIntake', function() {
+  $('#seccionEditarIntake').hide();
+  $('#seccionTarjetas').removeClass('hidden').show();
+  $('#divFiltros').show();
+  $('#btnBack').hide();
+});
+
+/** Helpers */
+function toISODate(s) {
+  if (!s) return '';
+  // intenta YYYY-MM-DD, o parsea y formatea
+  const m = String(s).match(/^(\d{4})[-\/](\d{2})[-\/](\d{2})/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  const d = new Date(s);
+  if (isNaN(d)) return '';
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${mm}-${dd}`;
+}
+
+
+
 function updateOrder(section) {
   let form = '';
   if (section == 'data_facturacion') {
@@ -1944,6 +2780,67 @@ function eliminarAvance(id) {
     }
   });
 }
+
+function nuevaRequisicionIntake() {
+  // Mostrar modal
+  $('#modalRequisiciones').modal('show');
+
+  // Loader mientras carga
+  $('#contenedorTabla').html('<p class="text-center text-muted">Cargando enlaces...</p>');
+
+  // Llamada AJAX
+  $.ajax({
+    url: '<?php echo base_url('Reclutamiento/get_links'); ?>',
+    type: 'GET',
+    dataType: 'json',
+    success: function(response) {
+      if (response.success && response.data.length) {
+        renderTablaRequisiciones(response.data);
+      } else {
+        $('#contenedorTabla').html('<p class="text-center text-warning">No hay enlaces disponibles.</p>');
+      }
+    },
+    error: function() {
+      $('#contenedorTabla').html('<p class="text-center text-danger">Error al cargar los enlaces.</p>');
+    }
+  });
+}
+
+function renderTablaRequisiciones(data) {
+  let html = `
+    <table class="table table-hover table-sm">
+      <thead class="thead-dark">
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th class="text-center">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.forEach((item, index) => {
+    html += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${item.nombre}</td>
+        <td class="text-center">
+          <a href="${item.link}" class="btn btn-sm btn-primary" target="_blank">
+            <i class="fas fa-paper-plane"></i> Solicitar
+          </a>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  $('#contenedorTabla').html(html);
+}
+
 </script>
 <!-- Funciones Reclutamiento -->
 <script src="<?php echo base_url(); ?>js/reclutamiento/functions.js"></script>

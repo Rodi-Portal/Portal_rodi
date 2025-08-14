@@ -5,7 +5,7 @@
   <div class="align-items-center mb-4">
     <div class="row justify-content-between">
       <div class="col-sm-12 col-md-8">
-        <h2 >Administración de Sucursales</h1>
+        <h2>Administración de Sucursales</h1>
       </div>
 
       <div class="col-sm-12 col-md-3">
@@ -213,12 +213,26 @@ $(document).ready(function() {
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
+          //console.log("🚀 ~ full:", full)
+          let link = '';
+
           let editar =
             '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a> ';
           let eliminar =
             '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" id="eliminar" class="fa-tooltip icono_datatable icono_gris"><i class="fas fa-trash"></i></a> ';
           let acceso =
             '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" id="acceso" class="fa-tooltip icono_datatable icono_azul_claro"><i class="fas fa-sign-in-alt"></i></a>';
+
+          if (full.tipo_bolsa == 1) {
+            link = `
+              <a href="javascript:void(0)"
+                class="link-requisicion fa-tooltip icono_datatable icono_azul_claro"
+                data-id-cliente="${full.idCliente}"
+                data-nombre="${(full.nombre || '').replace(/"/g, '&quot;')}">
+                <i class="fas fa-external-link-alt"></i>
+              </a>`;
+          }
+
 
           let accion = (full.status == 0) ?
             '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a> ' :
@@ -228,7 +242,7 @@ $(document).ready(function() {
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" id="bloquear_cliente" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
             ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" id="desbloquear_cliente" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> ';
 
-          return editar + accion + eliminar + acceso + bloqueo;
+          return editar + accion + eliminar + acceso + bloqueo + link;
         }
       }
     ],
@@ -251,7 +265,7 @@ $(document).ready(function() {
     rowCallback: function(row, data) {
       $("a#editar", row).bind('click', () => {
         resetModal();
-        
+
         $("#idCliente").val(data.idCliente);
         $("#idFacturacion").val(data.dFac);
         $("#idDomicilios").val(data.dDom);
@@ -311,6 +325,160 @@ $(document).ready(function() {
       $("a#eliminar", row).bind('click', () => {
         mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idCliente)
       });
+
+      $(row).find('a.link-requisicion').off('click').on('click', function() {
+        const idCliente = $(this).data('id-cliente');
+        const nombre = $(this).data('nombre') || '';
+
+        $(".nombreCliente").text(nombre);
+        $('#idClienteForLink').val(idCliente);
+
+        // fuente de verdad para siguientes acciones:
+        $('#modalLinkRequisicion').data('idCliente', idCliente);
+        $('#btnGenerarLinkReq').data('idCliente', idCliente);
+
+        cargarLinks(idCliente); // <<< pide los links
+        $('#modalLinkRequisicion').modal('show');
+      });
+
+      function cargarLinks(idCliente) {
+        $('#linksContainer').html('<em>Cargando…</em>');
+
+        $.ajax({
+          url: '<?php echo base_url("Cat_Cliente/getLinks"); ?>',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            id_cliente: idCliente,
+            <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
+          },
+          beforeSend: mostrarLoader,
+          success: function(res) {
+            ocultarLoader();
+            let html = '';
+
+            if (Array.isArray(res) && res.length) {
+              res.forEach(l => {
+                const url = l.link || '#';
+                html += `
+            <div class="p-2 mb-2 border rounded link-item">
+              <div class="d-flex align-items-center gap-2">
+                <strong class="mr-2">Link:</strong>
+                <a href="${url}" target="_blank"
+                   class="link-url text-truncate mr-2"
+                   style="display:inline-block; max-width: calc(100% - 180px);">
+                  ${url}
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-primary btn-copy-link"
+                        data-url="${url}">
+                  Copiar
+                </button>
+              </div>
+              <div class="mt-2 text-center">
+                <strong class="d-block mb-1">QR:</strong>
+                ${l.qr ? `<img src="${l.qr}" alt="QR" class="img-fluid mx-auto d-block" style="max-width:150px;">`
+                       : '<em class="d-block">QR no disponible</em>'}
+              </div>
+              ${l.fecha_expira ? `<small class="text-muted">Expira: ${l.fecha_expira}</small>` : ''}
+            </div>`;
+              });
+            } else {
+              html = '<div class="text-muted"><em>No hay links generados</em></div>';
+            }
+
+            $('#linksContainer').html(html);
+          },
+          error: function() {
+            ocultarLoader();
+            $('#linksContainer').html('<div class="text-danger">Error al cargar links</div>');
+          }
+        });
+      }
+
+      $('#linksContainer').off('click', '.btn-copy-link').on('click', '.btn-copy-link', function() {
+        const $btn = $(this);
+        const url = $btn.data('url');
+
+        // Clipboard API con fallback
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(url).then(() => {
+            $btn.text('¡Copiado!').prop('disabled', true);
+            setTimeout(() => $btn.text('Copiar').prop('disabled', false), 1200);
+          }).catch(() => fallbackCopy(url, $btn));
+        } else {
+          fallbackCopy(url, $btn);
+        }
+
+        function fallbackCopy(text, $button) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand('copy');
+          } catch (e) {}
+          document.body.removeChild(ta);
+          $button.text('¡Copiado!').prop('disabled', true);
+          setTimeout(() => $button.text('Copiar').prop('disabled', false), 1200);
+        }
+      });
+      $(document).off('click', '#btnGenerarLinkReq').on('click', '#btnGenerarLinkReq', function() {
+        const idCliente =
+          $(this).data('idCliente') ||
+          $('#modalLinkRequisicion').data('idCliente') ||
+          $('#idClienteForLink').val();
+
+        if (!idCliente) return alert('Falta id_cliente');
+
+        const generar = () => {
+          $.ajax({
+            url: '<?php echo base_url("Cat_Cliente/generarLinkRequisicion"); ?>',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              id_cliente: parseInt(idCliente, 10),
+              <?php echo $this->security->get_csrf_token_name(); ?>: '<?php echo $this->security->get_csrf_hash(); ?>'
+            },
+            beforeSend: mostrarLoader,
+            success: function(res) {
+              ocultarLoader();
+              if (res.error) {
+                return (window.Swal ? Swal.fire('Error', res.error, 'error') : alert(res.error));
+              }
+              // 👉 sin “clickear” el <a>: solo recarga la lista del mismo cliente
+              cargarLinks(idCliente);
+
+              window.Swal ? Swal.fire('¡Listo!', res.mensaje || 'Link generado.', 'success') :
+                alert('Link generado.');
+            },
+            error: function() {
+              ocultarLoader();
+              window.Swal ? Swal.fire('Error', 'No se pudo generar el link.', 'error') :
+                alert('No se pudo generar el link.');
+            }
+          });
+        };
+
+        if (window.Swal) {
+          Swal.fire({
+            icon: 'warning',
+            title: '¿Generar/actualizar link?',
+            text: 'El link y el QR anteriores quedarán obsoletos.',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+          }).then(r => {
+            if (r.isConfirmed) generar();
+          });
+        } else {
+          generar();
+        }
+      });
+
+
+
       $("a#acceso", row).bind('click', () => {
         $(".nombreCliente").text(data.nombre);
         mostrarLoader();
@@ -326,7 +494,7 @@ $(document).ready(function() {
           },
           success: function(res) {
             ocultarLoader();
-            console.log(res);
+            //console.log(res);
             if (res !== 0) {
               let datos = JSON.parse(res);
               let salida = generarTabla(datos);
@@ -409,7 +577,7 @@ $(document).ready(function() {
             $('.loader').css("display", "block");
           },
           success: function(res) {
-            console.log(res);
+            //console.log(res);
             setTimeout(function() {
               $('.loader').fadeOut();
             }, 200);
@@ -435,7 +603,7 @@ $(document).ready(function() {
             $('.loader').css("display", "block");
           },
           success: function(res) {
-            console.log(res);
+            //console.log(res);
             setTimeout(function() {
               $('.loader').fadeOut();
             }, 200);
@@ -701,7 +869,7 @@ function enviarCredenciales(valor1, valor2) {
 }
 
 function accionCliente(accion, id, correo = null) {
-  console.log("id del cliente:  " + id + "  accion d a realizar:  " + accion)
+  //console.log("id del cliente:  " + id + "  accion d a realizar:  " + accion)
   let opcion_motivo = $('#mensajeModal #opcion_motivo').val()
   let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
   let mensaje_comentario = $('#mensajeModal #mensaje_comentario').val()

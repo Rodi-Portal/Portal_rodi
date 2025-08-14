@@ -75,106 +75,100 @@ class Reclutamiento extends CI_Controller
     /*----------------------------------------*/
     public function requisicion()
     {
-        $filter             = '';
-        $getFilter          = '';
+        // Inicialización
+        $filter      = '';
+        $getFilter   = '';
+        $filterOrder = '';
+        $items       = [];
+
+        // Permisos y menú
         $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
-        $config           = $this->funciones_model->getConfiguraciones();
-        $data['version']  = $config->version_sistema;
-        //Filtros de busqueda y ordenamiento
-        if (isset($_GET['sort'])) {
-            $getSort = $_GET['sort'];
-            switch ($getSort) {
-                case 'ascending':
-                    $sort = 'ASC';
-                    break;
-                case 'descending':
-                    $sort = 'DESC';
-                    break;
-                default:
-                    $sort = 'DESC';
-                    break;
-            }
-        } else {
-            $sort    = 'DESC';
-            $getSort = '';
-        }
-        if (isset($_GET['filter'])) {
 
-            $getFilter   = $_GET['filter'];
-            $filterOrder = '';
-            if ($getFilter == 'COMPLETA' || $getFilter == 'INTERNA') {
+        // Configuración
+        $config          = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $config->version_sistema;
+
+        // ====== Filtros de búsqueda y ordenamiento ======
+        $getSort = $this->input->get('sort', true) ?? '';
+        switch ($getSort) {
+            case 'ascending':
+                $sort = 'ASC';
+                break;
+            case 'descending':
+                $sort = 'DESC';
+                break;
+            default:
+                $sort = 'DESC';
+                break;
+        }
+
+        $getFilter = $this->input->get('filter', true) ?? '';
+        if ($getFilter) {
+            if (in_array($getFilter, ['COMPLETA', 'INTERNA'])) {
                 $filter      = $getFilter;
                 $filterOrder = 'R.tipo';
-            }
-            if ($getFilter == 'En espera') {
+            } elseif ($getFilter == 'En espera') {
                 $filter      = 1;
                 $filterOrder = 'R.status';
-            }
-            if ($getFilter == 'En proceso') {
+            } elseif ($getFilter == 'En proceso') {
                 $filter      = 2;
                 $filterOrder = 'R.status';
             }
         } else {
-
             $filter      = '';
             $filterOrder = 'R.tipo !=';
         }
-        if (isset($_GET['order'])) {
-            $order = $_GET['order'];
-            if ($order != '') {
-                $id_order        = ($order > 0) ? $order : 0;
-                $condition_order = ($order > 0) ? 'R.id' : 'R.id >';
-            } else {
-                $id_order        = 0;
-                $condition_order = 'R.id >';
-            }
+
+        $order = $this->input->get('order', true);
+        if ($order !== null && $order !== '') {
+            $id_order        = ($order > 0) ? $order : 0;
+            $condition_order = ($order > 0) ? 'R.id' : 'R.id >';
         } else {
             $id_order        = 0;
             $condition_order = 'R.id >';
         }
-        //Dependiendo el rol del usuario se veran todas o sus propias requisiciones
+
+        // ====== Carga de requisiciones según rol ======
         if ($this->session->userdata('idrol') == 4) {
             $id_usuario            = $this->session->userdata('id');
             $info['requisiciones'] = $this->reclutamiento_model->getOrdersByUser($id_usuario, $sort, $id_order, $condition_order);
             $info['orders_search'] = $this->reclutamiento_model->getOrdersByUser($id_usuario, $sort, 0, 'R.id >');
-            $info['sortOrder']     = $getSort;
-            $info['filter']        = $getFilter;
         } else {
-
             $info['requisiciones'] = $this->reclutamiento_model->getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder);
             $info['orders_search'] = $this->reclutamiento_model->getAllOrders($sort, 0, 'R.id >', $filter, $filterOrder);
-            //var_dump($info['orders_search']);
-            $info['sortOrder'] = $getSort;
-            $info['filter']    = $getFilter;
         }
-        $info['registros']           = null;
-        $info['medios']              = $this->funciones_model->getMediosContacto();
-        $info['puestos']             = $this->funciones_model->getPuestos();
-        $info['paises']              = $this->funciones_model->getPaises();
-        $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
+        $info['sortOrder'] = $getSort;
+        $info['filter']    = $getFilter;
 
-        //Obtiene los usuarios con id rol 4 y 11 que pertencen a reclutadores y coordinadores de reclutadores
+        // Datos adicionales para la vista
+        $info['registros']            = null;
+        $info['medios']               = $this->funciones_model->getMediosContacto();
+        $info['puestos']              = $this->funciones_model->getPuestos();
+        $info['paises']               = $this->funciones_model->getPaises();
+        $info['paquetes_antidoping']  = $this->funciones_model->getPaquetesAntidoping();
         $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11, 6, 9, 10]);
         $info['registros_asignacion'] = $this->reclutamiento_model->getRequisicionesActivas();
         $info['acciones']             = $this->funciones_model->getAccionesRequisicion();
+
+        // Requisiciones en proceso según rol
         if ($this->session->userdata('idrol') == 4) {
-            $id_usuario = $this->session->userdata('id');
-            $reqs       = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
+            $id_usuario   = $this->session->userdata('id');
+            $info['reqs'] = $this->reclutamiento_model->getOrdersInProcessByUser($id_usuario);
         } else {
-            $reqs = $this->reclutamiento_model->getAllOrdersInProcess();
+            $info['reqs'] = $this->reclutamiento_model->getAllOrdersInProcess();
         }
 
-        //var_dump($reqs);
-        $info['reqs'] = $reqs;
-        //Modals
+        // Modales
         $modales['modals']             = $this->load->view('modals/mdl_usuario', '', true);
         $vista['modals_reclutamiento'] = $this->load->view('modals/mdl_reclutamiento', $info, true);
 
+        // Notificaciones
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
         if (! empty($notificaciones)) {
             $contador = 0;
@@ -185,15 +179,14 @@ class Reclutamiento extends CI_Controller
             }
             $data['contadorNotificaciones'] = $contador;
         }
-        // Cargar las vistas en variables, sin mostrarlas
-        $headerView      = $this->load->view('adminpanel/header', $data, true);
-        $scriptsView     = $this->load->view('adminpanel/scripts', $modales, true);
-        $requisicionView = $this->load->view('reclutamiento/requisicion', $vista, true);
-        $footerView      = $this->load->view('adminpanel/footer', [], true);
 
-        echo $scriptsView;
-        echo $requisicionView; // Si decides que esta vista sí debe mostrarse
-        echo $footerView;
+        // ====== Renderizado de vistas ======
+        // Si quieres incluir el header:
+        // echo $this->load->view('adminpanel/header', $data, true);
+
+        echo $this->load->view('adminpanel/scripts', $modales, true);
+        echo $this->load->view('reclutamiento/requisicion', $vista, true);
+        echo $this->load->view('adminpanel/footer', [], true);
     }
 
     public function control()
@@ -1124,6 +1117,113 @@ class Reclutamiento extends CI_Controller
         $mpdf->Output('Req' . $id . '.pdf', 'D');
     }
 
+    // application/controllers/Reclutamiento.php
+
+    // application/controllers/Reclutamiento.php
+
+    public function getOrderPDFIntake()
+    {
+        $mpdf = new \Mpdf\Mpdf([
+            'mode'          => 'utf-8',
+            'format'        => 'A4',
+            'margin_top'    => 42, // espacio para header
+            'margin_bottom' => 36, // espacio para footer
+            'margin_left'   => 12,
+            'margin_right'  => 12,
+        ]);
+        date_default_timezone_set('America/Mexico_City');
+
+        $id     = (int) $this->input->post('idReq');
+        $intake = $this->reclutamiento_model->getDetailsOrderByIdIntake($id);
+        if (! $intake) {show_error('No se encontró el intake.', 404);return;}
+
+        // === Datos del portal para header/footer ===
+        $datosFooter = $this->cat_portales_model->getDatosPortal();
+        // puede venir array de objetos o un objeto suelto
+        $pf = is_array($datosFooter) ? (reset($datosFooter) ?: null): (is_object($datosFooter) ? $datosFooter : null);
+
+        $portalName = trim($pf->nombre_portal ?? '') ?: 'RODI';
+        $portalTel  = trim($pf->telefono ?? '') ?: 'N/D';
+        $portalMail = trim($pf->correo ?? '') ?: 'N/D';
+        $portalWeb  = parse_url(base_url(), PHP_URL_HOST) ?: 'N/D'; // p.ej. rodi.com.mx
+
+        // === URLs para documentos (respeta absolutas) ===
+        $mkUrl = function ($base, $fname) {
+            if (empty($fname)) {
+                return '';
+            }
+
+            if (preg_match('~^https?://~i', $fname) || strpos($fname, '/') === 0) {
+                return $fname;
+            }
+
+            return rtrim($base, '/') . '/' . $fname;
+        };
+        $intake->archivo_url  = $mkUrl(LINKDOCREQUICICION, $intake->archivo_path ?? '');
+        $intake->terminos_url = $mkUrl(LINKAVISOS, $intake->terminos_file ?? '');
+        $data['intake']       = $intake;
+
+        // === Branding / logo ===
+        $brand = '#0C9DD3';
+        $logo  = $this->session->userdata('logo') ?: 'logo_nuevo.png';
+        if (! is_file(FCPATH . '_logosPortal/' . $logo)) {$logo = 'logo_nuevo.png';}
+        $logoUrl = base_url('_logosPortal/' . $logo);
+        $hoy     = date('d/m/Y');
+
+        // === Header (usa nombre del portal) ===
+        $headerHtml = '
+      <div style="background:' . $brand . '; color:#fff; padding:10px 12px;">
+        <table width="100%" style="border-collapse:collapse;">
+          <tr>
+            <td style="width:52px; vertical-align:middle;">
+              <img src="' . $logoUrl . '" alt="Logo" style="max-width:220px; max-height:120px; background:#fff;">
+            </td>
+            <td style="vertical-align:middle; text-align:center;">
+              <div style="font-weight:900; font-size:50px; color: white; text-align: center;">' . htmlspecialchars($portalName) . '</div>
+              <div style="font-size:18px; opacity:.95; color: white;">Reporte de Solicitud</div>
+            </td>
+            <td style="text-align:right; font-size:10px; vertical-align:middle; color: white; ">
+              Folio: ' . $id . '<br>
+              Fecha: ' . $hoy . '
+            </td>
+          </tr>
+        </table>
+      </div>
+    ';
+
+        // === Footer (usa nombre portal, tel y correo; N/D si no hay) ===
+        $footerHtml = '
+      <div style="font-size:9px; color:#4b5563;">
+        <table width="100%" style="border-collapse:collapse;">
+          <tr>
+            <td style="color:' . $brand . '; font-weight:700;">
+              ' . htmlspecialchars($portalName) . '
+            </td>
+            <td style="text-align:right;">
+              Página {PAGENO} de {nbpg}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="border-top:1px solid #d1d5db; padding-top:4px;">
+              Tel: ' . htmlspecialchars($portalTel) . ' &nbsp; | &nbsp;
+              Correo: ' . htmlspecialchars($portalMail) . ' &nbsp; | &nbsp;
+              Web: ' . htmlspecialchars($portalWeb) . '
+            </td>
+          </tr>
+        </table>
+      </div>
+    ';
+
+        $mpdf->setAutoTopMargin = 'stretch';
+        $mpdf->SetHTMLHeader($headerHtml);
+        $mpdf->SetHTMLFooter($footerHtml);
+
+        // Render vista
+        $html = $this->load->view('pdfs/reclutamiento/intake_pdf', $data, true);
+        $mpdf->WriteHTML($html);
+        $mpdf->Output('Solicitud_' . $id . '.pdf', 'D');
+    }
+
     public function cambiarStatusBolsaTrabajo()
     {
         date_default_timezone_set('America/Mexico_City');
@@ -1896,6 +1996,111 @@ class Reclutamiento extends CI_Controller
         }
         echo json_encode($msj);
     }
+
+    // application/controllers/Reclutamiento.php
+    public function updateIntake()
+    {
+        // Solo AJAX (opcional)
+        // if ( ! $this->input->is_ajax_request()) { show_404(); }
+
+        $this->output->set_content_type('application/json');
+
+        $idReq = (int) $this->input->post('idReq');
+        if (! $idReq) {
+            return $this->output->set_output(json_encode([
+                'success' => false,
+                'msg'     => 'Falta idReq',
+            ]));
+        }
+
+        // Toma TODO el POST (XSS filtering true) y quita el token
+        $post = $this->input->post(null, true);
+        unset($post[$this->security->get_csrf_token_name()]);
+
+        // —— WHITELIST de campos que SÍ actualizamos en requisicion_intake ——
+        $allowed = [
+            // Identificación / contacto
+            'nombre_cliente', 'razon_social', 'email', 'telefono', 'sitio_web', 'metodo_comunicacion',
+            // Empresa / ubicación
+            'pais_empresa', 'pais_otro',
+            // Reclutamiento / posición
+            'plan', 'fecha_solicitud', 'fecha_inicio', 'horario', 'sexo_preferencia', 'rango_edad',
+            // Requisitos / funciones
+            'funciones', 'requisitos', 'recursos',
+            // VOIP / CRM
+            'requiere_voip', 'voip_propiedad', 'voip_pais_ciudad', 'usa_crm', 'crm_nombre',
+            // Extras / legales
+            'miembro_bni', 'referido', 'observaciones',
+            // Si decides exponerlos en el form, añade: 'extras','archivo_path','acepta_terminos'
+        ];
+
+        // Normalizaciones simples
+        $norm = function ($k, $v) {
+            if ($v === null) {
+                return null;
+            }
+
+            $v = is_string($v) ? trim($v) : $v;
+
+            // fechas -> YYYY-MM-DD
+            if (in_array($k, ['fecha_solicitud', 'fecha_inicio'], true)) {
+                if ($v === '') {
+                    return null;
+                }
+
+                // Intenta detectar dd/mm/yyyy ó yyyy-mm-dd
+                if (preg_match('~^(\d{2})/(\d{2})/(\d{4})$~', $v, $m)) {
+                    return "{$m[3]}-{$m[2]}-{$m[1]}";
+                }
+                if (preg_match('~^(\d{4})[-/](\d{2})[-/](\d{2})$~', $v, $m)) {
+                    return "{$m[1]}-{$m[2]}-{$m[3]}";
+                }
+                // fallback: strtotime
+                $ts = strtotime($v);
+                return $ts ? date('Y-m-d', $ts) : null;
+            }
+
+            // si/no -> minúsculas consistentes
+            if (in_array($k, ['requiere_voip', 'usa_crm', 'miembro_bni'], true)) {
+                $v = mb_strtolower((string) $v);
+                if ($v === 'si' || $v === 'sí') {
+                    return 'si';
+                }
+
+                if ($v === 'no') {
+                    return 'no';
+                }
+
+                return ''; // vacío si viene algo raro
+            }
+
+            // email básico
+            if ($k === 'email' && $v !== '' && ! filter_var($v, FILTER_VALIDATE_EMAIL)) {
+                return ''; // inválido -> lo vaciamos o valida antes y devuelve error
+            }
+
+            return $v;
+        };
+
+        $data = [];
+        foreach ($allowed as $k) {
+            if (array_key_exists($k, $post)) {
+                $data[$k] = $norm($k, $post[$k]);
+            }
+        }
+
+        // Marca de edición
+        $data['edicion'] = date('Y-m-d H:i:s');
+
+        // Llama al modelo
+        $ok = $this->reclutamiento_model->updateIntakeByReq($idReq, $data);
+
+        return $this->output->set_output(json_encode([
+            'success' => (bool) $ok,
+            'msg'     => $ok ? 'OK' : 'No se pudo actualizar el intake',
+        ]));
+    }
+
     public function uploadCSV()
     {
         $id_portal = $this->session->userdata('idPortal');
@@ -2329,7 +2534,12 @@ class Reclutamiento extends CI_Controller
         $res = $this->reclutamiento_model->getDetailsOrderById($id);
         echo json_encode($res);
     }
-
+    public function getDetailsOrderByIdIntake()
+    {
+        $id  = $this->input->post('id');
+        $res = $this->reclutamiento_model->getDetailsOrderByIdIntake($id);
+        echo json_encode($res);
+    }
     public function getAspirantesRequisiciones()
     {
         if ($this->session->userdata('idrol') == 4) {
@@ -2703,6 +2913,18 @@ class Reclutamiento extends CI_Controller
 
         // Convertir la imagen a base64 y retornarla
         return 'data:image/png;base64,' . base64_encode($imageString);
+    }
+
+    public function get_links()
+    {
+        // Obtenemos datos desde el modelo
+        $data = $this->reclutamiento_model->get_active_links();
+
+        // Respondemos en formato JSON
+        echo json_encode([
+            'success' => true,
+            'data'    => $data,
+        ]);
     }
 
 }

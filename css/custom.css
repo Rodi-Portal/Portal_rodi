@@ -1400,3 +1400,84 @@ color: white;
   object-fit: contain;     /* imágenes / vídeos */
   border: none;
 }
+.btnbar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:nowrap;           /* pon wrap si quieres que brinquen a 2 filas en móvil */
+}
+.btnbar .btn{                 /* fuerza a no ocupar 100% */
+  display:inline-flex;
+  width:auto !important;
+  padding:0;
+  align-items:center;
+  justify-content:center;
+}
+.btnbar .btn-ico{
+  --btn-size: 40px;
+  width: var(--btn-size) !important;
+  height: var(--btn-size);
+  border-radius:8px;
+  line-height:1;
+  font-size:16px;
+}
+.btnbar .btn-ico i{ line-height:1; }
+.btnbar .btn-ico i.fa-fw{ width:1.25em; }
+.btnbar form{ margin:0; display:inline-flex; }
+
+.btn-ico i{ line-height:1; }
+.btn-ico i.fa-fw{ width:1.25em; }
+@media (max-width:576px){
+  .btn-ico{ --btn-size:36px; font-size:15px; }
+}
+
+.intake-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap:12px 16px;
+}
+@media (max-width: 768px){
+  .intake-grid{ grid-template-columns: 1fr; }
+}
+.intake-grid .form-group{ margin-bottom: 8px; }
+.intake-grid label{ font-weight:600; margin-bottom:4px; display:block; }
+
+
+/* Bordes y sombras suaves */
+.soft-shadow { box-shadow: 0 10px 25px rgba(0,0,0,.15); }
+.rounded-lg   { border-radius: .75rem; }
+
+/* Cabecera primaria */
+.modal-header-primary {
+  background: #2F6CD6;          /* tono primario */
+  color: #fff;
+  border-bottom: 0;
+}
+
+/* Ajustes de select y grupo */
+.custom-select, .input-group-text { border-radius: .5rem; }
+.input-group .custom-select { border-left: 0; }
+
+/* Botón principal con micro-animación */
+.btn-primary { border-radius: .5rem; transition: transform .08s ease; }
+.btn-primary:hover { transform: translateY(-1px); }
+
+/* Backdrop un poco más suave */
+.modal-backdrop.show { opacity: .25; }
+
+/* Estados de carga en botón */
+#btnEnviarEmpleado.loading .btn-text { display: none; }
+#btnEnviarEmpleado.loading .spinner-border { display: inline-block !important; }
+#modalSucursal .modal-dialog {
+  max-width: 700px; /* ajusta según necesites */
+}
+#sucursalSelect {
+  min-width: 100%; /* que use todo el espacio disponible */
+    max-height: 250px !important; /* ajusta el alto visible */
+  overflow-y: auto;
+}
+.modal-dialog.modal-dialog-scrollable .modal-body {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}

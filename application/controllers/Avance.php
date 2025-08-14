@@ -280,82 +280,142 @@ class Avance extends CI_Controller
 
     public function ver_aviso($archivo = null)
     {
-        if (! $archivo) {
-            show_error('Nombre del archivo no especificado', 400);
-            return;
+        $default = 'AV_TL_V1.pdf'; // <- tu default
+        $baseDir = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
+
+        // 1) si no viene nombre, usa default
+        $archivo = $archivo ? trim($archivo, "/\\") : $default;
+
+        // 2) sanitiza (sin rutas)
+        $archivo = basename($archivo);
+
+        // 3) arma ruta y fallback al default si no existe
+        $ruta = $baseDir . $archivo;
+        if (! is_file($ruta)) {
+            $ruta = $baseDir . $default;
+            if (! is_file($ruta)) {
+                show_error('Archivo no encontrado', 404);
+                return;
+            }
+            $archivo = $default;
         }
 
-        // Carpeta donde están guardados los avisos
-        $carpeta = '_avisosPortal';
+        // 4) MIME y headers
+        $mime = function_exists('mime_content_type') ? mime_content_type($ruta) : 'application/pdf';
+        if (stripos($mime, 'pdf') === false) {$mime = 'application/pdf';}
 
-        // Sanitizar el nombre del archivo
-        $archivo = trim($archivo, '/');
-        if (strpos($archivo, '..') !== false) {
-            show_error('Nombre de archivo inválido', 400);
-            return;
-        }
-
-        // Construir ruta
-        $ruta = FCPATH . $carpeta . DIRECTORY_SEPARATOR . $archivo;
-
-        // Verificar si el archivo existe
-        if (! file_exists($ruta)) {
-            show_error('Archivo no encontrado', 404);
-            return;
-        }
-
-        // Cargar helper para tipo MIME
-        $this->load->helper('file');
-        $mime = get_mime_by_extension($ruta);
-
-        // Mostrar el archivo en el navegador
         header('Content-Type: ' . $mime);
-        header('Content-Disposition: inline; filename="' . $archivo . '"');
+        header('Content-Length: ' . filesize($ruta));
+        header('Content-Disposition: inline; filename="' . rawurlencode($archivo) . '"');
         readfile($ruta);
         exit;
     }
-    public function guardar_aviso()
-{
-    // Obtener el identificador que quieres usar en el nombre del archivo
-    $dato = $this->session->userdata('idPortal'); // Ejemplo: 'TalentSafeControl'
-    $nombre_final = $dato . '_avisoPrivacidad.pdf';
 
-    $config['upload_path']   = './_avisosPortal/';
-    $config['allowed_types'] = 'pdf';
-    $config['max_size']      = 5120; // 5 MB
-    $config['file_name']     = $nombre_final;
-    $config['overwrite']     = TRUE; // Sobrescribir si ya existe
+    // application/controllers/Proveedores.php
 
-    $this->load->library('upload', $config);
+    public function get_proveedores()
+    {
+        // Obtener los proveedores desde el modelo
+        $proveedores = $this->avance_model->get_proveedores();
 
-    if (!$this->upload->do_upload('aviso')) {
-        // Error al subir
-        $error = $this->upload->display_errors();
-        // Retornar un mensaje de error con un swal.fire
-        $response = array(
-            'status' => 'error',
-            'message' => 'Error al subir el aviso: ' . $error
-        );
-        echo json_encode($response);
-    } else {
-        // Subido y renombrado
-        $this->session->set_userdata('aviso', $nombre_final);
-        
-        $data = array(
-            'aviso' => $nombre_final,  // Nombre del archivo PDF
-            'edicion' => date('Y-m-d H:i:s') // Fecha actual de creación
-        );
-
-        $this->cat_portales_model->editModulos($data, $dato);
-        
-        // Retornar un mensaje de éxito con un swal.fire
-        $response = array(
-            'status' => 'success',
-            'message' => 'Aviso guardado como: ' . $nombre_final
-        );
-        echo json_encode($response);
+        // Devolver los datos en formato JSON
+        echo json_encode($proveedores);
     }
-}
+    public function documentos_info()
+    {
+        $this->output->set_content_type('application/json');
 
+        $id_portal = $this->session->userdata('idPortal');
+        $row       = $this->cat_portales_model->getDocs($id_portal); // debe regresar columnas 'aviso' y 'terminos'
+
+        echo json_encode([
+            'aviso_actual'     => $row->aviso ?? null,
+            'terminos_actual'  => $row->terminos ?? null,
+            'default_aviso'    => 'AV_TL_V1.pdf',
+            'default_terminos' => 'TM_TL_V1.pdf',
+        ]);
+    }
+
+    public function documentos_guardar()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id_portal = $this->session->userdata('idPortal');
+        $tipo      = $this->input->post('tipo'); // 'aviso' | 'terminos'
+
+        if (empty($id_portal)) {
+            echo json_encode(['error' => 'Sesión sin idPortal']);return;
+        }
+        if (! in_array($tipo, ['aviso', 'terminos'], true)) {
+            echo json_encode(['error' => 'Tipo inválido']);return;
+        }
+        if (empty($_FILES['archivo']['name'])) {
+            echo json_encode(['error' => 'Selecciona un PDF']);return;
+        }
+
+                                                   // Directorio destino (el mismo que ya usas)
+        $upload_path = FCPATH . '/_avisosPortal/'; // OJO: carpeta existente y con permisos de escritura
+        if (! is_dir($upload_path)) {
+            @mkdir($upload_path, 0775, true);
+        }
+
+        // Nombre final por tipo
+        $nombre_final = $id_portal . ($tipo === 'aviso'
+            ? '_avisoPrivacidad.pdf'
+            : '_terminosCondiciones.pdf');
+
+        // Config de subida (como en tu guardar_aviso)
+        $config = [
+            'upload_path'   => $upload_path,
+            'allowed_types' => 'pdf',
+            'max_size'      => 5120, // 5MB
+            'file_name'     => $nombre_final,
+            'overwrite'     => true,
+        ];
+
+        $this->load->library('upload', $config);
+
+        // El campo se llama 'archivo' (porque así lo mandas en FormData)
+        if (! $this->upload->do_upload('archivo')) {
+            $error = strip_tags($this->upload->display_errors('', ''));
+            echo json_encode(['error' => 'Error al subir: ' . $error]);
+            return;
+        }
+
+        // Si llegó aquí, ya se guardó con el nombre final
+        $this->cat_portales_model->updateDocs($id_portal, [
+            $tipo     => $nombre_final, // 'aviso' o 'terminos'
+            'edicion' => date('Y-m-d H:i:s'),
+        ]);
+
+        echo json_encode([
+            'status'  => 'success',
+            'mensaje' => ucfirst($tipo) . ' actualizado.',
+            'archivo' => $nombre_final,
+            'ver_url' => base_url('Avance/' . ($tipo === 'aviso' ? 'ver_aviso/' : 'ver_terminos/') . rawurlencode($nombre_final)),
+        ]);
+    }
+
+    public function documentos_eliminar()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id_portal = $this->session->userdata('idPortal');
+        $tipo      = $this->input->post('tipo');
+        if (! in_array($tipo, ['aviso', 'terminos'], true)) {echo json_encode(['error' => 'Tipo inválido']);return;}
+
+        $row     = $this->cat_portales_model->getDocs($id_portal);
+        $current = $row ? ($row->{$tipo} ?? null) : null;
+        if (! $current) {echo json_encode(['error' => 'No hay archivo para eliminar']);return;}
+
+        $path = FCPATH . '/_avisosPortal/' . $id_portal . '/' . $current;
+        if (is_file($path)) {
+            @unlink($path);
+        }
+
+        $this->cat_portales_model->updateDocs($id_portal, [$tipo => null]);
+
+        echo json_encode(['status' => 'success', 'mensaje' => ucfirst($tipo) . ' eliminado.']);
+    }
 
 }
