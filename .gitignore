@@ -29,6 +29,8 @@ application/config/keys/*
 /_doping/
 /_adjuntos/
 /_clinico/
+/_const/
+/_logosPortal/
 /_docs/
 /_facturasdoping/
 /_psicometria/
