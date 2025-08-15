@@ -7,25 +7,19 @@
       <div class="col-sm-12 col-md-8">
         <h2>Administración de Sucursales</h1>
       </div>
-      <div class="col-sm-12 col-md-3 d-flex justify-content-between">
+      <div class="col-sm-12 col-md-4 d-flex flex-wrap align-items-center">
         <?php if ($tipo_bolsa == 1) {?>
-        <a href="#" class="btn btn-info btn-icon-split mr-2" onclick="generarLinkstodos(event)">
-          <span class="icon text-white-50">
-            <i class="fas fa-user-tie"></i>
-          </span>
-          <span class="text">Crear/actualizar Links</span>
+        <a href="#" class="btn btn-outline-primary btn-lg btn-elevated mr-2 mb-2" onclick="generarLinkstodos(event)">
+          <i class="fas fa-link mr-2"></i>
+          <span>Crear/Actualizar Links</span>
         </a>
         <?php }?>
-        <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#newModal"
+        <a href="#" class="btn btn-outline-primary btn-lg btn-elevated mb-2" data-toggle="modal" data-target="#newModal"
           onclick="registrarCliente()">
-          <span class="icon text-white-50">
-            <i class="fas fa-user-tie"></i>
-          </span>
-          <span class="text">Crear Sucursal</span>
+          <i class="fas fa-building mr-2"></i>
+          <span>Crear Sucursal</span>
         </a>
       </div>
-
-
       <!-- div class="col-sm-12 col-md-2" style="display: none;">
         <a href="#" class="btn btn-primary btn-icon-split" onclick="registrarAccesoCliente()">
           <span class="icon text-white-50">
@@ -657,7 +651,7 @@ function generarLinkstodos(e) {
   if (e) e.preventDefault();
 
   const $btn = $('#btnGenerarLinks');
-  const url  = '<?php echo base_url('Cat_Cliente/generarLinksTodos'); ?>';
+  const url = '<?php echo base_url('Cat_Cliente/generarLinksTodos'); ?>';
 
   $.ajax({
     url: url,
@@ -679,9 +673,9 @@ function generarLinkstodos(e) {
       Swal.close();
 
       // Seguridad por si llega algo distinto
-      const ok   = Number(res?.ok ?? 0);
+      const ok = Number(res?.ok ?? 0);
       const fail = Number(res?.fail ?? 0);
-      const msg  = res?.message || (fail ? 'Proceso terminado con errores.' : 'Proceso completado correctamente.');
+      const msg = res?.message || (fail ? 'Proceso terminado con errores.' : 'Proceso completado correctamente.');
       const items = Array.isArray(res?.items) ? res.items : [];
 
       // Armar tabla de detalle (scrollable)
@@ -690,7 +684,7 @@ function generarLinkstodos(e) {
           <td style="white-space:nowrap;">${it.id_cliente ?? '-'}</td>
           <td>${it.success ? '✅' : '❌'}</td>
           <td style="max-width:480px; overflow:hidden; text-overflow:ellipsis;">
-            ${it.success ? (it.link ? `<a href="${it.link}" target="_blank" rel="noopener">Ver link</a>` : '-') 
+            ${it.success ? (it.link ? `<a href="${it.link}" target="_blank" rel="noopener">Ver link</a>` : '-')
                          : (it.error || 'Error desconocido')}
           </td>
         </tr>
@@ -718,15 +712,15 @@ function generarLinkstodos(e) {
       `;
 
       Swal.fire({
-        icon: fail ? 'warning' : 'success',
-        title: fail ? 'Proceso con advertencias' : 'Proceso completado',
-        html,
-        confirmButtonText: 'Aceptar'
-      })
-      .then(() => {
-        // Si quieres refrescar algo al final, descomenta:
-        // location.reload();
-      });
+          icon: fail ? 'warning' : 'success',
+          title: fail ? 'Proceso con advertencias' : 'Proceso completado',
+          html,
+          confirmButtonText: 'Aceptar'
+        })
+        .then(() => {
+          // Si quieres refrescar algo al final, descomenta:
+          // location.reload();
+        });
 
     },
     error: function(xhr) {

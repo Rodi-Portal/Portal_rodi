@@ -13,6 +13,35 @@ color: #000000 !important;
   
   margin-left: 20px;/* Sobrescribe el color de texto */
   }
+  /* Botón moderno con sombra suave */
+.btn-elevated{
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease;
+  padding: .75rem 1.25rem; /* más alto y ancho */
+}
+.btn-elevated:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.14);
+}
+
+/* Asegura que el ícono y el texto tengan espacio correcto */
+.btn-elevated i{
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Ajustes de contraste para outline */
+.btn-outline-primary{
+  border-width: 2px;
+}
+
+/* En pantallas pequeñas separa bien los botones */
+@media (max-width: 576px){
+  .btn-elevated{ width: 100%; justify-content: center; }
+}
+
 
   .custom-header {
     background-color: #1E88E5 !important; /* Azul diferente */
@@ -1557,3 +1586,5 @@ color: white;
   max-height: calc(100vh - 180px);
   overflow-y: auto;
 }
+
+
