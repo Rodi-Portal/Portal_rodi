@@ -3,11 +3,11 @@
 
   <!-- Page Heading -->
   <div class="align-items-center mb-4">
-    <div class="row justify-content-between">
+    <div class="row justify-content-between align-items-center">
       <div class="col-sm-12 col-md-8">
-        <h2>Administración de Sucursales</h1>
+        <h2>Administración de Sucursales</h2>
       </div>
-      <div class="col-sm-12 col-md-4 d-flex flex-wrap align-items-center">
+      <div class="col-sm-12 col-md-4 d-flex flex-wrap flex-md-nowrap justify-content-end align-items-center">
         <?php if ($tipo_bolsa == 1) {?>
         <a href="#" class="btn btn-outline-primary btn-lg btn-elevated mr-2 mb-2" onclick="generarLinkstodos(event)">
           <i class="fas fa-link mr-2"></i>
@@ -20,15 +20,8 @@
           <span>Crear Sucursal</span>
         </a>
       </div>
-      <!-- div class="col-sm-12 col-md-2" style="display: none;">
-        <a href="#" class="btn btn-primary btn-icon-split" onclick="registrarAccesoCliente()">
-          <span class="icon text-white-50">
-            <i class="fas fa-sign-in-alt"></i>
-          </span>
-          <span class="text">Acceso a clientes</span>
-        </a>
-      </div -->
     </div>
+
     <div>
       <p>Este módulo permite la gestión completa de usuarios externos y sucursales, con funciones para <br>registrar,
         actualizar, eliminar y mantener la información de manera organizada y eficiente.</p>
