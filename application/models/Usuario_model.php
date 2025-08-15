@@ -73,7 +73,6 @@ class Usuario_model extends CI_Model
         D.verificacion,
         D.id as idDatos')
             ->from('datos_generales as D')
-
             ->where('D.correo', $correo);
 
         $consulta  = $this->db->get();

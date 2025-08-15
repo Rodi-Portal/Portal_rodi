@@ -487,14 +487,14 @@ class Login extends CI_Controller
 
             } elseif ($new > 0) {
                 $id       = $this->session->userdata('id');
-                $pwd      = substr(md5(microtime()), 1, 8);
+                $pwd      = substr(md5(microtime()), 1, 12);
                 $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
 
                 if ($id !== null) {
                     $usuario = ['password' => $password, 'verificacion' => 1];
                     $this->usuario_model->forgotenPass($usuario, $id);
 
-                    if (! empty($correo)) {
+                    if (!empty($correo)) {
                         $this->load->library('phpmailer_lib');
                         $mail = $this->phpmailer_lib->load();
                         $mail->isSMTP();
@@ -550,7 +550,7 @@ class Login extends CI_Controller
     // Funcion para generar aut
     public function generarCodigoAutenticacion($correo)
     {
-        $longitud_codigo      = 8;
+        $longitud_codigo      = 12;
         $caracteres_validos   = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $codigo_autenticacion = '';
 
