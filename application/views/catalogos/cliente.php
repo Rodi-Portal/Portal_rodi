@@ -351,7 +351,7 @@ $(document).ready(function() {
       });
 
       function cargarLinks(idCliente) {
-        
+
         $('#linksContainer').html('<em>Cargando…</em>');
 
         $.ajax({
@@ -532,7 +532,7 @@ $(document).ready(function() {
         }, 200);
       }
 
-      
+
 
       function generarTabla(datos) {
         let salida = `<table class="table table-striped">
@@ -652,41 +652,99 @@ $(document).ready(function() {
   });
 
 });
+
 function generarLinkstodos(e) {
-        if (e) e.preventDefault();
+  if (e) e.preventDefault();
 
-        var $btn = $('#btnGenerarLinks');
-        var url = '<?php echo base_url('Cat_Cliente/generarLinksTodos'); ?>';
+  const $btn = $('#btnGenerarLinks');
+  const url  = '<?php echo base_url('Cat_Cliente/generarLinksTodos'); ?>';
 
-        $.ajax({
-          url: url,
-          method: 'POST',
-          dataType: 'json',
-          // Si necesitas enviar datos, agrégalos aquí:
-          // data: { id_portal: '<?php echo $this->session->userdata('idPortal'); ?>' },
-          beforeSend: function() {
-            $btn.prop('disabled', true).addClass('disabled');
-          },
-          success: function(res) {
-            if (res && res.success) {
-              // Éxito (puedes usar SweetAlert si ya lo usas)
-              console.log('OK:', res);
-              alert(res.message || 'Proceso completado');
-              // Si quieres refrescar tabla/listado:
-              // location.reload();
-            } else {
-              alert(res?.message || 'No fue posible completar la operación.');
-            }
-          },
-          error: function(xhr) {
-            console.error('Error AJAX:', xhr.responseText || xhr.statusText);
-            alert('Ocurrió un error al procesar la solicitud.');
-          },
-          complete: function() {
-            $btn.prop('disabled', false).removeClass('disabled');
-          }
-        });
-      }
+  $.ajax({
+    url: url,
+    method: 'POST',
+    dataType: 'json',
+    beforeSend: function() {
+      $btn.prop('disabled', true).addClass('disabled');
+
+      // Modal de "procesando..."
+      Swal.fire({
+        title: 'Generando links...',
+        text: 'Esto puede tardar unos segundos.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+    },
+    success: function(res) {
+      // Cerrar el loading, por si sigue abierto
+      Swal.close();
+
+      // Seguridad por si llega algo distinto
+      const ok   = Number(res?.ok ?? 0);
+      const fail = Number(res?.fail ?? 0);
+      const msg  = res?.message || (fail ? 'Proceso terminado con errores.' : 'Proceso completado correctamente.');
+      const items = Array.isArray(res?.items) ? res.items : [];
+
+      // Armar tabla de detalle (scrollable)
+      const rows = items.map(it => `
+        <tr>
+          <td style="white-space:nowrap;">${it.id_cliente ?? '-'}</td>
+          <td>${it.success ? '✅' : '❌'}</td>
+          <td style="max-width:480px; overflow:hidden; text-overflow:ellipsis;">
+            ${it.success ? (it.link ? `<a href="${it.link}" target="_blank" rel="noopener">Ver link</a>` : '-') 
+                         : (it.error || 'Error desconocido')}
+          </td>
+        </tr>
+      `).join('');
+
+      const html = `
+        <div style="text-align:left">
+          <p style="margin:.25rem 0;">✅ Correctos: <b>${ok}</b></p>
+          <p style="margin:.25rem 0;">❌ Errores: <b>${fail}</b></p>
+          <div style="max-height:300px; overflow:auto; border:1px solid #eee; border-radius:6px;">
+            <table style="width:100%; font-size:13px;">
+              <thead>
+                <tr style="background:#f7f7f7;">
+                  <th style="text-align:left; padding:.5rem;">ID Cliente</th>
+                  <th style="text-align:left; padding:.5rem;">Estado</th>
+                  <th style="text-align:left; padding:.5rem;">Detalle / Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows || '<tr><td colspan="3" style="padding:.5rem;">Sin elementos.</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      Swal.fire({
+        icon: fail ? 'warning' : 'success',
+        title: fail ? 'Proceso con advertencias' : 'Proceso completado',
+        html,
+        confirmButtonText: 'Aceptar'
+      })
+      .then(() => {
+        // Si quieres refrescar algo al final, descomenta:
+        // location.reload();
+      });
+
+    },
+    error: function(xhr) {
+      Swal.close();
+      console.error('Error AJAX:', xhr.responseText || xhr.statusText);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un problema al procesar la solicitud.',
+        confirmButtonText: 'Aceptar'
+      });
+    },
+    complete: function() {
+      $btn.prop('disabled', false).removeClass('disabled');
+    }
+  });
+}
 
 function cargarDatosDomicilioGeneral(datos) {
   var auth_token = "MUJkuDQTBwg6L_OLJghlvf5LDwdas3Tnm5EaF3Kny_7GIUXTah_7nbuE-K15HdxxTxo";
