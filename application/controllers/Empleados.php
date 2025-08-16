@@ -71,7 +71,7 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos']   = $this->usuario_model->getPermisos(true);
+        $data['permisos']   = $this->usuario_model->getPermisos(true, 'emp');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
         foreach ($data['submodulos'] as $row) {
@@ -119,7 +119,7 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos']   = $this->usuario_model->getPermisos();
+        $data['permisos']   = $this->usuario_model->getPermisos(false, 'pre');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
         foreach ($data['submodulos'] as $row) {
@@ -167,7 +167,7 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos']   = $this->usuario_model->getPermisos(true);
+        $data['permisos']   = $this->usuario_model->getPermisos(true, 'former');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
         foreach ($data['submodulos'] as $row) {
@@ -215,7 +215,7 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos']   = $this->usuario_model->getPermisos(true);
+        $data['permisos']   = $this->usuario_model->getPermisos(true, 'former');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
         foreach ($data['submodulos'] as $row) {
@@ -263,11 +263,11 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']  = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos']  = $this->usuario_model->getPermisos2(true);
+        $data['permisos']  = $this->usuario_model->getPermisos(true, 'com');
 
         $data['submodulos']       = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $data['columnas_fijas']   = ['Sucursal', 'Empleados', 'Usuarios con acceso', 'Acciones'];
-        $data['columnas_ocultas'] = ['id_cliente','correo' , 'max', 'usuarios', 'empleados_activos', 'nombreCliente', 'empleados_inactivos'];
+        $data['columnas_ocultas'] = ['id_cliente','creacion','correo' , 'max', 'usuarios', 'empleados_activos', 'nombreCliente', 'empleados_inactivos', 'icono', 'url','pre_empleados'];
 
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
@@ -279,6 +279,7 @@ class Empleados extends CI_Controller
 
         // Obtener configuración guardada del usuario
         $configColumnas = $this->comunicacion_model->getColumnasConfiguracion($idUsuario, $idCliente, $idPortal);
+      
 
         // Columnas seleccionadas por el usuario (puede ser null si no tiene)
         $data['columnas_usuario'] = $configColumnas['seleccionadas'];
