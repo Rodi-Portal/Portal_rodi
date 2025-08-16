@@ -69,7 +69,10 @@ class Login extends CI_Controller
                     "nombrePortal" => $usuario->nombrePortal,
                     "logo"         => $usuario->logo,
                     "aviso"        => $usuario->aviso,
-                    "terminos"     => $usuario->aviso,
+                    "terminos"     => $usuario->terminos,
+                    "emp"        => $usuario->emp,
+                    "former"     => $usuario->former,
+
 
 
                 ];

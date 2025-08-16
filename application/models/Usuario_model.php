@@ -103,6 +103,8 @@ class Usuario_model extends CI_Model
             P.bloqueado,
             P.tipo_bolsa,
             P.logo,
+            P.former,
+            P.emp,
             P.aviso,
             P.terminos,
             P.id as idPortal')
