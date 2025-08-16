@@ -103,10 +103,13 @@
 </style>
 
 <script>
-$(document).ready(function() {
-  $('#processTable').DataTable();
-  $('#sidebarToggle').on('click', function() {
-    $('#sidebar').toggleClass('hidden'); // Alternar la clase 'hidden'
+$(document).ready(function () {
+  $('#processTable').DataTable({
+    order: [],                    // 👈 respeta el orden del DOM (tu foreach)
+  });
+
+  $('#sidebarToggle').on('click', function () {
+    $('#sidebar').toggleClass('hidden');
   });
 });
 </script>

@@ -206,7 +206,7 @@
       : $('#processTable').DataTable({
           scrollX: true,
           responsive: true,
-          order: [[1, 'asc']],
+          order: [],
           // columnDefs: [{ orderable: false, targets: [0, -1] }], // opcional
         });
 
