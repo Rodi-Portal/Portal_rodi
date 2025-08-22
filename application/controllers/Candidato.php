@@ -1813,7 +1813,7 @@ class Candidato extends Custom_Controller
 
         // Configurar la URL del endpoint según el origen
         $api_base_url = API_URL;
-
+        
         if ($origen == 1) {
             $url  = $api_base_url . "documents/" . $id;
             $path = '_documentEmpleado/';
@@ -1883,11 +1883,11 @@ class Candidato extends Custom_Controller
             $salida .= '</thead>';
             $salida .= '<tbody>';
             foreach (($response_data['documentos'] ?? []) as $doc) {
-                $idDoc       = isset($doc['id']) ? (int) $doc['id'] : 0;
-                $nameDoc     = isset($doc['nameDocument']) ? (string) $doc['nameDocument'] : '';
+                $idDoc       = isset($doc['id']) ? (int)$doc['id'] : 0;
+                $nameDoc     = isset($doc['nameDocument']) ? (string)$doc['nameDocument'] : '';
                 $nameAlterno = isset($doc['nameAlterno']) && $doc['nameAlterno'] !== null && $doc['nameAlterno'] !== ''
-                ? (string) $doc['nameAlterno'] : $nameDoc;
-                $uploadDate = isset($doc['upload_date']) ? (string) $doc['upload_date'] : '';
+                            ? (string)$doc['nameAlterno'] : $nameDoc;
+                $uploadDate  = isset($doc['upload_date']) ? (string)$doc['upload_date'] : '';
 
                 // URL al archivo:
                 // Opción A (tu nueva ruta protegida por sesión):
@@ -1898,23 +1898,22 @@ class Candidato extends Custom_Controller
                 // Args seguros para JS (strings via JSON)
                 $jsId     = $idDoc;
                 $jsName   = json_encode($nameDoc, JSON_UNESCAPED_UNICODE);
-                $jsReqId  = isset($id) ? (int) $id : 0;
-                $jsOrigen = json_encode((string) ($origen ?? ''), JSON_UNESCAPED_UNICODE);
+                $jsReqId  = isset($id) ? (int)$id : 0;
+                $jsOrigen = json_encode((string)($origen ?? ''), JSON_UNESCAPED_UNICODE);
 
-                $salida .= '<tr id="fila' . html_escape((string) $idDoc) . '">';
+                $salida .= '<tr id="fila' . html_escape((string)$idDoc) . '">';
 
                 $salida .= '<td><a href="' . html_escape($href) . '" target="_blank" style="word-break: break-word;">'
-                . html_escape($nameAlterno) . '</a></td>';
+                        .   html_escape($nameAlterno) . '</a></td>';
 
                 $salida .= '<td>' . html_escape($nameDoc) . '</td>';
                 $salida .= '<td>' . html_escape($uploadDate) . '</td>';
-
                 $salida .= '<td>
-                    <button onclick="eliminarArchivoInterno(' . $jsId . ', ' . $jsName . ', ' . $jsReqId . ', ' . $jsOrigen . ')"
-                            class="btn btn-link text-danger p-0" title="Eliminar">
-                    <i class="fa fa-trash"></i>
-                    </button>
-                </td>';
+                <button onclick="eliminarArchivoInterno(' . $doc["id"] . ', \'' . $doc["nameDocument"] . '\', ' . $id . ', \'' . $origen . '\')"
+                             class="btn btn-link text-danger p-0" title="Eliminar">
+                             <i class="fa fa-trash"></i>
+                         </button>
+             </td>';
 
                 $salida .= '</tr>';
             }
@@ -2013,7 +2012,7 @@ class Candidato extends Custom_Controller
 
         // Configurar la URL del endpoint según el origen
         $api_base_url = API_URL;
-
+       
         if ($origen == 1) {
             $url  = $api_base_url . "documents/" . $id;
             $path = '_documentEmpleado/';
@@ -2081,39 +2080,24 @@ class Candidato extends Custom_Controller
             $salida .= '</thead>';
             $salida .= '<tbody>';
 
-            foreach (($response_data['documentos'] ?? []) as $doc) {
-                $idDoc       = isset($doc['id']) ? (int) $doc['id'] : 0;
-                $nameDoc     = isset($doc['nameDocument']) && $doc['nameDocument'] !== null ? (string) $doc['nameDocument'] : '';
-                $nameAlterno = isset($doc['nameAlterno']) && $doc['nameAlterno'] !== '' ? (string) $doc['nameAlterno'] : $nameDoc;
-                $uploadDate  = isset($doc['upload_date']) && $doc['upload_date'] !== null ? (string) $doc['upload_date'] : '';
+           foreach ($response_data['documentos'] as $doc) {
+                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
+                
+                // Archivo real (nameDocument)
+                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'] ?? '')) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno'] ?? '') . '</a></td>';
 
-                                                              // Construye href solo si hay nombre de archivo
-                $relBase = trim((string) ($path ?? ''), '/'); // p.ej. "requisiciones/11/docs"
-                $href    = $nameDoc !== ''
-                ? base_url(($relBase !== '' ? $relBase . '/' : '') . rawurlencode($nameDoc))
-                : '';
-
-                $salida .= '<tr id="fila' . html_escape((string) $idDoc) . '">';
-
-                // Columna del archivo: link si hay archivo, texto plano si no
-                if ($href !== '') {
-                    $salida .= '<td><a href="' . html_escape($href) . '" target="_blank" style="word-break: break-word;">'
-                    . html_escape($nameAlterno) . '</a></td>';
-                } else {
-                    $salida .= '<td>' . html_escape($nameAlterno) . '</td>';
-                }
-
-                // Categoría / nombre real del archivo
-                $salida .= '<td>' . html_escape($nameDoc) . '</td>';
+                // Categoría o tipo de documento
+                $salida .= '<td>' . htmlspecialchars($doc['nameDocument'] ?? '') . '</td>';
 
                 // Fecha de carga
-                $salida .= '<td>' . html_escape($uploadDate) . '</td>';
+                $salida .= '<td>' . htmlspecialchars($doc['upload_date'] ?? '') . '</td>';
 
-                // Si luego agregas botón eliminar, colócalo aquí
-                // $salida .= '<td> ... </td>';
+                // Botón eliminar
+               
 
                 $salida .= '</tr>';
             }
+
 
             $salida .= '</tbody></table>';
         } else {
