@@ -5,58 +5,50 @@
     <div class="row">
       <div class="col-sm-12 col-md-6 col-lg-6 text-center">
         <h1 class="titulo_seccion mb-3">Requisiciones</h1>
-        <?php if ($this->session->userdata('tipo_bolsa') == 1) {?>
-        <button type="button" id="btnNuevaRequisicion" class="btn btn-success btn-icon-split" onclick="openQrModal()">
-          <span class="icon text-white-50">
-            <i class="far fa-file-alt"></i>
-          </span>
-          <span class="text">Link Solicitudes</span>
-        </button>
-        <?php }?>
       </div>
 
 
-      <div class="col-sm-12 col-md-6 col-lg-6">
-        <div class="mb-3 float-right">
-          <?php if ($this->session->userdata('tipo_bolsa') == 1) {?>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2"
-            onclick="nuevaRequisicionIntake()">
-            <span class="icon text-white-50">
-              <i class="far fa-file-alt"></i>
-            </span>
-            <span class="text">Registrar Requisicion</span>
-          </button>
+   <div class="col-sm-12 col-md-6 col-lg-6">
+  <div class="actions d-flex justify-content-md-end flex-wrap">
+    <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
+      <button type="button" class="btn action-btn btn-green"
+              onclick="openQrModal()">
+        <span class="icon"><i class="far fa-file-alt"></i></span>
+        <span class="text">Link General</span>
+      </button>
+    <?php endif; ?>
 
+    <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
+      <button type="button" id="btnRegistrarReq"
+              class="btn action-btn btn-blue"
+              onclick="nuevaRequisicionIntake()">
+        <span class="icon"><i class="far fa-file-alt"></i></span>
+        <span class="text">Registrar Requisición</span>
+      </button>
+    <?php else: ?>
+      <button type="button" id="btnReqInterna"
+              class="btn action-btn btn-blue"
+              onclick="nuevaRequisicion()">
+        <span class="icon"><i class="far fa-file-alt"></i></span>
+        <span class="text">Requisición Interna</span>
+      </button>
+    <?php endif; ?>
 
-          <?php } else {?>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2"
-            onclick="nuevaRequisicion()">
-            <span class="icon text-white-50">
-              <i class="far fa-file-alt"></i>
-            </span>
-            <span class="text">Requisicion Interna</span>
-          </button>
-          <?php }?>
-        </div>
-        <?php
-            if ($this->session->userdata('idrol') == 4) {
-                $disabled  = 'disabled';
-                $textTitle = 'title="No posees permiso para esta acción"';
-            } else {
-                $disabled  = '';
-                $textTitle = '';
-        }?>
-        <div class="mb-3 float-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
-          <button type="button" id="btnOpenAssignToUser" class="btn btn-primary btn-icon-split float-right mr-2"
-            onclick="openAssignToUser()" <?php echo $disabled; ?>>
-            <span class="icon text-white-50">
-              <i class="fas fa-user-edit"></i>
-            </span>
-            <span class="text">Asignar Requisicion</span>
-          </button>
-        </div>
+    <?php
+      if ($this->session->userdata('idrol') == 4) {
+        $disabled  = 'disabled';
+        $textTitle = 'title="No posees permiso para esta acción"';
+      } else { $disabled=''; $textTitle=''; }
+    ?>
+    <button type="button" id="btnOpenAssignToUser"
+            class="btn action-btn btn-purple"
+            onclick="openAssignToUser()" <?php echo $disabled . ' ' . $textTitle; ?>>
+      <span class="icon"><i class="fas fa-user-edit"></i></span>
+      <span class="text">Asignar Requisición</span>
+    </button>
+  </div>
+</div>
 
-      </div>
     </div>
   </section>
   <br><br>

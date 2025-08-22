@@ -998,7 +998,7 @@ class Cat_Cliente extends CI_Controller
         if (! $id_portal) {
             return $this->output
                 ->set_content_type('application/json')
-                ->set_output(json_encode(['error' => 'ID de cliente inválido']));
+                ->set_output(json_encode(['error' => 'ID de portal inválido']));
         }
 
         try {

@@ -536,7 +536,7 @@ class Cat_cliente_model extends CI_Model
     {
         $query = $this->db
             ->select('L.*')
-            ->from('links_cliente as L')
+            ->from('links_clientes as L')
             ->where('L.id_portal', $id_portal)
             ->where('L.id_cliente IS NULL', NULL, FALSE) // ✅ condición correcta
          

@@ -2712,3 +2712,25 @@ function mostrarInputOtro() {
   }
 }
 </script>
+<style>
+  .actions { gap: .5rem; }
+  .action-btn{
+    display:inline-flex; align-items:center;
+    min-width: 240px; /* mismo tamaño */
+    padding:.6rem .9rem; border-radius:.6rem; font-weight:600;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transition: transform .12s ease, filter .12s ease;
+  }
+  .action-btn .icon{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:2.25rem; height:2.25rem; margin-right:.6rem;
+    border-radius:.5rem; background: rgba(255,255,255,.18);
+  }
+  .action-btn:hover{ transform: translateY(-1px); filter:brightness(1.03); }
+  .action-btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+  /* Tonos (puedes ajustar hex a tu gusto) */
+  .btn-green  { background:#10b981; border-color:#10b981; color:#fff; }
+  .btn-blue   { background:#3b82f6; border-color:#3b82f6; color:#fff; }
+  .btn-purple { background:#6366f1; border-color:#6366f1; color:#fff; }
+</style>
