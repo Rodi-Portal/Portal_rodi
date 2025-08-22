@@ -2184,7 +2184,7 @@ function openUpdateOrderIntake(id) {
     success: function(res) {
       setTimeout(() => $('.loader').fadeOut(), 200);
       const dato = typeof res === 'string' ? JSON.parse(res) : res || {};
-      console.log("🚀 ~ openUpdateOrderIntake ~ empresa:", dato)
+      
 
       // Encabezado
       const cliente = dato.nombre_c || '';

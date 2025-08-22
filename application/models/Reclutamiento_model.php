@@ -832,7 +832,7 @@ class Reclutamiento_model extends CI_Model
             ->from('requisicion AS R')
             ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
             ->where('R.id', $idReq)
-            ->where('CL.id_portal', $id_portal) // mismo criterio que usas en SELECTs
+            ->where('R.id_portal', $id_portal) // mismo criterio que usas en SELECTs
             ->get()->row();
 
         if (! $row) {
