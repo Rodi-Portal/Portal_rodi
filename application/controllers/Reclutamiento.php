@@ -582,189 +582,204 @@ class Reclutamiento extends CI_Controller
 
     public function addApplicant()
     {
-        $this->form_validation->set_rules('requisicion', 'Asignar requisición', 'required');
+        // 1) Validación base (ajusta 'medio' según si es obligatorio u opcional)
+        $this->form_validation->set_rules('requisicion', 'Asignar requisición', 'required|integer');
         $this->form_validation->set_rules('nombre', 'Nombre(s)', 'required|trim');
         $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
         $this->form_validation->set_rules('materno', 'Segundo apellido', 'trim');
         $this->form_validation->set_rules('domicilio', 'Localización o domicilio', 'required|trim');
         $this->form_validation->set_rules('area_interes', 'Área de interés', 'required|trim');
-        $this->form_validation->set_rules('medio', 'Medio de contacto', 'required|trim');
+        // Si 'medio' viene como "null" desde el front, considera hacerlo opcional o valida con callback
+        $this->form_validation->set_rules('medio', 'Medio de contacto', 'trim');
         $this->form_validation->set_rules('telefono', 'Teléfono', 'trim|max_length[16]');
         $this->form_validation->set_rules('correo', 'Correo', 'trim|valid_email');
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_message('integer', 'El campo {field} debe ser numérico');
 
-        $msj = [];
-        if ($this->form_validation->run() == false) {
-            $msj = [
+        if ($this->form_validation->run() === false) {
+            echo json_encode(['codigo' => 0, 'msg' => validation_errors()]);
+            return;
+        }
+
+        // 2) Normaliza entradas
+        $date       = date('Y-m-d H:i:s');
+        $id_portal  = (int) $this->session->userdata('idPortal');
+        $id_usuario = (int) $this->session->userdata('id');
+        $idRol      = (int) $this->session->userdata('idrol');
+
+        $req              = (int) $this->input->post('requisicion', true);
+        $nombre           = strtoupper((string) $this->input->post('nombre', true));
+        $paterno          = strtoupper((string) $this->input->post('paterno', true));
+        $materno          = strtoupper((string) $this->input->post('materno', true));
+        $domicilio        = (string) $this->input->post('domicilio', true);
+        $area_interes     = (string) $this->input->post('area_interes', true);
+        $telefono         = (string) $this->input->post('telefono', true);
+        $correo           = (string) $this->input->post('correo', true);
+        $id_aspirante     = (int) $this->input->post('id_aspirante', true);
+        $id_bolsa_trabajo = (int) $this->input->post('id_bolsa_trabajo', true);
+
+        // "null" (string) -> NULL real
+        $medio = $this->input->post('medio', true);
+        if ($medio === 'null' || $medio === 'NULL' || $medio === '' || $medio === null) {
+            $medio = null;
+        }
+
+        // 3) Verifica que la requisición exista (evita FK error)
+        $existsReq = $this->reclutamiento_model->existsRequisitionInPortal($req, $id_portal);
+        if (! $existsReq) {
+            echo json_encode([
                 'codigo' => 0,
-                'msg'    => validation_errors(),
-            ];
-        } else {
-            $date         = date('Y-m-d H:i:s');
-            $id_portal    = $this->session->userdata('idPortal');
-            $req          = $this->input->post('requisicion');
-            $nombre       = $this->input->post('nombre');
-            $paterno      = $this->input->post('paterno');
-            $materno      = $this->input->post('materno');
-            $medio        = $this->input->post('medio');
-            $telefono     = $this->input->post('telefono');
-            $correo       = $this->input->post('correo');
-            $id_usuario   = $this->session->userdata('id');
-            $id_aspirante = $this->input->post('id_aspirante');
-            $idRol        = $this->session->userdata('idrol');
+                'msg'    => "La requisición {$req} no existe o no pertenece a este portal",
+            ]);
+            return;
+        }
 
-            $id_bolsa_trabajo = $this->input->post('id_bolsa_trabajo');
-            $notificacion     = 0;
+        $notificacion   = 0;
+        $nombre_archivo = null;
 
-            $nombre_archivo = null;
-            if (empty($id_aspirante)) {
-                if (empty($id_bolsa_trabajo)) {
-                    $jobPool = [
-                        'creacion'       => $date,
-                        'edicion'        => $date,
-                        'id_portal'      => $id_portal,
-                        'id_usuario'     => $id_usuario,
-                        'nombre'         => strtoupper($nombre),
-                        'paterno'        => strtoupper($paterno),
-                        'materno'        => strtoupper($materno),
-                        'telefono'       => $telefono,
-                        'medio_contacto' => $medio,
-                        'area_interes'   => $this->input->post('area_interes'),
-                        'domicilio'      => $this->input->post('domicilio'),
-                        'status'         => 2,
-                    ];
-                    $id_bolsa_trabajo = $this->reclutamiento_model->addJobPoolWithIdReturned($jobPool);
-                } else {
-                    $bolsa = [
-
-                        'id_portal'      => $id_portal,
-                        'edicion'        => $date,
-                        'nombre'         => strtoupper($nombre),
-                        'paterno'        => strtoupper($paterno),
-                        'materno'        => strtoupper($materno),
-                        'telefono'       => $telefono,
-                        'medio_contacto' => $medio,
-                        'area_interes'   => $this->input->post('area_interes'),
-                        'domicilio'      => $this->input->post('domicilio'),
-                        'status'         => 2,
-                    ];
-
-                    if ($idRol != 6) {
-                        $bolsa['id_usuario'] = $id_usuario;
-                    }
-                    $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
-                }
-                if ($this->reclutamiento_model->existeRegistro($id_bolsa_trabajo, $req)) {
-                    // Ya existe un registro, puedes manejarlo según tu lógica de negocio
-                    // Por ejemplo, podrías mostrar un mensaje de error o hacer alguna otra acción
-
-                    $msj = [
-                        'codigo' => 0,
-                        'msg'    => "Ya  esta  Registrado elaspirante  para  esta  requicisión ",
-                    ];
-
-                } else {
-                    // No existe un registro, procedemos a agregar el nuevo registro
-                    $datos = [
-                        'creacion'         => $date,
-                        'edicion'          => $date,
-                        'id_usuario'       => $id_usuario,
-                        'id_bolsa_trabajo' => $id_bolsa_trabajo,
-                        'id_requisicion'   => $req,
-                        'correo'           => $correo,
-
-                        'cv'               => $nombre_archivo,
-                        'status'           => 'Registrado',
-                    ];
-                    $id_req_aspirante = $this->reclutamiento_model->addApplicant($datos);
-
-                    if ($id_bolsa_trabajo != 0) {
-                        $bolsa = [
-                            'status' => 2,
-                        ];
-                        $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
-                    }
-
-                    // Llamar a la API solo si el registro se agregó correctamente
-                    if ($id_req_aspirante && $notificacion > 0) {
-                        $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspirante($id_req_aspirante);
-
-                        // Verifica que el resultado no sea NULL y que sea un objeto
-                        if ($result2 && $result2->phone != null) {
-                            $datos_plantilla = [
-                                'nombre_cliente'   => $result2->nombre_cliente,
-                                'nombre_aspirante' => $result2->nombre_completo,
-                                'vacante'          => $result2->vacante,
-                                'telefono'         => $result2->phone,
-                            ];
-
-                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone . '', 'hello_world', $datos_plantilla);
-
-                            if ($api_response['codigo'] == 1) {
-                                $msj = [
-                                    'codigo' => 1,
-                                    'msg'    => 'El aspirante fue guardado correctamente.  Y se notifico al cliente via  whatssapp ' . $api_response['msg'],
-                                ];
-                            } else {
-                                $msj = [
-                                    'codigo' => 1,
-                                    'msg'    => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente . ' . $api_response['msg'],
-                                ];
-                            }
-                        }
-
-                        // Llamar a la API con los datos de la plantilla
-
-                    } else {
-                        $msj = [
-                            'codigo' => 1,
-                            'msg'    => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente .',
-                        ];
-                    }
-                }
-            } elseif ($id_aspirante > 0) {
-                $datos_rh = [
-                    'id_requisicion' => $req,
-                    'correo'         => $correo,
+        // 4) Alta/edición
+        if ($id_aspirante <= 0) {
+            // ---- Alta en bolsa (nuevo o edición de bolsa existente) ----
+            if ($id_bolsa_trabajo <= 0) {
+                $jobPool = [
+                    'creacion'       => $date,
+                    'edicion'        => $date,
+                    'id_portal'      => $id_portal,
+                    'id_usuario'     => $id_usuario,
+                    'nombre'         => $nombre,
+                    'paterno'        => $paterno,
+                    'materno'        => $materno,
+                    'telefono'       => $telefono,
+                    'medio_contacto' => $medio, // <- puede ser NULL
+                    'area_interes'   => $area_interes,
+                    'domicilio'      => $domicilio,
+                    'status'         => 2,
                 ];
-                $datos_bt = [
-
+                $id_bolsa_trabajo = (int) $this->reclutamiento_model->addJobPoolWithIdReturned($jobPool);
+            } else {
+                $bolsa = [
                     'id_portal'      => $id_portal,
                     'edicion'        => $date,
-                    'nombre'         => strtoupper($nombre),
-                    'paterno'        => strtoupper($paterno),
-                    'materno'        => strtoupper($materno),
+                    'nombre'         => $nombre,
+                    'paterno'        => $paterno,
+                    'materno'        => $materno,
                     'telefono'       => $telefono,
-                    'medio_contacto' => $medio,
-                    'area_interes'   => $this->input->post('area_interes'),
-                    'domicilio'      => $this->input->post('domicilio'),
+                    'medio_contacto' => $medio, // <- puede ser NULL
+                    'area_interes'   => $area_interes,
+                    'domicilio'      => $domicilio,
+                    'status'         => 2,
                 ];
-
-                $resultado = $this->reclutamiento_model->editarDatosAspiranteBolsa($datos_bt, $id_bolsa_trabajo, $datos_rh, $id_aspirante);
-
-                // Verificar si la función se ejecutó correctamente
-                if ($resultado) {
-                    // La función se ejecutó correctamente
-                    $msj = [
-                        'codigo' => 1,
-                        'msg'    => 'El aspirante fue Actualizado correctamente :)',
-                    ];
-                } else {
-                    // La función no se ejecutó correctamente
-                    $msj = [
-                        'codigo' => 0,
-                        'msg'    => 'El aspirante no pudo ser actualizado :(',
-                    ];
+                if ($idRol != 6) {
+                    $bolsa['id_usuario'] = $id_usuario;
                 }
-
+                $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
             }
 
+            // Evita duplicado de relación bolsa–requisición
+            if ($this->reclutamiento_model->existeRegistro($id_bolsa_trabajo, $req)) {
+                echo json_encode([
+                    'codigo' => 0,
+                    'msg'    => 'Ya está registrado el aspirante para esta requisición',
+                ]);
+                return;
+            }
+
+            // ---- Inserta en requisicion_aspirante (con transacción y captura de error) ----
+            $datos = [
+                'creacion'         => $date,
+                'edicion'          => $date,
+                'id_usuario'       => $id_usuario,
+                'id_bolsa_trabajo' => $id_bolsa_trabajo,
+                'id_requisicion'   => $req, // <- FK: ya validamos que existe
+                'correo'           => $correo,
+                'cv'               => $nombre_archivo,
+                'status'           => 'Registrado',
+            ];
+
+            $res = $this->reclutamiento_model->addApplicant($datos); // ideal: que devuelva ['ok','id','db_error','sql']
+
+            // Si tu addApplicant() devuelve solo el ID:
+            // $id_req_aspirante = $res;
+            // $ok = (bool)$id_req_aspirante;
+
+            // Suponiendo una versión mejorada que devuelve arreglo:
+            if (is_array($res)) {
+                if (! empty($res['db_error'])) {
+                    // Log detallado para DEV
+                    log_message('error', 'addApplicant error: ' . print_r($res['db_error'], true) . ' SQL: ' . $res['sql']);
+                    echo json_encode(['codigo' => 0, 'msg' => 'No se pudo registrar el aspirante (error BD).']);
+                    return;
+                }
+                $id_req_aspirante = $res['id'] ?? 0;
+            } else {
+                // fallback si retorna id o false
+                $id_req_aspirante = (int) $res;
+                if ($id_req_aspirante <= 0) {
+                    echo json_encode(['codigo' => 0, 'msg' => 'No se pudo registrar el aspirante.']);
+                    return;
+                }
+            }
+
+            // Marca bolsa en “2”
+            if ($id_bolsa_trabajo > 0) {
+                $this->reclutamiento_model->editBolsaTrabajo(['status' => 2], $id_bolsa_trabajo);
+            }
+
+            // Notificación (si aplica)
+            if ($id_req_aspirante && $notificacion > 0) {
+                // ... tu bloque de notificación (igual que lo tienes) ...
+            }
+
+            echo json_encode([
+                'codigo' => 1,
+                'msg'    => 'El aspirante fue guardado correctamente.',
+            ]);
+            return;
+
+        } else {
+            // ---- Actualización de aspirante existente ----
+            $datos_rh = [
+                'id_requisicion' => $req,
+                'correo'         => $correo,
+            ];
+            $datos_bt = [
+                'id_portal'      => $id_portal,
+                'edicion'        => $date,
+                'nombre'         => $nombre,
+                'paterno'        => $paterno,
+                'materno'        => $materno,
+                'telefono'       => $telefono,
+                'medio_contacto' => $medio, // <- puede ser NULL
+                'area_interes'   => $area_interes,
+                'domicilio'      => $domicilio,
+            ];
+
+            // Asegura que la requisición exista también en actualización
+            if (! $existsReq) {
+                echo json_encode([
+                    'codigo' => 0,
+                    'msg'    => "La requisición {$req} no existe o no pertenece a este portal",
+                ]);
+                return;
+            }
+
+            $ok = $this->reclutamiento_model->editarDatosAspiranteBolsa(
+                $datos_bt,
+                $id_bolsa_trabajo,
+                $datos_rh,
+                $id_aspirante
+            );
+
+            echo json_encode([
+                'codigo' => $ok ? 1 : 0,
+                'msg'    => $ok ? 'El aspirante fue actualizado correctamente :)'
+                : 'El aspirante no pudo ser actualizado :(',
+            ]);
+            return;
         }
-        echo json_encode($msj);
     }
 
     public function guardarAccionRequisicion()

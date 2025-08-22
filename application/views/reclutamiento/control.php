@@ -56,8 +56,8 @@
         <?php
             if ($reqs) {
             foreach ($reqs as $req) {?>
-        <option value="<?php echo $req->id; ?>">
-          <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+        <option value="<?php echo $req->idReq; ?>">
+          <?php echo '#' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
         </option>
         <?php
             header('Content-Type: text/html; charset=utf-8');}

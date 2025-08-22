@@ -1052,10 +1052,10 @@
           let data = JSON.parse(res);
           //console.log("🚀 ~ openAddApplicant ~ res:", res)
           for (let i = 0; i < data.length; i++) {
-            let optionText = '#' + data[i]['id'] + ' ' + data[i]['nombre'] + ' - ' + data[i]['puesto'] +
+            let optionText = '#' + data[i]['idReq'] + ' ' + data[i]['nombre_cliente'] + ' - ' + data[i]['puesto'] +
               ' - Vacantes: ' + data[i]['numero_vacantes'];
             $('#req_asignada').append($('<option>', {
-              value: data[i]['id'],
+              value: data[i]['idReq'],
               text: optionText
             }));
           }

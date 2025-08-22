@@ -20,14 +20,16 @@
       <div class="modal-body">
         <form id="formAspirante">
           <div class="col-sm-12 ">
+
             <label for="buscador">Selecciona una Requisición :</label>
             <select name="req_asignada" id="req_asignada">
 
               <?php
                   if ($reqs) {
                   foreach ($reqs as $req) {?>
-              <option value="<?php echo $req->id; ?>">
-                <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+
+              <option value="<?php echo $req->idReq; ?>">
+                <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
               </option>
               <?php }
               } else {?>
@@ -245,8 +247,8 @@
 
                     if ($reqs) {
                     foreach ($reqs as $req) {?>
-                <option value="<?php echo $req->id; ?>">
-                  <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                <option value="<?php echo $req->idReq; ?>">
+                  <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
                 </option>
                 <?php }
                 }?>
@@ -303,8 +305,8 @@
               <?php
                   if ($reqs) {
                   foreach ($reqs as $req) {?>
-              <option value="<?php echo $req->id; ?>">
-                <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+              <option value="<?php echo $req->idReq; ?>">
+                <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
               </option>
               <?php }
               }?>
@@ -1869,17 +1871,17 @@
       </div>
 
       <div class="modal-footer d-flex justify-content-between">
-       
 
-        
-          <button type="button" class="btn btn-outline-danger" id="btnEliminarQR">
-            <i class="fas fa-trash-alt mr-1"></i> Eliminar
-          </button>
-          
-          <button type="button" class="btn btn-primary" id="btnGuardarQR">
-            <i class="fas fa-save mr-1"></i> Guardar / Actualizar
-          </button>
-        
+
+
+        <button type="button" class="btn btn-outline-danger" id="btnEliminarQR">
+          <i class="fas fa-trash-alt mr-1"></i> Eliminar
+        </button>
+
+        <button type="button" class="btn btn-primary" id="btnGuardarQR">
+          <i class="fas fa-save mr-1"></i> Guardar / Actualizar
+        </button>
+
       </div>
     </div>
   </div>
