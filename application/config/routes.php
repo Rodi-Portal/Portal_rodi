@@ -58,7 +58,7 @@ $route['comunicacion/(:num)'] = 'Empleados/showComunicacion/$1';
 
 $route['Cliente_General/getEmpleadosInternos/(:num)'] = 'Cliente_General/getEmpleadosInternos/$1';
 $route['Avance/ver/(:any)'] = 'Avance/ver/$1';
-
+$route['archivo/serve'] = 'archivo/serve';
 
 $route['default_controller'] = 'login';
 $route['404_override'] = '';

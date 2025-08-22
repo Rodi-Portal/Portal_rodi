@@ -1882,20 +1882,43 @@ class Candidato extends Custom_Controller
             $salida .= '</thead>';
             $salida .= '<tbody>';
 
-            foreach ($response_data['documentos'] as $doc) {
-                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
-                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'])) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno']) . '</a></td>';
-                $salida .= '<td>' . htmlspecialchars(isset($doc['nameDocument']) ? $doc['nameDocument'] : '') . '</td>';
-                $salida .= '<td>' . htmlspecialchars($doc['upload_date']) . '</td>';
-                $salida .= '<td>
-                <button onclick="eliminarArchivoInterno(' . $doc["id"] . ', \'' . $doc["nameDocument"] . '\', ' . $id . ', \'' . $origen . '\')"
-                             class="btn btn-link text-danger p-0" title="Eliminar">
-                             <i class="fa fa-trash"></i>
-                         </button>
-             </td>';
 
-                $salida .= '</tr>';
-            }
+
+        foreach (($response_data['documentos'] ?? []) as $doc) {
+            $idDoc       = (int)($doc['id'] ?? 0);
+            $nameDoc     = (string)($doc['nameDocument'] ?? '');
+            $nameAlterno = (string)($doc['nameAlterno'] ?? $nameDoc);
+            $uploadDate  = (string)($doc['upload_date'] ?? '');
+
+            // Construye la ruta relativa dentro de storage_root
+            // ($path debe ser relativo, p.ej. "requisiciones/11/docs")
+            $relBase = trim((string)($path ?? ''), '/');
+            $rel     = $relBase !== '' ? ($relBase . '/' . $nameDoc) : $nameDoc;
+
+            // URL firmada (expira en 10 min; cambia disposition a 'attachment' si quieres descargar)
+            $href = secure_file_url($rel, $nameAlterno, 'inline', 600);
+
+            // Args seguros para JS
+            $jsId     = $idDoc;                                     // numérico
+            $jsName   = json_encode($nameDoc, JSON_UNESCAPED_UNICODE); // string segura
+            $jsReqId  = (int)($id ?? 0);                            // asume $id numérico del contexto
+            $jsOrigen = json_encode((string)($origen ?? ''), JSON_UNESCAPED_UNICODE);
+
+            $salida .= '<tr id="fila' . html_escape((string)$idDoc) . '">';
+            $salida .= '  <td><a href="' . html_escape($href) . '" target="_blank" style="word-break:break-word;">'
+                    .        html_escape($nameAlterno) . '</a></td>';
+            $salida .= '  <td>' . html_escape($nameDoc) . '</td>';
+            $salida .= '  <td>' . html_escape($uploadDate) . '</td>';
+            $salida .= '  <td>
+                            <button onclick="eliminarArchivoInterno(' . $jsId . ', ' . $jsName . ', ' . $jsReqId . ', ' . $jsOrigen . ')" 
+                                    class="btn btn-link text-danger p-0" title="Eliminar">
+                            <i class="fa fa-trash"></i>
+                            </button>
+                        </td>';
+            $salida .= '</tr>';
+        }
+
+
 
             $salida .= '</tbody></table>';
         } else {
