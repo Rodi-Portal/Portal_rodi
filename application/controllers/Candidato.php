@@ -1813,6 +1813,7 @@ class Candidato extends Custom_Controller
 
         // Configurar la URL del endpoint según el origen
         $api_base_url = API_URL;
+
         if ($origen == 1) {
             $url  = $api_base_url . "documents/" . $id;
             $path = '_documentEmpleado/';
@@ -1881,44 +1882,42 @@ class Candidato extends Custom_Controller
             $salida .= '</tr>';
             $salida .= '</thead>';
             $salida .= '<tbody>';
+            foreach (($response_data['documentos'] ?? []) as $doc) {
+                $idDoc       = isset($doc['id']) ? (int) $doc['id'] : 0;
+                $nameDoc     = isset($doc['nameDocument']) ? (string) $doc['nameDocument'] : '';
+                $nameAlterno = isset($doc['nameAlterno']) && $doc['nameAlterno'] !== null && $doc['nameAlterno'] !== ''
+                ? (string) $doc['nameAlterno'] : $nameDoc;
+                $uploadDate = isset($doc['upload_date']) ? (string) $doc['upload_date'] : '';
 
+                // URL al archivo:
+                // Opción A (tu nueva ruta protegida por sesión):
+                $href = site_url('docs/' . rawurlencode($nameDoc));
+                // Opción B (si sigues usando $path):
+                // $href = base_url(trim((string)$path, '/').'/'.rawurlencode($nameDoc));
 
+                // Args seguros para JS (strings via JSON)
+                $jsId     = $idDoc;
+                $jsName   = json_encode($nameDoc, JSON_UNESCAPED_UNICODE);
+                $jsReqId  = isset($id) ? (int) $id : 0;
+                $jsOrigen = json_encode((string) ($origen ?? ''), JSON_UNESCAPED_UNICODE);
 
-        foreach (($response_data['documentos'] ?? []) as $doc) {
-            $idDoc       = (int)($doc['id'] ?? 0);
-            $nameDoc     = (string)($doc['nameDocument'] ?? '');
-            $nameAlterno = (string)($doc['nameAlterno'] ?? $nameDoc);
-            $uploadDate  = (string)($doc['upload_date'] ?? '');
+                $salida .= '<tr id="fila' . html_escape((string) $idDoc) . '">';
 
-            // Construye la ruta relativa dentro de storage_root
-            // ($path debe ser relativo, p.ej. "requisiciones/11/docs")
-            $relBase = trim((string)($path ?? ''), '/');
-            $rel     = $relBase !== '' ? ($relBase . '/' . $nameDoc) : $nameDoc;
+                $salida .= '<td><a href="' . html_escape($href) . '" target="_blank" style="word-break: break-word;">'
+                . html_escape($nameAlterno) . '</a></td>';
 
-            // URL firmada (expira en 10 min; cambia disposition a 'attachment' si quieres descargar)
-            $href = secure_file_url($rel, $nameAlterno, 'inline', 600);
+                $salida .= '<td>' . html_escape($nameDoc) . '</td>';
+                $salida .= '<td>' . html_escape($uploadDate) . '</td>';
 
-            // Args seguros para JS
-            $jsId     = $idDoc;                                     // numérico
-            $jsName   = json_encode($nameDoc, JSON_UNESCAPED_UNICODE); // string segura
-            $jsReqId  = (int)($id ?? 0);                            // asume $id numérico del contexto
-            $jsOrigen = json_encode((string)($origen ?? ''), JSON_UNESCAPED_UNICODE);
+                $salida .= '<td>
+                    <button onclick="eliminarArchivoInterno(' . $jsId . ', ' . $jsName . ', ' . $jsReqId . ', ' . $jsOrigen . ')"
+                            class="btn btn-link text-danger p-0" title="Eliminar">
+                    <i class="fa fa-trash"></i>
+                    </button>
+                </td>';
 
-            $salida .= '<tr id="fila' . html_escape((string)$idDoc) . '">';
-            $salida .= '  <td><a href="' . html_escape($href) . '" target="_blank" style="word-break:break-word;">'
-                    .        html_escape($nameAlterno) . '</a></td>';
-            $salida .= '  <td>' . html_escape($nameDoc) . '</td>';
-            $salida .= '  <td>' . html_escape($uploadDate) . '</td>';
-            $salida .= '  <td>
-                            <button onclick="eliminarArchivoInterno(' . $jsId . ', ' . $jsName . ', ' . $jsReqId . ', ' . $jsOrigen . ')" 
-                                    class="btn btn-link text-danger p-0" title="Eliminar">
-                            <i class="fa fa-trash"></i>
-                            </button>
-                        </td>';
-            $salida .= '</tr>';
-        }
-
-
+                $salida .= '</tr>';
+            }
 
             $salida .= '</tbody></table>';
         } else {
@@ -2014,7 +2013,7 @@ class Candidato extends Custom_Controller
 
         // Configurar la URL del endpoint según el origen
         $api_base_url = API_URL;
-       
+
         if ($origen == 1) {
             $url  = $api_base_url . "documents/" . $id;
             $path = '_documentEmpleado/';
@@ -2082,24 +2081,39 @@ class Candidato extends Custom_Controller
             $salida .= '</thead>';
             $salida .= '<tbody>';
 
-           foreach ($response_data['documentos'] as $doc) {
-                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
-                
-                // Archivo real (nameDocument)
-                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'] ?? '')) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno'] ?? '') . '</a></td>';
+            foreach (($response_data['documentos'] ?? []) as $doc) {
+                $idDoc       = isset($doc['id']) ? (int) $doc['id'] : 0;
+                $nameDoc     = isset($doc['nameDocument']) && $doc['nameDocument'] !== null ? (string) $doc['nameDocument'] : '';
+                $nameAlterno = isset($doc['nameAlterno']) && $doc['nameAlterno'] !== '' ? (string) $doc['nameAlterno'] : $nameDoc;
+                $uploadDate  = isset($doc['upload_date']) && $doc['upload_date'] !== null ? (string) $doc['upload_date'] : '';
 
-                // Categoría o tipo de documento
-                $salida .= '<td>' . htmlspecialchars($doc['nameDocument'] ?? '') . '</td>';
+                                                              // Construye href solo si hay nombre de archivo
+                $relBase = trim((string) ($path ?? ''), '/'); // p.ej. "requisiciones/11/docs"
+                $href    = $nameDoc !== ''
+                ? base_url(($relBase !== '' ? $relBase . '/' : '') . rawurlencode($nameDoc))
+                : '';
+
+                $salida .= '<tr id="fila' . html_escape((string) $idDoc) . '">';
+
+                // Columna del archivo: link si hay archivo, texto plano si no
+                if ($href !== '') {
+                    $salida .= '<td><a href="' . html_escape($href) . '" target="_blank" style="word-break: break-word;">'
+                    . html_escape($nameAlterno) . '</a></td>';
+                } else {
+                    $salida .= '<td>' . html_escape($nameAlterno) . '</td>';
+                }
+
+                // Categoría / nombre real del archivo
+                $salida .= '<td>' . html_escape($nameDoc) . '</td>';
 
                 // Fecha de carga
-                $salida .= '<td>' . htmlspecialchars($doc['upload_date'] ?? '') . '</td>';
+                $salida .= '<td>' . html_escape($uploadDate) . '</td>';
 
-                // Botón eliminar
-               
+                // Si luego agregas botón eliminar, colócalo aquí
+                // $salida .= '<td> ... </td>';
 
                 $salida .= '</tr>';
             }
-
 
             $salida .= '</tbody></table>';
         } else {

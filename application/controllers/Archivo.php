@@ -2,66 +2,59 @@
 
 class Archivo extends CI_Controller
 {
-    public function serve()
+    private $base_path;
+
+    public function __construct()
     {
-        $p = $this->input->get('p', true);
-        $e = (int) $this->input->get('e');
-        $d = $this->input->get('d', true) ?: 'inline';
-        $n = $this->input->get('n', true);
-        $s = $this->input->get('s', true);
+        parent::__construct();
+        // carpeta física al nivel de application/public (raíz del proyecto)
+        $this->base_path = rtrim(FCPATH, '/'). '/_documentEmpleado/';
 
-        $relative = base64_decode($p ?? '', true);
-        $name     = base64_decode($n ?? '', true);
-
-        if (!$relative || !$name || !$s) {
-            show_error('Parámetros inválidos', 400);
+        // crea la carpeta si no existe (opcional)
+        if (!is_dir($this->base_path)) {
+            @mkdir($this->base_path, 0750, true);
         }
-        if (time() > $e) {
-            show_error('Link expirado', 403);
-        }
+    }
 
-        $secret  = $this->config->item('download_secret');
-        $payload = $relative.'|'.$e.'|'.$d.'|'.$name;
-        $sigCalc = hash_hmac('sha256', $payload, $secret);
-
-        if (!hash_equals($sigCalc, $s)) {
-            show_error('Firma inválida', 403);
+    public function ver_doc($filename = '')
+    {
+        // 1) Debe haber sesión
+        if (!$this->session->userdata('id')) {
+            show_404(); // o redirect('login');
         }
 
-        $root   = rtrim($this->config->item('storage_root'), '/');
-        $full   = realpath($root . '/' . $relative);
+        // 2) Normaliza nombre (sin subcarpetas)
+        $filename = urldecode((string)$filename);
+        $filename = basename($filename); // evita traversal y separadores
 
-        // Anti-traversal + existencia
-        if (!$full || strncmp($full, $root, strlen($root)) !== 0 || !is_file($full)) {
+        if ($filename === '') {
             show_404();
         }
 
-        $this->_stream_file($full, $name, $d === 'inline');
-    }
+        // 3) Opcional: whitelist de extensiones
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $allowed = ['pdf','doc','docx','xls','xlsx','png','jpg','jpeg','gif','txt','csv'];
+        if (!in_array($ext, $allowed, true)) {
+            show_404();
+        }
 
-    private function _stream_file(string $full, string $downloadName, bool $inline = true): void
-    {
-        // Mime
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime  = finfo_file($finfo, $full) ?: 'application/octet-stream';
-        finfo_close($finfo);
+        // 4) Resuelve y valida
+        $full = $this->base_path . $filename;
+        if (!is_file($full) || !is_readable($full)) {
+            show_404();
+        }
 
-        // Disposición
-        $disp = $inline ? 'inline' : 'attachment';
-        $safe = rawurlencode($downloadName);
-        $cd   = "{$disp}; filename=\"{$safe}\"; filename*=UTF-8''{$safe}";
+        // 5) Cabeceras
+        $mime = $this->_detect_mime($full, $ext);
+        $disposition = $this->input->get('dl') ? 'attachment' : 'inline'; // agrega ?dl=1 para forzar descarga
+        $safe = rawurlencode($filename);
 
-        // Encabezados
-        header('Content-Type: ' . $mime);
-        header('Content-Disposition: ' . $cd);
-        header('Content-Length: ' . filesize($full));
+        header('Content-Type: '.$mime);
+        header('Content-Length: '.filesize($full));
+        header('Content-Disposition: '.$disposition.'; filename="'.$safe.'"; filename*=UTF-8\'\''.$safe);
         header('X-Content-Type-Options: nosniff');
 
-        // Si usas Apache mod_xsendfile o Nginx X-Accel-Redirect, activa uno:
-        // header('X-Sendfile: ' . $full); return;
-        // header('X-Accel-Redirect: /protected'. substr($full, strlen($this->config->item('storage_root')))); return;
-
-        // Fallback: streaming PHP
+        // 6) Stream
         @set_time_limit(0);
         $fp = fopen($full, 'rb');
         while (!feof($fp)) {
@@ -69,5 +62,28 @@ class Archivo extends CI_Controller
             @ob_flush(); flush();
         }
         fclose($fp);
+        exit;
+    }
+
+    private function _detect_mime($path, $ext)
+    {
+        if (function_exists('finfo_open')) {
+            $f = finfo_open(FILEINFO_MIME_TYPE);
+            if ($f) {
+                $m = finfo_file($f, $path);
+                finfo_close($f);
+                if ($m) return $m;
+            }
+        }
+        // fallback por extensión
+        $map = [
+            'pdf'=>'application/pdf','doc'=>'application/msword',
+            'docx'=>'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls'=>'application/vnd.ms-excel',
+            'xlsx'=>'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'png'=>'image/png','jpg'=>'image/jpeg','jpeg'=>'image/jpeg','gif'=>'image/gif',
+            'txt'=>'text/plain','csv'=>'text/csv'
+        ];
+        return $map[$ext] ?? 'application/octet-stream';
     }
 }
