@@ -532,6 +532,18 @@ class Cat_cliente_model extends CI_Model
 
         return $query->result(); // 👈 Esto devuelve un array de objetos
     }
+    public function getLinkPortal($id_portal)
+    {
+        $query = $this->db
+            ->select('L.*')
+            ->from('links_cliente as L')
+            ->where('L.id_portal', $id_portal)
+            ->where('L.id_cliente IS NULL', NULL, FALSE) // ✅ condición correcta
+         
+            ->get();
+
+        return $query->result(); // 👈 Esto devuelve un array de objetos
+    }
     public function getTerminos($id_portal)
     {
         $query = $this->db
@@ -545,19 +557,25 @@ class Cat_cliente_model extends CI_Model
 
     public function guardarLinkCliente($data)
     {
-        if (empty($data['id_cliente'])) {
-            return false; // id_cliente es obligatorio
+        if (! empty($data['id_cliente'])) {
+            $whereKey = 'id_cliente';
+            $whereVal = $data['id_cliente'];
+        } elseif (! empty($data['id_portal'])) {
+            $whereKey = 'id_portal';
+            $whereVal = $data['id_portal'];
+        } else {
+            return false; // Ninguna clave recibida
         }
 
         // Verificar si ya existe un registro para este cliente
-        $this->db->where('id_cliente', $data['id_cliente']);
+        $this->db->where($whereKey, $whereVal);
         $existe = $this->db->count_all_results('links_clientes') > 0;
 
         if ($existe) {
             // Actualizar
             $data['edicion'] = date('Y-m-d H:i:s');
             return $this->db
-                ->where('id_cliente', $data['id_cliente'])
+                ->where($whereKey, $whereVal)
                 ->update('links_clientes', $data);
         } else {
             // Insertar

@@ -163,11 +163,22 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-          var correo = (full.correo != '') ? full.correo : 'No registrado';
+          const norm = (v, fallback = '--') => {
+            if (v === null || v === undefined) return fallback;
+            if (typeof v === 'string') {
+              const s = v.trim();
+              return (s === '' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') ?
+                fallback :
+                s;
+            }
+            return String(v);
+          };
 
-          return '<b>Teléfono: </b>' + full.telefono + '<br><b>Correo: </b>' + correo + '<br><b>Medio: </b>' +
-            full
-            .medio_contacto;
+          const tel = norm(full?.telefono, '--');
+          const correo = norm(full?.correo, 'No registrado');
+          const medio = norm(full?.medio_contacto, '--');
+
+          return `<b>Teléfono: </b>${tel}<br><b>Correo: </b>${correo}<br><b>Medio: </b>${medio}`;
         }
       },
 
@@ -376,11 +387,39 @@ function changeDataTable(url) {
         });
       });
 
-      $('a#iniciar_socio', row).bind('click', () => {
+      $('a#iniciar_socio', row).off('click').bind('click', () => {
+        // --- BLINDAJE INICIAL: limpiar estado mínimo antes de rellenar ---
+        const $modal = $('#registroCandidatoModal');
 
+        // (a) Corrige ID duplicado curp_registro (warning que te sale en consola)
+        const $dups = $modal.find('#curp_registro');
+        if ($dups.length > 1) {
+          $($dups[1]).attr({
+            id: 'curp_check_registro',
+            name: 'curp_check_registro'
+          });
+        }
 
+        // (b) Reinicia #puesto SIN perder funcionalidad (vacía y deja base)
+        if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+          $('#puesto').select2('destroy'); // evita múltiples instancias
+        }
+        $('#puesto').empty()
+          .append('<option value="0" selected>N/A</option>')
+          .append('<option value="otro">Otro</option>');
+        $('#puesto_otro').val('').hide();
+
+        // (c) Limpia contenedores que vas a volver a llenar
+        $('#previos').empty();
+        $('#detalles_previo').empty();
+        $('#div_docs_extras').empty();
+
+        // (d) (Opcional) resetea validaciones visibles y loader
+        $('#msj_error').addClass('hidden').empty();
+        $('.loader').hide();
+
+        // --- TU LÓGICA TAL CUAL ---
         var nombreCompleto = data.aspirante.trim();
-
 
         // Dividir el nombre completo en partes
         var partesNombre = nombreCompleto.split(" ");
@@ -390,6 +429,7 @@ function changeDataTable(url) {
         var apellidoMaterno = partesNombre.length > 2 ? partesNombre[2] : "";
         var id_cliente = data.id_cliente;
         let id_position = 0;
+
         $("#id_cliente_hidden").val(data.id_cliente);
         $("#clave").val(data.clave);
         $("#cliente").val(data.nombre_cliente);
@@ -401,7 +441,9 @@ function changeDataTable(url) {
         $('#materno_registro').val(apellidoMaterno)
         $('#celular_registro').val(data.telefono)
         $('#correo_registro').val(data.correo)
+
         $('.loader').css("display", "block");
+
         $.ajax({
           async: false,
           url: '<?php echo base_url('Cat_Puestos/getPositionByName'); ?>',
@@ -413,6 +455,7 @@ function changeDataTable(url) {
             id_position = res;
           }
         });
+
         $.ajax({
           async: false,
           url: '<?php echo base_url('Candidato_Seccion/getHistorialProyectosByCliente'); ?>',
@@ -424,6 +467,7 @@ function changeDataTable(url) {
             $('#previos').html(res);
           }
         });
+
         setTimeout(() => {
           $.ajax({
             async: false,
@@ -432,28 +476,72 @@ function changeDataTable(url) {
             success: function(res) {
               if (res != 0) {
                 let data = JSON.parse(res);
+
+                // 🔒 IMPORTANTE: asegurar base limpia ANTES de append (por si otro flujo lo tocó)
+                if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+                  $('#puesto').select2('destroy');
+                }
+                // Conserva N/A y Otro que dejamos al inicio
+                // Agrega "Selecciona" una sola vez
                 $('#puesto').append('<option value="">Selecciona</option>');
+
                 for (let i = 0; i < data.length; i++) {
                   $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] +
                     '</option>');
                 }
+
+                // Quita opciones duplicadas (por si algo previo dejó residuos)
+                const seen = new Set();
+                $('#puesto option').each(function() {
+                  const k = this.value + '|' + (this.textContent || '');
+                  if (seen.has(k)) $(this).remove();
+                  else seen.add(k);
+                });
+
+                // Inicializa select2 una sola vez y dentro del modal
                 $('#puesto').select2({
                   placeholder: 'Selecciona una opción',
                   allowClear: true,
-                  // Puedes agregar más opciones según tus necesidades
+                  width: '100%',
+                  dropdownParent: $('#registroCandidatoModal')
                 });
+
               } else {
                 $('#puesto').append('<option value="">No hay puestos registrados</option>');
               }
             }
           });
         }, 200);
+
         setTimeout(function() {
           $('#puesto').val(id_position).trigger('change');
           $('.loader').fadeOut();
         }, 250);
+        $('#opcion_registro').val('2').trigger('change');
+        // Muestra el modal
         $('#registroCandidatoModal').modal('show');
+
+        // 🔁 LIMPIEZA AL CERRAR (para siguiente apertura igualita)
+        $('#registroCandidatoModal').one('hidden.bs.modal', function() {
+          // deja el select tal cual base y sin select2
+          if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+            $('#puesto').select2('destroy');
+          }
+          $('#puesto').empty()
+            .append('<option value="0" selected>N/A</option>')
+            .append('<option value="otro">Otro</option>');
+          $('#puesto_otro').val('').hide();
+
+          // limpia contenedores y estados
+          $('#previos, #detalles_previo, #div_docs_extras').empty();
+          $('#pais_registro, #proyecto_registro, .valor_dinamico').prop('disabled', true).val('');
+          $('#msj_error').addClass('hidden').empty();
+          $('.loader').hide();
+        });
       });
+
+
+
       $('a#ingreso_empresa', row).bind('click', () => {
         $("#idAspirante").val(data.id);
         $('#ingresoCandidatoModal .nombreRegistro').text(data.nombre)
@@ -498,7 +586,9 @@ function mostrarFormularioCargaCV(id) {
     Swal.fire('Atención', 'Tienes archivos pendientes de subir.', 'warning');
     return; // ⛔ NO abras el modal
   }
-
+  $(document).on('preDraw.dt', '#tabla', function() {
+    $('#tabla a#iniciar_socio').off('click.iniciarSocio');
+  });
   /* ───── Todo OK → abre el modal ───── */
   $('#modalCargaArchivos').modal('show');
 }
@@ -506,6 +596,7 @@ function mostrarFormularioCargaCV(id) {
 if (typeof baseDocs === 'undefined') {
   var baseDocs = <?php echo json_encode(VERASPIRANTESDOCS); ?>;
 }
+
 function mostrarFormularioActualizarDocs(id) {
   $('#id_aspirante').val(id);
   const $tbody = $('#tablaDocsModal tbody');
@@ -562,7 +653,10 @@ function mostrarFormularioActualizarDocs(id) {
           $.ajax({
             url: `<?php echo base_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>`,
             type: 'POST',
-            data: { id, tipo_vista },
+            data: {
+              id,
+              tipo_vista
+            },
             dataType: 'json',
             success: resp => {
               if (resp.ok) {
@@ -650,8 +744,6 @@ function openAddApplicant() {
 
   $("#nuevoAspiranteModal").modal('show');
 }
-
-
 
 
 function addApplicant() {

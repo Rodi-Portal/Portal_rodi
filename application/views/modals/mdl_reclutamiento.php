@@ -69,10 +69,10 @@
               <select name="medio" id="medio" class="form-control obligado w-100">
                 <option value="">Selecciona</option>
                 <?php if ($medios != null): ?>
-<?php foreach ($medios as $m): ?>
+                <?php foreach ($medios as $m): ?>
                 <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
                 <?php endforeach; ?>
-<?php endif; ?>
+                <?php endif; ?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -429,7 +429,7 @@
                     if ($paises != null) {
                         foreach ($paises as $p) {
                         $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
-                <option value="<?php echo $p->nombre; ?>"<?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
                     }
                     }
@@ -1748,7 +1748,8 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalRequisiciones" tabindex="-1" role="dialog" aria-labelledby="modalRequisicionesLabel" aria-hidden="true">
+<div class="modal fade" id="modalRequisiciones" tabindex="-1" role="dialog" aria-labelledby="modalRequisicionesLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
 
@@ -1791,7 +1792,7 @@
               <th>Nombre personalizado</th>
               <th>Archivo</th>
               <th>Fecha</th>
-               <th>Visible para Sucursal</th>
+              <th>Visible para Sucursal</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -1830,6 +1831,63 @@
     </div>
   </div>
 </div>
+<!-- Modal Link clientes general-->
+<div class="modal fade" id="qrModal" tabindex="-1" role="dialog" aria-labelledby="qrModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <!-- ancho -->
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title" id="qrModalLabel">
+          <i class="fas fa-qrcode mr-2"></i> Link de QR
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <!-- Col izquierda -->
+          <div class="col-md-6 border-right">
+            <h6 class="text-muted mb-2"><i class="fas fa-link mr-1"></i> Link</h6>
+
+            <div class="d-flex align-items-center mb-3">
+              <a id="qrLinkDisplay" href="#" target="_blank" class="text-truncate" style="max-width:80%;" title=""></a>
+              <button type="button" class="btn btn-sm btn-outline-primary ml-2" id="btnCopiarLink" title="Copiar">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Col derecha -->
+          <div class="col-md-6 text-center">
+            <h6 class="text-muted mb-2"><i class="far fa-image mr-1"></i> QR</h6>
+            <div id="qrPreviewWrapper" class="mt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex justify-content-between">
+       
+
+        
+          <button type="button" class="btn btn-outline-danger" id="btnEliminarQR">
+            <i class="fas fa-trash-alt mr-1"></i> Eliminar
+          </button>
+          
+          <button type="button" class="btn btn-primary" id="btnGuardarQR">
+            <i class="fas fa-save mr-1"></i> Guardar / Actualizar
+          </button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 
 
@@ -2108,8 +2166,8 @@ document.getElementById('accion_aspirante').addEventListener('change', function(
   }
 });
 var pag = 1;
-$('.div_info_project, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
-  .css('display', 'none');
+$('.div_info_project, .div_info_projectt, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
+  .addClass('d-none');
 $('#registroCandidatoModal').on('hidden.bs.modal', function(e) {
   $("#registroCandidatoModal #msj_error").css('display', 'none');
   $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
@@ -2123,41 +2181,88 @@ $('#registroCandidatoModal').on('hidden.bs.modal', function(e) {
   $('#ref_profesionales_registro').val(0);
   $('#ref_personales_registro').val(0);
   $('#examen_registro, #examen_medico, #previo').val(0);
-  $('#opcion_registro').val('').trigger('change');
+  $('#opcion_registro').val('2').trigger('change');
   $('#div_docs_extras').empty();
   extras = [];
 });
-$("#opcion_registro").change(function() {
-  var opcion = $(this).val();
-  $('.div_info_project').css('display', 'block');
-  $('.div_project').css('display', 'flex');
-  $('.div_info_test').css('display', 'block');
-  $('.div_test').css('display', 'flex');
-  $("#registroCandidatoModal #msj_error").css('display', 'none');
+$('#opcion_registro').off('change').on('change', function() {
+  const opcion = $(this).val();
 
-  if (opcion == 1) {
-    $('.nuevo_proyecto').css('display', 'none');
-    $('.div_check, .div_info_check, .div_info_extra, .div_extra').css('display', 'none');
-    $('.div_previo, .div_info_previo').css('display', 'none');
-  } else if (opcion == 0) {
-    $('.nuevo_proyecto').css('display', 'none');
-    $('.div_previo').css('display', 'flex');
-    $('.div_info_previo, #detalles_previo').css('display', 'block');
-    $('.div_check').css('display', 'flex');
-    $('.div_info_check').css('display', 'block');
-    $('.div_info_extra').css('display', 'block');
-    $('.div_extra').css('display', 'flex');
-  } else if (opcion == 2) {
-    $('.nuevo_proyecto').css('display', 'block'); // Si necesitas mostrar algo nuevo
-    $('.div_check, .div_info_check, .div_info_extra, .div_extra').css('display', 'none');
-    $('.div_previo, .div_info_previo').css('display', 'none');
-    $('.div_info_project, .div_project, .div_info_test, .div_test, #detalles_previo').css('display', 'none');
-  } else if (opcion == '') {
-    $('.nuevo_proyecto').css('display', 'none');
-    $('.div_previo, .div_info_previo, .div_check, .div_info_check, .div_info_project, .div_project, .div_info_test, .div_test, .div_info_extra, .div_extra')
-      .css('display', 'none');
+  // Oculta todo
+  $('.div_info_project, .div_info_projectt, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra, #detalles_previo')
+    .addClass('d-none');
+
+  // Muestra según opción
+  if (opcion == '1') {
+    // Enviado a RODI sin nuevo proyecto
+    // Solo tests visibles (según lo que tenías antes)
+    // Si quieres ocultar todo: no hagas nada aquí
+  } else if (opcion == '0') {
+    // Proyecto anterior
+    $('.div_info_previo, .div_check, .div_info_check, .div_info_extra')
+      .removeClass('d-none');
+    $('.div_previo, .div_extra')
+      .removeClass('d-none').css('display', 'flex'); // si necesitas flex
+  } else if (opcion == '2') {
+    // Registrar mi propio proceso (gratis)
+    // Según tu lógica previa: ocultas todo, así que ya está
+  } else if (opcion === '') {
+    // Nada seleccionado: ya está todo oculto
   }
 });
+// Evita doble binding
+$(document).off('hidden.bs.modal', '#registroCandidatoModal')
+  .on('hidden.bs.modal', '#registroCandidatoModal', function() {
+    const $m = $('#registroCandidatoModal');
+
+    // 1) Select2 seguro
+    if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+      $('#puesto').select2('destroy');
+    }
+
+    // 2) Reset de formulario
+    const $form = $('#nuevoRegistroForm');
+    if ($form[0]) $form[0].reset();
+
+    // 3) Secciones ocultas
+    $('.div_info_project, .div_info_projectt, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
+      .addClass('d-none');
+
+    // 4) Limpiar contenedores dinámicos
+    $('#previos, #detalles_previo, #div_docs_extras').empty();
+
+    // 5) Reiniciar selects “dinámicos”
+    $('select.valor_dinamico').prop('disabled', true).empty();
+    $('#pais_registro').prop('disabled', true).val('');
+    $('#proyecto_registro').prop('disabled', true).val('');
+
+    // 6) Reiniciar “Puesto”
+    $('#puesto').html('<option value="0" selected>N/A</option><option value="otro">Otro</option>');
+    $('#puesto_otro').val('').hide();
+
+    // 7) Exámenes (reconstruir opciones)
+    const $ex = $('#examen_registro');
+    $ex.empty()
+      .append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
+    // (re-inyecta tus opciones desde PHP)
+    <?php if ($paquetes_antidoping != null) {foreach ($paquetes_antidoping as $paq) {?>
+    $ex.append(
+      '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
+    <?php }}?>
+
+    // 8) Valores por defecto
+    $('#examen_registro, #examen_medico, #examen_psicometrico').val(0).trigger('change'); // si usan select2
+    $('#pais').val('México');
+    $('#subcliente').val(0);
+
+    // 9) Opciones generales
+    $('#opcion_registro').val('').trigger('change'); // esto ocultará secciones via handler de arriba
+
+    // 10) Mensajes/otros
+    $("#registroCandidatoModal #msj_error").hide().empty();
+    window.extras = []; // asegúrate de que exista a nivel global si lo usas
+  });
+
 
 $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
   cargarClientesActivos(urltraerClientes);
@@ -2304,26 +2409,6 @@ $('#nuevaAccionModal').on('hidden.bs.modal', function(e) {
 $('#estatusRequisicionModal').on('hidden.bs.modal', function(e) {
   $("#estatusRequisicionModal #msj_error").css('display', 'none');
   $("#estatusRequisicionModal textarea, #estatusRequisicionModal select").val('');
-});
-$("#registroCandidatoModal").on("hidden.bs.modal", function() {
-  $("#examen_registro").empty();
-  $("#examen_registro").append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
-
-  <?php
-      if ($paquetes_antidoping != null) {
-      foreach ($paquetes_antidoping as $paq) {?>
-  $("#examen_registro").append(
-    '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
-  <?php
-      }
-  }?>
-
-  $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
-  $("#examen_registro, #examen_medico, #examen_psicometrico").val(0).trigger('change'); // Actualizar Select2
-  $('#pais').val('México');
-  $('#subcliente').val(0);
-  $('#detalles_previo').empty();
-  $("#registroCandidatoModal #examen_registro").val(null).trigger('change'); // Reiniciar Select2
 });
 
 $("#region").change(function() {

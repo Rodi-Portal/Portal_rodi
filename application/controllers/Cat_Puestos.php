@@ -221,7 +221,7 @@ class Cat_Puestos extends CI_Controller{
   }
   function getPositionByName(){
     
-    $existPosition = $this->cat_puestos_model->getPositionByName($this->input->post('nombre'));
+    $existPosition = $this->cat_puestos_model->getPositionByName($this->input->post('nombre')) ?? 'Na';
   
     $date = date('Y-m-d H:i:s');
     $id_usuario = $this->session->userdata('id');

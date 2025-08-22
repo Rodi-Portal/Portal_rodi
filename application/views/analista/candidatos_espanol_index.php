@@ -825,36 +825,58 @@ function loadInternos(url1) {
         "serverSide": false,
         "destroy": true,
         "data": formattedData,
-        "columns": [{
-            title: 'ID',
-            data: 'id',
-            "width": "10%",
-            className: 'text-center',
-                render: function(data, type, row, meta) {
-              // Evita alterar el valor usado para ordenar/buscar
-              if (type !== 'display') return data;
+        "columns": [
+            {
+              title: 'N°',
+              data: 'id',
+              width: '10%',
+              className: 'text-center',
+              render: function (data, type, row, meta) {
+                // Mantén el ID real para ordenar/buscar
+                if (type !== 'display') return data;
 
-          
-              
+                // Número de fila visible (considera paginación)
+                const visibleIndex = meta.row + 1 + meta.settings._iDisplayStart;
 
-              // ⚠️ Si tienes otro nombre de clave, cámbialo aquí:
-              const tipoBolsa =
-                <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0));?>;
+                // Tipo de bolsa desde sesión (ajústalo si cambia la clave)
+                const tipoBolsa = <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0)); ?>;
 
-              // Asegura un id existente en el dataset
-            
+                // ID visible con tooltip del ID real
+                const idVisible = `
+                  <span
+                    class="fw-bold"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="ID: ${data}"
+                  >#${visibleIndex}</span>
+                `;
 
+                // Botones a pantalla completa, una sola fila debajo del ID
+                const botones = (tipoBolsa === 1 && data !== '')
+                  ? `<br><br>
+                    <div class="d-flex gap-2 mt-2 w-100">
+                      <button class="btn btn-success btn-sm flex-fill"
+                              onclick="verCandidato(${data})" title="Ver Candidato">
+                        <i class="fas fa-user"></i>
+                      </button>
+                      <button class="btn btn-info btn-sm flex-fill"
+                              onclick="linkPreEmpleo(${data})" title="Link PreEmpleo">
+                        <i class="fas fa-link"></i>
+                      </button>
+                    </div>
+                  `
+                  : '';
 
-              const btnLink = (tipoBolsa === 1 && data !== '') ?
-                `<br><br><button class="btn btn-primary btn-sm" onclick="linkPreEmpleo(${data})">
-           Link Aceptado
-         </button>` :
-                '';
-
-              return `${data}  ${btnLink}`;
-            } // Centrado de contenido
-          },
-          {
+                // Contenedor a ancho completo en la celda
+                return `
+                  <div class="w-100">
+                    ${idVisible}
+                    ${botones}
+                  </div>
+                `;
+              }
+            },
+            {
             title: 'Nombre',
             data: 'nombreCompleto',
             width: '20%',
@@ -864,12 +886,12 @@ function loadInternos(url1) {
               if (type !== 'display') return data;
 
               // Flags desde sesión (inyectados como literales JS válidos)
-              const emp = <?php echo json_encode((int) ($this->session->userdata('emp') ?? 0));?>;
-              const former = <?php echo json_encode((int) ($this->session->userdata('former') ?? 0));?>;
+              const emp = <?php echo json_encode((int) ($this->session->userdata('emp') ?? 0)); ?>;
+              const former = <?php echo json_encode((int) ($this->session->userdata('former') ?? 0)); ?>;
 
               // ⚠️ Si tienes otro nombre de clave, cámbialo aquí:
               const tipoBolsa =
-                <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0));?>;
+                <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0)); ?>;
 
               // Asegura un id existente en el dataset
               const id = row.id ?? row.id_usuario ?? row.id_cliente ?? '';
@@ -880,13 +902,9 @@ function loadInternos(url1) {
          </button>` :
                 '';
 
-              const btnLink = (tipoBolsa === 1 && id !== '') ?
-                `<br><br><button class="btn btn-success btn-sm" onclick="linkPreEmpleo(${id})">
-           Link Aceptado
-         </button>` :
-                '';
 
-              return `${data} ${btnEnviar} ${btnLink}`;
+
+              return `${data} ${btnEnviar}`;
             }
           },
           {

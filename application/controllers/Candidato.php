@@ -1991,6 +1991,7 @@ class Candidato extends Custom_Controller
 
         // Configurar la URL del endpoint según el origen
         $api_base_url = API_URL;
+       
         if ($origen == 1) {
             $url  = $api_base_url . "documents/" . $id;
             $path = '_documentEmpleado/';

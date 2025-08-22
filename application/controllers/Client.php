@@ -7,7 +7,7 @@ class Client extends Custom_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('id')) {
+        if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
         $this->load->library('usuario_sesion');
@@ -17,24 +17,24 @@ class Client extends Custom_Controller
     public function index()
     {
 
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
-        $data['submenus'] = $items;
-        $info['estados'] = $this->funciones_model->getEstados();
-        $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-        $info['estudios'] = $this->funciones_model->getTiposEstudios();
-        $info['proyectos'] = $this->candidato_model->getProyectosCliente(2);
-        $info['tipos_docs'] = $this->funciones_model->getTiposDocumentos();
-        $info['studies'] = $this->funciones_model->getTiposEstudios();
-        $info['paises'] = $this->funciones_model->getPaises();
+        $data['submenus']            = $items;
+        $info['estados']             = $this->funciones_model->getEstados();
+        $info['civiles']             = $this->funciones_model->getEstadosCiviles();
+        $info['estudios']            = $this->funciones_model->getTiposEstudios();
+        $info['proyectos']           = $this->candidato_model->getProyectosCliente(2);
+        $info['tipos_docs']          = $this->funciones_model->getTiposDocumentos();
+        $info['studies']             = $this->funciones_model->getTiposEstudios();
+        $info['paises']              = $this->funciones_model->getPaises();
         $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
-        $info['paises_estudio'] = $this->funciones_model->getPaisesEstudio();
+        $info['paises_estudio']      = $this->funciones_model->getPaisesEstudio();
 
         $vista['modals'] = $this->load->view('modals/mdl_cliente_hcl', $info, true);
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
         $data['cliente'] = $this->cat_cliente_model->getById($this->uri->segment(3));
 
@@ -42,7 +42,7 @@ class Client extends Custom_Controller
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
 
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -63,24 +63,24 @@ class Client extends Custom_Controller
     /*----------------------------------------*/
     public function getCandidatos()
     {
-        $id_cliente = $_GET['id_cliente'];
-        $cand['recordsTotal'] = $this->cliente_hcl_model->getTotal($id_cliente);
+        $id_cliente              = $_GET['id_cliente'];
+        $cand['recordsTotal']    = $this->cliente_hcl_model->getTotal($id_cliente);
         $cand['recordsFiltered'] = $this->cliente_hcl_model->getTotal($id_cliente);
-        $cand['data'] = $this->cliente_hcl_model->getCandidatos($id_cliente);
+        $cand['data']            = $this->cliente_hcl_model->getCandidatos($id_cliente);
         $this->output->set_output(json_encode($cand));
     }
     public function getCandidatoPanelCliente()
     {
-        $id_cliente = $this->session->userdata('idcliente');
-        $cand['recordsTotal'] = $this->cliente_hcl_model->getTotalPanel($id_cliente);
+        $id_cliente              = $this->session->userdata('idcliente');
+        $cand['recordsTotal']    = $this->cliente_hcl_model->getTotalPanel($id_cliente);
         $cand['recordsFiltered'] = $this->cliente_hcl_model->getTotalPanel($id_cliente);
-        $cand['data'] = $this->cliente_hcl_model->getCandidatosPanel($id_cliente);
+        $cand['data']            = $this->cliente_hcl_model->getCandidatosPanel($id_cliente);
         $this->output->set_output(json_encode($cand));
     }
     public function getVerificacionDocumentos()
     {
         $id_candidato = $_POST['id_candidato'];
-        $salida = "";
+        $salida       = "";
         $data['docs'] = $this->candidato_model->checkVerificacionDocumentos($id_candidato);
         if ($data['docs']) {
             foreach ($data['docs'] as $doc) {
@@ -113,12 +113,12 @@ class Client extends Custom_Controller
     }
     public function getReferenciasLaborales()
     {
-        $id_candidato = $this->input->post('id_candidato');
-        $salida = "";
+        $id_candidato        = $this->input->post('id_candidato');
+        $salida              = "";
         $data['referencias'] = $this->candidato_model->getReferenciasLaborales($id_candidato);
         if ($data['referencias']) {
             foreach ($data['referencias'] as $ref) {
-                if (!empty($ref->fecha_entrada_txt)) {
+                if (! empty($ref->fecha_entrada_txt)) {
                     if (strtotime($ref->fecha_entrada_txt) !== false) {
                         $entrada_laboral = formatoFechaDescripcion($ref->fecha_entrada_txt);
                     } else {
@@ -128,7 +128,7 @@ class Client extends Custom_Controller
                     $entrada_laboral = 'Not provided';
                 }
                 //Salida
-                if (!empty($ref->fecha_salida_txt)) {
+                if (! empty($ref->fecha_salida_txt)) {
                     if (strtotime($ref->fecha_salida_txt) !== false) {
                         $salida_laboral = formatoFechaDescripcion($ref->fecha_salida_txt);
                     } else {
@@ -159,12 +159,12 @@ class Client extends Custom_Controller
     }
     public function getVerificacionesLaborales()
     {
-        $id_candidato = $this->input->post('id_candidato');
-        $salida = "";
+        $id_candidato        = $this->input->post('id_candidato');
+        $salida              = "";
         $data['referencias'] = $this->candidato_model->getVerificacionReferencias($id_candidato);
         if ($data['referencias']) {
             foreach ($data['referencias'] as $ref) {
-                if (!empty($ref->fecha_entrada_txt)) {
+                if (! empty($ref->fecha_entrada_txt)) {
                     if (strtotime($ref->fecha_entrada_txt) !== false) {
                         $entrada_verifica = formatoFechaDescripcion($ref->fecha_entrada_txt);
                     } else {
@@ -174,7 +174,7 @@ class Client extends Custom_Controller
                     $entrada_verifica = 'Not provided';
                 }
                 //Salida
-                if (!empty($ref->fecha_salida_txt)) {
+                if (! empty($ref->fecha_salida_txt)) {
                     if (strtotime($ref->fecha_salida_txt) !== false) {
                         $salida_verifica = formatoFechaDescripcion($ref->fecha_salida_txt);
                     } else {
@@ -246,7 +246,7 @@ class Client extends Custom_Controller
     public function getVerificacionHistorialDomicilios()
     {
         $id_candidato = $this->input->post('id_candidato');
-        $salida = '';
+        $salida       = '';
         $verificacion = $this->candidato_model->getVerificacionHistorialDomicilios($id_candidato);
         if ($verificacion != null) {
             echo $salida = $verificacion->comentario;
@@ -283,7 +283,7 @@ class Client extends Custom_Controller
     public function getReferenciasPersonales()
     {
         $id_candidato = $this->input->post('id_candidato');
-        $salida = "";
+        $salida       = "";
         $data['refs'] = $this->candidato_model->getReferenciasPersonales($id_candidato);
         if ($data['refs']) {
             foreach ($data['refs'] as $ref) {
@@ -303,8 +303,8 @@ class Client extends Custom_Controller
     }
     public function checkCredito()
     {
-        $id_candidato = $this->input->post('id_candidato');
-        $salida = "";
+        $id_candidato      = $this->input->post('id_candidato');
+        $salida            = "";
         $data['historial'] = $this->candidato_model->checkCredito($id_candidato);
         if ($data['historial']) {
             foreach ($data['historial'] as $h) {
@@ -326,55 +326,56 @@ class Client extends Custom_Controller
             echo $salida = 0;
         }
     }
-    public function verProcesoCandidato() {
+    public function verProcesoCandidato()
+    {
         $id_candidato = $this->input->post('id_candidato');
-        $status_bgc = $this->input->post('status_bgc');
-        $formulario = $this->input->post('formulario');
-        
-        // Realizamos la solicitud a la función verProcesoCandidatoJson para obtener los datos JSON
-        $api_base_url = $this->config->item('api_base_url');  // Asegúrate de que esté bien configurado
-        $url = $api_base_url . 'api/verProcesoCandidatoJson';  // Verifica que la URL sea correcta
-        
-        $data = array(
+        $status_bgc   = $this->input->post('status_bgc');
+        $formulario   = $this->input->post('formulario');
+
+                                                                       // Realizamos la solicitud a la función verProcesoCandidatoJson para obtener los datos JSON
+        $api_base_url = $this->config->item('api_base_url');           // Asegúrate de que esté bien configurado
+        $url          = $api_base_url . 'api/verProcesoCandidatoJson'; // Verifica que la URL sea correcta
+
+        $data = [
             'id_candidato' => $id_candidato,
-            'status_bgc' => $status_bgc,
-            'formulario' => $formulario
-        );
-       
+            'status_bgc'   => $status_bgc,
+            'formulario'   => $formulario,
+        ];
+
         // Usamos cURL para hacer la solicitud
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));  // Envía los datos como JSON
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data)); // Envía los datos como JSON
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',  // Tipo de contenido
-            'Accept: application/json',        // Aceptar respuesta JSON
+            'Content-Type: application/json', // Tipo de contenido
+            'Accept: application/json',       // Aceptar respuesta JSON
         ]);
-        
+
         // Ejecutar la solicitud
         $response = curl_exec($ch);
-        
+
         // Verificar si hubo un error en la ejecución de cURL
         if ($response === false) {
-            $error_msg = curl_error($ch);  // Obtener el error de cURL
+            $error_msg = curl_error($ch); // Obtener el error de cURL
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
             curl_close($ch);
             return;
         }
-        
+
         // Verificar el código de estado HTTP
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
+
         // Si el código HTTP no es 200, algo salió mal
         if ($http_status !== 200) {
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud, código HTTP: ' . $http_status]);
             return;
         }
-        
+
         // Decodificar la respuesta JSON
         $response_data = json_decode($response, true);
-      
+
         // Si la respuesta es válida, construir el HTML
         if (isset($response_data)) {
             $salida = '<table class="table table-striped">';
@@ -385,7 +386,7 @@ class Client extends Custom_Controller
             $salida .= '</tr>';
             $salida .= '</thead>';
             $salida .= '<tbody>';
-            
+
             // Recorrer los datos y construir el HTML
             foreach ($response_data as $key => $value) {
                 $salida .= '<tr>';
@@ -393,20 +394,17 @@ class Client extends Custom_Controller
                 $salida .= '<th>' . htmlspecialchars($value) . '</th>';
                 $salida .= '</tr>';
             }
-            
+
             $salida .= '</tbody>';
             $salida .= '</table>';
         } else {
             $salida = 'No data available';
         }
-        
+
         // Mostrar el resultado HTML
         echo $salida;
     }
-    
-    
-    
-    
+
     public function getDocumentosRequeridos()
     {
         $id_candidato = $_POST['id_candidato'];
@@ -416,7 +414,9 @@ class Client extends Custom_Controller
     /*----------------------------------------*/
     /*  Proceso
     /*----------------------------------------*/
-    public function registrar(){
+    public function registrar()
+    {
+
         $this->form_validation->set_rules('nombre', 'Name', 'required|trim');
         $this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
         $this->form_validation->set_rules('materno', 'Second lastname', 'trim');
@@ -428,113 +428,107 @@ class Client extends Custom_Controller
         $this->form_validation->set_rules('medico', 'Examen Médico', 'required');
         $this->form_validation->set_rules('psicometrico', 'Examen Psicometrico', 'required');
         $this->form_validation->set_rules('opcion', 'Choose an option', 'required|trim');
-				$previo = $this->input->post('previo') ;
-        $id_cliente = $this->input->post('id_cliente');
-        $clave = strtoupper($this->input->post('clave'));
-        $nombre_cliente = strtoupper($this->input->post('cliente'));
-        $idAspiranteReq = $this->input->post('idAspiranteReq');
-        $id_portal = $this->session->userdata('idPortal');
-        $opcion = strtoupper($this->input->post('opcion'));
-        $nombre = strtoupper($this->input->post('nombre'));
-        $paterno = strtoupper($this->input->post('paterno'));
-        $materno = strtoupper($this->input->post('materno'));
-		$puesto = $this->input->post('puesto');
-        $puesto_otro = $this->input->post('puesto_otro');
-        $nss = $this->input->post('nss');
-        $curp = $this->input->post('curp');
-        $cel = $this->input->post('celular');
-        $correo = strtolower($this->input->post('correo'));
-        $proyecto = $this->input->post('proyecto');
-        $examen = $this->input->post('examen');
-        $medico = $this->input->post('medico');
-				$region = $this->input->post('region');
-        $psicometrico = $this->input->post('psicometrico');
+        $previo          = $this->input->post('previo');
+        $id_cliente      = $this->input->post('id_cliente');
+        $clave           = strtoupper($this->input->post('clave'));
+        $nombre_cliente  = strtoupper($this->input->post('cliente'));
+        $idAspiranteReq  = $this->input->post('idAspiranteReq');
+        $id_portal       = $this->session->userdata('idPortal');
+        $opcion          = strtoupper($this->input->post('opcion'));
+        $nombre          = strtoupper($this->input->post('nombre'));
+        $paterno         = strtoupper($this->input->post('paterno'));
+        $materno         = strtoupper($this->input->post('materno'));
+        $puesto          = $this->input->post('puesto');
+        $puesto_otro     = $this->input->post('puesto_otro');
+        $nss             = $this->input->post('nss');
+        $curp            = $this->input->post('curp');
+        $cel             = $this->input->post('celular');
+        $correo          = strtolower($this->input->post('correo'));
+        $proyecto        = $this->input->post('proyecto');
+        $examen          = $this->input->post('examen');
+        $medico          = $this->input->post('medico');
+        $region          = $this->input->post('region');
+        $psicometrico    = $this->input->post('psicometrico');
         $tipo_antidoping = ($examen == 0) ? 0 : 1;
-        $antidoping = ($examen == 0) ? null : $examen;
+        $antidoping      = ($examen == 0) ? null : $examen;
         date_default_timezone_set('America/Mexico_City');
         $date = date('Y-m-d H:i:s');
-		
+
         $id_usuario = $this->session->userdata('id');
-        $usuario = $this->session->userdata('tipo');
+        $usuario    = $this->session->userdata('tipo');
         if ($this->session->userdata('idcliente') != null) {
             $id_cliente = $this->session->userdata('idcliente');
-        } elseif($this->input->post('id_cliente_hidden') !=  null){
+        } elseif ($this->input->post('id_cliente_hidden') != null) {
             $id_cliente = $this->input->post('id_cliente_hidden');
-        }else{
+        } else {
             $id_cliente = $this->input->post('id_cliente');
         }
-        
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
-          
-       
-					$privacidad_usuario = 0;
-					switch ($usuario) {
-							case 1:
-									$tipo_usuario = "id_usuario";
-									break;
-							case 2:
-									$tipo_usuario = "id_usuario_cliente";
-									$privacidad_usuario = $this->session->userdata('privacidad');
-									break;
-							case 3:
-									$tipo_usuario = "id_usuario_subcliente";
-									break;
-					}
-           
+
+            $privacidad_usuario = 0;
+            switch ($usuario) {
+                case 1:
+                    $tipo_usuario = "id_usuario";
+                    break;
+                case 2:
+                    $tipo_usuario       = "id_usuario_cliente";
+                    $privacidad_usuario = $this->session->userdata('privacidad');
+                    break;
+                case 3:
+                    $tipo_usuario = "id_usuario_subcliente";
+                    break;
+            }
+
             if ($opcion == 1) {
-									
-					
+
                 $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
 
                 // Reemplaza con la URL de tu API
 
-                $data = array(
+                $data = [
                     // datos  para  tabla  candidato
-                    'creacion' => $date,
-                    'edicion' => $date,
-                    'tipo_usuario' => $usuario,
-                    'id_usuario'=> 1,
-                    'fecha_alta' => $date,
-                    'tipo_formulario' => 0,
-                    'nombre' => $nombre,
-                    'paterno' => $paterno,
-                    'materno' => $materno,
-                    'correo' => $correo,
-                    'id_cliente' => 273,
-                    'celular' => $cel,
-                    'subproyecto' => $proyecto . ' ' . $pais,
-                    'pais' => $pais,
-					'privacidad'=> $privacidad_usuario,
+                    'creacion'              => $date,
+                    'edicion'               => $date,
+                    'tipo_usuario'          => $usuario,
+                    'id_usuario'            => 1,
+                    'fecha_alta'            => $date,
+                    'tipo_formulario'       => 0,
+                    'nombre'                => $nombre,
+                    'paterno'               => $paterno,
+                    'materno'               => $materno,
+                    'correo'                => $correo,
+                    'id_cliente'            => 273,
+                    'celular'               => $cel,
+                    'subproyecto'           => $proyecto . ' ' . $pais,
+                    'pais'                  => $pais,
+                    'privacidad'            => $privacidad_usuario,
 
                     // datos  para  tabla  pruebas
 
-                    'socioeconomico' => 0,
-                    'tipo_antidoping' => $tipo_antidoping,
-                    'antidoping' => $antidoping,
-                    'medico' => $medico,
-                    'psicometrico' => $psicometrico,
-
-               
+                    'socioeconomico'        => 0,
+                    'tipo_antidoping'       => $tipo_antidoping,
+                    'antidoping'            => $antidoping,
+                    'medico'                => $medico,
+                    'psicometrico'          => $psicometrico,
 
                     // datos  para  tabla  Candidato_sync
-                    'id_usuario_talent' => $id_usuario,
-                    'id_cliente_talent' => $id_cliente,
-                    'id_aspirante_talent' => $idAspiranteReq,
+                    'id_usuario_talent'     => $id_usuario,
+                    'id_cliente_talent'     => $id_cliente,
+                    'id_aspirante_talent'   => $idAspiranteReq,
                     'nombre_cliente_talent' => $nombre_cliente,
-                    'id_cliente_talent' => $id_cliente,
-                    'id_portal' => $id_portal,
-					'id_puesto_talent' => $puesto,
+                    'id_cliente_talent'     => $id_cliente,
+                    'id_portal'             => $id_portal,
+                    'id_puesto_talent'      => $puesto,
 
+                ];
 
-                );
-              
-                $url =  API_URL.'candidatos';
+                $url = API_URL . 'candidatos';
 
                 $ch = curl_init($url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -545,37 +539,37 @@ class Client extends Custom_Controller
                     'Accept: application/json',
                 ]);
 
-                $response = curl_exec($ch);
+                $response    = curl_exec($ch);
                 $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
 
-						if ($response === false) {
-									echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
-									return;
-							}
-							
-							// Decodificar la respuesta JSON
-							$responseData = json_decode($response, true);
-							
-							// Verificar el código de estado HTTP y el mensaje en la respuesta
-							if ($http_status == 201 && isset($responseData['codigo']) && $responseData['codigo'] === 1) {
-									$msj = array(
-											'codigo' => 1,
-											'msg' => "Success",
-									);
-							} else {
-									$msj = array(
-											'codigo' => 0,
-											'msg' => "Error",
-									);
-							}
+                if ($response === false) {
+                    echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
+                    return;
+                }
+
+                // Decodificar la respuesta JSON
+                $responseData = json_decode($response, true);
+
+                // Verificar el código de estado HTTP y el mensaje en la respuesta
+                if ($http_status == 201 && isset($responseData['codigo']) && $responseData['codigo'] === 1) {
+                    $msj = [
+                        'codigo' => 1,
+                        'msg'    => "Success",
+                    ];
+                } else {
+                    $msj = [
+                        'codigo' => 0,
+                        'msg'    => "Error",
+                    ];
+                }
                 //* Envio de notificacion
                 if ($usuario == 2 || $usuario == 3) {
-                    $cliente = $this->cat_cliente_model->getById($id_cliente);
-                    $aplicaDoping = '';
-                    $aplicaMedico = '';
+                    $cliente           = $this->cat_cliente_model->getById($id_cliente);
+                    $aplicaDoping      = '';
+                    $aplicaMedico      = '';
                     $usuariosAnalistas = $this->usuario_model->get_usuarios_by_rol([1, 2, 6, 8, 9]);
-                    $aplicaDoping = $examen != 0 ? 'para examen de drogas' : '';
+                    $aplicaDoping      = $examen != 0 ? 'para examen de drogas' : '';
                     if ($medico != 0) {
                         if ($examen != 0) {
                             $aplicaMedico = ' y examen medico';
@@ -586,45 +580,43 @@ class Client extends Custom_Controller
                     foreach ($usuariosAnalistas as $row) {
                         $usuariosObjetivo[] = $row->id;
                     }
-                    $titulo = 'Registro de examenes para candidato';
+                    $titulo  = 'Registro de examenes para candidato';
                     $mensaje = 'El cliente ' . $cliente->nombre . ' ha registrado al candidato: ' . $nombre . ' ' . $paterno . ' ' . $materno . ' ' . $aplicaDoping . $aplicaMedico;
                     $this->registrar_notificacion($usuariosObjetivo, $titulo, $mensaje);
                 }
 
-            } if ($opcion == 0){
-                     //TODO:  aqui comienza   a trabajar 
-							//----- aqui comienza   el registro del  candidaton  con un proyecto previo 
-              if ($this->input->post('previo') != 0) {
-                 
+            }if ($opcion == 0) {
+                //TODO:  aqui comienza   a trabajar
+                //----- aqui comienza   el registro del  candidaton  con un proyecto previo
+                if ($this->input->post('previo') != 0) {
+
                     $id_proyecto_previo = $this->input->post('previo');
                     $subproyecto_previo = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
-                    $pais_previo = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
-                    $migracion = ($this->input->post('migracion') == '') ? null : $this->input->post('migracion') ;
-                    $seccion = $this->candidato_model->getProyectoPrevio($id_proyecto_previo);
-								
-	
+                    $pais_previo        = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
+                    $migracion          = ($this->input->post('migracion') == '') ? null : $this->input->post('migracion');
+                    $seccion            = $this->candidato_model->getProyectoPrevio($id_proyecto_previo);
 
                     //Acceo a Candidatos
                     if ($seccion->lleva_identidad == 1 || $seccion->lleva_empleos == 1 || $seccion->lleva_estudios == 1 || $seccion->lleva_domicilios == 1 || $seccion->cantidad_ref_profesionales > 0 || $seccion->cantidad_ref_personales > 0) {
-                        $aux = substr(md5(microtime()), 1, 8);
-												$token  = password_hash($aux, PASSWORD_BCRYPT);
-                       
-                        if ($pais_previo == 'Mexico' || $pais_previo  == 'México') {
+                        $aux   = substr(md5(microtime()), 1, 8);
+                        $token = password_hash($aux, PASSWORD_BCRYPT);
+
+                        if ($pais_previo == 'Mexico' || $pais_previo == 'México') {
                             $tipo_formulario = 3;
                         }
-                        if (!empty($pais_previo ) && $pais_previo != 'Mexico' && $pais_previo  != 'México') {
+                        if (! empty($pais_previo) && $pais_previo != 'Mexico' && $pais_previo != 'México') {
                             $tipo_formulario = 4;
                         }
                     }
                     if ($seccion->lleva_identidad != 1 && $seccion->lleva_empleos != 1 && $seccion->lleva_estudios != 1 && $seccion->lleva_domicilios != 1 && $seccion->cantidad_ref_profesionales == 0 && $seccion->cantidad_ref_personales == 0) {
-                        $token = "completo";
+                        $token           = "completo";
                         $tipo_formulario = 0;
                     }
-										
-                    //Verificar Documentacion Requerida
-                   // $res  = $this->candidato_model->getCandidatoProyectoPrevio($seccion->proyecto);
 
-									/*	echo '<pre>';
+                    //Verificar Documentacion Requerida
+                    // $res  = $this->candidato_model->getCandidatoProyectoPrevio($seccion->proyecto);
+
+                    /*	echo '<pre>';
 									echo $seccion->proyecto."aqui el Resultado";
 										echo '</pre>';
 										die();*/
@@ -659,20 +651,19 @@ class Client extends Custom_Controller
                     if ($this->input->post('curp') == 1) {
                         array_push($documentosSolicitados, 5);
                     }
-                    //* Obligados
-                    array_push($documentosSolicitados, 3); //ID
-                    //* Opcionales
+                                                            //* Obligados
+                    array_push($documentosSolicitados, 3);  //ID
+                                                            //* Opcionales
                     array_push($documentosSolicitados, 14); //Pasaporte
                     if ($pais_previo == 'México' || empty($pais_previo)) {
                         array_push($documentosSolicitados, 45); //Constancia fiscal
                     }
 
-								
                     //* Docs extras
                     $cant_extras = $this->input->post('extras');
-                    if (!empty($cant_extras)) {
+                    if (! empty($cant_extras)) {
                         for ($i = 0; $i < count($cant_extras); $i++) {
-                            if (!in_array($cant_extras[$i], $documentosSolicitados)) {
+                            if (! in_array($cant_extras[$i], $documentosSolicitados)) {
                                 array_push($documentosSolicitados, $cant_extras[$i]);
                             }
 
@@ -681,150 +672,142 @@ class Client extends Custom_Controller
 
                     $docs_requeridos = []; // Inicializa el arreglo de documentos requeridos
 
-									for ($i = 0; $i < count($documentosSolicitados); $i++) {
-										$row = $this->documentacion_model->getDocumentoRequerido($documentosSolicitados[$i]);
-										$solicitado = $row->solicitado;
-										
-										// Verifica si se cumple alguna condición específica para modificar $solicitado
-										if ($documentosSolicitados[$i] == 12 && $seccion->lleva_criminal == 1 && $pais_previo != 'México' && $pais_previo != '') {
-												$solicitado = 1;
-										}
-										
-										// Construye un arreglo con los datos del documento actual
-										$documento = [
-												
-												'id_tipo_documento' => $row->id_tipo_documento,
-												'nombre_espanol' => $row->nombre_espanol,
-												'nombre_ingles' => $row->nombre_ingles,
-												'label_ingles' => $row->label_ingles,
-												'div_id' => $row->div_id,
-												'input_id' => $row->input_id,
-												'multiple' => $row->multiple,
-												'width' => $row->width,
-												'height' => $row->height,
-												'obligatorio' => $row->obligatorio,
-												'solicitado' => $solicitado,
-										];
-										
-										// Agrega el documento actual al arreglo de documentos requeridos
-										$docs_requeridos[] = $documento;
-									}
+                    for ($i = 0; $i < count($documentosSolicitados); $i++) {
+                        $row        = $this->documentacion_model->getDocumentoRequerido($documentosSolicitados[$i]);
+                        $solicitado = $row->solicitado;
+
+                        // Verifica si se cumple alguna condición específica para modificar $solicitado
+                        if ($documentosSolicitados[$i] == 12 && $seccion->lleva_criminal == 1 && $pais_previo != 'México' && $pais_previo != '') {
+                            $solicitado = 1;
+                        }
+
+                        // Construye un arreglo con los datos del documento actual
+                        $documento = [
+
+                            'id_tipo_documento' => $row->id_tipo_documento,
+                            'nombre_espanol'    => $row->nombre_espanol,
+                            'nombre_ingles'     => $row->nombre_ingles,
+                            'label_ingles'      => $row->label_ingles,
+                            'div_id'            => $row->div_id,
+                            'input_id'          => $row->input_id,
+                            'multiple'          => $row->multiple,
+                            'width'             => $row->width,
+                            'height'            => $row->height,
+                            'obligatorio'       => $row->obligatorio,
+                            'solicitado'        => $solicitado,
+                        ];
+
+                        // Agrega el documento actual al arreglo de documentos requeridos
+                        $docs_requeridos[] = $documento;
+                    }
                     //$candidato_previo = $this->candidato_model->getInfoCandidatoEspecifico($seccion->id_candidato);
 
-                    $candidato_secciones = array(
+                    $candidato_secciones = [
                         $tipo_usuario => $id_usuario,
-                       
-                    );
-										foreach (get_object_vars($seccion) as $campo => $valor) {
-											if ($campo != 'id_cliente' && $campo != 'status' && $campo != 'id') {
-													// Verificar si el valor no es nulo antes de manipularlo
-													if ($valor !== null) {
-															// Agregar el valor directamente sin escapar
-															$candidato_secciones[$campo] = $valor;
-													}
-											}
-									}
-									
-									// Codificar el array a JSON
-									$json = json_encode($candidato_secciones);
-									
-									// Imprimir el JSON
-							
+
+                    ];
+                    foreach (get_object_vars($seccion) as $campo => $valor) {
+                        if ($campo != 'id_cliente' && $campo != 'status' && $campo != 'id') {
+                            // Verificar si el valor no es nulo antes de manipularlo
+                            if ($valor !== null) {
+                                // Agregar el valor directamente sin escapar
+                                $candidato_secciones[$campo] = $valor;
+                            }
+                        }
+                    }
+
+                    // Codificar el array a JSON
+                    $json = json_encode($candidato_secciones);
+
+                    // Imprimir el JSON
 
                     //$this->candidato_seccion_model->store_secciones_candidato($candidato_secciones);
 
-                   
-										$data = array(
-											// datos  para  tabla  candidato
-											'creacion' => $date,
-											'edicion' => $date,
-											'tipo_usuario' => $usuario,
-											'usuario' => $id_usuario,
-											'fecha_alta' => $date,
-											'tipo_formulario' => $tipo_formulario,
-											'nombre' => $nombre,
-											'paterno' => $paterno,
-											'materno' => $materno,
-											'correo' => $correo,
-											'token' => $token,
-											'id_cliente' => 273,
-											'celular' => $cel,
-											'subproyecto' => $subproyecto_previo,
-											'pais' => $pais_previo,
-											'privacidad'=> $privacidad_usuario,
-	
-											// datos  para  tabla  pruebas  
-	
-											'socioeconomico' => 1,
-											'tipo_antidoping' => $tipo_antidoping,
-											'antidoping' => $antidoping,
-											'medico' => $medico,
-											'psicometrico' => $psicometrico,
-	
-											
-	
-											// datos  para  tabla  Candidato_sync
-											'id_cliente_talent' => $id_cliente,
-											'id_aspirante_talent' => $idAspiranteReq,
-											'nombre_cliente_talent' => $nombre_cliente,
-											'id_cliente_talent' => $id_cliente,
-											'id_portal' => $id_portal,
-											//  aqui los documentos  requeridos   esto es un array  donde  se insertara un registro por  cada  objeto en la tabla 
-											// candidato_documento_requerido  la clave   y el valor  coniciden con los de la base de datos 
-											'documentos'=> $docs_requeridos,
+                    $data = [
+                        // datos  para  tabla  candidato
+                        'creacion'              => $date,
+                        'edicion'               => $date,
+                        'tipo_usuario'          => $usuario,
+                        'usuario'               => $id_usuario,
+                        'fecha_alta'            => $date,
+                        'tipo_formulario'       => $tipo_formulario,
+                        'nombre'                => $nombre,
+                        'paterno'               => $paterno,
+                        'materno'               => $materno,
+                        'correo'                => $correo,
+                        'token'                 => $token,
+                        'id_cliente'            => 273,
+                        'celular'               => $cel,
+                        'subproyecto'           => $subproyecto_previo,
+                        'pais'                  => $pais_previo,
+                        'privacidad'            => $privacidad_usuario,
 
-											// aqui las  secciones  requeridas  esto es un arreglo y va  al modelo CandidatoSeccion
-											'secciones'=> $candidato_secciones,
+                        // datos  para  tabla  pruebas
 
-									);
+                        'socioeconomico'        => 1,
+                        'tipo_antidoping'       => $tipo_antidoping,
+                        'antidoping'            => $antidoping,
+                        'medico'                => $medico,
+                        'psicometrico'          => $psicometrico,
 
-								
+                        // datos  para  tabla  Candidato_sync
+                        'id_cliente_talent'     => $id_cliente,
+                        'id_aspirante_talent'   => $idAspiranteReq,
+                        'nombre_cliente_talent' => $nombre_cliente,
+                        'id_cliente_talent'     => $id_cliente,
+                        'id_portal'             => $id_portal,
+                        //  aqui los documentos  requeridos   esto es un array  donde  se insertara un registro por  cada  objeto en la tabla
+                        // candidato_documento_requerido  la clave   y el valor  coniciden con los de la base de datos
+                        'documentos'            => $docs_requeridos,
 
-									$url = API_URL.'candidatoconprevio';
+                        // aqui las  secciones  requeridas  esto es un arreglo y va  al modelo CandidatoSeccion
+                        'secciones'             => $candidato_secciones,
 
+                    ];
 
-                                        $ch = curl_init($url);
-                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                                        curl_setopt($ch, CURLOPT_POST, true);
-                                        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-                                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                                            'Content-Type: application/json',
-                                            'Accept: application/json',
-                                        ]);
+                    $url = API_URL . 'candidatoconprevio';
 
-                                        $response = curl_exec($ch);
-                                        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                                        curl_close($ch);
+                    $ch = curl_init($url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'Content-Type: application/json',
+                        'Accept: application/json',
+                    ]);
 
-								if ($response === false) {
-									echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
-									return;
-							}
-							
-							// Decodificar la respuesta JSON
-							$responseData = json_decode($response, true);
+                    $response    = curl_exec($ch);
+                    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
 
-							/*	echo '<pre>';
+                    if ($response === false) {
+                        echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
+                        return;
+                    }
+
+                    // Decodificar la respuesta JSON
+                    $responseData = json_decode($response, true);
+
+                    /*	echo '<pre>';
 									echo $seccion->proyecto."aqui el Resultado";
 										echo '</pre>';
 										die();*/
-							
-							// Verificar el código de estado HTTP y el mensaje en la respuesta
-							if ($http_status == 201 && isset($responseData['codigo']) && $responseData['codigo'] === 1) {
-									$msj = array(
-											'codigo' => 1,
-											'msg' => "Success",
-									);
-							} else {
-									$msj = array(
-											'codigo' => 0,
-											'msg' => "Error",
-									);
-							}
-                
+
+                    // Verificar el código de estado HTTP y el mensaje en la respuesta
+                    if ($http_status == 201 && isset($responseData['codigo']) && $responseData['codigo'] === 1) {
+                        $msj = [
+                            'codigo' => 1,
+                            'msg'    => "Success",
+                        ];
+                    } else {
+                        $msj = [
+                            'codigo' => 0,
+                            'msg'    => "Error",
+                        ];
+                    }
 
                     //Envio de correo al candidato con sus credenciales
-                   /* if ($seccion->lleva_identidad == 1 || $seccion->lleva_empleos == 1 || $seccion->lleva_estudios == 1 || $seccion->lleva_domicilios == 1 || $seccion->cantidad_ref_profesionales > 0 || $seccion->cantidad_ref_personales > 0) {
+                    /* if ($seccion->lleva_identidad == 1 || $seccion->lleva_empleos == 1 || $seccion->lleva_estudios == 1 || $seccion->lleva_domicilios == 1 || $seccion->cantidad_ref_profesionales > 0 || $seccion->cantidad_ref_personales > 0) {
                         $info_cliente = $this->cliente_general_model->getDatosCliente($id_cliente);
 
                         if ($usuario == 1) {
@@ -926,8 +909,8 @@ class Client extends Custom_Controller
                         $mensaje = 'El cliente ' . $cliente->nombre . ' ha registrado al candidato: ' . $nombre . ' ' . $paterno . ' ' . $materno . ' para ESE' . $aplicaDoping . $aplicaMedico;
                         $this->registrar_notificacion($usuariosObjetivo, $titulo, $mensaje);
                     }*/
-                }  
-                //TODO: hasta  aqui estoy trabajando 
+                }
+                //TODO: hasta  aqui estoy trabajando
                 if ($this->input->post('previo') == 0) {
                     $this->form_validation->set_rules('empleos', 'Employment history', 'required');
                     $this->form_validation->set_rules('empleos_tiempo', 'Time required for employment history', 'required');
@@ -947,12 +930,12 @@ class Client extends Custom_Controller
                     $this->form_validation->set_rules('prohibited', 'Prohibited parties list check', 'required');
                     $this->form_validation->set_rules('curp', 'CURP', 'required');
 
-                    $msj = array();
+                    $msj = [];
                     if ($this->form_validation->run() == false) {
-                        $msj = array(
+                        $msj = [
                             'codigo' => 0,
-                            'msg' => validation_errors(),
-                        );
+                            'msg'    => validation_errors(),
+                        ];
                     } else {
                         $privacidad_usuario = 0;
                         switch ($usuario) {
@@ -960,7 +943,7 @@ class Client extends Custom_Controller
                                 $tipo_usuario = "id_usuario";
                                 break;
                             case 2:
-                                $tipo_usuario = "id_usuario_cliente";
+                                $tipo_usuario       = "id_usuario_cliente";
                                 $privacidad_usuario = $this->session->userdata('privacidad');
                                 break;
                             case 3:
@@ -970,24 +953,24 @@ class Client extends Custom_Controller
                         //$last = $this->candidato_model->lastIdCandidato();
                         //$last = ($last == null || $last == "")? 0 : $last;
 
-                        $etiquetas = '';
-                        $region = $this->input->post('region');
-                        $pais = $this->input->post('pais');
-                        $empleos = $this->input->post('empleos');
-                        $criminal = $this->input->post('criminal');
-                        $domicilios = $this->input->post('domicilios');
-                        $estudios = $this->input->post('estudios');
-                        $identidad = $this->input->post('identidad');
-                        $global = $this->input->post('global');
+                        $etiquetas         = '';
+                        $region            = $this->input->post('region');
+                        $pais              = $this->input->post('pais');
+                        $empleos           = $this->input->post('empleos');
+                        $criminal          = $this->input->post('criminal');
+                        $domicilios        = $this->input->post('domicilios');
+                        $estudios          = $this->input->post('estudios');
+                        $identidad         = $this->input->post('identidad');
+                        $global            = $this->input->post('global');
                         $ref_profesionales = $this->input->post('ref_profesionales');
-                        $credito = $this->input->post('credito');
-                        $ref_personales = $this->input->post('ref_personales');
-                        $ref_academicas = $this->input->post('ref_academicas');
-                        $migracion = $this->input->post('migracion');
-                        $prohibited = $this->input->post('prohibited');
-                        $mvr = $this->input->post('mvr');
-                        $curp = $this->input->post('curp');
-                        $conjunto_docs = array();
+                        $credito           = $this->input->post('credito');
+                        $ref_personales    = $this->input->post('ref_personales');
+                        $ref_academicas    = $this->input->post('ref_academicas');
+                        $migracion         = $this->input->post('migracion');
+                        $prohibited        = $this->input->post('prohibited');
+                        $mvr               = $this->input->post('mvr');
+                        $curp              = $this->input->post('curp');
+                        $conjunto_docs     = [];
 
                         //Secciones
                         //Datos Generales
@@ -1018,13 +1001,13 @@ class Client extends Custom_Controller
                         //Estudios
                         if ($estudios != 0) {
                             $lleva_estudios = 1;
-                            $id_estudios = 3;
+                            $id_estudios    = 3;
                             //$salida = $this->candidato_model->getEtiquetaSeccion(3);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_mayores_estudios">Mayores estudios</a>';
                             array_push($conjunto_docs, 7);
                         } else {
                             $lleva_estudios = 0;
-                            $id_estudios = 0;
+                            $id_estudios    = 0;
                         }
                         //Global searches
                         if ($global != 0) {
@@ -1037,23 +1020,23 @@ class Client extends Custom_Controller
                         //Domicilio
                         if ($domicilios != 0) {
                             //Candidato seccion
-                            $lleva_domicilios = 1;
-                            $tiempo_domicilios = $this->input->post('domicilios_tiempo');
+                            $lleva_domicilios                = 1;
+                            $tiempo_domicilios               = $this->input->post('domicilios_tiempo');
                             $id_seccion_historial_domicilios = $domicilios;
                             //$salida = $this->candidato_model->getEtiquetaSeccion($id_seccion_historial_domicilios);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_domicilios">Historial de domicilios</a>';
                             array_push($conjunto_docs, 2);
                         } else {
                             //Candidato seccion
-                            $lleva_domicilios = 0;
-                            $tiempo_domicilios = null;
+                            $lleva_domicilios                = 0;
+                            $tiempo_domicilios               = null;
                             $id_seccion_historial_domicilios = null;
                         }
                         //Empleos
                         if ($empleos != 0) {
                             //Candidato seccion
-                            $lleva_empleos = 1;
-                            $lleva_gaps = 1;
+                            $lleva_empleos  = 1;
+                            $lleva_gaps     = 1;
                             $tiempo_empleos = $this->input->post('empleos_tiempo');
                             //$salida = $this->candidato_model->getEtiquetaSeccion(16);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_laborales">Referencias laborales</a>';
@@ -1061,10 +1044,10 @@ class Client extends Custom_Controller
                             $id_empleos = 59;
                         } else {
                             //Candidato seccion
-                            $lleva_empleos = 0;
-                            $lleva_gaps = 0;
+                            $lleva_empleos  = 0;
+                            $lleva_gaps     = 0;
                             $tiempo_empleos = null;
-                            $id_empleos = 0;
+                            $id_empleos     = 0;
                         }
                         //Referencias Profesionales
                         if ($ref_profesionales > 0) {
@@ -1077,24 +1060,24 @@ class Client extends Custom_Controller
                         //Credito
                         if ($credito != 0) {
                             //Candidato seccion
-                            $lleva_credito = 1;
+                            $lleva_credito  = 1;
                             $tiempo_credito = $this->input->post('credito_tiempo');
                             //$salida = $this->candidato_model->getEtiquetaSeccion(23);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_credito">Historial crediticio</a>';
                             array_push($conjunto_docs, 28);
                         } else {
                             //Candidato seccion
-                            $lleva_credito = 0;
+                            $lleva_credito  = 0;
                             $tiempo_credito = null;
                         }
                         //Criminal
                         if ($criminal == 1) {
                             //Candidato seccion
-                            $lleva_criminal = 1;
+                            $lleva_criminal    = 1;
                             $tiempo_criminales = $this->input->post('criminal_tiempo');
                         } else {
                             //Candidato seccion
-                            $lleva_criminal = 0;
+                            $lleva_criminal    = 0;
                             $tiempo_criminales = null;
                         }
                         //Referencias Personales
@@ -1133,8 +1116,8 @@ class Client extends Custom_Controller
 
                         //Acceso a Candidatos
                         if ($identidad == 1 || $lleva_empleos == 1 || $lleva_estudios == 1 || $lleva_domicilios == 1 || $ref_profesionales > 0 || $ref_personales > 0) {
-                            $base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
-                            $aux = substr(md5(microtime()), 1, 8);
+                            $base  = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
+                            $aux   = substr(md5(microtime()), 1, 8);
                             $token = md5($aux . $base);
                             if ($region == 'Mexico') {
                                 $tipo_formulario = 3;
@@ -1143,34 +1126,34 @@ class Client extends Custom_Controller
                                 $tipo_formulario = 4;
                             }
                         } else {
-                            $token = "completo";
+                            $token           = "completo";
                             $tipo_formulario = 0;
                         }
 
-                        $data = array(
-                            'creacion' => $date,
-                            'edicion' => $date,
-                            $tipo_usuario => $id_usuario,
-                            'fecha_alta' => $date,
+                        $data = [
+                            'creacion'        => $date,
+                            'edicion'         => $date,
+                            $tipo_usuario     => $id_usuario,
+                            'fecha_alta'      => $date,
                             'tipo_formulario' => $tipo_formulario,
-                            'nombre' => $nombre,
-                            'paterno' => $paterno,
-                            'materno' => $materno,
-                            'correo' => $correo,
-                            'token' => $token,
-                            'id_cliente' => $id_cliente,
-                            'celular' => $cel,
-                            'subproyecto' => '',
-                            'pais' => $pais,
-                            'privacidad' => $privacidad_usuario,
-                        );
+                            'nombre'          => $nombre,
+                            'paterno'         => $paterno,
+                            'materno'         => $materno,
+                            'correo'          => $correo,
+                            'token'           => $token,
+                            'id_cliente'      => $id_cliente,
+                            'celular'         => $cel,
+                            'subproyecto'     => '',
+                            'pais'            => $pais,
+                            'privacidad'      => $privacidad_usuario,
+                        ];
                         $id_candidato = $this->candidato_model->registrarRetornaCandidato($data);
 
                         //Verificacion Documentos
                         $cant_extras = $this->input->post('extras');
-                        if (!empty($cant_extras)) {
+                        if (! empty($cant_extras)) {
                             for ($i = 0; $i < count($cant_extras); $i++) {
-                                if (!in_array($cant_extras[$i], $conjunto_docs)) {
+                                if (! in_array($cant_extras[$i], $conjunto_docs)) {
                                     array_push($conjunto_docs, $cant_extras[$i]);
                                 }
 
@@ -1184,60 +1167,60 @@ class Client extends Custom_Controller
                             if ($conjunto_docs[$i] == 12 && $lleva_criminal == 1 && $region != 'México' && $region != '') {
                                 $solicitado = 1;
                             }
-                            $docs_requeridos = array(
-                                'id_candidato' => $id_candidato,
+                            $docs_requeridos = [
+                                'id_candidato'      => $id_candidato,
                                 'id_tipo_documento' => $row->id_tipo_documento,
-                                'nombre_espanol' => $row->nombre_espanol,
-                                'nombre_ingles' => $row->nombre_ingles,
-                                'label_ingles' => $row->label_ingles,
-                                'div_id' => $row->div_id,
-                                'input_id' => $row->input_id,
-                                'multiple' => $row->multiple,
-                                'width' => $row->width,
-                                'height' => $row->height,
-                                'obligatorio' => $row->obligatorio,
-                                'solicitado' => $solicitado,
-                            );
+                                'nombre_espanol'    => $row->nombre_espanol,
+                                'nombre_ingles'     => $row->nombre_ingles,
+                                'label_ingles'      => $row->label_ingles,
+                                'div_id'            => $row->div_id,
+                                'input_id'          => $row->input_id,
+                                'multiple'          => $row->multiple,
+                                'width'             => $row->width,
+                                'height'            => $row->height,
+                                'obligatorio'       => $row->obligatorio,
+                                'solicitado'        => $solicitado,
+                            ];
                             $this->documentacion_model->addDocumentoRequerido($docs_requeridos);
                         }
 
                         $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_documentacion">Verificación de documentos</a>';
                         $id_seccion_verificacion_docs = 112;
                         //* Se guarda el registro para la tabla candidato_seccion
-                        $candidato_secciones = array(
-                            'creacion' => $date,
-                            $tipo_usuario => $id_usuario,
-                            'id_candidato' => $id_candidato,
-                            'proyecto' => $proyecto,
-                            'secciones' => $etiquetas,
-                            'lleva_identidad' => $identidad,
-                            'lleva_empleos' => $lleva_empleos,
-                            'lleva_criminal' => $lleva_criminal,
-                            'lleva_estudios' => $lleva_estudios,
-                            'lleva_domicilios' => $lleva_domicilios,
-                            'lleva_gaps' => $lleva_gaps,
-                            'lleva_credito' => $lleva_credito,
-                            'lleva_prohibited_parties_list' => $prohibited,
-                            'lleva_curp' => $curp,
-                            'lleva_motor_vehicle_records' => $mvr,
-                            'id_seccion_datos_generales' => $id_seccion_datos_generales,
-                            'id_estudios' => $id_estudios,
+                        $candidato_secciones = [
+                            'creacion'                        => $date,
+                            $tipo_usuario                     => $id_usuario,
+                            'id_candidato'                    => $id_candidato,
+                            'proyecto'                        => $proyecto,
+                            'secciones'                       => $etiquetas,
+                            'lleva_identidad'                 => $identidad,
+                            'lleva_empleos'                   => $lleva_empleos,
+                            'lleva_criminal'                  => $lleva_criminal,
+                            'lleva_estudios'                  => $lleva_estudios,
+                            'lleva_domicilios'                => $lleva_domicilios,
+                            'lleva_gaps'                      => $lleva_gaps,
+                            'lleva_credito'                   => $lleva_credito,
+                            'lleva_prohibited_parties_list'   => $prohibited,
+                            'lleva_curp'                      => $curp,
+                            'lleva_motor_vehicle_records'     => $mvr,
+                            'id_seccion_datos_generales'      => $id_seccion_datos_generales,
+                            'id_estudios'                     => $id_estudios,
                             'id_seccion_historial_domicilios' => $id_seccion_historial_domicilios,
-                            'id_seccion_verificacion_docs' => $id_seccion_verificacion_docs,
-                            'id_seccion_global_search' => $id_seccion_global_search,
-                            'id_ref_personales' => $id_ref_personales,
-                            'id_ref_profesional' => $id_ref_profesional,
-                            'id_ref_academica' => $id_ref_academica,
-                            'id_empleos' => $id_empleos,
-                            'tiempo_empleos' => $tiempo_empleos,
-                            'tiempo_criminales' => $tiempo_criminales,
-                            'tiempo_domicilios' => $tiempo_domicilios,
-                            'tiempo_credito' => $tiempo_credito,
-                            'cantidad_ref_profesionales' => $ref_profesionales,
-                            'cantidad_ref_personales' => $ref_personales,
-                            'cantidad_ref_academicas' => $ref_academicas,
-                            'tipo_conclusion' => 22,
-                        );
+                            'id_seccion_verificacion_docs'    => $id_seccion_verificacion_docs,
+                            'id_seccion_global_search'        => $id_seccion_global_search,
+                            'id_ref_personales'               => $id_ref_personales,
+                            'id_ref_profesional'              => $id_ref_profesional,
+                            'id_ref_academica'                => $id_ref_academica,
+                            'id_empleos'                      => $id_empleos,
+                            'tiempo_empleos'                  => $tiempo_empleos,
+                            'tiempo_criminales'               => $tiempo_criminales,
+                            'tiempo_domicilios'               => $tiempo_domicilios,
+                            'tiempo_credito'                  => $tiempo_credito,
+                            'cantidad_ref_profesionales'      => $ref_profesionales,
+                            'cantidad_ref_personales'         => $ref_personales,
+                            'cantidad_ref_academicas'         => $ref_academicas,
+                            'tipo_conclusion'                 => 22,
+                        ];
                         $this->candidato_seccion_model->store_secciones_candidato($candidato_secciones);
 
                         //Se checa si no existe un proyecto previo con el mismo nombre; si no existe se agrega al historial
@@ -1245,54 +1228,54 @@ class Client extends Custom_Controller
                         //Se eliminan los proyectos previos con el mismo nombre de proyecto
                         $this->candidato_seccion_model->deleteProyectosPrevios($proyecto, $id_cliente);
                         //if($hayId == 0){
-                        $proyecto_historial = array(
-                            'creacion' => $date,
-                            $tipo_usuario => $id_usuario,
-                            'id_cliente' => $id_cliente,
-                            'proyecto' => $proyecto,
-                            'secciones' => $etiquetas,
-                            'lleva_identidad' => $identidad,
-                            'lleva_empleos' => $lleva_empleos,
-                            'lleva_criminal' => $lleva_criminal,
-                            'lleva_estudios' => $lleva_estudios,
-                            'lleva_domicilios' => $lleva_domicilios,
-                            'lleva_gaps' => $lleva_gaps,
-                            'lleva_credito' => $lleva_credito,
-                            'lleva_prohibited_parties_list' => $prohibited,
-                            'lleva_curp' => $curp,
-                            'lleva_motor_vehicle_records' => $mvr,
-                            'id_seccion_datos_generales' => $id_seccion_datos_generales,
-                            'id_estudios' => $id_estudios,
+                        $proyecto_historial = [
+                            'creacion'                        => $date,
+                            $tipo_usuario                     => $id_usuario,
+                            'id_cliente'                      => $id_cliente,
+                            'proyecto'                        => $proyecto,
+                            'secciones'                       => $etiquetas,
+                            'lleva_identidad'                 => $identidad,
+                            'lleva_empleos'                   => $lleva_empleos,
+                            'lleva_criminal'                  => $lleva_criminal,
+                            'lleva_estudios'                  => $lleva_estudios,
+                            'lleva_domicilios'                => $lleva_domicilios,
+                            'lleva_gaps'                      => $lleva_gaps,
+                            'lleva_credito'                   => $lleva_credito,
+                            'lleva_prohibited_parties_list'   => $prohibited,
+                            'lleva_curp'                      => $curp,
+                            'lleva_motor_vehicle_records'     => $mvr,
+                            'id_seccion_datos_generales'      => $id_seccion_datos_generales,
+                            'id_estudios'                     => $id_estudios,
                             'id_seccion_historial_domicilios' => $id_seccion_historial_domicilios,
-                            'id_seccion_verificacion_docs' => $id_seccion_verificacion_docs,
-                            'id_seccion_global_search' => $id_seccion_global_search,
-                            'id_ref_personales' => $id_ref_personales,
-                            'id_ref_profesional' => $id_ref_profesional,
-                            'id_ref_academica' => $id_ref_academica,
-                            'id_empleos' => $id_empleos,
-                            'tiempo_empleos' => $tiempo_empleos,
-                            'tiempo_criminales' => $tiempo_criminales,
-                            'tiempo_domicilios' => $tiempo_domicilios,
-                            'tiempo_credito' => $tiempo_credito,
-                            'cantidad_ref_profesionales' => $ref_profesionales,
-                            'cantidad_ref_personales' => $ref_personales,
-                            'cantidad_ref_academicas' => $ref_academicas,
-                            'tipo_conclusion' => 22,
-                        );
+                            'id_seccion_verificacion_docs'    => $id_seccion_verificacion_docs,
+                            'id_seccion_global_search'        => $id_seccion_global_search,
+                            'id_ref_personales'               => $id_ref_personales,
+                            'id_ref_profesional'              => $id_ref_profesional,
+                            'id_ref_academica'                => $id_ref_academica,
+                            'id_empleos'                      => $id_empleos,
+                            'tiempo_empleos'                  => $tiempo_empleos,
+                            'tiempo_criminales'               => $tiempo_criminales,
+                            'tiempo_domicilios'               => $tiempo_domicilios,
+                            'tiempo_credito'                  => $tiempo_credito,
+                            'cantidad_ref_profesionales'      => $ref_profesionales,
+                            'cantidad_ref_personales'         => $ref_personales,
+                            'cantidad_ref_academicas'         => $ref_academicas,
+                            'tipo_conclusion'                 => 22,
+                        ];
                         $this->candidato_model->guardarHistorialProyecto($proyecto_historial);
                         //}
 
-                        $pruebas = array(
-                            'creacion' => $date,
-                            'edicion' => $date,
-                            $tipo_usuario => $id_usuario,
-                            'id_candidato' => $id_candidato,
-                            'id_cliente' => $id_cliente,
-                            'socioeconomico' => 1,
+                        $pruebas = [
+                            'creacion'        => $date,
+                            'edicion'         => $date,
+                            $tipo_usuario     => $id_usuario,
+                            'id_candidato'    => $id_candidato,
+                            'id_cliente'      => $id_cliente,
+                            'socioeconomico'  => 1,
                             'tipo_antidoping' => $tipo_antidoping,
-                            'antidoping' => $antidoping,
-                            'medico' => $medico,
-                        );
+                            'antidoping'      => $antidoping,
+                            'medico'          => $medico,
+                        ];
                         $this->candidato_model->crearPruebas($pruebas);
 
                         //Envio de correo al candidato con sus credenciales
@@ -1300,22 +1283,22 @@ class Client extends Custom_Controller
                             $info_cliente = $this->cliente_general_model->getDatosCliente($id_cliente);
 
                             if ($usuario == 1) {
-                                $from = $this->config->item('smtp_user');
-                                $to = $correo;
-                                $subject = strtolower($info_cliente->nombre) . " - credentials for register form";
+                                $from              = $this->config->item('smtp_user');
+                                $to                = $correo;
+                                $subject           = strtolower($info_cliente->nombre) . " - credentials for register form";
                                 $datos['password'] = $aux;
-                                $datos['cliente'] = strtoupper($info_cliente->nombre);
-                                $datos['email'] = $correo;
-                                $message = $this->load->view('mails/mail_hcl', $datos, true);
+                                $datos['cliente']  = strtoupper($info_cliente->nombre);
+                                $datos['email']    = $correo;
+                                $message           = $this->load->view('mails/mail_hcl', $datos, true);
                                 $this->load->library('phpmailer_lib');
                                 $mail = $this->phpmailer_lib->load();
                                 $mail->isSMTP();
-                                $mail->Host = 'mail.rodicontrol.com';
-                                $mail->SMTPAuth = true;
-                                $mail->Username = 'rodicontrol@rodicontrol.com';
-                                $mail->Password = 'r49o*&rUm%91';
+                                $mail->Host       = 'mail.rodicontrol.com';
+                                $mail->SMTPAuth   = true;
+                                $mail->Username   = 'rodicontrol@rodicontrol.com';
+                                $mail->Password   = 'r49o*&rUm%91';
                                 $mail->SMTPSecure = 'ssl';
-                                $mail->Port = 465;
+                                $mail->Port       = 465;
                                 $mail->addCC('rodicontrol@rodicontrol.com');
 
                                 $mail->setFrom('rodicontrol@rodicontrol.com', 'Process of the candidate on RODI platform');
@@ -1323,36 +1306,36 @@ class Client extends Custom_Controller
                                 $mail->Subject = $subject;
                                 $mail->isHTML(true);
                                 $mailContent = $message;
-                                $mail->Body = $mailContent;
+                                $mail->Body  = $mailContent;
 
-                                if (!$mail->send()) {
-                                    $msj = array(
+                                if (! $mail->send()) {
+                                    $msj = [
                                         'codigo' => 3,
-                                        'msg' => $aux,
-                                    );
+                                        'msg'    => $aux,
+                                    ];
                                 } else {
-                                    $msj = array(
+                                    $msj = [
                                         'codigo' => 4,
-                                        'msg' => $aux,
-                                    );
+                                        'msg'    => $aux,
+                                    ];
                                 }
                             } else {
-                                $from = $this->config->item('smtp_user');
-                                $to = $correo;
-                                $subject = strtolower($info_cliente->nombre) . " - credentials for register form";
+                                $from              = $this->config->item('smtp_user');
+                                $to                = $correo;
+                                $subject           = strtolower($info_cliente->nombre) . " - credentials for register form";
                                 $datos['password'] = $aux;
-                                $datos['cliente'] = strtoupper($info_cliente->nombre);
-                                $datos['email'] = $correo;
-                                $message = $this->load->view('mails/mail_hcl', $datos, true);
+                                $datos['cliente']  = strtoupper($info_cliente->nombre);
+                                $datos['email']    = $correo;
+                                $message           = $this->load->view('mails/mail_hcl', $datos, true);
                                 $this->load->library('phpmailer_lib');
                                 $mail = $this->phpmailer_lib->load();
                                 $mail->isSMTP();
-                                $mail->Host = 'mail.rodicontrol.com';
-                                $mail->SMTPAuth = true;
-                                $mail->Username = 'rodicontrol@rodicontrol.com';
-                                $mail->Password = 'r49o*&rUm%91';
+                                $mail->Host       = 'mail.rodicontrol.com';
+                                $mail->SMTPAuth   = true;
+                                $mail->Username   = 'rodicontrol@rodicontrol.com';
+                                $mail->Password   = 'r49o*&rUm%91';
                                 $mail->SMTPSecure = 'ssl';
-                                $mail->Port = 465;
+                                $mail->Port       = 465;
                                 $mail->addCC('rodicontrol@rodicontrol.com');
 
                                 $mail->setFrom('rodicontrol@rodicontrol.com', 'Process of the candidate on RODI platform');
@@ -1360,28 +1343,28 @@ class Client extends Custom_Controller
                                 $mail->Subject = $subject;
                                 $mail->isHTML(true);
                                 $mailContent = $message;
-                                $mail->Body = $mailContent;
+                                $mail->Body  = $mailContent;
                                 $mail->send();
-                                $msj = array(
+                                $msj = [
                                     'codigo' => 1,
-                                    'msg' => 'Success',
-                                );
+                                    'msg'    => 'Success',
+                                ];
                             }
                         } else {
-                            $msj = array(
+                            $msj = [
                                 'codigo' => 1,
-                                'msg' => 'Success',
-                            );
+                                'msg'    => 'Success',
+                            ];
                         }
                         //* Envio de notificacion
                         if ($usuario == 2 || $usuario == 3) {
-                            $cliente = $this->cat_cliente_model->getById($id_cliente);
+                            $cliente      = $this->cat_cliente_model->getById($id_cliente);
                             $aplicaDoping = '';
                             $aplicaMedico = '';
-                            $rolDoping = 0;
+                            $rolDoping    = 0;
                             if ($examen != 0) {
                                 $aplicaDoping = ', para examen de drogas';
-                                $rolDoping = 8;
+                                $rolDoping    = 8;
                             }
                             if ($medico != 0) {
                                 $rolDoping = 8;
@@ -1395,87 +1378,284 @@ class Client extends Custom_Controller
                             foreach ($usuariosAnalistas as $row) {
                                 $usuariosObjetivo[] = $row->id;
                             }
-                            $titulo = 'Registro de un nuevo candidato';
+                            $titulo  = 'Registro de un nuevo candidato';
                             $mensaje = 'El cliente ' . $cliente->nombre . ' ha registrado al candidato: ' . $nombre . ' ' . $paterno . ' ' . $materno . ' para ESE' . $aplicaDoping . $aplicaMedico;
                             $this->registrar_notificacion($usuariosObjetivo, $titulo, $mensaje);
                         }
                     }
                 }
 
-            }else{
+            } else {
+                $id_bolsa = $this->input->post('id_bolsa_trabajo');
+
+                $candidatoBolsa  = $this->reclutamiento_model->getBolsaTrabajoById($id_bolsa);
+                $fechaNacimiento = $candidatoBolsa->fecha_nacimiento;
+
                 $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
 
-                $data = array(
+                $data = [
                     // datos  para  tabla  candidato
-                    'creacion' => $date,
-                    'edicion' => $date,
-                    'id_portal' => $id_portal, 
-                    'id_cliente' => $id_cliente,
-                    'id_usuario'=> $id_usuario,                    
-                    'nombre' => $nombre,
-                    'paterno' => $paterno,
-                    'materno' => $materno,
-                    'telefono' => $cel,
-                    'correo' => $correo,
-                    'puesto' => !empty($puesto_otro) ? $puesto_otro : $puesto,
-                    'nss' => $nss,
-                    'curp' => $curp,
-                    'status' => 3,
-                    'eliminado' => 0
-                );
+                    'creacion'         => $date,
+                    'edicion'          => $date,
+                    'id_portal'        => $id_portal,
+                    'id_cliente'       => $id_cliente,
+                    'id_usuario'       => $id_usuario,
+                    'nombre'           => $nombre,
+                    'paterno'          => $paterno,
+                    'fecha_nacimiento' => $fechaNacimiento,
+                    'materno'          => $materno,
+                    'telefono'         => $cel,
+                    'correo'           => $correo,
+                    'puesto'           => ! empty($puesto_otro) ? $puesto_otro : $puesto,
+                    'nss'              => $nss,
+                    'curp'             => $curp,
+                    'status'           => 3,
+                    'eliminado'        => 0,
+                ];
 
+                $resultado = $this->candidato_avance_model->registrarPreEmpleadoConDomicilio($data, $pais);
+                if ($resultado > 0) {
+                    $msj = [
+                        'codigo' => 1,
+                        'msg'    => "Success",
+                    ];
+                    $extrasJson = $candidatoBolsa->extras; // el JSON que viene de la bolsa
+                    if ($resultado > 0 && $extrasJson != null) {
+                        $permitidos = [
+                            'ups', 'aviso', 'cedula', 'correo', 'estado', 'mini_ups', 'camara_pc', 'direccion',
+                            'tipo_fibra', 'fibra_optica', 'microfono_pc', 'lugar_alterno', 'plan_internet',
+                            'racionamiento', 'auriculares_pc', 'planta_electrica', 'recursos_propios',
+                            'fallas_electricas', 'proveedor_internet', 'detalle_racionamiento',
+                        ];
 
-               $resultado = $this->candidato_avance_model->registrarPreEmpleadoConDomicilio($data, $pais);
+                        // Estrategia 1: reemplazar todo (borra e inserta)
+                        $this->reclutamiento_model->reemplazarExtrasDesdeJson($resultado, $extrasJson, $permitidos);
+                        $respLink = $this->_generarLinkEmpleado($resultado, (int) $id_portal);
 
-               if($resultado > 0  ){
-                $msj = array(
-                    'codigo' => 1,
-                    'msg' => "Success",
-                                );
-                       
-               }else{
-                $msj = array(
-                    'codigo' => 0,
-                    'msg' => "Error",
-                     );
-               }
-               
+                        if (! empty($respLink['success'])) {
+                            // Opcional: agrega el link/qr a tu respuesta
+                            $msj = [
+                                'codigo' => 1,
+                                'msg'    => 'Success',
+                                'link'   => $respLink['link'] ?? null,
+                                'qr'     => $respLink['qr'] ?? null,
+                                'sha'    => $respLink['sha'] ?? null, // huella corta útil para debug
+                            ];
+                        } else {
+                            // Si falló la generación del link, no detiene el flujo del alta
+                            log_message('error', 'No se pudo generar link para empleado ' . $resultado . ': ' . ($respLink['error'] ?? ''));
+                            $msj = [
+                                'codigo' => 1,
+                                'msg'    => 'Empleado creado, pero falló la generación del link',
+                            ];
+                        }
+                    }
+                } else {
+                    $msj = [
+                        'codigo' => 0,
+                        'msg'    => "Error",
+                    ];
+                }
+
             }
 
         }
         echo json_encode($msj);
     }
 
+    public function regenerarLinkEmpleado()
+    {
+        $id_empleado = (int) $this->input->post('id_empleado');
+        $id_portal   = (int) $this->session->userdata('idPortal'); // o de sesión
+        $this->output->set_content_type('application/json');
+
+        if (! $id_empleado || ! $id_portal) {
+            return $this->output->set_output(json_encode(['success' => false, 'error' => 'Faltan parámetros.']));
+        }
+
+        $res = $this->_generarLinkEmpleado($id_empleado, $id_portal);
+        if (empty($res['success'])) {
+            return $this->output->set_output(json_encode(['success' => false, 'error' => $res['error'] ?? 'Error interno']));
+        }
+
+        $row = $this->reclutamiento_model->getLastLinkEmpleado($id_empleado);
+
+        return $this->output->set_output(json_encode([
+            'success' => true,
+            'row'     => $row,
+        ]));
+    }
+
+    public function revocarLinkEmpleado()
+    {
+        $id_empleado = (int) $this->input->post('id_empleado');
+        $this->output->set_content_type('application/json');
+
+        if (! $id_empleado) {
+            return $this->output->set_output(json_encode(['success' => false, 'error' => 'Falta id_empleado']));
+        }
+
+        $ok = $this->reclutamiento_model->revokeLinkEmpleado($id_empleado);
+        return $this->output->set_output(json_encode(['success' => (bool) $ok]));
+    }
+    private function _generarLinkEmpleado(int $id_empleado, int $id_portal): array
+    {
+        try {
+            $logo         = $this->session->userdata('logo') ?? 'portal_icon.png';
+            $NombrePortal = $this->session->userdata('nombrePortal') ?? 'Portal';
+            $usuario_id   = (int) $this->session->userdata('id');
+
+            foreach (['id_empleado', 'id_portal', 'usuario_id', 'NombrePortal'] as $k) {
+                if (empty($$k)) {
+                    return ['success' => false, 'error' => "Falta {$k}"];
+                }
+            }
+
+            $private_key = $this->resolverClavePrivada();
+            if (! $private_key) {
+                return ['success' => false, 'error' => 'No se pudo cargar la clave privada JWT'];
+            }
+
+            // payload con expiración (ajusta días)
+            $payload = [
+                'iat'          => time(),
+                'exp'          => time() + 86400 * 7, // 7 días
+                'jti'          => bin2hex(random_bytes(16)),
+                'idUsuario'    => $usuario_id,
+                'idPortal'     => $id_portal,
+                'NombrePortal' => $NombrePortal,
+                'logo'         => $logo,
+                'idEmpleado'   => $id_empleado,
+            ];
+
+            $jwt   = \Firebase\JWT\JWT::encode($payload, $private_key, 'RS256');
+            $sha16 = substr(hash('sha256', $jwt), 0, 16);
+
+            $formUrl = LINKNUEVOCANDIDATO;
+            if (! $formUrl) {
+                return ['success' => false, 'error' => 'Falta LINKNUEVOCANDIDATO'];
+            }
+
+            $link   = rtrim($formUrl, '/') . '?token=' . rawurlencode($jwt);
+            $qr_b64 = $this->_qr_base64($link);
+
+            // --- UPSERT (actualiza si existe, crea si no)
+            $dataRow = [
+                'id_empleado' => $id_empleado,
+                'link'        => $link,
+                'qr'          => $qr_b64,
+                'jti'         => $payload['jti'],
+                'token_sha16' => $sha16,
+                'exp_unix'    => $payload['exp'],
+                'is_used'     => 0,
+                'eliminado'   => 0,
+                'revoked_at'  => null,
+                'used_at'     => null,
+            ];
+
+            $this->db->trans_start();
+            $ok = $this->reclutamiento_model->upsertCurrentLinkEmpleado($id_empleado, $dataRow);
+            $this->db->trans_complete();
+
+            if (! $ok || $this->db->trans_status() === false) {
+                log_message('error', 'upsertCurrentLinkEmpleado falló');
+                return ['success' => false, 'error' => 'No se pudo guardar/actualizar el link del empleado'];
+            }
+
+            log_message('info', 'Link (re)generado/actualizado', [
+                'id_empleado' => $id_empleado,
+                'sha16'       => $sha16,
+                'jti'         => $payload['jti'],
+                'exp'         => $payload['exp'],
+            ]);
+
+            return [
+                'success' => true,
+                'link'    => $link,
+                'qr'      => $qr_b64,
+                'jti'     => $payload['jti'],
+                'sha'     => $sha16,
+            ];
+
+        } catch (\Throwable $e) {
+            log_message('error', '_generarLinkEmpleado error: ' . $e->getMessage() . ' line ' . $e->getLine());
+            return ['success' => false, 'error' => 'Excepción interna: ' . $e->getMessage()];
+        }
+    }
+
+    private function resolverClavePrivada()
+    {
+        $conf     = $this->config->item('jwt_private_key');      // ya puede ser el PEM por file_get_contents
+        $confPath = $this->config->item('jwt_private_key_path'); // opcional
+
+        if ($conf && strpos($conf, '-----BEGIN') !== false) {
+            return $conf;
+        }
+
+        if ($conf) {
+            $decoded = base64_decode($conf, true);
+            if ($decoded && strpos($decoded, '-----BEGIN') !== false) {
+                return $decoded;
+            }
+
+            if (is_file($conf)) {
+                $pem = @file_get_contents($conf);
+                if ($pem && strpos($pem, '-----BEGIN') !== false) {
+                    return $pem;
+                }
+
+            }
+        }
+
+        if ($confPath && is_file($confPath)) {
+            $pem = @file_get_contents($confPath);
+            if ($pem && strpos($pem, '-----BEGIN') !== false) {
+                return $pem;
+            }
+
+        }
+
+        return null;
+    }
+    private function _qr_base64($text)
+    {
+        $qrCode = new \Endroid\QrCode\QrCode($text);
+        $qrCode->setSize(300);
+        $qrCode->setMargin(10);
+        $writer = new \Endroid\QrCode\Writer\PngWriter();
+        $png    = $writer->write($qrCode)->getString();
+        return 'data:image/png;base64,' . base64_encode($png);
+    }
     public function regenerarPassword()
     {
         $this->load->config('email');
         date_default_timezone_set('America/Mexico_City');
-        $date = date('Y-m-d H:i:s');
+        $date         = date('Y-m-d H:i:s');
         $id_candidato = $_POST['id_candidato'];
-        $correo = $_POST['correo'];
-        $base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
-        $aux = substr(md5(microtime()), 1, 8);
-        $token = md5($aux . $base);
+        $correo       = $_POST['correo'];
+        $base         = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
+        $aux          = substr(md5(microtime()), 1, 8);
+        $token        = md5($aux . $base);
         $this->candidato_model->regenerarPassword($id_candidato, $date, $token);
-        $from = $this->config->item('smtp_user');
-        $to = $correo;
-        $data_candidato = $this->candidato_model->getInfoCandidatoEspecifico($id_candidato);
-        $subcliente = ($data_candidato->subcliente != null) ? $data_candidato->subcliente : '';
-        $subject = "Credentials to access to register form";
+        $from              = $this->config->item('smtp_user');
+        $to                = $correo;
+        $data_candidato    = $this->candidato_model->getInfoCandidatoEspecifico($id_candidato);
+        $subcliente        = ($data_candidato->subcliente != null) ? $data_candidato->subcliente : '';
+        $subject           = "Credentials to access to register form";
         $datos['password'] = $aux;
-        $datos['cliente'] = strtoupper($data_candidato->cliente . ' ' . $subcliente);
-        $datos['email'] = $correo;
-        $message = $this->load->view('mails/mail_hcl', $datos, true);
+        $datos['cliente']  = strtoupper($data_candidato->cliente . ' ' . $subcliente);
+        $datos['email']    = $correo;
+        $message           = $this->load->view('mails/mail_hcl', $datos, true);
 
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
         $mail->isSMTP();
-        $mail->Host = 'mail.rodicontrol.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'rodicontrol@rodicontrol.com';
-        $mail->Password = 'r49o*&rUm%91';
+        $mail->Host       = 'mail.rodicontrol.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'rodicontrol@rodicontrol.com';
+        $mail->Password   = 'r49o*&rUm%91';
         $mail->SMTPSecure = 'ssl';
-        $mail->Port = 465;
+        $mail->Port       = 465;
         $mail->addCC('rodicontrol@rodicontrol.com');
 
         $mail->setFrom('rodicontrol@rodicontrol.com', 'Register form on TALENTSAFE CONTROL platform');
@@ -1483,17 +1663,17 @@ class Client extends Custom_Controller
         $mail->Subject = $subject;
         $mail->isHTML(true);
         $mailContent = $message;
-        $mail->Body = $mailContent;
-        if (!$mail->send()) {
-            $msj = array(
+        $mail->Body  = $mailContent;
+        if (! $mail->send()) {
+            $msj = [
                 'codigo' => 3,
-                'msg' => $aux,
-            );
+                'msg'    => $aux,
+            ];
         } else {
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => $aux,
-            );
+                'msg'    => $aux,
+            ];
         }
         echo json_encode($msj);
     }
@@ -1524,49 +1704,49 @@ class Client extends Custom_Controller
         $this->form_validation->set_message('alpha', 'El campo {field} debe contener solo carácteres alfabéticos y sin acentos');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date         = date('Y-m-d H:i:s');
             $id_candidato = $this->input->post('id_candidato');
-            $id_usuario = $this->session->userdata('id');
-            $fecha = fecha_espanol_bd($this->input->post('fecha_nacimiento'));
-            $edad = calculaEdad($fecha);
+            $id_usuario   = $this->session->userdata('id');
+            $fecha        = fecha_espanol_bd($this->input->post('fecha_nacimiento'));
+            $edad         = calculaEdad($fecha);
 
-            $candidato = array(
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'nombre' => $this->input->post('nombre'),
-                'paterno' => $this->input->post('paterno'),
-                'materno' => $this->input->post('materno'),
+            $candidato = [
+                'edicion'          => $date,
+                'id_usuario'       => $id_usuario,
+                'nombre'           => $this->input->post('nombre'),
+                'paterno'          => $this->input->post('paterno'),
+                'materno'          => $this->input->post('materno'),
                 'fecha_nacimiento' => $fecha,
-                'edad' => $edad,
-                'puesto' => $this->input->post('puesto'),
-                'nacionalidad' => $this->input->post('nacionalidad'),
-                'genero' => $this->input->post('genero'),
-                'calle' => $this->input->post('calle'),
-                'exterior' => $this->input->post('exterior'),
-                'interior' => $this->input->post('interior'),
-                'entre_calles' => $this->input->post('entre_calles'),
-                'colonia' => $this->input->post('colonia'),
-                'id_estado' => $this->input->post('estado'),
-                'id_municipio' => $this->input->post('municipio'),
-                'cp' => $this->input->post('cp'),
-                'estado_civil' => $this->input->post('civil'),
-                'celular' => $this->input->post('celular'),
-                'telefono_casa' => $this->input->post('tel_casa'),
-                'correo' => $this->input->post('correo'),
-            );
+                'edad'             => $edad,
+                'puesto'           => $this->input->post('puesto'),
+                'nacionalidad'     => $this->input->post('nacionalidad'),
+                'genero'           => $this->input->post('genero'),
+                'calle'            => $this->input->post('calle'),
+                'exterior'         => $this->input->post('exterior'),
+                'interior'         => $this->input->post('interior'),
+                'entre_calles'     => $this->input->post('entre_calles'),
+                'colonia'          => $this->input->post('colonia'),
+                'id_estado'        => $this->input->post('estado'),
+                'id_municipio'     => $this->input->post('municipio'),
+                'cp'               => $this->input->post('cp'),
+                'estado_civil'     => $this->input->post('civil'),
+                'celular'          => $this->input->post('celular'),
+                'telefono_casa'    => $this->input->post('tel_casa'),
+                'correo'           => $this->input->post('correo'),
+            ];
             $this->candidato_model->editarCandidato($candidato, $id_candidato);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -1590,73 +1770,73 @@ class Client extends Custom_Controller
         $this->form_validation->set_message('alpha', 'El campo {field} debe contener solo carácteres alfabéticos y sin acentos');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date         = date('Y-m-d H:i:s');
             $id_candidato = $this->input->post('id_candidato');
-            $id_usuario = $this->session->userdata('id');
+            $id_usuario   = $this->session->userdata('id');
 
             $data['estudios'] = $this->candidato_model->revisionMayoresEstudios($id_candidato);
             if ($data['estudios']) {
-                $candidato = array(
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_grado_estudio' => $this->input->post('mayor_estudios_candidato'),
-                    'estudios_periodo' => $this->input->post('periodo_candidato'),
-                    'estudios_escuela' => $this->input->post('escuela_candidato'),
-                    'estudios_ciudad' => $this->input->post('ciudad_candidato'),
+                $candidato = [
+                    'edicion'              => $date,
+                    'id_usuario'           => $id_usuario,
+                    'id_grado_estudio'     => $this->input->post('mayor_estudios_candidato'),
+                    'estudios_periodo'     => $this->input->post('periodo_candidato'),
+                    'estudios_escuela'     => $this->input->post('escuela_candidato'),
+                    'estudios_ciudad'      => $this->input->post('ciudad_candidato'),
                     'estudios_certificado' => $this->input->post('certificado_candidato'),
-                );
+                ];
                 $this->candidato_model->editarCandidato($candidato, $id_candidato);
-                $verificacion = array(
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
+                $verificacion = [
+                    'edicion'         => $date,
+                    'id_usuario'      => $id_usuario,
                     'id_tipo_studies' => $this->input->post('mayor_estudios_analista'),
-                    'periodo' => $this->input->post('periodo_analista'),
-                    'escuela' => $this->input->post('escuela_analista'),
-                    'ciudad' => $this->input->post('ciudad_analista'),
-                    'certificado' => $this->input->post('certificado_analista'),
-                    'comentarios' => $this->input->post('comentarios'),
-                );
+                    'periodo'         => $this->input->post('periodo_analista'),
+                    'escuela'         => $this->input->post('escuela_analista'),
+                    'ciudad'          => $this->input->post('ciudad_analista'),
+                    'certificado'     => $this->input->post('certificado_analista'),
+                    'comentarios'     => $this->input->post('comentarios'),
+                ];
                 $this->candidato_model->editarMayoresEstudios($verificacion, $id_candidato);
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'success',
-                );
+                    'msg'    => 'success',
+                ];
             } else {
-                $candidato = array(
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_grado_estudio' => $this->input->post('mayor_estudios_candidato'),
-                    'estudios_periodo' => $this->input->post('periodo_candidato'),
-                    'estudios_escuela' => $this->input->post('escuela_candidato'),
-                    'estudios_ciudad' => $this->input->post('ciudad_candidato'),
+                $candidato = [
+                    'edicion'              => $date,
+                    'id_usuario'           => $id_usuario,
+                    'id_grado_estudio'     => $this->input->post('mayor_estudios_candidato'),
+                    'estudios_periodo'     => $this->input->post('periodo_candidato'),
+                    'estudios_escuela'     => $this->input->post('escuela_candidato'),
+                    'estudios_ciudad'      => $this->input->post('ciudad_candidato'),
                     'estudios_certificado' => $this->input->post('certificado_candidato'),
-                );
+                ];
                 $this->candidato_model->editarCandidato($candidato, $id_candidato);
-                $verificacion = array(
-                    'creacion' => $date,
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_candidato' => $id_candidato,
+                $verificacion = [
+                    'creacion'        => $date,
+                    'edicion'         => $date,
+                    'id_usuario'      => $id_usuario,
+                    'id_candidato'    => $id_candidato,
                     'id_tipo_studies' => $this->input->post('mayor_estudios_analista'),
-                    'periodo' => $this->input->post('periodo_analista'),
-                    'escuela' => $this->input->post('escuela_analista'),
-                    'ciudad' => $this->input->post('ciudad_analista'),
-                    'certificado' => $this->input->post('certificado_analista'),
-                    'comentarios' => $this->input->post('comentarios'),
-                );
+                    'periodo'         => $this->input->post('periodo_analista'),
+                    'escuela'         => $this->input->post('escuela_analista'),
+                    'ciudad'          => $this->input->post('ciudad_analista'),
+                    'certificado'     => $this->input->post('certificado_analista'),
+                    'comentarios'     => $this->input->post('comentarios'),
+                ];
                 $id_ver_estudios = $this->candidato_model->guardarMayoresEstudios($verificacion);
-                $msj = array(
+                $msj             = [
                     'codigo' => 1,
-                    'msg' => 'success',
-                );
+                    'msg'    => 'success',
+                ];
             }
         }
         echo json_encode($msj);
@@ -1669,32 +1849,32 @@ class Client extends Custom_Controller
 
             $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
-            $msj = array();
+            $msj = [];
             if ($this->form_validation->run() == false) {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => validation_errors(),
-                );
+                    'msg'    => validation_errors(),
+                ];
             } else {
                 date_default_timezone_set('America/Mexico_City');
-                $date = date('Y-m-d H:i:s');
+                $date         = date('Y-m-d H:i:s');
                 $id_candidato = $this->input->post('id_candidato');
-                $trabajo = ($this->input->post('trabajo') !== null) ? $this->input->post('trabajo') : '';
-                $enterado = ($this->input->post('enterado') !== null) ? $this->input->post('enterado') : '';
-                $inactivo = ($this->input->post('inactivo') !== null) ? $this->input->post('inactivo') : '';
-                $id_usuario = $this->session->userdata('id');
-                $candidato = array(
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
+                $trabajo      = ($this->input->post('trabajo') !== null) ? $this->input->post('trabajo') : '';
+                $enterado     = ($this->input->post('enterado') !== null) ? $this->input->post('enterado') : '';
+                $inactivo     = ($this->input->post('inactivo') !== null) ? $this->input->post('inactivo') : '';
+                $id_usuario   = $this->session->userdata('id');
+                $candidato    = [
+                    'edicion'          => $date,
+                    'id_usuario'       => $id_usuario,
                     'trabajo_gobierno' => $trabajo,
                     'trabajo_enterado' => $enterado,
                     'trabajo_inactivo' => $inactivo,
-                );
+                ];
                 $this->candidato_model->editarCandidato($candidato, $id_candidato);
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'success',
-                );
+                    'msg'    => 'success',
+                ];
             }
             echo json_encode($msj);
         }
@@ -1734,63 +1914,63 @@ class Client extends Custom_Controller
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date         = date('Y-m-d H:i:s');
             $id_candidato = $this->input->post('id_candidato');
-            $num = $this->input->post('num');
-            $idverlab = $this->input->post('idverlab');
-            $id_usuario = $this->session->userdata('id');
+            $num          = $this->input->post('num');
+            $idverlab     = $this->input->post('idverlab');
+            $id_usuario   = $this->session->userdata('id');
 
             $this->candidato_model->eliminarVerificacionLaboral($id_candidato, $num);
             //$fentrada = fecha_ingles_bd($this->input->post('entrada'));
             //$fsalida = fecha_ingles_bd($this->input->post('salida'));
-            $verificacion_reflab = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_candidato' => $id_candidato,
-                'numero_referencia' => $num,
-                'empresa' => $this->input->post('empresa'),
-                'direccion' => $this->input->post('direccion'),
-                'fecha_entrada_txt' => $this->input->post('entrada'),
-                'fecha_salida_txt' => $this->input->post('salida'),
-                'telefono' => $this->input->post('telefono'),
-                'puesto1' => $this->input->post('puesto1'),
-                'puesto2' => $this->input->post('puesto2'),
-                'salario1' => $this->input->post('salario1'),
-                'salario2' => $this->input->post('salario2'),
-                'jefe_nombre' => $this->input->post('jefenombre'),
-                'jefe_correo' => $this->input->post('jefecorreo'),
-                'jefe_puesto' => $this->input->post('jefepuesto'),
-                'causa_separacion' => $this->input->post('separacion'),
-                'notas' => $this->input->post('notas'),
-                'responsabilidad' => $this->input->post('responsabilidad'),
-                'iniciativa' => $this->input->post('iniciativa'),
-                'eficiencia' => $this->input->post('eficiencia'),
-                'disciplina' => $this->input->post('disciplina'),
-                'puntualidad' => $this->input->post('puntualidad'),
-                'limpieza' => $this->input->post('limpieza'),
-                'estabilidad' => $this->input->post('estabilidad'),
-                'emocional' => $this->input->post('emocional'),
-                'honestidad' => $this->input->post('honesto'),
-                'rendimiento' => $this->input->post('rendimiento'),
-                'actitud' => $this->input->post('actitud'),
-                'recontratacion' => $this->input->post('recontratacion'),
+            $verificacion_reflab = [
+                'creacion'              => $date,
+                'edicion'               => $date,
+                'id_usuario'            => $id_usuario,
+                'id_candidato'          => $id_candidato,
+                'numero_referencia'     => $num,
+                'empresa'               => $this->input->post('empresa'),
+                'direccion'             => $this->input->post('direccion'),
+                'fecha_entrada_txt'     => $this->input->post('entrada'),
+                'fecha_salida_txt'      => $this->input->post('salida'),
+                'telefono'              => $this->input->post('telefono'),
+                'puesto1'               => $this->input->post('puesto1'),
+                'puesto2'               => $this->input->post('puesto2'),
+                'salario1'              => $this->input->post('salario1'),
+                'salario2'              => $this->input->post('salario2'),
+                'jefe_nombre'           => $this->input->post('jefenombre'),
+                'jefe_correo'           => $this->input->post('jefecorreo'),
+                'jefe_puesto'           => $this->input->post('jefepuesto'),
+                'causa_separacion'      => $this->input->post('separacion'),
+                'notas'                 => $this->input->post('notas'),
+                'responsabilidad'       => $this->input->post('responsabilidad'),
+                'iniciativa'            => $this->input->post('iniciativa'),
+                'eficiencia'            => $this->input->post('eficiencia'),
+                'disciplina'            => $this->input->post('disciplina'),
+                'puntualidad'           => $this->input->post('puntualidad'),
+                'limpieza'              => $this->input->post('limpieza'),
+                'estabilidad'           => $this->input->post('estabilidad'),
+                'emocional'             => $this->input->post('emocional'),
+                'honestidad'            => $this->input->post('honesto'),
+                'rendimiento'           => $this->input->post('rendimiento'),
+                'actitud'               => $this->input->post('actitud'),
+                'recontratacion'        => $this->input->post('recontratacion'),
                 'motivo_recontratacion' => $this->input->post('motivo'),
-            );
+            ];
             $this->candidato_model->guardarVerificacionLaboral($verificacion_reflab);
             //$this->generarAvancesUST($id_candidato);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -1799,7 +1979,7 @@ class Client extends Custom_Controller
     {
         $id_candidato = $this->input->post('id_candidato');
         $data['docs'] = $this->candidato_model->getDocumentosRequeridos($id_candidato);
-        $info = $this->candidato_model->getInfoCandidatoEspecifico($id_candidato);
+        $info         = $this->candidato_model->getInfoCandidatoEspecifico($id_candidato);
         if ($data['docs']) {
             foreach ($data['docs'] as $d) {
                 if ($d->id_tipo_documento == 2) {
@@ -1858,56 +2038,56 @@ class Client extends Custom_Controller
             $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
             $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-            $msj = array();
+            $msj = [];
             if ($this->form_validation->run() == false) {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => validation_errors(),
-                );
+                    'msg'    => validation_errors(),
+                ];
             } else {
                 date_default_timezone_set('America/Mexico_City');
-                $date = date('Y-m-d H:i:s');
+                $date         = date('Y-m-d H:i:s');
                 $id_candidato = $this->input->post('id_candidato');
-                $id_usuario = $this->session->userdata('id');
+                $id_usuario   = $this->session->userdata('id');
 
-                $candidato = array(
+                $candidato = [
                     'id_usuario' => $id_usuario,
-                );
+                ];
                 $this->candidato_model->editarCandidato($candidato, $id_candidato);
-                $verificacion_documento = array(
-                    'creacion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_candidato' => $id_candidato,
-                    'licencia' => $this->input->post('lic_profesional'),
-                    'licencia_institucion' => $this->input->post('lic_institucion'),
-                    'ine' => $this->input->post('ine_clave'),
-                    'ine_ano' => $this->input->post('ine_registro'),
-                    'ine_vertical' => $this->input->post('ine_vertical'),
-                    'ine_institucion' => $this->input->post('ine_institucion'),
-                    'penales' => $this->input->post('penales_numero'),
-                    'penales_institucion' => $this->input->post('penales_institucion'),
-                    'domicilio' => $this->input->post('domicilio_numero'),
-                    'fecha_domicilio' => $this->input->post('domicilio_fecha'),
-                    'militar' => $this->input->post('militar_numero'),
-                    'militar_fecha' => $this->input->post('militar_fecha'),
-                    'pasaporte' => $this->input->post('pasaporte_numero'),
-                    'pasaporte_fecha' => $this->input->post('pasaporte_institucion'),
-                    'licencia_manejo' => $this->input->post('licencia_numero'),
-                    'licencia_manejo_fecha' => $this->input->post('licencia_fecha'),
-                    'imss' => $this->input->post('nss_numero'),
-                    'imss_institucion' => $this->input->post('nss_fecha'),
-                    'motor_vehicle_records' => $this->input->post('mvr'),
-                    'forma_migratoria' => $this->input->post('migratorio_numero'),
+                $verificacion_documento = [
+                    'creacion'               => $date,
+                    'id_usuario'             => $id_usuario,
+                    'id_candidato'           => $id_candidato,
+                    'licencia'               => $this->input->post('lic_profesional'),
+                    'licencia_institucion'   => $this->input->post('lic_institucion'),
+                    'ine'                    => $this->input->post('ine_clave'),
+                    'ine_ano'                => $this->input->post('ine_registro'),
+                    'ine_vertical'           => $this->input->post('ine_vertical'),
+                    'ine_institucion'        => $this->input->post('ine_institucion'),
+                    'penales'                => $this->input->post('penales_numero'),
+                    'penales_institucion'    => $this->input->post('penales_institucion'),
+                    'domicilio'              => $this->input->post('domicilio_numero'),
+                    'fecha_domicilio'        => $this->input->post('domicilio_fecha'),
+                    'militar'                => $this->input->post('militar_numero'),
+                    'militar_fecha'          => $this->input->post('militar_fecha'),
+                    'pasaporte'              => $this->input->post('pasaporte_numero'),
+                    'pasaporte_fecha'        => $this->input->post('pasaporte_institucion'),
+                    'licencia_manejo'        => $this->input->post('licencia_numero'),
+                    'licencia_manejo_fecha'  => $this->input->post('licencia_fecha'),
+                    'imss'                   => $this->input->post('nss_numero'),
+                    'imss_institucion'       => $this->input->post('nss_fecha'),
+                    'motor_vehicle_records'  => $this->input->post('mvr'),
+                    'forma_migratoria'       => $this->input->post('migratorio_numero'),
                     'forma_migratoria_fecha' => $this->input->post('migratorio_fecha'),
                     //'curp' => $this->input->post('curp'),
-                    'comentarios' => $this->input->post('comentarios'),
-                );
+                    'comentarios'            => $this->input->post('comentarios'),
+                ];
                 $this->candidato_model->eliminarVerificacionDocumentacion($id_candidato);
                 $this->candidato_model->guardarVerificacionDocumento($verificacion_documento);
-                $msj = array(
+                $msj = [
                     'codigo' => 1,
-                    'msg' => 'success',
-                );
+                    'msg'    => 'success',
+                ];
             }
             echo json_encode($msj);
         }
@@ -1921,56 +2101,56 @@ class Client extends Custom_Controller
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date         = date('Y-m-d H:i:s');
             $id_candidato = $_POST['id_candidato'];
-            $id_usuario = $this->session->userdata('id');
+            $id_usuario   = $this->session->userdata('id');
             //Checks
-            $check_identidad = ($this->input->post('check_identidad') != -1) ? $this->input->post('check_identidad') : 3;
-            $check_estudios = ($this->input->post('check_estudios') != -1) ? $this->input->post('check_estudios') : 3;
-            $check_global = ($this->input->post('check_global') != -1) ? $this->input->post('check_global') : 3;
-            $check_laboral = ($this->input->post('check_laboral') != -1) ? $this->input->post('check_laboral') : 3;
-            $check_visita = ($this->input->post('check_visita') != -1) ? $this->input->post('check_visita') : 3;
+            $check_identidad   = ($this->input->post('check_identidad') != -1) ? $this->input->post('check_identidad') : 3;
+            $check_estudios    = ($this->input->post('check_estudios') != -1) ? $this->input->post('check_estudios') : 3;
+            $check_global      = ($this->input->post('check_global') != -1) ? $this->input->post('check_global') : 3;
+            $check_laboral     = ($this->input->post('check_laboral') != -1) ? $this->input->post('check_laboral') : 3;
+            $check_visita      = ($this->input->post('check_visita') != -1) ? $this->input->post('check_visita') : 3;
             $check_laboratorio = ($this->input->post('check_laboratorio') != -1) ? $this->input->post('check_laboratorio') : 3;
-            $check_domicilio = ($this->input->post('check_domicilio') != -1) ? $this->input->post('check_domicilio') : 3;
-            $check_penales = ($this->input->post('check_penales') != -1) ? $this->input->post('check_penales') : 3;
-            $check_ofac = ($this->input->post('check_ofac') != -1) ? $this->input->post('check_ofac') : 3;
-            $check_credito = ($this->input->post('check_credito') != -1) ? $this->input->post('check_credito') : 3;
-            $check_medico = ($this->input->post('check_medico') != -1) ? $this->input->post('check_medico') : 3;
+            $check_domicilio   = ($this->input->post('check_domicilio') != -1) ? $this->input->post('check_domicilio') : 3;
+            $check_penales     = ($this->input->post('check_penales') != -1) ? $this->input->post('check_penales') : 3;
+            $check_ofac        = ($this->input->post('check_ofac') != -1) ? $this->input->post('check_ofac') : 3;
+            $check_credito     = ($this->input->post('check_credito') != -1) ? $this->input->post('check_credito') : 3;
+            $check_medico      = ($this->input->post('check_medico') != -1) ? $this->input->post('check_medico') : 3;
 
-            $bgc = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_candidato' => $id_candidato,
-                'identidad_check' => $check_identidad,
-                'empleo_check' => $check_laboral,
-                'estudios_check' => $check_estudios,
-                'visita_check' => $check_visita,
-                'penales_check' => $check_penales,
-                'ofac_check' => $check_ofac,
-                'medico_check' => $check_medico,
-                'laboratorio_check' => $check_laboratorio,
-                'medico_check' => $check_medico,
+            $bgc = [
+                'creacion'              => $date,
+                'edicion'               => $date,
+                'id_usuario'            => $id_usuario,
+                'id_candidato'          => $id_candidato,
+                'identidad_check'       => $check_identidad,
+                'empleo_check'          => $check_laboral,
+                'estudios_check'        => $check_estudios,
+                'visita_check'          => $check_visita,
+                'penales_check'         => $check_penales,
+                'ofac_check'            => $check_ofac,
+                'medico_check'          => $check_medico,
+                'laboratorio_check'     => $check_laboratorio,
+                'medico_check'          => $check_medico,
                 'global_searches_check' => $check_global,
-                'domicilios_check' => $check_domicilio,
-                'credito_check' => $check_credito,
-                'comentario_final' => $this->input->post('comentario_final'),
-            );
+                'domicilios_check'      => $check_domicilio,
+                'credito_check'         => $check_credito,
+                'comentario_final'      => $this->input->post('comentario_final'),
+            ];
             $this->candidato_model->eliminarBGC($id_candidato);
             $this->candidato_model->guardarBGC($bgc, $id_candidato);
             $this->candidato_model->statusBGCCandidato($this->input->post('bgc_status'), $id_candidato);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -1991,64 +2171,64 @@ class Client extends Custom_Controller
             $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
             $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
 
-            $msj = array();
+            $msj = [];
             if ($this->form_validation->run() == false) {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => validation_errors(),
-                );
+                    'msg'    => validation_errors(),
+                ];
             } else {
                 date_default_timezone_set('America/Mexico_City');
-                $date = date('Y-m-d H:i:s');
-                $num = $this->input->post('num');
+                $date         = date('Y-m-d H:i:s');
+                $num          = $this->input->post('num');
                 $id_candidato = $this->input->post('id_candidato');
-                $idDomicilio = $this->input->post('id_domicilio');
-                $id_usuario = $this->session->userdata('id');
+                $idDomicilio  = $this->input->post('id_domicilio');
+                $id_usuario   = $this->session->userdata('id');
 
-                $candidato = array(
+                $candidato = [
                     'id_usuario' => $id_usuario,
-                );
+                ];
                 $this->candidato_model->editarCandidato($candidato, $id_candidato);
 
                 if ($idDomicilio != '') {
-                    $dom = array(
-                        'edicion' => $date,
+                    $dom = [
+                        'edicion'      => $date,
                         'id_candidato' => $id_candidato,
-                        'periodo' => $this->input->post('address_periodo'),
-                        'causa' => $this->input->post('address_causa'),
-                        'calle' => $this->input->post('address_calle'),
-                        'exterior' => $this->input->post('address_exterior'),
-                        'interior' => $this->input->post('address_interior'),
-                        'colonia' => $this->input->post('address_colonia'),
-                        'id_estado' => $this->input->post('address_estado'),
+                        'periodo'      => $this->input->post('address_periodo'),
+                        'causa'        => $this->input->post('address_causa'),
+                        'calle'        => $this->input->post('address_calle'),
+                        'exterior'     => $this->input->post('address_exterior'),
+                        'interior'     => $this->input->post('address_interior'),
+                        'colonia'      => $this->input->post('address_colonia'),
+                        'id_estado'    => $this->input->post('address_estado'),
                         'id_municipio' => $this->input->post('address_municipio'),
-                        'cp' => $this->input->post('address_cp'),
-                    );
+                        'cp'           => $this->input->post('address_cp'),
+                    ];
                     $this->candidato_model->editarDomicilio($dom, $idDomicilio);
-                    $msj = array(
+                    $msj = [
                         'codigo' => 2,
-                        'msg' => 'success',
-                    );
+                        'msg'    => 'success',
+                    ];
                 } else {
-                    $dom = array(
-                        'creacion' => $date,
-                        'edicion' => $date,
+                    $dom = [
+                        'creacion'     => $date,
+                        'edicion'      => $date,
                         'id_candidato' => $id_candidato,
-                        'periodo' => $this->input->post('address_periodo'),
-                        'causa' => $this->input->post('address_causa'),
-                        'calle' => $this->input->post('address_calle'),
-                        'exterior' => $this->input->post('address_exterior'),
-                        'interior' => $this->input->post('address_interior'),
-                        'colonia' => $this->input->post('address_colonia'),
-                        'id_estado' => $this->input->post('address_estado'),
+                        'periodo'      => $this->input->post('address_periodo'),
+                        'causa'        => $this->input->post('address_causa'),
+                        'calle'        => $this->input->post('address_calle'),
+                        'exterior'     => $this->input->post('address_exterior'),
+                        'interior'     => $this->input->post('address_interior'),
+                        'colonia'      => $this->input->post('address_colonia'),
+                        'id_estado'    => $this->input->post('address_estado'),
                         'id_municipio' => $this->input->post('address_municipio'),
-                        'cp' => $this->input->post('address_cp'),
-                    );
+                        'cp'           => $this->input->post('address_cp'),
+                    ];
                     $idDomicilio = $this->candidato_model->guardarDomicilio($dom);
-                    $msj = array(
+                    $msj         = [
                         'codigo' => 1,
-                        'msg' => $idDomicilio,
-                    );
+                        'msg'    => $idDomicilio,
+                    ];
                 }
             }
             echo json_encode($msj);
@@ -2061,54 +2241,54 @@ class Client extends Custom_Controller
 
             $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
-            $msj = array();
+            $msj = [];
             if ($this->form_validation->run() == false) {
-                $msj = array(
+                $msj = [
                     'codigo' => 0,
-                    'msg' => validation_errors(),
-                );
+                    'msg'    => validation_errors(),
+                ];
             } else {
                 date_default_timezone_set('America/Mexico_City');
-                $date = date('Y-m-d H:i:s');
-                $num = $this->input->post('num');
+                $date         = date('Y-m-d H:i:s');
+                $num          = $this->input->post('num');
                 $id_candidato = $this->input->post('id_candidato');
-                $idDomicilio = $this->input->post('id_domicilio');
-                $id_usuario = $this->session->userdata('id');
+                $idDomicilio  = $this->input->post('id_domicilio');
+                $id_usuario   = $this->session->userdata('id');
 
-                $candidato = array(
+                $candidato = [
                     'id_usuario' => $id_usuario,
-                );
+                ];
                 $this->candidato_model->editarCandidato($candidato, $id_candidato);
 
                 if ($idDomicilio != '') {
-                    $dom = array(
-                        'edicion' => $date,
-                        'id_candidato' => $id_candidato,
-                        'periodo' => $this->input->post('address_periodo'),
-                        'causa' => $this->input->post('address_causa'),
+                    $dom = [
+                        'edicion'                 => $date,
+                        'id_candidato'            => $id_candidato,
+                        'periodo'                 => $this->input->post('address_periodo'),
+                        'causa'                   => $this->input->post('address_causa'),
                         'domicilio_internacional' => $this->input->post('address_domicilio'),
-                        'pais' => $this->input->post('address_pais'),
-                    );
+                        'pais'                    => $this->input->post('address_pais'),
+                    ];
                     $this->candidato_model->editarDomicilio($dom, $idDomicilio);
-                    $msj = array(
+                    $msj = [
                         'codigo' => 2,
-                        'msg' => 'success',
-                    );
+                        'msg'    => 'success',
+                    ];
                 } else {
-                    $dom = array(
-                        'creacion' => $date,
-                        'edicion' => $date,
-                        'id_candidato' => $id_candidato,
-                        'periodo' => $this->input->post('address_periodo'),
-                        'causa' => $this->input->post('address_causa'),
+                    $dom = [
+                        'creacion'                => $date,
+                        'edicion'                 => $date,
+                        'id_candidato'            => $id_candidato,
+                        'periodo'                 => $this->input->post('address_periodo'),
+                        'causa'                   => $this->input->post('address_causa'),
                         'domicilio_internacional' => $this->input->post('address_domicilio'),
-                        'pais' => $this->input->post('address_pais'),
-                    );
+                        'pais'                    => $this->input->post('address_pais'),
+                    ];
                     $idDomicilio = $this->candidato_model->guardarDomicilio($dom);
-                    $msj = array(
+                    $msj         = [
                         'codigo' => 1,
-                        'msg' => $idDomicilio,
-                    );
+                        'msg'    => $idDomicilio,
+                    ];
                 }
             }
             echo json_encode($msj);
@@ -2121,31 +2301,31 @@ class Client extends Custom_Controller
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date         = date('Y-m-d H:i:s');
             $id_candidato = $this->input->post('id_candidato');
-            $comentario = $this->input->post('comentario');
-            $id_usuario = $this->session->userdata('id');
+            $comentario   = $this->input->post('comentario');
+            $id_usuario   = $this->session->userdata('id');
             $this->candidato_model->eliminarVerificacionDomicilios($id_candidato);
-            $domicilio = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
+            $domicilio = [
+                'creacion'     => $date,
+                'edicion'      => $date,
+                'id_usuario'   => $id_usuario,
                 'id_candidato' => $id_candidato,
-                'comentario' => $comentario,
-            );
+                'comentario'   => $comentario,
+            ];
             $this->candidato_model->guardarVerificacionDomicilio($domicilio);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'Success',
-            );
+                'msg'    => 'Success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -2167,41 +2347,41 @@ class Client extends Custom_Controller
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $num = $this->input->post('num');
+            $date         = date('Y-m-d H:i:s');
+            $num          = $this->input->post('num');
             $id_candidato = $this->input->post('id_candidato');
 
             $this->candidato_model->eliminarReferenciaProfesional($id_candidato, $num);
-            $refpro = array(
-                'creacion' => $date,
-                'id_candidato' => $id_candidato,
-                'numero' => $num,
-                'nombre' => $this->input->post('nombre'),
-                'telefono' => $this->input->post('telefono'),
-                'tiempo_conocerlo' => $this->input->post('tiempo'),
-                'donde_conocerlo' => $this->input->post('conocido'),
-                'puesto' => $this->input->post('puesto'),
-                'verificacion_tiempo' => $this->input->post('tiempo2'),
+            $refpro = [
+                'creacion'               => $date,
+                'id_candidato'           => $id_candidato,
+                'numero'                 => $num,
+                'nombre'                 => $this->input->post('nombre'),
+                'telefono'               => $this->input->post('telefono'),
+                'tiempo_conocerlo'       => $this->input->post('tiempo'),
+                'donde_conocerlo'        => $this->input->post('conocido'),
+                'puesto'                 => $this->input->post('puesto'),
+                'verificacion_tiempo'    => $this->input->post('tiempo2'),
                 'verificacion_conocerlo' => $this->input->post('conocido2'),
-                'verificacion_puesto' => $this->input->post('puesto2'),
-                'cualidades' => $this->input->post('cualidades'),
-                'desempeno' => $this->input->post('desempeno'),
-                'recomienda' => $this->input->post('recomienda'),
-                'comentarios' => $this->input->post('comentario'),
-            );
+                'verificacion_puesto'    => $this->input->post('puesto2'),
+                'cualidades'             => $this->input->post('cualidades'),
+                'desempeno'              => $this->input->post('desempeno'),
+                'recomienda'             => $this->input->post('recomienda'),
+                'comentarios'            => $this->input->post('comentario'),
+            ];
             $this->candidato_model->guardarReferenciaProfesional($refpro);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -2214,30 +2394,30 @@ class Client extends Custom_Controller
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             $id_candidato = $this->input->post('id_candidato');
-            $fi = $this->input->post('fi');
-            $ff = $this->input->post('ff');
-            $comentario = $this->input->post('comentario');
-            $id_usuario = $this->session->userdata('id');
+            $fi           = $this->input->post('fi');
+            $ff           = $this->input->post('ff');
+            $comentario   = $this->input->post('comentario');
+            $id_usuario   = $this->session->userdata('id');
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $salida = "";
-            $credito = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
+            $date    = date('Y-m-d H:i:s');
+            $salida  = "";
+            $credito = [
+                'creacion'     => $date,
+                'edicion'      => $date,
+                'id_usuario'   => $id_usuario,
                 'id_candidato' => $id_candidato,
                 'fecha_inicio' => $fi,
-                'fecha_fin' => $ff,
-                'comentario' => $comentario,
-            );
+                'fecha_fin'    => $ff,
+                'comentario'   => $comentario,
+            ];
             $this->candidato_model->guardarHistorialCrediticio($credito);
             $data['historial'] = $this->candidato_model->checkCredito($id_candidato);
             foreach ($data['historial'] as $h) {
@@ -2254,10 +2434,10 @@ class Client extends Custom_Controller
 													<p>' . $h->comentario . '</p>
 											</div>';
             }
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => $salida,
-            );
+                'msg'    => $salida,
+            ];
         }
         echo json_encode($msj);
     }
@@ -2279,39 +2459,39 @@ class Client extends Custom_Controller
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date         = date('Y-m-d H:i:s');
             $id_candidato = $this->input->post('id_candidato');
-            $id_usuario = $this->session->userdata('id');
+            $id_usuario   = $this->session->userdata('id');
 
             $this->candidato_model->eliminarReferenciasPersonales($id_candidato);
             for ($i = 1; $i <= $cantidad; $i++) {
-                $data_refper = array(
-                    'creacion' => $date,
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_candidato' => $id_candidato,
-                    'nombre' => $this->input->post('nombre' . $i),
-                    'telefono' => $this->input->post('telefono' . $i),
+                $data_refper = [
+                    'creacion'         => $date,
+                    'edicion'          => $date,
+                    'id_usuario'       => $id_usuario,
+                    'id_candidato'     => $id_candidato,
+                    'nombre'           => $this->input->post('nombre' . $i),
+                    'telefono'         => $this->input->post('telefono' . $i),
                     'tiempo_conocerlo' => $this->input->post('tiempo' . $i),
-                    'donde_conocerlo' => $this->input->post('lugar' . $i),
-                    'sabe_trabajo' => $this->input->post('trabaja' . $i),
-                    'sabe_vive' => $this->input->post('vive' . $i),
-                    'comentario' => $this->input->post('comentario' . $i),
-                );
+                    'donde_conocerlo'  => $this->input->post('lugar' . $i),
+                    'sabe_trabajo'     => $this->input->post('trabaja' . $i),
+                    'sabe_vive'        => $this->input->post('vive' . $i),
+                    'comentario'       => $this->input->post('comentario' . $i),
+                ];
                 $this->candidato_model->saveRefPer($data_refper);
             }
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -2320,69 +2500,69 @@ class Client extends Custom_Controller
     {
         $mpdf = new \Mpdf\Mpdf();
         date_default_timezone_set('America/Mexico_City');
-        $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
-        $id_candidato = $_POST['idCandidatoPDF'];
+        $data['hoy']   = date("d-m-Y");
+        $hoy           = date("d-m-Y");
+        $id_candidato  = $_POST['idCandidatoPDF'];
         $data['datos'] = $this->candidato_model->getDatosCandidato($id_candidato);
-        $id_usuario = $this->session->userdata('id');
-        $tipo_usuario = $this->session->userdata('tipo');
+        $id_usuario    = $this->session->userdata('id');
+        $tipo_usuario  = $this->session->userdata('tipo');
         foreach ($data['datos'] as $row) {
-            $f = $row->fecha_alta;
-            $fform = $row->fecha_contestado;
-            $fdocs = $row->fecha_documentos;
-            $fbgc = $row->fecha_bgc;
+            $f               = $row->fecha_alta;
+            $fform           = $row->fecha_contestado;
+            $fdocs           = $row->fecha_documentos;
+            $fbgc            = $row->fecha_bgc;
             $nombreCandidato = $row->nombre . " " . $row->paterno . " " . $row->materno;
-            $cliente = $row->cliente;
-            $id_doping = $row->idDoping;
+            $cliente         = $row->cliente;
+            $id_doping       = $row->idDoping;
         }
-        $f_alta = formatoFecha($f);
-        $fform = formatoFecha($fform);
-        $fdocs = formatoFecha($fdocs);
-        $fecha_bgc = DateTime::createFromFormat('Y-m-d H:i:s', $fbgc);
-        $fecha_bgc = $fecha_bgc->format('F d, Y');
-        $fbgc = formatoFecha($fbgc);
-        $data['cliente'] = $cliente;
+        $f_alta            = formatoFecha($f);
+        $fform             = formatoFecha($fform);
+        $fdocs             = formatoFecha($fdocs);
+        $fecha_bgc         = DateTime::createFromFormat('Y-m-d H:i:s', $fbgc);
+        $fecha_bgc         = $fecha_bgc->format('F d, Y');
+        $fbgc              = formatoFecha($fbgc);
+        $data['cliente']   = $cliente;
         $data['candidato'] = $nombreCandidato;
         //$hoy = formatoFecha($hoy);
-        $data['secciones'] = $this->candidato_model->getSeccionesCandidato($id_candidato);
-        $data['checklist'] = $this->candidato_model->getVerificacionChecklist($id_candidato);
-        $data['bgc'] = $this->candidato_model->getBGC($id_candidato);
+        $data['secciones']            = $this->candidato_model->getSeccionesCandidato($id_candidato);
+        $data['checklist']            = $this->candidato_model->getVerificacionChecklist($id_candidato);
+        $data['bgc']                  = $this->candidato_model->getBGC($id_candidato);
         $data['fecha_ver_documentos'] = $this->candidato_model->getFechaVerificacionDocumentos($id_candidato);
-        $data['fecha_ver_laboral'] = $this->candidato_model->getFechaVerificacionLaboral($id_candidato);
-        $data['fecha_ver_estudios'] = $this->candidato_model->getFechaVerificacionEstudios($id_candidato);
-        $data['fecha_ver_penales'] = $this->candidato_model->getFechaVerificacionPenales($id_candidato);
-        $data['global_searches'] = $this->candidato_model->getGlobalSearches($id_candidato);
-        $data['fecha_medico'] = $this->candidato_model->getFechaExamenMedico($id_candidato);
-        $data['fecha_credito'] = $this->candidato_model->getFechaCredito($id_candidato);
-        $data['fecha_ver_ofac'] = $this->candidato_model->getFechaVerificacionOfac($id_candidato);
-        $data['docs'] = $this->candidato_model->getDocumentacionCandidato($id_candidato);
-        $data['ver_documento'] = $this->candidato_model->getVerificacionDocumentosCandidato($id_candidato);
-        $data['familia'] = $this->candidato_model->getFamiliaresCandidato($id_candidato);
-        $data['det_estudio'] = $this->candidato_model->getStatusVerificacionEstudios($id_candidato);
-        $data['ver_mayor_estudio'] = $this->candidato_model->getVerificacionMayoresEstudios($id_candidato);
-        $data['ref_laboral'] = $this->candidato_model->getReferenciasLaborales($id_candidato);
-        $data['ver_laboral'] = $this->candidato_model->getVerificacionReferencias($id_candidato);
-        $data['gaps'] = $this->candidato_model->checkGaps($id_candidato);
-        $data['det_empleo'] = $this->candidato_model->getStatusVerificacionEmpleo($id_candidato);
-        $data['det_penales'] = $this->candidato_model->getStatusVerificacionPenales($id_candidato);
-        $data['analista'] = $this->candidato_model->getAnalista($id_candidato);
-        $data['coordinadora'] = $this->candidato_model->getCoordinadora($id_candidato);
-        $data['domicilios'] = $this->candidato_model->getHistorialDomicilios($id_candidato);
-        $data['ver_domicilios'] = $this->candidato_model->checkVerificacionDomicilios($id_candidato);
-        $data['ref_profesional'] = $this->candidato_model->getReferenciasProfesionales($id_candidato);
-        $data['credito'] = $this->candidato_model->checkCredito($id_candidato);
-        $data['estatus_estudios'] = $this->candidato_model->getEstatusEstudios($id_candidato);
-        $data['estatus_laborales'] = $this->candidato_model->getEstatusLaborales($id_candidato);
-        $data['estatus_penales'] = $this->candidato_model->getEstatusPenales($id_candidato);
-        $data['ref_personales'] = $this->candidato_model->getReferenciasPersonales($id_candidato);
-        $data['ref_academicas'] = $this->candidato_ref_academica_model->getById($id_candidato);
+        $data['fecha_ver_laboral']    = $this->candidato_model->getFechaVerificacionLaboral($id_candidato);
+        $data['fecha_ver_estudios']   = $this->candidato_model->getFechaVerificacionEstudios($id_candidato);
+        $data['fecha_ver_penales']    = $this->candidato_model->getFechaVerificacionPenales($id_candidato);
+        $data['global_searches']      = $this->candidato_model->getGlobalSearches($id_candidato);
+        $data['fecha_medico']         = $this->candidato_model->getFechaExamenMedico($id_candidato);
+        $data['fecha_credito']        = $this->candidato_model->getFechaCredito($id_candidato);
+        $data['fecha_ver_ofac']       = $this->candidato_model->getFechaVerificacionOfac($id_candidato);
+        $data['docs']                 = $this->candidato_model->getDocumentacionCandidato($id_candidato);
+        $data['ver_documento']        = $this->candidato_model->getVerificacionDocumentosCandidato($id_candidato);
+        $data['familia']              = $this->candidato_model->getFamiliaresCandidato($id_candidato);
+        $data['det_estudio']          = $this->candidato_model->getStatusVerificacionEstudios($id_candidato);
+        $data['ver_mayor_estudio']    = $this->candidato_model->getVerificacionMayoresEstudios($id_candidato);
+        $data['ref_laboral']          = $this->candidato_model->getReferenciasLaborales($id_candidato);
+        $data['ver_laboral']          = $this->candidato_model->getVerificacionReferencias($id_candidato);
+        $data['gaps']                 = $this->candidato_model->checkGaps($id_candidato);
+        $data['det_empleo']           = $this->candidato_model->getStatusVerificacionEmpleo($id_candidato);
+        $data['det_penales']          = $this->candidato_model->getStatusVerificacionPenales($id_candidato);
+        $data['analista']             = $this->candidato_model->getAnalista($id_candidato);
+        $data['coordinadora']         = $this->candidato_model->getCoordinadora($id_candidato);
+        $data['domicilios']           = $this->candidato_model->getHistorialDomicilios($id_candidato);
+        $data['ver_domicilios']       = $this->candidato_model->checkVerificacionDomicilios($id_candidato);
+        $data['ref_profesional']      = $this->candidato_model->getReferenciasProfesionales($id_candidato);
+        $data['credito']              = $this->candidato_model->checkCredito($id_candidato);
+        $data['estatus_estudios']     = $this->candidato_model->getEstatusEstudios($id_candidato);
+        $data['estatus_laborales']    = $this->candidato_model->getEstatusLaborales($id_candidato);
+        $data['estatus_penales']      = $this->candidato_model->getEstatusPenales($id_candidato);
+        $data['ref_personales']       = $this->candidato_model->getReferenciasPersonales($id_candidato);
+        $data['ref_academicas']       = $this->candidato_ref_academica_model->getById($id_candidato);
 
         $data['fecha_bgc'] = $fecha_bgc;
-        $data['pruebas'] = $this->candidato_model->getPruebasCandidato($id_candidato);
-        $doping = $this->doping_model->getDatosDoping($id_doping);
-        $data['doping'] = $doping;
+        $data['pruebas']   = $this->candidato_model->getPruebasCandidato($id_candidato);
+        $doping            = $this->doping_model->getDatosDoping($id_doping);
+        $data['doping']    = $doping;
         //$data['doc_doping'] = $this->load->view('pdfs/doping_pdf',$dop,TRUE);
-        $html = $this->load->view('pdfs/hcl_pdf', $data, true);
+        $html                   = $this->load->view('pdfs/hcl_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->AddPage();
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Request Date: ' . $f_alta . '<br>Release Date: ' . $fbgc . '</div>');
@@ -2399,7 +2579,7 @@ class Client extends Custom_Controller
                 $claveAleatoria = substr(md5(microtime()), 1, 8);
                 //$clave = ($usuario->clave != null)? $usuario->clave:$claveAleatoria;
                 $clave = $usuario->clave;
-                $mpdf->SetProtection(array(), $clave, 'r0d1@');
+                $mpdf->SetProtection([], $clave, 'r0d1@');
             }
         }
         $mpdf->autoPageBreak = false;
@@ -2411,64 +2591,64 @@ class Client extends Custom_Controller
     {
         $mpdf = new \Mpdf\Mpdf();
         date_default_timezone_set('America/Mexico_City');
-        $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
-        $id_candidato = $_POST['idCandidatoPDF'];
+        $data['hoy']   = date("d-m-Y");
+        $hoy           = date("d-m-Y");
+        $id_candidato  = $_POST['idCandidatoPDF'];
         $data['datos'] = $this->candidato_model->getDatosCandidato($id_candidato);
-        $id_usuario = $this->session->userdata('id');
-        $tipo_usuario = $this->session->userdata('tipo');
+        $id_usuario    = $this->session->userdata('id');
+        $tipo_usuario  = $this->session->userdata('tipo');
         foreach ($data['datos'] as $row) {
-            $f = $row->fecha_alta;
-            $fform = $row->fecha_contestado;
-            $fdocs = $row->fecha_documentos;
+            $f               = $row->fecha_alta;
+            $fform           = $row->fecha_contestado;
+            $fdocs           = $row->fecha_documentos;
             $nombreCandidato = $row->nombre . " " . $row->paterno . " " . $row->materno;
-            $cliente = $row->cliente;
-            $id_doping = $row->idDoping;
+            $cliente         = $row->cliente;
+            $id_doping       = $row->idDoping;
         }
-        $f_alta = formatoFecha($f);
-        $fform = formatoFecha($fform);
-        $fdocs = formatoFecha($fdocs);
-        $data['cliente'] = $cliente;
+        $f_alta            = formatoFecha($f);
+        $fform             = formatoFecha($fform);
+        $fdocs             = formatoFecha($fdocs);
+        $data['cliente']   = $cliente;
         $data['candidato'] = $nombreCandidato;
         //$hoy = formatoFecha($hoy);
-        $data['secciones'] = $this->candidato_model->getSeccionesCandidato($id_candidato);
-        $data['checklist'] = $this->candidato_model->getVerificacionChecklist($id_candidato);
-        $data['bgc'] = $this->candidato_model->getBGC($id_candidato);
+        $data['secciones']            = $this->candidato_model->getSeccionesCandidato($id_candidato);
+        $data['checklist']            = $this->candidato_model->getVerificacionChecklist($id_candidato);
+        $data['bgc']                  = $this->candidato_model->getBGC($id_candidato);
         $data['fecha_ver_documentos'] = $this->candidato_model->getFechaVerificacionDocumentos($id_candidato);
-        $data['fecha_ver_laboral'] = $this->candidato_model->getFechaVerificacionLaboral($id_candidato);
-        $data['fecha_ver_estudios'] = $this->candidato_model->getFechaVerificacionEstudios($id_candidato);
-        $data['fecha_ver_penales'] = $this->candidato_model->getFechaVerificacionPenales($id_candidato);
-        $data['global_searches'] = $this->candidato_model->getGlobalSearches($id_candidato);
-        $data['fecha_medico'] = $this->candidato_model->getFechaExamenMedico($id_candidato);
-        $data['fecha_credito'] = $this->candidato_model->getFechaCredito($id_candidato);
-        $data['fecha_ver_ofac'] = $this->candidato_model->getFechaVerificacionOfac($id_candidato);
-        $data['docs'] = $this->candidato_model->getDocumentacionCandidato($id_candidato);
-        $data['ver_documento'] = $this->candidato_model->getVerificacionDocumentosCandidato($id_candidato);
-        $data['familia'] = $this->candidato_model->getFamiliaresCandidato($id_candidato);
-        $data['det_estudio'] = $this->candidato_model->getStatusVerificacionEstudios($id_candidato);
-        $data['ver_mayor_estudio'] = $this->candidato_model->getVerificacionMayoresEstudios($id_candidato);
-        $data['ref_laboral'] = $this->candidato_model->getReferenciasLaborales($id_candidato);
-        $data['ver_laboral'] = $this->candidato_model->getVerificacionReferencias($id_candidato);
-        $data['gaps'] = $this->candidato_model->checkGaps($id_candidato);
-        $data['det_empleo'] = $this->candidato_model->getStatusVerificacionEmpleo($id_candidato);
-        $data['det_penales'] = $this->candidato_model->getStatusVerificacionPenales($id_candidato);
-        $data['analista'] = $this->candidato_model->getAnalista($id_candidato);
-        $data['coordinadora'] = $this->candidato_model->getCoordinadora($id_candidato);
-        $data['domicilios'] = $this->candidato_model->getHistorialDomicilios($id_candidato);
-        $data['ver_domicilios'] = $this->candidato_model->checkVerificacionDomicilios($id_candidato);
-        $data['ref_profesional'] = $this->candidato_model->getReferenciasProfesionales($id_candidato);
-        $data['credito'] = $this->candidato_model->checkCredito($id_candidato);
-        $data['estatus_estudios'] = $this->candidato_model->getEstatusEstudios($id_candidato);
-        $data['estatus_laborales'] = $this->candidato_model->getEstatusLaborales($id_candidato);
-        $data['estatus_penales'] = $this->candidato_model->getEstatusPenales($id_candidato);
-        $data['ref_personales'] = $this->candidato_model->getReferenciasPersonales($id_candidato);
-        $data['ref_academicas'] = $this->candidato_ref_academica_model->getById($id_candidato);
+        $data['fecha_ver_laboral']    = $this->candidato_model->getFechaVerificacionLaboral($id_candidato);
+        $data['fecha_ver_estudios']   = $this->candidato_model->getFechaVerificacionEstudios($id_candidato);
+        $data['fecha_ver_penales']    = $this->candidato_model->getFechaVerificacionPenales($id_candidato);
+        $data['global_searches']      = $this->candidato_model->getGlobalSearches($id_candidato);
+        $data['fecha_medico']         = $this->candidato_model->getFechaExamenMedico($id_candidato);
+        $data['fecha_credito']        = $this->candidato_model->getFechaCredito($id_candidato);
+        $data['fecha_ver_ofac']       = $this->candidato_model->getFechaVerificacionOfac($id_candidato);
+        $data['docs']                 = $this->candidato_model->getDocumentacionCandidato($id_candidato);
+        $data['ver_documento']        = $this->candidato_model->getVerificacionDocumentosCandidato($id_candidato);
+        $data['familia']              = $this->candidato_model->getFamiliaresCandidato($id_candidato);
+        $data['det_estudio']          = $this->candidato_model->getStatusVerificacionEstudios($id_candidato);
+        $data['ver_mayor_estudio']    = $this->candidato_model->getVerificacionMayoresEstudios($id_candidato);
+        $data['ref_laboral']          = $this->candidato_model->getReferenciasLaborales($id_candidato);
+        $data['ver_laboral']          = $this->candidato_model->getVerificacionReferencias($id_candidato);
+        $data['gaps']                 = $this->candidato_model->checkGaps($id_candidato);
+        $data['det_empleo']           = $this->candidato_model->getStatusVerificacionEmpleo($id_candidato);
+        $data['det_penales']          = $this->candidato_model->getStatusVerificacionPenales($id_candidato);
+        $data['analista']             = $this->candidato_model->getAnalista($id_candidato);
+        $data['coordinadora']         = $this->candidato_model->getCoordinadora($id_candidato);
+        $data['domicilios']           = $this->candidato_model->getHistorialDomicilios($id_candidato);
+        $data['ver_domicilios']       = $this->candidato_model->checkVerificacionDomicilios($id_candidato);
+        $data['ref_profesional']      = $this->candidato_model->getReferenciasProfesionales($id_candidato);
+        $data['credito']              = $this->candidato_model->checkCredito($id_candidato);
+        $data['estatus_estudios']     = $this->candidato_model->getEstatusEstudios($id_candidato);
+        $data['estatus_laborales']    = $this->candidato_model->getEstatusLaborales($id_candidato);
+        $data['estatus_penales']      = $this->candidato_model->getEstatusPenales($id_candidato);
+        $data['ref_personales']       = $this->candidato_model->getReferenciasPersonales($id_candidato);
+        $data['ref_academicas']       = $this->candidato_ref_academica_model->getById($id_candidato);
 
         $data['pruebas'] = $this->candidato_model->getPruebasCandidato($id_candidato);
-        $doping = $this->doping_model->getDatosDoping($id_doping);
-        $data['doping'] = $doping;
+        $doping          = $this->doping_model->getDatosDoping($id_doping);
+        $data['doping']  = $doping;
         //$data['doc_doping'] = $this->load->view('pdfs/doping_pdf',$dop,TRUE);
-        $html = $this->load->view('pdfs/hcl_parcial_pdf', $data, true);
+        $html                   = $this->load->view('pdfs/hcl_parcial_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->AddPage();
         $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Request Date: ' . $f_alta . '</div>');
@@ -2485,7 +2665,7 @@ class Client extends Custom_Controller
                 $claveAleatoria = substr(md5(microtime()), 1, 8);
                 //$clave = ($usuario->clave != null)? $usuario->clave:$claveAleatoria;
                 $clave = $usuario->clave;
-                $mpdf->SetProtection(array(), $clave, 'r0d1@');
+                $mpdf->SetProtection([], $clave, 'r0d1@');
             }
         }
         $mpdf->autoPageBreak = false;

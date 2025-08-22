@@ -991,13 +991,36 @@ class Cat_Cliente extends CI_Controller
                 ->set_output(json_encode([]));
         }
     }
+    public function getLinkPortal()
+    {
+        $id_portal = $this->session->userdata('idPortal'); // TRUE => XSS clean
 
+        if (! $id_portal) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['error' => 'ID de cliente inválido']));
+        }
+
+        try {
+            $data = $this->cat_cliente_model->getLinkPortal($id_portal);
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data ?: []));
+        } catch (Throwable $e) { // mejor que Exception para PHP 7+
+            log_message('error', 'Excepción en getLinks: ' . $e->getMessage());
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([]));
+        }
+    }
     public function generarLinkRequisicion()
     {
         $this->output->set_content_type('application/json');
         $id_portal = $this->session->userdata('idPortal');
-        // Entrada
-        $id_cliente = (int) $this->input->post('id_cliente');
+                                                              // Entrada
+        $raw        = $this->input->post('id_cliente', true); // puede ser null, '', '123', etc.
+        $id_cliente = ($raw === null || $raw === '') ? null : (int) $raw;
         $terminos   = $this->cat_cliente_model->getTerminos($id_portal);
         // Sesión
         // echo $id_cliente.'  aqui andamos  ';
@@ -1008,7 +1031,7 @@ class Cat_Cliente extends CI_Controller
         $usuario_id   = $this->session->userdata('id');
 
         // Validaciones mínimas
-        foreach (['id_cliente', 'id_portal', 'usuario_id', 'NombrePortal'] as $k) {
+        foreach (['id_portal', 'usuario_id', 'NombrePortal'] as $k) {
             if (empty($$k)) {
                 echo json_encode(['error' => "Falta {$k}"]);return;
             }
@@ -1054,13 +1077,20 @@ class Cat_Cliente extends CI_Controller
         $qr_base64 = $this->_qr_base64($link);
 
         // Upsert (si ya existe, actualizar)
+
         $data = [
-            'id_cliente' => $id_cliente,
-            'link'       => $link,
-            'qr'         => $qr_base64,
-            'creacion'   => date('Y-m-d H:i:s'),
-            'edicion'    => date('Y-m-d H:i:s'),
+            'link'     => $link,
+            'qr'       => $qr_base64,
+            'creacion' => date('Y-m-d H:i:s'),
+            'edicion'  => date('Y-m-d H:i:s'),
         ];
+
+        if ($id_cliente !== null) {
+            $data['id_cliente'] = $id_cliente;
+        } else {
+            $data['id_portal'] = $id_portal;
+        }
+
         $ok = $this->cat_cliente_model->guardarLinkCliente($data);
         if (! $ok) {echo json_encode(['error' => 'No se pudo guardar el link']);return;}
 

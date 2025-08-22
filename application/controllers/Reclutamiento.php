@@ -125,7 +125,7 @@ class Reclutamiento extends CI_Controller
             $filterOrder = 'R.tipo !=';
         }
 
-        $order = $this->input->get('order', true);
+        $order = (int) $this->input->get('order');
         if ($order !== null && $order !== '') {
             $id_order        = ($order > 0) ? $order : 0;
             $condition_order = ($order > 0) ? 'R.id' : 'R.id >';
@@ -143,6 +143,11 @@ class Reclutamiento extends CI_Controller
             $info['requisiciones'] = $this->reclutamiento_model->getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder);
             $info['orders_search'] = $this->reclutamiento_model->getAllOrders($sort, 0, 'R.id >', $filter, $filterOrder);
         }
+        /*
+        echo'<pre>';
+        print_r($info['orders_search'] );
+        echo'</pre>'; 
+        die(); */
         $info['sortOrder'] = $getSort;
         $info['filter']    = $getFilter;
 
@@ -494,6 +499,39 @@ class Reclutamiento extends CI_Controller
         echo $scriptsView;
         echo $requisicionView; // Si decides que esta vista sí debe mostrarse
         echo $footerView;
+    }
+    public function getLinkEmpleado()
+    {
+        $id_empleado = (int) $this->input->get('id_empleado');
+        $this->output->set_content_type('application/json');
+
+        if (! $id_empleado) {
+            return $this->output->set_output(json_encode(['success' => false, 'error' => 'Falta id_empleado']));
+        }
+
+        $row = $this->reclutamiento_model->getLastLinkEmpleado($id_empleado);
+        if (! $row) {
+            return $this->output->set_output(json_encode(['success' => true, 'exists' => false]));
+        }
+
+        // Calcula estado
+        $now    = time();
+        $status = 'Activo';
+        if ((int) $row->eliminado === 1 || ! empty($row->revoked_at)) {
+            $status = 'Revocado';
+        } elseif ((int) $row->is_used === 1) {
+            $status = 'Usado';
+        } elseif (! empty($row->exp_unix) && $now > (int) $row->exp_unix) {
+            $status = 'Expirado';
+        }
+
+        return $this->output->set_output(json_encode([
+            'success' => true,
+            'exists'  => true,
+            'row'     => $row,
+            'status'  => $status,
+            'now'     => $now,
+        ]));
     }
 
     /*----------------------------------------*/
@@ -1172,47 +1210,47 @@ class Reclutamiento extends CI_Controller
 
         // === Header (usa nombre del portal) ===
         $headerHtml = '
-      <div style="background:' . $brand . '; color:#fff; padding:10px 12px;">
-        <table width="100%" style="border-collapse:collapse;">
-          <tr>
-            <td style="width:52px; vertical-align:middle;">
-              <img src="' . $logoUrl . '" alt="Logo" style="max-width:220px; max-height:120px; background:#fff;">
-            </td>
-            <td style="vertical-align:middle; text-align:center;">
-              <div style="font-weight:900; font-size:50px; color: white; text-align: center;">' . htmlspecialchars($portalName) . '</div>
-              <div style="font-size:18px; opacity:.95; color: white;">Reporte de Solicitud</div>
-            </td>
-            <td style="text-align:right; font-size:10px; vertical-align:middle; color: white; ">
-              Folio: ' . $id . '<br>
-              Fecha: ' . $hoy . '
-            </td>
-          </tr>
-        </table>
-      </div>
-    ';
+            <div style="background:' . $brand . '; color:#fff; padding:10px 12px;">
+                <table width="100%" style="border-collapse:collapse;">
+                <tr>
+                    <td style="width:52px; vertical-align:middle;">
+                    <img src="' . $logoUrl . '" alt="Logo" style="max-width:220px; max-height:120px; background:#fff;">
+                    </td>
+                    <td style="vertical-align:middle; text-align:center;">
+                    <div style="font-weight:900; font-size:50px; color: white; text-align: center;">' . htmlspecialchars($portalName) . '</div>
+                    <div style="font-size:18px; opacity:.95; color: white;">Reporte de Solicitud</div>
+                    </td>
+                    <td style="text-align:right; font-size:10px; vertical-align:middle; color: white; ">
+                    Folio: ' . $id . '<br>
+                    Fecha: ' . $hoy . '
+                    </td>
+                </tr>
+                </table>
+            </div>
+            ';
 
         // === Footer (usa nombre portal, tel y correo; N/D si no hay) ===
         $footerHtml = '
-      <div style="font-size:9px; color:#4b5563;">
-        <table width="100%" style="border-collapse:collapse;">
-          <tr>
-            <td style="color:' . $brand . '; font-weight:700;">
-              ' . htmlspecialchars($portalName) . '
-            </td>
-            <td style="text-align:right;">
-              Página {PAGENO} de {nbpg}
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2" style="border-top:1px solid #d1d5db; padding-top:4px;">
-              Tel: ' . htmlspecialchars($portalTel) . ' &nbsp; | &nbsp;
-              Correo: ' . htmlspecialchars($portalMail) . ' &nbsp; | &nbsp;
-              Web: ' . htmlspecialchars($portalWeb) . '
-            </td>
-          </tr>
-        </table>
-      </div>
-    ';
+            <div style="font-size:9px; color:#4b5563;">
+                <table width="100%" style="border-collapse:collapse;">
+                <tr>
+                    <td style="color:' . $brand . '; font-weight:700;">
+                    ' . htmlspecialchars($portalName) . '
+                    </td>
+                    <td style="text-align:right;">
+                    Página {PAGENO} de {nbpg}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border-top:1px solid #d1d5db; padding-top:4px;">
+                    Tel: ' . htmlspecialchars($portalTel) . ' &nbsp; | &nbsp;
+                    Correo: ' . htmlspecialchars($portalMail) . ' &nbsp; | &nbsp;
+                    Web: ' . htmlspecialchars($portalWeb) . '
+                    </td>
+                </tr>
+                </table>
+            </div>
+            ';
 
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader($headerHtml);
