@@ -140,6 +140,10 @@ echo $token  */?>
               <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
               Pago/Suscripción
             </a>
+              <a class="collapse-item" href="<?php echo base_url(); ?>legal">
+              <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
+              T & C
+            </a>
             <?php }?>
             <a class="collapse-item" href="<?php echo base_url(); ?>Login/logout">
               <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>

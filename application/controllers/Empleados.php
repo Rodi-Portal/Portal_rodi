@@ -256,7 +256,7 @@ class Empleados extends CI_Controller
         echo $headerView;
         echo $scriptsView; // Mostrar scripts si es necesario
         echo $View;        // Mostrar el contenido del módulo de exempleados
-    }    
+    }
 
     public function comunicacion()
     {
@@ -267,7 +267,7 @@ class Empleados extends CI_Controller
 
         $data['submodulos']       = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $data['columnas_fijas']   = ['Sucursal', 'Empleados', 'Usuarios con acceso', 'Acciones'];
-        $data['columnas_ocultas'] = ['id_cliente','creacion','correo' , 'max', 'usuarios', 'empleados_activos', 'nombreCliente', 'empleados_inactivos', 'icono', 'url','pre_empleados'];
+        $data['columnas_ocultas'] = ['id_cliente', 'creacion', 'correo', 'max', 'usuarios', 'empleados_activos', 'nombreCliente', 'empleados_inactivos', 'icono', 'url', 'pre_empleados'];
 
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
@@ -279,7 +279,6 @@ class Empleados extends CI_Controller
 
         // Obtener configuración guardada del usuario
         $configColumnas = $this->comunicacion_model->getColumnasConfiguracion($idUsuario, $idCliente, $idPortal);
-      
 
         // Columnas seleccionadas por el usuario (puede ser null si no tiene)
         $data['columnas_usuario'] = $configColumnas['seleccionadas'];
@@ -359,8 +358,8 @@ class Empleados extends CI_Controller
         $data['submenus'] = $items;
 
         // Configuración general
-        $config              = $this->funciones_model->getConfiguraciones();
-        $data['version']     = $config->version_sistema;
+        $config             = $this->funciones_model->getConfiguraciones();
+        $data['version']    = $config->version_sistema;
         $data['cliente_id'] = $cliente_ids;
 
         // Verificación del módulo
@@ -383,6 +382,32 @@ class Empleados extends CI_Controller
         echo $headerView;
         echo $scriptsView;
         echo $View;
+    }
+
+    /*Consultas  para  obtener Datos Pre Empleo Interni */
+    public function getPreEmpleados($id)
+    {
+        // Ejemplo: consulta en otra tabla (pre_empleados)
+        $id = (int) $id;
+        if ($id <= 0) {
+            return $this->output->set_status_header(400)
+                ->set_output(json_encode(['ok' => false, 'error' => 'ID inválido']));
+        }
+
+        // (opcional) valida permisos/sesión antes de consultar…
+
+        $data = $this->empleados_model->findFullPre($id);
+        if (! $data) {
+            return $this->output->set_status_header(404)
+                ->set_output(json_encode(['ok' => false, 'error' => 'No encontrado']));
+        }
+
+        return $this->output->set_output(json_encode([
+            'ok'   => true,
+            'id'   => $id,
+            'data' => $data,
+        ]));
+
     }
 
 }

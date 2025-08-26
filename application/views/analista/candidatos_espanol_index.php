@@ -825,24 +825,24 @@ function loadInternos(url1) {
         "serverSide": false,
         "destroy": true,
         "data": formattedData,
-        "columns": [
-            {
-              title: 'N°',
-              data: 'id',
-              width: '10%',
-              className: 'text-center',
-              render: function (data, type, row, meta) {
-                // Mantén el ID real para ordenar/buscar
-                if (type !== 'display') return data;
+        "columns": [{
+            title: 'N°',
+            data: 'id',
+            width: '10%',
+            className: 'text-center',
+            render: function(data, type, row, meta) {
+              // Mantén el ID real para ordenar/buscar
+              if (type !== 'display') return data;
 
-                // Número de fila visible (considera paginación)
-                const visibleIndex = meta.row + 1 + meta.settings._iDisplayStart;
+              // Número de fila visible (considera paginación)
+              const visibleIndex = meta.row + 1 + meta.settings._iDisplayStart;
 
-                // Tipo de bolsa desde sesión (ajústalo si cambia la clave)
-                const tipoBolsa = <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0)); ?>;
+              // Tipo de bolsa desde sesión (ajústalo si cambia la clave)
+              const tipoBolsa =
+                <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0)); ?>;
 
-                // ID visible con tooltip del ID real
-                const idVisible = `
+              // ID visible con tooltip del ID real
+              const idVisible = `
                   <span
                     class="fw-bold"
                     data-bs-toggle="tooltip"
@@ -851,9 +851,9 @@ function loadInternos(url1) {
                   >#${visibleIndex}</span>
                 `;
 
-                // Botones a pantalla completa, una sola fila debajo del ID
-                const botones = (tipoBolsa === 1 && data !== '')
-                  ? `<br><br>
+              // Botones a pantalla completa, una sola fila debajo del ID
+              const botones = (tipoBolsa === 1 && data !== '') ?
+                `<br><br>
                     <div class="d-flex gap-2 mt-2 w-100">
                       <button class="btn btn-success btn-sm flex-fill"
                               onclick="verCandidato(${data})" title="Ver Candidato">
@@ -864,19 +864,19 @@ function loadInternos(url1) {
                         <i class="fas fa-link"></i>
                       </button>
                     </div>
-                  `
-                  : '';
+                  ` :
+                '';
 
-                // Contenedor a ancho completo en la celda
-                return `
+              // Contenedor a ancho completo en la celda
+              return `
                   <div class="w-100">
                     ${idVisible}
                     ${botones}
                   </div>
                 `;
-              }
-            },
-            {
+            }
+          },
+          {
             title: 'Nombre',
             data: 'nombreCompleto',
             width: '20%',
@@ -973,6 +973,65 @@ function loadInternos(url1) {
       console.error("Error en la petición AJAX de Internos:", status, error);
     }
   });
+}
+
+
+function verCandidato(id) {
+  $('#empDynTitle').text('Empleado #' + id);
+  $('#empDynAlert').hide().removeClass('alert-danger').addClass('alert-info').text('');
+  $('#empDynBase').html('<div class="text-muted">Cargando…</div>');
+  $('#empDynExtra').empty();
+  $('#empDynDocs').empty();
+  $('#empDynExams').empty();
+
+  $('#empDynModal').modal('show');
+
+  $.ajax({
+
+      url: '<?php echo base_url("Empleados/getPreEmpleados/") ?>' + id, // llamada directa al controlador/función
+      type: "GET",
+      dataType: "json"
+    })
+    .done(function(resp) {
+      if (!resp || !resp.ok) {
+        $('#empDynAlert').show().addClass('alert-danger').removeClass('alert-info')
+          .text('No se pudo obtener información del empleado.');
+        return;
+      }
+      const D = resp.data || {};
+
+      // BASE
+      $('#empDynBase').html(renderKV(D.base || {}));
+
+      // CAMPOS EXTRA
+      if (D.campos_extra && D.campos_extra.length) {
+        $('#empDynExtra').html(renderCamposExtra(D.campos_extra));
+        $('#tab-extra').parent().show();
+      } else {
+        $('#empDynExtra').html('<div class="text-muted">Sin campos extra</div>');
+      }
+
+      // DOCUMENTOS
+      if (D.documentos && D.documentos.length) {
+        $('#empDynDocs').html(renderDocs(D.documentos));
+        $('#tab-docs').parent().show();
+      } else {
+        $('#empDynDocs').html('<div class="text-muted">Sin documentos</div>');
+      }
+
+      // EXÁMENES
+      if (D.examenes && D.examenes.length) {
+        $('#empDynExams').html(renderExams(D.examenes));
+        $('#tab-exams').parent().show();
+      } else {
+        $('#empDynExams').html('<div class="text-muted">Sin exámenes</div>');
+      }
+    })
+    .fail(function(xhr) {
+      $('#empDynAlert').show().addClass('alert-danger').removeClass('alert-info')
+        .text('Error al cargar los datos del empleado.');
+      console.log('FAIL', xhr.responseText);
+    });
 }
 
 function changeDatatable(url1) {
