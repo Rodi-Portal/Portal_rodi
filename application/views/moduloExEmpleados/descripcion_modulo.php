@@ -117,6 +117,6 @@
 
   <div class="exempleados-contacto">
     <p>¿Tienes dudas o necesitas ayuda? Contacta al equipo de Recursos Humanos:</p>
-    <p><strong>Correo:</strong> <a href="mailto:rrhh@example.com">rrhh@example.com</a></p>
+    <p><strong>Correo:</strong> <a href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a></p>
   </div>
 </div>

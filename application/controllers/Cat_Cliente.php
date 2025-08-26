@@ -214,6 +214,7 @@ class Cat_Cliente extends CI_Controller
 
     public function index()
     {
+        $data['tipo_bolsa'] = $this->session->userdata('tipo_bolsa');
         $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
@@ -327,6 +328,141 @@ class Cat_Cliente extends CI_Controller
     }
 
 // Funcion para registrar Clientes Julio  2024
+
+    public function generarLinksTodos()
+    {
+        $this->output->set_content_type('application/json; charset=utf-8');
+
+        $id_portal = $this->session->userdata('idPortal');
+        if (empty($id_portal)) {
+            return $this->output->set_output(json_encode([
+                'success' => false,
+                'message' => 'Falta id_portal en la sesión.',
+            ]));
+        }
+
+        $clientes = $this->cat_cliente_model->traerClientes($id_portal);
+        if (empty($clientes)) {
+            return $this->output->set_output(json_encode([
+                'success' => true,
+                'ok'      => 0,
+                'fail'    => 0,
+                'items'   => [],
+                'message' => 'No hay clientes para procesar.',
+            ], JSON_UNESCAPED_UNICODE));
+        }
+
+        $ok    = 0;
+        $fail  = 0;
+        $items = [];
+        foreach ($clientes as $c) {
+            $id_cliente = (int) ($c->id ?? 0);
+            if ($id_cliente <= 0) {
+                $fail++;
+                $items[] = ['id_cliente' => $id_cliente, 'success' => false, 'error' => 'id_cliente inválido'];
+                continue;
+            }
+
+            $res = $this->_generarLinkCliente($id_cliente, $id_portal);
+
+            if (! empty($res['success'])) {$ok++;} else { $fail++;}
+
+            $items[] = array_merge(['id_cliente' => $id_cliente], $res);
+        }
+
+        // ←←← devolver la respuesta **después** de terminar el bucle
+        return $this->output->set_output(json_encode([
+            'success' => ($fail === 0),
+            'ok'      => $ok,
+            'fail'    => $fail,
+            'items'   => $items,
+            'message' => $fail ? 'Proceso terminado con errores.' : 'Proceso completado correctamente.',
+        ], JSON_UNESCAPED_UNICODE));
+    }
+    private function _generarLinkCliente(int $id_cliente, int $id_portal): array
+    {
+        try {
+            // Datos de sesión
+            $logo         = $this->session->userdata('logo') ?? 'portal_icon.png';
+            $aviso        = $this->session->userdata('aviso') ?? 'AV_TL_V1.pdf';
+            $NombrePortal = $this->session->userdata('nombrePortal');
+            $usuario_id   = (int) $this->session->userdata('id');
+
+            // Términos
+            $terminosRow = $this->cat_cliente_model->getTerminos($id_portal);
+            $terminos    = $terminosRow->terminos ?? 'TM_TL_V1.pdf';
+
+            // Validaciones mínimas
+            foreach (['id_cliente', 'id_portal', 'usuario_id', 'NombrePortal'] as $k) {
+                if (empty($$k)) {
+                    return ['success' => false, 'error' => "Falta {$k}"];
+                }
+            }
+
+            // Clave privada (PEM)
+            $private_key = $this->resolverClavePrivada();
+            if (! $private_key) {
+                return ['success' => false, 'error' => 'No se pudo cargar la clave privada JWT'];
+            }
+
+            // Payload (sin exp)
+            $payload = [
+                'iat'          => time(),
+                'jti'          => bin2hex(random_bytes(16)),
+                'idUsuario'    => $usuario_id,
+                'idPortal'     => $id_portal,
+                'NombrePortal' => $NombrePortal,
+                'logo'         => $logo,
+                'aviso'        => $aviso,
+                'terminos'     => $terminos,
+                'idCliente'    => $id_cliente,
+            ];
+
+            // JWT RS256
+            $jwt = \Firebase\JWT\JWT::encode($payload, $private_key, 'RS256');
+
+            // URL del formulario
+            $formUrl = LINKNUEVAREQUISICION;
+            if (! $formUrl) {
+                return ['success' => false, 'error' => 'Falta LINKNUEVAREQUISICION'];
+            }
+
+            // Token URL-encoded
+            $link = rtrim($formUrl, '/') . '?token=' . rawurlencode($jwt);
+
+            // QR
+            $qr_base64 = $this->_qr_base64($link);
+
+            // Upsert
+            $data = [
+                'id_cliente' => $id_cliente,
+                'link'       => $link,
+                'qr'         => $qr_base64,
+                'creacion'   => date('Y-m-d H:i:s'),
+                'edicion'    => date('Y-m-d H:i:s'),
+            ];
+            $ok = $this->cat_cliente_model->guardarLinkCliente($data);
+
+            if (! $ok) {
+                return ['success' => false, 'error' => 'No se pudo guardar el link'];
+            }
+
+            return [
+                'success' => true,
+                'link'    => $link,
+                'qr'      => $qr_base64,
+                'jti'     => $payload['jti'],
+                'sha'     => substr(hash('sha256', $jwt), 0, 16),
+                // Opcional: no regreses el token completo por seguridad
+            ];
+
+        } catch (\Throwable $e) {
+            log_message('error', '_generarLinkCliente error: ' . $e->getMessage() . ' line ' . $e->getLine());
+            return ['success' => false, 'error' => 'Excepción interna: ' . $e->getMessage()];
+        }
+        //return ['success' => true, 'link' =>  ..., 'qr' =>  ..., 'jti' =>  ..., 'sha' =>  ...];
+    }
+
     public function guardarDatos()
     {
 
@@ -855,13 +991,36 @@ class Cat_Cliente extends CI_Controller
                 ->set_output(json_encode([]));
         }
     }
+    public function getLinkPortal()
+    {
+        $id_portal = $this->session->userdata('idPortal'); // TRUE => XSS clean
 
+        if (! $id_portal) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['error' => 'ID de portal inválido']));
+        }
+
+        try {
+            $data = $this->cat_cliente_model->getLinkPortal($id_portal);
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($data ?: []));
+        } catch (Throwable $e) { // mejor que Exception para PHP 7+
+            log_message('error', 'Excepción en getLinks: ' . $e->getMessage());
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([]));
+        }
+    }
     public function generarLinkRequisicion()
     {
         $this->output->set_content_type('application/json');
         $id_portal = $this->session->userdata('idPortal');
-        // Entrada
-        $id_cliente = (int) $this->input->post('id_cliente');
+                                                              // Entrada
+        $raw        = $this->input->post('id_cliente', true); // puede ser null, '', '123', etc.
+        $id_cliente = ($raw === null || $raw === '') ? null : (int) $raw;
         $terminos   = $this->cat_cliente_model->getTerminos($id_portal);
         // Sesión
         // echo $id_cliente.'  aqui andamos  ';
@@ -872,7 +1031,7 @@ class Cat_Cliente extends CI_Controller
         $usuario_id   = $this->session->userdata('id');
 
         // Validaciones mínimas
-        foreach (['id_cliente', 'id_portal', 'usuario_id', 'NombrePortal'] as $k) {
+        foreach (['id_portal', 'usuario_id', 'NombrePortal'] as $k) {
             if (empty($$k)) {
                 echo json_encode(['error' => "Falta {$k}"]);return;
             }
@@ -918,13 +1077,20 @@ class Cat_Cliente extends CI_Controller
         $qr_base64 = $this->_qr_base64($link);
 
         // Upsert (si ya existe, actualizar)
+
         $data = [
-            'id_cliente' => $id_cliente,
-            'link'       => $link,
-            'qr'         => $qr_base64,
-            'creacion'   => date('Y-m-d H:i:s'),
-            'edicion'    => date('Y-m-d H:i:s'),
+            'link'     => $link,
+            'qr'       => $qr_base64,
+            'creacion' => date('Y-m-d H:i:s'),
+            'edicion'  => date('Y-m-d H:i:s'),
         ];
+
+        if ($id_cliente !== null) {
+            $data['id_cliente'] = $id_cliente;
+        } else {
+            $data['id_portal'] = $id_portal;
+        }
+
         $ok = $this->cat_cliente_model->guardarLinkCliente($data);
         if (! $ok) {echo json_encode(['error' => 'No se pudo guardar el link']);return;}
 

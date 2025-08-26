@@ -103,6 +103,49 @@ class Empleados_model extends CI_Model
 
         return false; // Si $data está vacío o no es array
     }
+
+    /**
+     * Regresa un arreglo con:
+     *  - base:           fila de empleados (por id)
+     *  - campos_extra:   array de filas en empleados_campos_extra
+     *  - documentos:     array de filas en document_empleado
+     *  - examenes:       array de filas en exams_empleado
+     */
+    public function findFullPre(int $id): ?array
+    {
+        $base = $this->db->from('empleados')
+                         ->where('id', $id)
+                         ->limit(1)
+                         ->get()
+                         ->row_array();
+
+        if (!$base) return null;
+
+        $campos_extra = $this->db->from('empleado_campos_extra')
+                                 ->where('id_empleado', $id)
+                                 ->order_by('id', 'desc')
+                                 ->get()
+                                 ->result_array();
+
+        $documentos = $this->db->from('documents_empleado')
+                               ->where('employee_id', $id)
+                               ->order_by('id', 'desc')
+                               ->get()
+                               ->result_array();
+
+        $examenes = $this->db->from('exams_empleados')
+                             ->where('employee_id', $id)
+                             ->order_by('id', 'desc')
+                             ->get()
+                             ->result_array();
+
+        return [
+            'base'         => $base,
+            'campos_extra' => $campos_extra,
+            'documentos'   => $documentos,
+            'examenes'     => $examenes,
+        ];
+    }
     /*
     echo '<pre>';
         print_r($query->result());

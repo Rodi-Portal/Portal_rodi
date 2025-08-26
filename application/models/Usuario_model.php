@@ -73,7 +73,6 @@ class Usuario_model extends CI_Model
         D.verificacion,
         D.id as idDatos')
             ->from('datos_generales as D')
-
             ->where('D.correo', $correo);
 
         $consulta  = $this->db->get();
@@ -104,6 +103,8 @@ class Usuario_model extends CI_Model
             P.bloqueado,
             P.tipo_bolsa,
             P.logo,
+            P.former,
+            P.emp,
             P.aviso,
             P.terminos,
             P.id as idPortal')
@@ -231,10 +232,13 @@ class Usuario_model extends CI_Model
              UCL.privacidad,
              CL.ingles,
              CL.id_portal,
-             P.bloqueado')
+             P.bloqueado,
+             P.tipo_bolsa,
+             LC.link')
             ->from('usuarios_clientes as UCL')
-            ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales')
-            ->join('cliente  as CL', ' CL.id = UCL. id_cliente')
+            ->join('datos_generales as DG', 'DG.id = UCL.id_datos_generales', 'left')
+            ->join('cliente  as CL', ' CL.id = UCL.id_cliente')
+            ->join('links_clientes  as LC', ' CL.id = LC.id_cliente', 'left')
             ->join('portal AS P', 'P.id = CL.id_portal')
             ->where('DG.correo', $correo)
             ->where('CL.status', 1)
@@ -260,7 +264,7 @@ class Usuario_model extends CI_Model
         $resultado = $consulta->row();
         return $resultado;
     }
-    public function getPermisos($filtrar_roles = false)
+    public function getPermisos($filtrar_roles = false, $origen = null)
     {
         $id_portal  = $this->session->userdata('idPortal');
         $id_usuario = $this->session->userdata('id');
@@ -271,6 +275,7 @@ class Usuario_model extends CI_Model
             ->from('cliente AS C')
             ->join('usuario_permiso AS UP', 'UP.id_cliente = C.id')
             ->where('UP.id_usuario', $id_usuario);
+
         $clientes = array_column($this->db->get()->result_array(), 'id');
         if (empty($clientes)) {
             return [];
@@ -285,32 +290,45 @@ class Usuario_model extends CI_Model
             C.url,
             C.creacion,
             C.max_colaboradores,
+            DOM.pais,
+            DOM.estado,
+            DOM.ciudad,
             D.telefono,
             D.correo,
-            DG.nombre,
+            DG.nombre AS nombreUsuario,
             DG.paterno,
             UPo.id AS id_usuario,
             R.nombre AS rol_usuario,
             (SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 1) AS empleados_activos,
-            (SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 2 ) AS empleados_inactivos')
+            (SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 2) AS empleados_inactivos,
+            (SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 3) AS pre_empleados
+        ')
             ->from('cliente AS C')
-            ->join('datos_generales AS D', 'D.id = C.id_datos_generales', 'left') // datos cliente
+            ->join('datos_generales AS D', 'D.id = C.id_datos_generales', 'left')
+            ->join('domicilios AS DOM', 'DOM.id = C.id_domicilios', 'left')// datos cliente
+     // datos cliente
             ->join('usuario_permiso AS UP', 'C.id = UP.id_cliente')
             ->join('usuarios_portal AS UPo', 'UPo.id = UP.id_usuario')
             ->join('datos_generales AS DG', 'DG.id = UPo.id_datos_generales', 'left') // datos usuario
             ->join('rol AS R', 'R.id = UPo.id_rol', 'left')
             ->where('C.id_portal', $id_portal)
-            ->where_in('C.id', $clientes)
-    ->order_by('(SELECT COUNT(*) FROM empleados E WHERE E.id_cliente = C.id AND E.status = 1)', 'DESC'); // 👈 Así sí funciona
-    
-    
+            ->where_in('C.id', $clientes);
 
         // Si el parámetro $filtrar_roles es true, excluimos los roles 4 y 11
         if ($filtrar_roles) {
             $this->db->where_not_in('UPo.id_rol', [4, 11]);
         }
 
-        //$this->db->order_by('C.nombre', 'ASC');
+        // Orden
+        if ($origen === "former") {
+            $this->db->order_by('empleados_inactivos', 'DESC');
+        } elseif ($origen === "emp" || $origen === "com") {
+            $this->db->order_by('empleados_activos', 'DESC');
+        } elseif ($origen === "pre") {
+            $this->db->order_by('pre_empleados', 'DESC');
+        } else {
+            $this->db->order_by('C.nombre', 'ASC'); // opcional por defecto
+        }
 
         $query  = $this->db->get();
         $result = $query->result();
@@ -319,6 +337,7 @@ class Usuario_model extends CI_Model
         $clientesAgrupados = [];
         foreach ($result as $row) {
             $id = $row->id_cliente;
+
             if (! isset($clientesAgrupados[$id])) {
                 $clientesAgrupados[$id] = [
                     'id_cliente'          => $row->id_cliente,
@@ -329,17 +348,20 @@ class Usuario_model extends CI_Model
                     'telefono'            => $row->telefono,
                     'correo'              => $row->correo,
                     'max'                 => $row->max_colaboradores,
-                    'empleados_activos'   => $row->empleados_activos,
-                    'empleados_inactivos' => $row->empleados_inactivos,
-
+                    'empleados_activos'   => (int) $row->empleados_activos,   // casteo a int
+                    'empleados_inactivos' => (int) $row->empleados_inactivos, // casteo a int
+                    'pre_empleados'       => (int) $row->pre_empleados, 
+                    'estado'              => $row->estado,
+                    'pais'                => $row->pais,
+                    'ciudad'              => $row->ciudad,      // casteo a int
                     'usuarios'            => [],
                 ];
             }
 
             $clientesAgrupados[$id]['usuarios'][] = [
-                'nombre_completo' => trim("{$row->nombre} {$row->paterno} "),
+                'nombre_completo' => trim("{$row->nombreUsuario} {$row->paterno}"),
                 'rol'             => $row->rol_usuario,
-                'id_usuario'           => $row->id_usuario,
+                'id_usuario'      => $row->id_usuario,
             ];
         }
 

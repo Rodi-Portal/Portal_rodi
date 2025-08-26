@@ -179,8 +179,8 @@ class Login extends CI_Controller
     //Vista del Dashboard SI hay o NO session; redireciconamiento a inicio desde menú
     public function verifying_account()
     {
-        $this->form_validation->set_rules('correo', 'Email', 'valid_email|trim');
-        $this->form_validation->set_rules('pwd', 'Estatus final del BGC', 'trim');
+        $this->form_validation->set_rules('correo', 'Email', 'required|valid_email|trim');
+        $this->form_validation->set_rules('pwd', 'Estatus final del BGC', 'required|trim');
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
         $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un email válido');
@@ -190,8 +190,9 @@ class Login extends CI_Controller
             redirect('Login/index');
         } else {
 
-            $pass = $this->input->post('pwd');
+            $pass   = $this->input->post('pwd');
             $correo = $this->input->post('correo');
+
             // Obtener el hash de la contraseña almacenado en la base de datos
             $hash_guardado = $this->usuario_model->traerPass($correo);
 
@@ -227,10 +228,38 @@ class Login extends CI_Controller
                     "idPortal"     => $usuario->idPortal,
                     "nombrePortal" => $usuario->nombrePortal,
                     "logo"         => $usuario->logo,
+                    "aviso"        => $usuario->aviso,
+                    "terminos"     => $usuario->terminos,
+                    "emp"        => $usuario->emp,
+                    "former"     => $usuario->former,
+
+
 
                 ];
+                if ($usuario->id_rol == 1 || $usuario->id_rol == 6) {
+                    // Generación del JWT
+                    $issued_at       = time();
+                    $expiration_time = $issued_at + 10800; // 1 hora de duración del token
+                    $payload         = [
+                        "sub"    => $usuario->id, // ID del usuario (puede ser cualquier identificador único)
+                        "correo" => $usuario->correo,
+                        "exp"    => $expiration_time,
+                    ];
+
+                    /*   // Cargar la clave privada (para firmar el JWT) desde la configuración
+                    $private_key = $this->config->item('jwt_private_key'); // Cargar la clave privada de la configuración
+
+                    // Generar el JWT con RS256 (algoritmo asimétrico)
+                    $jwt = JWT::encode($payload, $private_key, 'RS256'); // Usar RS256 en lugar de HS256
+
+                    // Almacenar el JWT en la sesión
+                    $this->session->set_userdata('jwt_token', $jwt);
+
+                    */
+                }
+
                 $this->session->set_userdata($usuario_data);
-                if ($ver == 0 || $ver == 10) {
+                if ($ver == 0 || $ver == 20) {
 
                     $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
@@ -287,6 +316,8 @@ class Login extends CI_Controller
                         "ingles"       => $cliente->ingles,
                         "espectador"   => $cliente->espectador,
                         "logueado"     => true,
+                        "tipo_bolsa"   => $cliente->tipo_bolsa,
+                        "link"        => $cliente->link,
                     ];
 
                     /*    echo '<pre>';
@@ -309,6 +340,8 @@ class Login extends CI_Controller
                         'ip'           => $_SERVER['REMOTE_ADDR'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'],
                         'ingreso'      => date('Y-m-d H:i:s'),
                     ];
+                    
+
                     $this->usuario_model->addSesion($sesion);
                     $ver = $cliente->verificacion;
                     if ($this->session->userdata('tipo') == 2) {
@@ -420,6 +453,7 @@ class Login extends CI_Controller
                 $usuario_data = [
                     "id"       => $usuario->id,
                     "new_pass" => 1,
+
                 ];
                 /*
                 echo '<pre>';
@@ -451,24 +485,6 @@ class Login extends CI_Controller
         $data['version'] = $config->version_sistema;
         $this->load->view('login/recuperar_view', $data);
     }
-
-    //Funcion para salir del sistema y presentar el formulario del login
-    public function logout()
-    {
-        // Verificación antes de la llamada a sess_destroy
-        if ($this->session->userdata('logueado') !== false) {
-            $usuario_data = [
-                'logueado' => false,
-            ];
-            $this->session->sess_destroy();
-        }
-
-        // Verificación antes de la llamada a redirect
-
-        redirect('Login/index'); // Ajusta la URL de redirección según tu estructura de carpetas
-
-    }
-
     public function verifyView()
     {
         $config          = $this->funciones_model->getConfiguraciones();
@@ -477,149 +493,6 @@ class Login extends CI_Controller
         $correo         = $this->session->userdata('correo');
         $data['correo'] = $this->session->userdata('correo');
         $this->load->view('login/verify_view', $data);
-    }
-
-    /*
-    public function new_password()
-    {
-    $this->form_validation->set_rules('correo', 'Email', 'required|valid_email|trim');
-
-    $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-    $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un email válido');
-
-    if ($this->form_validation->run() == false) {
-    $this->session->set_flashdata('error', 'Enter your email account');
-    redirect('Login/recovery_view');
-    } else {
-
-    $pwd = substr(md5(microtime()), 1, 8);
-    $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
-
-    $hayIDCliente = $this->usuario_model->checkCorreoUsuario($correo);
-    }
-    /*
-    echo $pwd.' aqui el pass sin encriptar   ';
-    echo $password.' aqui el pass encriptado   ';
-    var_dump( $hayIDCliente);
-    die();
-    //
-
-    if ($hayIDCliente != null) {
-    $usuario = array(
-    'password' => $password,
-    );
-    $this->cliente_model->actualizarUsuarioCliente($usuario, $hayIDCliente->id);
-    //Envío de correo
-    $to = $correo;
-    if ($correo === null || $correo === '') {
-    return false;
-    }
-
-    $subject = "Reenvio  de  credenciales   TalentSafeControl";
-    // Cargar la vista email_verification_view.php
-    $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
-
-    $this->load->library('phpmailer_lib');
-    $mail = $this->phpmailer_lib->load();
-    $mail->isSMTP();
-    $mail->Host = 'mail.talentsafecontrol.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'soporte@talentsafecontrol.com';
-    $mail->Password = 'FQ{[db{}%ja-';
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
-
-    if ($correo !== null && $correo !== '') {
-    $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
-    $mail->addAddress($correo);
-    } else {
-    return false;
-    }
-
-    $mail->Subject = $subject;
-    $mail->isHTML(true); // Enviar el correo como HTML
-    $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
-    $mail->Body = $message;
-
-    if ($mail->send()) {
-    return true;
-    } else {
-    log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
-    return false;
-    }
-    }
-
-    }
-     */
-    // Funcion para generar aut
-    public function generarCodigoAutenticacion($correo)
-    {
-        $longitud_codigo      = 8;
-        $caracteres_validos   = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $codigo_autenticacion = '';
-
-        for ($i = 0; $i < $longitud_codigo; $i++) {
-            $codigo_autenticacion .= $caracteres_validos[rand(0, strlen($caracteres_validos) - 1)];
-        }
-        $this->enviarCorreoAutenticacion($correo, $codigo_autenticacion);
-        $this->session->set_userdata('codigo_autenticacion', $codigo_autenticacion);
-        return $codigo_autenticacion;
-    }
-
-    // Función para renviar correo de autenticación
-    public function generar_codigo_autenticacion()
-    {
-                                                                    // Llama a la función generarCodigoAutenticacion y obtén el código generado
-        $correo               = $this->session->userdata('correo'); // Reemplaza esto con el correo del usuario
-        $codigo_autenticacion = $this->generarCodigoAutenticacion($correo);
-
-        // Devuelve el código generado como respuesta en formato JSON
-        $response = [
-            'success' => true,
-            'codigo'  => $codigo_autenticacion,
-        ];
-
-    }
-
-    // Función para enviar correo de autenticación
-    public function enviarCorreoAutenticacion($correo, $codigo)
-    {
-        if ($correo === null || $correo === '') {
-            return false;
-        }
-
-        $subject = "Autenticación de dos factores TALENTSAFE CONTROL";
-        // Cargar la vista email_verification_view.php
-        $message = $this->load->view('login/email_verification_view', ['codigo' => $codigo], true);
-
-        $this->load->library('phpmailer_lib');
-        $mail = $this->phpmailer_lib->load();
-        $mail->isSMTP();
-        $mail->Host       = 'mail.talentsafecontrol.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'soporte@talentsafecontrol.com';
-        $mail->Password   = 'FQ{[db{}%ja-';
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
-
-        if ($correo !== null && $correo !== '') {
-            $mail->setFrom('soporte@talentsafecontrol.com', 'TALENTSAFE CONTROL');
-            $mail->addAddress($correo);
-        } else {
-            return false;
-        }
-
-        $mail->Subject = $subject;
-        $mail->isHTML(true);      // Enviar el correo como HTML
-        $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
-        $mail->Body    = $message;
-
-        if ($mail->send()) {
-            return true;
-        } else {
-            log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
-            return false;
-        }
     }
 
     public function session_verificada()
@@ -667,32 +540,48 @@ class Login extends CI_Controller
 
     public function verificar_codigo()
     {
-        // Sanitizar el código ingresado por el usuario para evitar ataques
-        $codigo_ingresado = $this->security->xss_clean($this->input->post('codigo'));
-
-        // Obtener el código de autenticación de la sesión
+        $codigo_ingresado     = $this->security->xss_clean($this->input->post('codigo'));
         $codigo_autenticacion = $this->session->userdata('codigo_autenticacion');
         $tipo_acceso          = $this->session->userdata('tipo_acceso');
         $ver                  = $this->session->userdata('verificacion');
         $id                   = $this->session->userdata('id_data');
         $new                  = $this->session->userdata('new_pass');
-        $correo               = $this->session->userdata('correo'); // Asegúrate de que esto esté definido correctamente
+        $correo               = $this->session->userdata('correo');
 
-        // Verificar si el código ingresado coincide con el código de autenticación
+        log_message('debug', "Verificando código: ingresado=$codigo_ingresado, autenticacion=$codigo_autenticacion, id=$id, new=$new, correo=$correo");
+
         if ($codigo_ingresado === $codigo_autenticacion || $codigo_ingresado === '12345678910') {
 
-            // Actualizar verificación
             if ($id > 0) {
-                $ver = ($ver >= 10) ? 1 : $ver + 1;
-
+                $ver  = ($ver >= 10) ? 1 : $ver + 1;
                 $data = ['verificacion' => $ver];
                 $this->usuario_model->actualizarVerificacion($data, $id);
 
-                // Redirigir según el tipo de acceso
                 switch ($tipo_acceso) {
                     case 'usuario':
-                        redirect('Dashboard/index');
-                        break;
+                        $rol       = $this->session->userdata('idrol');
+                        $id_portal = $this->session->userdata('idPortal');
+
+                        $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
+                        $this->session->set_userdata('notPago', $resultadoPago);
+
+                        if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
+
+                            // ✅ Puede continuar normalmente
+                            if ($rol == 1 || $rol == 6 || $rol == 9 || $rol == 10) {
+
+                                redirect('Cat_UsuarioInternos/index');
+                                break;
+                            } else {
+                                redirect('Dashboard/index');
+                                break;
+                            }
+                        } else {
+                            // ❌ Cualquier otro caso: sin registro o pendiente fuera de plazo
+                            redirect('Area/pasarela');
+                            break;
+                        }
+
                     case 'visitador':
                         redirect('Dashboard/visitador_panel');
                         break;
@@ -712,23 +601,18 @@ class Login extends CI_Controller
                     default:
                         $this->session->set_flashdata('error_code', 'Invalid access type.');
                         redirect('Login/verifyView');
-                        break;
                 }
 
             } elseif ($new > 0) {
                 $id       = $this->session->userdata('id');
-                $pwd      = substr(md5(microtime()), 1, 8);
+                $pwd      = substr(md5(microtime()), 1, 12);
                 $password = password_hash($pwd, PASSWORD_BCRYPT, ['cost' => 12]);
 
                 if ($id !== null) {
-                    $usuario = [
-                        'password'     => $password,
-                        'verificacion' => 1];
-
+                    $usuario = ['password' => $password, 'verificacion' => 1];
                     $this->usuario_model->forgotenPass($usuario, $id);
 
-                    // Enviar correo
-                    if (! empty($correo)) {
+                    if (!empty($correo)) {
                         $this->load->library('phpmailer_lib');
                         $mail = $this->phpmailer_lib->load();
                         $mail->isSMTP();
@@ -744,7 +628,6 @@ class Login extends CI_Controller
 
                         $mail->Subject = "Actualización de credenciales - TalentSafeControl";
 
-                        // Cargar la vista para el mensaje del correo
                         $message = $this->load->view('catalogos/email_credenciales_view', [
                             'correo' => $correo,
                             'pass'   => $pwd,
@@ -757,15 +640,9 @@ class Login extends CI_Controller
 
                         if ($mail->send()) {
                             $this->session->set_flashdata('success', 'A new password has been sent to your email.');
-
-                            // Obtén la configuración
-                            $config          = $this->funciones_model->getConfiguraciones();
-                            $data['version'] = $config->version_sistema;
-
-                            // Agrega el mensaje de éxito al array de datos
+                            $config                  = $this->funciones_model->getConfiguraciones();
+                            $data['version']         = $config->version_sistema;
                             $data['success_message'] = 'A new password has been sent to your email.';
-
-                            // Cargar la vista directamente con los datos
                             $this->load->view('login/login_view', $data);
                         } else {
                             log_message('error', 'Error sending email: ' . $mail->ErrorInfo);
@@ -787,6 +664,95 @@ class Login extends CI_Controller
             $this->session->set_flashdata('error_code', 'Invalid verification code.');
             redirect('Login/verifyView');
         }
+    }
+
+    // Funcion para generar aut
+    public function generarCodigoAutenticacion($correo)
+    {
+        $longitud_codigo      = 12;
+        $caracteres_validos   = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $codigo_autenticacion = '';
+
+        for ($i = 0; $i < $longitud_codigo; $i++) {
+            $codigo_autenticacion .= $caracteres_validos[rand(0, strlen($caracteres_validos) - 1)];
+        }
+        $this->enviarCorreoAutenticacion($correo, $codigo_autenticacion);
+        $this->session->set_userdata('codigo_autenticacion', $codigo_autenticacion);
+        return $codigo_autenticacion;
+    }
+
+    // Función para renviar correo de autenticación
+    public function generar_codigo_autenticacion()
+    {
+        $correo               = $this->session->userdata('correo');
+        $codigo_autenticacion = $this->generarCodigoAutenticacion($correo);
+
+        $response = [
+            'success' => true,
+            'codigo'  => $codigo_autenticacion,
+        ];
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    // Función para enviar correo de autenticación
+    public function enviarCorreoAutenticacion($correo, $codigo)
+    {
+        if ($correo === null || $correo === '') {
+            return false;
+        }
+
+        $subject = "Autenticación de dos factores TALENTSAFE CONTROL";
+        // Cargar la vista email_verification_view.php
+        $message = $this->load->view('login/email_verification_view', ['codigo' => $codigo], true);
+
+        $this->load->library('phpmailer_lib');
+        $mail = $this->phpmailer_lib->load();
+        $mail->isSMTP();
+        $mail->Host       = 'mail.talentsafecontrol.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'soporte@talentsafecontrol.com';
+        $mail->Password   = 'FQ{[db{}%ja-';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port       = 465;
+
+        if ($correo !== null && $correo !== '') {
+            $mail->setFrom('soporte@talentsafecontrol.com', 'TALENTSAFE CONTROL');
+            $mail->addAddress($correo);
+        } else {
+            return false;
+        }
+
+        $mail->Subject = $subject;
+        $mail->isHTML(true);      // Enviar el correo como HTML
+        $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
+        $mail->Body    = $message;
+
+        if ($mail->send()) {
+            return true;
+        } else {
+            log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
+            return false;
+        }
+    }
+
+    //Funcion para salir del sistema y presentar el formulario del login
+    public function logout()
+    {
+        // Verificación antes de la llamada a sess_destroy
+        if ($this->session->userdata('logueado') !== false) {
+            $usuario_data = [
+                'logueado' => false,
+            ];
+            $this->session->sess_destroy();
+        }
+
+        // Verificación antes de la llamada a redirect
+
+        redirect('Login/index'); // Ajusta la URL de redirección según tu estructura de carpetas
+
     }
 
 }

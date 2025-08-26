@@ -9,7 +9,10 @@ echo '</pre>';*/
 echo $procesosActuales[0]->url;
 print_r($procesosActuales);
 echo '</pre>';*/
+    $CI = &get_instance();
+
     $cliente = $procesosActuales[0] ?? null;
+
 ?>
 <div class="alert alert-info fs-4">
 
@@ -56,72 +59,120 @@ echo '</pre>';*/
           <h3 class="text-wrap ">
             <?php echo $translations['proceso_titulo'] . ': <b>' . $totalRequisiciones . '</b>' ?></h3>
 
-          <button type="button" class="btn btn-primary btn-sm fs-4 py-3 px-4" onclick="loadPageInSection()">
+          <?php if ($tipo_bolsa == 1) {?>
+
+          <button type="button" class="btn btn-primary fs-1 py-3 px-5 d-flex align-items-center gap-2"
+            style="font-weight: 600;" onclick="window.open('<?php echo $link; ?>', '_blank')">
+            <i class="fas fa-plus"></i>
+            <?php echo $translations['accion_nueva_requisicion']; ?>
+          </button>
+          <?php } else {?>
+          <button type="button" class="btn btn-primary fs-1 py-3 px-5 d-flex align-items-center gap-2"
+            style="font-weight: 600;" onclick="loadPageInSection()">
             <i class="fas fa-plus"></i> <?php echo $translations['accion_nueva_requisicion']; ?>
           </button>
-
+          <?php }?>
         </div>
-
-
-
         <hr>
         <div>
-
-
-
-        </div>
-
-        <hr>
-        <?php if (! empty($procesosActuales)) {
-                foreach ($procesosActuales as $proceso) {
-                    $idioma = ($proceso->ingles == 1) ? 'ingles' : 'espanol';
-                    $status = ($proceso->statusReq > 1) ?
-                    '<label>' . $translations['proceso_status'] . ': <b>Iniciada</b></label><br>' :
-                    '<label>' . $translations['proceso_status'] . ': <b>Pendiente</b></label><br>';
-
-                    $observaciones = ($proceso->ingles == 1) ?
-                    '<small>Observations: <b>' . $proceso->observaciones . '</b></small><br>' :
-                    '<small>Observaciones: <b>' . $proceso->observaciones . '</b></small><br>';
-
-                    $numeroVacantes = ($proceso->ingles == 1) ?
-                    '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>' :
-                    '<small>Vacantes: <b>' . $proceso->numero_vacantes . '</b></small><br>';
-
-                    $zona = ($proceso->ingles == 1) ?
-                    '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>' :
-                    '<small>Zona de trabajo: <b>' . $proceso->zona_trabajo . '</b></small><br>';
-
-                    $experiencia = ($proceso->ingles == 1) ?
-                    '<div class="experiencia" style="max-width: 400px;">' .
-                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' .
-                    '</div>' :
-                    '<div class="experiencia" style="max-width: 400px;">' .
-                    '<small>Experiencia: <b>' . $proceso->experiencia . '</b></small><br>' .
-                        '</div>';
-                ?>
-        <div class="card-proceso position-relative div-candidato" id="div-candidato<?php echo $proceso->idReq ?>">
-          <div class="card-title" onclick="openDetails(<?php echo $proceso->idReq ?>)">
-            <h4 id="vacanteMessage">Haz clic aquí para consultar el estado de tu vacante.</h4>
-            <span class="badge text-bg-dark">Nombre de la vacante</span>
-            <h4 class="d-inline align-middle"><b><?php echo $proceso->puesto ?></b></h4><br>
-            <?php echo $status; ?>
-            <?php echo $observaciones; ?>
-            <?php echo $numeroVacantes; ?>
-            <?php echo $zona; ?>
-            <?php echo $experiencia; ?>
-            <div>
-              <span class="badge text-bg-info">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo ?></span>
-              <span class="badge text-bg-info">Sueldo Máximo: <?php echo $proceso->sueldo_maximo ?></span>
-            </div>
-            <p class="text-muted text-end">
-              <?php echo $translations['proceso_fecha_registro'] . ': ' . fechaTexto($proceso->creacion, $idioma) ?>
-            </p>
-          </div>
         </div>
         <hr>
+        <?php if (! empty($procesosActuales)) {?>
+        <?php foreach ($procesosActuales as $proceso): ?>
         <?php
+    // Estatus como tag de color
+        $isIniciada = ($proceso->statusReq > 1);
+        $tagStatus  = $isIniciada
+        ? '<span class="tag tag--iniciada">Iniciada</span>'
+        : '<span class="tag tag--pendiente">Pendiente</span>';
+
+        // Cuando SÍ hay intake
+        if ($proceso->id_intake !== null) {
+            $grid = '
+          <div class="vacante-grid">
+            <div class="kv-label">PLAN</div>
+            <div class="kv-value"><b>' . $proceso->plan . '</b></div>
+
+            <div class="kv-label">Método de comunicación</div>
+            <div class="kv-value"><b>' . $proceso->metodo_comunicacion . '</b></div>
+
+            <div class="kv-label">Actividad</div>
+            <div class="kv-value"><b>' . $proceso->actividad . '</b></div>
+
+            <div class="kv-label">Sexo de preferencia</div>
+            <div class="kv-value"><b>' . $proceso->sexo_preferencia . '</b></div>
+
+            <div class="kv-label">Funciones</div>
+            <div class="kv-value"><b>' . $proceso->funciones . '</b></div>
+
+            <div class="kv-label">Habilidades</div>
+            <div class="kv-value"><b>' . $proceso->requisitos . '</b></div>
+
+            <div class="kv-label">Recursos técnicos</div>
+            <div class="kv-value"><b>' . $proceso->recursos . '</b></div>
+
+            <div class="kv-label">Rango de edad</div>
+            <div class="kv-value"><b>' . $proceso->rango_edad . '</b></div>
+          </div>';
+        }
+        // Cuando NO hay intake (usa traducciones/idioma)
+        else {
+                $idioma = ($proceso->ingles == 1) ? 'ingles' : 'espanol';
+                $grid   = '
+	          <div class="vacante-grid">
+	            <div class="kv-label">' . ($proceso->ingles ? 'Observations' : 'Observaciones') . '</div>
+	            <div class="kv-value"><b>' . $proceso->observaciones . '</b></div>
+
+	            <div class="kv-label">' . ($proceso->ingles ? 'Vacancies' : 'Vacantes') . '</div>
+	            <div class="kv-value"><b>' . $proceso->numero_vacantes . '</b></div>
+
+	            <div class="kv-label">' . ($proceso->ingles ? 'Work area' : 'Zona de trabajo') . '</div>
+	            <div class="kv-value"><b>' . $proceso->zona_trabajo . '</b></div>
+
+	            <div class="kv-label">' . ($proceso->ingles ? 'Experience' : 'Experiencia') . '</div>
+	            <div class="kv-value"><b>' . $proceso->experiencia . '</b></div>
+	          </div>';
             }
-        } else {?>
+        ?>
+
+        <div class="vacante-card div-candidato" id="div-candidato<?php echo $proceso->idReq?>">
+          <div class="vacante-head" onclick="openDetails(<?php echo $proceso->idReq?>)">
+            Haz clic aquí para consultar el estado de tu vacante.
+          </div>
+
+          <div class="vacante-title">
+            <span class="vacante-nombre-label">Nombre de la vacante</span>
+            <h4 class="vacante-puesto m-0"><b><?php echo $proceso->puesto?></b></h4>
+          </div>
+
+          <div class="vacante-status">
+            Estatus: <?php echo $tagStatus?>
+          </div>
+
+          <?php echo $grid?>
+
+          <?php if ($proceso->id_intake !== null): ?>
+          <div class="mb-1">
+            <span class="badge-soft">Fecha de Registro:
+              <?php echo fechaTexto($proceso->fecha_solicitud, 'espanol')?></span>
+            <span class="badge-soft">Fecha de inicio: <span
+                class="muted"><?php echo fechaTexto($proceso->fecha_inicio, 'espanol')?></span></span>
+          </div>
+          <?php else: ?>
+          <div class="mb-1">
+            <span class="badge-soft">
+              <?php echo $translations['proceso_fecha_registro'] . ': ' . fechaTexto($proceso->creacion, $idioma)?>
+            </span>
+            <?php if (! empty($proceso->sueldo_minimo) || ! empty($proceso->sueldo_maximo)): ?>
+            <span class="badge-soft">Sueldo Mínimo: <?php echo $proceso->sueldo_minimo?></span>
+            <span class="badge-soft">Sueldo Máximo: <?php echo $proceso->sueldo_maximo?></span>
+            <?php endif; ?>
+          </div>
+          <?php endif; ?>
+        </div>
+
+        <hr>
+        <?php endforeach;} else {?>
         <div class="card">
           <div class="card-body text-center">
             <?php echo $translations['proceso_sin_candidatos'] ?>

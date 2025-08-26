@@ -58,8 +58,11 @@ $route['comunicacion/(:num)'] = 'Empleados/showComunicacion/$1';
 
 $route['Cliente_General/getEmpleadosInternos/(:num)'] = 'Cliente_General/getEmpleadosInternos/$1';
 $route['Avance/ver/(:any)'] = 'Avance/ver/$1';
-
+$route['docs/(:any)'] = 'Archivo/ver_doc/$1';
+$route['exams/(:any)'] = 'Archivo/ver_exam/$1';  // nueva ruta para exámenes
 
 $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['legal']                = 'legal/index';
+$route['legal/download/(:any)'] = 'legal/download/$1';

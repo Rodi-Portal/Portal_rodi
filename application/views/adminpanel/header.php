@@ -105,7 +105,7 @@ echo $token  */?>
       <br><br>
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
-      <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+      <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10 || $idRol == 4) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
           aria-expanded="true" aria-controls="collapseUsuario">
@@ -139,6 +139,10 @@ echo $token  */?>
             <a class="collapse-item" href="<?php echo base_url(); ?>Area/pasarela">
               <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
               Pago/Suscripción
+            </a>
+              <a class="collapse-item" href="<?php echo base_url(); ?>legal">
+              <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
+              T & C
             </a>
             <?php }?>
             <a class="collapse-item" href="<?php echo base_url(); ?>Login/logout">

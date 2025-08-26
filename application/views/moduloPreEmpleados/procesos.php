@@ -11,7 +11,7 @@
       <th style="text-align: center">Sucursal </th>
         <th style="text-align: center">Correo Electrónico</th>
         <th style="text-align: center">Usuarios con acceso a sucursal</th>
-        <th style="text-align: center">Creacion</th>
+        <th style="text-align: center">Candidatos en proceso</th>
         <th style="text-align: center">Acciones</th>
       </tr>
 
@@ -41,7 +41,7 @@
           </li>
           <?php endforeach; ?>
         </td>
-        <td><?php echo isset($p['creacion']) ? htmlspecialchars($p['creacion'], ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+        <td>Candidatos: <?php echo isset($p['pre_empleados']) ? htmlspecialchars($p['pre_empleados'], ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
         <td>
           <a href="<?php echo site_url(htmlspecialchars($p['url'], ENT_QUOTES, 'UTF-8')); ?>" class="btn-ver-empleados">Ver procesos</a>
         </td>
@@ -103,10 +103,13 @@
 </style>
 
 <script>
-$(document).ready(function() {
-  $('#processTable').DataTable();
-  $('#sidebarToggle').on('click', function() {
-    $('#sidebar').toggleClass('hidden'); // Alternar la clase 'hidden'
+$(document).ready(function () {
+  $('#processTable').DataTable({
+    order: [],                    // 👈 respeta el orden del DOM (tu foreach)
+  });
+
+  $('#sidebarToggle').on('click', function () {
+    $('#sidebar').toggleClass('hidden');
   });
 });
 </script>

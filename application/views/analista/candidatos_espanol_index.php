@@ -826,23 +826,87 @@ function loadInternos(url1) {
         "destroy": true,
         "data": formattedData,
         "columns": [{
-            title: 'ID',
+            title: 'N°',
             data: 'id',
-            "width": "10%",
-            className: 'text-center' // Centrado de contenido
+            width: '10%',
+            className: 'text-center',
+            render: function(data, type, row, meta) {
+              // Mantén el ID real para ordenar/buscar
+              if (type !== 'display') return data;
+
+              // Número de fila visible (considera paginación)
+              const visibleIndex = meta.row + 1 + meta.settings._iDisplayStart;
+
+              // Tipo de bolsa desde sesión (ajústalo si cambia la clave)
+              const tipoBolsa =
+                <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0)); ?>;
+
+              // ID visible con tooltip del ID real
+              const idVisible = `
+                  <span
+                    class="fw-bold"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="ID: ${data}"
+                  >#${visibleIndex}</span>
+                `;
+
+              // Botones a pantalla completa, una sola fila debajo del ID
+              const botones = (tipoBolsa === 1 && data !== '') ?
+                `<br><br>
+                    <div class="d-flex gap-2 mt-2 w-100">
+                      <button class="btn btn-success btn-sm flex-fill"
+                              onclick="verCandidato(${data})" title="Ver Candidato">
+                        <i class="fas fa-user"></i>
+                      </button>
+                      <button class="btn btn-info btn-sm flex-fill"
+                              onclick="linkPreEmpleo(${data})" title="Link PreEmpleo">
+                        <i class="fas fa-link"></i>
+                      </button>
+                    </div>
+                  ` :
+                '';
+
+              // Contenedor a ancho completo en la celda
+              return `
+                  <div class="w-100">
+                    ${idVisible}
+                    ${botones}
+                  </div>
+                `;
+            }
           },
           {
             title: 'Nombre',
             data: 'nombreCompleto',
-            "width": "20%",
+            width: '20%',
             className: 'text-center',
-            mRender: function(data, type, full) {
-              return full.nombreCompleto +
-                '<br><br><button class="btn btn-success btn-sm" onclick="confirmActionInterno(' +
-                full.id + ')">Enviar a Empleados</button>';
-              // reclutador;
-            } // Centrado de contenido
-          }, // Columna concatenada
+            render: function(data, type, row, meta) {
+              // Evita alterar el valor usado para ordenar/buscar
+              if (type !== 'display') return data;
+
+              // Flags desde sesión (inyectados como literales JS válidos)
+              const emp = <?php echo json_encode((int) ($this->session->userdata('emp') ?? 0)); ?>;
+              const former = <?php echo json_encode((int) ($this->session->userdata('former') ?? 0)); ?>;
+
+              // ⚠️ Si tienes otro nombre de clave, cámbialo aquí:
+              const tipoBolsa =
+                <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0)); ?>;
+
+              // Asegura un id existente en el dataset
+              const id = row.id ?? row.id_usuario ?? row.id_cliente ?? '';
+
+              const btnEnviar = ((emp === 1 || former === 1) && id !== '') ?
+                `<br><br><button class="btn btn-success btn-sm" onclick="confirmActionInterno(${id})">
+           Enviar a Empleados
+         </button>` :
+                '';
+
+
+
+              return `${data} ${btnEnviar}`;
+            }
+          },
           {
             title: 'Fecha Alta',
             data: 'creacion',
@@ -909,6 +973,65 @@ function loadInternos(url1) {
       console.error("Error en la petición AJAX de Internos:", status, error);
     }
   });
+}
+
+
+function verCandidato(id) {
+  $('#empDynTitle').text('Empleado #' + id);
+  $('#empDynAlert').hide().removeClass('alert-danger').addClass('alert-info').text('');
+  $('#empDynBase').html('<div class="text-muted">Cargando…</div>');
+  $('#empDynExtra').empty();
+  $('#empDynDocs').empty();
+  $('#empDynExams').empty();
+
+  $('#empDynModal').modal('show');
+
+  $.ajax({
+
+      url: '<?php echo base_url("Empleados/getPreEmpleados/") ?>' + id, // llamada directa al controlador/función
+      type: "GET",
+      dataType: "json"
+    })
+    .done(function(resp) {
+      if (!resp || !resp.ok) {
+        $('#empDynAlert').show().addClass('alert-danger').removeClass('alert-info')
+          .text('No se pudo obtener información del empleado.');
+        return;
+      }
+      const D = resp.data || {};
+
+      // BASE
+      $('#empDynBase').html(renderKV(D.base || {}));
+
+      // CAMPOS EXTRA
+      if (D.campos_extra && D.campos_extra.length) {
+        $('#empDynExtra').html(renderCamposExtra(D.campos_extra));
+        $('#tab-extra').parent().show();
+      } else {
+        $('#empDynExtra').html('<div class="text-muted">Sin campos extra</div>');
+      }
+
+      // DOCUMENTOS
+      if (D.documentos && D.documentos.length) {
+        $('#empDynDocs').html(renderDocs(D.documentos));
+        $('#tab-docs').parent().show();
+      } else {
+        $('#empDynDocs').html('<div class="text-muted">Sin documentos</div>');
+      }
+
+      // EXÁMENES
+      if (D.examenes && D.examenes.length) {
+        $('#empDynExams').html(renderExams(D.examenes));
+        $('#tab-exams').parent().show();
+      } else {
+        $('#empDynExams').html('<div class="text-muted">Sin exámenes</div>');
+      }
+    })
+    .fail(function(xhr) {
+      $('#empDynAlert').show().addClass('alert-danger').removeClass('alert-info')
+        .text('Error al cargar los datos del empleado.');
+      console.log('FAIL', xhr.responseText);
+    });
 }
 
 function changeDatatable(url1) {
@@ -2180,10 +2303,10 @@ function confirmActionInterno(id) {
 
 // Abre el modal y carga sucursales por AJAX
 function abrirModalSucursales(idCandidato) {
-  const $modal  = $('#modalSucursal');
+  const $modal = $('#modalSucursal');
   const $select = $('#sucursalSelect');
   const $loader = $('#sucursalesLoader');
-  const $err    = $('#sucursalesError');
+  const $err = $('#sucursalesError');
 
   $select.empty().append('<option value="" selected disabled>— elige una sucursal —</option>');
   $err.hide().text('');
@@ -2193,38 +2316,40 @@ function abrirModalSucursales(idCandidato) {
   const urlSucursales = '<?php echo base_url('CandidatoEmpresa/getActivas'); ?>';
 
   $.ajax({
-    url: urlSucursales,
-    method: 'GET',
-    dataType: 'json'
-  })
-  .done(function(resp) {
-    $loader.hide();
+      url: urlSucursales,
+      method: 'GET',
+      dataType: 'json'
+    })
+    .done(function(resp) {
+      $loader.hide();
 
-    // Admite tanto {success:true,data:[...]} como un arreglo directo
-    const data = Array.isArray(resp) ? resp
-               : Array.isArray(resp?.data) ? resp.data
-               : [];
+      // Admite tanto {success:true,data:[...]} como un arreglo directo
+      const data = Array.isArray(resp) ? resp :
+        Array.isArray(resp?.data) ? resp.data : [];
 
-    if (data.length === 0) {
-      $err.text('No hay sucursales disponibles.').show();
-      return;
-    }
+      if (data.length === 0) {
+        $err.text('No hay sucursales disponibles.').show();
+        return;
+      }
 
-    // Tu backend devuelve { idCliente, nombre }
-    data.forEach(function(s) {
-      $select.append(
-        $('<option>', { value: s.idCliente, text: s.nombre })
-      );
+      // Tu backend devuelve { idCliente, nombre }
+      data.forEach(function(s) {
+        $select.append(
+          $('<option>', {
+            value: s.idCliente,
+            text: s.nombre
+          })
+        );
+      });
+
+      // Abrir modal (Bootstrap 5)
+      const bsModal = new bootstrap.Modal($modal[0]);
+      bsModal.show();
+    })
+    .fail(function(xhr) {
+      $loader.hide();
+      $err.text(xhr.responseJSON?.message || 'Error al cargar sucursales.').show();
     });
-
-    // Abrir modal (Bootstrap 5)
-    const bsModal = new bootstrap.Modal($modal[0]);
-    bsModal.show();
-  })
-  .fail(function(xhr) {
-    $loader.hide();
-    $err.text(xhr.responseJSON?.message || 'Error al cargar sucursales.').show();
-  });
 
   // Click en "Enviar a Empleados"
   $('#btnEnviarEmpleado').off('click').on('click', function() {
@@ -2254,38 +2379,40 @@ function enviarInternoEmpleado(idCandidato, sucursalId) {
   });
 
   return $.ajax({
-    url: urlEnviar,
-    method: 'POST',
-    dataType: 'json',
-    data: {
-      id: idCandidato,
-      sucursal_id: sucursalId
-    }
-  })
-  .done(function(data) {
-    if (data?.success) {
-      Swal.fire({
-        title: '¡Éxito!',
-        text: 'Candidato procesado correctamente.',
-        icon: 'success',
-        confirmButtonText: 'Aceptar'
-      }).then(r => { if (r.isConfirmed) location.reload(); });
-    } else {
+      url: urlEnviar,
+      method: 'POST',
+      dataType: 'json',
+      data: {
+        id: idCandidato,
+        sucursal_id: sucursalId
+      }
+    })
+    .done(function(data) {
+      if (data?.success) {
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Candidato procesado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        }).then(r => {
+          if (r.isConfirmed) location.reload();
+        });
+      } else {
+        Swal.fire({
+          title: 'Error',
+          text: data?.error || 'Ocurrió un error al procesar el candidato.',
+          icon: 'error'
+        });
+      }
+    })
+    .fail(function(xhr) {
       Swal.fire({
         title: 'Error',
-        text: data?.error || 'Ocurrió un error al procesar el candidato.',
+        text: xhr.responseJSON?.message || 'Hubo un problema con la solicitud. Intenta de nuevo.',
         icon: 'error'
       });
-    }
-  })
-  .fail(function(xhr) {
-    Swal.fire({
-      title: 'Error',
-      text: xhr.responseJSON?.message || 'Hubo un problema con la solicitud. Intenta de nuevo.',
-      icon: 'error'
+      console.error('Error al realizar la solicitud:', xhr);
     });
-    console.error('Error al realizar la solicitud:', xhr);
-  });
 }
 
 
