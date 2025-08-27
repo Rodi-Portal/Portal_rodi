@@ -197,7 +197,7 @@
   // Listas generadas por PHP
   const DINAMICAS     = <?= $DINAMICAS_JS ?>;   // p.ej. ["telefono","estado","pais","ciudad"]
   const SELECCIONADAS = <?= $SEL_JS ?>;         // p.ej. ["telefono","estado"]
-  const BASE = 2; // 0=checkbox, 1=Sucursal; dinámicas empiezan en la 2
+  const BASE1 = 2; // 0=checkbox, 1=Sucursal; dinámicas empiezan en la 2
 
   $(document).ready(function () {
     // Evita doble inicialización
@@ -213,7 +213,7 @@
     // Mostrar SOLO fijas + seleccionadas
     const selected = new Set(SELECCIONADAS);
     DINAMICAS.forEach((name, i) => {
-      const colIdx = BASE + i;               // índice físico en la tabla
+      const colIdx = BASE1 + i;               // índice físico en la tabla
       const visible = selected.has(name);    // únicamente seleccionadas
       table.column(colIdx).visible(visible);
     });
@@ -304,7 +304,7 @@
         const vis  = this.checked;
         const i    = DINAMICAS.indexOf(name);
         if (i >= 0) {
-          const colIdx = BASE + i;
+          const colIdx = BASE1 + i;
           table.column(colIdx).visible(vis);
         }
         if (vis) visibleNames.push(name);
