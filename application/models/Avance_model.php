@@ -119,14 +119,17 @@ class Avance_model extends CI_Model
             // 🔎 Está pendiente, evaluamos plazo
             $diaActual = (int) date('d');
             if ($diaActual >= 1 && $diaActual <= 5) {
-                return 'pendiente_en_plazo';
+                //return 'pendiente_en_plazo';
+                return 'otro_estado';
             } else {
-                return 'pendiente_fuera_plazo';
+                return 'otro_estado';
+               // return 'pendiente_fuera_plazo';
             }
         }
 
         // Si llegamos aquí, estado raro
         return 'pagado';
+       // return 'otro_estado';
     }
 
 }
