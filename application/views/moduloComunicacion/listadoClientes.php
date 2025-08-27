@@ -62,7 +62,7 @@
         <?php foreach ($columnas_visibles as $col): ?>
         <th>
           <input type="text" class="form-control form-control-sm"
-            placeholder="Buscar                                                                                                                                                                                                                                                                                                                                                <?php echo htmlspecialchars($col); ?>"
+            placeholder="Buscar                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <?php echo htmlspecialchars($col); ?>"
             autocomplete="off" name="search_<?php echo uniqid(); ?>" readonly
             onfocus="this.removeAttribute('readonly');">
         </th>
@@ -155,9 +155,9 @@
   aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable" role="document">
     <div class="modal-content">
-      <form id="columnSettingsForm" data-table="<?php echo $TABLE_KEY?>">
-        <input type="hidden" id="csrfToken" name="<?php echo $this->security->get_csrf_token_name();?>"
-          value="<?php echo $this->security->get_csrf_hash();?>">
+      <form id="columnSettingsForm" data-table="<?php echo $TABLE_KEY ?>">
+        <input type="hidden" id="csrfToken" name="<?php echo $this->security->get_csrf_token_name(); ?>"
+          value="<?php echo $this->security->get_csrf_hash(); ?>">
 
         <div class="modal-header">
           <h5 class="modal-title" id="columnModalLabel">Seleccionar columnas</h5>
@@ -168,11 +168,11 @@
           <?php if (! empty($columnas_dinamicas)): ?>
           <?php foreach ($columnas_dinamicas as $name): ?>
           <div class="form-check">
-            <input class="form-check-input column-toggle" type="checkbox" value="<?php echo htmlspecialchars($name)?>"
-              id="col_<?php echo htmlspecialchars($name)?>"
-              <?php echo in_array($name, $columnas_usuario, true) ? 'checked' : ''?>>
-            <label class="form-check-label" for="col_<?php echo htmlspecialchars($name)?>">
-              <?php echo htmlspecialchars($name)?>
+            <input class="form-check-input column-toggle" type="checkbox" value="<?php echo htmlspecialchars($name) ?>"
+              id="col_<?php echo htmlspecialchars($name) ?>"
+              <?php echo in_array($name, $columnas_usuario, true) ? 'checked' : '' ?>>
+            <label class="form-check-label" for="col_<?php echo htmlspecialchars($name) ?>">
+              <?php echo htmlspecialchars($name) ?>
             </label>
           </div>
           <?php endforeach; ?>
@@ -194,184 +194,244 @@
 
 
 <script>
-  // Listas generadas por PHP
-  const DINAMICAS     = <?= $DINAMICAS_JS ?>;   // p.ej. ["telefono","estado","pais","ciudad"]
-  const SELECCIONADAS = <?= $SEL_JS ?>;         // p.ej. ["telefono","estado"]
-  const BASE1 = 2; // 0=checkbox, 1=Sucursal; dinámicas empiezan en la 2
+// Listas generadas por PHP
+const DINAMICAS = <?php echo $DINAMICAS_JS ?>; // p.ej. ["telefono","estado","pais","ciudad"]
+const SELECCIONADAS = <?php echo $SEL_JS ?>; // p.ej. ["telefono","estado"]
+const BASE1 = 2; // 0=checkbox, 1=Sucursal; dinámicas empiezan en la 2
 
-  $(document).ready(function () {
-    // Evita doble inicialización
-    const table = $.fn.DataTable.isDataTable('#processTable')
-      ? $('#processTable').DataTable()
-      : $('#processTable').DataTable({
-          scrollX: true,
-          responsive: true,
-          order: [],
-          // columnDefs: [{ orderable: false, targets: [0, -1] }], // opcional
-        });
-
-    // Mostrar SOLO fijas + seleccionadas
-    const selected = new Set(SELECCIONADAS);
-    DINAMICAS.forEach((name, i) => {
-      const colIdx = BASE1 + i;               // índice físico en la tabla
-      const visible = selected.has(name);    // únicamente seleccionadas
-      table.column(colIdx).visible(visible);
+$(document).ready(function() {
+  // Evita doble inicialización
+  const table = $.fn.DataTable.isDataTable('#processTable') ?
+    $('#processTable').DataTable() :
+    $('#processTable').DataTable({
+      scrollX: true,
+      responsive: true,
+      orderCellsTop: true, // <-- importante con 2 filas en THEAD
+      order: [],
     });
 
-    // Sincroniza checks del modal (value = nombre)
-    $('#columnSettingsForm .column-toggle').each(function () {
-      this.checked = selected.has(this.value);
-    });
-
-    // Filtros por columna (segunda fila de thead)
-    $('#processTable thead tr:eq(1) th').each(function () {
-      const $input = $('input', this);
-      if ($input.length) {
-        $input
-          .on('keyup change', function () {
-            const colIndex = $(this).closest('th').index();
-            table.column(colIndex).search(this.value).draw();
-          })
-          .attr({
-            autocomplete: 'no-autofill',
-            autocorrect: 'off',
-            autocapitalize: 'off',
-            spellcheck: 'false'
-          });
-      }
-    });
-
-    // Checkbox seleccionar todos
-    $('#selectAll').on('click', function () {
-      $('.row-select').prop('checked', this.checked);
-    });
-
-    // Acción masiva
-    $('#accionMasiva').on('click', function () {
-      const seleccionados = $('.row-select:checked').map(function () {
-        return $(this).data('id');
-      }).get();
-
-      if (seleccionados.length === 0) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Sin selección',
-          text: 'Selecciona al menos una sucursal',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
-
-      Swal.fire({
-        title: '¿Acción sobre sucursales seleccionadas?',
-        text: 'Dispondrás de la información y funciones de todas las sucursales que seleccionaste.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'Cancelar'
-      }).then(result => {
-        if (result.isConfirmed) {
-          const form = $('<form>', {
-            method: 'POST',
-            action: '<?= base_url("empleados/showComunicacion") ?>'
-          });
-          seleccionados.forEach(id => {
-            form.append($('<input>', { type: 'hidden', name: 'ids[]', value: id }));
-          });
-          $('body').append(form);
-          form.submit();
-        }
-      });
-    });
-
-    // Guardar configuración (por NOMBRE) y aplicar visibilidad al vuelo
-    const saveUrl = "<?= site_url('configuracion/save'); ?>";
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 2200,
-      timerProgressBar: true
-    });
-
-    $('#applyColumnSettings').on('click', function () {
-      const $form = $('#columnSettingsForm');
-      const tableKey = $form.data('table') || 'mensajeria';
-
-      const visibleNames = [];
-      $('#columnSettingsForm .column-toggle').each(function () {
-        const name = this.value;        // NOMBRE (no índice)
-        const vis  = this.checked;
-        const i    = DINAMICAS.indexOf(name);
-        if (i >= 0) {
-          const colIdx = BASE1 + i;
-          table.column(colIdx).visible(vis);
-        }
-        if (vis) visibleNames.push(name);
-      });
-
-      const payload = {
-        table_key: tableKey,
-        settings: { visible_names: visibleNames }
-      };
-
-      const $csrf   = $('#csrfToken');
-      const csrfKey = $csrf.attr('name');
-      const csrfVal = $csrf.val();
-
-      Swal.fire({ title: 'Guardando…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-      $.ajax({
-        url: saveUrl,
-        type: 'POST',
-        dataType: 'json',
-        data: { payload: JSON.stringify(payload), [csrfKey]: csrfVal },
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        success(res) {
-          Swal.close();
-          if (res?.ok) {
-            if (res.csrf) $csrf.val(res.csrf);
-            Toast.fire({ icon: 'success', title: res.msg || 'Preferencias guardadas' });
-          } else {
-            Swal.fire({ icon: 'warning', title: 'No se pudo guardar', text: res?.error || 'Inténtalo de nuevo.' });
-          }
-        },
-        error(xhr) {
-          Swal.close();
-          Swal.fire({ icon: 'error', title: 'Error del servidor', text: xhr.responseText || xhr.statusText || 'Error desconocido' });
-        }
-      });
-    });
-
-    // Eliminar permisos
-    $(document).on('click', '.eliminar-permiso', function (e) {
-      e.preventDefault();
-      const id_usuario = $(this).data('id_usuario');
-      const id_cliente = $(this).data('id_cliente');
-
-      Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'El usuario perderá el acceso a esta sucursal.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.post('<?= site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>', { id_usuario, id_cliente })
-            .done(response => {
-              const data = JSON.parse(response);
-              Swal.fire(data.status === 'success' ? 'Eliminado' : 'Error', data.message, data.status);
-              if (data.status === 'success') location.reload();
-            })
-            .fail(() => Swal.fire('Error', 'No se pudo eliminar el permiso.', 'error'));
-        }
-      });
-    });
-
-    // Foco inicial (opcional)
-    $('#focus-catcher').focus();
+  // Mostrar SOLO fijas + seleccionadas
+  const selected = new Set(SELECCIONADAS);
+  DINAMICAS.forEach((name, i) => {
+    const colIdx = BASE1 + i; // índice físico en la tabla
+    const visible = selected.has(name); // únicamente seleccionadas
+    table.column(colIdx).visible(visible);
   });
+
+  // Sincroniza checks del modal (value = nombre)
+  $('#columnSettingsForm .column-toggle').each(function() {
+    this.checked = selected.has(this.value);
+  });
+
+  // Filtros por columna (segunda fila de thead)
+  // ===== Filtros por columna (compatible con scrollX/responsive y readonly) =====
+  const api = table;
+  const $container = $(api.table().container());
+
+  function wireColumnFilters() {
+    // header visible cuando hay scrollX; si no, usa thead normal
+    const $head = $container.find('.dataTables_scrollHead thead').length ?
+      $container.find('.dataTables_scrollHead thead') :
+      $(api.table().header()).parent();
+
+    // limpia handlers previos para no duplicar
+    $head.off('.colfilter');
+
+    // tu estrategia anti-autocompletar: quitar readonly al enfocar
+    $head.on('focus.colfilter', 'tr:eq(1) th input', function() {
+      this.removeAttribute('readonly');
+      this.setAttribute('autocomplete', 'off');
+    });
+
+    // filtrar por columna (mapeo por nodo <th> real)
+    $head.on('input.colfilter change.colfilter', 'tr:eq(1) th input', function() {
+      // índice del <th> en la segunda fila
+      const i = $(this).closest('th').index();
+
+      // toma el <th> de la PRIMERA fila en la misma posición
+      const topTh = $head.find('tr:first th').eq(i)[0];
+
+      // pide el índice real de DataTables usando el <th> de la fila superior
+      const colIdx = api.column(topTh).index();
+
+      const val = this.value;
+      if (api.column(colIdx).search() !== val) {
+        // regex=false, smart=true para evitar que caracteres raros se interpreten como regex
+        api.column(colIdx).search(val, false, true).draw();
+      }
+    });
+
+  }
+
+  wireColumnFilters();
+  // re-enlaza si cambia el layout/visibilidad/responsive
+  table.on('draw.dt column-visibility.dt responsive-resize.dt', wireColumnFilters);
+
+
+  // Checkbox seleccionar todos
+  $('#selectAll').on('click', function() {
+    $('.row-select').prop('checked', this.checked);
+  });
+
+  // Acción masiva
+  $('#accionMasiva').on('click', function() {
+    const seleccionados = $('.row-select:checked').map(function() {
+      return $(this).data('id');
+    }).get();
+
+    if (seleccionados.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin selección',
+        text: 'Selecciona al menos una sucursal',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Acción sobre sucursales seleccionadas?',
+      text: 'Dispondrás de la información y funciones de todas las sucursales que seleccionaste.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'Cancelar'
+    }).then(result => {
+      if (result.isConfirmed) {
+        const form = $('<form>', {
+          method: 'POST',
+          action: '<?php echo base_url("empleados/showComunicacion") ?>'
+        });
+        seleccionados.forEach(id => {
+          form.append($('<input>', {
+            type: 'hidden',
+            name: 'ids[]',
+            value: id
+          }));
+        });
+        $('body').append(form);
+        form.submit();
+      }
+    });
+  });
+
+  // Guardar configuración (por NOMBRE) y aplicar visibilidad al vuelo
+  const saveUrl = "<?php echo site_url('configuracion/save'); ?>";
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2200,
+    timerProgressBar: true
+  });
+
+  $('#applyColumnSettings').on('click', function() {
+    const $form = $('#columnSettingsForm');
+    const tableKey = $form.data('table') || 'mensajeria';
+
+    const visibleNames = [];
+    $('#columnSettingsForm .column-toggle').each(function() {
+      const name = this.value;
+      const vis = this.checked;
+      const i = DINAMICAS.indexOf(name);
+      if (i >= 0) {
+        const colIdx = BASE1 + i;
+        table.column(colIdx).visible(vis);
+      }
+      if (vis) visibleNames.push(name);
+    });
+
+    // 👇 añade estas dos líneas
+    table.columns().adjust().draw(false);
+    wireColumnFilters();
+
+    const payload = {
+      table_key: tableKey,
+      settings: {
+        visible_names: visibleNames
+      }
+    };
+
+    const $csrf = $('#csrfToken');
+    const csrfKey = $csrf.attr('name');
+    const csrfVal = $csrf.val();
+
+    Swal.fire({
+      title: 'Guardando…',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    $.ajax({
+      url: saveUrl,
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        payload: JSON.stringify(payload),
+        [csrfKey]: csrfVal
+      },
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success(res) {
+        Swal.close();
+        if (res?.ok) {
+          if (res.csrf) $csrf.val(res.csrf);
+          Toast.fire({
+            icon: 'success',
+            title: res.msg || 'Preferencias guardadas'
+          });
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'No se pudo guardar',
+            text: res?.error || 'Inténtalo de nuevo.'
+          });
+        }
+      },
+      error(xhr) {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error del servidor',
+          text: xhr.responseText || xhr.statusText || 'Error desconocido'
+        });
+      }
+    });
+  });
+
+  // Eliminar permisos
+  $(document).on('click', '.eliminar-permiso', function(e) {
+    e.preventDefault();
+    const id_usuario = $(this).data('id_usuario');
+    const id_cliente = $(this).data('id_cliente');
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'El usuario perderá el acceso a esta sucursal.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.post('<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>', {
+            id_usuario,
+            id_cliente
+          })
+          .done(response => {
+            const data = JSON.parse(response);
+            Swal.fire(data.status === 'success' ? 'Eliminado' : 'Error', data.message, data.status);
+            if (data.status === 'success') location.reload();
+          })
+          .fail(() => Swal.fire('Error', 'No se pudo eliminar el permiso.', 'error'));
+      }
+    });
+  });
+
+  // Foco inicial (opcional)
+  $('#focus-catcher').focus();
+});
 </script>
 
 
@@ -383,54 +443,55 @@
   margin-bottom: 10px;
 }
 
-* ====== HEADER DE LA TABLA (original + clonado por scrollX) ====== */
-#processTable.dataTable thead > tr > th,
-#processTable.dataTable thead > tr > td,
-div.dataTables_scrollHead table.dataTable thead > tr > th,
-div.dataTables_scrollHead table.dataTable thead > tr > td{
-  background:linear-gradient(to right,#e225e2,rgba(187,103,187,.6)) !important;
-  color:#fff !important;
-  text-align:center !important;
+*======HEADER DE LA TABLA (original + clonado por scrollX)======*/ #processTable.dataTable thead>tr>th,
+#processTable.dataTable thead>tr>td,
+div.dataTables_scrollHead table.dataTable thead>tr>th,
+div.dataTables_scrollHead table.dataTable thead>tr>td {
+  background: linear-gradient(to right, #e225e2, rgba(187, 103, 187, .6)) !important;
+  color: #fff !important;
+  text-align: center !important;
 }
 
 /* Quitar el background-image de los TH con sorting para que se vea tu degradado */
-#processTable.dataTable thead > tr > th.sorting,
-#processTable.dataTable thead > tr > th.sorting_asc,
-#processTable.dataTable thead > tr > th.sorting_desc,
-#processTable.dataTable thead > tr > th.sorting_asc_disabled,
-#processTable.dataTable thead > tr > th.sorting_desc_disabled,
-div.dataTables_scrollHead table.dataTable thead > tr > th.sorting,
-div.dataTables_scrollHead table.dataTable thead > tr > th.sorting_asc,
-div.dataTables_scrollHead table.dataTable thead > tr > th.sorting_desc,
-div.dataTables_scrollHead table.dataTable thead > tr > th.sorting_asc_disabled,
-div.dataTables_scrollHead table.dataTable thead > tr > th.sorting_desc_disabled{
-  background-image:none !important;
+#processTable.dataTable thead>tr>th.sorting,
+#processTable.dataTable thead>tr>th.sorting_asc,
+#processTable.dataTable thead>tr>th.sorting_desc,
+#processTable.dataTable thead>tr>th.sorting_asc_disabled,
+#processTable.dataTable thead>tr>th.sorting_desc_disabled,
+div.dataTables_scrollHead table.dataTable thead>tr>th.sorting,
+div.dataTables_scrollHead table.dataTable thead>tr>th.sorting_asc,
+div.dataTables_scrollHead table.dataTable thead>tr>th.sorting_desc,
+div.dataTables_scrollHead table.dataTable thead>tr>th.sorting_asc_disabled,
+div.dataTables_scrollHead table.dataTable thead>tr>th.sorting_desc_disabled {
+  background-image: none !important;
 }
 
 /* Primera fila del thead (títulos) */
 #processTable thead tr:first-child th,
-div.dataTables_scrollHead thead tr:first-child th{
-  text-transform:uppercase; text-align:center;
-    background:right,#e225e2 !important;
-    color: white;
-    font
-
+div.dataTables_scrollHead thead tr:first-child th {
+  text-transform: uppercase;
+  text-align: center;
+  background: right, #e225e2 !important;
+  color: white;
+  font
 }
 
 /* Inputs de búsqueda (2ª fila) */
-#processTable thead input.form-control{
-  height:28px; padding:2px 6px;
+#processTable thead input.form-control {
+  height: 28px;
+  padding: 2px 6px;
 }
 
 /* ====== CUERPO ====== */
 #processTable.dataTable tbody td,
-#processTable.dataTable tbody th{
-  vertical-align:top !important;
-  text-align:left !important;
-  padding:10px 12px !important;
+#processTable.dataTable tbody th {
+  vertical-align: top !important;
+  text-align: left !important;
+  padding: 10px 12px !important;
 }
-#processTable.dataTable tbody tr:hover > *{
-  background-color:#f1f5ff !important;
+
+#processTable.dataTable tbody tr:hover>* {
+  background-color: #f1f5ff !important;
 }
 
 .btn-ver-empleados {
