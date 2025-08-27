@@ -126,7 +126,7 @@ class Avance_model extends CI_Model
         }
 
         // Si llegamos aquí, estado raro
-        return 'otro_estado';
+        return 'pagado';
     }
 
 }
