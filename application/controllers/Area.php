@@ -83,7 +83,10 @@ class Area extends CI_Controller
         }
 
 // Siempre cargar la vista principal
+            $headerView = $this->load->view('adminpanel/header', $data, true);
+
         $View = $this->load->view('adminpanel/pasarela', $data, true);
+         echo $headerView;
         echo $View;
 
     }
