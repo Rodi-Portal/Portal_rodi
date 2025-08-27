@@ -26,8 +26,7 @@ cpanel.yml
 
 # Assets generados (ajusta a tus carpetas reales)
 public/comunicacion/
-public/vue/js/
-public/vue/css/
+public/*
 
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
