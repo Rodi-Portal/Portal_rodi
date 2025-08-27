@@ -20,6 +20,14 @@ application/config/database.php
 
 .htaccess
 cpanel.yml
+# Subidas/archivos generados por la app
+/_evaluaciones/
+/_evaluacionesPortal/
+
+# Assets generados (ajusta a tus carpetas reales)
+public/comunicacion/
+public/vue/js/
+public/vue/css/
 
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
