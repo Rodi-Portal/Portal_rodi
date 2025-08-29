@@ -102,6 +102,42 @@ class Archivo extends CI_Controller
         exit;
     }
 
+        public function ver_docs_bolsa($filename = '')
+    {
+        if (! $this->session->userdata('id')) {show_404();}
+
+        $filename = urldecode((string) $filename);
+        $filename = basename($filename);
+        if ($filename === '') {show_404();}
+
+        $ext     = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg', 'gif', 'txt', 'csv'];
+        if (! in_array($ext, $allowed, true)) {show_404();}
+
+        // Carpeta física específica para exámenes
+        $base_path_exams = rtrim(FCPATH, '/') . '/_documentosBolsa/';
+        if (! is_dir($base_path_exams)) {@mkdir($base_path_exams, 0750, true);}
+
+        $full = $base_path_exams . $filename;
+        if (! is_file($full) || ! is_readable($full)) {show_404();}
+
+        $mime        = $this->_detect_mime($full, $ext);
+        $disposition = $this->input->get('dl') ? 'attachment' : 'inline';
+        $safe        = rawurlencode($filename);
+
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($full));
+        header('Content-Disposition: ' . $disposition . '; filename="' . $safe . '"; filename*=UTF-8\'\'' . $safe);
+        header('X-Content-Type-Options: nosniff');
+
+        @set_time_limit(0);
+        $fp = fopen($full, 'rb');
+        while (! feof($fp)) {echo fread($fp, 8192);@ob_flush();
+            flush();}
+        fclose($fp);
+        exit;
+    }
+
     private function _detect_mime($path, $ext)
     {
         if (function_exists('finfo_open')) {

@@ -397,7 +397,7 @@ if (typeof URL_GET === 'undefined') {
 }
 
 // Si necesitas id_portal desde sesión (ajústalo si tu sesión usa otra key/nombre)
-var ID_PORTAL_SESSION = <?php echo json_encode((int) ($this->session->userdata('idPortal') ?? 0)); ?>;
+var ID_PORTAL_SESSION =                        <?php echo json_encode((int) ($this->session->userdata('idPortal') ?? 0)); ?>;
 
 function linkPreEmpleo(idEmpleado) {
   const $m = $('#modalLinkEmpleado');
@@ -542,8 +542,9 @@ function bloqueoModal(lock, msg) {
 }
 
 
-const BASE = "<?php echo base_url();?>";
-
+  if (typeof window.BASE4 === 'undefined') {
+    window.BASE4 = "<?php echo base_url('tu_ruta'); ?>";
+  }
 // ========= Utilidades =========
 function esc(s) {
   return $('<div/>').text(s == null ? '' : String(s)).html();
@@ -564,13 +565,18 @@ function isPdf(name) {
 // Ajusta a tu endpoint seguro (Files/stream, docs/ver_doc, etc.)
 function buildDocUrl(fileName, kind) {
   const base = (kind === 'exam') ? 'exams' : 'docs';
-  return BASE + base + "/" + encodeURIComponent(fileName);
+  return BASE4 + base + "/" + encodeURIComponent(fileName);
 }
 
 
 // Campos a ignorar por clave / patrón
-const IGNORE_KEYS = ['id', 'id_empleado', 'id_domicilio_empleado','id_usuario', 'id_cliente', 'id_portal', 'status','convenio_confidencialidad', 'acuerdo_confidencialidad','foto_asociado', 'cedula_identidad'];
-const IGNORE_PARTIAL = ['creacion', 'edicion', 'updated', 'fecha', 'eliminado', 'status']; // oculta fechas e indicadores internos
+  if (!Array.isArray(window.IGNORE_KEYS)) {
+    window.IGNORE_KEYS = ['id','id_empleado','id_domicilio_empleado','id_usuario','id_cliente','id_portal','status','convenio_confidencialidad','acuerdo_confidencialidad','foto_asociado','cedula_identidad'];
+  }
+
+  if (!Array.isArray(window.IGNORE_PARTIAL)) {
+    window.IGNORE_PARTIAL = ['creacion','edicion','updated','fecha','eliminado','status'];
+  }// oculta fechas e indicadores internos
 
 function shouldIgnoreKey(k, v) {
   if (!k) return true;
@@ -727,7 +733,7 @@ function verCandidato(id) {
 
   // AJAX directo al controlador (sin rutas personalizadas)
   $.ajax({
-      url: BASE + "index.php/Empleados/getEmpleado/" + encodeURIComponent(id),
+      url: BASE4 + "index.php/Empleados/getEmpleado/" + encodeURIComponent(id),
       type: "GET",
       dataType: "json"
     })

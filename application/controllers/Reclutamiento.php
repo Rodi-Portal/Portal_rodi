@@ -2531,6 +2531,56 @@ class Reclutamiento extends CI_Controller
         echo json_encode($msj);
     }
 
+    public function renombrarDocumentoBolsa()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id     = (int) $this->input->post('id');
+        $nombre = trim((string) $this->input->post('nombre'));
+
+        if ($id <= 0 || $nombre === '') {
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Datos inválidos']));
+        }
+
+        $ok = $this->db->where('id', $id)
+            ->update('documentos_bolsa', [
+                'nombre_personalizado' => $nombre,
+                'fecha_actualizacion'  => date('Y-m-d H:i:s'),
+            ]);
+
+        return $this->output->set_output(json_encode(['ok' => (bool) $ok]));
+    }
+
+    public function eliminarDocumentoBolsa()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id = (int) $this->input->post('id');
+        if ($id <= 0) {
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'ID inválido']));
+        }
+
+        // Obtén el registro para poder borrar el archivo físico (opcional)
+        $row = $this->db->get_where('documentos_bolsa', ['id' => $id])->row();
+        if (! $row) {
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'No encontrado']));
+        }
+
+        // Borra archivo físico (opcional pero recomendado)
+        $destDir = rtrim(FCPATH, '/\\') . '/_documentosBolsa/';
+        $path    = $destDir . $row->nombre_archivo;
+        if (is_file($path)) {@unlink($path);}
+
+        // Soft-delete en BD
+        $ok = $this->db->where('id', $id)
+            ->update('documentos_bolsa', [
+                'eliminado'           => 1,
+                'fecha_actualizacion' => date('Y-m-d H:i:s'),
+            ]);
+
+        return $this->output->set_output(json_encode(['ok' => (bool) $ok]));
+    }
+
     public function updateWarrantyApplicant()
     {
         $this->form_validation->set_rules('sueldo_acordado', 'Sueldo acordado', 'required|trim');
@@ -2578,9 +2628,157 @@ class Reclutamiento extends CI_Controller
         }
         echo json_encode($msj);
     }
+
+    public function subirDocumentosBolsa()
+    {
+        $this->output->set_content_type('application/json');
+
+                                                              // 1) Parámetros
+        $id_bolsa = (int) $this->input->post('id_aspirante'); // alias de id_bolsa
+        $nombres  = $this->input->post('nombres');            // array de nombres personalizados
+        $user_id  = (int) ($this->session->userdata('id') ?? 0);
+
+        if ($id_bolsa <= 0) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Falta id_aspirante (id_bolsa).',
+            ]));
+        }
+
+        // 2) Validar que existan archivos
+        if (! isset($_FILES['archivos']) || empty($_FILES['archivos']['name'])) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'No se recibieron archivos.',
+            ]));
+        }
+
+        // 3) Directorio de destino
+        $destDir = rtrim(FCPATH, '/\\') . '/_documentosBolsa';
+        if (! is_dir($destDir)) {
+            @mkdir($destDir, 0755, true);
+        }
+        if (! is_dir($destDir) || ! is_writable($destDir)) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'No se pudo crear o escribir en el directorio de destino.',
+            ]));
+        }
+
+        // 4) Recorrer archivos
+        $total   = count($_FILES['archivos']['name']);
+        $results = [];
+        $okCount = 0;
+
+        for ($i = 0; $i < $total; $i++) {
+            $error = $_FILES['archivos']['error'][$i];
+            if ($error !== UPLOAD_ERR_OK) {
+                $results[] = ['i' => $i, 'ok' => false, 'msg' => 'Error al subir (code ' . $error . ')'];
+                continue;
+            }
+
+            $origName = $_FILES['archivos']['name'][$i];
+            $tmpPath  = $_FILES['archivos']['tmp_name'][$i];
+            $size     = (int) $_FILES['archivos']['size'][$i];
+
+            // Nombre personalizado (sin extensión); si no viene, usar base del original
+            $nombreBase = '';
+            if (is_array($nombres) && isset($nombres[$i]) && trim($nombres[$i]) !== '') {
+                $nombreBase = trim($nombres[$i]);
+            } else {
+                $nombreBase = pathinfo($origName, PATHINFO_FILENAME);
+            }
+
+            // Extensión (del archivo original)
+            $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+
+            // Sanitizar nombre de archivo final
+            $slug = $this->_slugify($nombreBase);
+            if ($slug === '') {$slug = 'documento';}
+
+            $fileName = $slug . ($ext ? '.' . $ext : '');
+            $destPath = $destDir . '/' . $fileName;
+
+            // Evitar colisiones: si existe, agrega sufijo incremental
+            $c = 1;
+            while (file_exists($destPath)) {
+                $fileName = $slug . '-' . $c . ($ext ? '.' . $ext : '');
+                $destPath = $destDir . '/' . $fileName;
+                $c++;
+            }
+
+            // Mover archivo
+            if (! @move_uploaded_file($tmpPath, $destPath)) {
+                $results[] = ['i' => $i, 'ok' => false, 'msg' => 'No se pudo mover el archivo al destino.'];
+                continue;
+            }
+
+                          // Tipo (puedes guardar MIME o la extensión)
+            $tipo = $ext; // o @mime_content_type($destPath);
+
+            // 5) Guardar en BD
+            $data = [
+                'id_bolsa'             => $id_bolsa,
+                'id_usuario'           => $user_id,
+                'nombre_personalizado' => $nombreBase,
+                'nombre_archivo'       => $fileName,
+                'tipo'                 => $tipo,
+                'tipo_vista'           => 1,
+                'eliminado'            => 0,
+                // fecha_subida / fecha_actualizacion se cubren con defaults de la BD
+            ];
+
+            $okInsert = $this->db->insert('documentos_bolsa', $data);
+
+            if ($okInsert) {
+                $okCount++;
+                $results[] = ['i' => $i, 'ok' => true, 'archivo' => $fileName];
+            } else {
+                // Si falla BD, opcionalmente borra el archivo físico
+                @unlink($destPath);
+                $results[] = ['i' => $i, 'ok' => false, 'msg' => 'Error al insertar en BD.'];
+            }
+        }
+
+        return $this->output->set_output(json_encode([
+            'ok'        => ($okCount > 0),
+            'guardados' => $okCount,
+            'detalles'  => $results,
+        ]));
+    }
+
+/**
+ * Convierte un texto en un slug seguro para nombre de archivo.
+ */
+    private function _slugify($str)
+    {
+        $str = trim($str);
+        // Reemplazar acentos
+        $unwanted = ['Á', 'É', 'Í', 'Ó', 'Ú', 'Ñ', 'Ü', 'á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
+        $replaced = ['A', 'E', 'I', 'O', 'U', 'N', 'U', 'a', 'e', 'i', 'o', 'u', 'n', 'u'];
+        $str      = str_replace($unwanted, $replaced, $str);
+
+        // Quitar cualquier cosa rara
+        $str = preg_replace('~[^\pL0-9]+~u', '-', $str);
+        $str = preg_replace('~^-+|-+$~', '', $str); // bordes
+        $str = preg_replace('~-+~', '-', $str);     // múltiples guiones
+
+        return strtolower($str);
+    }
+
     /*----------------------------------------*/
     /*    Consultas
     /*----------------------------------------*/
+    public function getDocumentosBolsa()
+    {
+
+        $id_bolsa = $this->input->post('id');
+
+        $res = $this->reclutamiento_model->getDocumentosBolsa($id_bolsa);
+
+        echo json_encode($res);
+    }
+
     public function getDetailsOrderById()
     {
         $id  = $this->input->post('id');

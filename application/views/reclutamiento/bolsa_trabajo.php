@@ -1,3 +1,25 @@
+<style>
+.btn-cuadro {
+  width: 38px;
+  /* ancho fijo */
+  height: 38px;
+  /* alto fijo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  /* quita el padding que mete Bootstrap */
+  font-size: 16px;
+  /* controla el tamaño del ícono */
+  line-height: 1;
+  /* evita que crezca verticalmente */
+}
+
+.btn-cuadro i.fa-info-circle {
+  padding: 10px;
+  /* súbelo hasta que se vea igual que los demás */
+}
+</style>
 <!-- Begin Page Content -->
 <div class="container-fluid">
   <section class="content-header">
@@ -48,10 +70,10 @@
 
     </div>
     <?php if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {?>
-    <div class="mb-3 text-right" data-toggle="tooltip"<?php echo $textTitle; ?>>
+    <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
       <button type="button" id="generarLink" class="btn"
         style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
-        data-toggle="modal" data-target="#modalGenerarLink"                                                            <?php echo $disabled; ?>>
+        data-toggle="modal" data-target="#modalGenerarLink" <?php echo $disabled; ?>>
 
         <span class="icon text-white-50">
           <i class="fas fa-user-edit" style="color: #000;"></i>
@@ -102,7 +124,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">ATodosll</option>
         <?php
@@ -210,7 +232,7 @@
                   $materno        = obtenerDato($r, $extras, 'materno', '');
                   $nombreCompleto = trim($nombre . ' ' . $paterno . ' ' . $materno);
                   $telefono       = obtenerDato($r, $extras, 'telefono');
-                 
+
                   $medio_contacto = obtenerDato($r, $extras, 'medio_contacto');
                   $area_interes   = obtenerDato($r, $extras, 'area_interes');
                   $correo         = obtenerDato($r, $extras, 'correo', '');
@@ -247,7 +269,7 @@
 
                   $domicilio1 = implode(', ', $partesDomicilio);
                   // --- Definir el botón UNA SOLA VEZ ---
-                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('
+                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('
                   . $r->id . ',\''
                   . addslashes($nombre1) . '\',\''
                   . addslashes($paterno1) . '\',\''
@@ -260,12 +282,27 @@
 
                   // --- Excepción para status 0: botón deshabilitado y otros cambios ---
                   if ($r->status == 0) {
-                      $botonProceso          = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
+                      $botonProceso = '
+                        <a href="javascript:void(0)"
+                          class="btn btn-success  btn-cuadro mr-1 isDisabled"
+
+                          data-toggle="tooltip"
+                          title="Asignarlo a Requisición">
+                          <i class="fas fa-play"></i>
+                        </a>';
                       $color_estatus         = 'req_negativa';
                       $text_estatus          = 'Estatus: <b>Bloqueado <br></b>';
                       $disabled_bloqueo      = 'isDisabled';
                       $disabled_comentario   = 'isDisabled';
-                      $desbloquear_aspirante = '<a href="javascript:void(0)" class="btn btn-success text-lg unlockButton" onclick="confirmarDesbloqueo()" data-toggle="tooltip" title="Desbloquear"><i class="fas fa-lock-open"></i></a>';
+                      $desbloquear_aspirante = '
+                      <a href="javascript:void(0)"
+                        class="btn btn-success  btn-cuadro mr-1 unlockButton"
+                        style="width:38px;height:38px;"
+                        onclick="confirmarDesbloqueo()"
+                        data-toggle="tooltip"
+                        title="Desbloquear">
+                        <i class="fas fa-lock-open"></i>
+                      </a>';
                   } elseif ($r->status == 1) {
                       $color_estatus = 'req_espera';
                       $text_estatus  = 'Estatus: <b>En espera <br></b>';
@@ -289,7 +326,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                                                                                                         <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -303,43 +340,54 @@
             <?php endif; ?>
             <h5 class="card-text">Teléfono: <b><?php echo $telefono; ?></b></h5>
             <div class="alert alert-secondary text-center mt-3"><?php echo $text_estatus ?></div>
-            <div class="row">
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Ver detalles"
-                  onclick="verDetalles(<?php echo $r->id; ?>)"><i class="fas fa-info-circle"></i></a>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip" title="Ver empleos"
-                  onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
-                    class="fas fa-user-tie"></i></a>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip"
-                  title="Historial de movimientos"
-                  onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
-                    class="fas fa-history"></i></a>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id ?>">
-                <?php echo $botonProceso; ?>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <?php if ($r->status == 0): ?>
-                <a href="javascript:void(0)" class="btn btn-success text-lg unlockButton"
-                  onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)"
-                  data-toggle="tooltip" title="Desbloquear persona"><i class="fas fa-lock-open"></i></a>
-                <?php else: ?>
-                <a href="javascript:void(0)" class="btn btn-danger text-lg"
-                  onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)"
-                  data-toggle="tooltip" title="Bloquear persona"><i class="fas fa-ban"></i></a>
-                <?php endif; ?>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip"
-                  title="Editar aspirante"
-                  onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
-                    class="fas fa-edit"></i></a>
-              </div>
+            <div class="d-flex justify-content-center align-items-center flex-nowrap">
+              <a href="javascript:void(0)" class="btn btn-primary btn-cuadro mr-1" data-toggle="tooltip"
+                title="Ver detalles" onclick="verDetalles(<?php echo $r->id; ?>)">
+                <i class="fas fa-info-circle"></i>
+              </a>
+
+              <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
+                title="Ver empleos"
+                onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-user-tie"></i>
+              </a>
+
+              <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
+                title="Historial de movimientos"
+                onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-history"></i>
+              </a>
+
+              <!-- Botón proceso -->
+              <?php echo $botonProceso; ?>
+
+              <?php if ($r->status == 0): ?>
+              <a href="javascript:void(0)" class="btn btn-success btn-cuadro mr-1 unlockButton" data-toggle="tooltip"
+                title="Desbloquear persona"
+                onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                <i class="fas fa-lock-open"></i>
+              </a>
+              <?php else: ?>
+              <a href="javascript:void(0)" class="btn btn-danger btn-cuadro mr-1" data-toggle="tooltip"
+                title="Bloquear persona"
+                onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                <i class="fas fa-ban"></i>
+              </a>
+              <?php endif; ?>
+
+              <a href="javascript:void(0)" class="btn btn-warning btn-cuadro mr-1" data-toggle="tooltip"
+                title="Editar aspirante"
+                onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-edit"></i>
+              </a>
+
+              <a href="javascript:void(0)" class="btn btn-secondary btn-cuadro" data-toggle="tooltip"
+                title="Subir documentos"
+                onclick="openSubirDocumentos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-upload"></i>
+              </a>
             </div>
+
             <div class="alert alert-secondary text-center mt-3" id="divUsuario<?php echo $r->id; ?>">
               <b><?php echo $usuario . ' utrututu'; ?></b>
             </div>
@@ -980,6 +1028,268 @@
     });
   }
 
+  // Utilidades locales
+  function _baseName(filename) {
+    if (!filename) return '';
+    const lastSlash = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+    const justName = lastSlash !== -1 ? filename.substring(lastSlash + 1) : filename;
+    const dot = justName.lastIndexOf('.');
+    return dot > 0 ? justName.substring(0, dot) : justName;
+  }
+
+  function _fmtBytes(bytes) {
+    if (!bytes) return '0 B';
+    const k = 1024,
+      sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function openSubirDocumentos(idAspirante, nombreCompleto) {
+    $("#docIdAspirante").val(idAspirante);
+    $("#docNombreAspirante").text(nombreCompleto);
+
+    $("#tablaDocumentos tbody").html('<tr><td colspan="2">Cargando...</td></tr>');
+    $("#inputArchivos").val('');
+    $("#previewArchivos tbody").empty();
+    $("#previewArchivos").hide();
+
+    $("#modalDocumentos").modal("show");
+
+    $.ajax({
+      url: '<?php echo base_url('Reclutamiento/getDocumentosBolsa'); ?>',
+      type: "POST",
+      data: {
+        id: idAspirante
+      },
+      dataType: "json",
+      success: function(resp) {
+        console.log('getDocumentosBolsa ->', resp); // 👈 para depurar
+
+        // Normaliza: si viene objeto, conviértelo a arreglo de 1
+        const docs = Array.isArray(resp) ? resp : (resp && typeof resp === 'object' ? [resp] : []);
+
+        let rows = "";
+        if (docs.length > 0) {
+          rows = docs.map(function(doc) {
+            const nombreMostrar = (doc.nombre_personalizado && doc.nombre_personalizado.trim() !== '') ?
+              doc.nombre_personalizado :
+              doc.nombre_archivo;
+
+            // ⚠️ Carpeta pública correcta
+            const href = '<?php echo base_url('docsBolsa/'); ?>' + encodeURIComponent(doc.nombre_archivo);
+
+            // Evita romper el HTML con comillas
+            const safeNombreMostrar = (nombreMostrar || '').replace(/'/g, "\\'");
+            const safeNombreArchivo = (doc.nombre_archivo || '').replace(/'/g, "\\'");
+
+            return `
+            <tr>
+              <td>
+                <a href="${href}" target="_blank">${nombreMostrar}</a>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-info" onclick="renombrarDoc(${Number(doc.id)}, '${safeNombreMostrar}', '${safeNombreArchivo}')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="eliminarDoc(${Number(doc.id)})">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>`;
+          }).join('');
+        } else {
+          rows = "<tr><td colspan='2'>No hay documentos</td></tr>";
+        }
+        $("#tablaDocumentos tbody").html(rows);
+      },
+      error: function(xhr) {
+        $("#tablaDocumentos tbody").html("<tr><td colspan='2'>Error al cargar documentos</td></tr>");
+        console.error(xhr.responseText || xhr);
+      }
+    });
+  }
+
+  async function renombrarDoc(idDoc, nombreActual, nombreArchivo) {
+    const porDefecto = (nombreActual && nombreActual.trim()) ?
+      nombreActual.trim() :
+      (nombreArchivo ? nombreArchivo.replace(/\.[^/.]+$/, '') : '');
+
+    const {
+      value: nombre
+    } = await Swal.fire({
+      title: 'Renombrar documento',
+      input: 'text',
+      inputValue: porDefecto,
+      inputAttributes: {
+        autocapitalize: 'off',
+        maxlength: 255
+      },
+      inputAutoFocus: true, // (por defecto ya es true, pero lo dejamos explícito)
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+      didOpen: () => { // asegura foco al input
+        const input = Swal.getInput();
+        if (input) input.focus();
+      },
+      inputValidator: (value) => {
+        if (!value || !value.trim()) return 'Escribe un nombre';
+        if (/[/\\:*?"<>|]/.test(value)) return 'No uses caracteres inválidos: /\\:*?"<>|';
+        return undefined;
+      },
+      preConfirm: (value) => {
+        const nombre = value.trim();
+        return $.ajax({
+          url: '<?php echo base_url('Reclutamiento/renombrarDocumentoBolsa'); ?>',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            id: idDoc,
+            nombre
+          }
+        }).then((r) => {
+          if (!r || !r.ok) throw new Error((r && r.msg) ? r.msg : 'No se pudo renombrar');
+          return r;
+        }).catch((err) => {
+          Swal.showValidationMessage(err.message || 'Error al renombrar');
+        });
+      }
+    });
+
+    if (nombre) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Renombrado',
+        timer: 1200,
+        showConfirmButton: false
+      });
+      openSubirDocumentos($("#docIdAspirante").val(), $("#docNombreAspirante").text());
+    }
+  }
+
+
+
+  function eliminarDoc(idDoc) {
+    Swal.fire({
+      title: '¿Eliminar documento?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        return $.ajax({
+          url: '<?php echo base_url('Reclutamiento/eliminarDocumentoBolsa'); ?>',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            id: idDoc
+          }
+        }).then((r) => {
+          if (!r || !r.ok) {
+            throw new Error((r && r.msg) ? r.msg : 'No se pudo eliminar');
+          }
+          return r;
+        }).catch((err) => {
+          Swal.showValidationMessage(err.message || 'Error al eliminar');
+        });
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Eliminado',
+          timer: 1200,
+          showConfirmButton: false
+        });
+        openSubirDocumentos($("#docIdAspirante").val(), $("#docNombreAspirante").text());
+      }
+    });
+  }
+
+
+
+  // PREVIEW: cuando seleccionen archivos
+  $("#inputArchivos").on("change", function() {
+    const files = Array.from(this.files || []);
+    const $prev = $("#previewArchivos");
+    const $tbody = $prev.find("tbody");
+    $tbody.empty();
+
+    if (!files.length) {
+      $prev.hide();
+      return;
+    }
+    files.forEach((file, idx) => {
+      $tbody.append(`
+      <tr>
+        <td>${idx + 1}</td>
+        <td>${file.name}</td>
+        <td>
+          <input type="text" class="form-control form-control-sm nombre-personalizado"
+                 value="${_baseName(file.name).replace(/"/g, '&quot;')}" data-index="${idx}"
+                 placeholder="Nombre sin extensión">
+        </td>
+        <td>${_fmtBytes(file.size)}</td>
+      </tr>
+    `);
+    });
+    $prev.show();
+  });
+
+  // SUBIR múltiples archivos + nombres
+  $("#formSubirDocs").on("submit", function(e) {
+    e.preventDefault();
+
+    const idAspirante = $("#docIdAspirante").val();
+    const input = document.getElementById('inputArchivos');
+    const files = Array.from(input.files || []);
+    if (!files.length) {
+      alert('Selecciona al menos un archivo');
+      return;
+    }
+
+    const nombresInputs = Array.from(document.querySelectorAll('#previewArchivos .nombre-personalizado'));
+    if (nombresInputs.length !== files.length) {
+      alert('Ocurrió un problema al leer los nombres personalizados.');
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append('id_aspirante', idAspirante);
+
+    // Empaqueta en el mismo orden
+    files.forEach((file) => fd.append('archivos[]', file, file.name));
+    nombresInputs.forEach((inp) => fd.append('nombres[]', inp.value.trim()));
+
+    $.ajax({
+      url: '<?php echo base_url('Reclutamiento/subirDocumentosBolsa'); ?>', // ajusta a tu ruta
+      type: 'POST',
+      data: fd,
+      processData: false,
+      contentType: false,
+      success: function(resp) {
+        // refresca lista
+        openSubirDocumentos(idAspirante, $("#docNombreAspirante").text());
+        // limpia preview
+        $("#inputArchivos").val('');
+        $("#previewArchivos tbody").empty();
+        $("#previewArchivos").hide();
+      },
+      error: function(xhr) {
+        alert('Error al subir documentos');
+        console.error(xhr.responseText || xhr);
+      }
+    });
+  });
+
+
 
 
   function verEmpleos(id, nombreCompleto) {
@@ -1052,7 +1362,9 @@
           let data = JSON.parse(res);
           //console.log("🚀 ~ openAddApplicant ~ res:", res)
           for (let i = 0; i < data.length; i++) {
-            let optionText = '#' + data[i]['idReq'] + ' ' + data[i]['nombre_cliente'] + ' - ' + data[i]['puesto'] +
+            let optionText = '#' + data[i]['idReq'] + ' ' + data[i]['nombre_cliente'] + ' - ' + data[i][
+                'puesto'
+              ] +
               ' - Vacantes: ' + data[i]['numero_vacantes'];
             $('#req_asignada').append($('<option>', {
               value: data[i]['idReq'],

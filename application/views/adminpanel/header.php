@@ -66,7 +66,12 @@
   <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
 
   <!-- Inicialización de Selectpicker -->
-
+<script>
+$(document).on('focusin', function (e) {
+  if ($(e.target).closest('.swal2-container').length) {
+    e.stopImmediatePropagation();
+  }
+});</script>
 </head>
 
 <body id="page-top">

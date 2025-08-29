@@ -1365,6 +1365,19 @@ class Reclutamiento_model extends CI_Model
         $consulta = $this->db->get();
         return $consulta->row();
     }
+      public function getDocumentosBolsa($id)
+    {
+        $id_portal = $this->session->userdata('idPortal');
+
+        $this->db
+            ->select("*")
+            ->from('documentos_bolsa ')
+            ->where('id_bolsa', $id)
+            ->where('eliminado ', 0);
+
+        $consulta = $this->db->get();
+        return $consulta->result();
+    }
     public function getEmpleosByIdBolsaTrabajo($id)
     {
         $id_portal = $this->session->userdata('idPortal');

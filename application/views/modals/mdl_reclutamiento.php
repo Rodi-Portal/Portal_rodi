@@ -344,7 +344,62 @@
   </div>
 </div>
 
+<!-- Modal Subir / Administrar Documentos -->
+<div class="modal fade" id="modalDocumentos" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Documentos de <span id="docNombreAspirante"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
 
+      <div class="modal-body">
+        <!-- Tabla de documentos -->
+        <table class="table table-bordered" id="tablaDocumentos">
+          <thead>
+            <tr>
+              <th>Archivo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <hr>
+        <!-- Subir nuevos documentos -->
+        <form id="formSubirDocs" enctype="multipart/form-data">
+          <input type="hidden" name="id_aspirante" id="docIdAspirante">
+
+          <div class="form-group">
+            <label>Subir nuevos documentos</label>
+            <input type="file" name="archivos[]" id="inputArchivos" multiple class="form-control">
+            <small class="form-text text-muted">Selecciona varios; podrás editar el nombre antes de subir.</small>
+          </div>
+          <!-- Vista previa + nombres personalizados -->
+          <div id="previewArchivos" class="mb-3" style="display:none;">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Archivo</th>
+                  <th>Nombre personalizado</th>
+                  <th>Peso</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Subir</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ESTAMOS AQUI -->
 <div class="modal fade" id="registroCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -663,7 +718,7 @@
               </div>
               <div class="col-md-6">
                 <label>CURP check *</label>
-                <select name="curp_registro" id="curp_registro" class="form-control valor_dinamico registro_obligado"
+                <select name="curp_check_registro" id="curp_check_registro" class="form-control valor_dinamico registro_obligado"
                   disabled></select>
                 <br>
               </div>
@@ -732,6 +787,8 @@
         </form>
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
+  <!-- ESTA;OS AQUI -->
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-success" onclick="registrarCandidato()">Guardar</button>
@@ -1580,6 +1637,19 @@
         </button>
       </div>
       <div class="modal-body">
+        <?php if ($this->session->userdata('tipo_bolsa') > 0) {?>
+        <form action="<?php echo base_url('importador/importar_bolsa_y_empleados');?>" method="post"
+          enctype="multipart/form-data">
+          <input type="hidden" name="id_portal" >
+          <input type="hidden" name="id_cliente" ><!-- si aplica -->
+          <div class="form-group">
+            <label>Excel (.xlsx)</label>
+            <input type="file" name="archivo_excel" accept=".xlsx,.xls" class="form-control" required>
+          </div>
+          <button class="btn btn-primary">Importar</button>
+        </form>
+
+        <?php } else {?>
         <form id="formImportarPuestos">
           <div class="row">
             <div class="col-12">
@@ -1590,6 +1660,7 @@
             </div>
           </div>
         </form>
+        <?php }?>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -2167,105 +2238,97 @@ document.getElementById('accion_aspirante').addEventListener('change', function(
     inputOtro.removeAttribute('required'); // Quitar obligatoriedad
   }
 });
+// ===== INICIO REEMPLAZO COMPLETO =====
 var pag = 1;
-$('.div_info_project, .div_info_projectt, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
-  .addClass('d-none');
-$('#registroCandidatoModal').on('hidden.bs.modal', function(e) {
-  $("#registroCandidatoModal #msj_error").css('display', 'none');
-  $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
-  $('.valor_dinamico').val(0);
-  $('.valor_dinamico, #detalles_previo, #pais_previo').empty();
-  $('#pais_registro, #pais_previo').prop('disabled', true);
-  //$('#pais_registro').val(-1);
-  $('#proyecto_registro').prop('disabled', true);
-  $('#proyecto_registro').val('');
-  $('.valor_dinamico').prop('disabled', true);
-  $('#ref_profesionales_registro').val(0);
-  $('#ref_personales_registro').val(0);
-  $('#examen_registro, #examen_medico, #previo').val(0);
-  $('#opcion_registro').val('2').trigger('change');
-  $('#div_docs_extras').empty();
-  extras = [];
+
+// Oculta secciones al cargar el script
+$('.div_info_project, .div_info_projectt, .div_project, \
+   .div_info_previo, .div_previo, \
+   .div_info_check, .div_check, \
+   .div_info_test, .div_test, \
+   .div_info_extra, .div_extra, \
+   #detalles_previo').addClass('d-none');
+
+// Al cerrar el modal: SOLO resetea dinámicos, NO borres datos del aspirante ni #previos
+$('#registroCandidatoModal').off('hidden.bs.modal').on('hidden.bs.modal', function (e) {
+  // Oculta todo lo dinámico
+  $('.div_info_project, .div_info_projectt, .div_project, \
+     .div_info_previo, .div_previo, \
+     .div_info_check, .div_check, \
+     .div_info_test, .div_test, \
+     .div_info_extra, .div_extra, \
+     #detalles_previo').addClass('d-none');
+
+  // Mensajes
+  $("#registroCandidatoModal #msj_error").hide().empty();
+
+  // Limpia SOLO contenedores dinámicos (conserva lista #previos y datos del aspirante)
+  $('#detalles_previo, #div_docs_extras').empty();
+
+  // Deshabilita y limpia selects DINÁMICOS de "nuevo proyecto" (no usado)
+  $('select.valor_dinamico').prop('disabled', true).empty();
+  $('#pais_registro, #pais_previo').prop('disabled', true).val('');
+  $('#proyecto_registro').prop('disabled', true).val('');
+
+  // “Puesto: otro”
+  $('#puesto_otro').val('').hide();
+
+  // Exámenes → a 0 (no vaciamos opciones)
+  $('#examen_registro').val('0');
+  $('#examen_medico').val('0');
+  $('#examen_psicometrico').val('0');
+
+  // Sin selección por defecto; el usuario elige 0/1 cuando reabra
+  $('#opcion_registro').val('').trigger('change');
+
+  // IMPORTANTE: NO hacer
+  // $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
+  // para no perder datos del aspirante ni la lista de #previos
 });
-$('#opcion_registro').off('change').on('change', function() {
+
+// Handler de la opción: 0 (Previo+Exámenes), 1 (Exámenes), 2 (Nada)
+$('#opcion_registro').off('change').on('change', function () {
   const opcion = $(this).val();
 
-  // Oculta todo
-  $('.div_info_project, .div_info_projectt, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra, #detalles_previo')
+  // Oculta absolutamente todo lo que es visible/ocultable
+  $('.div_info_project, .div_info_projectt, .div_project, \
+     .div_info_previo, .div_previo, \
+     .div_info_check, .div_check, \
+     .div_info_test, .div_test, \
+     .div_info_extra, .div_extra, \
+     #detalles_previo').addClass('d-none');
+
+  // Nunca mostrar: nuevo proyecto / checks / extras
+  $('.div_info_project, .div_info_projectt, .div_project, .div_info_check, .div_check, .div_info_extra, .div_extra')
     .addClass('d-none');
 
-  // Muestra según opción
-  if (opcion == '1') {
-    // Enviado a RODI sin nuevo proyecto
-    // Solo tests visibles (según lo que tenías antes)
-    // Si quieres ocultar todo: no hagas nada aquí
-  } else if (opcion == '0') {
-    // Proyecto anterior
-    $('.div_info_previo, .div_check, .div_info_check, .div_info_extra')
-      .removeClass('d-none');
-    $('.div_previo, .div_extra')
-      .removeClass('d-none').css('display', 'flex'); // si necesitas flex
-  } else if (opcion == '2') {
-    // Registrar mi propio proceso (gratis)
-    // Según tu lógica previa: ocultas todo, así que ya está
-  } else if (opcion === '') {
-    // Nada seleccionado: ya está todo oculto
+  if (opcion === '0') {
+    // Proyecto anterior + Exámenes
+    $('.div_info_previo, .div_previo').removeClass('d-none');
+    $('.div_info_test, .div_test').removeClass('d-none');
+    // Deja contenedor visible para que tu AJAX lo llene
+    $('#detalles_previo').removeClass('d-none');
+
+  } else if (opcion === '1') {
+    // Solo exámenes
+    $('.div_info_test, .div_test').removeClass('d-none');
   }
+  // '2' o '' => no mostrar nada extra
 });
-// Evita doble binding
-$(document).off('hidden.bs.modal', '#registroCandidatoModal')
-  .on('hidden.bs.modal', '#registroCandidatoModal', function() {
-    const $m = $('#registroCandidatoModal');
 
-    // 1) Select2 seguro
-    if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
-      $('#puesto').select2('destroy');
-    }
-
-    // 2) Reset de formulario
-    const $form = $('#nuevoRegistroForm');
-    if ($form[0]) $form[0].reset();
-
-    // 3) Secciones ocultas
-    $('.div_info_project, .div_info_projectt, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
-      .addClass('d-none');
-
-    // 4) Limpiar contenedores dinámicos
-    $('#previos, #detalles_previo, #div_docs_extras').empty();
-
-    // 5) Reiniciar selects “dinámicos”
-    $('select.valor_dinamico').prop('disabled', true).empty();
-    $('#pais_registro').prop('disabled', true).val('');
-    $('#proyecto_registro').prop('disabled', true).val('');
-
-    // 6) Reiniciar “Puesto”
-    $('#puesto').html('<option value="0" selected>N/A</option><option value="otro">Otro</option>');
-    $('#puesto_otro').val('').hide();
-
-    // 7) Exámenes (reconstruir opciones)
-    const $ex = $('#examen_registro');
-    $ex.empty()
-      .append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
-    // (re-inyecta tus opciones desde PHP)
-    <?php if ($paquetes_antidoping != null) {foreach ($paquetes_antidoping as $paq) {?>
-    $ex.append(
-      '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
-    <?php }}?>
-
-    // 8) Valores por defecto
-    $('#examen_registro, #examen_medico, #examen_psicometrico').val(0).trigger('change'); // si usan select2
-    $('#pais').val('México');
-    $('#subcliente').val(0);
-
-    // 9) Opciones generales
-    $('#opcion_registro').val('').trigger('change'); // esto ocultará secciones via handler de arriba
-
-    // 10) Mensajes/otros
-    $("#registroCandidatoModal #msj_error").hide().empty();
-    window.extras = []; // asegúrate de que exista a nivel global si lo usas
+// (Opcional) Si usas Select2 en #puesto, destrúyelo al cerrar
+if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+  $('#registroCandidatoModal').on('hidden.bs.modal', function () {
+    $('#puesto').select2('destroy');
   });
+}
 
+// Mostrar/ocultar input "otro" de puesto
+$('#puesto').off('change').on('change', function () {
+  $('#puesto_otro').toggle(this.value === 'otro');
+});
 
+// Deja este bloque tal cual (no se toca)
 $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
   cargarClientesActivos(urltraerClientes);
   $("#nuevaRequisicionModal #titulo_paso").text('Datos  ');
@@ -2273,6 +2336,7 @@ $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
   $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2, #nuevaRequisicionModal #paso3").prop(
     'disabled', true);
 });
+// ===== FIN REEMPLAZO COMPLETO =====
 $('#nuevaRequisicionModal #btnContinuar').on('click', function() {
   var formulario_actual = document.getElementById('formPaso' + pag);
   var todoCorrecto = true;
@@ -2713,24 +2777,59 @@ function mostrarInputOtro() {
 }
 </script>
 <style>
-  .actions { gap: .5rem; }
-  .action-btn{
-    display:inline-flex; align-items:center;
-    min-width: 240px; /* mismo tamaño */
-    padding:.6rem .9rem; border-radius:.6rem; font-weight:600;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
-    transition: transform .12s ease, filter .12s ease;
-  }
-  .action-btn .icon{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:2.25rem; height:2.25rem; margin-right:.6rem;
-    border-radius:.5rem; background: rgba(255,255,255,.18);
-  }
-  .action-btn:hover{ transform: translateY(-1px); filter:brightness(1.03); }
-  .action-btn:disabled{ opacity:.6; cursor:not-allowed; }
+.actions {
+  gap: .5rem;
+}
 
-  /* Tonos (puedes ajustar hex a tu gusto) */
-  .btn-green  { background:#10b981; border-color:#10b981; color:#fff; }
-  .btn-blue   { background:#3b82f6; border-color:#3b82f6; color:#fff; }
-  .btn-purple { background:#6366f1; border-color:#6366f1; color:#fff; }
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  min-width: 240px;
+  /* mismo tamaño */
+  padding: .6rem .9rem;
+  border-radius: .6rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+  transition: transform .12s ease, filter .12s ease;
+}
+
+.action-btn .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-right: .6rem;
+  border-radius: .5rem;
+  background: rgba(255, 255, 255, .18);
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.action-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Tonos (puedes ajustar hex a tu gusto) */
+.btn-green {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+}
+
+.btn-blue {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.btn-purple {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: #fff;
+}
 </style>
