@@ -373,7 +373,6 @@ class Login extends CI_Controller
                 $id_portal = $this->session->userdata('idPortal');
 
                 $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
-                $resultadoPago = 'pendiente_en_plazo';
 
                 $this->session->set_userdata('notPago', $resultadoPago);
 
@@ -450,7 +449,6 @@ class Login extends CI_Controller
                         $id_portal = $this->session->userdata('idPortal');
 
                         $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
-                        $resultadoPago = 'pendiente_en_plazo';
 
 
                         $this->session->set_userdata('notPago', $resultadoPago);
