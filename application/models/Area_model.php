@@ -206,7 +206,7 @@ class Area_model extends CI_Model
         $this->db->select("DATE_FORMAT(mes, '%Y-%m-01') as mes");
         $this->db->from('pagos_mensuales');
         $this->db->where('id_portal', $id_portal);
-        $this->db->where_in('estado', ['pagado', 'pendiente']); // O el estado que consideres
+        $this->db->where_in('estado', ['pagado']); // O el estado que consideres
         $query = $this->db->get();
 
         $meses = [];
