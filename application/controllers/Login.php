@@ -361,7 +361,7 @@ class Login extends CI_Controller
 
         $resultado = $this->usuario_model->actualizarVerificacion($data, $id);
 
-        $resultado . ' Aquí el resultado';
+        
 
         $tipo_acceso = $this->session->userdata('tipo_acceso');
         //var_dump($tipo_acceso);
@@ -373,6 +373,8 @@ class Login extends CI_Controller
                 $id_portal = $this->session->userdata('idPortal');
 
                 $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
+                $resultadoPago = 'pendiente_en_plazo';
+
                 $this->session->set_userdata('notPago', $resultadoPago);
 
                 if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
@@ -448,8 +450,10 @@ class Login extends CI_Controller
                         $id_portal = $this->session->userdata('idPortal');
 
                         $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
-                        $this->session->set_userdata('notPago', $resultadoPago);
+                        $resultadoPago = 'pendiente_en_plazo';
 
+
+                        $this->session->set_userdata('notPago', $resultadoPago);
                         if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
 
                             // ✅ Puede continuar normalmente

@@ -95,38 +95,59 @@ class Avance_model extends CI_Model
         return null; // no hay pago registrado para ese mes
     }
 
-    public function verificarPagoMesActual($id_portal)
-    {
-        $primerDiaMes = date('Y-m-01');
+// En tu modelo (p. ej. Avance_model.php)
+public function verificarPagoMesActual($id_portal, $autocreate = true, $dias_gracia = 5)
+{
+    date_default_timezone_set('America/Mexico_City');
 
-        $this->db->where('id_portal', $id_portal);
-        $this->db->where('mes', $primerDiaMes);
-        $query = $this->db->get('pagos_mensuales');
+    // Mes actual y mes anterior guardados como 'YYYY-mm-01'
+    $mesActual   = date('Y-m-01');
+    $mesAnterior = date('Y-m-01', strtotime('first day of previous month'));
+    $diaActual   = (int) date('j'); // 1..31
 
-        if ($query->num_rows() === 0) {
-            // ⚠️ No hay registro para este mes → se considera pendiente de crear
-            return 'sin_registro';
-        }
+    // --- 1) Busca/crea registro del mes actual ---
+    $pagoActual = $this->db->get_where('pagos_mensuales', [
+        'id_portal' => (int)$id_portal,
+        'mes'       => $mesActual
+    ])->row();
 
-        $pago = $query->row();
-
-        if ($pago->estado === 'pagado' && ! empty($pago->fecha_pago)) {
-            // ✅ Ya pagado
-            return 'pagado';
-        }
-
-        if ($pago->estado === 'pendiente' && empty($pago->fecha_pago)) {
-            // 🔎 Está pendiente, evaluamos plazo
-            $diaActual = (int) date('d');
-            if ($diaActual >= 1 && $diaActual <= 5) {
-                return 'pendiente_en_plazo';
-            } else {
-                return 'pendiente_fuera_plazo';
-            }
-        }
-
-        // Si llegamos aquí, estado raro
-        return 'otro_estado';
+    if (!$pagoActual && $autocreate) {
+        $this->db->insert('pagos_mensuales', [
+            'id_portal'  => (int)$id_portal,
+            'mes'        => $mesActual,
+            'monto'      => null,
+            'estado'     => 'pendiente',
+            'fecha_pago' => null,
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+        $pagoActual = (object)['estado' => 'pendiente', 'fecha_pago' => null];
     }
+
+    // Si el mes actual ya está pagado → acceso total
+    if ($pagoActual && $pagoActual->estado === 'pagado' && !empty($pagoActual->fecha_pago)) {
+        return 'pagado';
+    }
+
+    // --- 2) Verifica si el mes anterior fue pagado ---
+    $pagoAnterior = $this->db->get_where('pagos_mensuales', [
+        'id_portal' => (int)$id_portal,
+        'mes'       => $mesAnterior,
+        'estado'    => 'pagado'
+    ])->row();
+
+    $anteriorPagado = ($pagoAnterior && !empty($pagoAnterior->fecha_pago));
+
+    // --- 3) Regla de gracia condicional ---
+    //   - Si el mes anterior está pagado: hay gracia del día 1 al 5.
+    //   - Si el mes anterior NO está pagado: NO hay gracia nunca.
+    if ($anteriorPagado) {
+        return ($diaActual >= 1 && $diaActual <= $dias_gracia)
+            ? 'pendiente_en_plazo'      // puede entrar, muestra modal
+            : 'pendiente_fuera_plazo';  // bloquea
+    } else {
+        return 'pendiente_fuera_plazo'; // bloquea siempre (sin gracia)
+    }
+}
+
 
 }

@@ -388,6 +388,114 @@
   </div>
 </div>
 
+<?php
+    // --- Preparar labels del periodo y vencimiento (ES) ---
+    date_default_timezone_set('America/Mexico_City');
+    $tz      = new DateTimeZone('America/Mexico_City');
+    $hoy     = new DateTime('now', $tz);
+    $periodo = new DateTime('first day of last month', $tz);       // mes anterior
+    $vence   = new DateTime($hoy->format('Y-m-05 00:00:00'), $tz); // día 5 del mes actual
+
+    if (class_exists('IntlDateFormatter')) {
+        $fmtMesAnio    = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "LLLL y");
+        $fmtLargo      = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "d 'de' LLLL 'de' y");
+        $periodo_label = $fmtMesAnio->format($periodo);
+        $vence_label   = $fmtLargo->format($vence);
+    } else {
+        // Fallback sin extensión intl (útil en Windows/Laragon)
+        $MESES         = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        $periodo_label = ucfirst($MESES[(int) $periodo->format('n') - 1]) . ' ' . $periodo->format('Y');
+        $vence_label   = $vence->format('j') . ' de ' . $MESES[(int) $vence->format('n') - 1] . ' de ' . $vence->format('Y');
+    }
+?>
+<div class="modal fade" id="modalAvisoPago" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title">
+          <i class="fas fa-exclamation-triangle mr-1"></i> Aviso de pago
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-1"><b>Periodo:</b> <?php echo htmlspecialchars($periodo_label)?></p>
+        <p class="mb-2"><b>Vence:</b> <?php echo htmlspecialchars($vence_label)?></p>
+        <?php if (isset($monto_label) && $monto_label !== ''): ?>
+          <p class="mb-2"><b>Monto del periodo:</b> <?php echo htmlspecialchars($monto_label)?></p>
+        <?php endif; ?>
+
+        <div class="alert alert-info py-2">
+          Para realizar el pago puedes:
+          <ul class="mb-0 mt-2 pl-3">
+            <li>
+              <i class="fas fa-envelope"></i>
+              Escribir a
+              <a href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>
+            </li>
+            <li>
+              <i class="fas fa-phone"></i>
+              Comunicarte por teléfono al
+              <a href="tel:+523334542877">33 3454 2877</a>
+              o por WhatsApp al
+              <a href="https://wa.me/523334542877" target="_blank" rel="noopener">33 3454 2877</a>.
+            </li>
+            <li>
+              <i class="fas fa-credit-card"></i>
+              Presionar <b>“Ir a pagos”</b> para ingresar al apartado de <b>Pagos y Suscripción</b>, donde podrás
+              generar un <b>link de pago</b> según tu suscripción y el monto indicado.
+            </li>
+          </ul>
+        </div>
+
+        <p class="text-muted small mb-0">
+          Recuerda: el pago se realiza del <b>1 al 5</b> de cada mes. Para cualquier duda o aclaración,
+          contáctanos por los medios mencionados anteriormente.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <a href="<?php echo base_url('Area/pasarela');?>" class="btn btn-primary">
+          <i class="fas fa-external-link-alt mr-1"></i> Ir a pagos
+        </a>
+        <button type="button" class="btn btn-success"id="btnEntendidoPago" data-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+$(function() {
+  // Si el backend dejó 'pendiente_en_plazo' en sesión, mostramos el modal
+  var estadoPago = "<?= $this->session->userdata('notPago'); ?>";
+  if (estadoPago === 'pendiente_en_plazo') {
+    $('#modalAvisoPago').modal('show');
+  }
+
+  // Al dar clic en "Entendido", cambiamos la variable de sesión para esta sesión
+  $('#btnEntendidoPago').on('click', function () {
+    var data = {};
+    <?php if (method_exists($this->security, 'get_csrf_token_name')): ?>
+      data['<?= $this->security->get_csrf_token_name(); ?>'] = '<?= $this->security->get_csrf_hash(); ?>';
+    <?php endif; ?>
+
+    $.ajax({
+      url: "<?= base_url('Area/omitirAvisoPago'); ?>",
+      type: "POST",
+      dataType: "json",
+      data: data
+    }).always(function () {
+      // Cerramos el modal (éxito o no) y no se mostrará otra vez hasta relogueo
+      $('#modalAvisoPago').modal('hide');
+    });
+  });
+});
+</script>
+
+
 <script>
 // ENDPOINTS (ajusta rutas si tu controlador se llama distinto)
 if (typeof URL_GET === 'undefined') {
@@ -397,7 +505,7 @@ if (typeof URL_GET === 'undefined') {
 }
 
 // Si necesitas id_portal desde sesión (ajústalo si tu sesión usa otra key/nombre)
-var ID_PORTAL_SESSION =                        <?php echo json_encode((int) ($this->session->userdata('idPortal') ?? 0)); ?>;
+var ID_PORTAL_SESSION =                                               <?php echo json_encode((int) ($this->session->userdata('idPortal') ?? 0)); ?>;
 
 function linkPreEmpleo(idEmpleado) {
   const $m = $('#modalLinkEmpleado');
