@@ -1066,7 +1066,6 @@ class Cat_Portales extends CI_Controller
     }
     public function guardarPago()
     {
-        // 1. Obtener los datos del POST
         $idUsuario   = $this->session->userdata('id');
         $id_portal   = $this->input->post('id_portal');
         $monto       = $this->input->post('monto');
@@ -1074,7 +1073,7 @@ class Cat_Portales extends CI_Controller
         $comentarios = $this->input->post('comentarios');
         $meses_json  = $this->input->post('meses');
 
-        // 2. Validación básica
+        // Validación básica
         if (! $id_portal || ! $monto || ! $fecha_pago || ! $meses_json) {
             return $this->output
                 ->set_content_type('application/json')
@@ -1084,9 +1083,7 @@ class Cat_Portales extends CI_Controller
                 ]));
         }
 
-        // 3. Decodificar los meses
-        $meses       = json_decode($meses_json, true);
-        $montoPorMes = round($monto / count($meses), 2);
+        $meses = json_decode($meses_json, true);
         if (empty($meses)) {
             return $this->output
                 ->set_content_type('application/json')
@@ -1095,25 +1092,40 @@ class Cat_Portales extends CI_Controller
                     'message' => 'No se seleccionaron meses.',
                 ]));
         }
+
+        $montoPorMes = round($monto / count($meses), 2);
         $numeros     = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-        $requeest_id = $numeros . '-int9845123-' . $idUsuario;
-        // 4. Insertar un registro por cada mes
+        $request_id  = $numeros . '-int9845123-' . $idUsuario;
+
         foreach ($meses as $mes) {
             $data = [
                 'id_portal'          => $id_portal,
-                'payment_request_id' => $requeest_id,
+                'payment_request_id' => $request_id,
                 'mes'                => $mes,
                 'monto'              => $montoPorMes,
                 'estado'             => 'pagado',
                 'fecha_pago'         => $fecha_pago,
                 'comentarios_pago'   => $comentarios,
-                'created_at'         => date('Y-m-d H:i:s'), // opcional
+                'updated_at'         => date('Y-m-d H:i:s'),
             ];
 
-            $this->db->insert('pagos_mensuales', $data); // cambia 'pagos' por el nombre real de tu tabla
+            // ¿Ya existe un pago para este portal y mes?
+            $existe = $this->db->get_where('pagos_mensuales', [
+                'id_portal' => $id_portal,
+                'mes'       => $mes,
+            ])->row();
+
+            if ($existe) {
+                // 🔄 Actualiza solo lo que llega
+                $this->db->where('id', $existe->id)
+                    ->update('pagos_mensuales', $data);
+            } else {
+                // ➕ Inserta si no existe
+                $data['created_at'] = date('Y-m-d H:i:s');
+                $this->db->insert('pagos_mensuales', $data);
+            }
         }
 
-        // 5. Respuesta de éxito
         return $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode([
