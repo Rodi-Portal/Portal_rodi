@@ -13,7 +13,18 @@ class Area extends CI_Controller
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
     }
+    public function omitirAvisoPago()
+    {
+        if (! $this->input->is_ajax_request()) {
+            show_404();
+        }
+        // Marcamos la variable que activa el modal como "pagado" para esta sesión
+        $this->session->set_userdata('notPago', 'pagado_temporal');
 
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(['ok' => true]));
+    }
     public function pasarela()
     {
         $id_cliente = $this->session->userdata('id');
@@ -78,15 +89,12 @@ class Area extends CI_Controller
             // Solo cargar el header si el estado de pago es válido
             $headerView = $this->load->view('adminpanel/header', $data, true);
             echo $headerView;
-        }else{
+        } else {
             $data['cargar_recursos'] = true;
         }
 
 // Siempre cargar la vista principal
-            $headerView = $this->load->view('adminpanel/header', $data, true);
-
         $View = $this->load->view('adminpanel/pasarela', $data, true);
-         echo $headerView;
         echo $View;
 
     }
