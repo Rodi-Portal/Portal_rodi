@@ -1066,71 +1066,124 @@ class Cat_Portales extends CI_Controller
     }
     public function guardarPago()
     {
-        $idUsuario   = $this->session->userdata('id');
-        $id_portal   = $this->input->post('id_portal');
-        $monto       = $this->input->post('monto');
-        $fecha_pago  = $this->input->post('fecha_pago');
-        $comentarios = $this->input->post('comentarios');
-        $meses_json  = $this->input->post('meses');
+        // ===== NORMALIZACIÓN DE ENTRADA =====
+        $idUsuario   = (int) $this->session->userdata('id');
+        $id_portal   = $this->input->post('id_portal', true);
+        $monto_raw   = $this->input->post('monto', true);
+        $fecha_pago  = $this->input->post('fecha_pago', true);
+        $comentarios = $this->input->post('comentarios', true);
 
-        // Validación básica
-        if (! $id_portal || ! $monto || ! $fecha_pago || ! $meses_json) {
+        // Puede llegar como JSON string o como array (meses[])
+        $meses_post = $this->input->post('meses');
+
+        // ❌ ¡No uses echo/die en endpoints JSON!
+        // echo '<pre>'. print_r($_POST, true) .'</pre>'; die();
+
+        // ----- Normaliza monto (quita comas, espacios)
+        $monto_str = str_replace([' ', ','], ['', ''], (string) $monto_raw);
+        $monto     = is_numeric($monto_str) ? (float) $monto_str : null;
+
+        // ----- Normaliza meses
+        $meses = [];
+        if (is_array($meses_post)) {
+            $meses = $meses_post;
+        } elseif (is_string($meses_post) && $meses_post !== '') {
+            $tmp = json_decode($meses_post, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($tmp)) {
+                $meses = $tmp;
+            } else {
+                // Soporte a "2025-07,2025-08,2025-09"
+                $meses = array_filter(array_map('trim', explode(',', $meses_post)));
+            }
+        }
+
+        // ----- Valida fecha (YYYY-MM-DD)
+        $fecha_ok = false;
+        if ($fecha_pago) {
+            $dt       = DateTime::createFromFormat('Y-m-d', $fecha_pago);
+            $fecha_ok = $dt && $dt->format('Y-m-d') === $fecha_pago;
+        }
+
+        // ===== VALIDACIONES =====
+        if (empty($id_portal) || $monto === null || ! $fecha_ok || empty($meses)) {
             return $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode([
                     'status'  => 'error',
-                    'message' => 'Faltan datos obligatorios.',
+                    'message' => 'Datos inválidos: verifica id_portal, monto, fecha (YYYY-MM-DD) y meses.',
+                    'debug'   => [
+                        'id_portal'   => $id_portal,
+                        'monto_raw'   => $monto_raw,
+                        'monto_final' => $monto,
+                        'fecha_pago'  => $fecha_pago,
+                        'meses'       => $meses,
+                    ],
                 ]));
         }
 
-        $meses = json_decode($meses_json, true);
-        if (empty($meses)) {
-            return $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode([
-                    'status'  => 'error',
-                    'message' => 'No se seleccionaron meses.',
-                ]));
-        }
+        // ===== DISTRIBUCIÓN EXACTA DE CENTAVOS =====
+        $n           = count($meses);
+        $total_cents = (int) round($monto * 100);
+        $base_cents  = intdiv($total_cents, $n);
+        $resto       = $total_cents % $n; // estos centavos se reparten de a +0.01 en los primeros $resto meses
 
-        $montoPorMes = round($monto / count($meses), 2);
-        $numeros     = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-        $request_id  = $numeros . '-int9845123-' . $idUsuario;
+        // ID de lote de pago
+        $request_id = str_pad((string) rand(0, 999999), 6, '0', STR_PAD_LEFT) . '-int9845123-' . $idUsuario;
 
-        foreach ($meses as $mes) {
+        // ===== TRANSACCIÓN =====
+        $this->db->trans_start();
+
+        foreach (array_values($meses) as $i => $mes) {
+            // monto por este mes en centavos
+            $cents     = $base_cents + ($i < $resto ? 1 : 0);
+            $monto_mes = $cents / 100.0;
+
             $data = [
                 'id_portal'          => $id_portal,
                 'payment_request_id' => $request_id,
-                'mes'                => $mes,
-                'monto'              => $montoPorMes,
+                'mes'                => $mes, // ej: '2025-08'
+                'monto'              => $monto_mes,
                 'estado'             => 'pagado',
                 'fecha_pago'         => $fecha_pago,
                 'comentarios_pago'   => $comentarios,
                 'updated_at'         => date('Y-m-d H:i:s'),
             ];
 
-            // ¿Ya existe un pago para este portal y mes?
+            // UPSERT manual (si no tienes UNIQUE, añade uno sobre (id_portal, mes))
             $existe = $this->db->get_where('pagos_mensuales', [
                 'id_portal' => $id_portal,
                 'mes'       => $mes,
             ])->row();
 
             if ($existe) {
-                // 🔄 Actualiza solo lo que llega
-                $this->db->where('id', $existe->id)
-                    ->update('pagos_mensuales', $data);
+                $this->db->where('id', $existe->id)->update('pagos_mensuales', $data);
             } else {
-                // ➕ Inserta si no existe
                 $data['created_at'] = date('Y-m-d H:i:s');
                 $this->db->insert('pagos_mensuales', $data);
             }
         }
 
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'status'  => 'error',
+                    'message' => 'No se pudo guardar el/los pago(s).',
+                ]));
+        }
+
+        // ===== RESPUESTA =====
         return $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode([
-                'status'  => 'success',
-                'message' => 'Pago(s) registrado(s) correctamente.',
+                'status'     => 'success',
+                'message'    => 'Pago(s) registrado(s) correctamente.',
+                'total'      => $monto,
+                'meses'      => $meses,
+                'reparto'    => $n,
+                'request_id' => $request_id,
             ]));
     }
 
