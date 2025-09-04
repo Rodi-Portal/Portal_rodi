@@ -125,7 +125,7 @@ class Reclutamiento extends CI_Controller
             $filterOrder = 'R.tipo !=';
         }
 
-        $order = $this->input->get('order', true);
+        $order = (int) $this->input->get('order');
         if ($order !== null && $order !== '') {
             $id_order        = ($order > 0) ? $order : 0;
             $condition_order = ($order > 0) ? 'R.id' : 'R.id >';
@@ -143,6 +143,11 @@ class Reclutamiento extends CI_Controller
             $info['requisiciones'] = $this->reclutamiento_model->getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder);
             $info['orders_search'] = $this->reclutamiento_model->getAllOrders($sort, 0, 'R.id >', $filter, $filterOrder);
         }
+        /*
+        echo'<pre>';
+        print_r($info['orders_search'] );
+        echo'</pre>'; 
+        die(); */
         $info['sortOrder'] = $getSort;
         $info['filter']    = $getFilter;
 
@@ -495,6 +500,39 @@ class Reclutamiento extends CI_Controller
         echo $requisicionView; // Si decides que esta vista sí debe mostrarse
         echo $footerView;
     }
+    public function getLinkEmpleado()
+    {
+        $id_empleado = (int) $this->input->get('id_empleado');
+        $this->output->set_content_type('application/json');
+
+        if (! $id_empleado) {
+            return $this->output->set_output(json_encode(['success' => false, 'error' => 'Falta id_empleado']));
+        }
+
+        $row = $this->reclutamiento_model->getLastLinkEmpleado($id_empleado);
+        if (! $row) {
+            return $this->output->set_output(json_encode(['success' => true, 'exists' => false]));
+        }
+
+        // Calcula estado
+        $now    = time();
+        $status = 'Activo';
+        if ((int) $row->eliminado === 1 || ! empty($row->revoked_at)) {
+            $status = 'Revocado';
+        } elseif ((int) $row->is_used === 1) {
+            $status = 'Usado';
+        } elseif (! empty($row->exp_unix) && $now > (int) $row->exp_unix) {
+            $status = 'Expirado';
+        }
+
+        return $this->output->set_output(json_encode([
+            'success' => true,
+            'exists'  => true,
+            'row'     => $row,
+            'status'  => $status,
+            'now'     => $now,
+        ]));
+    }
 
     /*----------------------------------------*/
     /*    Acciones
@@ -544,189 +582,204 @@ class Reclutamiento extends CI_Controller
 
     public function addApplicant()
     {
-        $this->form_validation->set_rules('requisicion', 'Asignar requisición', 'required');
+        // 1) Validación base (ajusta 'medio' según si es obligatorio u opcional)
+        $this->form_validation->set_rules('requisicion', 'Asignar requisición', 'required|integer');
         $this->form_validation->set_rules('nombre', 'Nombre(s)', 'required|trim');
         $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
         $this->form_validation->set_rules('materno', 'Segundo apellido', 'trim');
         $this->form_validation->set_rules('domicilio', 'Localización o domicilio', 'required|trim');
         $this->form_validation->set_rules('area_interes', 'Área de interés', 'required|trim');
-        $this->form_validation->set_rules('medio', 'Medio de contacto', 'required|trim');
+        // Si 'medio' viene como "null" desde el front, considera hacerlo opcional o valida con callback
+        $this->form_validation->set_rules('medio', 'Medio de contacto', 'trim');
         $this->form_validation->set_rules('telefono', 'Teléfono', 'trim|max_length[16]');
         $this->form_validation->set_rules('correo', 'Correo', 'trim|valid_email');
 
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
         $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_message('integer', 'El campo {field} debe ser numérico');
 
-        $msj = [];
-        if ($this->form_validation->run() == false) {
-            $msj = [
+        if ($this->form_validation->run() === false) {
+            echo json_encode(['codigo' => 0, 'msg' => validation_errors()]);
+            return;
+        }
+
+        // 2) Normaliza entradas
+        $date       = date('Y-m-d H:i:s');
+        $id_portal  = (int) $this->session->userdata('idPortal');
+        $id_usuario = (int) $this->session->userdata('id');
+        $idRol      = (int) $this->session->userdata('idrol');
+
+        $req              = (int) $this->input->post('requisicion', true);
+        $nombre           = strtoupper((string) $this->input->post('nombre', true));
+        $paterno          = strtoupper((string) $this->input->post('paterno', true));
+        $materno          = strtoupper((string) $this->input->post('materno', true));
+        $domicilio        = (string) $this->input->post('domicilio', true);
+        $area_interes     = (string) $this->input->post('area_interes', true);
+        $telefono         = (string) $this->input->post('telefono', true);
+        $correo           = (string) $this->input->post('correo', true);
+        $id_aspirante     = (int) $this->input->post('id_aspirante', true);
+        $id_bolsa_trabajo = (int) $this->input->post('id_bolsa_trabajo', true);
+
+        // "null" (string) -> NULL real
+        $medio = $this->input->post('medio', true);
+        if ($medio === 'null' || $medio === 'NULL' || $medio === '' || $medio === null) {
+            $medio = null;
+        }
+
+        // 3) Verifica que la requisición exista (evita FK error)
+        $existsReq = $this->reclutamiento_model->existsRequisitionInPortal($req, $id_portal);
+        if (! $existsReq) {
+            echo json_encode([
                 'codigo' => 0,
-                'msg'    => validation_errors(),
-            ];
-        } else {
-            $date         = date('Y-m-d H:i:s');
-            $id_portal    = $this->session->userdata('idPortal');
-            $req          = $this->input->post('requisicion');
-            $nombre       = $this->input->post('nombre');
-            $paterno      = $this->input->post('paterno');
-            $materno      = $this->input->post('materno');
-            $medio        = $this->input->post('medio');
-            $telefono     = $this->input->post('telefono');
-            $correo       = $this->input->post('correo');
-            $id_usuario   = $this->session->userdata('id');
-            $id_aspirante = $this->input->post('id_aspirante');
-            $idRol        = $this->session->userdata('idrol');
+                'msg'    => "La requisición {$req} no existe o no pertenece a este portal",
+            ]);
+            return;
+        }
 
-            $id_bolsa_trabajo = $this->input->post('id_bolsa_trabajo');
-            $notificacion     = 0;
+        $notificacion   = 0;
+        $nombre_archivo = null;
 
-            $nombre_archivo = null;
-            if (empty($id_aspirante)) {
-                if (empty($id_bolsa_trabajo)) {
-                    $jobPool = [
-                        'creacion'       => $date,
-                        'edicion'        => $date,
-                        'id_portal'      => $id_portal,
-                        'id_usuario'     => $id_usuario,
-                        'nombre'         => strtoupper($nombre),
-                        'paterno'        => strtoupper($paterno),
-                        'materno'        => strtoupper($materno),
-                        'telefono'       => $telefono,
-                        'medio_contacto' => $medio,
-                        'area_interes'   => $this->input->post('area_interes'),
-                        'domicilio'      => $this->input->post('domicilio'),
-                        'status'         => 2,
-                    ];
-                    $id_bolsa_trabajo = $this->reclutamiento_model->addJobPoolWithIdReturned($jobPool);
-                } else {
-                    $bolsa = [
-
-                        'id_portal'      => $id_portal,
-                        'edicion'        => $date,
-                        'nombre'         => strtoupper($nombre),
-                        'paterno'        => strtoupper($paterno),
-                        'materno'        => strtoupper($materno),
-                        'telefono'       => $telefono,
-                        'medio_contacto' => $medio,
-                        'area_interes'   => $this->input->post('area_interes'),
-                        'domicilio'      => $this->input->post('domicilio'),
-                        'status'         => 2,
-                    ];
-
-                    if ($idRol != 6) {
-                        $bolsa['id_usuario'] = $id_usuario;
-                    }
-                    $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
-                }
-                if ($this->reclutamiento_model->existeRegistro($id_bolsa_trabajo, $req)) {
-                    // Ya existe un registro, puedes manejarlo según tu lógica de negocio
-                    // Por ejemplo, podrías mostrar un mensaje de error o hacer alguna otra acción
-
-                    $msj = [
-                        'codigo' => 0,
-                        'msg'    => "Ya  esta  Registrado elaspirante  para  esta  requicisión ",
-                    ];
-
-                } else {
-                    // No existe un registro, procedemos a agregar el nuevo registro
-                    $datos = [
-                        'creacion'         => $date,
-                        'edicion'          => $date,
-                        'id_usuario'       => $id_usuario,
-                        'id_bolsa_trabajo' => $id_bolsa_trabajo,
-                        'id_requisicion'   => $req,
-                        'correo'           => $correo,
-
-                        'cv'               => $nombre_archivo,
-                        'status'           => 'Registrado',
-                    ];
-                    $id_req_aspirante = $this->reclutamiento_model->addApplicant($datos);
-
-                    if ($id_bolsa_trabajo != 0) {
-                        $bolsa = [
-                            'status' => 2,
-                        ];
-                        $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
-                    }
-
-                    // Llamar a la API solo si el registro se agregó correctamente
-                    if ($id_req_aspirante && $notificacion > 0) {
-                        $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspirante($id_req_aspirante);
-
-                        // Verifica que el resultado no sea NULL y que sea un objeto
-                        if ($result2 && $result2->phone != null) {
-                            $datos_plantilla = [
-                                'nombre_cliente'   => $result2->nombre_cliente,
-                                'nombre_aspirante' => $result2->nombre_completo,
-                                'vacante'          => $result2->vacante,
-                                'telefono'         => $result2->phone,
-                            ];
-
-                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone . '', 'hello_world', $datos_plantilla);
-
-                            if ($api_response['codigo'] == 1) {
-                                $msj = [
-                                    'codigo' => 1,
-                                    'msg'    => 'El aspirante fue guardado correctamente.  Y se notifico al cliente via  whatssapp ' . $api_response['msg'],
-                                ];
-                            } else {
-                                $msj = [
-                                    'codigo' => 1,
-                                    'msg'    => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente . ' . $api_response['msg'],
-                                ];
-                            }
-                        }
-
-                        // Llamar a la API con los datos de la plantilla
-
-                    } else {
-                        $msj = [
-                            'codigo' => 1,
-                            'msg'    => 'El aspirante fue guardado correctamente, pero no se pudo notificar al cliente .',
-                        ];
-                    }
-                }
-            } elseif ($id_aspirante > 0) {
-                $datos_rh = [
-                    'id_requisicion' => $req,
-                    'correo'         => $correo,
+        // 4) Alta/edición
+        if ($id_aspirante <= 0) {
+            // ---- Alta en bolsa (nuevo o edición de bolsa existente) ----
+            if ($id_bolsa_trabajo <= 0) {
+                $jobPool = [
+                    'creacion'       => $date,
+                    'edicion'        => $date,
+                    'id_portal'      => $id_portal,
+                    'id_usuario'     => $id_usuario,
+                    'nombre'         => $nombre,
+                    'paterno'        => $paterno,
+                    'materno'        => $materno,
+                    'telefono'       => $telefono,
+                    'medio_contacto' => $medio, // <- puede ser NULL
+                    'area_interes'   => $area_interes,
+                    'domicilio'      => $domicilio,
+                    'status'         => 2,
                 ];
-                $datos_bt = [
-
+                $id_bolsa_trabajo = (int) $this->reclutamiento_model->addJobPoolWithIdReturned($jobPool);
+            } else {
+                $bolsa = [
                     'id_portal'      => $id_portal,
                     'edicion'        => $date,
-                    'nombre'         => strtoupper($nombre),
-                    'paterno'        => strtoupper($paterno),
-                    'materno'        => strtoupper($materno),
+                    'nombre'         => $nombre,
+                    'paterno'        => $paterno,
+                    'materno'        => $materno,
                     'telefono'       => $telefono,
-                    'medio_contacto' => $medio,
-                    'area_interes'   => $this->input->post('area_interes'),
-                    'domicilio'      => $this->input->post('domicilio'),
+                    'medio_contacto' => $medio, // <- puede ser NULL
+                    'area_interes'   => $area_interes,
+                    'domicilio'      => $domicilio,
+                    'status'         => 2,
                 ];
-
-                $resultado = $this->reclutamiento_model->editarDatosAspiranteBolsa($datos_bt, $id_bolsa_trabajo, $datos_rh, $id_aspirante);
-
-                // Verificar si la función se ejecutó correctamente
-                if ($resultado) {
-                    // La función se ejecutó correctamente
-                    $msj = [
-                        'codigo' => 1,
-                        'msg'    => 'El aspirante fue Actualizado correctamente :)',
-                    ];
-                } else {
-                    // La función no se ejecutó correctamente
-                    $msj = [
-                        'codigo' => 0,
-                        'msg'    => 'El aspirante no pudo ser actualizado :(',
-                    ];
+                if ($idRol != 6) {
+                    $bolsa['id_usuario'] = $id_usuario;
                 }
-
+                $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa_trabajo);
             }
 
+            // Evita duplicado de relación bolsa–requisición
+            if ($this->reclutamiento_model->existeRegistro($id_bolsa_trabajo, $req)) {
+                echo json_encode([
+                    'codigo' => 0,
+                    'msg'    => 'Ya está registrado el aspirante para esta requisición',
+                ]);
+                return;
+            }
+
+            // ---- Inserta en requisicion_aspirante (con transacción y captura de error) ----
+            $datos = [
+                'creacion'         => $date,
+                'edicion'          => $date,
+                'id_usuario'       => $id_usuario,
+                'id_bolsa_trabajo' => $id_bolsa_trabajo,
+                'id_requisicion'   => $req, // <- FK: ya validamos que existe
+                'correo'           => $correo,
+                'cv'               => $nombre_archivo,
+                'status'           => 'Registrado',
+            ];
+
+            $res = $this->reclutamiento_model->addApplicant($datos); // ideal: que devuelva ['ok','id','db_error','sql']
+
+            // Si tu addApplicant() devuelve solo el ID:
+            // $id_req_aspirante = $res;
+            // $ok = (bool)$id_req_aspirante;
+
+            // Suponiendo una versión mejorada que devuelve arreglo:
+            if (is_array($res)) {
+                if (! empty($res['db_error'])) {
+                    // Log detallado para DEV
+                    log_message('error', 'addApplicant error: ' . print_r($res['db_error'], true) . ' SQL: ' . $res['sql']);
+                    echo json_encode(['codigo' => 0, 'msg' => 'No se pudo registrar el aspirante (error BD).']);
+                    return;
+                }
+                $id_req_aspirante = $res['id'] ?? 0;
+            } else {
+                // fallback si retorna id o false
+                $id_req_aspirante = (int) $res;
+                if ($id_req_aspirante <= 0) {
+                    echo json_encode(['codigo' => 0, 'msg' => 'No se pudo registrar el aspirante.']);
+                    return;
+                }
+            }
+
+            // Marca bolsa en “2”
+            if ($id_bolsa_trabajo > 0) {
+                $this->reclutamiento_model->editBolsaTrabajo(['status' => 2], $id_bolsa_trabajo);
+            }
+
+            // Notificación (si aplica)
+            if ($id_req_aspirante && $notificacion > 0) {
+                // ... tu bloque de notificación (igual que lo tienes) ...
+            }
+
+            echo json_encode([
+                'codigo' => 1,
+                'msg'    => 'El aspirante fue guardado correctamente.',
+            ]);
+            return;
+
+        } else {
+            // ---- Actualización de aspirante existente ----
+            $datos_rh = [
+                'id_requisicion' => $req,
+                'correo'         => $correo,
+            ];
+            $datos_bt = [
+                'id_portal'      => $id_portal,
+                'edicion'        => $date,
+                'nombre'         => $nombre,
+                'paterno'        => $paterno,
+                'materno'        => $materno,
+                'telefono'       => $telefono,
+                'medio_contacto' => $medio, // <- puede ser NULL
+                'area_interes'   => $area_interes,
+                'domicilio'      => $domicilio,
+            ];
+
+            // Asegura que la requisición exista también en actualización
+            if (! $existsReq) {
+                echo json_encode([
+                    'codigo' => 0,
+                    'msg'    => "La requisición {$req} no existe o no pertenece a este portal",
+                ]);
+                return;
+            }
+
+            $ok = $this->reclutamiento_model->editarDatosAspiranteBolsa(
+                $datos_bt,
+                $id_bolsa_trabajo,
+                $datos_rh,
+                $id_aspirante
+            );
+
+            echo json_encode([
+                'codigo' => $ok ? 1 : 0,
+                'msg'    => $ok ? 'El aspirante fue actualizado correctamente :)'
+                : 'El aspirante no pudo ser actualizado :(',
+            ]);
+            return;
         }
-        echo json_encode($msj);
     }
 
     public function guardarAccionRequisicion()
@@ -1172,47 +1225,47 @@ class Reclutamiento extends CI_Controller
 
         // === Header (usa nombre del portal) ===
         $headerHtml = '
-      <div style="background:' . $brand . '; color:#fff; padding:10px 12px;">
-        <table width="100%" style="border-collapse:collapse;">
-          <tr>
-            <td style="width:52px; vertical-align:middle;">
-              <img src="' . $logoUrl . '" alt="Logo" style="max-width:220px; max-height:120px; background:#fff;">
-            </td>
-            <td style="vertical-align:middle; text-align:center;">
-              <div style="font-weight:900; font-size:50px; color: white; text-align: center;">' . htmlspecialchars($portalName) . '</div>
-              <div style="font-size:18px; opacity:.95; color: white;">Reporte de Solicitud</div>
-            </td>
-            <td style="text-align:right; font-size:10px; vertical-align:middle; color: white; ">
-              Folio: ' . $id . '<br>
-              Fecha: ' . $hoy . '
-            </td>
-          </tr>
-        </table>
-      </div>
-    ';
+            <div style="background:' . $brand . '; color:#fff; padding:10px 12px;">
+                <table width="100%" style="border-collapse:collapse;">
+                <tr>
+                    <td style="width:52px; vertical-align:middle;">
+                    <img src="' . $logoUrl . '" alt="Logo" style="max-width:220px; max-height:120px; background:#fff;">
+                    </td>
+                    <td style="vertical-align:middle; text-align:center;">
+                    <div style="font-weight:900; font-size:50px; color: white; text-align: center;">' . htmlspecialchars($portalName) . '</div>
+                    <div style="font-size:18px; opacity:.95; color: white;">Reporte de Solicitud</div>
+                    </td>
+                    <td style="text-align:right; font-size:10px; vertical-align:middle; color: white; ">
+                    Folio: ' . $id . '<br>
+                    Fecha: ' . $hoy . '
+                    </td>
+                </tr>
+                </table>
+            </div>
+            ';
 
         // === Footer (usa nombre portal, tel y correo; N/D si no hay) ===
         $footerHtml = '
-      <div style="font-size:9px; color:#4b5563;">
-        <table width="100%" style="border-collapse:collapse;">
-          <tr>
-            <td style="color:' . $brand . '; font-weight:700;">
-              ' . htmlspecialchars($portalName) . '
-            </td>
-            <td style="text-align:right;">
-              Página {PAGENO} de {nbpg}
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2" style="border-top:1px solid #d1d5db; padding-top:4px;">
-              Tel: ' . htmlspecialchars($portalTel) . ' &nbsp; | &nbsp;
-              Correo: ' . htmlspecialchars($portalMail) . ' &nbsp; | &nbsp;
-              Web: ' . htmlspecialchars($portalWeb) . '
-            </td>
-          </tr>
-        </table>
-      </div>
-    ';
+            <div style="font-size:9px; color:#4b5563;">
+                <table width="100%" style="border-collapse:collapse;">
+                <tr>
+                    <td style="color:' . $brand . '; font-weight:700;">
+                    ' . htmlspecialchars($portalName) . '
+                    </td>
+                    <td style="text-align:right;">
+                    Página {PAGENO} de {nbpg}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border-top:1px solid #d1d5db; padding-top:4px;">
+                    Tel: ' . htmlspecialchars($portalTel) . ' &nbsp; | &nbsp;
+                    Correo: ' . htmlspecialchars($portalMail) . ' &nbsp; | &nbsp;
+                    Web: ' . htmlspecialchars($portalWeb) . '
+                    </td>
+                </tr>
+                </table>
+            </div>
+            ';
 
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader($headerHtml);
@@ -2315,7 +2368,7 @@ class Reclutamiento extends CI_Controller
 
             if ($vienenExtras) {
                 // --- Validación manual ---
-                $requeridos = ['nombre', 'fecha_nacimiento', 'telefono', 'direccion'];
+                $requeridos = ['nombre', 'fecha_nacimiento', 'telefono'];
                 $faltantes  = [];
                 foreach ($requeridos as $campo) {
                     if (empty($post['extra_' . $campo])) {
@@ -2478,6 +2531,56 @@ class Reclutamiento extends CI_Controller
         echo json_encode($msj);
     }
 
+    public function renombrarDocumentoBolsa()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id     = (int) $this->input->post('id');
+        $nombre = trim((string) $this->input->post('nombre'));
+
+        if ($id <= 0 || $nombre === '') {
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Datos inválidos']));
+        }
+
+        $ok = $this->db->where('id', $id)
+            ->update('documentos_bolsa', [
+                'nombre_personalizado' => $nombre,
+                'fecha_actualizacion'  => date('Y-m-d H:i:s'),
+            ]);
+
+        return $this->output->set_output(json_encode(['ok' => (bool) $ok]));
+    }
+
+    public function eliminarDocumentoBolsa()
+    {
+        $this->output->set_content_type('application/json');
+
+        $id = (int) $this->input->post('id');
+        if ($id <= 0) {
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'ID inválido']));
+        }
+
+        // Obtén el registro para poder borrar el archivo físico (opcional)
+        $row = $this->db->get_where('documentos_bolsa', ['id' => $id])->row();
+        if (! $row) {
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'No encontrado']));
+        }
+
+        // Borra archivo físico (opcional pero recomendado)
+        $destDir = rtrim(FCPATH, '/\\') . '/_documentosBolsa/';
+        $path    = $destDir . $row->nombre_archivo;
+        if (is_file($path)) {@unlink($path);}
+
+        // Soft-delete en BD
+        $ok = $this->db->where('id', $id)
+            ->update('documentos_bolsa', [
+                'eliminado'           => 1,
+                'fecha_actualizacion' => date('Y-m-d H:i:s'),
+            ]);
+
+        return $this->output->set_output(json_encode(['ok' => (bool) $ok]));
+    }
+
     public function updateWarrantyApplicant()
     {
         $this->form_validation->set_rules('sueldo_acordado', 'Sueldo acordado', 'required|trim');
@@ -2525,9 +2628,157 @@ class Reclutamiento extends CI_Controller
         }
         echo json_encode($msj);
     }
+
+    public function subirDocumentosBolsa()
+    {
+        $this->output->set_content_type('application/json');
+
+                                                              // 1) Parámetros
+        $id_bolsa = (int) $this->input->post('id_aspirante'); // alias de id_bolsa
+        $nombres  = $this->input->post('nombres');            // array de nombres personalizados
+        $user_id  = (int) ($this->session->userdata('id') ?? 0);
+
+        if ($id_bolsa <= 0) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Falta id_aspirante (id_bolsa).',
+            ]));
+        }
+
+        // 2) Validar que existan archivos
+        if (! isset($_FILES['archivos']) || empty($_FILES['archivos']['name'])) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'No se recibieron archivos.',
+            ]));
+        }
+
+        // 3) Directorio de destino
+        $destDir = rtrim(FCPATH, '/\\') . '/_documentosBolsa';
+        if (! is_dir($destDir)) {
+            @mkdir($destDir, 0755, true);
+        }
+        if (! is_dir($destDir) || ! is_writable($destDir)) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'No se pudo crear o escribir en el directorio de destino.',
+            ]));
+        }
+
+        // 4) Recorrer archivos
+        $total   = count($_FILES['archivos']['name']);
+        $results = [];
+        $okCount = 0;
+
+        for ($i = 0; $i < $total; $i++) {
+            $error = $_FILES['archivos']['error'][$i];
+            if ($error !== UPLOAD_ERR_OK) {
+                $results[] = ['i' => $i, 'ok' => false, 'msg' => 'Error al subir (code ' . $error . ')'];
+                continue;
+            }
+
+            $origName = $_FILES['archivos']['name'][$i];
+            $tmpPath  = $_FILES['archivos']['tmp_name'][$i];
+            $size     = (int) $_FILES['archivos']['size'][$i];
+
+            // Nombre personalizado (sin extensión); si no viene, usar base del original
+            $nombreBase = '';
+            if (is_array($nombres) && isset($nombres[$i]) && trim($nombres[$i]) !== '') {
+                $nombreBase = trim($nombres[$i]);
+            } else {
+                $nombreBase = pathinfo($origName, PATHINFO_FILENAME);
+            }
+
+            // Extensión (del archivo original)
+            $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+
+            // Sanitizar nombre de archivo final
+            $slug = $this->_slugify($nombreBase);
+            if ($slug === '') {$slug = 'documento';}
+
+            $fileName = $slug . ($ext ? '.' . $ext : '');
+            $destPath = $destDir . '/' . $fileName;
+
+            // Evitar colisiones: si existe, agrega sufijo incremental
+            $c = 1;
+            while (file_exists($destPath)) {
+                $fileName = $slug . '-' . $c . ($ext ? '.' . $ext : '');
+                $destPath = $destDir . '/' . $fileName;
+                $c++;
+            }
+
+            // Mover archivo
+            if (! @move_uploaded_file($tmpPath, $destPath)) {
+                $results[] = ['i' => $i, 'ok' => false, 'msg' => 'No se pudo mover el archivo al destino.'];
+                continue;
+            }
+
+                          // Tipo (puedes guardar MIME o la extensión)
+            $tipo = $ext; // o @mime_content_type($destPath);
+
+            // 5) Guardar en BD
+            $data = [
+                'id_bolsa'             => $id_bolsa,
+                'id_usuario'           => $user_id,
+                'nombre_personalizado' => $nombreBase,
+                'nombre_archivo'       => $fileName,
+                'tipo'                 => $tipo,
+                'tipo_vista'           => 1,
+                'eliminado'            => 0,
+                // fecha_subida / fecha_actualizacion se cubren con defaults de la BD
+            ];
+
+            $okInsert = $this->db->insert('documentos_bolsa', $data);
+
+            if ($okInsert) {
+                $okCount++;
+                $results[] = ['i' => $i, 'ok' => true, 'archivo' => $fileName];
+            } else {
+                // Si falla BD, opcionalmente borra el archivo físico
+                @unlink($destPath);
+                $results[] = ['i' => $i, 'ok' => false, 'msg' => 'Error al insertar en BD.'];
+            }
+        }
+
+        return $this->output->set_output(json_encode([
+            'ok'        => ($okCount > 0),
+            'guardados' => $okCount,
+            'detalles'  => $results,
+        ]));
+    }
+
+/**
+ * Convierte un texto en un slug seguro para nombre de archivo.
+ */
+    private function _slugify($str)
+    {
+        $str = trim($str);
+        // Reemplazar acentos
+        $unwanted = ['Á', 'É', 'Í', 'Ó', 'Ú', 'Ñ', 'Ü', 'á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
+        $replaced = ['A', 'E', 'I', 'O', 'U', 'N', 'U', 'a', 'e', 'i', 'o', 'u', 'n', 'u'];
+        $str      = str_replace($unwanted, $replaced, $str);
+
+        // Quitar cualquier cosa rara
+        $str = preg_replace('~[^\pL0-9]+~u', '-', $str);
+        $str = preg_replace('~^-+|-+$~', '', $str); // bordes
+        $str = preg_replace('~-+~', '-', $str);     // múltiples guiones
+
+        return strtolower($str);
+    }
+
     /*----------------------------------------*/
     /*    Consultas
     /*----------------------------------------*/
+    public function getDocumentosBolsa()
+    {
+
+        $id_bolsa = $this->input->post('id');
+
+        $res = $this->reclutamiento_model->getDocumentosBolsa($id_bolsa);
+
+        echo json_encode($res);
+    }
+
     public function getDetailsOrderById()
     {
         $id  = $this->input->post('id');
@@ -2925,6 +3176,31 @@ class Reclutamiento extends CI_Controller
             'success' => true,
             'data'    => $data,
         ]);
+    }
+
+       public function eliminar_extra()
+    {
+        $id  = $this->input->post('id');
+        $key = $this->input->post('key');
+
+        // Obtienes el registro
+        $registro = $this->db->get_where('aspirantes', ['id' => $id])->row();
+
+        if ($registro) {
+            // Decodificas el JSON de extras
+            $extras = json_decode($registro->extras, true);
+
+            if (isset($extras[$key])) {
+                unset($extras[$key]); // eliminas la clave
+                $this->db->where('id', $id)
+                    ->update('aspirantes', ['extras' => json_encode($extras)]);
+                echo 'ok';
+            } else {
+                echo 'error: clave no encontrada';
+            }
+        } else {
+            echo 'error: registro no encontrado';
+        }
     }
 
 }

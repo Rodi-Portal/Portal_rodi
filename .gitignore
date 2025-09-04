@@ -48,4 +48,5 @@ application/config/keys/*
 /_examEmpleado/
 /_cursos/
 /_documentEmpleado/
+/_documentosBolsa/
 /_perfiEmpleado/

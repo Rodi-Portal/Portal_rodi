@@ -3,7 +3,8 @@
 
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Sucursal: <small><?php echo $cliente; ?></small></h1><br>
+    <h1 class="h3 mb-0 text-gray-800">
+      Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
 
 
     <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">
@@ -104,7 +105,13 @@
 
 <script>
 var id = '<?php echo $this->uri->segment(3) ?>';
-var nombre_cliente = '<?php echo $cliente; ?>';
+if (id === "" || id === "null" || id === null) {
+  id = 0;
+}
+var nombre_cliente = '<?php echo isset($cliente) ? $cliente : 'Sin Sucursal'; ?>'
+if (nombre_cliente === "" || nombre_cliente === "null" || nombre_cliente === null) {
+  nombre_cliente = 0;
+}
 var id_cliente = id;
 //var url = '< ?php echo site_url("cliente_general/getEmpleadosInternos/") ?>' + id;
 var url = '<?php echo API_URL ?>candidato-sync/' + id;
@@ -261,6 +268,7 @@ function registrarCandidato() {
 
 
 $(document).ready(function() {
+
   var urlInternos = '<?php echo base_url("Cliente_General/getEmpleadosInternos/") ?>' + id;
   var urlExternos = '<?php echo API_URL ?>candidato-sync/' + id;
   //inputmask
@@ -871,7 +879,7 @@ function loadInternos(url1) {
               return `
                   <div class="w-100">
                     ${idVisible}
-                    ${botones}
+
                   </div>
                 `;
             }
@@ -898,8 +906,8 @@ function loadInternos(url1) {
 
               const btnEnviar = ((emp === 1 || former === 1) && id !== '') ?
                 `<br><br><button class="btn btn-success btn-sm" onclick="confirmActionInterno(${id})">
-           Enviar a Empleados
-         </button>` :
+                Enviar a Empleados
+              </button>` :
                 '';
 
 
@@ -924,48 +932,116 @@ function loadInternos(url1) {
           {
             title: 'Documentos',
             data: null,
-            "width": "15%",
-            className: 'text-center', // Centrado de contenido
-
+            width: '15%',
+            className: 'text-center align-middle',
             render: function(data, type, row) {
-              // Crear botones para los documentos
-              return '<button class="btn btn-info btn-sm" onclick="cargarDocumentosPanelClienteInterno(' +
-                row.id +
-                ', \'' + row.nombreCompleto + '\', 1)">' +
-                '<i class="fa fa-eye"></i></button>';
+              if (type !== 'display') return '';
+              const safeName = JSON.stringify(String(row.nombreCompleto || '')); // ← define y sanea
+              return `
+                <div class="d-flex justify-content-center">
+                  <button class="btn btn-outline-info btn-sm d-inline-flex align-items-center justify-content-center py-2"
+                          type="button"
+                          title="Ver documentos"
+                          aria-label="Ver documentos"
+                          data-toggle="tooltip" data-placement="top"
+                          onclick='cargarDocumentosPanelClienteInterno(${row.id}, ${safeName}, 1)'>
+                    <i class="fas fa-file-alt"></i>
+                  </button>
+                </div>
+              `;
             }
           },
           {
             title: 'Exámenes',
             data: null,
-            "width": "15%",
-            className: 'text-center', // Centrado de contenido
+            width: '15%',
+            className: 'text-center align-middle',
             render: function(data, type, row) {
-              // Botón para los exámenes
-              return '<div style="display: flex; justify-content: center; align-items: center;">' +
-                '<button class="btn btn-primary btn-sm" onclick="cargarDocumentosPanelClienteInterno(' +
-                row.id +
-                ', \'' + row.nombreCompleto + '\', 2)">' +
-                '<i class="fa fa-syringe"></i></button>' +
-                '</div>';
-
+              if (type !== 'display') return '';
+              const safeName = JSON.stringify(String(row.nombreCompleto || '')); // ← define y sanea
+              return `
+                <div class="d-flex justify-content-center">
+                  <button class="btn btn-outline-warning btn-sm d-inline-flex align-items-center justify-content-center py-2"
+                          type="button"
+                          title="Ver exámenes"
+                          aria-label="Ver exámenes"
+                          data-toggle="tooltip" data-placement="top"
+                          onclick='cargarDocumentosPanelClienteInterno(${row.id}, ${safeName}, 2)'>
+                    <i class="fas fa-syringe"></i>
+                  </button>
+                </div>
+              `;
             }
           },
           {
-            title: 'Eliminar',
+            title: 'Acciones',
             data: 'id',
-            width: "10%",
-            className: 'text-center',
-            render: function(data, type, row) {
-              return `<button class="btn btn-link text-danger "
-                    onclick="eliminarCandidato(${data})"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    title="Eliminar candidato">
-                <i class="fas fa-trash fa-lg"></i>
-            </button> `;
+            width: "14%",
+            className: 'text-center align-middle',
+            render: function(data, type, row, meta) {
+              if (type !== 'display') return data;
+
+              const tipoBolsa = <?php echo json_encode((int) ($this->session->userdata('tipo_bolsa') ?? 0));
+                                ?>;
+
+              const hasId = (data != null && data !== '');
+              const showVer = hasId; // siempre que exista ID
+              const showEliminar = hasId; // siempre que exista ID
+              const showPreEmpleo = (tipoBolsa === 1 && hasId);
+              const showAsignar = hasId; 
+
+              // Si nada aplica, no pintes nada
+              if (!showVer && !showPreEmpleo && !showAsignar && !showEliminar) return '';
+
+              // Todo en UNA sola fila
+              let html =
+                '<div class="btn-group btn-group-sm" role="group" aria-label="Acciones" style="white-space:nowrap;">';
+
+              if (showVer) {
+                html += `
+                  <button class="btn btn-outline-success"
+                          type="button" title="Ver candidato"
+                          data-toggle="tooltip" data-placement="top"
+                          onclick="verCandidato(${data})">
+                    <i class="fas fa-user"></i>
+                  </button>`;
+              }
+
+              if (showPreEmpleo) {
+                html += `
+                  <button class="btn btn-outline-info"
+                          type="button" title="Link PreEmpleo"
+                          data-toggle="tooltip" data-placement="top"
+                          onclick="linkPreEmpleo(${data})">
+                    <i class="fas fa-link"></i>
+                  </button>`;
+              }
+
+              if (showAsignar) {
+                html += `
+                  <button class="btn btn-outline-primary btn-asignar-cliente"
+                          type="button" title="Asignar a sucursal"
+                          data-toggle="tooltip" data-placement="top"
+                          data-id="${data}">
+                    <i class="fas fa-sitemap"></i>
+                  </button>`;
+              }
+
+              if (showEliminar) {
+                html += `
+                  <button class="btn btn-outline-danger"
+                          type="button" title="Eliminar candidato"
+                          data-toggle="tooltip" data-placement="top"
+                          onclick="eliminarCandidato(${data})">
+                    <i class="fas fa-trash fa-lg"></i>
+                  </button>`;
+              }
+
+              html += '</div>';
+              return html;
             }
           },
+
         ]
       });
     },
@@ -999,6 +1075,7 @@ function verCandidato(id) {
         return;
       }
       const D = resp.data || {};
+      //console.log("🚀 ~ verCandidato ~ D:", D)
 
       // BASE
       $('#empDynBase').html(renderKV(D.base || {}));
@@ -5773,7 +5850,8 @@ function eliminarCandidato(idCandidato) {
                   showConfirmButton: false,
                   timer: 2500
                 });
-                $('#fila' + idCandidato).remove();
+
+                window.location.reload(); // 👈 recarga cuando termine de cerrarse
               } else {
                 Swal.fire({
                   position: 'center',

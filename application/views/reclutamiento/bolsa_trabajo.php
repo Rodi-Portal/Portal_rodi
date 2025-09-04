@@ -1,3 +1,25 @@
+<style>
+.btn-cuadro {
+  width: 38px;
+  /* ancho fijo */
+  height: 38px;
+  /* alto fijo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  /* quita el padding que mete Bootstrap */
+  font-size: 16px;
+  /* controla el tamaño del ícono */
+  line-height: 1;
+  /* evita que crezca verticalmente */
+}
+
+.btn-cuadro i.fa-info-circle {
+  padding: 10px;
+  /* súbelo hasta que se vea igual que los demás */
+}
+</style>
 <!-- Begin Page Content -->
 <div class="container-fluid">
   <section class="content-header">
@@ -48,10 +70,10 @@
 
     </div>
     <?php if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {?>
-    <div class="mb-3 text-right" data-toggle="tooltip"<?php echo $textTitle; ?>>
+    <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
       <button type="button" id="generarLink" class="btn"
         style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
-        data-toggle="modal" data-target="#modalGenerarLink"                                                            <?php echo $disabled; ?>>
+        data-toggle="modal" data-target="#modalGenerarLink" <?php echo $disabled; ?>>
 
         <span class="icon text-white-50">
           <i class="fas fa-user-edit" style="color: #000;"></i>
@@ -102,7 +124,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">ATodosll</option>
         <?php
@@ -173,20 +195,38 @@
 
         function obtenerPrimeroDisponible($r, $extras, $campos)
         {
+            // Combinar $r y $extras en un solo arreglo
+            $data = array_merge((array) $r, (array) $extras);
+
+            // Normalizar las claves (minúsculas y sin espacios extras)
+            $normalizadas = [];
+            foreach ($data as $k => $v) {
+                $normalizadas[strtolower(trim($k))] = $v;
+            }
+
+            // Buscar el primer campo que tenga valor
             foreach ($campos as $campo) {
-                $valor = obtenerDato($r, $extras, $campo);
-                if (! empty($valor)) {
-                    return $valor;
+                $campoNormalizado = strtolower(trim($campo));
+                if (! empty($normalizadas[$campoNormalizado])) {
+                    return $normalizadas[$campoNormalizado];
                 }
             }
+
             return 'No registrado';
         }
+
     ?>
     <div id="seccionTarjetas">
       <?php
+          /*
+          echo '<pre>';
+          print_r($registros);
+          echo '</pre>';
+        */
           if ($registros) {
               echo '<div class="row mb-3">';
               foreach ($registros as $r) {
+
                   date_default_timezone_set('America/Mexico_City');
                   $hoy                   = date('Y-m-d H:i:s');
                   $fecha_registro        = fechaTexto($r->creacion, 'espanol');
@@ -210,14 +250,18 @@
                   $materno        = obtenerDato($r, $extras, 'materno', '');
                   $nombreCompleto = trim($nombre . ' ' . $paterno . ' ' . $materno);
                   $telefono       = obtenerDato($r, $extras, 'telefono');
-                 
+
                   $medio_contacto = obtenerDato($r, $extras, 'medio_contacto');
                   $area_interes   = obtenerDato($r, $extras, 'area_interes');
-                  $correo         = obtenerDato($r, $extras, 'correo', '');
-                  $domicilio      = obtenerPrimeroDisponible($r, $extras, ['direccion', 'estado']);
-                  $estado         = obtenerDato($r, $extras, 'estado', '');
-                  $direccion      = obtenerDato($r, $extras, 'direccion', '');
-                  $usuario        = (empty($r->usuario)) ? 'Sin asignar' : $r->usuario;
+                  $correo         = obtenerPrimeroDisponible(
+                      $r,
+                      $extras,
+                      ['E-MAIL E.G.C (email)', 'CORREO BINANCE (email) ', 'correo']
+                  );
+                  $domicilio = obtenerPrimeroDisponible($r, $extras, ['domicilio', 'direccion', 'estado']);
+                  $estado    = obtenerDato($r, $extras, 'estado', '');
+                  $direccion = obtenerDato($r, $extras, 'direccion', '');
+                  $usuario   = (empty($r->usuario)) ? 'Sin asignar' : $r->usuario;
 
                   // Normaliza nombre y paterno para envío
                   if (empty($paterno) && ! empty($nombre) && strpos(trim($nombre), ' ') !== false) {
@@ -247,7 +291,7 @@
 
                   $domicilio1 = implode(', ', $partesDomicilio);
                   // --- Definir el botón UNA SOLA VEZ ---
-                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success text-lg" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('
+                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('
                   . $r->id . ',\''
                   . addslashes($nombre1) . '\',\''
                   . addslashes($paterno1) . '\',\''
@@ -260,26 +304,45 @@
 
                   // --- Excepción para status 0: botón deshabilitado y otros cambios ---
                   if ($r->status == 0) {
-                      $botonProceso          = '<a href="javascript:void(0)" class="btn btn-success text-lg isDisabled" data-toggle="tooltip" title="Asignarlo a Requisición"><i class="fas fa-play-circle"></i></a>';
+                      $botonProceso = '
+                        <a href="javascript:void(0)"
+                          class="btn btn-success  btn-cuadro mr-1 isDisabled"
+
+                          data-toggle="tooltip"
+                          title="Asignarlo a Requisición">
+                          <i class="fas fa-play"></i>
+                        </a>';
                       $color_estatus         = 'req_negativa';
                       $text_estatus          = 'Estatus: <b>Bloqueado <br></b>';
                       $disabled_bloqueo      = 'isDisabled';
                       $disabled_comentario   = 'isDisabled';
-                      $desbloquear_aspirante = '<a href="javascript:void(0)" class="btn btn-success text-lg unlockButton" onclick="confirmarDesbloqueo()" data-toggle="tooltip" title="Desbloquear"><i class="fas fa-lock-open"></i></a>';
+                      $desbloquear_aspirante = '
+                      <a href="javascript:void(0)"
+                        class="btn btn-success  btn-cuadro mr-1 unlockButton"
+                        style="width:38px;height:38px;"
+                        onclick="confirmarDesbloqueo()"
+                        data-toggle="tooltip"
+                        title="Desbloquear">
+                        <i class="fas fa-lock-open"></i>
+                      </a>';
                   } elseif ($r->status == 1) {
                       $color_estatus = 'req_espera';
                       $text_estatus  = 'Estatus: <b>En espera <br></b>';
                   } elseif ($r->status == 2) {
                       $color_estatus       = 'req_activa';
-                      $text_estatus        = 'Estatus: <b>En proceso de reclutamiento<br></b>';
+                      $text_estatus        = 'Estatus: <b>En Proceso/Aprobado<br></b>';
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 3) {
                       $color_estatus       = 'req_preventiva';
-                      $text_estatus        = 'Estatus: <b>Preventivo Revisar Historial<br></b>';
+                      $text_estatus        = 'Estatus: <b>Reutilizable/<br></b>';
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 4) {
                       $color_estatus       = 'req_positivo';
-                      $text_estatus        = 'Estatus: <b>Listo para preempleo<br></b>';
+                      $text_estatus        = 'Estatus: <b>Preempleo/Contratado<br></b>';
+                      $disabled_comentario = 'isDisabled';
+                  } elseif ($r->status == 5) {
+                      $color_estatus       = 'req_aprobado';
+                      $text_estatus        = 'Estatus: <b>Aprobado con Acuerdo<br></b>';
                       $disabled_comentario = 'isDisabled';
                   }
 
@@ -289,13 +352,18 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                                                                                                         <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
           <div class="card-body">
             <?php if ($esTipoExtras): ?>
-            <h5 class="card-text">Ubicación: <br><b><?php echo $estado . ', ' . $direccion; ?></b></h5>
+            <h5 class="card-text">
+              Ubicación: <br>
+              <b>
+                <?php echo($domicilio ?? $estado . ', ' . $direccion); ?>
+              </b>
+            </h5>
             <h5 class="card-title">Correo: <br><b><?php echo $correo; ?></b></h5>
             <?php else: ?>
             <h5 class="card-title">Área de interés: <br><b><?php echo $area_interes; ?></b></h5>
@@ -303,43 +371,54 @@
             <?php endif; ?>
             <h5 class="card-text">Teléfono: <b><?php echo $telefono; ?></b></h5>
             <div class="alert alert-secondary text-center mt-3"><?php echo $text_estatus ?></div>
-            <div class="row">
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip" title="Ver detalles"
-                  onclick="verDetalles(<?php echo $r->id; ?>)"><i class="fas fa-info-circle"></i></a>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip" title="Ver empleos"
-                  onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
-                    class="fas fa-user-tie"></i></a>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-info text-lg" data-toggle="tooltip"
-                  title="Historial de movimientos"
-                  onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
-                    class="fas fa-history"></i></a>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1" id="divIniciar<?php echo $r->id ?>">
-                <?php echo $botonProceso; ?>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <?php if ($r->status == 0): ?>
-                <a href="javascript:void(0)" class="btn btn-success text-lg unlockButton"
-                  onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)"
-                  data-toggle="tooltip" title="Desbloquear persona"><i class="fas fa-lock-open"></i></a>
-                <?php else: ?>
-                <a href="javascript:void(0)" class="btn btn-danger text-lg"
-                  onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)"
-                  data-toggle="tooltip" title="Bloquear persona"><i class="fas fa-ban"></i></a>
-                <?php endif; ?>
-              </div>
-              <div class="col-sm-4 col-md-2 col-lg-2 mb-1">
-                <a href="javascript:void(0)" class="btn btn-primary text-lg" data-toggle="tooltip"
-                  title="Editar aspirante"
-                  onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')"><i
-                    class="fas fa-edit"></i></a>
-              </div>
+            <div class="d-flex justify-content-center align-items-center flex-nowrap">
+              <a href="javascript:void(0)" class="btn btn-primary btn-cuadro mr-1" data-toggle="tooltip"
+                title="Ver detalles" onclick="verDetalles(<?php echo $r->id; ?>)">
+                <i class="fas fa-info-circle"></i>
+              </a>
+
+              <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
+                title="Ver empleos"
+                onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-user-tie"></i>
+              </a>
+
+              <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
+                title="Historial de movimientos"
+                onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-history"></i>
+              </a>
+
+              <!-- Botón proceso -->
+              <?php echo $botonProceso; ?>
+
+              <?php if ($r->status == 0): ?>
+              <a href="javascript:void(0)" class="btn btn-success btn-cuadro mr-1 unlockButton" data-toggle="tooltip"
+                title="Desbloquear persona"
+                onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                <i class="fas fa-lock-open"></i>
+              </a>
+              <?php else: ?>
+              <a href="javascript:void(0)" class="btn btn-danger btn-cuadro mr-1" data-toggle="tooltip"
+                title="Bloquear persona"
+                onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                <i class="fas fa-ban"></i>
+              </a>
+              <?php endif; ?>
+
+              <a href="javascript:void(0)" class="btn btn-warning btn-cuadro mr-1" data-toggle="tooltip"
+                title="Editar aspirante"
+                onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-edit"></i>
+              </a>
+
+              <a href="javascript:void(0)" class="btn btn-secondary btn-cuadro" data-toggle="tooltip"
+                title="Subir documentos"
+                onclick="openSubirDocumentos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-upload"></i>
+              </a>
             </div>
+
             <div class="alert alert-secondary text-center mt-3" id="divUsuario<?php echo $r->id; ?>">
               <b><?php echo $usuario . ' utrututu'; ?></b>
             </div>
@@ -539,8 +618,19 @@
             </div>
             <div id="extras_update" style="display:none"></div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Guardar
-            información personal</button>
+
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 mb-2">
+              <button type="button" id="agregar_extra" class="btn btn-primary w-100">
+                <i class="fas fa-plus"></i> Agregar campo extra
+              </button>
+            </div>
+            <div class="col-12 col-sm-6 mb-2">
+              <button type="button" class="btn btn-success w-100" onclick="updateApplicant('personal')">
+                Guardar información personal
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -712,7 +802,12 @@
       </div>
     </div>
 
-    <div id="extras_update" style="display:none"></div>
+    <div id="extras_update" style="display:none">
+      <div class="row"></div>
+      <!-- Aquí se agregan los campos -->
+    </div>
+
+
   </div>
   <!-- Sweetalert 2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
@@ -980,6 +1075,268 @@
     });
   }
 
+  // Utilidades locales
+  function _baseName(filename) {
+    if (!filename) return '';
+    const lastSlash = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+    const justName = lastSlash !== -1 ? filename.substring(lastSlash + 1) : filename;
+    const dot = justName.lastIndexOf('.');
+    return dot > 0 ? justName.substring(0, dot) : justName;
+  }
+
+  function _fmtBytes(bytes) {
+    if (!bytes) return '0 B';
+    const k = 1024,
+      sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function openSubirDocumentos(idAspirante, nombreCompleto) {
+    $("#docIdAspirante").val(idAspirante);
+    $("#docNombreAspirante").text(nombreCompleto);
+
+    $("#tablaDocumentos tbody").html('<tr><td colspan="2">Cargando...</td></tr>');
+    $("#inputArchivos").val('');
+    $("#previewArchivos tbody").empty();
+    $("#previewArchivos").hide();
+
+    $("#modalDocumentos").modal("show");
+
+    $.ajax({
+      url: '<?php echo base_url('Reclutamiento/getDocumentosBolsa'); ?>',
+      type: "POST",
+      data: {
+        id: idAspirante
+      },
+      dataType: "json",
+      success: function(resp) {
+        console.log('getDocumentosBolsa ->', resp); // 👈 para depurar
+
+        // Normaliza: si viene objeto, conviértelo a arreglo de 1
+        const docs = Array.isArray(resp) ? resp : (resp && typeof resp === 'object' ? [resp] : []);
+
+        let rows = "";
+        if (docs.length > 0) {
+          rows = docs.map(function(doc) {
+            const nombreMostrar = (doc.nombre_personalizado && doc.nombre_personalizado.trim() !== '') ?
+              doc.nombre_personalizado :
+              doc.nombre_archivo;
+
+            // ⚠️ Carpeta pública correcta
+            const href = '<?php echo base_url('docsBolsa/'); ?>' + encodeURIComponent(doc.nombre_archivo);
+
+            // Evita romper el HTML con comillas
+            const safeNombreMostrar = (nombreMostrar || '').replace(/'/g, "\\'");
+            const safeNombreArchivo = (doc.nombre_archivo || '').replace(/'/g, "\\'");
+
+            return `
+            <tr>
+              <td>
+                <a href="${href}" target="_blank">${nombreMostrar}</a>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-info" onclick="renombrarDoc(${Number(doc.id)}, '${safeNombreMostrar}', '${safeNombreArchivo}')">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="eliminarDoc(${Number(doc.id)})">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>`;
+          }).join('');
+        } else {
+          rows = "<tr><td colspan='2'>No hay documentos</td></tr>";
+        }
+        $("#tablaDocumentos tbody").html(rows);
+      },
+      error: function(xhr) {
+        $("#tablaDocumentos tbody").html("<tr><td colspan='2'>Error al cargar documentos</td></tr>");
+        console.error(xhr.responseText || xhr);
+      }
+    });
+  }
+
+  async function renombrarDoc(idDoc, nombreActual, nombreArchivo) {
+    const porDefecto = (nombreActual && nombreActual.trim()) ?
+      nombreActual.trim() :
+      (nombreArchivo ? nombreArchivo.replace(/\.[^/.]+$/, '') : '');
+
+    const {
+      value: nombre
+    } = await Swal.fire({
+      title: 'Renombrar documento',
+      input: 'text',
+      inputValue: porDefecto,
+      inputAttributes: {
+        autocapitalize: 'off',
+        maxlength: 255
+      },
+      inputAutoFocus: true, // (por defecto ya es true, pero lo dejamos explícito)
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+      didOpen: () => { // asegura foco al input
+        const input = Swal.getInput();
+        if (input) input.focus();
+      },
+      inputValidator: (value) => {
+        if (!value || !value.trim()) return 'Escribe un nombre';
+        if (/[/\\:*?"<>|]/.test(value)) return 'No uses caracteres inválidos: /\\:*?"<>|';
+        return undefined;
+      },
+      preConfirm: (value) => {
+        const nombre = value.trim();
+        return $.ajax({
+          url: '<?php echo base_url('Reclutamiento/renombrarDocumentoBolsa'); ?>',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            id: idDoc,
+            nombre
+          }
+        }).then((r) => {
+          if (!r || !r.ok) throw new Error((r && r.msg) ? r.msg : 'No se pudo renombrar');
+          return r;
+        }).catch((err) => {
+          Swal.showValidationMessage(err.message || 'Error al renombrar');
+        });
+      }
+    });
+
+    if (nombre) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Renombrado',
+        timer: 1200,
+        showConfirmButton: false
+      });
+      openSubirDocumentos($("#docIdAspirante").val(), $("#docNombreAspirante").text());
+    }
+  }
+
+
+
+  function eliminarDoc(idDoc) {
+    Swal.fire({
+      title: '¿Eliminar documento?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        return $.ajax({
+          url: '<?php echo base_url('Reclutamiento/eliminarDocumentoBolsa'); ?>',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            id: idDoc
+          }
+        }).then((r) => {
+          if (!r || !r.ok) {
+            throw new Error((r && r.msg) ? r.msg : 'No se pudo eliminar');
+          }
+          return r;
+        }).catch((err) => {
+          Swal.showValidationMessage(err.message || 'Error al eliminar');
+        });
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Eliminado',
+          timer: 1200,
+          showConfirmButton: false
+        });
+        openSubirDocumentos($("#docIdAspirante").val(), $("#docNombreAspirante").text());
+      }
+    });
+  }
+
+
+
+  // PREVIEW: cuando seleccionen archivos
+  $("#inputArchivos").on("change", function() {
+    const files = Array.from(this.files || []);
+    const $prev = $("#previewArchivos");
+    const $tbody = $prev.find("tbody");
+    $tbody.empty();
+
+    if (!files.length) {
+      $prev.hide();
+      return;
+    }
+    files.forEach((file, idx) => {
+      $tbody.append(`
+      <tr>
+        <td>${idx + 1}</td>
+        <td>${file.name}</td>
+        <td>
+          <input type="text" class="form-control form-control-sm nombre-personalizado"
+                 value="${_baseName(file.name).replace(/"/g, '&quot;')}" data-index="${idx}"
+                 placeholder="Nombre sin extensión">
+        </td>
+        <td>${_fmtBytes(file.size)}</td>
+      </tr>
+    `);
+    });
+    $prev.show();
+  });
+
+  // SUBIR múltiples archivos + nombres
+  $("#formSubirDocs").on("submit", function(e) {
+    e.preventDefault();
+
+    const idAspirante = $("#docIdAspirante").val();
+    const input = document.getElementById('inputArchivos');
+    const files = Array.from(input.files || []);
+    if (!files.length) {
+      alert('Selecciona al menos un archivo');
+      return;
+    }
+
+    const nombresInputs = Array.from(document.querySelectorAll('#previewArchivos .nombre-personalizado'));
+    if (nombresInputs.length !== files.length) {
+      alert('Ocurrió un problema al leer los nombres personalizados.');
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append('id_aspirante', idAspirante);
+
+    // Empaqueta en el mismo orden
+    files.forEach((file) => fd.append('archivos[]', file, file.name));
+    nombresInputs.forEach((inp) => fd.append('nombres[]', inp.value.trim()));
+
+    $.ajax({
+      url: '<?php echo base_url('Reclutamiento/subirDocumentosBolsa'); ?>', // ajusta a tu ruta
+      type: 'POST',
+      data: fd,
+      processData: false,
+      contentType: false,
+      success: function(resp) {
+        // refresca lista
+        openSubirDocumentos(idAspirante, $("#docNombreAspirante").text());
+        // limpia preview
+        $("#inputArchivos").val('');
+        $("#previewArchivos tbody").empty();
+        $("#previewArchivos").hide();
+      },
+      error: function(xhr) {
+        alert('Error al subir documentos');
+        console.error(xhr.responseText || xhr);
+      }
+    });
+  });
+
+
 
 
   function verEmpleos(id, nombreCompleto) {
@@ -1052,10 +1409,12 @@
           let data = JSON.parse(res);
           //console.log("🚀 ~ openAddApplicant ~ res:", res)
           for (let i = 0; i < data.length; i++) {
-            let optionText = '#' + data[i]['id'] + ' ' + data[i]['nombre'] + ' - ' + data[i]['puesto'] +
+            let optionText = '#' + data[i]['idReq'] + ' ' + data[i]['nombre_cliente'] + ' - ' + data[i][
+                'puesto'
+              ] +
               ' - Vacantes: ' + data[i]['numero_vacantes'];
             $('#req_asignada').append($('<option>', {
-              value: data[i]['id'],
+              value: data[i]['idReq'],
               text: optionText
             }));
           }
@@ -1469,6 +1828,7 @@
         }, 200);
 
         var dato = JSON.parse(res);
+        //console.log("🚀 ~ openUpdateApplicant ~ dato:", dato)
 
         // Detecta si hay datos en extras
         var extras = {};
@@ -1491,50 +1851,95 @@
 
           let nombre = (dato['nombre'] || extras['nombre'] || '');
           let paterno = (dato['paterno'] || extras['paterno'] || '');
-
           if (paterno) {
             nombre = nombre + ' ' + paterno;
           }
 
           const camposNormales = {
-            nombre: nombre, // ← Ya concatenado arriba
+            nombre: nombre,
             telefono: dato['telefono'] || extras['telefono'] || "",
             fecha_nacimiento: dato['fecha_nacimiento'] || extras['fecha_nacimiento'] || ""
           };
 
-          // Luego, añade todos los extras (sin sobrescribir los anteriores si existen)
           const camposDinamicos = {
             ...camposNormales
-          }; // Empieza con los normales
+          };
 
-          if (esTipoExtras) {
-            Object.keys(extras).forEach(function(key) {
-              if (key === '_token') return;
-              // Solo agrega si no existe ya en los normales
-              if (!camposDinamicos.hasOwnProperty(key)) {
-                camposDinamicos[key] = extras[key];
-              }
-            });
-          }
+          // Añadir los extras que no existan
+          Object.keys(extras).forEach(function(key) {
+            if (key === '_token') return;
+            if (!camposDinamicos.hasOwnProperty(key)) {
+              camposDinamicos[key] = extras[key];
+            }
+          });
 
-          // Ahora genera TODOS los campos (normales + extras) dinámicamente:
+          // Generar todos los campos existentes
           let html = `<div class="row">`;
           Object.keys(camposDinamicos).forEach(function(key) {
             let etiqueta = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
             html += `
-                    <div class="col-md-4 col-sm-12 mb-3">
-                      <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                          <label for="extra_${key}_update" class="font-weight-bold mb-2">${etiqueta}</label>
-                          <input type="text" class="form-control" name="extra_${key}" id="extra_${key}_update" value="${camposDinamicos[key] || ''}">
+            <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${key}">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <label class="font-weight-bold mb-2">${etiqueta}</label>
+                        <div class="d-flex align-items-center mb-2">
+                            <input type="text" class="form-control" name="extra_${key}" value="${camposDinamicos[key] || ''}">
+                            <button type="button" class="btn btn-sm btn-danger ml-2 eliminar-extra" data-key="${key}">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
-                      </div>
                     </div>
-                  `;
+                </div>
+            </div>
+            `;
           });
           html += `</div>`;
 
           $('#extras_update').html(html).show();
+
+          // Contador global para nuevos extras (fuera de la función)
+          let contadorExtras = 0;
+
+          // Botón para agregar campos nuevos
+          $('#agregar_extra').off('click').on('click', function() {
+            contadorExtras++;
+            const keyDefault = `nuevo_${contadorExtras}`;
+            const keySlug = slugKey(keyDefault);
+
+            const htmlNuevo = `
+            <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${keySlug}">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                  <label class="font-weight-bold mb-2">Nuevo campo extra</label>
+                  <div class="d-flex mb-2">
+                    <input type="text" class="form-control llave-extra mr-2"
+                          placeholder="Nombre de la llave" value="${keySlug}">
+                    <!-- IMPORTANTE: el valor SIEMPRE tiene name="extra_<slug>" -->
+                    <input type="text" class="form-control valor-extra mr-2"
+                          name="extra_${keySlug}" placeholder="Valor" value="">
+                    <button type="button" class="btn btn-sm btn-danger eliminar-extra" data-key="${keySlug}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <small class="text-muted">Se enviará como <code>extra_${keySlug}</code></small>
+                </div>
+              </div>
+            </div>`;
+            $('#extras_update .row').append(htmlNuevo);
+          });
+          $(document).on('input', '.llave-extra', function() {
+            const $col = $(this).closest('.extra-dinamico');
+            const raw = $(this).val();
+            const keyNew = slugKey(raw);
+
+            $col.attr('data-key', keyNew);
+            $col.find('.valor-extra').attr('name', `extra_${keyNew}`);
+            $col.find('.eliminar-extra').attr('data-key', keyNew);
+            // (opcional) actualizar la leyenda del pequeño <small> si la agregaste
+            $col.find('small.text-muted code').text(`extra_${keyNew}`);
+          });
+
+          // SweetAlert para eliminar cualquier campo
 
         } else {
           $('#extras_update').hide();
@@ -1579,6 +1984,14 @@
     $('#btnAsignarAspirante').addClass('isDisabled')
   }
 
+  function slugKey(k) {
+    return (k || '')
+      .trim()
+      .replace(/\s+/g, '_') // espacios -> _
+      .replace(/[^\w\-]/g, '') // deja solo [A-Za-z0-9_ -]
+      ||
+      'nuevo';
+  }
 
   function updateApplicant(section) {
     let form = '';
@@ -1586,6 +1999,7 @@
       form = $('#formDatosPersonales').serialize();
       form += '&id_bolsa=' + $('#idBolsa').val();
       form += '&section=' + section;
+
     }
     if (section == 'salud') {
       form = $('#formSalud').serialize();
@@ -1635,6 +2049,35 @@
       }
     });
   }
+  $(document).on('click', '.eliminar-extra', function() {
+    const key = $(this).data('key'); // clave del JSON a eliminar
+
+    Swal.fire({
+      title: `¿Eliminar el campo "${key}"?`,
+      text: "Esta acción no se puede deshacer",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        // Quitar del DOM
+        $(this).closest('.col-md-4').remove();
+
+        // Quitar del objeto JS para que no se envíe al guardar
+        delete camposDinamicos[key];
+
+        Swal.fire(
+          'Eliminado',
+          'El campo ha sido eliminado',
+          'success'
+        );
+      }
+    });
+  });
   </script>
   <!-- Funciones Reclutamiento -->
   <script src="<?php echo base_url(); ?>js/reclutamiento/functions.js"></script>

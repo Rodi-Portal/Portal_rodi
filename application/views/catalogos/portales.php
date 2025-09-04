@@ -403,7 +403,7 @@ $(document).ready(function() {
           },
           success: function(res) {
             ocultarLoader();
-            console.log(res);
+            //console.log(res);
             if (res !== 0) {
               let datos = JSON.parse(res);
               let salida = generarTabla(datos);

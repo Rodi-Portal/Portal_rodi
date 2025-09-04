@@ -1881,18 +1881,49 @@ class Candidato extends Custom_Controller
             $salida .= '</tr>';
             $salida .= '</thead>';
             $salida .= '<tbody>';
+            foreach (($response_data['documentos'] ?? []) as $doc) {
+                $idDoc       = isset($doc['id']) ? (int) $doc['id'] : 0;
+                $nameDoc     = isset($doc['nameDocument']) ? (string) $doc['nameDocument'] : '';
+                $nameAlterno = isset($doc['nameAlterno']) && $doc['nameAlterno'] !== null && $doc['nameAlterno'] !== ''
+                ? (string) $doc['nameAlterno'] : $nameDoc;
+                $uploadDate = isset($doc['upload_date']) ? (string) $doc['upload_date'] : '';
 
-            foreach ($response_data['documentos'] as $doc) {
-                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
-                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'])) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno']) . '</a></td>';
-                $salida .= '<td>' . htmlspecialchars(isset($doc['nameDocument']) ? $doc['nameDocument'] : '') . '</td>';
-                $salida .= '<td>' . htmlspecialchars($doc['upload_date']) . '</td>';
+                // URL al archivo
+                if($origen == 1){ 
+                $href = site_url('docs/' . rawurlencode($nameDoc));
+                }elseif($origen == 2){
+                $href = site_url('exams/' . rawurlencode($nameDoc));
+
+                }
+                // Args seguros para JS
+                $jsId     = $idDoc;
+                $jsName   = json_encode($nameDoc, JSON_UNESCAPED_UNICODE);
+                $jsReqId  = isset($id) ? (int) $id : 0;
+                $jsOrigen = json_encode((string) ($origen ?? ''), JSON_UNESCAPED_UNICODE);
+
+                // ✂️ Abreviar nombre en PHP
+                $maxLen         = 30;
+                $displayName    = mb_strimwidth($nameAlterno, 0, $maxLen, '…', 'UTF-8');
+                $maxLen         = 20; // ajusta a lo que quieras
+                $displayNameDoc = mb_strimwidth($nameDoc, 0, $maxLen, '…', 'UTF-8');
+                $salida .= '<tr id="fila' . html_escape((string) $idDoc) . '">';
+
+                // 👇 Muestra abreviado pero con tooltip (nombre completo)
+                $salida .= '<td><a href="' . html_escape($href) . '" target="_blank" '
+                . 'title="' . html_escape($nameAlterno) . '">'
+                . html_escape($displayName)
+                    . '</a></td>';
+
+                $salida .= '<td title="' . html_escape($nameDoc) . '">'
+                . html_escape($displayNameDoc)
+                    . '</td>';
+                $salida .= '<td>' . html_escape($uploadDate) . '</td>';
                 $salida .= '<td>
-                <button onclick="eliminarArchivoInterno(' . $doc["id"] . ', \'' . $doc["nameDocument"] . '\', ' . $id . ', \'' . $origen . '\')"
-                             class="btn btn-link text-danger p-0" title="Eliminar">
-                             <i class="fa fa-trash"></i>
-                         </button>
-             </td>';
+                    <button onclick="eliminarArchivoInterno(' . $doc["id"] . ', \'' . $doc["nameDocument"] . '\', ' . $id . ', \'' . $origen . '\')"
+                            class="btn btn-link text-danger p-0" title="Eliminar">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>';
 
                 $salida .= '</tr>';
             }
@@ -1991,6 +2022,7 @@ class Candidato extends Custom_Controller
 
         // Configurar la URL del endpoint según el origen
         $api_base_url = API_URL;
+
         if ($origen == 1) {
             $url  = $api_base_url . "documents/" . $id;
             $path = '_documentEmpleado/';
@@ -2058,9 +2090,9 @@ class Candidato extends Custom_Controller
             $salida .= '</thead>';
             $salida .= '<tbody>';
 
-           foreach ($response_data['documentos'] as $doc) {
+            foreach ($response_data['documentos'] as $doc) {
                 $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
-                
+
                 // Archivo real (nameDocument)
                 $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'] ?? '')) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno'] ?? '') . '</a></td>';
 
@@ -2071,11 +2103,9 @@ class Candidato extends Custom_Controller
                 $salida .= '<td>' . htmlspecialchars($doc['upload_date'] ?? '') . '</td>';
 
                 // Botón eliminar
-               
 
                 $salida .= '</tr>';
             }
-
 
             $salida .= '</tbody></table>';
         } else {

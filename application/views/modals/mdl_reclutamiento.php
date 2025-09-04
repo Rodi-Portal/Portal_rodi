@@ -26,8 +26,9 @@
               <?php
                   if ($reqs) {
                   foreach ($reqs as $req) {?>
-              <option value="<?php echo $req->id; ?>">
-                <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+
+              <option value="<?php echo $req->idReq; ?>">
+                <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
               </option>
               <?php }
               } else {?>
@@ -69,10 +70,10 @@
               <select name="medio" id="medio" class="form-control obligado w-100">
                 <option value="">Selecciona</option>
                 <?php if ($medios != null): ?>
-<?php foreach ($medios as $m): ?>
+                <?php foreach ($medios as $m): ?>
                 <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
                 <?php endforeach; ?>
-<?php endif; ?>
+                <?php endif; ?>
                 <option value="0">N/A</option>
               </select>
             </div>
@@ -245,8 +246,8 @@
 
                     if ($reqs) {
                     foreach ($reqs as $req) {?>
-                <option value="<?php echo $req->id; ?>">
-                  <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                <option value="<?php echo $req->idReq; ?>">
+                  <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
                 </option>
                 <?php }
                 }?>
@@ -303,8 +304,8 @@
               <?php
                   if ($reqs) {
                   foreach ($reqs as $req) {?>
-              <option value="<?php echo $req->id; ?>">
-                <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+              <option value="<?php echo $req->idReq; ?>">
+                <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
               </option>
               <?php }
               }?>
@@ -342,7 +343,62 @@
   </div>
 </div>
 
+<!-- Modal Subir / Administrar Documentos -->
+<div class="modal fade" id="modalDocumentos" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Documentos de <span id="docNombreAspirante"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
 
+      <div class="modal-body">
+        <!-- Tabla de documentos -->
+        <table class="table table-bordered" id="tablaDocumentos">
+          <thead>
+            <tr>
+              <th>Archivo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <hr>
+        <!-- Subir nuevos documentos -->
+        <form id="formSubirDocs" enctype="multipart/form-data">
+          <input type="hidden" name="id_aspirante" id="docIdAspirante">
+
+          <div class="form-group">
+            <label>Subir nuevos documentos</label>
+            <input type="file" name="archivos[]" id="inputArchivos" multiple class="form-control">
+            <small class="form-text text-muted">Selecciona varios; podrás editar el nombre antes de subir.</small>
+          </div>
+          <!-- Vista previa + nombres personalizados -->
+          <div id="previewArchivos" class="mb-3" style="display:none;">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Archivo</th>
+                  <th>Nombre personalizado</th>
+                  <th>Peso</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Subir</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ESTAMOS AQUI -->
 <div class="modal fade" id="registroCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -429,7 +485,7 @@
                     if ($paises != null) {
                         foreach ($paises as $p) {
                         $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
-                <option value="<?php echo $p->nombre; ?>"<?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
                     }
                     }
@@ -661,8 +717,8 @@
               </div>
               <div class="col-md-6">
                 <label>CURP check *</label>
-                <select name="curp_registro" id="curp_registro" class="form-control valor_dinamico registro_obligado"
-                  disabled></select>
+                <select name="curp_check_registro" id="curp_check_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -730,6 +786,8 @@
         </form>
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
+      <!-- ESTA;OS AQUI -->
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-success" onclick="registrarCandidato()">Guardar</button>
@@ -1578,6 +1636,23 @@
         </button>
       </div>
       <div class="modal-body">
+        <?php if ($this->session->userdata('tipo_bolsa') > 0) {?>
+        <form action="<?php echo base_url('Importa_excel/importar'); ?>" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="id_portal">
+          <input type="hidden" name="id_cliente"><!-- si aplica -->
+          <div class="form-group">
+            <label>Excel (.xlsx)</label>
+            <input type="file" name="archivo_excel" accept=".xlsx,.xls" class="form-control" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
+            <button class="btn btn-primary">Importar</button>
+
+          </div>
+        </form>
+        </div>
+        <?php } else {?>
         <form id="formImportarPuestos">
           <div class="row">
             <div class="col-12">
@@ -1588,11 +1663,15 @@
             </div>
           </div>
         </form>
+
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
         <button type="button" class="btn btn-success" id="btnSubir">Enviar</button>
+
       </div>
+      <?php }?>
     </div>
   </div>
 </div>
@@ -1748,7 +1827,8 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalRequisiciones" tabindex="-1" role="dialog" aria-labelledby="modalRequisicionesLabel" aria-hidden="true">
+<div class="modal fade" id="modalRequisiciones" tabindex="-1" role="dialog" aria-labelledby="modalRequisicionesLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
 
@@ -1791,7 +1871,7 @@
               <th>Nombre personalizado</th>
               <th>Archivo</th>
               <th>Fecha</th>
-               <th>Visible para Sucursal</th>
+              <th>Visible para Sucursal</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -1830,6 +1910,63 @@
     </div>
   </div>
 </div>
+<!-- Modal Link clientes general-->
+<div class="modal fade" id="qrModal" tabindex="-1" role="dialog" aria-labelledby="qrModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <!-- ancho -->
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title" id="qrModalLabel">
+          <i class="fas fa-qrcode mr-2"></i> Link de QR
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <!-- Col izquierda -->
+          <div class="col-md-6 border-right">
+            <h6 class="text-muted mb-2"><i class="fas fa-link mr-1"></i> Link</h6>
+
+            <div class="d-flex align-items-center mb-3">
+              <a id="qrLinkDisplay" href="#" target="_blank" class="text-truncate" style="max-width:80%;" title=""></a>
+              <button type="button" class="btn btn-sm btn-outline-primary ml-2" id="btnCopiarLink" title="Copiar">
+                <i class="fas fa-copy"></i>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Col derecha -->
+          <div class="col-md-6 text-center">
+            <h6 class="text-muted mb-2"><i class="far fa-image mr-1"></i> QR</h6>
+            <div id="qrPreviewWrapper" class="mt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex justify-content-between">
+
+
+
+        <button type="button" class="btn btn-outline-danger" id="btnEliminarQR">
+          <i class="fas fa-trash-alt mr-1"></i> Eliminar
+        </button>
+
+        <button type="button" class="btn btn-primary" id="btnGuardarQR">
+          <i class="fas fa-save mr-1"></i> Guardar / Actualizar
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 
 
@@ -2107,58 +2244,97 @@ document.getElementById('accion_aspirante').addEventListener('change', function(
     inputOtro.removeAttribute('required'); // Quitar obligatoriedad
   }
 });
+// ===== INICIO REEMPLAZO COMPLETO =====
 var pag = 1;
-$('.div_info_project, .div_project, .div_info_previo, .div_previo, .div_info_check, .div_check, .div_info_test, .div_test, .div_info_extra, .div_extra')
-  .css('display', 'none');
-$('#registroCandidatoModal').on('hidden.bs.modal', function(e) {
-  $("#registroCandidatoModal #msj_error").css('display', 'none');
-  $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
-  $('.valor_dinamico').val(0);
-  $('.valor_dinamico, #detalles_previo, #pais_previo').empty();
-  $('#pais_registro, #pais_previo').prop('disabled', true);
-  //$('#pais_registro').val(-1);
-  $('#proyecto_registro').prop('disabled', true);
-  $('#proyecto_registro').val('');
-  $('.valor_dinamico').prop('disabled', true);
-  $('#ref_profesionales_registro').val(0);
-  $('#ref_personales_registro').val(0);
-  $('#examen_registro, #examen_medico, #previo').val(0);
+
+// Oculta secciones al cargar el script
+$('.div_info_project, .div_info_projectt, .div_project, \
+   .div_info_previo, .div_previo, \
+   .div_info_check, .div_check, \
+   .div_info_test, .div_test, \
+   .div_info_extra, .div_extra, \
+   #detalles_previo').addClass('d-none');
+
+// Al cerrar el modal: SOLO resetea dinámicos, NO borres datos del aspirante ni #previos
+$('#registroCandidatoModal').off('hidden.bs.modal').on('hidden.bs.modal', function(e) {
+  // Oculta todo lo dinámico
+  $('.div_info_project, .div_info_projectt, .div_project, \
+     .div_info_previo, .div_previo, \
+     .div_info_check, .div_check, \
+     .div_info_test, .div_test, \
+     .div_info_extra, .div_extra, \
+     #detalles_previo').addClass('d-none');
+
+  // Mensajes
+  $("#registroCandidatoModal #msj_error").hide().empty();
+
+  // Limpia SOLO contenedores dinámicos (conserva lista #previos y datos del aspirante)
+  $('#detalles_previo, #div_docs_extras').empty();
+
+  // Deshabilita y limpia selects DINÁMICOS de "nuevo proyecto" (no usado)
+  $('select.valor_dinamico').prop('disabled', true).empty();
+  $('#pais_registro, #pais_previo').prop('disabled', true).val('');
+  $('#proyecto_registro').prop('disabled', true).val('');
+
+  // “Puesto: otro”
+  $('#puesto_otro').val('').hide();
+
+  // Exámenes → a 0 (no vaciamos opciones)
+  $('#examen_registro').val('0');
+  $('#examen_medico').val('0');
+  $('#examen_psicometrico').val('0');
+
+  // Sin selección por defecto; el usuario elige 0/1 cuando reabra
   $('#opcion_registro').val('').trigger('change');
-  $('#div_docs_extras').empty();
-  extras = [];
-});
-$("#opcion_registro").change(function() {
-  var opcion = $(this).val();
-  $('.div_info_project').css('display', 'block');
-  $('.div_project').css('display', 'flex');
-  $('.div_info_test').css('display', 'block');
-  $('.div_test').css('display', 'flex');
-  $("#registroCandidatoModal #msj_error").css('display', 'none');
 
-  if (opcion == 1) {
-    $('.nuevo_proyecto').css('display', 'none');
-    $('.div_check, .div_info_check, .div_info_extra, .div_extra').css('display', 'none');
-    $('.div_previo, .div_info_previo').css('display', 'none');
-  } else if (opcion == 0) {
-    $('.nuevo_proyecto').css('display', 'none');
-    $('.div_previo').css('display', 'flex');
-    $('.div_info_previo, #detalles_previo').css('display', 'block');
-    $('.div_check').css('display', 'flex');
-    $('.div_info_check').css('display', 'block');
-    $('.div_info_extra').css('display', 'block');
-    $('.div_extra').css('display', 'flex');
-  } else if (opcion == 2) {
-    $('.nuevo_proyecto').css('display', 'block'); // Si necesitas mostrar algo nuevo
-    $('.div_check, .div_info_check, .div_info_extra, .div_extra').css('display', 'none');
-    $('.div_previo, .div_info_previo').css('display', 'none');
-    $('.div_info_project, .div_project, .div_info_test, .div_test, #detalles_previo').css('display', 'none');
-  } else if (opcion == '') {
-    $('.nuevo_proyecto').css('display', 'none');
-    $('.div_previo, .div_info_previo, .div_check, .div_info_check, .div_info_project, .div_project, .div_info_test, .div_test, .div_info_extra, .div_extra')
-      .css('display', 'none');
+  // IMPORTANTE: NO hacer
+  // $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
+  // para no perder datos del aspirante ni la lista de #previos
+});
+
+// Handler de la opción: 0 (Previo+Exámenes), 1 (Exámenes), 2 (Nada)
+$('#opcion_registro').off('change').on('change', function() {
+  const opcion = $(this).val();
+
+  // Oculta absolutamente todo lo que es visible/ocultable
+  $('.div_info_project, .div_info_projectt, .div_project, \
+     .div_info_previo, .div_previo, \
+     .div_info_check, .div_check, \
+     .div_info_test, .div_test, \
+     .div_info_extra, .div_extra, \
+     #detalles_previo').addClass('d-none');
+
+  // Nunca mostrar: nuevo proyecto / checks / extras
+  $('.div_info_project, .div_info_projectt, .div_project, .div_info_check, .div_check, .div_info_extra, .div_extra')
+    .addClass('d-none');
+
+  if (opcion === '0') {
+    // Proyecto anterior + Exámenes
+    $('.div_info_previo, .div_previo').removeClass('d-none');
+    $('.div_info_test, .div_test').removeClass('d-none');
+    // Deja contenedor visible para que tu AJAX lo llene
+    $('#detalles_previo').removeClass('d-none');
+
+  } else if (opcion === '1') {
+    // Solo exámenes
+    $('.div_info_test, .div_test').removeClass('d-none');
   }
+  // '2' o '' => no mostrar nada extra
 });
 
+// (Opcional) Si usas Select2 en #puesto, destrúyelo al cerrar
+if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+  $('#registroCandidatoModal').on('hidden.bs.modal', function() {
+    $('#puesto').select2('destroy');
+  });
+}
+
+// Mostrar/ocultar input "otro" de puesto
+$('#puesto').off('change').on('change', function() {
+  $('#puesto_otro').toggle(this.value === 'otro');
+});
+
+// Deja este bloque tal cual (no se toca)
 $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
   cargarClientesActivos(urltraerClientes);
   $("#nuevaRequisicionModal #titulo_paso").text('Datos  ');
@@ -2166,6 +2342,7 @@ $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
   $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2, #nuevaRequisicionModal #paso3").prop(
     'disabled', true);
 });
+// ===== FIN REEMPLAZO COMPLETO =====
 $('#nuevaRequisicionModal #btnContinuar').on('click', function() {
   var formulario_actual = document.getElementById('formPaso' + pag);
   var todoCorrecto = true;
@@ -2304,26 +2481,6 @@ $('#nuevaAccionModal').on('hidden.bs.modal', function(e) {
 $('#estatusRequisicionModal').on('hidden.bs.modal', function(e) {
   $("#estatusRequisicionModal #msj_error").css('display', 'none');
   $("#estatusRequisicionModal textarea, #estatusRequisicionModal select").val('');
-});
-$("#registroCandidatoModal").on("hidden.bs.modal", function() {
-  $("#examen_registro").empty();
-  $("#examen_registro").append('<option value="">Selecciona</option><option value="0" selected>N/A</option>');
-
-  <?php
-      if ($paquetes_antidoping != null) {
-      foreach ($paquetes_antidoping as $paq) {?>
-  $("#examen_registro").append(
-    '<option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?></option>');
-  <?php
-      }
-  }?>
-
-  $("#registroCandidatoModal input, #registroCandidatoModal select, #registroCandidatoModal textarea").val('');
-  $("#examen_registro, #examen_medico, #examen_psicometrico").val(0).trigger('change'); // Actualizar Select2
-  $('#pais').val('México');
-  $('#subcliente').val(0);
-  $('#detalles_previo').empty();
-  $("#registroCandidatoModal #examen_registro").val(null).trigger('change'); // Reiniciar Select2
 });
 
 $("#region").change(function() {
@@ -2624,4 +2781,177 @@ function mostrarInputOtro() {
     inputOtro.value = ""; // Limpiar el input si se cambia a otra opción
   }
 }
+function buildFallasCSV(fallas) {
+  const headers = ['fila','nombre','entidad','label','url','http_code','error'];
+  const esc = v => {
+    const s = String(v ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  };
+  const lines = [headers.join(',')];
+  (fallas||[]).forEach(f => {
+    lines.push([esc(f.fila),esc(f.nombre),esc(f.entidad),esc(f.label),esc(f.url),esc(f.http_code),esc(f.error||'')].join(','));
+  });
+  return lines.join('\r\n');
+}
+function downloadTextFile(filename, text, mime='text/csv;charset=utf-8;') {
+  const blob = new Blob([text], {type: mime});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ===== Render del resultado (SweetAlert + botón CSV si hay fallas) =====
+function renderResultado(resp){
+  if(!resp || resp.ok === false){
+    Swal.fire('Error', (resp && resp.msg) ? resp.msg : 'Falló la importación', 'error');
+    return;
+  }
+  let msg = `
+    <b>Bolsa insertados:</b> ${resp.bolsa_insertados}<br>
+    <b>Empleados insertados:</b> ${resp.empleados_insertados}<br>
+    <b>Extras empleados:</b> ${resp.empleado_extras_rows}<br>
+  `;
+  if(resp.errores && resp.errores.length){
+    msg += `<hr><b>Errores:</b><ul>` + resp.errores.map(e=>`<li>${e}</li>`).join('') + `</ul>`;
+  }
+
+  let csvData = null;
+  if(resp.fallas_descargas && resp.fallas_descargas.length){
+    msg += `<hr><b>Descargas fallidas:</b><ul>` +
+      resp.fallas_descargas.map(f =>
+        `<li>Fila ${f.fila} (${f.nombre}) [${f.entidad}] ${f.label}: 
+          <a href="${f.url}" target="_blank">${f.url}</a>
+          — HTTP ${f.http_code} ${f.error ? (' - '+f.error) : ''}</li>`
+      ).join('') +
+      `</ul>
+       <p style="margin-top:12px">
+         <button type="button" id="btn-dl-csv" class="swal2-confirm swal2-styled">
+           Descargar CSV de fallas
+         </button>
+       </p>`;
+    csvData = buildFallasCSV(resp.fallas_descargas);
+  }
+
+  if (resp.fallas_csv_url) {
+    msg += `<p style="margin-top:8px">
+      <a class="swal2-confirm swal2-styled" href="${resp.fallas_csv_url}" target="_blank">
+        Descargar CSV de fallas (servidor)
+      </a></p>`;
+  }
+
+  Swal.fire({
+    title: 'Importación terminada',
+    html: msg,
+    icon: 'success',
+    width: 800,
+    didOpen: () => {
+      const btn = document.getElementById('btn-dl-csv');
+      if(btn && csvData){
+        btn.addEventListener('click', () => {
+          const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+          downloadTextFile(`fallas_descargas_${ts}.csv`, csvData);
+        });
+      }
+    }
+  });
+}
+
+// ===== Interceptar ese único form y mandar por AJAX =====
+$(function(){
+  // Selecciona exactamente tu form por su action (contiene Importa_excel/importar)
+  $('form[action*="Importa_excel/importar"]').on('submit', function(e){
+    e.preventDefault();
+
+    const form = this;
+    const fd   = new FormData(form);
+
+    // (Opcional) Si tienes CSRF activo en CI3, descomenta y ajusta:
+    // fd.append('<?= $this->security->get_csrf_token_name(); ?>', '<?= $this->security->get_csrf_hash(); ?>');
+
+    $.ajax({
+      url: $(form).attr('action'),          // usa la URL del form
+      method: 'POST',
+      data: fd,
+      processData: false,
+      contentType: false,
+      beforeSend: function(){
+        Swal.fire({
+          title:'Importando...',
+          text:'Por favor espera',
+          allowOutsideClick:false,
+          didOpen:()=>Swal.showLoading()
+        });
+      },
+      success: function(resp){
+        // Si el backend devuelve JSON como string, parsea:
+        if (typeof resp === 'string') {
+          try { resp = JSON.parse(resp); } catch(e){ resp = {ok:false, msg:'Respuesta no válida'}; }
+        }
+        renderResultado(resp);
+      },
+      error: function(){
+        Swal.fire('Error', 'No se pudo contactar al servidor', 'error');
+      }
+    });
+  });
+});
 </script>
+<style>
+.actions {
+  gap: .5rem;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  min-width: 240px;
+  /* mismo tamaño */
+  padding: .6rem .9rem;
+  border-radius: .6rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+  transition: transform .12s ease, filter .12s ease;
+}
+
+.action-btn .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-right: .6rem;
+  border-radius: .5rem;
+  background: rgba(255, 255, 255, .18);
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.action-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Tonos (puedes ajustar hex a tu gusto) */
+.btn-green {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+}
+
+.btn-blue {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.btn-purple {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: #fff;
+}
+</style>

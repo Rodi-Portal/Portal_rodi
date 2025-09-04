@@ -3,53 +3,50 @@
 
   <section class="content-header">
     <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-6">
-        <h1 class="titulo_seccion">Requisiciones</small></h1>
+      <div class="col-sm-12 col-md-6 col-lg-6 text-center">
+        <h1 class="titulo_seccion mb-3">Requisiciones</h1>
       </div>
 
+
       <div class="col-sm-12 col-md-6 col-lg-6">
-        <div class="mb-3 float-right">
-          <?php if ($this->session->userdata('tipo_bolsa') == 1) {?>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2"
-            onclick="nuevaRequisicionIntake()">
-            <span class="icon text-white-50">
-              <i class="far fa-file-alt"></i>
-            </span>
-            <span class="text">Registrar Requisicion</span>
+        <div class="actions d-flex justify-content-md-end flex-wrap">
+          <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
+          <button type="button" class="btn action-btn btn-green" onclick="openQrModal()">
+            <span class="icon"><i class="far fa-file-alt"></i></span>
+            <span class="text">Link General</span>
           </button>
+          <?php endif; ?>
 
-          <?php } else {?>
-          <button type="button" id="btnNuevaRequisicion" class="btn btn-primary btn-icon-split float-right mr-2"
-            onclick="nuevaRequisicion()">
-            <span class="icon text-white-50">
-              <i class="far fa-file-alt"></i>
-            </span>
-            <span class="text">Requisicion Interna</span>
+          <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
+          <button type="button" id="btnRegistrarReq" class="btn action-btn btn-blue" onclick="nuevaRequisicionIntake()">
+            <span class="icon"><i class="far fa-file-alt"></i></span>
+            <span class="text">Registrar Requisición</span>
           </button>
-          <?php }?>
-        </div>
-        <?php
-            if ($this->session->userdata('idrol') == 4) {
-                $disabled  = 'disabled';
-                $textTitle = 'title="No posees permiso para esta acción"';
-            } else {
-                $disabled  = '';
-                $textTitle = '';
-        }?>
-        <div class="mb-3 float-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
-          <button type="button" id="btnOpenAssignToUser" class="btn btn-primary btn-icon-split float-right mr-2"
-            onclick="openAssignToUser()" <?php echo $disabled; ?>>
-            <span class="icon text-white-50">
-              <i class="fas fa-user-edit"></i>
-            </span>
-            <span class="text">Asignar Requisicion</span>
+          <?php else: ?>
+          <button type="button" id="btnReqInterna" class="btn action-btn btn-blue" onclick="nuevaRequisicion()">
+            <span class="icon"><i class="far fa-file-alt"></i></span>
+            <span class="text">Requisición Interna</span>
+          </button>
+          <?php endif; ?>
+
+          <?php
+              if ($this->session->userdata('idrol') == 4) {
+                  $disabled  = 'disabled';
+                  $textTitle = 'title="No posees permiso para esta acción"';
+              } else { $disabled = '';
+                  $textTitle                            = '';}
+          ?>
+          <button type="button" id="btnOpenAssignToUser" class="btn action-btn btn-purple" onclick="openAssignToUser()"
+            <?php echo $disabled . ' ' . $textTitle; ?>>
+            <span class="icon"><i class="fas fa-user-edit"></i></span>
+            <span class="text">Asignar Requisición</span>
           </button>
         </div>
-
       </div>
+
     </div>
   </section>
-
+  <br><br>
   <div>
     <p>Este módulo facilita la gestión de requisiciones de empleo, permitiendo asignar a un reclutador, registrar nuevas
       requisiciones expresas, y realizar acciones como descargar, iniciar, ver, detener y eliminar requisiciones de
@@ -85,20 +82,25 @@
     </div>
     <div class="col-sm-12 col-md-3 col-lg-3">
       <label for="buscador">Buscar:</label>
-      <select name="buscador" id="buscador">
+      <select name="buscador" id="buscador" class="form-control">
         <option value="0">Todos</option>
-        <?php
-
-            if ($orders_search) {
-            foreach ($orders_search as $row) {?>
-        <option value="<?php echo $row->id; ?>">
-          <?php echo '#' . $row->id . ' ' . $row->nombre . ' - ' . $row->puesto; ?></option>
-        <?php }
-        } else {?>
-        <option value="">Sin requisiones registradas</option>
-        <?php }?>
+        <?php if (! empty($orders_search)): ?>
+        <?php foreach ($orders_search as $row): ?>
+        <option value="<?php echo (int) $row->idReq; ?>">
+          <?php
+              echo '#' . (int) $row->idReq . ' '
+                  . (! empty($row->nombre_cliente) ? htmlspecialchars($row->nombre_cliente) : 'No Asignado')
+                  . ' - '
+                  . (! empty($row->puesto) ? htmlspecialchars($row->puesto) : 'Sin puesto');
+          ?>
+        </option>
+        <?php endforeach; ?>
+        <?php else: ?>
+        <option value="">Sin requisiciones registradas</option>
+        <?php endif; ?>
       </select>
     </div>
+
   </div>
 
   <a href="javascript:void(0)" class="btn btn-primary btn-icon-split btnRegresar" id="btnBack"
@@ -111,15 +113,17 @@
 
   <div id="seccionTarjetas">
     <div id="tarjetas">
-      <?php if ($requisiciones): ?>
+      <?php
+      
+      if ($requisiciones):  ?>
+
       <div class="row mb-3">
         <?php foreach ($requisiciones as $r):
                 $hoy            = date('Y-m-d H:i:s');
                 $fecha_registro = ! empty($r->creacionReq) ? fechaTexto($r->creacionReq, 'espanol') : '';
 
                 // Intake vs clásica
-                $esIntake = (isset($r->tipo) && strtoupper($r->tipo) === 'SOLICITUD')
-                || ! empty($r->nombre_cliente) || ! empty($r->razon_social);
+                $esIntake = (isset($r->tipo) && strtoupper($r->tipo) === 'SOLICITUD' || strtoupper($r->tipo) === 'INTAKE');
 
                 if ($esIntake) {
                     $empresa      = trim((string) ($r->nombre ?? ''));
@@ -129,11 +133,11 @@
                     $correoCard   = ! empty($r->email) ? trim((string) $r->email) : trim((string) ($r->correo ?? ''));
                     $contactoCard = trim((string) ($r->nombre_cliente ?? ''));
                 } else {
-                    $empresa      = trim((string) ($r->nombre ?? ''));
+                    $empresa      = trim((string) ($r->nombre_cliente ?? ''));
                     $comercial    = trim((string) ($r->nombre_comercial ?? ''));
                     $puestoCard   = trim((string) ($r->puesto ?? ''));
-                    $telefonoCard = trim((string) ($r->telefono ?? ''));
-                    $correoCard   = trim((string) ($r->correo ?? ''));
+                    $telefonoCard = trim((string) ($r->telefono_cliente ?? ''));
+                    $correoCard   = trim((string) ($r->correo_cliente ?? ''));
                     $contactoCard = trim((string) ($r->contacto ?? ''));
                 }
 
@@ -174,10 +178,10 @@
                             $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $nombreUsuario . '</b></div>';
                         } else {
                             $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '">
-																								                  <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
-																								                     onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
-																								                     <i class="fas fa-user-times fa-fw"></i>
-																								                  </a> <b>' . $nombreUsuario . '</b></div>';
+		                          <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
+		                              onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
+		                              <i class="fas fa-user-times fa-fw"></i>
+		                          </a> <b>' . $nombreUsuario . '</b></div>';
                         }
                     }
                 } else {
@@ -188,21 +192,37 @@
                 // Botón editar
                 $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA')
                 ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar Requisición"
-																								                 onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
-																								                 <i class="fas fa-edit fa-fw"></i></a>'
+		                onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
+		                <i class="fas fa-edit fa-fw"></i></a>'
                 : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar SOLICITUD" onclick="openUpdateOrderIntake(' . (int) $r->idReq . ')">
-																					                    <i class="fas fa-edit fa-fw"></i>
-																					                  </a>';
+		                <i class="fas fa-edit fa-fw"></i>
+		              </a>';
 
                 $totalOrders = count($requisiciones);
                 $moveOrder   = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
             ?>
         <div class="col-sm-12 col-md-4 col-lg-4 mb-5<?php echo $moveOrder ?>">
           <div class="card text-center tarjeta" id="<?php echo 'tarjeta' . (int) $r->idReq; ?>">
-            <div
-              class="card-header	                                	                                	                                		                                	                                	                                	                                	                                	                                	                                	                                	                                		                                	                                	                                	                                	                                	                                	                                			                                   		                                   	                                   	                                    <?php echo $color_estatus; ?>">
-              <b><?php echo '#' . (int) $r->idReq . ' ' . $nombres; ?></b>
-              <?php if ($esIntake): ?><span class="badge badge-info ml-2">SOLUCITUD</span><?php endif; ?>
+            <div class="card-header <?php echo $color_estatus?>">
+              <div class="d-flex align-items-center">
+                <span class="text-uppercase text-truncate d-block w-100">
+                  <strong>
+                    #<?php echo (int) $r->idReq?>
+                    <?php
+        // usar $nombres tal cual, pero para el header: <br> → espacio, trim y colapsar espacios
+                        $headerNombre = preg_replace(
+                            '/\s+/', ' ',
+                            trim(str_ireplace(['<br>', '<br/>', '<br />'], ' ', (string) $nombres))
+                        );
+                        echo ' ' . html_escape($headerNombre);
+                    ?>
+                  </strong>
+                </span>
+
+                <?php if ($esIntake): ?>
+                <span class="badge badge-info ml-2">SOLICITUD</span>
+                <?php endif; ?>
+              </div>
             </div>
 
             <div class="card-body">
@@ -1161,23 +1181,26 @@ $(document).ready(function() {
   function loadContent(url) {
     $.get(url, function(data) {
       $('#module-content').html(data);
-    }).fail(function() {
+
+      // Si quieres abrir un modal automáticamente, tendrías que llamarlo aquí, por ejemplo:
+      // $('#confirmarPasswordModal').modal('show');
+    }).fail(function(xhr, status, error) {
+      console.error("Error en loadContent:", status, error, xhr.responseText);
       $('#module-content').html('<p>Error al cargar el contenido. Por favor, inténtalo de nuevo.</p>');
     });
   }
 
+
   // Manejo del cambio en el select de buscador
-  $('#buscador').change(function() {
-    var opcion = $(this).val();
-
-    if (opcion === "0") { // Si selecciona "VER TODAS"
-      regresarListado()
-    } else {
-      var newUrl = url_orders + "?order=" + opcion;
-      loadContent(newUrl); // Cargar el contenido según la opción seleccionada
+  $('#buscador').on('change', function() {
+    const opcion = $(this).val(); // ahora será "60", no "#60 ..."
+    if (opcion === "0") {
+      regresarListado();
+    } else if (opcion && opcion !== "") {
+      const newUrl = url_orders + "?order=" + encodeURIComponent(opcion);
+      loadContent(newUrl);
     }
-
-    return false; // Prevenir el comportamiento predeterminado
+    return false;
   });
 
   // Inicializa los valores de los selects para ordenar y filtrar
@@ -1510,6 +1533,217 @@ function verDetallesIntake(idIntake) {
     }
   });
 }
+// ENDPOINTS: define una sola vez (en layout)
+window.ENDPOINTS = window.ENDPOINTS || {
+  GET: "<?php echo base_url('Cat_Cliente/getLinkPortal'); ?>",
+  SAVE: "<?php echo base_url('Cat_Cliente/saveLinkPortal'); ?>",
+  DELETE: "<?php echo base_url('Cat_Cliente/deleteLinkPortal'); ?>"
+};
+
+// Utilidades
+function csrfPair() {
+  const name = document.querySelector('meta[name="csrf-name"]');
+  const hash = document.querySelector('meta[name="csrf-hash"]');
+  return name && hash ? {
+    name: name.content,
+    hash: hash.content
+  } : null;
+}
+
+function updateCsrfFromResponse(resp) {
+  if (resp && resp.csrf_name && resp.csrf_hash) {
+    document.querySelector('meta[name="csrf-name"]').setAttribute('content', resp.csrf_name);
+    document.querySelector('meta[name="csrf-hash"]').setAttribute('content', resp.csrf_hash);
+  }
+}
+
+function shorten(url, max = 90) {
+  if (!url) return '';
+  return url.length > max ? url.slice(0, 45) + '…' + url.slice(-35) : url;
+}
+
+function truncateLink(link, maxLen) {
+  if (!link) return '';
+  if (link.length <= maxLen) return link;
+  const left = Math.floor((maxLen - 1) * 0.55);
+  const right = maxLen - 1 - left;
+  return link.substr(0, left) + '…' + link.substr(link.length - right);
+}
+
+function copyText(text) {
+  const temp = document.createElement('input');
+  temp.value = text;
+  document.body.appendChild(temp);
+  temp.select();
+  document.execCommand('copy');
+  document.body.removeChild(temp);
+}
+
+// Render del modal (no registra handlers)
+function renderQRModal(link, qr) {
+  const display = link ? truncateLink(link, 60) : 'Sin link';
+
+  $('#qrLinkDisplay')
+    .text(display)
+    .attr('href', link || '#')
+    .attr('title', link || 'No hay link');
+
+  $('#qrUrl').val(link || '');
+
+  if (qr) {
+    $('#qrPreviewWrapper').html(`<img src="${qr}" alt="QR">`);
+  } else {
+    $('#qrPreviewWrapper').html(`<p class="text-muted mb-0">Sin imagen de QR.</p>`);
+  }
+}
+
+// Abre y carga (llámala desde tu botón)
+function openQrModal() {
+  // Limpia UI
+  renderQRModal('', null);
+  $('#btnEliminarQR').prop('disabled', true);
+
+  // Abre modal (una sola llamada)
+  $('#qrModal').modal({
+    backdrop: 'static',
+    show: true
+  });
+
+  // Trae datos
+  $.ajax({
+    url: ENDPOINTS.GET,
+    method: 'GET',
+    dataType: 'json'
+  }).done(function(resp) {
+    const item = Array.isArray(resp) ? resp[0] : resp;
+    const link = item && (item.link || item.url || null);
+    const qr = item && (item.qr || item.qr_url || item.qrImage || null);
+
+    renderQRModal(link, qr);
+    $('#btnEliminarQR').prop('disabled', !(link || qr));
+    updateCsrfFromResponse(resp);
+  }).fail(function() {
+    renderQRModal('', null);
+    alert('No se pudo obtener la información del QR.');
+  });
+}
+
+// ========= Handlers (registrar UNA sola vez) =========
+$(function() {
+  // Copiar link mostrado
+  $("#btnGuardarQR").on("click", function() {
+    // Si tienes el id_cliente en un input oculto, tómalo:
+    var raw = ($("#idCliente").val() || "").trim(); // <input type="hidden" id="idCliente" ...>
+    var idCliente = raw === "" ? null : parseInt(raw, 10);
+
+    // Arma payload
+    var data = {};
+    if (idCliente !== null && !Number.isNaN(idCliente)) {
+      data.id_cliente = idCliente; // si viene, envíalo
+    }
+    // Si además tu endpoint requiere id_portal explícito, agrégalo:
+    // data.id_portal =                                                                                                                                                                  <?php echo (int) $this->session->userdata('id_portal_token'); ?>;
+
+    // CSRF opcional
+    var csrf = csrfPair();
+    if (csrf) data[csrf.name] = csrf.hash;
+
+    $.ajax({
+        url: "<?php echo base_url('Cat_Cliente/generarLinkRequisicion'); ?>",
+        type: "POST",
+        data: data,
+        dataType: "json"
+      })
+      .done(function(res) {
+        updateCsrfFromResponse(res);
+
+        // Soporta ambos formatos de respuesta:
+        // A) { success: true, link: "...", qr_image: "..." }
+        // B) { link: "...", qr: "data:image/...base64", mensaje: "..." }
+        var ok = (res && (res.success === true || !!res.link));
+        var link = res && (res.link || res.url || null);
+        var qrImage = res && (res.qr_image || res.qr || null);
+        var msg = res && (res.mensaje || res.message || (ok ? 'OK' : 'Error'));
+
+        if (!ok || !link) {
+          Swal.fire("Error", msg || "No se pudo generar/actualizar el QR.", "error");
+          return;
+        }
+
+        // Pinta en el modal
+        $("#qrLinkDisplay")
+          .attr("href", link)
+          .attr("title", link)
+          .text(shorten(link));
+
+        if (qrImage) {
+          $("#qrPreviewWrapper").html(
+            '<img src="' + qrImage + '" class="img-fluid rounded border" style="max-width:220px;">'
+          );
+        } else {
+          $("#qrPreviewWrapper").html('<p class="text-muted mb-0">Sin imagen de QR.</p>');
+        }
+
+        // Habilita eliminar
+        $("#btnEliminarQR").prop("disabled", false);
+
+        Swal.fire("Éxito", msg || "QR generado/actualizado correctamente.", "success");
+      })
+      .fail(function(xhr) {
+        let m = (xhr.responseJSON && (xhr.responseJSON.error || xhr.responseJSON.message)) ||
+          "Error en la petición AJAX";
+        Swal.fire("Error", m, "error");
+      });
+  });
+
+  // (Opcional) Eliminar
+  $("#btnEliminarQR").on("click", function() {
+    var raw = ($("#idCliente").val() || "").trim();
+    var idCliente = raw === "" ? null : parseInt(raw, 10);
+
+    var data = {};
+    if (idCliente !== null && !Number.isNaN(idCliente)) data.id_cliente = idCliente;
+    var csrf = csrfPair();
+    if (csrf) data[csrf.name] = csrf.hash;
+
+    $.ajax({
+        url: "<?php echo base_url('Cat_Cliente/eliminarLinkRequisicion'); ?>",
+        type: "POST",
+        data: data,
+        dataType: "json"
+      })
+      .done(function(res) {
+        updateCsrfFromResponse(res);
+        if (res && (res.success === true || res.deleted === true)) {
+          $("#qrLinkDisplay").attr("href", "#").attr("title", "").text("");
+          $("#qrPreviewWrapper").empty();
+          $("#btnEliminarQR").prop("disabled", true);
+          Swal.fire("Éxito", "QR eliminado.", "success");
+        } else {
+          Swal.fire("Error", (res && (res.mensaje || res.error)) || "No se pudo eliminar.", "error");
+        }
+      })
+      .fail(function() {
+        Swal.fire("Error", "Error en la petición AJAX", "error");
+      });
+  });
+
+  // Copiar link
+  $("#btnCopiarLink").on("click", function() {
+    var link = $("#qrLinkDisplay").attr("href");
+    if (!link || link === "#") return;
+    navigator.clipboard.writeText(link).then(
+      () => Swal.fire("Copiado", "Link copiado al portapapeles", "success"),
+      () => alert("No se pudo copiar")
+    );
+  });
+
+  // Limpieza visual al cerrar (opcional)
+  $('#qrModal').on('hidden.bs.modal', function() {
+    renderQRModal('', null);
+    $('#btnEliminarQR').prop('disabled', true);
+  });
+});
 
 
 function verDetalles(id) {
@@ -1955,7 +2189,7 @@ function openUpdateOrderIntake(id) {
     success: function(res) {
       setTimeout(() => $('.loader').fadeOut(), 200);
       const dato = typeof res === 'string' ? JSON.parse(res) : res || {};
-      console.log("🚀 ~ openUpdateOrderIntake ~ empresa:", dato)
+
 
       // Encabezado
       const cliente = dato.nombre_c || '';
@@ -2840,7 +3074,6 @@ function renderTablaRequisiciones(data) {
 
   $('#contenedorTabla').html(html);
 }
-
 </script>
 <!-- Funciones Reclutamiento -->
 <script src="<?php echo base_url(); ?>js/reclutamiento/functions.js"></script>

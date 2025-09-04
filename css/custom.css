@@ -665,7 +665,11 @@ color: white;
   color: white !important;
 }
 .req_preventiva{
-  background-color: #deee66 !important;
+  background-color: #d4cb29 !important;
+  color: black !important;
+}
+.req_aprobado{
+  background-color: #f65921 !important;
   color: black !important;
 }
 .req_negativa{

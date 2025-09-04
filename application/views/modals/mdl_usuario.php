@@ -387,6 +387,312 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="modalAsignarCliente" tabindex="-1" role="dialog" aria-labelledby="modalAsignarClienteLabel"
+  aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAsignarClienteLabel">Asignar a sucursal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="idCandidatoSeleccionado" value="">
+        <div class="form-group">
+          <label for="selectCliente">Sucursal (cliente)</label>
+          <select id="selectCliente" class="form-control">
+            <option value="">Cargando sucursales...</option>
+          </select>
+        </div>
+        <div id="asignarAlert" class="alert alert-danger d-none mb-0">Seleccione una sucursal.</div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
+        <button type="button" id="asignarCliente" class="btn btn-primary">Asignar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<?php
+    // --- Preparar labels del periodo y vencimiento (ES) ---
+    date_default_timezone_set('America/Mexico_City');
+    $tz      = new DateTimeZone('America/Mexico_City');
+    $hoy     = new DateTime('now', $tz);
+    $periodo = new DateTime('first day of last month', $tz);       // mes anterior
+    $vence   = new DateTime($hoy->format('Y-m-05 00:00:00'), $tz); // día 5 del mes actual
+
+    if (class_exists('IntlDateFormatter')) {
+        $fmtMesAnio    = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "LLLL y");
+        $fmtLargo      = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "d 'de' LLLL 'de' y");
+        $periodo_label = $fmtMesAnio->format($periodo);
+        $vence_label   = $fmtLargo->format($vence);
+    } else {
+        // Fallback sin extensión intl (útil en Windows/Laragon)
+        $MESES         = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+        $periodo_label = ucfirst($MESES[(int) $periodo->format('n') - 1]) . ' ' . $periodo->format('Y');
+        $vence_label   = $vence->format('j') . ' de ' . $MESES[(int) $vence->format('n') - 1] . ' de ' . $vence->format('Y');
+    }
+?>
+<div class="modal fade" id="modalAvisoPago" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
+  data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title">
+          <i class="fas fa-exclamation-triangle mr-1"></i> Aviso de pago
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-1"><b>Periodo:</b> <?php echo htmlspecialchars($periodo_label) ?></p>
+        <p class="mb-2"><b>Vence:</b> <?php echo htmlspecialchars($vence_label) ?></p>
+        <?php if (isset($monto_label) && $monto_label !== ''): ?>
+        <p class="mb-2"><b>Monto del periodo:</b><?php echo htmlspecialchars($monto_label) ?></p>
+        <?php endif; ?>
+
+        <div class="alert alert-info py-2">
+          Para realizar el pago puedes:
+          <ul class="mb-0 mt-2 pl-3">
+            <li>
+              <i class="fas fa-envelope"></i>
+              Escribir a
+              <a href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>
+            </li>
+            <li>
+              <i class="fas fa-phone"></i>
+              Comunicarte por teléfono al
+              <a href="tel:+523334542877">33 3454 2877</a>
+              o por WhatsApp al
+              <a href="https://wa.me/523334542877" target="_blank" rel="noopener">33 3454 2877</a>.
+            </li>
+            <li>
+              <i class="fas fa-credit-card"></i>
+              Presionar <b>“Ir a pagos”</b> para ingresar al apartado de <b>Pagos y Suscripción</b>, donde podrás
+              generar un <b>link de pago</b> según tu suscripción y el monto indicado.
+            </li>
+          </ul>
+        </div>
+
+        <p class="text-muted small mb-0">
+          Recuerda: el pago se realiza del <b>1 al 5</b> de cada mes. Para cualquier duda o aclaración,
+          contáctanos por los medios mencionados anteriormente.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <a href="<?php echo base_url('Area/pasarela'); ?>" class="btn btn-primary">
+          <i class="fas fa-external-link-alt mr-1"></i> Ir a pagos
+        </a>
+        <button type="button" class="btn btn-success" id="btnEntendidoPago" data-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/**
+ * Script de asignación de clientes a candidatos con DataTables y Bootstrap 4.
+ *
+ * Flujo:
+ * 1. Inicialización:
+ *    - Activa tooltips de Bootstrap para elementos con `data-toggle="tooltip"`.
+ *    - Reaplica los tooltips cada vez que la tabla (`#tabla`) se redibuja.
+ *
+ * 2. Al hacer clic en ".btn-asignar-cliente":
+ *    - Obtiene el ID del candidato desde el atributo `data-id`.
+ *    - Guarda el ID en un input oculto `#idCandidatoSeleccionado`.
+ *    - Limpia y carga el select `#selectCliente` con las sucursales obtenidas vía AJAX.
+ *    - Si la carga falla, muestra un mensaje de error en el select.
+ *    - Abre el modal `#modalAsignarCliente`.
+ *
+ * 3. Al confirmar con el botón "#asignarCliente":
+ *    - Obtiene el candidato y el cliente seleccionados.
+ *    - Valida que se haya elegido un cliente (si no, muestra alerta).
+ *    - Envía una petición POST al backend (`cliente_general/asignarCliente`)
+ *      con los datos requeridos (id_candidato, id_cliente).
+ *    - Si la respuesta es exitosa:
+ *        - Cierra el modal.
+ *        - Recarga la tabla DataTable sin perder la paginación actual.
+ *        - (Opcional) muestra un mensaje de éxito con toastr.
+ *    - Si ocurre un error (backend o red), muestra un mensaje en `#asignarAlert`.
+ *
+ * Dependencias:
+ * - jQuery (eventos, AJAX, manipulación DOM).
+ * - Bootstrap 4 (tooltips, modales).
+ * - DataTables (para redibujar la tabla y refrescar datos).
+ * - CodeIgniter 3 (endpoints y opcionalmente protección CSRF).
+ *
+ * Uso:
+ * - Se espera que el backend exponga:
+ *    - `cliente_general/listarClientes`: retorna lista de sucursales en JSON.
+ *    - `cliente_general/asignarCliente`: procesa la asignación y devuelve JSON con {status, message}.
+ */
+$(function() {
+  // Tooltips BS4
+  function initTips() {
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body'
+    });
+  }
+  initTips();
+  $('#tabla').on('draw.dt', initTips);
+
+  // Al hacer clic en el botón de cada fila
+  $(document).on('click', '.btn-asignar-cliente', function() {
+    const idCandidato = $(this).data('id');
+    $('#idCandidatoSeleccionado').val(idCandidato);
+    // console.log("🚀 ~ idCandidato:", idCandidato)
+    $('#asignarAlert').addClass('d-none');
+
+    // Limpia y carga el select
+    $('#selectCliente').empty().append('<option value="">Cargando sucursales...</option>');
+
+    // Llama al backend para traer sucursales (clientes)
+    $.get('<?php echo site_url("Cliente/listarClientes"); ?>', function(resp) {
+        $('#selectCliente').empty().append('<option value="0">Sin sucursal...</option>');
+
+        if (Array.isArray(resp) && resp.length) {
+
+          resp.forEach(function(cli) {
+            $('#selectCliente').append(
+              $('<option>', {
+                value: cli.id,
+                text: cli.nombre
+              })
+            );
+          });
+        } else {
+          $('#selectCliente').append('<option value="">(Sin sucursales disponibles)</option>');
+        }
+      }, 'json')
+      .fail(function() {
+        $('#selectCliente').empty().append('<option value="">Error al cargar sucursales</option>');
+      });
+
+    // Abre modal
+    $('#modalAsignarCliente').modal('show');
+  });
+
+  // Confirmar asignación
+  $('#asignarCliente').on('click', function() {
+    const idCandidato = $('#idCandidatoSeleccionado').val();
+    // console.log("🚀 ~ idCandidato:", idCandidato)
+    const idCliente = $('#selectCliente').val();
+
+    if (!idCliente) {
+      $('#asignarAlert').removeClass('d-none').text('Seleccione una sucursal.');
+      return;
+    }
+
+    // Si usas CSRF en CI3, agrega token aquí:
+    // const csrfName = '<?php echo $this->security->get_csrf_token_name(); ?>';
+    // const csrfHash = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+    $.post('<?php echo site_url("Cliente/asignarCliente"); ?>', {
+        id_candidato: idCandidato,
+        id_cliente: idCliente,
+        // [csrfName]: csrfHash
+      }, function(resp) {
+        if (resp && resp.status === 'success') {
+
+
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Asignación realizada',
+            showConfirmButton: false,
+            timer: 1800,
+            timerProgressBar: true
+          });
+          $('#modalAsignarCliente').one('hidden.bs.modal', function() {
+            window.location.reload(); // 👈 recarga cuando termine de cerrarse
+          }).modal('hide');
+
+          // Refresca la tabla
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'No se pudo asignar',
+            text: (resp && resp.message) ? resp.message : 'Inténtalo nuevamente.'
+          });
+        }
+      }, 'json')
+      .fail(xhr => {
+        Swal.close();
+        const msg = (xhr.responseJSON && xhr.responseJSON.message) ?
+          xhr.responseJSON.message :
+          (xhr.statusText || 'Error de red');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de red',
+          text: msg
+        });
+      });
+  });
+});
+
+/**
+ * Muestra un modal de aviso de pago si la sesión contiene el estado "pendiente_en_plazo".
+ *
+ * Flujo:
+ * 1. Al cargar la página:
+ *    - Revisa la variable de sesión `notPago` enviada desde el backend.
+ *    - Si el valor es "pendiente_en_plazo", abre el modal `#modalAvisoPago`.
+ *
+ * 2. Al dar clic en el botón "#btnEntendidoPago":
+ *    - Envía una petición AJAX tipo POST al endpoint "Area/omitirAvisoPago".
+ *    - Incluye el token CSRF si está habilitado en CodeIgniter.
+ *    - Cierra el modal sin importar la respuesta del servidor.
+ *
+ * Dependencias:
+ * - jQuery (para DOM y AJAX).
+ * - Bootstrap Modal (para mostrar/ocultar el aviso).
+ * - CodeIgniter 3 (para sesión y seguridad CSRF).
+ *
+ * Uso:
+ * - El backend debe establecer en sesión `notPago = 'pendiente_en_plazo'`.
+ * - El método "omitirAvisoPago" debe procesar la petición y actualizar la sesión.
+ */
+$(function() {
+  // Si el backend dejó 'pendiente_en_plazo' en sesión, mostramos el modal
+  var estadoPago = "<?php echo $this->session->userdata('notPago'); ?>";
+  if (estadoPago === 'pendiente_en_plazo') {
+    $('#modalAvisoPago').modal('show');
+  }
+
+  // Al dar clic en "Entendido", cambiamos la variable de sesión para esta sesión
+  $('#btnEntendidoPago').on('click', function() {
+    var data = {};
+    <?php if (method_exists($this->security, 'get_csrf_token_name')): ?>
+    data['<?php echo $this->security->get_csrf_token_name(); ?>'] =
+      '<?php echo $this->security->get_csrf_hash(); ?>';
+    <?php endif; ?>
+
+    $.ajax({
+      url: "<?php echo base_url('Area/omitirAvisoPago'); ?>",
+      type: "POST",
+      dataType: "json",
+      data: data
+    }).always(function() {
+      // Cerramos el modal (éxito o no) y no se mostrará otra vez hasta relogueo
+      $('#modalAvisoPago').modal('hide');
+    });
+  });
+});
+</script>
+
 
 <script>
 // ENDPOINTS (ajusta rutas si tu controlador se llama distinto)
@@ -542,8 +848,9 @@ function bloqueoModal(lock, msg) {
 }
 
 
-const BASE = "<?php echo base_url();?>";
-
+if (typeof window.BASE4 === 'undefined') {
+  window.BASE4 = "<?php echo base_url('tu_ruta'); ?>";
+}
 // ========= Utilidades =========
 function esc(s) {
   return $('<div/>').text(s == null ? '' : String(s)).html();
@@ -564,13 +871,19 @@ function isPdf(name) {
 // Ajusta a tu endpoint seguro (Files/stream, docs/ver_doc, etc.)
 function buildDocUrl(fileName, kind) {
   const base = (kind === 'exam') ? 'exams' : 'docs';
-  return BASE + base + "/" + encodeURIComponent(fileName);
+  return BASE4 + base + "/" + encodeURIComponent(fileName);
 }
 
-
 // Campos a ignorar por clave / patrón
-const IGNORE_KEYS = ['id', 'id_empleado', 'id_domicilio_empleado','id_usuario', 'id_cliente', 'id_portal', 'status','convenio_confidencialidad', 'acuerdo_confidencialidad','foto_asociado', 'cedula_identidad'];
-const IGNORE_PARTIAL = ['creacion', 'edicion', 'updated', 'fecha', 'eliminado', 'status']; // oculta fechas e indicadores internos
+if (!Array.isArray(window.IGNORE_KEYS)) {
+  window.IGNORE_KEYS = ['id', 'id_empleado', 'id_domicilio_empleado', 'id_usuario', 'id_cliente', 'id_portal', 'status',
+    'convenio_confidencialidad', 'acuerdo_confidencialidad', 'foto_asociado', 'cedula_identidad'
+  ];
+}
+
+if (!Array.isArray(window.IGNORE_PARTIAL)) {
+  window.IGNORE_PARTIAL = ['creacion', 'edicion', 'updated', 'fecha', 'eliminado', 'status'];
+} // oculta fechas e indicadores internos
 
 function shouldIgnoreKey(k, v) {
   if (!k) return true;
@@ -587,7 +900,6 @@ function shouldIgnoreKey(k, v) {
 
   return false;
 }
-
 // 0/1 → No/Sí (badges). Si quieres texto simple, cambia por "No"/"Sí"
 function formatValue(v) {
   if (v == null) return '';
@@ -599,7 +911,6 @@ function formatValue(v) {
 
   return esc(v);
 }
-
 // ========= Renderizadores =========
 function renderKV(obj) {
   const keys = Object.keys(obj || {});
@@ -644,39 +955,72 @@ function renderCamposExtra(list) {
     </div>`;
 }
 
+function abbreviateFilename(name, max = 32) {
+  if (!name) return '';
+  // quitar ruta y querystrings
+  const basePart = name.split(/[\\/]/).pop();
+  const clean = basePart.split('?')[0];
+
+  if (clean.length <= max) return clean;
+
+  const dot = clean.lastIndexOf('.');
+  let ext = '',
+    base = clean;
+  if (dot > 0 && dot < clean.length - 1) {
+    ext = clean.slice(dot);
+    base = clean.slice(0, dot);
+  }
+
+  const available = max - ext.length; // espacio para la base (sin extensión)
+  if (available <= 1) return clean.slice(0, max - 1) + '…';
+
+  const front = Math.ceil((available - 1) / 2);
+  const back = Math.floor((available - 1) / 2);
+
+  return base.slice(0, front) + '…' + base.slice(-back) + ext;
+}
+ const URL_VER_DOC  = '<?= site_url("archivo/ver_doc/") ?>';
+  const URL_VER_EXAM = '<?= site_url("archivo/ver_exam/") ?>';
 function renderDocs(list) {
   if (!list || !list.length) return '<div class="text-muted">Sin documentos</div>';
 
-  const rows = list
-    .map(d => {
-      const file = d.name || d.filename || '';
-      if (!file) return null;
+  const rows = list.map(d => {
+    const file = d.name || d.filename || '';
+    if (!file) return null;
 
-      const url = buildDocUrl(file, 'doc');
-      const icon = isPdf(file) ? 'fa-file-pdf' : (isImage(file) ? 'fa-image' : 'fa-file');
+    const url = URL_VER_DOC+file;
+    const icon = isPdf(file) ? 'fa-file-pdf' : (isImage(file) ? 'fa-image' : 'fa-file');
+    const desc = d.description || d.nameDocument || '';
+    const status = (d.status === '0' || d.status === 0) ? '<span class="badge badge-secondary">Inactivo</span>' :
+      (d.status === '1' || d.status === 1) ? '<span class="badge badge-success">Activo</span>' :
+      esc(d.status || '');
 
-      const desc = d.description || d.nameDocument || '';
-      const status = (d.status === '0' || d.status === 0) ? '<span class="badge badge-secondary">Inactivo</span>' :
-        (d.status === '1' || d.status === 1) ? '<span class="badge badge-success">Activo</span>' :
-        esc(d.status || '');
+    // 👇 abreviado para mostrar, completo en title
+    const shortFile = abbreviateFilename(file, 32);
 
-      return `<tr>
-          <td class="text-nowrap"><a href="${url}" target="_blank"><i class="far ${icon} mr-1"></i>${esc(file)}</a></td>
-          <td>${formatValue(desc)}</td>
-          <td>${status}</td>
-        </tr>`;
-    })
-    .filter(Boolean)
-    .join('');
+    return `<tr>
+      <td class="text-nowrap">
+        <a href="${url}" target="_blank" title="${esc(file)}">
+          <i class="far ${icon} mr-1"></i>${esc(shortFile)}
+        </a>
+      </td>
+      <td>${formatValue(desc)}</td>
+      <td>${status}</td>
+    </tr>`;
+  }).filter(Boolean).join('');
 
   if (!rows) return '<div class="text-muted">Sin documentos</div>';
+
   return `<div class="table-responsive">
-      <table class="table table-sm table-striped table-bordered mb-0">
-        <thead class="thead-light"><tr><th>Archivo</th><th>Descripción</th><th>Status</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
+    <table class="table table-sm table-striped table-bordered mb-0">
+      <thead class="thead-light">
+        <tr><th>Archivo</th><th>Descripción</th><th>Status</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
 }
+
 
 function renderExams(list) {
   if (!list || !list.length) return '<div class="text-muted">Sin exámenes</div>';
@@ -686,8 +1030,8 @@ function renderExams(list) {
       const file = x.name || '';
       if (!file) return null;
 
-      const url = buildDocUrl(file, 'exam');
-      const icon = isPdf(file) ? 'fa-file-pdf' : (isImage(file) ? 'fa-image' : 'fa-file');
+    const url = URL_VER_EXAM+file;
+         const icon = isPdf(file) ? 'fa-file-pdf' : (isImage(file) ? 'fa-image' : 'fa-file');
 
       const nombreDoc = x.nameDocument || '';
       const status = (x.status === '0' || x.status === 0) ? '<span class="badge badge-secondary">Inactivo</span>' :
@@ -727,7 +1071,7 @@ function verCandidato(id) {
 
   // AJAX directo al controlador (sin rutas personalizadas)
   $.ajax({
-      url: BASE + "index.php/Empleados/getEmpleado/" + encodeURIComponent(id),
+      url: BASE4 + "index.php/Empleados/getEmpleado/" + encodeURIComponent(id),
       type: "GET",
       dataType: "json"
     })
