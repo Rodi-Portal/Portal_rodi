@@ -114,9 +114,7 @@
   <div id="seccionTarjetas">
     <div id="tarjetas">
       <?php
-          echo '<pre>';
-          print_r($requisiciones);
-          echo '</pre>';
+      
       if ($requisiciones):  ?>
 
       <div class="row mb-3">
