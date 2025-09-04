@@ -8,46 +8,41 @@
       </div>
 
 
-   <div class="col-sm-12 col-md-6 col-lg-6">
-  <div class="actions d-flex justify-content-md-end flex-wrap">
-    <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
-      <button type="button" class="btn action-btn btn-green"
-              onclick="openQrModal()">
-        <span class="icon"><i class="far fa-file-alt"></i></span>
-        <span class="text">Link General</span>
-      </button>
-    <?php endif; ?>
+      <div class="col-sm-12 col-md-6 col-lg-6">
+        <div class="actions d-flex justify-content-md-end flex-wrap">
+          <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
+          <button type="button" class="btn action-btn btn-green" onclick="openQrModal()">
+            <span class="icon"><i class="far fa-file-alt"></i></span>
+            <span class="text">Link General</span>
+          </button>
+          <?php endif; ?>
 
-    <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
-      <button type="button" id="btnRegistrarReq"
-              class="btn action-btn btn-blue"
-              onclick="nuevaRequisicionIntake()">
-        <span class="icon"><i class="far fa-file-alt"></i></span>
-        <span class="text">Registrar Requisición</span>
-      </button>
-    <?php else: ?>
-      <button type="button" id="btnReqInterna"
-              class="btn action-btn btn-blue"
-              onclick="nuevaRequisicion()">
-        <span class="icon"><i class="far fa-file-alt"></i></span>
-        <span class="text">Requisición Interna</span>
-      </button>
-    <?php endif; ?>
+          <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
+          <button type="button" id="btnRegistrarReq" class="btn action-btn btn-blue" onclick="nuevaRequisicionIntake()">
+            <span class="icon"><i class="far fa-file-alt"></i></span>
+            <span class="text">Registrar Requisición</span>
+          </button>
+          <?php else: ?>
+          <button type="button" id="btnReqInterna" class="btn action-btn btn-blue" onclick="nuevaRequisicion()">
+            <span class="icon"><i class="far fa-file-alt"></i></span>
+            <span class="text">Requisición Interna</span>
+          </button>
+          <?php endif; ?>
 
-    <?php
-      if ($this->session->userdata('idrol') == 4) {
-        $disabled  = 'disabled';
-        $textTitle = 'title="No posees permiso para esta acción"';
-      } else { $disabled=''; $textTitle=''; }
-    ?>
-    <button type="button" id="btnOpenAssignToUser"
-            class="btn action-btn btn-purple"
-            onclick="openAssignToUser()" <?php echo $disabled . ' ' . $textTitle; ?>>
-      <span class="icon"><i class="fas fa-user-edit"></i></span>
-      <span class="text">Asignar Requisición</span>
-    </button>
-  </div>
-</div>
+          <?php
+              if ($this->session->userdata('idrol') == 4) {
+                  $disabled  = 'disabled';
+                  $textTitle = 'title="No posees permiso para esta acción"';
+              } else { $disabled = '';
+                  $textTitle                            = '';}
+          ?>
+          <button type="button" id="btnOpenAssignToUser" class="btn action-btn btn-purple" onclick="openAssignToUser()"
+            <?php echo $disabled . ' ' . $textTitle; ?>>
+            <span class="icon"><i class="fas fa-user-edit"></i></span>
+            <span class="text">Asignar Requisición</span>
+          </button>
+        </div>
+      </div>
 
     </div>
   </section>
@@ -118,15 +113,19 @@
 
   <div id="seccionTarjetas">
     <div id="tarjetas">
-      <?php if ($requisiciones): ?>
+      <?php
+          echo '<pre>';
+          print_r($requisiciones);
+          echo '</pre>';
+      if ($requisiciones):  ?>
+
       <div class="row mb-3">
         <?php foreach ($requisiciones as $r):
                 $hoy            = date('Y-m-d H:i:s');
                 $fecha_registro = ! empty($r->creacionReq) ? fechaTexto($r->creacionReq, 'espanol') : '';
 
                 // Intake vs clásica
-                $esIntake = (isset($r->tipo) && strtoupper($r->tipo) === 'SOLICITUD')
-                || ! empty($r->nombre_cliente) || ! empty($r->razon_social);
+                $esIntake = (isset($r->tipo) && strtoupper($r->tipo) === 'SOLICITUD' || strtoupper($r->tipo) === 'INTAKE');
 
                 if ($esIntake) {
                     $empresa      = trim((string) ($r->nombre ?? ''));
@@ -136,11 +135,11 @@
                     $correoCard   = ! empty($r->email) ? trim((string) $r->email) : trim((string) ($r->correo ?? ''));
                     $contactoCard = trim((string) ($r->nombre_cliente ?? ''));
                 } else {
-                    $empresa      = trim((string) ($r->nombre ?? ''));
+                    $empresa      = trim((string) ($r->nombre_cliente ?? ''));
                     $comercial    = trim((string) ($r->nombre_comercial ?? ''));
                     $puestoCard   = trim((string) ($r->puesto ?? ''));
-                    $telefonoCard = trim((string) ($r->telefono ?? ''));
-                    $correoCard   = trim((string) ($r->correo ?? ''));
+                    $telefonoCard = trim((string) ($r->telefono_cliente ?? ''));
+                    $correoCard   = trim((string) ($r->correo_cliente ?? ''));
                     $contactoCard = trim((string) ($r->contacto ?? ''));
                 }
 
@@ -181,10 +180,10 @@
                             $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $nombreUsuario . '</b></div>';
                         } else {
                             $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '">
-																																			                  <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
-																																			                     onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
-																																			                     <i class="fas fa-user-times fa-fw"></i>
-																																			                  </a> <b>' . $nombreUsuario . '</b></div>';
+		                          <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
+		                              onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
+		                              <i class="fas fa-user-times fa-fw"></i>
+		                          </a> <b>' . $nombreUsuario . '</b></div>';
                         }
                     }
                 } else {
@@ -195,21 +194,37 @@
                 // Botón editar
                 $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA')
                 ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar Requisición"
-																																			                 onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
-																																			                 <i class="fas fa-edit fa-fw"></i></a>'
+		                onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
+		                <i class="fas fa-edit fa-fw"></i></a>'
                 : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar SOLICITUD" onclick="openUpdateOrderIntake(' . (int) $r->idReq . ')">
-																																                    <i class="fas fa-edit fa-fw"></i>
-																																                  </a>';
+		                <i class="fas fa-edit fa-fw"></i>
+		              </a>';
 
                 $totalOrders = count($requisiciones);
                 $moveOrder   = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
             ?>
         <div class="col-sm-12 col-md-4 col-lg-4 mb-5<?php echo $moveOrder ?>">
           <div class="card text-center tarjeta" id="<?php echo 'tarjeta' . (int) $r->idReq; ?>">
-            <div
-              class="card-header	                                	                                			                                		                                	                                	                                	                                	                                			                                		                                	                                	                                	                                	                                		                                	                                	                                	                                	                                	                                	                                	                                	                                		                                	                                	                                	                                	                                	                                	                                			                                   		                                   	                                   	                                    <?php echo $color_estatus; ?>">
-              <b><?php echo '#' . (int) $r->idReq . ' ' . $nombres; ?></b>
-              <?php if ($esIntake): ?><span class="badge badge-info ml-2">SOLUCITUD</span><?php endif; ?>
+            <div class="card-header <?php echo $color_estatus?>">
+              <div class="d-flex align-items-center">
+                <span class="text-uppercase text-truncate d-block w-100">
+                  <strong>
+                    #<?php echo (int) $r->idReq?>
+                    <?php
+        // usar $nombres tal cual, pero para el header: <br> → espacio, trim y colapsar espacios
+                        $headerNombre = preg_replace(
+                            '/\s+/', ' ',
+                            trim(str_ireplace(['<br>', '<br/>', '<br />'], ' ', (string) $nombres))
+                        );
+                        echo ' ' . html_escape($headerNombre);
+                    ?>
+                  </strong>
+                </span>
+
+                <?php if ($esIntake): ?>
+                <span class="badge badge-info ml-2">SOLICITUD</span>
+                <?php endif; ?>
+              </div>
             </div>
 
             <div class="card-body">
@@ -1629,7 +1644,7 @@ $(function() {
       data.id_cliente = idCliente; // si viene, envíalo
     }
     // Si además tu endpoint requiere id_portal explícito, agrégalo:
-    // data.id_portal =                                                                                                                    <?php echo (int) $this->session->userdata('id_portal_token'); ?>;
+    // data.id_portal =                                                                                                                                                                  <?php echo (int) $this->session->userdata('id_portal_token'); ?>;
 
     // CSRF opcional
     var csrf = csrfPair();
@@ -2176,7 +2191,7 @@ function openUpdateOrderIntake(id) {
     success: function(res) {
       setTimeout(() => $('.loader').fadeOut(), 200);
       const dato = typeof res === 'string' ? JSON.parse(res) : res || {};
-      
+
 
       // Encabezado
       const cliente = dato.nombre_c || '';

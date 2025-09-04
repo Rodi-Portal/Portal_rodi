@@ -2368,7 +2368,7 @@ class Reclutamiento extends CI_Controller
 
             if ($vienenExtras) {
                 // --- Validación manual ---
-                $requeridos = ['nombre', 'fecha_nacimiento', 'telefono', 'direccion'];
+                $requeridos = ['nombre', 'fecha_nacimiento', 'telefono'];
                 $faltantes  = [];
                 foreach ($requeridos as $campo) {
                     if (empty($post['extra_' . $campo])) {
@@ -3176,6 +3176,31 @@ class Reclutamiento extends CI_Controller
             'success' => true,
             'data'    => $data,
         ]);
+    }
+
+       public function eliminar_extra()
+    {
+        $id  = $this->input->post('id');
+        $key = $this->input->post('key');
+
+        // Obtienes el registro
+        $registro = $this->db->get_where('aspirantes', ['id' => $id])->row();
+
+        if ($registro) {
+            // Decodificas el JSON de extras
+            $extras = json_decode($registro->extras, true);
+
+            if (isset($extras[$key])) {
+                unset($extras[$key]); // eliminas la clave
+                $this->db->where('id', $id)
+                    ->update('aspirantes', ['extras' => json_encode($extras)]);
+                echo 'ok';
+            } else {
+                echo 'error: clave no encontrada';
+            }
+        } else {
+            echo 'error: registro no encontrado';
+        }
     }
 
 }

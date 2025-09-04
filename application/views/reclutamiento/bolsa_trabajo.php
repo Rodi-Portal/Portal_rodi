@@ -124,7 +124,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">ATodosll</option>
         <?php
@@ -195,20 +195,38 @@
 
         function obtenerPrimeroDisponible($r, $extras, $campos)
         {
+            // Combinar $r y $extras en un solo arreglo
+            $data = array_merge((array) $r, (array) $extras);
+
+            // Normalizar las claves (minúsculas y sin espacios extras)
+            $normalizadas = [];
+            foreach ($data as $k => $v) {
+                $normalizadas[strtolower(trim($k))] = $v;
+            }
+
+            // Buscar el primer campo que tenga valor
             foreach ($campos as $campo) {
-                $valor = obtenerDato($r, $extras, $campo);
-                if (! empty($valor)) {
-                    return $valor;
+                $campoNormalizado = strtolower(trim($campo));
+                if (! empty($normalizadas[$campoNormalizado])) {
+                    return $normalizadas[$campoNormalizado];
                 }
             }
+
             return 'No registrado';
         }
+
     ?>
     <div id="seccionTarjetas">
       <?php
+          /*
+          echo '<pre>';
+          print_r($registros);
+          echo '</pre>';
+        */
           if ($registros) {
               echo '<div class="row mb-3">';
               foreach ($registros as $r) {
+
                   date_default_timezone_set('America/Mexico_City');
                   $hoy                   = date('Y-m-d H:i:s');
                   $fecha_registro        = fechaTexto($r->creacion, 'espanol');
@@ -235,11 +253,15 @@
 
                   $medio_contacto = obtenerDato($r, $extras, 'medio_contacto');
                   $area_interes   = obtenerDato($r, $extras, 'area_interes');
-                  $correo         = obtenerDato($r, $extras, 'correo', '');
-                  $domicilio      = obtenerPrimeroDisponible($r, $extras, ['direccion', 'estado']);
-                  $estado         = obtenerDato($r, $extras, 'estado', '');
-                  $direccion      = obtenerDato($r, $extras, 'direccion', '');
-                  $usuario        = (empty($r->usuario)) ? 'Sin asignar' : $r->usuario;
+                  $correo         = obtenerPrimeroDisponible(
+                      $r,
+                      $extras,
+                      ['E-MAIL E.G.C (email)', 'CORREO BINANCE (email) ', 'correo']
+                  );
+                  $domicilio = obtenerPrimeroDisponible($r, $extras, ['domicilio', 'direccion', 'estado']);
+                  $estado    = obtenerDato($r, $extras, 'estado', '');
+                  $direccion = obtenerDato($r, $extras, 'direccion', '');
+                  $usuario   = (empty($r->usuario)) ? 'Sin asignar' : $r->usuario;
 
                   // Normaliza nombre y paterno para envío
                   if (empty($paterno) && ! empty($nombre) && strpos(trim($nombre), ' ') !== false) {
@@ -308,15 +330,19 @@
                       $text_estatus  = 'Estatus: <b>En espera <br></b>';
                   } elseif ($r->status == 2) {
                       $color_estatus       = 'req_activa';
-                      $text_estatus        = 'Estatus: <b>En proceso de reclutamiento<br></b>';
+                      $text_estatus        = 'Estatus: <b>En Proceso/Aprobado<br></b>';
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 3) {
                       $color_estatus       = 'req_preventiva';
-                      $text_estatus        = 'Estatus: <b>Preventivo Revisar Historial<br></b>';
+                      $text_estatus        = 'Estatus: <b>Reutilizable/<br></b>';
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 4) {
                       $color_estatus       = 'req_positivo';
-                      $text_estatus        = 'Estatus: <b>Listo para preempleo<br></b>';
+                      $text_estatus        = 'Estatus: <b>Preempleo/Contratado<br></b>';
+                      $disabled_comentario = 'isDisabled';
+                  } elseif ($r->status == 5) {
+                      $color_estatus       = 'req_aprobado';
+                      $text_estatus        = 'Estatus: <b>Aprobado con Acuerdo<br></b>';
                       $disabled_comentario = 'isDisabled';
                   }
 
@@ -326,13 +352,18 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
           <div class="card-body">
             <?php if ($esTipoExtras): ?>
-            <h5 class="card-text">Ubicación: <br><b><?php echo $estado . ', ' . $direccion; ?></b></h5>
+            <h5 class="card-text">
+              Ubicación: <br>
+              <b>
+                <?php echo($domicilio ?? $estado . ', ' . $direccion); ?>
+              </b>
+            </h5>
             <h5 class="card-title">Correo: <br><b><?php echo $correo; ?></b></h5>
             <?php else: ?>
             <h5 class="card-title">Área de interés: <br><b><?php echo $area_interes; ?></b></h5>
@@ -587,8 +618,19 @@
             </div>
             <div id="extras_update" style="display:none"></div>
           </form>
-          <button type="button" class="btn btn-success btn-block text-lg" onclick="updateApplicant('personal')">Guardar
-            información personal</button>
+
+          <div class="row mt-3">
+            <div class="col-12 col-sm-6 mb-2">
+              <button type="button" id="agregar_extra" class="btn btn-primary w-100">
+                <i class="fas fa-plus"></i> Agregar campo extra
+              </button>
+            </div>
+            <div class="col-12 col-sm-6 mb-2">
+              <button type="button" class="btn btn-success w-100" onclick="updateApplicant('personal')">
+                Guardar información personal
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -760,7 +802,12 @@
       </div>
     </div>
 
-    <div id="extras_update" style="display:none"></div>
+    <div id="extras_update" style="display:none">
+      <div class="row"></div>
+      <!-- Aquí se agregan los campos -->
+    </div>
+
+
   </div>
   <!-- Sweetalert 2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.js"></script>
@@ -1781,6 +1828,7 @@
         }, 200);
 
         var dato = JSON.parse(res);
+        //console.log("🚀 ~ openUpdateApplicant ~ dato:", dato)
 
         // Detecta si hay datos en extras
         var extras = {};
@@ -1803,50 +1851,95 @@
 
           let nombre = (dato['nombre'] || extras['nombre'] || '');
           let paterno = (dato['paterno'] || extras['paterno'] || '');
-
           if (paterno) {
             nombre = nombre + ' ' + paterno;
           }
 
           const camposNormales = {
-            nombre: nombre, // ← Ya concatenado arriba
+            nombre: nombre,
             telefono: dato['telefono'] || extras['telefono'] || "",
             fecha_nacimiento: dato['fecha_nacimiento'] || extras['fecha_nacimiento'] || ""
           };
 
-          // Luego, añade todos los extras (sin sobrescribir los anteriores si existen)
           const camposDinamicos = {
             ...camposNormales
-          }; // Empieza con los normales
+          };
 
-          if (esTipoExtras) {
-            Object.keys(extras).forEach(function(key) {
-              if (key === '_token') return;
-              // Solo agrega si no existe ya en los normales
-              if (!camposDinamicos.hasOwnProperty(key)) {
-                camposDinamicos[key] = extras[key];
-              }
-            });
-          }
+          // Añadir los extras que no existan
+          Object.keys(extras).forEach(function(key) {
+            if (key === '_token') return;
+            if (!camposDinamicos.hasOwnProperty(key)) {
+              camposDinamicos[key] = extras[key];
+            }
+          });
 
-          // Ahora genera TODOS los campos (normales + extras) dinámicamente:
+          // Generar todos los campos existentes
           let html = `<div class="row">`;
           Object.keys(camposDinamicos).forEach(function(key) {
             let etiqueta = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
             html += `
-                    <div class="col-md-4 col-sm-12 mb-3">
-                      <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                          <label for="extra_${key}_update" class="font-weight-bold mb-2">${etiqueta}</label>
-                          <input type="text" class="form-control" name="extra_${key}" id="extra_${key}_update" value="${camposDinamicos[key] || ''}">
+            <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${key}">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <label class="font-weight-bold mb-2">${etiqueta}</label>
+                        <div class="d-flex align-items-center mb-2">
+                            <input type="text" class="form-control" name="extra_${key}" value="${camposDinamicos[key] || ''}">
+                            <button type="button" class="btn btn-sm btn-danger ml-2 eliminar-extra" data-key="${key}">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
-                      </div>
                     </div>
-                  `;
+                </div>
+            </div>
+            `;
           });
           html += `</div>`;
 
           $('#extras_update').html(html).show();
+
+          // Contador global para nuevos extras (fuera de la función)
+          let contadorExtras = 0;
+
+          // Botón para agregar campos nuevos
+          $('#agregar_extra').off('click').on('click', function() {
+            contadorExtras++;
+            const keyDefault = `nuevo_${contadorExtras}`;
+            const keySlug = slugKey(keyDefault);
+
+            const htmlNuevo = `
+            <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${keySlug}">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                  <label class="font-weight-bold mb-2">Nuevo campo extra</label>
+                  <div class="d-flex mb-2">
+                    <input type="text" class="form-control llave-extra mr-2"
+                          placeholder="Nombre de la llave" value="${keySlug}">
+                    <!-- IMPORTANTE: el valor SIEMPRE tiene name="extra_<slug>" -->
+                    <input type="text" class="form-control valor-extra mr-2"
+                          name="extra_${keySlug}" placeholder="Valor" value="">
+                    <button type="button" class="btn btn-sm btn-danger eliminar-extra" data-key="${keySlug}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <small class="text-muted">Se enviará como <code>extra_${keySlug}</code></small>
+                </div>
+              </div>
+            </div>`;
+            $('#extras_update .row').append(htmlNuevo);
+          });
+          $(document).on('input', '.llave-extra', function() {
+            const $col = $(this).closest('.extra-dinamico');
+            const raw = $(this).val();
+            const keyNew = slugKey(raw);
+
+            $col.attr('data-key', keyNew);
+            $col.find('.valor-extra').attr('name', `extra_${keyNew}`);
+            $col.find('.eliminar-extra').attr('data-key', keyNew);
+            // (opcional) actualizar la leyenda del pequeño <small> si la agregaste
+            $col.find('small.text-muted code').text(`extra_${keyNew}`);
+          });
+
+          // SweetAlert para eliminar cualquier campo
 
         } else {
           $('#extras_update').hide();
@@ -1891,6 +1984,14 @@
     $('#btnAsignarAspirante').addClass('isDisabled')
   }
 
+  function slugKey(k) {
+    return (k || '')
+      .trim()
+      .replace(/\s+/g, '_') // espacios -> _
+      .replace(/[^\w\-]/g, '') // deja solo [A-Za-z0-9_ -]
+      ||
+      'nuevo';
+  }
 
   function updateApplicant(section) {
     let form = '';
@@ -1898,6 +1999,7 @@
       form = $('#formDatosPersonales').serialize();
       form += '&id_bolsa=' + $('#idBolsa').val();
       form += '&section=' + section;
+
     }
     if (section == 'salud') {
       form = $('#formSalud').serialize();
@@ -1947,6 +2049,35 @@
       }
     });
   }
+  $(document).on('click', '.eliminar-extra', function() {
+    const key = $(this).data('key'); // clave del JSON a eliminar
+
+    Swal.fire({
+      title: `¿Eliminar el campo "${key}"?`,
+      text: "Esta acción no se puede deshacer",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        // Quitar del DOM
+        $(this).closest('.col-md-4').remove();
+
+        // Quitar del objeto JS para que no se envíe al guardar
+        delete camposDinamicos[key];
+
+        Swal.fire(
+          'Eliminado',
+          'El campo ha sido eliminado',
+          'success'
+        );
+      }
+    });
+  });
   </script>
   <!-- Funciones Reclutamiento -->
   <script src="<?php echo base_url(); ?>js/reclutamiento/functions.js"></script>

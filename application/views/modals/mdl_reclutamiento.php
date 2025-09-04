@@ -718,8 +718,8 @@
               </div>
               <div class="col-md-6">
                 <label>CURP check *</label>
-                <select name="curp_check_registro" id="curp_check_registro" class="form-control valor_dinamico registro_obligado"
-                  disabled></select>
+                <select name="curp_check_registro" id="curp_check_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -787,7 +787,7 @@
         </form>
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
-  <!-- ESTA;OS AQUI -->
+      <!-- ESTA;OS AQUI -->
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -1638,17 +1638,21 @@
       </div>
       <div class="modal-body">
         <?php if ($this->session->userdata('tipo_bolsa') > 0) {?>
-        <form action="<?php echo base_url('importador/importar_bolsa_y_empleados');?>" method="post"
-          enctype="multipart/form-data">
-          <input type="hidden" name="id_portal" >
-          <input type="hidden" name="id_cliente" ><!-- si aplica -->
+        <form action="<?php echo base_url('Importa_excel/importar'); ?>" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="id_portal">
+          <input type="hidden" name="id_cliente"><!-- si aplica -->
           <div class="form-group">
             <label>Excel (.xlsx)</label>
             <input type="file" name="archivo_excel" accept=".xlsx,.xls" class="form-control" required>
           </div>
-          <button class="btn btn-primary">Importar</button>
-        </form>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
 
+            <button class="btn btn-primary">Importar</button>
+
+          </div>
+        </form>
+        </div>
         <?php } else {?>
         <form id="formImportarPuestos">
           <div class="row">
@@ -1660,12 +1664,15 @@
             </div>
           </div>
         </form>
-        <?php }?>
+
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
         <button type="button" class="btn btn-success" id="btnSubir">Enviar</button>
+
       </div>
+      <?php }?>
     </div>
   </div>
 </div>
@@ -2250,7 +2257,7 @@ $('.div_info_project, .div_info_projectt, .div_project, \
    #detalles_previo').addClass('d-none');
 
 // Al cerrar el modal: SOLO resetea dinámicos, NO borres datos del aspirante ni #previos
-$('#registroCandidatoModal').off('hidden.bs.modal').on('hidden.bs.modal', function (e) {
+$('#registroCandidatoModal').off('hidden.bs.modal').on('hidden.bs.modal', function(e) {
   // Oculta todo lo dinámico
   $('.div_info_project, .div_info_projectt, .div_project, \
      .div_info_previo, .div_previo, \
@@ -2287,7 +2294,7 @@ $('#registroCandidatoModal').off('hidden.bs.modal').on('hidden.bs.modal', functi
 });
 
 // Handler de la opción: 0 (Previo+Exámenes), 1 (Exámenes), 2 (Nada)
-$('#opcion_registro').off('change').on('change', function () {
+$('#opcion_registro').off('change').on('change', function() {
   const opcion = $(this).val();
 
   // Oculta absolutamente todo lo que es visible/ocultable
@@ -2318,13 +2325,13 @@ $('#opcion_registro').off('change').on('change', function () {
 
 // (Opcional) Si usas Select2 en #puesto, destrúyelo al cerrar
 if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
-  $('#registroCandidatoModal').on('hidden.bs.modal', function () {
+  $('#registroCandidatoModal').on('hidden.bs.modal', function() {
     $('#puesto').select2('destroy');
   });
 }
 
 // Mostrar/ocultar input "otro" de puesto
-$('#puesto').off('change').on('change', function () {
+$('#puesto').off('change').on('change', function() {
   $('#puesto_otro').toggle(this.value === 'otro');
 });
 
@@ -2775,6 +2782,122 @@ function mostrarInputOtro() {
     inputOtro.value = ""; // Limpiar el input si se cambia a otra opción
   }
 }
+function buildFallasCSV(fallas) {
+  const headers = ['fila','nombre','entidad','label','url','http_code','error'];
+  const esc = v => {
+    const s = String(v ?? '');
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  };
+  const lines = [headers.join(',')];
+  (fallas||[]).forEach(f => {
+    lines.push([esc(f.fila),esc(f.nombre),esc(f.entidad),esc(f.label),esc(f.url),esc(f.http_code),esc(f.error||'')].join(','));
+  });
+  return lines.join('\r\n');
+}
+function downloadTextFile(filename, text, mime='text/csv;charset=utf-8;') {
+  const blob = new Blob([text], {type: mime});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ===== Render del resultado (SweetAlert + botón CSV si hay fallas) =====
+function renderResultado(resp){
+  if(!resp || resp.ok === false){
+    Swal.fire('Error', (resp && resp.msg) ? resp.msg : 'Falló la importación', 'error');
+    return;
+  }
+  let msg = `
+    <b>Bolsa insertados:</b> ${resp.bolsa_insertados}<br>
+    <b>Empleados insertados:</b> ${resp.empleados_insertados}<br>
+    <b>Extras empleados:</b> ${resp.empleado_extras_rows}<br>
+  `;
+  if(resp.errores && resp.errores.length){
+    msg += `<hr><b>Errores:</b><ul>` + resp.errores.map(e=>`<li>${e}</li>`).join('') + `</ul>`;
+  }
+
+  let csvData = null;
+  if(resp.fallas_descargas && resp.fallas_descargas.length){
+    msg += `<hr><b>Descargas fallidas:</b><ul>` +
+      resp.fallas_descargas.map(f =>
+        `<li>Fila ${f.fila} (${f.nombre}) [${f.entidad}] ${f.label}: 
+          <a href="${f.url}" target="_blank">${f.url}</a>
+          — HTTP ${f.http_code} ${f.error ? (' - '+f.error) : ''}</li>`
+      ).join('') +
+      `</ul>
+       <p style="margin-top:12px">
+         <button type="button" id="btn-dl-csv" class="swal2-confirm swal2-styled">
+           Descargar CSV de fallas
+         </button>
+       </p>`;
+    csvData = buildFallasCSV(resp.fallas_descargas);
+  }
+
+  if (resp.fallas_csv_url) {
+    msg += `<p style="margin-top:8px">
+      <a class="swal2-confirm swal2-styled" href="${resp.fallas_csv_url}" target="_blank">
+        Descargar CSV de fallas (servidor)
+      </a></p>`;
+  }
+
+  Swal.fire({
+    title: 'Importación terminada',
+    html: msg,
+    icon: 'success',
+    width: 800,
+    didOpen: () => {
+      const btn = document.getElementById('btn-dl-csv');
+      if(btn && csvData){
+        btn.addEventListener('click', () => {
+          const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+          downloadTextFile(`fallas_descargas_${ts}.csv`, csvData);
+        });
+      }
+    }
+  });
+}
+
+// ===== Interceptar ese único form y mandar por AJAX =====
+$(function(){
+  // Selecciona exactamente tu form por su action (contiene Importa_excel/importar)
+  $('form[action*="Importa_excel/importar"]').on('submit', function(e){
+    e.preventDefault();
+
+    const form = this;
+    const fd   = new FormData(form);
+
+    // (Opcional) Si tienes CSRF activo en CI3, descomenta y ajusta:
+    // fd.append('<?= $this->security->get_csrf_token_name(); ?>', '<?= $this->security->get_csrf_hash(); ?>');
+
+    $.ajax({
+      url: $(form).attr('action'),          // usa la URL del form
+      method: 'POST',
+      data: fd,
+      processData: false,
+      contentType: false,
+      beforeSend: function(){
+        Swal.fire({
+          title:'Importando...',
+          text:'Por favor espera',
+          allowOutsideClick:false,
+          didOpen:()=>Swal.showLoading()
+        });
+      },
+      success: function(resp){
+        // Si el backend devuelve JSON como string, parsea:
+        if (typeof resp === 'string') {
+          try { resp = JSON.parse(resp); } catch(e){ resp = {ok:false, msg:'Respuesta no válida'}; }
+        }
+        renderResultado(resp);
+      },
+      error: function(){
+        Swal.fire('Error', 'No se pudo contactar al servidor', 'error');
+      }
+    });
+  });
+});
 </script>
 <style>
 .actions {

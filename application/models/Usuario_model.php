@@ -191,10 +191,10 @@ class Usuario_model extends CI_Model
 
         $clientes = array_column($this->db->get()->result_array(), 'id');
         if (empty($clientes)) {
-            return [];
+            return []; // sin permisos de cliente no mostramos nada
         }
 
-        // Ahora traemos todos los usuarios por esos clientes
+        // Traer info por cliente + usuarios con acceso
         $this->db
             ->select('
             C.id AS id_cliente,
@@ -218,21 +218,18 @@ class Usuario_model extends CI_Model
         ')
             ->from('cliente AS C')
             ->join('datos_generales AS D', 'D.id = C.id_datos_generales', 'left')
-            ->join('domicilios AS DOM', 'DOM.id = C.id_domicilios', 'left')// datos cliente
-     // datos cliente
+            ->join('domicilios AS DOM', 'DOM.id = C.id_domicilios', 'left')
             ->join('usuario_permiso AS UP', 'C.id = UP.id_cliente')
             ->join('usuarios_portal AS UPo', 'UPo.id = UP.id_usuario')
-            ->join('datos_generales AS DG', 'DG.id = UPo.id_datos_generales', 'left') // datos usuario
+            ->join('datos_generales AS DG', 'DG.id = UPo.id_datos_generales', 'left')
             ->join('rol AS R', 'R.id = UPo.id_rol', 'left')
             ->where('C.id_portal', $id_portal)
             ->where_in('C.id', $clientes);
 
-        // Si el parámetro $filtrar_roles es true, excluimos los roles 4 y 11
         if ($filtrar_roles) {
             $this->db->where_not_in('UPo.id_rol', [4, 11]);
         }
 
-        // Orden
         if ($origen === "former") {
             $this->db->order_by('empleados_inactivos', 'DESC');
         } elseif ($origen === "emp" || $origen === "com") {
@@ -240,13 +237,12 @@ class Usuario_model extends CI_Model
         } elseif ($origen === "pre") {
             $this->db->order_by('pre_empleados', 'DESC');
         } else {
-            $this->db->order_by('C.nombre', 'ASC'); // opcional por defecto
+            $this->db->order_by('C.nombre', 'ASC');
         }
 
-        $query  = $this->db->get();
-        $result = $query->result();
+        $result = $this->db->get()->result();
 
-        // Agrupamos por cliente
+        // Agrupar por cliente
         $clientesAgrupados = [];
         foreach ($result as $row) {
             $id = $row->id_cliente;
@@ -260,13 +256,13 @@ class Usuario_model extends CI_Model
                     'creacion'            => $row->creacion,
                     'telefono'            => $row->telefono,
                     'correo'              => $row->correo,
-                    'max'                 => $row->max_colaboradores,
-                    'empleados_activos'   => (int) $row->empleados_activos,   // casteo a int
-                    'empleados_inactivos' => (int) $row->empleados_inactivos, // casteo a int
-                    'pre_empleados'       => (int) $row->pre_empleados, 
+                    'max'                 => (int) $row->max_colaboradores,
+                    'empleados_activos'   => (int) $row->empleados_activos,
+                    'empleados_inactivos' => (int) $row->empleados_inactivos,
+                    'pre_empleados'       => (int) $row->pre_empleados,
                     'estado'              => $row->estado,
                     'pais'                => $row->pais,
-                    'ciudad'              => $row->ciudad,      // casteo a int
+                    'ciudad'              => $row->ciudad,
                     'usuarios'            => [],
                 ];
             }
@@ -278,8 +274,63 @@ class Usuario_model extends CI_Model
             ];
         }
 
-        // Retornar como array simple (sin IDs como clave)
-        return array_values($clientesAgrupados);
+        // ===============================
+        //  Fila especial: Pendientes de Sucursal
+        //  Empleados del portal sin sucursal: id_cliente NULL o 0 y status=3 (pre_empleados)
+        // ===============================
+        $this->db->select('COUNT(*) AS c')
+            ->from('empleados')
+            ->where('id_portal', $id_portal)
+            ->group_start()
+            ->where('id_cliente IS NULL', null, false)
+            ->group_end()
+            ->where('status', 3);
+        $rowPend    = $this->db->get()->row();
+        $pendientes = (int) ($rowPend->c ?? 0);
+
+        if ($pendientes > 0) {
+            // clave artificial para no chocar con IDs reales
+            $clientesAgrupados['_pendientes'] = [
+                'id_cliente'          => null,
+                'nombreCliente'       => 'Pendientes de Sucursal',
+                'icono'               => null,
+                'url'                 => 'Cliente_General/index/0', // ajusta destino si usas otro
+                'creacion'            => null,
+                'telefono'            => '',
+                'correo'              => '',
+                'max'                 => 0,
+                'empleados_activos'   => 0,
+                'empleados_inactivos' => 0,
+                'pre_empleados'       => $pendientes,
+                'estado'              => '',
+                'pais'                => '',
+                'ciudad'              => '',
+                'usuarios'            => [], // no aplica
+            ];
+        }
+
+        $lista = array_values($clientesAgrupados);
+
+        if ($origen === 'pre') {
+            // Orden por cantidad de candidatos en proceso (desc)
+            usort($lista, function ($a, $b) {
+                return ($b['pre_empleados'] ?? 0) <=> ($a['pre_empleados'] ?? 0);
+            });
+        } elseif ($origen === 'emp' || $origen === 'com') {
+            usort($lista, function ($a, $b) {
+                return ($b['empleados_activos'] ?? 0) <=> ($a['empleados_activos'] ?? 0);
+            });
+        } elseif ($origen === 'former') {
+            usort($lista, function ($a, $b) {
+                return ($b['empleados_inactivos'] ?? 0) <=> ($a['empleados_inactivos'] ?? 0);
+            });
+        } else {
+            usort($lista, function ($a, $b) {
+                return strcasecmp($a['nombreCliente'] ?? '', $b['nombreCliente'] ?? '');
+            });
+        }
+
+        return $lista;
     }
 
     public function getPermisos2($filtrar_roles = false)

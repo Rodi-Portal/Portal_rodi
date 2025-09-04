@@ -44,53 +44,52 @@ class Candidato_avance_model extends CI_Model
         }
     }
 
-    
-  
-    public function registrarPreEmpleadoConDomicilio($data, $pais) {
-      // Iniciar transacción
-      $this->db->trans_start();
-  
-      // Insertar domicilio primero
-      $this->db->insert('domicilios_empleados', ['pais' => $pais]);
-      $id_domicilio = $this->db->insert_id(); // Obtener ID del domicilio
-  
-      // Agregar el ID del domicilio en los datos del empleado
-      $data['id_domicilio_empleado'] = $id_domicilio;
-  
-      // Insertar empleado
-      $this->db->insert('empleados', $data);
-      $id_empleado = $this->db->insert_id(); 
-  
-      // Completar transacción
-      $this->db->trans_complete();
-  
-      // Verificar si la transacción fue exitosa
-      if ($this->db->trans_status() === FALSE) {
-          return FALSE; // Si falló, se hará rollback automáticamente
-      }
-  
-      return $id_empleado;
-  }
-
-
-  public function getAllEmpleados($id)
+    public function registrarPreEmpleadoConDomicilio($data, $pais)
     {
+        // Iniciar transacción
+        $this->db->trans_start();
+
+        // Insertar domicilio primero
+        $this->db->insert('domicilios_empleados', ['pais' => $pais]);
+        $id_domicilio = $this->db->insert_id(); // Obtener ID del domicilio
+
+        // Agregar el ID del domicilio en los datos del empleado
+        $data['id_domicilio_empleado'] = $id_domicilio;
+
+        // Insertar empleado
+        $this->db->insert('empleados', $data);
+        $id_empleado = $this->db->insert_id();
+
+        // Completar transacción
+        $this->db->trans_complete();
+
+        // Verificar si la transacción fue exitosa
+        if ($this->db->trans_status() === false) {
+            return false; // Si falló, se hará rollback automáticamente
+        }
+
+        return $id_empleado;
+    }
+
+    public function getAllEmpleados($id)
+    {
+        $portal = $this->session->userdata('idPortal');
         $this->db
-            ->select("*")  // Seleccionar todas las columnas
+            ->select("*")
             ->from("empleados")
-            ->where('status',3)
-            ->where('id_cliente', $id);
+            ->where('status', 3)
+            ->where('id_portal', $portal);
+
+        // 👇 Aquí la diferencia:
+        if ($id == 0) {
+            $this->db->where('id_cliente IS NULL', null, false);
+        } else {
+            $this->db->where('id_cliente', $id);
+        }
 
         $query = $this->db->get();
 
-        if ($query->num_rows() > 0) {
-            return $query->result();  // Devuelve un array de objetos
-        } else {
-            return false;  // Retorna false si no hay datos
-        }
+        return ($query->num_rows() > 0) ? $query->result() : false;
     }
-  
-  
-  
 
 }

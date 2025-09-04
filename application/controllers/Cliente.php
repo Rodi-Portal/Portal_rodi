@@ -466,4 +466,65 @@ class Cliente extends CI_Controller
             return true;
         }
     }
+
+
+     public function listarClientes()
+    {
+        // Puedes filtrar por portal si aplica
+        $id_portal = (int) $this->session->userdata('idPortal');
+
+        $clientes = $this->db->select('id, nombre')
+            ->from('cliente')
+            ->where('id_portal', $id_portal)
+            ->where('eliminado', 0)  // quita si no aplica
+            ->order_by('nombre', 'ASC')
+            ->get()->result_array();
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($clientes));
+    }
+
+    public function asignarCliente()
+    {
+        $id_candidato = (int) $this->input->post('id_candidato', true);
+        $id_cliente   = $this->input->post('id_cliente', true); // puede venir "0" o null para desasignar
+        $id_portal    = (int) $this->session->userdata('idPortal');
+
+        if (empty($id_candidato)) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(['status' => 'error', 'message' => 'ID de candidato inválido.']));
+        }
+
+        // Normaliza: si llega "0" lo tratamos como NULL (o quita esto si NO quieres permitir desasignar)
+        if ($id_cliente === "0" || $id_cliente === 0) {
+            $id_cliente = null;
+        } else {
+            $id_cliente = (int) $id_cliente;
+        }
+
+        // Verifica que el candidato pertenezca al portal actual (seguridad)
+        $existe = $this->db->select('id')
+            ->from('empleados')
+            ->where('id', $id_candidato)
+            ->where('id_portal', $id_portal)
+            ->get()->row();
+
+        if (!$existe) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(['status' => 'error', 'message' => 'Candidato no encontrado en este portal.']));
+        }
+
+        // Actualiza asignación
+        $this->db->where('id', $id_candidato)
+                 ->update('empleados', ['id_cliente' => $id_cliente]);
+
+        if ($this->db->affected_rows() >= 0) {
+            return $this->output->set_content_type('application/json')
+                ->set_output(json_encode(['status' => 'success']));
+        }
+
+        return $this->output->set_content_type('application/json')
+            ->set_output(json_encode(['status' => 'error', 'message' => 'No se pudo actualizar.']));
+    }
 }
