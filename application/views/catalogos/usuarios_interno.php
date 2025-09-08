@@ -134,6 +134,22 @@
     </div>
   </div>
 </div>
+<!-- Modal de Asignacion de  permisos -->
+
+<div class="modal fade" id="modalPermisos" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h5 class="modal-title">Permisos</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-0"><!-- aquí se injecta el parcial --></div>
+    </div>
+  </div>
+</div>
+
 
 <?php echo $modals; ?>
 <div class="loader" style="display: none;"></div>
@@ -250,36 +266,43 @@ $(document).ready(function() {
         data: 'id_usuario',
         bSortable: false,
         visible: mostrarColumna,
-        "width": "15%",
+        width: "15%",
         mRender: function(data, type, full) {
           let editar =
-            '<a id="editar" href="javascript:void(0)" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-pencil-alt" style="font-size: 16px;"></i></a> ';
+            '<a id="editar" href="javascript:void(0)" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-pencil-alt" style="font-size:16px;"></i></a> ';
 
           let accion = (full.status == 0) ?
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo cambiar-estado" data-id="' +
             data + '" data-referente="' + full.referente +
-            '" data-status="activar"><i class="fas fa-ban" style="font-size: 16px;"></i></a> ' :
+            '" data-status="activar"><i class="fas fa-ban" style="font-size:16px;"></i></a> ' :
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_verde cambiar-estado" data-id="' +
             data + '" data-referente="' + full.referente +
-            '" data-status="desactivar"><i class="far fa-check-circle" style="font-size: 16px;"></i></a> ';
+            '" data-status="desactivar"><i class="far fa-check-circle" style="font-size:16px;"></i></a> ';
 
           let eliminar =
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo" data-id="' + data +
             '" data-referente="' + full.referente +
-            '" data-action="eliminarUsuario"><i class="fas fa-trash" style="font-size: 16px;"></i></a> ';
+            '" data-action="eliminarUsuario"><i class="fas fa-trash" style="font-size:16px;"></i></a> ';
 
           let credenciales =
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_amarillo" data-correo="' +
             full.correo + '" data-id="' + full.id_datos_generales +
-            '"><i class="fas fa-sync-alt" style="font-size: 16px;"></i></a> ';
+            '"><i class="fas fa-sync-alt" style="font-size:16px;"></i></a> ';
+
+          // 👇 Nuevo botón Permisos
+          let permisos =
+            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_morado abrir-permisos" ' +
+            'title="Permisos del usuario" data-id="' + data + '" data-module="">' +
+            '<i class="fas fa-user-shield" style="font-size:16px;"></i></a> ';
 
           if (full.id_rol == 1 || full.id_rol == 6) {
-            return editar + credenciales;
+            return editar + permisos + credenciales;
           } else {
-            return editar + accion + eliminar + credenciales;
+            return editar + permisos + accion + eliminar + credenciales;
           }
         }
       }
+
 
     ],
     "columnDefs": [{
@@ -302,7 +325,7 @@ $(document).ready(function() {
     /*****Devuelve los valores registrados para editarlos DESDE EL BOTON EDITAR**************/
 
     rowCallback: function(row, data) {
-   
+
 
       $("a#editar", row).bind('click', () => {
         $("#idUsuarioInterno").val(data.id_usuario);
@@ -738,7 +761,7 @@ function editarUsuarios() {
         });
 
         $('#formAccesoUsuariosinternos')[0]
-      .reset(); // Se limpian nuevamente los campos de registro después de guardar
+          .reset(); // Se limpian nuevamente los campos de registro después de guardar
       } else {
         $("#nuevoAccesoUsuariosInternos #msj_error").css('display', 'block').html(data.msg);
       }
@@ -846,6 +869,39 @@ function recargarTable() {
   $("#tabla").DataTable().ajax.reload();
 }
 
+var baseUrl = window.BASE_URL || '<?= base_url(); ?>';
+
+  // Click en el botón del DataTable
+$(document).on('click', '.abrir-permisos', function () {
+  const userId = $(this).data('id');
+  const module = $(this).data('module') || ''; // puede ir vacío
+  $.ajax({
+    url: baseUrl + 'permisos/precheck',
+    type: 'post',
+    dataType: 'json',
+    data: { user_id: userId, module: module }, // si va vacío, server elige
+    beforeSend: function(){ $('.loader').show(); },
+    success: function(res){
+      $('.loader').fadeOut();
+      if (!res || res.ok !== true) {
+        Swal.fire('Atención', (res && res.msg) ? res.msg : 'No fue posible abrir el modal.', 'warning');
+        return;
+      }
+      if (res.fallback && res.fallback_from) {
+        // aviso suave (opcional)
+        Swal.fire({icon:'info', title:'Módulo ajustado', html:'Se abrirá: <b>'+res.module+'</b>', timer:1800, showConfirmButton:false});
+      }
+      $('#modalPermisos .modal-title').text('Permisos del usuario #' + userId + ' · ' + (res.module || module));
+      $('#modalPermisos').modal('show');
+      $('#modalPermisos .modal-body').html('<div class="text-center p-5"><div class="spinner-border"></div><div class="mt-2 text-muted">Cargando…</div></div>');
+      $('#modalPermisos .modal-body').load(res.modal_url);
+    },
+    error: function(){
+      $('.loader').fadeOut();
+      Swal.fire('Error', 'No se pudo validar la apertura del modal.', 'error');
+    }
+  });
+});
 
 
 /**********************************************************************************************/
