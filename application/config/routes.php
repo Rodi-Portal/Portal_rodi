@@ -72,3 +72,7 @@ $route['legal/download/(:any)'] = 'legal/download/$1';
 $route['permisos/precheck'] = 'permisos/precheck';
 $route['permisos/usuario/(:num)'] = 'permisos/usuario/$1';
 $route['permisos/guardar'] = 'permisos/guardar';
+
+
+$route['Archivo/ver_aspirante/(:num)']       = 'Archivo/ver_aspirante/$1';
+$route['Archivo/descargar_aspirante/(:num)'] = 'Archivo/descargar_aspirante/$1';

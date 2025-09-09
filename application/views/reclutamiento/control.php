@@ -568,33 +568,22 @@ function changeDataTable(url) {
   });
 }
 
-function mostrarFormularioCargaCV(id) {
-  console.log('mostrarFormularioCargaCV id:', id);
-  $('#id_aspirante').val(id);
 
-  /* ───── VALIDACIONES RÁPIDAS ───── */
-
-  // 1. ¿La librería Dropzone está cargada?
-  if (typeof window.Dropzone === 'undefined') {
-    Swal.fire('Ups…', 'La librería Dropzone no se cargó. Recarga la página.', 'error');
-    return; // ⛔ NO abras el modal
-  }
-
-  // 2. (Opcional) ¿Ya hay una cola en curso?
-  //    Evita abrir un segundo modal si el usuario está subiendo algo.
-  if (dz && dz.getQueuedFiles().length > 0) {
-    Swal.fire('Atención', 'Tienes archivos pendientes de subir.', 'warning');
-    return; // ⛔ NO abras el modal
-  }
-  $(document).on('preDraw.dt', '#tabla', function() {
-    $('#tabla a#iniciar_socio').off('click.iniciarSocio');
-  });
-  /* ───── Todo OK → abre el modal ───── */
-  $('#modalCargaArchivos').modal('show');
-}
 
 if (typeof baseDocs === 'undefined') {
   var baseDocs = <?php echo json_encode(VERASPIRANTESDOCS); ?>;
+}
+
+function abreviarNombreArchivo(nombre, maxLen = 20) {
+  if (!nombre || nombre.length <= maxLen) return nombre;
+  const dot  = nombre.lastIndexOf('.');
+  const ext  = (dot > -1 ? nombre.slice(dot) : '');
+  const base = (dot > -1 ? nombre.slice(0, dot) : nombre);
+  if (base.length + ext.length <= maxLen) return nombre;
+  const keep  = maxLen - ext.length - 3; // por '...'
+  const left  = Math.ceil(keep * 0.6);
+  const right = keep - left;
+  return base.slice(0, left) + '...' + base.slice(base.length - right) + ext;
 }
 
 function mostrarFormularioActualizarDocs(id) {
@@ -604,79 +593,90 @@ function mostrarFormularioActualizarDocs(id) {
   $tbody.html('<tr><td colspan="5" class="text-center">Cargando…</td></tr>');
 
   $.ajax({
-    url: `<?php echo base_url('Documentos_Aspirantes/lista/') ?>${id}`,
+    url: '<?= site_url('Documentos_Aspirantes/lista/') ?>' + id,
     type: 'GET',
     dataType: 'json',
     success: function(docs) {
-      if (!docs.length) {
+      if (!Array.isArray(docs) || !docs.length) {
         $tbody.html('<tr><td colspan="5" class="text-center text-muted">Sin documentos</td></tr>');
-      } else {
-        let filas = '';
-        docs.forEach(d => {
-          filas += `
-            <tr>
-              <td>${d.nombre_personalizado}</td>
-              <td><a href="${baseDocs}${d.nombre_archivo}" target="_blank">${d.nombre_archivo}</a></td>
-              <td>${d.fecha_subida}</td>
-              <td>
-                <div class="form-check form-switch">
-                  <input class="form-check-input tipo-vista-switch"
-                        type="checkbox"
-                        data-id="${d.id}"
-                        ${d.tipo_vista == 1 ? 'checked' : ''}>
-                </div>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-info"
-                        data-toggle="tooltip" title="Reemplazar archivo"
-                        onclick="abrirModalReemplazo(${d.id}, '${d.nombre_personalizado.replace(/'/g,'&#39;')}')">
-                  <i class="fas fa-sync-alt"></i>
-                </button>
-                <button class="btn btn-sm btn-danger"
-                        data-toggle="tooltip" title="Eliminar archivo"
-                        onclick="eliminarArchivo(${d.id})">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </td>
-            </tr>`;
-        });
-        $tbody.html(filas);
-
-        // Re-inicializa tooltips
-        $('[data-toggle="tooltip"]').tooltip();
-
-        // Activa switch luego de dibujar filas
-        $('.tipo-vista-switch').off('change').on('change', function() {
-          const id = $(this).data('id');
-          const tipo_vista = $(this).is(':checked') ? 1 : 0;
-
-          $.ajax({
-            url: `<?php echo base_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>`,
-            type: 'POST',
-            data: {
-              id,
-              tipo_vista
-            },
-            dataType: 'json',
-            success: resp => {
-              if (resp.ok) {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Actualizado',
-                  text: 'Vista actualizada correctamente',
-                  timer: 1200,
-                  showConfirmButton: false
-                });
-              } else {
-                Swal.fire('Error', resp.message, 'error');
-              }
-            },
-            error: () => {
-              Swal.fire('Error', 'No se pudo actualizar la vista.', 'error');
-            }
-          });
-        });
+        $('#modalActualizarArchivos').modal('show');
+        return;
       }
+
+      let filas = '';
+      docs.forEach(function(d) {
+        const urlVer  = '<?= site_url('Archivo/ver_aspirante/') ?>' + d.id;
+        const urlDown = '<?= site_url('Archivo/descargar_aspirante/') ?>' + d.id;
+        const textoLink = abreviarNombreArchivo(d.nombre_archivo, 20);
+
+        filas += `
+          <tr>
+            <td>${d.nombre_personalizado}</td>
+            <td>
+              <a href="${urlVer}" target="_blank" rel="noopener" title="${d.nombre_archivo}">
+                ${textoLink}
+              </a>
+              <a href="${urlDown}" class="ml-2" title="Descargar" data-toggle="tooltip">
+                <i class="fas fa-download"></i>
+              </a>
+            </td>
+            <td>${d.fecha_subida}</td>
+            <td>
+              <div class="form-check form-switch">
+                <input class="form-check-input tipo-vista-switch"
+                       type="checkbox"
+                       data-id="${d.id}"
+                       ${Number(d.tipo_vista) === 1 ? 'checked' : ''}>
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info"
+                      data-toggle="tooltip" title="Reemplazar archivo"
+                      onclick="abrirModalReemplazo(${d.id}, '${d.nombre_personalizado.replace(/'/g,'&#39;')}')">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <button class="btn btn-sm btn-danger"
+                      data-toggle="tooltip" title="Eliminar archivo"
+                      onclick="eliminarArchivo(${d.id})">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>`;
+      });
+
+      $tbody.html(filas);
+
+      // Tooltips BS4
+      $('[data-toggle="tooltip"]').tooltip();
+
+      // Switch de tipo_vista
+      $('.tipo-vista-switch').off('change').on('change', function() {
+        const id = $(this).data('id');
+        const tipo_vista = $(this).is(':checked') ? 1 : 0;
+
+        $.ajax({
+          url: '<?= site_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>',
+          type: 'POST',
+          data: { id: id, tipo_vista: tipo_vista },
+          dataType: 'json',
+          success: function(resp) {
+            if (resp && resp.ok) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Actualizado',
+                text: 'Vista actualizada correctamente',
+                timer: 1200,
+                showConfirmButton: false
+              });
+            } else {
+              Swal.fire('Error', (resp && resp.message) ? resp.message : 'No se pudo actualizar la vista.', 'error');
+            }
+          },
+          error: function() {
+            Swal.fire('Error', 'No se pudo actualizar la vista.', 'error');
+          }
+        });
+      });
 
       $('#modalActualizarArchivos').modal('show');
     },
@@ -690,6 +690,7 @@ function mostrarFormularioActualizarDocs(id) {
     }
   });
 }
+
 
 
 

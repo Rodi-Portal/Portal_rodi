@@ -486,7 +486,7 @@
                     if ($paises != null) {
                         foreach ($paises as $p) {
                         $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
-                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <option value="<?php echo $p->nombre; ?>"<?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
                     }
                     }
@@ -1789,44 +1789,52 @@
   <div class="modal-dialog" role="document" style="max-width:700px;">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Carga y nombra tus archivos</h5>
+        <h5 class="modal-title" id="modalCargaArchivosLabel">Carga y nombra tus archivos</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
           <span>&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <form action="<?php echo base_url('Documentos_Aspirantes/subir') ?>" class="dropzone" id="tablaDropzone"
-          enctype="multipart/form-data">
-          <input type="hidden" id="id_aspirante" name="id_aspirante" value="">
 
-          <!-- ZONA DROPZONE: Aquí -->
-          <div class="dz-message text-center text-muted"
-            style="padding: 40px 0; border: 2px dashed #0087F7; background: #f4f8fb; border-radius:8px; margin-bottom: 20px;">
-            <i class="fas fa-cloud-upload-alt fa-3x mb-2" style="color:#0087F7"></i>
-            <h5>Arrastra archivos aquí o haz clic para seleccionarlos</h5>
-            <p>Puedes seleccionar varios archivos a la vez (PDF, imágenes, videos, etc.).</p>
+      <form id="formCargaArchivos" enctype="multipart/form-data" onsubmit="return false;">
+        <div class="modal-body">
+          <input type="hidden" id="id_aspirante" name="id_aspirante" value="">
+          <input type="hidden" id="id_bolsa" name="id_bolsa" value="">
+
+          <div class="form-group">
+            <label for="filesInput">Selecciona uno o varios archivos</label>
+            <input id="filesInput" name="files[]" type="file" class="form-control" multiple accept=".pdf,image/*,video/*">
+            <small class="form-text text-muted">Tipos permitidos: PDF, imágenes y videos.</small>
           </div>
 
-          <table class="table table-bordered" id="archivosTable">
-            <thead>
-              <tr>
-                <th>Archivo</th>
-                <th>Nombre personalizado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="dz-previews">
-              <!-- Dropzone coloca las filas aquí -->
-              <!-- <tr><td colspan="3"></td></tr> -->
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm align-middle">
+              <thead class="thead-light">
+                <tr>
+                  <th>Archivo</th>
+                  <th>Tamaño</th>
+                  <th>Nombre personalizado</th>
+                  <th style="width:1%;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="filesTableBody">
+                <tr class="text-muted" id="emptyRow">
+                  <td colspan="4">Sin archivos seleccionados…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      </div>
-      <button type="button" class="btn btn-primary mt-2" id="btnSubirArchivos">Subir Archivos</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnSubirArchivos">Subir archivos</button>
+        </div>
       </form>
     </div>
   </div>
 </div>
+
+
 
 <div class="modal fade" id="modalRequisiciones" tabindex="-1" role="dialog" aria-labelledby="modalRequisicionesLabel"
   aria-hidden="true">
@@ -1977,207 +1985,172 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 </script>
 
 <script>
-Dropzone.autoDiscover = false;
-if (typeof dz === 'undefined') {
-  var dz = null;
-} // instancia global
+ // ====== SIN DROPZONE: multi-file input “normal” ======
+$(function() {
+  var selectedFiles = [];
+  var $modal = $('#modalCargaArchivos');
+  var $filesInput = $('#filesInput');
+  var $tbody = $('#filesTableBody');
+  var $btnUpload = $('#btnSubirArchivos');
 
-function mostrarFormularioCargaCV(id) {
-  console.log('mostrarFormularioCargaCV id:', id);
-  $('#id_aspirante').val(id);
-  $('#modalCargaArchivos').modal('show');
-}
+  // Si tu vista es PHP, usa una de estas (elige la que corresponda):
+  // const UPLOAD_URL = "< ?php echo base_url('Documentos_Aspirantes/subir')?>";
+  const UPLOAD_URL = "<?php echo base_url('Documentos_Aspirantes/subir'); ?>";
 
-$('#modalCargaArchivos').on('shown.bs.modal', function() {
-  console.log('Modal abierto: inicializando Dropzone...');
+  // 1) Abrir modal y preparar id_aspirante
+  window.mostrarFormularioCargaCV = function(id) {
+    console.log('mostrarFormularioCargaCV id:', id);
+    $('#id_aspirante').val(id);
+    $('#id_bolsa').val(id); // si aplicas mismo id, o bórralo si no lo usas
+    $modal.modal('show');
+  };
 
-  if (dz) {
-    dz.destroy(); // destruye la instancia anterior para permitir reinicializar
-    dz = null;
+  // 2) Construye la tabla de archivos seleccionados
+  function bytesToSize(bytes) {
+    if (bytes === 0) return '0 B';
+    var k = 1024, sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-
-  const form = document.getElementById('tablaDropzone');
-  if (!form) {
-    console.error('No se encontró #tablaDropzone');
-    return;
+  function baseNameNoExt(filename) {
+    var i = filename.lastIndexOf('.');
+    return (i > 0) ? filename.substring(0, i) : filename;
   }
 
-  dz = new Dropzone("#tablaDropzone", {
-    url: "<?php echo base_url('Documentos_Aspirantes/subir') ?>", // MISMA que el action del form
-    paramName: "file", // CI3 recibirá $_FILES['file']
-    autoProcessQueue: false,
-    uploadMultiple: true,
-    parallelUploads: 10,
-    maxFiles: 10,
-    acceptedFiles: ".pdf,image/*,video/*",
-    previewsContainer: "#dz-previews",
-    clickable: "#tablaDropzone .dz-message",
-    // ¡Empieza EXACTO con <tr>!
-    previewTemplate: `
-    <div style="display: table-row;" data-dz-preview class="dz-preview dz-file-preview align-middle">
-      <div style="display: table-cell; vertical-align: middle;">
-        <span data-dz-name></span>
-        <br>
-        <small class="text-muted" data-dz-size></small>
-      </div>
-      <div style="display: table-cell; vertical-align: middle;">
-        <input type="text" name="nombres_archivos[]" class="form-control" placeholder="Ejemplo: CV, Comprobante, etc." required>
-      </div>
-      <div style="display: table-cell; vertical-align: middle;">
-        <a href="javascript:void(0);" class="btn btn-danger btn-sm" data-dz-remove title="Eliminar">
-          <i class="fas fa-trash-alt"></i>
-        </a>
-      </div>
-    </div>
-  `
-  });
+  function rebuildTable() {
+    $tbody.empty();
+    selectedFiles.forEach(function(file, idx) {
+      var tr = document.createElement('tr');
 
-  console.log('Dropzone inicializada:', dz);
-
-  dz.on("addedfile", function(file) {
-    console.log('[DZ] added:', file.name);
-  });
-
-  // Con uploadMultiple:true usa estos:
-  dz.on("sendingmultiple", function(files, xhr, formData) {
-    console.log('[DZ] sendingmultiple:', files.length);
-    const nombres = [];
-    document.querySelectorAll('input[name="nombres_archivos[]"]').forEach(i => nombres.push(i.value));
-    // Envía ambos nombres por compatibilidad con tu controlador actual
-    formData.append('id_bolsa', $('#id_aspirante').val());
-    formData.append('id_aspirante', $('#id_aspirante').val());
-    formData.append('nombres_archivos', JSON.stringify(nombres));
-  });
-
-  dz.on('successmultiple', (files, resp) => {
-    if (typeof resp === 'string') resp = JSON.parse(resp);
-
-    let huboErrores = false;
-    const errores = []; // ← aquí guardaremos los textos
-    const fallidos = [];
-    resp.data.forEach((r, idx) => {
-      const file = files[idx];
-
-      if (r.success) {
-        file.previewElement.classList.add('dz-success');
-      } else {
-        huboErrores = true;
-        errores.push(`${r.file}: ${r.error}`);
-        fallidos.push(file); // nombre + mensaje que devolviste
-        dz.emit('error', file, r.error);
-        dz.emit('complete', file);
-      }
+      tr.innerHTML = `
+        <td><span class="font-weight-bold">${file.name}</span></td>
+        <td><small class="text-muted">${bytesToSize(file.size)}</small></td>
+        <td>
+          <input type="text" class="form-control"
+                 name="nombres_archivos[]"
+                 value="${baseNameNoExt(file.name)}"
+                 placeholder="Ejemplo: CV, Comprobante, etc."
+                 required>
+        </td>
+        <td class="text-right">
+          <button type="button"
+                  class="btn btn-sm btn-outline-danger btn-remove"
+                  data-index="${idx}">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      `;
+      $tbody.append(tr);
     });
-
-    if (huboErrores) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Carga parcial',
-        html: errores.join('<br>'),
-        customClass: {
-          popup: 'text-left'
-        }
-      }).then(() => {
-        //  🔻   Quita solo los que fallaron
-        fallidos.forEach(f => dz.removeFile(f));
-
-        //  👉  Si quieres limpiar TODOS (éxito + error), usa:
-        dz.removeAllFiles(true);
-      });
-    } else {
-      $('#modalCargaArchivos').modal('hide');
-      dz.removeAllFiles(true);
-      Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: 'Todos los archivos cargados correctamente.',
-        timer: 2000,
-        showConfirmButton: false
-      });
-    }
-  });
-
-
-  // 4xx / 5xx o error de red
-  dz.on('errormultiple', (_files, msg) => {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error de servidor',
-      text: (typeof msg === 'string') ? msg : 'Intenta de nuevo o contacta a soporte.'
-    });
-  });
-
-
-  dz.on("errormultiple", function(files, errMsg) {
-    console.warn('[DZ] errormultiple:', errMsg);
-    $('#btnSubirArchivos').prop('disabled', false);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Ocurrió un problema al subir.Revisa  tu conexion de internet o Contacta  a Soporte de TalentSafe'
-    });
-  });
-});
-
-// Botón "Subir Archivos"
-$('#btnSubirArchivos').on('click', function() {
-  if (!dz) {
-    console.error('[DZ] no inicializada');
-    return;
   }
-  // Validar nombres
-  const nombres = document.querySelectorAll('input[name="nombres_archivos[]"]');
-  for (let i = 0; i < nombres.length; i++) {
-    if (nombres[i].value.trim() === '') {
-      nombres[i].focus();
-      Swal.fire({
-        icon: 'warning',
-        title: 'Nombre requerido',
-        text: 'Debes definir un nombre perzonalizado para cada archivo.'
-      });
+
+  // 3) Al seleccionar archivos en el input
+  $filesInput.on('change', function() {
+    selectedFiles = Array.from(this.files || []);
+    rebuildTable();
+  });
+
+  // 4) Eliminar un archivo de la lista (y del FileList usando DataTransfer)
+  $tbody.on('click', '.btn-remove', function() {
+    var idx = parseInt(this.getAttribute('data-index'), 10);
+    if (isNaN(idx)) return;
+
+    selectedFiles.splice(idx, 1);
+
+    // reconstruir FileList con DataTransfer
+    var dt = new DataTransfer();
+    selectedFiles.forEach(function(f) { dt.items.add(f); });
+    $filesInput[0].files = dt.files;
+
+    rebuildTable();
+  });
+
+  // 5) Subir (AJAX + FormData)
+  $btnUpload.on('click', function() {
+    if (!selectedFiles.length) {
+      Swal.fire({ icon:'info', title:'Sin archivos', text:'Selecciona al menos un archivo.' });
       return;
     }
-  }
 
-  // Encola archivos en estado ADDED y procesa
-  const added = dz.getFilesWithStatus(Dropzone.ADDED);
-  if (added.length) dz.enqueueFiles(added);
-
-  const queued = dz.getQueuedFiles();
-  console.log('[DZ] queued:', queued.length);
-
-  if (queued.length) {
-    const $btn = $(this); // referencia al mismo botón
-    $btn.prop('disabled', true);
-
-    // callback que se ejecuta UNA sola vez y luego se desengancha
-    function habilitarDeNuevo() {
-      $btn.prop('disabled', false); // vuelve a habilitar
-      dz.off('queuecomplete', habilitarDeNuevo); // elimina el handler ⇒ “once”
+    // Validar nombres personalizados
+    var nombresInputs = document.querySelectorAll('input[name="nombres_archivos[]"]');
+    var nombresOk = true;
+    for (var i = 0; i < nombresInputs.length; i++) {
+      if (!nombresInputs[i].value.trim()) {
+        nombresInputs[i].focus();
+        nombresOk = false;
+        break;
+      }
+    }
+    if (!nombresOk) {
+      Swal.fire({ icon:'warning', title:'Nombre requerido', text:'Define un nombre personalizado para cada archivo.' });
+      return;
     }
 
-    dz.on('queuecomplete', habilitarDeNuevo); // registra el handler
-    dz.processQueue(); // dispara la subida
-  } else {
-    Swal.fire({
-      icon: 'info',
-      title: 'Sin archivos',
-      text: 'Carga al menos un archivo.'
+    var fd = new FormData();
+    // Archivos
+    selectedFiles.forEach(function(file) {
+      fd.append('files[]', file);
     });
-    return;
-  }
+    // Nombres personalizados (como arreglo)
+    nombresInputs.forEach(function(input) {
+      fd.append('nombres_archivos[]', input.value.trim());
+    });
 
-});
+    // Extras que ya mandabas
+    fd.append('id_aspirante', $('#id_aspirante').val() || '');
+    fd.append('id_bolsa', $('#id_bolsa').val() || '');
 
-// Limpiar al cerrar el modal
-$('#modalCargaArchivos').on('hidden.bs.modal', function() {
-  if (dz) {
-    dz.removeAllFiles(true);
-    dz = null; // para re-inicializar limpio al volver a abrir
-  }
-  $('#dz-previews').empty();
-});
+    // Deshabilita botón durante el envío
+    $btnUpload.prop('disabled', true).text('Subiendo...');
+
+    $.ajax({
+      url: UPLOAD_URL,
+      method: 'POST',
+      data: fd,
+      processData: false,
+      contentType: false,
+      dataType: 'json'
+    })
+    .done(function(resp) {
+      // Soporta dos variantes comunes de respuesta
+      if (resp && resp.ok) {
+        Swal.fire({ icon:'success', title:'¡Éxito!', text: resp.msg || 'Archivos cargados.' });
+        $modal.modal('hide');
+      } else if (resp && Array.isArray(resp.data)) {
+        // estilo por-archivo: [{success, file, error}]
+        var errores = resp.data.filter(r => !r.success).map(r => `${r.file}: ${r.error}`);
+        if (errores.length) {
+          Swal.fire({ icon:'warning', title:'Carga parcial', html: errores.join('<br>') });
+        } else {
+          Swal.fire({ icon:'success', title:'¡Éxito!', text:'Todos los archivos cargados.' });
+          $modal.modal('hide');
+        }
+      } else {
+        Swal.fire({ icon:'error', title:'Error', text: (resp && resp.msg) ? resp.msg : 'No se pudo completar la carga.' });
+      }
+    })
+    .fail(function(xhr) {
+      Swal.fire({ icon:'error', title:'Error de servidor', text: xhr.statusText || 'Intenta de nuevo.' });
+    })
+    .always(function() {
+      $btnUpload.prop('disabled', false).text('Subir archivos');
+      // Limpieza
+      selectedFiles = [];
+      $filesInput.val('');
+      $tbody.empty();
+    });
+  });
+
+  // 6) Limpiar al cerrar el modal
+  $modal.on('hidden.bs.modal', function() {
+    selectedFiles = [];
+    $filesInput.val('');
+    $tbody.empty();
+  });
+})
+
 
 
 $('#btnGuardarCambios').on('click', function() {
@@ -2822,7 +2795,7 @@ function renderResultado(resp){
   if(resp.fallas_descargas && resp.fallas_descargas.length){
     msg += `<hr><b>Descargas fallidas:</b><ul>` +
       resp.fallas_descargas.map(f =>
-        `<li>Fila ${f.fila} (${f.nombre}) [${f.entidad}] ${f.label}: 
+        `<li>Fila ${f.fila} (${f.nombre}) [${f.entidad}] ${f.label}:
           <a href="${f.url}" target="_blank">${f.url}</a>
           — HTTP ${f.http_code} ${f.error ? (' - '+f.error) : ''}</li>`
       ).join('') +
@@ -2869,7 +2842,7 @@ $(function(){
     const fd   = new FormData(form);
 
     // (Opcional) Si tienes CSRF activo en CI3, descomenta y ajusta:
-    // fd.append('<?= $this->security->get_csrf_token_name(); ?>', '<?= $this->security->get_csrf_hash(); ?>');
+    // fd.append('<?php echo $this->security->get_csrf_token_name();?>', '<?php echo $this->security->get_csrf_hash();?>');
 
     $.ajax({
       url: $(form).attr('action'),          // usa la URL del form
