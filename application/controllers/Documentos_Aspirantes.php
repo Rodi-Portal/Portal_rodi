@@ -32,6 +32,7 @@ class Documentos_Aspirantes extends CI_Controller
         $docs = $this->db->select('id, nombre_personalizado, nombre_archivo, fecha_subida, tipo_vista')
             ->from('documentos_aspirante')
             ->where('id_aspirante', $id_bolsa)
+            ->where('tipo_vista', 1)
             ->where('eliminado', 0)
             ->order_by('fecha_subida', 'DESC')
             ->get()
