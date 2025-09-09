@@ -979,8 +979,8 @@ function abbreviateFilename(name, max = 32) {
 
   return base.slice(0, front) + '…' + base.slice(-back) + ext;
 }
- const URL_VER_DOC  = '<?= site_url("archivo/ver_doc/") ?>';
-  const URL_VER_EXAM = '<?= site_url("archivo/ver_exam/") ?>';
+var URL_VER_DOC  = '<?= site_url("archivo/ver_doc/") ?>';
+var URL_VER_EXAM = '<?= site_url("archivo/ver_exam/") ?>';
 function renderDocs(list) {
   if (!list || !list.length) return '<div class="text-muted">Sin documentos</div>';
 

@@ -486,7 +486,7 @@
                     if ($paises != null) {
                         foreach ($paises as $p) {
                         $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
-                <option value="<?php echo $p->nombre; ?>"<?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
                     }
                     }
@@ -1652,29 +1652,29 @@
 
           </div>
         </form>
-        </div>
-        <?php } else {?>
-        <form id="formImportarPuestos">
-          <div class="row">
-            <div class="col-12">
-              <label for="archivo_csv" id="label"></label>
-              <input type="file" class="form-control" name="archivo_csv" id="archivo_csv"
-                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-              <br>
-            </div>
+      </div>
+      <?php } else {?>
+      <form id="formImportarPuestos">
+        <div class="row">
+          <div class="col-12">
+            <label for="archivo_csv" id="label"></label>
+            <input type="file" class="form-control" name="archivo_csv" id="archivo_csv"
+              accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            <br>
           </div>
-        </form>
+        </div>
+      </form>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-
-        <button type="button" class="btn btn-success" id="btnSubir">Enviar</button>
-
-      </div>
-      <?php }?>
     </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
+      <button type="button" class="btn btn-success" id="btnSubir">Enviar</button>
+
+    </div>
+    <?php }?>
   </div>
+</div>
 </div>
 
 <div class="modal fade" id="ingresoCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -1802,7 +1802,8 @@
 
           <div class="form-group">
             <label for="filesInput">Selecciona uno o varios archivos</label>
-            <input id="filesInput" name="files[]" type="file" class="form-control" multiple accept=".pdf,image/*,video/*">
+            <input id="filesInput" name="files[]" type="file" class="form-control" multiple
+              accept=".pdf,image/*,video/*">
             <small class="form-text text-muted">Tipos permitidos: PDF, imágenes y videos.</small>
           </div>
 
@@ -1973,6 +1974,39 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalAsignarSucursal" tabindex="-1" role="dialog"
+  aria-labelledby="modalAsignarSucursalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="formAsignarSucursal" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAsignarSucursalLabel">
+          <i class="fas fa-store mr-2"></i>Asignar a sucursal
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="idReq" id="asg_idReq">
+        <div class="form-group">
+          <label for="asg_sucursal">Sucursal</label>
+          <select id="asg_sucursal" name="id_sucursal" class="form-control" style="width:100%">
+            <option value=""></option> <!-- ← NECESARIA para que se vea el placeholder -->
+          </select>
+          <small class="form-text text-muted">Escribe para buscar…</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnGuardarAsignacion">
+          <span class="txt">Guardar</span>
+          <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
 
 
@@ -1985,7 +2019,137 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 </script>
 
 <script>
- // ====== SIN DROPZONE: multi-file input “normal” ======
+(function() {
+  var $modal = $('#modalAsignarSucursal');
+  var $select = $('#asg_sucursal');
+
+  function initSucursalSelect(preselectedId) {
+    const $sel = $('#asg_sucursal');
+    const $modal = $('#modalAsignarSucursal');
+
+    if ($sel.data('select2')) $sel.select2('destroy');
+    $sel.empty().append('<option value=""></option>');
+
+    $sel.select2({
+      theme: 'bootstrap4', // usa el tema BS4
+      width: '100%',
+      placeholder: 'Selecciona una sucursal',
+      allowClear: true,
+      dropdownParent: $modal, // muy importante en modales
+      ajax: {
+        url: '<?php echo site_url('Area/select2');?>',
+        dataType: 'json',
+        delay: 250,
+        data: p => ({
+          q: p.term || '',
+          page: p.page || 1
+        }),
+        processResults: d => ({
+          results: d?.results || [],
+          pagination: {
+            more: !!d?.more
+          }
+        }),
+        cache: true
+      }
+    });
+
+    if (preselectedId) {
+      $.getJSON('<?php echo site_url('Area/get/');?>' + preselectedId, function(item) {
+        if (item && item.id) {
+          const opt = new Option(item.text, item.id, true, true);
+          $sel.append(opt).trigger('change');
+        }
+      });
+    }
+  }
+
+
+
+  // Abrir modal desde el botón “Asignar sucursal”
+  $(document).on('click', '.btn-asignar-sucursal', function() {
+    var idReq = $(this).data('idreq');
+    var pre = $(this).data('sucursal') || '';
+    $('#asg_idReq').val(idReq);
+    initSucursalSelect(pre);
+    $modal.modal('show');
+  });
+
+  // Guardar
+  $('#formAsignarSucursal').on('submit', function(e) {
+    e.preventDefault();
+    var idReq = $('#asg_idReq').val();
+    var idSucursal = $select.val();
+
+    if (!idSucursal) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Selecciona una sucursal',
+        text: 'Debes elegir una sucursal.'
+      });
+      return;
+    }
+
+    var $btn = $('#btnGuardarAsignacion');
+    $btn.prop('disabled', true);
+    $btn.find('.txt').text('Guardando…');
+    $btn.find('.spinner-border').removeClass('d-none');
+
+    $.ajax({
+      url: '<?php echo site_url('Requisicion/asignar_sucursal'); ?>', // también sin routes extra
+      method: 'POST',
+      dataType: 'json',
+      data: {
+        idReq: idReq,
+        id_sucursal: idSucursal
+      },
+      success: function(resp) {
+        if (resp && resp.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Asignado',
+            text: 'La requisición fue asignada.',
+            timer: 1200,
+            showConfirmButton: false
+          });
+          $modal.modal('hide');
+
+          // Actualiza data-sucursal en el botón de esa tarjeta
+          $('.btn-asignar-sucursal[data-idreq="' + idReq + '"]').data('sucursal', idSucursal);
+
+          // (Opcional) pinta nombre en la tarjeta si viene
+          if (resp.sucursal) {
+            $('#divUsuario' + idReq).find('.asignacion-sucursal').remove();
+            $('#divUsuario' + idReq).append(
+              '<div class="asignacion-sucursal mt-2"><i class="fas fa-store mr-1"></i>' + resp.sucursal +
+              '</div>'
+            );
+          }
+        } else {
+          Swal.fire('Error', (resp && resp.msg) ? resp.msg : 'No se pudo asignar.', 'error');
+        }
+      },
+      error: function(xhr) {
+        Swal.fire('Error', xhr.statusText || 'Fallo de red', 'error');
+      },
+      complete: function() {
+        $btn.prop('disabled', false);
+        $btn.find('.txt').text('Guardar');
+        $btn.find('.spinner-border').addClass('d-none');
+      }
+    });
+  });
+
+  // Limpieza al cerrar
+  $modal.on('hidden.bs.modal', function() {
+    if ($select.data('select2')) $select.select2('destroy');
+    $select.empty();
+    $('#asg_idReq').val('');
+  });
+})();
+
+
+// ====== SIN DROPZONE: multi-file input “normal” ======
 $(function() {
   var selectedFiles = [];
   var $modal = $('#modalCargaArchivos');
@@ -2008,7 +2172,8 @@ $(function() {
   // 2) Construye la tabla de archivos seleccionados
   function bytesToSize(bytes) {
     if (bytes === 0) return '0 B';
-    var k = 1024, sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    var k = 1024,
+      sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
     var i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
@@ -2060,7 +2225,9 @@ $(function() {
 
     // reconstruir FileList con DataTransfer
     var dt = new DataTransfer();
-    selectedFiles.forEach(function(f) { dt.items.add(f); });
+    selectedFiles.forEach(function(f) {
+      dt.items.add(f);
+    });
     $filesInput[0].files = dt.files;
 
     rebuildTable();
@@ -2069,7 +2236,11 @@ $(function() {
   // 5) Subir (AJAX + FormData)
   $btnUpload.on('click', function() {
     if (!selectedFiles.length) {
-      Swal.fire({ icon:'info', title:'Sin archivos', text:'Selecciona al menos un archivo.' });
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin archivos',
+        text: 'Selecciona al menos un archivo.'
+      });
       return;
     }
 
@@ -2084,7 +2255,11 @@ $(function() {
       }
     }
     if (!nombresOk) {
-      Swal.fire({ icon:'warning', title:'Nombre requerido', text:'Define un nombre personalizado para cada archivo.' });
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nombre requerido',
+        text: 'Define un nombre personalizado para cada archivo.'
+      });
       return;
     }
 
@@ -2106,41 +2281,61 @@ $(function() {
     $btnUpload.prop('disabled', true).text('Subiendo...');
 
     $.ajax({
-      url: UPLOAD_URL,
-      method: 'POST',
-      data: fd,
-      processData: false,
-      contentType: false,
-      dataType: 'json'
-    })
-    .done(function(resp) {
-      // Soporta dos variantes comunes de respuesta
-      if (resp && resp.ok) {
-        Swal.fire({ icon:'success', title:'¡Éxito!', text: resp.msg || 'Archivos cargados.' });
-        $modal.modal('hide');
-      } else if (resp && Array.isArray(resp.data)) {
-        // estilo por-archivo: [{success, file, error}]
-        var errores = resp.data.filter(r => !r.success).map(r => `${r.file}: ${r.error}`);
-        if (errores.length) {
-          Swal.fire({ icon:'warning', title:'Carga parcial', html: errores.join('<br>') });
-        } else {
-          Swal.fire({ icon:'success', title:'¡Éxito!', text:'Todos los archivos cargados.' });
+        url: UPLOAD_URL,
+        method: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        dataType: 'json'
+      })
+      .done(function(resp) {
+        // Soporta dos variantes comunes de respuesta
+        if (resp && resp.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: resp.msg || 'Archivos cargados.'
+          });
           $modal.modal('hide');
+        } else if (resp && Array.isArray(resp.data)) {
+          // estilo por-archivo: [{success, file, error}]
+          var errores = resp.data.filter(r => !r.success).map(r => `${r.file}: ${r.error}`);
+          if (errores.length) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Carga parcial',
+              html: errores.join('<br>')
+            });
+          } else {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'Todos los archivos cargados.'
+            });
+            $modal.modal('hide');
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: (resp && resp.msg) ? resp.msg : 'No se pudo completar la carga.'
+          });
         }
-      } else {
-        Swal.fire({ icon:'error', title:'Error', text: (resp && resp.msg) ? resp.msg : 'No se pudo completar la carga.' });
-      }
-    })
-    .fail(function(xhr) {
-      Swal.fire({ icon:'error', title:'Error de servidor', text: xhr.statusText || 'Intenta de nuevo.' });
-    })
-    .always(function() {
-      $btnUpload.prop('disabled', false).text('Subir archivos');
-      // Limpieza
-      selectedFiles = [];
-      $filesInput.val('');
-      $tbody.empty();
-    });
+      })
+      .fail(function(xhr) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de servidor',
+          text: xhr.statusText || 'Intenta de nuevo.'
+        });
+      })
+      .always(function() {
+        $btnUpload.prop('disabled', false).text('Subir archivos');
+        // Limpieza
+        selectedFiles = [];
+        $filesInput.val('');
+        $tbody.empty();
+      });
   });
 
   // 6) Limpiar al cerrar el modal
@@ -2755,30 +2950,38 @@ function mostrarInputOtro() {
     inputOtro.value = ""; // Limpiar el input si se cambia a otra opción
   }
 }
+
 function buildFallasCSV(fallas) {
-  const headers = ['fila','nombre','entidad','label','url','http_code','error'];
+  const headers = ['fila', 'nombre', 'entidad', 'label', 'url', 'http_code', 'error'];
   const esc = v => {
     const s = String(v ?? '');
-    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   };
   const lines = [headers.join(',')];
-  (fallas||[]).forEach(f => {
-    lines.push([esc(f.fila),esc(f.nombre),esc(f.entidad),esc(f.label),esc(f.url),esc(f.http_code),esc(f.error||'')].join(','));
+  (fallas || []).forEach(f => {
+    lines.push([esc(f.fila), esc(f.nombre), esc(f.entidad), esc(f.label), esc(f.url), esc(f.http_code), esc(f
+      .error || '')].join(','));
   });
   return lines.join('\r\n');
 }
-function downloadTextFile(filename, text, mime='text/csv;charset=utf-8;') {
-  const blob = new Blob([text], {type: mime});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
+
+function downloadTextFile(filename, text, mime = 'text/csv;charset=utf-8;') {
+  const blob = new Blob([text], {
+    type: mime
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ===== Render del resultado (SweetAlert + botón CSV si hay fallas) =====
-function renderResultado(resp){
-  if(!resp || resp.ok === false){
+function renderResultado(resp) {
+  if (!resp || resp.ok === false) {
     Swal.fire('Error', (resp && resp.msg) ? resp.msg : 'Falló la importación', 'error');
     return;
   }
@@ -2787,12 +2990,12 @@ function renderResultado(resp){
     <b>Empleados insertados:</b> ${resp.empleados_insertados}<br>
     <b>Extras empleados:</b> ${resp.empleado_extras_rows}<br>
   `;
-  if(resp.errores && resp.errores.length){
-    msg += `<hr><b>Errores:</b><ul>` + resp.errores.map(e=>`<li>${e}</li>`).join('') + `</ul>`;
+  if (resp.errores && resp.errores.length) {
+    msg += `<hr><b>Errores:</b><ul>` + resp.errores.map(e => `<li>${e}</li>`).join('') + `</ul>`;
   }
 
   let csvData = null;
-  if(resp.fallas_descargas && resp.fallas_descargas.length){
+  if (resp.fallas_descargas && resp.fallas_descargas.length) {
     msg += `<hr><b>Descargas fallidas:</b><ul>` +
       resp.fallas_descargas.map(f =>
         `<li>Fila ${f.fila} (${f.nombre}) [${f.entidad}] ${f.label}:
@@ -2822,9 +3025,9 @@ function renderResultado(resp){
     width: 800,
     didOpen: () => {
       const btn = document.getElementById('btn-dl-csv');
-      if(btn && csvData){
+      if (btn && csvData) {
         btn.addEventListener('click', () => {
-          const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+          const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
           downloadTextFile(`fallas_descargas_${ts}.csv`, csvData);
         });
       }
@@ -2833,39 +3036,46 @@ function renderResultado(resp){
 }
 
 // ===== Interceptar ese único form y mandar por AJAX =====
-$(function(){
+$(function() {
   // Selecciona exactamente tu form por su action (contiene Importa_excel/importar)
-  $('form[action*="Importa_excel/importar"]').on('submit', function(e){
+  $('form[action*="Importa_excel/importar"]').on('submit', function(e) {
     e.preventDefault();
 
     const form = this;
-    const fd   = new FormData(form);
+    const fd = new FormData(form);
 
     // (Opcional) Si tienes CSRF activo en CI3, descomenta y ajusta:
-    // fd.append('<?php echo $this->security->get_csrf_token_name();?>', '<?php echo $this->security->get_csrf_hash();?>');
+    // fd.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
 
     $.ajax({
-      url: $(form).attr('action'),          // usa la URL del form
+      url: $(form).attr('action'), // usa la URL del form
       method: 'POST',
       data: fd,
       processData: false,
       contentType: false,
-      beforeSend: function(){
+      beforeSend: function() {
         Swal.fire({
-          title:'Importando...',
-          text:'Por favor espera',
-          allowOutsideClick:false,
-          didOpen:()=>Swal.showLoading()
+          title: 'Importando...',
+          text: 'Por favor espera',
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading()
         });
       },
-      success: function(resp){
+      success: function(resp) {
         // Si el backend devuelve JSON como string, parsea:
         if (typeof resp === 'string') {
-          try { resp = JSON.parse(resp); } catch(e){ resp = {ok:false, msg:'Respuesta no válida'}; }
+          try {
+            resp = JSON.parse(resp);
+          } catch (e) {
+            resp = {
+              ok: false,
+              msg: 'Respuesta no válida'
+            };
+          }
         }
         renderResultado(resp);
       },
-      error: function(){
+      error: function() {
         Swal.fire('Error', 'No se pudo contactar al servidor', 'error');
       }
     });
@@ -2927,5 +3137,45 @@ $(function(){
   background: #6366f1;
   border-color: #6366f1;
   color: #fff;
+}
+
+/* Altura y padding tipo form-control de BS4 */
+/* ----- Select2 dentro del modal de sucursal ----- */
+#modalAsignarSucursal .select2-container {
+  width: 100% !important;
+}
+
+/* Caja del control (como un form-control de BS4) */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection--single,
+#modalAsignarSucursal .select2-container--default .select2-selection--single {
+  height: calc(2.25rem + 2px) !important;
+  min-height: calc(2.25rem + 2px) !important;
+  padding: .375rem .75rem !important;
+  border: 1px solid #ced4da !important;
+  border-radius: .25rem !important;
+  background-color: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  box-shadow: none !important;
+}
+
+/* Texto renderizado */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection__rendered,
+#modalAsignarSucursal .select2-container--default .select2-selection__rendered {
+  line-height: 1.5 !important;
+  padding-left: 0 !important;
+}
+
+/* Placeholder gris como BS4 */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection__placeholder,
+#modalAsignarSucursal .select2-container--default .select2-selection__placeholder {
+  color: #6c757d !important;
+}
+
+/* Flecha del desplegable */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection__arrow,
+#modalAsignarSucursal .select2-container--default .select2-selection__arrow {
+  height: calc(2.25rem + 2px) !important;
+  right: .75rem !important;
 }
 </style>

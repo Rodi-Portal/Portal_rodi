@@ -396,5 +396,66 @@ class Area extends CI_Controller
         }
 
     }
+    public function select2()
+    {
+        // Portal actual
+        $id_portal = (int) ($this->session->userdata('idPortal') ?: 0);
+
+        $q    = trim($this->input->get('q', true) ?: '');
+        $page = max(1, (int) ($this->input->get('page') ?: 1));
+
+        $limit  = 20;
+        $offset = ($page - 1) * $limit;
+
+        $this->db->select('id, nombre AS text')
+            ->from('cliente') // <-- tu tabla origen
+            ->where('eliminado', 0)
+            ->where('id_portal', $id_portal); // <-- filtra por portal
+
+        if ($q !== '') {
+            $this->db->like('nombre', $q);
+        }
+
+        $this->db->order_by('nombre', 'asc')
+            ->limit($limit + 1, $offset);
+
+        $rows = $this->db->get()->result_array();
+
+        $more = count($rows) > $limit;
+        if ($more) {
+            array_pop($rows);
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'results' => $rows,
+                'more'    => $more,
+            ]));
+    }
+
+    /**
+     * Devuelve un item por id para preselección Select2.
+     * GET: /Area/get/{id}
+     * Respuesta: { id, text } o {}
+     */
+    public function get($id)
+    {
+        $id_portal = (int) ($this->session->userdata('idPortal') ?: 0);
+
+        $row = $this->db->select('id, nombre AS text')
+            ->from('cliente') // <-- tu tabla
+            ->where([
+                'id'        => (int) $id,
+                'eliminado' => 0,
+                'id_portal' => $id_portal, // <-- compara portal
+            ])
+            ->get()
+            ->row_array();
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($row ?: []));
+    }
 
 }

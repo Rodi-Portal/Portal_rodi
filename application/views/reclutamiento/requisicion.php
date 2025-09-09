@@ -114,8 +114,8 @@
   <div id="seccionTarjetas">
     <div id="tarjetas">
       <?php
-      
-      if ($requisiciones):  ?>
+
+      if ($requisiciones): ?>
 
       <div class="row mb-3">
         <?php foreach ($requisiciones as $r):
@@ -147,6 +147,7 @@
                 // Estatus / botones
                 $color_estatus = '';
                 $text_estatus  = '';
+
                 if ((int) $r->status === 1) {
                     $botonProceso    = '<a href="javascript:void(0)" class="btn btn-success btn-ico" id="btnIniciar' . $r->idReq . '" title="Iniciar proceso" onclick="cambiarStatusRequisicion(' . $r->idReq . ',\'' . $nombreJS . '\', \'iniciar\')"><i class="fas fa-play-circle fa-fw"></i></a>';
                     $text_estatus    = 'Estatus: <b>En espera</b>';
@@ -178,10 +179,10 @@
                             $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $nombreUsuario . '</b></div>';
                         } else {
                             $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '">
-		                          <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
-		                              onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
-		                              <i class="fas fa-user-times fa-fw"></i>
-		                          </a> <b>' . $nombreUsuario . '</b></div>';
+			                          <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
+			                              onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
+			                              <i class="fas fa-user-times fa-fw"></i>
+			                          </a> <b>' . $nombreUsuario . '</b></div>';
                         }
                     }
                 } else {
@@ -191,31 +192,31 @@
 
                 // Botón editar
                 $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA')
-                ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar Requisición"
-		                onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
-		                <i class="fas fa-edit fa-fw"></i></a>'
-                : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar SOLICITUD" onclick="openUpdateOrderIntake(' . (int) $r->idReq . ')">
-		                <i class="fas fa-edit fa-fw"></i>
-		              </a>';
+                    ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar Requisición"
+			                onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
+			                <i class="fas fa-edit fa-fw"></i></a>'
+                    : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar SOLICITUD" onclick="openUpdateOrderIntake(' . (int) $r->idReq . ')">
+			                <i class="fas fa-edit fa-fw"></i>
+			              </a>';
 
                 $totalOrders = count($requisiciones);
                 $moveOrder   = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
             ?>
         <div class="col-sm-12 col-md-4 col-lg-4 mb-5<?php echo $moveOrder ?>">
           <div class="card text-center tarjeta" id="<?php echo 'tarjeta' . (int) $r->idReq; ?>">
-            <div class="card-header <?php echo $color_estatus?>">
+            <div class="card-header	                                    <?php echo $color_estatus ?>">
               <div class="d-flex align-items-center">
                 <span class="text-uppercase text-truncate d-block w-100">
                   <strong>
-                    #<?php echo (int) $r->idReq?>
+                    #<?php echo (int) $r->idReq ?>
                     <?php
-        // usar $nombres tal cual, pero para el header: <br> → espacio, trim y colapsar espacios
-                        $headerNombre = preg_replace(
-                            '/\s+/', ' ',
-                            trim(str_ireplace(['<br>', '<br/>', '<br />'], ' ', (string) $nombres))
-                        );
-                        echo ' ' . html_escape($headerNombre);
-                    ?>
+                                // usar $nombres tal cual, pero para el header: <br> → espacio, trim y colapsar espacios
+                                $headerNombre = preg_replace(
+                                    '/\s+/', ' ',
+                                    trim(str_ireplace(['<br>', '<br/>', '<br />'], ' ', (string) $nombres))
+                                );
+                                echo ' ' . html_escape($headerNombre);
+                            ?>
                   </strong>
                 </span>
 
@@ -283,6 +284,13 @@
                 </form>
                 <?php }?>
                 <?php echo $btnDelete ?>
+                <?php if ($esIntake): ?>
+                <button type="button" class="btn btn-success btn-ico btn-asignar-sucursal" title="Asignar a sucursal"
+                  data-idreq="<?php echo (int) $r->idReq; ?>"
+                  data-sucursal="<?php echo isset($r->id_sucursal) ? (int) $r->id_sucursal : 0; ?>">
+                  <i class="fas fa-store fa-fw"></i>
+                </button>
+    <?php endif; ?>
               </div>
 
               <div class="alert alert-secondary text-left mt-3" id="divUsuario<?php echo (int) $r->idReq; ?>">
@@ -1642,7 +1650,7 @@ $(function() {
       data.id_cliente = idCliente; // si viene, envíalo
     }
     // Si además tu endpoint requiere id_portal explícito, agrégalo:
-    // data.id_portal =                                                                                                                                                                  <?php echo (int) $this->session->userdata('id_portal_token'); ?>;
+    // data.id_portal =                                                                                                                                                                                         <?php echo (int) $this->session->userdata('id_portal_token'); ?>;
 
     // CSRF opcional
     var csrf = csrfPair();
