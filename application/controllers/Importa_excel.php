@@ -1,9 +1,9 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date as XlsDate;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class Importa_excel extends CI_Controller
 {
@@ -19,8 +19,14 @@ class Importa_excel extends CI_Controller
         $this->path_docs_empleado = rtrim(FCPATH, '/') . '/_documentEmpleado/';
         $this->path_docs_bolsa    = rtrim(FCPATH, '/') . '/_documentosBolsa/';
 
-        if (!is_dir($this->path_docs_empleado)) @mkdir($this->path_docs_empleado, 0775, true);
-        if (!is_dir($this->path_docs_bolsa))    @mkdir($this->path_docs_bolsa, 0775, true);
+        if (! is_dir($this->path_docs_empleado)) {
+            @mkdir($this->path_docs_empleado, 0775, true);
+        }
+
+        if (! is_dir($this->path_docs_bolsa)) {
+            @mkdir($this->path_docs_bolsa, 0775, true);
+        }
+
     }
 
     /**
@@ -40,83 +46,106 @@ class Importa_excel extends CI_Controller
         $this->output->set_content_type('application/json');
 
         if (empty($_FILES['archivo_excel']['name'])) {
-            return $this->output->set_output(json_encode(['ok'=>false,'msg'=>'Sube un archivo Excel']));
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Sube un archivo Excel']));
         }
 
-        $id_portal  = (int) ($this->session->userdata('idPortal')  ?: 1);
-        $id_usuario = (int) ($this->session->userdata('id')        ?: 1);
-        $id_cliente = (int) ($this->input->post('id_cliente')      ?: null); // opcional
+        $id_portal  = (int) ($this->session->userdata('idPortal') ?: 1);
+        $id_usuario = (int) ($this->session->userdata('id') ?: 1);
+        $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
 
         try {
             $spreadsheet = IOFactory::load($_FILES['archivo_excel']['tmp_name']);
         } catch (Exception $e) {
-            return $this->output->set_output(json_encode(['ok'=>false,'msg'=>'Excel inválido: '.$e->getMessage()]));
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Excel inválido: ' . $e->getMessage()]));
         }
 
         $sheet = $spreadsheet->getSheet(0);
         $rows  = $sheet->toArray(null, true, true, true);
 
         if (count($rows) < 2) {
-            return $this->output->set_output(json_encode(['ok'=>false,'msg'=>'Excel vacío']));
+            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Excel vacío']));
         }
 
         // Cabeceras robustas (evita trim(null))
         $rawHeaders = $rows[1] ?? [];
-        $headers = [];
+        $headers    = [];
         foreach ($rawHeaders as $colLetter => $title) {
-            $t = $title === null ? '' : trim((string)$title);
-            if ($t !== '') $headers[$colLetter] = $t;
+            $t = $title === null ? '' : trim((string) $title);
+            if ($t !== '') {
+                $headers[$colLetter] = $t;
+            }
+
         }
         $index = [];
-        foreach ($headers as $colLetter => $title) { $index[$title] = $colLetter; }
+        foreach ($headers as $colLetter => $title) {$index[$title] = $colLetter;}
 
         // ===== Helpers lectura =====
-        $get = function($row, $names) use ($index) {
+        $get = function ($row, $names) use ($index) {
             $names = is_array($names) ? $names : [$names];
             foreach ($names as $name) {
                 if (isset($index[$name])) {
                     $col = $index[$name];
-                    return isset($row[$col]) ? trim((string)$row[$col]) : null;
+                    return isset($row[$col]) ? trim((string) $row[$col]) : null;
                 }
             }
             return null;
         };
-        $getDateYmd = function($row, $names) use ($get) {
+        $getDateYmd = function ($row, $names) use ($get) {
             $raw = $get($row, $names);
-            if ($raw === null || $raw === '') return null;
+            if ($raw === null || $raw === '') {
+                return null;
+            }
+
             if (is_numeric($raw)) {
-                try { return XlsDate::excelToDateTimeObject($raw)->format('Y-m-d'); }
-                catch (Exception $e) { return null; }
+                try {return XlsDate::excelToDateTimeObject($raw)->format('Y-m-d');} catch (Exception $e) {return null;}
             }
             $ts = strtotime($raw);
             return $ts ? date('Y-m-d', $ts) : null;
         };
-        $getNumber = function($row, $names) use ($get) {
+        $getNumber = function ($row, $names) use ($get) {
             $raw = $get($row, $names);
-            if ($raw === null || $raw === '') return null;
-            $raw = str_replace([',','$'], '', (string)$raw);
+            if ($raw === null || $raw === '') {
+                return null;
+            }
+
+            $raw = str_replace([',', '$'], '', (string) $raw);
             return is_numeric($raw) ? $raw : null;
         };
-        $splitNombre = function($full) {
-            $full = trim(preg_replace('/\s+/', ' ', (string)$full));
-            if ($full === '') return ['nombre'=>'', 'paterno'=>null, 'materno'=>null];
+        $splitNombre = function ($full) {
+            $full = trim(preg_replace('/\s+/', ' ', (string) $full));
+            if ($full === '') {
+                return ['nombre' => '', 'paterno' => null, 'materno' => null];
+            }
+
             $parts = explode(' ', $full);
-            if (count($parts) === 1) return ['nombre'=>$parts[0], 'paterno'=>null, 'materno'=>null];
-            if (count($parts) === 2) return ['nombre'=>$parts[0], 'paterno'=>$parts[1], 'materno'=>null];
+            if (count($parts) === 1) {
+                return ['nombre' => $parts[0], 'paterno' => null, 'materno' => null];
+            }
+
+            if (count($parts) === 2) {
+                return ['nombre' => $parts[0], 'paterno' => $parts[1], 'materno' => null];
+            }
+
             $paterno = array_pop($parts);
             $materno = array_pop($parts);
             $nombre  = implode(' ', $parts);
-            return ['nombre'=>$nombre, 'paterno'=>$materno, 'materno'=>$paterno];
+            return ['nombre' => $nombre, 'paterno' => $materno, 'materno' => $paterno];
         };
-        $calcEdad = function($ymd) {
-            if (!$ymd) return null;
-            try { $b = new DateTime($ymd); $t = new DateTime('today'); return (int)$b->diff($t)->y; }
-            catch (Exception $e) { return null; }
+        $calcEdad = function ($ymd) {
+            if (! $ymd) {
+                return null;
+            }
+
+            try { $b = new DateTime($ymd);
+                $t                             = new DateTime('today');return (int) $b->diff($t)->y;} catch (Exception $e) {return null;}
         };
-        $toLatin1 = function($s) {
-            if ($s === null) return null;
-            $out = @iconv('UTF-8', 'ISO-8859-1//TRANSLIT', (string)$s);
-            return $out !== false ? $out : (string)$s;
+        $toLatin1 = function ($s) {
+            if ($s === null) {
+                return null;
+            }
+
+            $out = @iconv('UTF-8', 'ISO-8859-1//TRANSLIT', (string) $s);
+            return $out !== false ? $out : (string) $s;
         };
 
         // ===== Nombres de columnas =====
@@ -128,82 +157,99 @@ class Importa_excel extends CI_Controller
             'domicilio'        => ['Dirección (short text)'],
             'fecha_nacimiento' => ['FECHA DE NACIMIENTO (date)'],
             'telefono'         => ['TELEFONO DE CONTACTO (phone)'],
-            'medio_contacto'   => ['Medio de contacto','MEDIO DE CONTACTO'],
-            'area_interes'     => ['Área de interés','AREA INTERES','Cliente/Servicio (short text)'],
+            'medio_contacto'   => ['Medio de contacto', 'MEDIO DE CONTACTO'],
+            'area_interes'     => ['Área de interés', 'AREA INTERES', 'Cliente/Servicio (short text)'],
             'sueldo_deseado'   => ['PAGO MENSUAL (number)'],
         ];
 
         // Campos fijos empleado
         $MAP_EMPLE = [
-            'id_empleado'       => [$X_TASK_ID],
-            'nombre'            => [$X_NOMBRE_COMPLETO],
-            'telefono'          => ['TELEFONO DE CONTACTO (phone)'],
-            'correo'            => ['E-MAIL E.G.C (email)'],
-            'departamento'      => ['Departamento','Cliente/Servicio (short text)'],
-            'puesto'            => ['Puesto','Cargo'],
-            'rfc'               => ['RFC'],
-            'nss'               => ['NSS','IMSS'],
-            'curp'              => ['N° DE CEDULA (short text)','CURP'],
-            'foto'              => ['Foto','FOTO'],
-            'fecha_nacimiento'  => ['FECHA DE NACIMIENTO (date)'],
+            'id_empleado'      => [$X_TASK_ID],
+            'nombre'           => [$X_NOMBRE_COMPLETO],
+            'telefono'         => ['TELEFONO DE CONTACTO (phone)'],
+            'correo'           => ['E-MAIL E.G.C (email)'],
+            'departamento'     => ['Departamento', 'Cliente/Servicio (short text)'],
+            'puesto'           => ['Puesto', 'Cargo'],
+            'rfc'              => ['RFC'],
+            'nss'              => ['NSS', 'IMSS'],
+            'curp'             => ['N° DE CEDULA (short text)', 'CURP'],
+            'foto'             => ['Foto', 'FOTO'],
+            'fecha_nacimiento' => ['FECHA DE NACIMIENTO (date)'],
         ];
 
         // Adjuntos: etiquetas + posibles cabeceras
         $ATTACH_COLS = [
-            ['label' => 'Hoja de vida',                 'headers' => ['Hoja de vida (attachment)','Hoja de vida','CV','Curriculum','Currículum']],
-            ['label' => 'Cédula de identidad',          'headers' => ['Cedula Asociado (attachment)','Cédula','Cedula']],
-            ['label' => 'Foto Asociado',                'headers' => ['Foto Asociado (attachment)','Foto Asociado','Foto']],
-            ['label' => 'Acuerdo de Confidencialidad',  'headers' => ['Acuerdo Confidencialidad (attachment)','Acuerdo de Confidencialidad']],
-            ['label' => 'Convenio de Confidencialidad', 'headers' => ['Convenio de confidencialidad (attachment)','Convenio de confidencialidad']],
-            ['label' => 'Validación Técnica',           'headers' => ['Validación Técnica (attachment)','Validación Técnica']],
-            ['label' => 'Informe de cierre',            'headers' => ['informe de cierre de servicio (attachment)','Informe de cierre']],
+            ['label' => 'Hoja de vida', 'headers' => ['Hoja de vida (attachment)', 'Hoja de vida', 'CV', 'Curriculum', 'Currículum']],
+            ['label' => 'Cédula de identidad', 'headers' => ['Cedula Asociado (attachment)', 'Cédula', 'Cedula']],
+            ['label' => 'Foto Asociado', 'headers' => ['Foto Asociado (attachment)', 'Foto Asociado', 'Foto']],
+            ['label' => 'Acuerdo de Confidencialidad', 'headers' => ['Acuerdo Confidencialidad (attachment)', 'Acuerdo de Confidencialidad']],
+            ['label' => 'Convenio de Confidencialidad', 'headers' => ['Convenio de confidencialidad (attachment)', 'Convenio de confidencialidad']],
+            ['label' => 'Validación Técnica', 'headers' => ['Validación Técnica (attachment)', 'Validación Técnica']],
+            ['label' => 'Informe de cierre', 'headers' => ['informe de cierre de servicio (attachment)', 'Informe de cierre']],
         ];
         $ATTACH_HEADERS = [];
-        foreach ($ATTACH_COLS as $def) foreach ($def['headers'] as $h) $ATTACH_HEADERS[] = $h;
+        foreach ($ATTACH_COLS as $def) {
+            foreach ($def['headers'] as $h) {
+                $ATTACH_HEADERS[] = $h;
+            }
+        }
 
-        $creacionAhora = date('Y-m-d H:i:s');
-        $insertados_bolsa = 0;
-        $insertados_emp   = 0;
+        $creacionAhora     = date('Y-m-d H:i:s');
+        $insertados_bolsa  = 0;
+        $insertados_emp    = 0;
         $extras_rows_total = 0;
-        $errores = [];
-        $fallas_descargas = []; // para swal: listado detallado de fallas de descarga
+        $errores           = [];
+        $fallas_descargas  = []; // para swal: listado detallado de fallas de descarga
 
         // ===== Filas =====
         for ($i = 2; $i <= count($rows); $i++) {
             $r = $rows[$i] ?? [];
 
-            $fullName = isset($index[$X_NOMBRE_COMPLETO]) ? trim((string)($r[$index[$X_NOMBRE_COMPLETO]] ?? '')) : '';
-            $np = $splitNombre($fullName);
-            if ($fullName === '') { $errores[] = "Fila $i: nombre vacío"; continue; }
+            $fullName = isset($index[$X_NOMBRE_COMPLETO]) ? trim((string) ($r[$index[$X_NOMBRE_COMPLETO]] ?? '')) : '';
+            $np       = $splitNombre($fullName);
+            if ($fullName === '') {$errores[] = "Fila $i: nombre vacío";
+                continue;}
 
             // STATUS
-            $status_raw = $get($r, ['Status','ESTADO','Estado','status','Estatus']);
-            $action = $this->map_status_action($status_raw); // bolsa_status, create_empleado, empleado_status
+            $status_raw = $get($r, ['Status', 'ESTADO', 'Estado', 'status', 'Estatus']);
+            $action     = $this->map_status_action($status_raw); // bolsa_status, create_empleado, empleado_status
 
             // --- Bolsa (datos base) ---
-            $domicilio_bt        = $get($r, $MAP_BOLSA['domicilio']);
-            $fecha_nac_bt        = $getDateYmd($r, $MAP_BOLSA['fecha_nacimiento']);
-            $telefono_bt         = $get($r, $MAP_BOLSA['telefono']) ?: '';
-            $medio_contacto_bt   = $get($r, $MAP_BOLSA['medio_contacto']);
-            $area_interes_bt     = $get($r, $MAP_BOLSA['area_interes']);
-            $sueldo_deseado_bt   = $getNumber($r, $MAP_BOLSA['sueldo_deseado']);
+            $domicilio_bt      = $get($r, $MAP_BOLSA['domicilio']);
+            $fecha_nac_bt      = $getDateYmd($r, $MAP_BOLSA['fecha_nacimiento']);
+            $telefono_bt       = $get($r, $MAP_BOLSA['telefono']) ?: '';
+            $medio_contacto_bt = $get($r, $MAP_BOLSA['medio_contacto']);
+            $area_interes_bt   = $get($r, $MAP_BOLSA['area_interes']);
+            $sueldo_deseado_bt = $getNumber($r, $MAP_BOLSA['sueldo_deseado']);
 
-            if ($telefono_bt === '') { $errores[] = "Fila $i ({$fullName}): teléfono vacío"; continue; }
+            if ($telefono_bt === '') {$errores[] = "Fila $i ({$fullName}): teléfono vacío";
+                continue;}
 
             // Excluir adjuntos de extras
             $used_bolsa = [$X_NOMBRE_COMPLETO];
-            foreach ($MAP_BOLSA as $arr) foreach ((array)$arr as $hn) $used_bolsa[] = $hn;
+            foreach ($MAP_BOLSA as $arr) {
+                foreach ((array) $arr as $hn) {
+                    $used_bolsa[] = $hn;
+                }
+            }
+
             $used_bolsa = array_merge($used_bolsa, $ATTACH_HEADERS);
 
             // extras iniciales (sin adjuntos)
             $extras_bolsa = [];
             foreach ($headers as $colKey => $headerName) {
                 $headerName = trim($headerName);
-                if ($headerName === '' || in_array($headerName, $used_bolsa, true)) continue;
+                if ($headerName === '' || in_array($headerName, $used_bolsa, true)) {
+                    continue;
+                }
+
                 $valx = isset($r[$colKey]) ? $r[$colKey] : null;
-                if ($valx === null || $valx === '') continue;
+                if ($valx === null || $valx === '') {
+                    continue;
+                }
+
                 if (is_numeric($valx) && $valx > 20000 && $valx < 60000) {
-                    try { $valx = XlsDate::excelToDateTimeObject($valx)->format('Y-m-d'); } catch (Exception $e) {}
+                    try { $valx = XlsDate::excelToDateTimeObject($valx)->format('Y-m-d');} catch (Exception $e) {}
                 }
                 $extras_bolsa[$headerName] = $valx;
             }
@@ -219,7 +265,7 @@ class Importa_excel extends CI_Controller
                 'domicilio'        => $toLatin1($domicilio_bt),
                 'fecha_nacimiento' => $fecha_nac_bt,
                 'edad'             => $calcEdad($fecha_nac_bt),
-                'telefono'         => $toLatin1($telefono_bt),
+                'telefono'         => preg_replace('/\D+/', '', (string) $telefono_bt),
                 'nacionalidad'     => null,
                 'civil'            => null,
                 'dependientes'     => null,
@@ -233,7 +279,7 @@ class Importa_excel extends CI_Controller
                 'software'         => null,
                 'medio_contacto'   => $toLatin1($medio_contacto_bt),
                 'area_interes'     => $toLatin1($area_interes_bt),
-                'sueldo_deseado'   => $sueldo_deseado_bt !== null ? (string)$sueldo_deseado_bt : null,
+                'sueldo_deseado'   => $sueldo_deseado_bt !== null ? (string) $sueldo_deseado_bt : null,
                 'otros_ingresos'   => null,
                 'viajar'           => null,
                 'trabajar'         => null,
@@ -242,11 +288,59 @@ class Importa_excel extends CI_Controller
                 'status'           => $action['bolsa_status'],
                 'semaforo'         => 0,
             ];
+            // === Anti-duplicado SIMPLE (bolsa_trabajo) =============================
+            $tel_clean = preg_replace('/\D+/', '', (string) $telefono_bt);
+            $norm      = function ($s) {
+                $s = @iconv('UTF-8', 'ASCII//TRANSLIT', (string) $s);
+                return strtolower(preg_replace('/[^a-z0-9]+/', '', $s));
+            };
+            $nom = $norm($np['nombre'] ?? '');
+            $pat = $norm($np['paterno'] ?? '');
+            $mat = $norm($np['materno'] ?? '');
+
+            $dup_id = null;
+            if (! empty($fecha_nac_bt)) {
+                $sql1 = "
+                    SELECT id
+                    FROM bolsa_trabajo
+                    WHERE id_portal = ?
+                    AND fecha_nacimiento = ?
+                    AND REPLACE(REPLACE(REPLACE(REPLACE(telefono,' ',''),'-',''),'(',''),')','') = ?
+                    LIMIT 1
+                ";
+                $q1     = $this->db->query($sql1, [$id_portal, $fecha_nac_bt, $tel_clean])->row();
+                $dup_id = $q1->id ?? null;
+            }
+            if (! $dup_id) {
+                $sql2 = "
+                    SELECT id
+                    FROM bolsa_trabajo
+                    WHERE id_portal = ?
+                    AND REPLACE(REPLACE(REPLACE(REPLACE(telefono,' ',''),'-',''),'(',''),')','') = ?
+                    AND LOWER(REPLACE(REPLACE(REPLACE(COALESCE(nombre ,''),' ',''),'-',''),'.',''))  = ?
+                    AND LOWER(REPLACE(REPLACE(REPLACE(COALESCE(paterno,''),' ',''),'-',''),'.','')) = ?
+                    AND LOWER(REPLACE(REPLACE(REPLACE(COALESCE(materno,''),' ',''),'-',''),'.','')) = ?
+                    LIMIT 1
+                ";
+                $q2     = $this->db->query($sql2, [$id_portal, $tel_clean, $nom, $pat, $mat])->row();
+                $dup_id = $q2->id ?? null;
+            }
+          if ($dup_id) {
+                $this->db->where('id', $dup_id)->update('bolsa_trabajo', [
+                    'edicion' => date('Y-m-d H:i:s'),
+                    'status'  => $action['bolsa_status'] ?? 1,
+                    'extras'  => json_encode($extras_bolsa, JSON_UNESCAPED_UNICODE),
+                ]);
+                $errores[] = "Fila $i ({$fullName}): duplicado — se actualizó (id=$dup_id)";
+                continue;
+            }
+
+// ======================================================================
 
             $this->db->trans_start();
 
             $ok_b = $this->db->insert('bolsa_trabajo', $data_bolsa);
-            if (!$ok_b) {
+            if (! $ok_b) {
                 $this->db->trans_complete();
                 $errores[] = "Fila $i ({$fullName}): error al insertar en bolsa_trabajo";
                 continue;
@@ -254,7 +348,7 @@ class Importa_excel extends CI_Controller
             $insertados_bolsa++;
             $id_bolsa = $this->db->insert_id();
 
-            $id_empleado_pk = null;
+            $id_empleado_pk  = null;
             $failed_bolsa    = []; // label => [urls]
             $failed_empleado = []; // label => [urls]
 
@@ -270,35 +364,35 @@ class Importa_excel extends CI_Controller
                 $foto_emp   = $get($r, $MAP_EMPLE['foto']);
                 $fnac_emp   = $getDateYmd($r, $MAP_EMPLE['fecha_nacimiento']);
                 $id_emp_ext = $get($r, $MAP_EMPLE['id_empleado']);
-                $id_emp_ext = ($id_emp_ext !== null && $id_emp_ext !== '') ? mb_substr(trim((string)$id_emp_ext), 0, 50) : null;
+                $id_emp_ext = ($id_emp_ext !== null && $id_emp_ext !== '') ? mb_substr(trim((string) $id_emp_ext), 0, 50) : null;
 
                 $data_emp = [
-                    'creacion'      => $creacionAhora,
-                    'edicion'       => null,
-                    'id_portal'     => $id_portal ?: null,
-                    'id_cliente'    => $id_cliente ?: null,
-                    'id_usuario'    => $id_usuario ?: null,
-                    'id_empleado'   => $id_emp_ext,
+                    'creacion'              => $creacionAhora,
+                    'edicion'               => null,
+                    'id_portal'             => $id_portal ?: null,
+                    'id_cliente'            => $id_cliente ?: null,
+                    'id_usuario'            => $id_usuario ?: null,
+                    'id_empleado'           => $id_emp_ext,
                     'id_domicilio_empleado' => null,
-                    'nombre'        => $np['nombre'] ?: null,
-                    'paterno'       => $np['paterno'],
-                    'materno'       => $np['materno'],
-                    'telefono'      => $tel_emp ?: $telefono_bt,
-                    'correo'        => $correo_emp,
-                    'departamento'  => $dep_emp,
-                    'puesto'        => $pto_emp,
-                    'rfc'           => $rfc_emp,
-                    'nss'           => $nss_emp,
-                    'curp'          => $curp_emp,
-                    'foto'          => $foto_emp,
-                    'fecha_nacimiento' => $fnac_emp,
-                    'id_bolsa'      => $id_bolsa,
-                    'status'        => $action['empleado_status'], // 3 cuando es Contratado
-                    'eliminado'     => 0
+                    'nombre'                => $np['nombre'] ?: null,
+                    'paterno'               => $np['paterno'],
+                    'materno'               => $np['materno'],
+                    'telefono'              => $tel_emp ?: $telefono_bt,
+                    'correo'                => $correo_emp,
+                    'departamento'          => $dep_emp,
+                    'puesto'                => $pto_emp,
+                    'rfc'                   => $rfc_emp,
+                    'nss'                   => $nss_emp,
+                    'curp'                  => $curp_emp,
+                    'foto'                  => $foto_emp,
+                    'fecha_nacimiento'      => $fnac_emp,
+                    'id_bolsa'              => $id_bolsa,
+                    'status'                => $action['empleado_status'], // 3 cuando es Contratado
+                    'eliminado'             => 0,
                 ];
 
                 $ok_e = $this->db->insert('empleados', $data_emp);
-                if (!$ok_e) {
+                if (! $ok_e) {
                     $this->db->trans_complete();
                     $errores[] = "Fila $i ({$fullName}): error al insertar en empleados";
                     continue;
@@ -308,29 +402,39 @@ class Importa_excel extends CI_Controller
 
                 // Extras de empleado (excluyendo adjuntos)
                 $used_emple = [];
-                foreach ($MAP_EMPLE as $arr) foreach ((array)$arr as $hn) $used_emple[] = $hn;
+                foreach ($MAP_EMPLE as $arr) {
+                    foreach ((array) $arr as $hn) {
+                        $used_emple[] = $hn;
+                    }
+                }
+
                 $used_emple[] = $X_NOMBRE_COMPLETO;
                 $used_emple   = array_merge($used_emple, $ATTACH_HEADERS);
 
                 $extras_rows = [];
                 foreach ($headers as $colKey => $headerName) {
                     $headerName = trim($headerName);
-                    if ($headerName === '' || in_array($headerName, $used_emple, true)) continue;
+                    if ($headerName === '' || in_array($headerName, $used_emple, true)) {
+                        continue;
+                    }
 
                     $valx = isset($r[$colKey]) ? $r[$colKey] : null;
-                    if ($valx === null || $valx === '') continue;
+                    if ($valx === null || $valx === '') {
+                        continue;
+                    }
+
                     if (is_numeric($valx) && $valx > 20000 && $valx < 60000) {
-                        try { $valx = XlsDate::excelToDateTimeObject($valx)->format('Y-m-d'); } catch (Exception $e) {}
+                        try { $valx = XlsDate::excelToDateTimeObject($valx)->format('Y-m-d');} catch (Exception $e) {}
                     }
 
                     $extras_rows[] = [
                         'id_empleado' => $id_empleado_pk,
                         'nombre'      => mb_substr($headerName, 0, 255),
-                        'valor'       => mb_substr((string)$valx, 0, 255),
+                        'valor'       => mb_substr((string) $valx, 0, 255),
                     ];
                 }
 
-                if (!empty($extras_rows)) {
+                if (! empty($extras_rows)) {
                     $this->db->insert_batch('empleado_campos_extra', $extras_rows);
                     $extras_rows_total += count($extras_rows);
                 }
@@ -339,40 +443,52 @@ class Importa_excel extends CI_Controller
             // --- DOCUMENTOS: intenta descargar; solo guarda link si falla ---
             foreach ($ATTACH_COLS as $def) {
                 $label = $def['label'];
-                $urls = [];
+                $urls  = [];
 
                 foreach ($def['headers'] as $hname) {
-                    if (!isset($index[$hname])) continue;
+                    if (! isset($index[$hname])) {
+                        continue;
+                    }
+
                     $colLetter = $index[$hname];
                     $colIndex  = Coordinate::columnIndexFromString($colLetter);
 
                     // Hipervínculo real de la celda
                     $cell = $sheet->getCellByColumnAndRow($colIndex, $i);
                     if ($cell && $cell->hasHyperlink()) {
-                        $u = trim((string)$cell->getHyperlink()->getUrl());
-                        if ($u !== '') $urls[] = $u;
+                        $u = trim((string) $cell->getHyperlink()->getUrl());
+                        if ($u !== '') {
+                            $urls[] = $u;
+                        }
+
                     }
                     // Texto visible con posibles URLs
-                    $visible = isset($rows[$i][$colLetter]) ? (string)$rows[$i][$colLetter] : '';
+                    $visible = isset($rows[$i][$colLetter]) ? (string) $rows[$i][$colLetter] : '';
                     if ($visible !== '') {
-                        foreach ($this->extract_urls($visible) as $u2) $urls[] = $u2;
+                        foreach ($this->extract_urls($visible) as $u2) {
+                            $urls[] = $u2;
+                        }
+
                     }
                 }
 
-                if (empty($urls)) continue;
+                if (empty($urls)) {
+                    continue;
+                }
+
                 $urls = array_values(array_unique($urls));
 
                 foreach ($urls as $u) {
                     $uNorm = $this->normalize_share_url($u);
 
                     // Bolsa
-                    $bolRes = $this->save_remote_file($uNorm, $this->path_docs_bolsa, "bolsa_{$id_bolsa}_".$this->slug($label));
+                    $bolRes = $this->save_remote_file($uNorm, $this->path_docs_bolsa, "bolsa_{$id_bolsa}_" . $this->slug($label));
                     if ($bolRes['ok']) {
                         $this->insert_doc_bolsa($id_bolsa, $id_usuario, basename($bolRes['path']), $label);
                     } else {
                         $this->insert_doc_bolsa($id_bolsa, $id_usuario, $uNorm, $label); // fallback URL
                         $failed_bolsa[$label][] = $uNorm;
-                        $fallas_descargas[] = [
+                        $fallas_descargas[]     = [
                             'fila'      => $i,
                             'nombre'    => $fullName,
                             'entidad'   => 'bolsa',
@@ -385,13 +501,13 @@ class Importa_excel extends CI_Controller
 
                     // Empleado (si se creó)
                     if ($id_empleado_pk) {
-                        $empRes = $this->save_remote_file($uNorm, $this->path_docs_empleado, "emp_{$id_empleado_pk}_".$this->slug($label));
+                        $empRes = $this->save_remote_file($uNorm, $this->path_docs_empleado, "emp_{$id_empleado_pk}_" . $this->slug($label));
                         if ($empRes['ok']) {
                             $this->insert_doc_empleado($id_empleado_pk, basename($empRes['path']), $label);
                         } else {
                             $this->insert_doc_empleado($id_empleado_pk, $uNorm, $label); // fallback URL
                             $failed_empleado[$label][] = $uNorm;
-                            $fallas_descargas[] = [
+                            $fallas_descargas[]        = [
                                 'fila'      => $i,
                                 'nombre'    => $fullName,
                                 'entidad'   => 'empleado',
@@ -406,16 +522,16 @@ class Importa_excel extends CI_Controller
             }
 
             // --- Si hubo fallas: agregar links a EXTRAS ---
-            if (!empty($failed_bolsa)) {
+            if (! empty($failed_bolsa)) {
                 $extras_merge = $extras_bolsa;
                 foreach ($failed_bolsa as $key => $urlsFail) {
                     $extras_merge[$key] = implode(' ', array_unique($urlsFail));
                 }
                 $this->db->where('id', $id_bolsa)->update('bolsa_trabajo', [
-                    'extras' => json_encode($extras_merge, JSON_UNESCAPED_UNICODE)
+                    'extras' => json_encode($extras_merge, JSON_UNESCAPED_UNICODE),
                 ]);
             }
-            if ($id_empleado_pk && !empty($failed_empleado)) {
+            if ($id_empleado_pk && ! empty($failed_empleado)) {
                 $rowsFail = [];
                 foreach ($failed_empleado as $key => $urlsFail) {
                     $rowsFail[] = [
@@ -424,31 +540,37 @@ class Importa_excel extends CI_Controller
                         'valor'       => mb_substr(implode(' ', array_unique($urlsFail)), 0, 255),
                     ];
                 }
-                if (!empty($rowsFail)) $this->db->insert_batch('empleado_campos_extra', $rowsFail);
+                if (! empty($rowsFail)) {
+                    $this->db->insert_batch('empleado_campos_extra', $rowsFail);
+                }
+
             }
 
             $this->db->trans_complete();
-            if ($this->db->trans_status() === FALSE) {
+            if ($this->db->trans_status() === false) {
                 $errores[] = "Fila $i ({$fullName}): transacción fallida";
             }
         }
 
         return $this->output->set_output(json_encode([
-            'ok'                    => true,
-            'bolsa_insertados'      => $insertados_bolsa,
-            'empleados_insertados'  => $insertados_emp,
-            'empleado_extras_rows'  => $extras_rows_total,
-            'errores'               => $errores,
-            'fallas_descargas'      => $fallas_descargas, // <- para SweetAlert
+            'ok'                   => true,
+            'bolsa_insertados'     => $insertados_bolsa,
+            'empleados_insertados' => $insertados_emp,
+            'empleado_extras_rows' => $extras_rows_total,
+            'errores'              => $errores,
+            'fallas_descargas'     => $fallas_descargas, // <- para SweetAlert
         ]));
     }
 
     /* =================== Reglas STATUS =================== */
     private function norm_label(?string $s): string
     {
-        if ($s === null) return '';
+        if ($s === null) {
+            return '';
+        }
+
         $s = trim(mb_strtolower($s));
-        $s = @iconv('UTF-8','ASCII//TRANSLIT',$s);
+        $s = @iconv('UTF-8', 'ASCII//TRANSLIT', $s);
         $s = preg_replace('/[^a-z0-9 ]+/', ' ', $s);
         $s = preg_replace('/\s+/', ' ', $s);
         return $s;
@@ -464,25 +586,28 @@ class Importa_excel extends CI_Controller
         $n = $this->norm_label($raw);
 
         if (str_contains($n, 'contratad')) {
-            return ['create_empleado'=>true,  'bolsa_status'=>4, 'empleado_status'=>3];
+            return ['create_empleado' => true, 'bolsa_status' => 4, 'empleado_status' => 3];
         }
-        if (str_contains($n, 'aprobado con acuerdo') || (str_contains($n,'aprobado') && str_contains($n,'acuerdo'))) {
-            return ['create_empleado'=>false, 'bolsa_status'=>5, 'empleado_status'=>null];
+        if (str_contains($n, 'aprobado con acuerdo') || (str_contains($n, 'aprobado') && str_contains($n, 'acuerdo'))) {
+            return ['create_empleado' => false, 'bolsa_status' => 5, 'empleado_status' => null];
         }
         if (str_contains($n, 'reutilizable')) {
-            return ['create_empleado'=>false, 'bolsa_status'=>3, 'empleado_status'=>null];
+            return ['create_empleado' => false, 'bolsa_status' => 3, 'empleado_status' => null];
         }
         if ($n === 'aprobado' || str_contains($n, 'aprobado')) {
-            return ['create_empleado'=>false, 'bolsa_status'=>2, 'empleado_status'=>null];
+            return ['create_empleado' => false, 'bolsa_status' => 2, 'empleado_status' => null];
         }
-        return ['create_empleado'=>false, 'bolsa_status'=>1, 'empleado_status'=>null];
+        return ['create_empleado' => false, 'bolsa_status' => 1, 'empleado_status' => null];
     }
 
     /* =================== Descargas & Docs =================== */
 
     private function extract_urls($text): array
     {
-        if (!is_string($text) || trim($text)==='') return [];
+        if (! is_string($text) || trim($text) === '') {
+            return [];
+        }
+
         preg_match_all('#https?://[^\s,<>\(\)\[\]\{\}]+#i', $text, $m);
         return array_values(array_unique($m[0] ?? []));
     }
@@ -490,14 +615,14 @@ class Importa_excel extends CI_Controller
     private function normalize_share_url(string $u): string
     {
         if (preg_match('#drive\.google\.com/file/d/([^/]+)/view#', $u, $m)) {
-            return "https://drive.google.com/uc?export=download&id=".$m[1];
+            return "https://drive.google.com/uc?export=download&id=" . $m[1];
         }
         if (preg_match('#drive\.google\.com/open\?id=([^&]+)#', $u, $m)) {
-            return "https://drive.google.com/uc?export=download&id=".$m[1];
+            return "https://drive.google.com/uc?export=download&id=" . $m[1];
         }
         if (stripos($u, 'dropbox.com') !== false) {
             $u = preg_replace('#\?dl=0#', '', $u);
-            return $u.(str_contains($u,'?')?'&':'?').'dl=1';
+            return $u . (str_contains($u, '?') ? '&' : '?') . 'dl=1';
         }
         return $u;
     }
@@ -509,8 +634,8 @@ class Importa_excel extends CI_Controller
      */
     private function save_remote_file(string $url, string $destDirAbs, string $prefix): array
     {
-        if (!preg_match('#^https?://#i', $url)) {
-            return ['ok'=>false, 'error'=>'URL inválida', 'http_code'=>0];
+        if (! preg_match('#^https?://#i', $url)) {
+            return ['ok' => false, 'error' => 'URL inválida', 'http_code' => 0];
         }
 
         // HEAD para adivinar content-type/extension si falta
@@ -525,7 +650,7 @@ class Importa_excel extends CI_Controller
             CURLOPT_USERAGENT      => 'CI3-Importer/1.0',
         ]);
         curl_exec($ch);
-        $ctype = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $ctype     = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         $head_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
@@ -534,27 +659,30 @@ class Importa_excel extends CI_Controller
 
         if ($ext === '' && is_string($ctype)) {
             $map = [
-                'application/pdf' => 'pdf',
-                'image/jpeg'      => 'jpg',
-                'image/png'       => 'png',
-                'image/gif'       => 'gif',
-                'application/msword' => 'doc',
+                'application/pdf'                                                         => 'pdf',
+                'image/jpeg'                                                              => 'jpg',
+                'image/png'                                                               => 'png',
+                'image/gif'                                                               => 'gif',
+                'application/msword'                                                      => 'doc',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
             ];
             foreach ($map as $mt => $e) {
-                if (stripos($ctype, $mt) !== false) { $ext = $e; break; }
+                if (stripos($ctype, $mt) !== false) {$ext = $e;
+                    break;}
             }
         }
-        if ($ext === '') $ext = 'bin';
+        if ($ext === '') {
+            $ext = 'bin';
+        }
 
         $name = $prefix . '_' . date('YmdHis') . '_' . substr(sha1($url), 0, 8) . '.' . $ext;
         $dest = rtrim($destDirAbs, '/\\') . DIRECTORY_SEPARATOR . $name;
 
         $dl = $this->curl_download($url, $dest);
         if ($dl['ok']) {
-            return ['ok'=>true, 'path'=>$dest, 'http_code'=>$dl['http_code']];
+            return ['ok' => true, 'path' => $dest, 'http_code' => $dl['http_code']];
         } else {
-            return ['ok'=>false, 'error'=>$dl['error'], 'http_code'=>$dl['http_code']];
+            return ['ok' => false, 'error' => $dl['error'], 'http_code' => $dl['http_code']];
         }
     }
 
@@ -565,7 +693,9 @@ class Importa_excel extends CI_Controller
     private function curl_download(string $url, string $destAbs): array
     {
         $fp = @fopen($destAbs, 'wb');
-        if (!$fp) return ['ok'=>false,'http_code'=>0,'error'=>'No se pudo abrir destino'];
+        if (! $fp) {
+            return ['ok' => false, 'http_code' => 0, 'error' => 'No se pudo abrir destino'];
+        }
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [
@@ -578,18 +708,18 @@ class Importa_excel extends CI_Controller
             CURLOPT_USERAGENT      => 'CI3-Importer/1.0',
         ]);
         $ok   = curl_exec($ch);
-        $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $err  = (string)curl_error($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $err  = (string) curl_error($ch);
         curl_close($ch);
         fclose($fp);
 
-        if (!$ok || $code >= 400) {
+        if (! $ok || $code >= 400) {
             @unlink($destAbs);
             log_message('error', "[import-docs] FAIL $url code=$code err=$err");
-            return ['ok'=>false,'http_code'=>$code,'error'=>$err ?: 'HTTP '.$code];
+            return ['ok' => false, 'http_code' => $code, 'error' => $err ?: 'HTTP ' . $code];
         }
-        log_message('info',  "[import-docs] OK   $url -> $destAbs (HTTP $code)");
-        return ['ok'=>true,'http_code'=>$code,'error'=>''];
+        log_message('info', "[import-docs] OK   $url -> $destAbs (HTTP $code)");
+        return ['ok' => true, 'http_code' => $code, 'error' => ''];
     }
 
     private function slug(string $s): string
@@ -603,7 +733,7 @@ class Importa_excel extends CI_Controller
     {
         $data = [
             'employee_id'     => $employee_id,
-            'name'            => $nameOrUrl,     // basename o URL fallback
+            'name'            => $nameOrUrl, // basename o URL fallback
             'id_opcion'       => null,
             'expiry_date'     => null,
             'expiry_reminder' => null,
