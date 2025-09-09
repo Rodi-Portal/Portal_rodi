@@ -10,20 +10,15 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/jpg" href="<?php echo base_url() ?>img/favicon.jpg" sizes="64x64">
-
   <!-- Custom Fonts -->
   <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
-
-
   <?php echo link_tag("css/sb-admin-2.min.css"); ?>
-
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
-
   <!-- Select Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
@@ -31,26 +26,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
   <!-- CSS -->
   <?php echo link_tag("css/custom.css"); ?>
-
   <!-- Sweetalert 2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
-
   <!-- Animate CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-
-
   <!-- JavaScript -->
   <script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
   <!--script src="< ?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script -->
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   <!-- Dropzone JS (debe ir después de jQuery y Bootstrap JS) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-
   <!-- Page Level Plugins -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="<?php echo base_url() ?>js/chart.min.js"></script>
@@ -58,25 +46,22 @@
   <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
   <!-- Dropzone JS -->
-
   <!-- FullCalendar (Descomentado si se necesita) -->
   <!--<link href='< ?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
-
   <!-- Uncomment if Pusher is needed -->
   <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
-
   <!-- Inicialización de Selectpicker -->
-<script>
-$(document).on('focusin', function (e) {
-  if ($(e.target).closest('.swal2-container').length) {
-    e.stopImmediatePropagation();
-  }
-});</script>
+  <script>
+  $(document).on('focusin', function(e) {
+    if ($(e.target).closest('.swal2-container').length) {
+      e.stopImmediatePropagation();
+    }
+  });
+  </script>
 </head>
 
 <body id="page-top">
   <!-- JavaScript -->
-
   <?php
       $CI                   = &get_instance();
       $idRol                = $CI->session->userdata('idrol');
@@ -87,17 +72,12 @@ $(document).on('focusin', function (e) {
       $terminos             = $terminos_condiciones ? $terminos_condiciones : 'TM_TL_V1.pdf';
 
   ?>
-
-
-
   <?php /*$token = $this->session->userdata('jwt_token'); 
-
 echo $token  */?>
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
       <!-- Sidebar - Brand -->
       <?php if ($logo == null) {
               $logo = 'logo_nuevo.png';
@@ -129,7 +109,6 @@ echo $token  */?>
             </div>
           </div>
         </a>
-
         <div id="collapseUsuario" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php if ($idRol == 1 || $idRol == 6) {?>
@@ -145,7 +124,7 @@ echo $token  */?>
               <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
               Pago/Suscripción
             </a>
-              <a class="collapse-item" href="<?php echo base_url(); ?>legal">
+            <a class="collapse-item" href="<?php echo base_url(); ?>legal">
               <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
               T & C
             </a>
@@ -166,12 +145,9 @@ echo $token  */?>
           <span>Dashboard</span>
         </a>
       </li>
-
       <!-- Divider -->
       <hr class="sidebar-divider">
-
       <!-- Manual de Usuario -->
-
       <li class="nav-item">
         <!-- Ajusta la ruta del archivo según corresponda -->
         <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
@@ -186,9 +162,7 @@ echo $token  */?>
         <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"><i
             class="fas fa-users"></i>
           <span>Reclutamiento</span><!-- Icono de FontAwesome para Recruitment -->
-
         </a>
-
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -197,7 +171,6 @@ echo $token  */?>
           <i class="fas fa-user-clock"></i>
           <span>Preempleo</span>
         </a>
-
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -218,7 +191,6 @@ echo $token  */?>
 
       </li>
       <!-- Divider -->
-
       <!-- Reportes -->
       <?php
           $portal = $this->session->userdata('idPortal');
@@ -251,87 +223,88 @@ echo $token  */?>
           </div>
         </div>
       </li>
-      <?php }
-      ?>
-
-
-
-
-
-
-
-
-
+      <?php } ?>
       <!-- Catalogos -->
+
       <?php
-      if (in_array(5, $submenus) || ($idRol == 1 || $idRol == 6 || $idRol == 9)) {?>
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
-          aria-expanded="true" aria-controls="collapseCatalogos">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>Registrar</span>
-        </a>
-        <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <?php
-            if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
-              Administradores</a>
-            <?php
-            }?>
-            <?php
-if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
-            <?php
-            }?>
-            <?php
+        // ¿Se muestra el menú "Registrar"?
+        $menuRegistrar = show_if_can(
+          'admin.__menu.ver',
+          in_array(5, $submenus) || in_array((int)$idRol, [1, 6, 9], true)
+        );
 
-    if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
-            <?php
-            }?>
+        // Ítems dentro de "Registrar"
+        $itemUsuariosAdmins = show_if_can(
+          'admin.usuarios_internos.ver',
+          in_array((int)$idRol, [1, 6, 9], true)
+        );
 
-            <!-- ?php
-                        if(in_array(8, $submenus)){ ?>
-                      <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
-                      < ?php
-                        } ? -->
+        $itemSucursales = show_if_can(
+          'admin.sucursales.ver',
+          in_array((int)$idRol, [1, 6, 9], true)
+        );
+
+        // Si quieres dejar Portales con la misma condición legacy de antes:
+        $itemPortales = show_if_can(
+          'admin.portales.ver',
+          ($portal == 1 && in_array((int)$idRol, [1, 6], true))
+        );
+        ?>
+
+      <?php
+     if ($menuRegistrar): ?>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
+            aria-expanded="true" aria-controls="collapseCatalogos">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Registrar</span>
+          </a>
+
+          <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+
+              <?php if ($itemUsuariosAdmins): ?>
+                <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">
+                  Usuarios Administradores
+                </a>
+              <?php endif; ?>
+
+              <?php if ($itemSucursales): ?>
+                <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">
+                  Sucursales
+                </a>
+              <?php endif; ?>
+
+              <?php if ($itemPortales): ?>
+                <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">
+                  Portales
+                </a>
+              <?php endif; ?>
+
+            </div>
           </div>
-        </div>
-      </li>
-      <?php }
-      if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
+        </li>
+    <?php endif; 
+
+      if ($portal == 1 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
       <div id="resultados"></div>
 
       <button id="enviarCvsBtn">Enviar CVS</button>
       <div id="resultados2"></div>
       <?php }?>
-
-      <!-- ?php
-                        if(in_array(8, $submenus)){ ?>
-                      <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
-                      < ?php
-                        } ? -->
-
-
-
       <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
         <i class="fa fa-bars"></i>
       </button>
     </ul>
     <!-- End of Sidebar -->
     <!-- Content Wrapper -->
-    <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
-
       <!-- Main Content -->
       <div id="content">
-
         <!-- Topbar -->
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
           <ul class="navbar-nav d-flex flex-row w-100">
-
             <!-- Contenedor para los botones -->
             <li class="nav-item custom-menu" style="flex: 1;">
               <div class="button-container">
@@ -381,7 +354,6 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
 
               </div>
             </li>
-
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1" id="iconoNotificaciones">
               <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
@@ -390,7 +362,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:<?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -442,10 +414,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             </li -->
           </ul>
         </nav>
-
         <!-- Enlace que abre el modal -->
-
-
         <!-- Modal para subir la imagen -->
         <div class="modal fade" id="updateLogoModal" tabindex="-1" role="dialog" aria-labelledby="updateLogoModalLabel"
           aria-hidden="true">
@@ -522,11 +491,10 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                         </td>
                         <td class="text-nowrap">
                           <!-- Guardar -->
-                  
 
-                          <button type="button" id="btn-save-aviso"
-                            class="btn btn-sm btn-link"
-                            data-toggle="tooltip" title="Guardar"
+
+                          <button type="button" id="btn-save-aviso" class="btn btn-sm btn-link" data-toggle="tooltip"
+                            title="Guardar"
                             style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
                             <span class="fas fa-save"
                               style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
@@ -536,12 +504,10 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                           </button>
 
                           <!-- Eliminar -->
-                          <button type="button" id="btn-del-aviso"
-                            class="btn btn-sm btn-link"
-                            data-toggle="tooltip" title="Eliminar" disabled
+                          <button type="button" id="btn-del-aviso" class="btn btn-sm btn-link" data-toggle="tooltip"
+                            title="Eliminar" disabled
                             style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
-                            <span class="fas fa-trash-alt"
-                              style="font-size:2rem;color:#dc3545;margin-left: 25px">
+                            <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545;margin-left: 25px">
                             </span>
                           </button>
                         </td>

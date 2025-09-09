@@ -124,29 +124,25 @@ class Permisos extends CI_Controller
 
 // application/controllers/Permisos.php
 // application/controllers/Permisos.php
+// application/controllers/Permisos.php
     private function _active_modules_for_current_client(): array
     {
-        // Tu sesión usa idPortal 👇
         $portal_id = (int) ($this->session->userdata('idPortal') ?? 0);
 
-        // 1) Desde la tabla portal (si hay portal en sesión)
         $from_portal = [];
         if ($portal_id > 0) {
-            // Ajusta nombres de columnas si difieren (com360 existe en tu tabla)
-            $row = $this->db->select('reclu, pre, emp, former, `com`, `com360`', false)
-                ->from('portal')
-                ->where('id', $portal_id)
-                ->limit(1)
-                ->get()
-                ->row_array() ?? [];
+            $row = $this->db->select('reclu, pre, emp, former, `com`, com360', false)
+                ->from('portal')->where('id', $portal_id)->limit(1)
+                ->get()->row_array() ?? [];
 
+            // 👇 Slugs EXACTOS como en auth_permission.module
             $map = [
-                'reclu'  => 'RECLUTAMIENTO',
-                'pre'    => 'PREEMPLEO',
-                'emp'    => 'EMPLEADOS',
-                'former' => 'EXEMPLEADOS',
-                'com'    => 'COMUNICACION',
-                'com360' => 'COMUNICACION360',
+                'reclu'  => 'reclutamiento',
+                'pre'    => 'pre_empleo',
+                'emp'    => 'empleados',
+                'former' => 'exempleados',
+                'com'    => 'comunicacion',
+                'com360' => 'comunicacion360',
             ];
 
             foreach ($map as $col => $slug) {
@@ -156,24 +152,21 @@ class Permisos extends CI_Controller
             }
         }
 
-        // 2) Módulos “utilitarios” siempre configurables en el modal
-        $always = ['GENERAL', 'MI_CUENTA', 'REPORTES', 'DASHBOARDS'];
+        // 👇 Utilitarios con slugs reales
+        $always = ['admin', 'mi_cuenta', 'reportes', 'dashboards'];
 
-        // 3) Candidatos = portal activos + utilitarios (únicos)
         $candidates = array_values(array_unique(array_merge($from_portal, $always)));
         if (empty($candidates)) {
             return [];
         }
 
-        // 4) Solo devuelve los que realmente tengan catálogo activo en auth_permission
         $rows = $this->db->select('DISTINCT module', false)
             ->from('auth_permission')
             ->where('is_active', 1)
             ->where_in('module', $candidates)
-            ->get()
-            ->result_array();
+            ->get()->result_array();
 
-        return array_map(static function ($r) {return $r['module'];}, $rows);
+        return array_map(static fn($r) => $r['module'], $rows); // devuelve slugs
     }
 
     public function guardar()
@@ -181,39 +174,32 @@ class Permisos extends CI_Controller
         $user_id = (int) $this->input->post('user_id');
         $module  = trim((string) $this->input->post('module'));
         $eff_enc = $this->input->post('eff_enc'); // array: base64(key) => allow|deny|inherit
-        if (! is_array($eff_enc)) {
-            return $this->_json(['ok' => false, 'msg' => 'Nada para guardar'], 400);
-        }
-
-// Decodifica a $eff con claves reales
-        $eff = [];
-        foreach ($eff_enc as $kEnc => $effect) {
-            $kEnc = (string) $kEnc;
-            // reconstruye base64 estándar
-            $kStd = strtr($kEnc, '-_', '+/');
-            // agrega padding si hace falta
-            $pad = strlen($kStd) % 4;
-            if ($pad) {$kStd .= str_repeat('=', 4 - $pad);}
-            $perm_key = base64_decode($kStd, true);
-            if ($perm_key === false) {
-                continue;
-            }
-            // si algo extraño, ignora
-            $eff[$perm_key] = $effect;
-        }
-        if (empty($eff)) {
-            return $this->_json(['ok' => false, 'msg' => 'Nada para guardar'], 400);
-        }
 
         if ($user_id <= 0) {
             return $this->_json(['ok' => false, 'msg' => 'Falta user_id'], 400);
         }
-
         if ($module === '') {
             return $this->_json(['ok' => false, 'msg' => 'Falta module'], 400);
         }
+        if (! is_array($eff_enc) || empty($eff_enc)) {
+            return $this->_json(['ok' => false, 'msg' => 'Nada para guardar'], 400);
+        }
 
-        if (! is_array($eff)) {
+        // Decodifica a $eff con claves reales
+        $eff = [];
+        foreach ($eff_enc as $kEnc => $effect) {
+            $kStd = strtr((string) $kEnc, '-_', '+/');
+            $pad  = strlen($kStd) % 4;
+            if ($pad) {
+                $kStd .= str_repeat('=', 4 - $pad);
+            }
+
+            $perm_key = base64_decode($kStd, true);
+            if ($perm_key !== false) {
+                $eff[$perm_key] = (string) $effect;
+            }
+        }
+        if (empty($eff)) {
             return $this->_json(['ok' => false, 'msg' => 'Nada para guardar'], 400);
         }
 
@@ -223,17 +209,28 @@ class Permisos extends CI_Controller
             return $this->_json(['ok' => false, 'msg' => 'Usuario no existe'], 404);
         }
 
-        // 2) Validar que el módulo esté ACTIVO para el cliente (según portal)
-        $allowed = $this->_active_modules_for_current_client();
-        if (! in_array($module, $allowed, true)) {
+        // 2) Validar que el módulo esté ACTIVO para el cliente (case-insensitive)
+        $allowed    = $this->_active_modules_for_current_client();
+        $allowed_ci = array_map('strtoupper', (array) $allowed);
+        if (! in_array(strtoupper($module), $allowed_ci, true)) {
             return $this->_json(['ok' => false, 'msg' => 'Módulo no activo para este cliente.'], 403);
         }
 
-        // 3) Cargar catálogo válido del módulo (para no aceptar claves ajenas)
-        $valid_keys = $this->db->select('`key`')->from('auth_permission')
-            ->where(['module' => $module, 'is_active' => 1])->get()->result_array();
-        $valid     = array_column($valid_keys, 'key');
+        // 3) Cargar catálogo válido del módulo (tolerando mayúsc/minúsc)
+        //    Intento exacto + variantes.
+        $this->db->select('`key`')->from('auth_permission')->where('is_active', 1);
+        $this->db->group_start()
+            ->where('module', $module)
+            ->or_where('module', strtolower($module))
+            ->or_where('module', strtoupper($module))
+            ->group_end();
+        $valid_rows = $this->db->get()->result_array();
+
+        $valid     = array_column($valid_rows, 'key');
         $valid_set = array_fill_keys($valid, true);
+        if (empty($valid_set)) {
+            return $this->_json(['ok' => false, 'msg' => 'No hay catálogo de permisos activo para el módulo.'], 404);
+        }
 
         $admin_id = (int) ($this->session->userdata('id') ?? 0);
 
@@ -243,49 +240,46 @@ class Permisos extends CI_Controller
 
         foreach ($eff as $perm_key => $effect) {
             if (! isset($valid_set[$perm_key])) {
-                continue; // ignora claves que no pertenecen al módulo
+                continue; // ignora claves ajenas al módulo
             }
 
-            if ($effect === 'inherit') {
-                // Borrar override (scope global)
-                $this->db->where([
-                    'user_id'        => $user_id,
-                    'permission_key' => $perm_key,
-                    'scope_type'     => 'global',
-                    'scope_value'    => null,
-                ])->delete('auth_user_permission');
+            // SIEMPRE: eliminar overrides previos globales de ese key (evita duplicados)
+            $this->db->where([
+                'user_id'        => $user_id,
+                'permission_key' => $perm_key,
+                'scope_type'     => 'global',
+            ])->where('scope_value IS NULL', null, false)->delete('auth_user_permission');
+            $del += $this->db->affected_rows();
 
-                $del += $this->db->affected_rows();
+            // Efecto "heredar" => solo borrar (ya se hizo) y continuar
+            if ($effect === 'inherit') {
                 continue;
             }
 
+            // Solo aceptamos allow|deny
             if ($effect !== 'allow' && $effect !== 'deny') {
-                continue; // valor inesperado
+                continue;
             }
 
-            // UPSERT usando UNIQUE KEY (user_id, permission_key, scope_type)
-            $sql = "
-              INSERT INTO auth_user_permission
-                (user_id, permission_key, effect, scope_type, scope_value, note, created_by)
-              VALUES
-                (?, ?, ?, 'global', NULL, NULL, ?)
-              ON DUPLICATE KEY UPDATE
-                effect      = VALUES(effect),
-                scope_type  = VALUES(scope_type),
-                scope_value = VALUES(scope_value),
-                note        = VALUES(note),
-                created_by  = VALUES(created_by),
-                updated_at  = CURRENT_TIMESTAMP
-            ";
-            $this->db->query($sql, [$user_id, $perm_key, $effect, $admin_id]);
-            $aff = $this->db->affected_rows();
-            if ($aff === 1) {
+            // Insertar el override limpio
+            $this->db->insert('auth_user_permission', [
+                'user_id'        => $user_id,
+                'permission_key' => $perm_key,
+                'effect'         => $effect,
+                'scope_type'     => 'global',
+                'scope_value'    => null,
+                'note'           => null,
+                'created_by'     => $admin_id,
+                'created_at'     => date('Y-m-d H:i:s'),
+                'updated_at'     => date('Y-m-d H:i:s'),
+            ]);
+
+            if ($this->db->affected_rows() === 1) {
                 $ins++;
-            } elseif ($aff >= 2) {
+            } else {
+                // muy raro que no inserte; lo contamos como update para estadísticas
                 $upd++;
             }
-
-            // update
         }
 
         $this->db->trans_complete();

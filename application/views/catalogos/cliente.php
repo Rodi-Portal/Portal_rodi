@@ -1,6 +1,8 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
-
+<?php
+    // justo arriba del <script> donde configuras DataTables
+    $idRol = $this->session->userdata('idrol'); ?>
   <!-- Page Heading -->
   <div class="align-items-center mb-4">
     <div class="row justify-content-between align-items-center">
@@ -8,17 +10,19 @@
         <h2>Administración de Sucursales</h2>
       </div>
       <div class="col-sm-12 col-md-4 d-flex flex-wrap flex-md-nowrap justify-content-end align-items-center">
-        <?php if ($tipo_bolsa == 1) {?>
+        <?php if (show_if_can('admin.sucursales.generar_link', ($tipo_bolsa == 1) && in_array((int) $idRol, [1, 6, 9], true))): ?>
         <a href="#" class="btn btn-outline-primary btn-lg btn-elevated mr-2 mb-2" onclick="generarLinkstodos(event)">
-          <i class="fas fa-link mr-2"></i>
-          <span>Crear/Actualizar Links</span>
+          <i class="fas fa-link mr-2"></i><span>Crear/Actualizar Links</span>
         </a>
-        <?php }?>
+        <?php endif; ?>
+
+        <?php if (show_if_can('admin.sucursales.crear', in_array((int) $idRol, [1, 6, 9], true))): ?>
         <a href="#" class="btn btn-outline-primary btn-lg btn-elevated mb-2" data-toggle="modal" data-target="#newModal"
           onclick="registrarCliente()">
-          <i class="fas fa-building mr-2"></i>
-          <span>Crear Sucursal</span>
+          <i class="fas fa-building mr-2"></i><span>Crear Sucursal</span>
         </a>
+        <?php endif; ?>
+
       </div>
     </div>
 
@@ -85,10 +89,22 @@
     </div>
   </div>
 </div>
-
+<?php
+    // justo arriba del <script> donde configuras DataTables
+    echo perms_js_flags([
+        'suc_ver'          => ['admin.sucursales.ver', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_crear'        => ['admin.sucursales.crear', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_editar'       => ['admin.sucursales.editar', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_eliminar'     => ['admin.sucursales.eliminar', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_estado'       => ['admin.sucursales.cambiar_estado', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_generar_link' => ['admin.sucursales.generar_link', ($tipo_bolsa == 1) && in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_ver_accesos'  => ['admin.sucursales.ver_accesos', in_array((int) $idRol, [1, 6, 9], true)],
+    ]);
+?>
 <!-- /.content-wrapper -->
 <script>
 var url = '<?php echo base_url('Cat_Cliente/getClientes'); ?>';
+
 var tipos_bloqueo_php =
   '<?php foreach ($tipos_bloqueo as $row) {echo '<option value="' . $row->tipo . '">' . $row->descripcion . '</option>';}?>';
 var tipos_desbloqueo_php =
@@ -205,42 +221,69 @@ $(document).ready(function() {
       },
       {
         title: 'Acciones',
-        data: 'id',
-        bSortable: false,
-        "width": "15%",
-        mRender: function(data, type, full) {
-          //console.log("🚀 ~ full:", full)
-          let link = '';
+        data: null,
+        orderable: false,
+        width: "15%",
+        render: function(data, type, full) {
+          const can = k => !!(window.PERM && window.PERM[k]);
+          const html = [];
 
-          let editar =
-            '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a> ';
-          let eliminar =
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" id="eliminar" class="fa-tooltip icono_datatable icono_gris"><i class="fas fa-trash"></i></a> ';
-          let acceso =
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" id="acceso" class="fa-tooltip icono_datatable icono_azul_claro"><i class="fas fa-sign-in-alt"></i></a>';
-
-          if (full.tipo_bolsa == 1) {
-            link = `
-              <a href="javascript:void(0)"
-                class="link-requisicion fa-tooltip icono_datatable icono_azul_claro"
-                data-id-cliente="${full.idCliente}"
-                data-nombre="${(full.nombre || '').replace(/"/g, '&quot;')}">
-                <i class="fas fa-external-link-alt"></i>
-              </a>`;
+          // Editar
+          if (can('suc_editar')) {
+            html.push(
+              '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a>'
+            );
           }
 
+          // Activar / Desactivar (cambiar_estado)
+          if (can('suc_estado')) {
+            html.push(
+              (Number(full.status) === 0) ?
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a>' :
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" id="desactivar" class="fa-tooltip icono_datatable icono_verde"><i class="far fa-check-circle"></i></a>'
+            );
+          }
 
-          let accion = (full.status == 0) ?
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a> ' :
-            '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" id="desactivar" class="fa-tooltip icono_datatable icono_verde"><i class="far fa-check-circle"></i></a> ';
+          // Eliminar
+          if (can('suc_eliminar')) {
+            html.push(
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" id="eliminar" class="fa-tooltip icono_datatable icono_gris"><i class="fas fa-trash"></i></a>'
+            );
+          }
 
-          let bloqueo = (full.bloqueado === 'NO') ?
-            ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" id="bloquear_cliente" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
-            ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" id="desbloquear_cliente" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> ';
+          // Ver accesos (usa el mismo permiso de ver listado)
+          if (can('suc_ver_accesos')) {
+            html.push(
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" id="acceso" class="fa-tooltip icono_datatable icono_azul_claro"><i class="fas fa-sign-in-alt"></i></a>'
+            );
+          }
 
-          return editar + accion + eliminar + acceso + bloqueo + link;
+          // Bloquear / Desbloquear (puedes usar el mismo permiso de estado o definir otro)
+          if (can('suc_estado')) {
+            html.push(
+              (String(full.bloqueado) === 'NO') ?
+              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" id="bloquear_cliente" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
+              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" id="desbloquear_cliente" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> '
+            );
+          }
+
+          // Crear/Actualizar Links (solo si tipo_bolsa == 1)
+          if (can('suc_generar_link') && Number(full.tipo_bolsa) === 1) {
+            const nombre = (full.nombre || '').replace(/"/g, '&quot;');
+            html.push(`
+        <a href="javascript:void(0)"
+           class="link-requisicion fa-tooltip icono_datatable icono_azul_claro"
+           data-id-cliente="${full.idCliente}"
+           data-nombre="${nombre}">
+           <i class="fas fa-external-link-alt"></i>
+        </a>
+      `);
+          }
+
+          return html.join(' ');
         }
       }
+
     ],
     "columnDefs": [{
       "targets": [2, 3, 4], // Índices de las columnas a ocultar en pantallas pequeñas
