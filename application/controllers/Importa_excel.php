@@ -325,7 +325,7 @@ class Importa_excel extends CI_Controller
                 $q2     = $this->db->query($sql2, [$id_portal, $tel_clean, $nom, $pat, $mat])->row();
                 $dup_id = $q2->id ?? null;
             }
-          if ($dup_id) {
+            if ($dup_id) {
                 $this->db->where('id', $dup_id)->update('bolsa_trabajo', [
                     'edicion' => date('Y-m-d H:i:s'),
                     'status'  => $action['bolsa_status'] ?? 1,
@@ -439,8 +439,7 @@ class Importa_excel extends CI_Controller
                     $extras_rows_total += count($extras_rows);
                 }
             }
-
-            // --- DOCUMENTOS: intenta descargar; solo guarda link si falla ---
+            // --- DOCUMENTOS: intenta descargar; SOLO inserta si la descarga fue OK ---
             foreach ($ATTACH_COLS as $def) {
                 $label = $def['label'];
                 $urls  = [];
@@ -481,12 +480,27 @@ class Importa_excel extends CI_Controller
                 foreach ($urls as $u) {
                     $uNorm = $this->normalize_share_url($u);
 
-                    // Bolsa
-                    $bolRes = $this->save_remote_file($uNorm, $this->path_docs_bolsa, "bolsa_{$id_bolsa}_" . $this->slug($label));
-                    if ($bolRes['ok']) {
+                    // ===== Bolsa =====
+                    $bolRes = $this->save_remote_file(
+                        $uNorm,
+                        $this->path_docs_bolsa,
+                        "bolsa_{$id_bolsa}_" . $this->slug($label)
+                    );
+
+                    // Considera OK solo si devolvió ok, existe el archivo y tiene tamaño > 0
+                    $bol_ok = ($bolRes['ok'] ?? false)
+                    && isset($bolRes['path'])
+                    && is_file($bolRes['path'])
+                    && filesize($bolRes['path']) > 0;
+
+                    if ($bol_ok) {
                         $this->insert_doc_bolsa($id_bolsa, $id_usuario, basename($bolRes['path']), $label);
                     } else {
-                        $this->insert_doc_bolsa($id_bolsa, $id_usuario, $uNorm, $label); // fallback URL
+                        // NO insertes en documentos_bolsa: guárdalo como FALLO para pasarlo a EXTRAS
+                        if (! empty($bolRes['path']) && is_file($bolRes['path'])) {
+                            @unlink($bolRes['path']);
+                        }
+                        // limpia basura
                         $failed_bolsa[$label][] = $uNorm;
                         $fallas_descargas[]     = [
                             'fila'      => $i,
@@ -494,18 +508,31 @@ class Importa_excel extends CI_Controller
                             'entidad'   => 'bolsa',
                             'label'     => $label,
                             'url'       => $uNorm,
-                            'http_code' => $bolRes['http_code'],
-                            'error'     => $bolRes['error'],
+                            'http_code' => $bolRes['http_code'] ?? 0,
+                            'error'     => $bolRes['error'] ?? 'Descarga fallida',
                         ];
                     }
 
-                    // Empleado (si se creó)
+                    // ===== Empleado (si se creó) =====
                     if ($id_empleado_pk) {
-                        $empRes = $this->save_remote_file($uNorm, $this->path_docs_empleado, "emp_{$id_empleado_pk}_" . $this->slug($label));
-                        if ($empRes['ok']) {
+                        $empRes = $this->save_remote_file(
+                            $uNorm,
+                            $this->path_docs_empleado,
+                            "emp_{$id_empleado_pk}_" . $this->slug($label)
+                        );
+
+                        $emp_ok = ($empRes['ok'] ?? false)
+                        && isset($empRes['path'])
+                        && is_file($empRes['path'])
+                        && filesize($empRes['path']) > 0;
+
+                        if ($emp_ok) {
                             $this->insert_doc_empleado($id_empleado_pk, basename($empRes['path']), $label);
                         } else {
-                            $this->insert_doc_empleado($id_empleado_pk, $uNorm, $label); // fallback URL
+                            if (! empty($empRes['path']) && is_file($empRes['path'])) {
+                                @unlink($empRes['path']);
+                            }
+
                             $failed_empleado[$label][] = $uNorm;
                             $fallas_descargas[]        = [
                                 'fila'      => $i,
@@ -513,8 +540,8 @@ class Importa_excel extends CI_Controller
                                 'entidad'   => 'empleado',
                                 'label'     => $label,
                                 'url'       => $uNorm,
-                                'http_code' => $empRes['http_code'],
-                                'error'     => $empRes['error'],
+                                'http_code' => $empRes['http_code'] ?? 0,
+                                'error'     => $empRes['error'] ?? 'Descarga fallida',
                             ];
                         }
                     }
