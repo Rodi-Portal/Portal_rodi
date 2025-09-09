@@ -245,10 +245,18 @@ echo $token  */?>
         );
 
         // Si quieres dejar Portales con la misma condición legacy de antes:
-        $itemPortales = show_if_can(
-          'admin.portales.ver',
-          ($portal == 1 && in_array((int)$idRol, [1, 6], true))
-        );
+    
+      $soloPortal1YRol1 = ((int)$portal === 1 && (int)$idRol === 1);
+
+      if ($soloPortal1YRol1) {
+          // Aquí sí dejamos que el override per-usuario decida (legacy=true)
+          $itemPortales = show_if_can('admin.portales.ver', true);
+      } else {
+          // Nunca mostrar para otros casos (incluye rol 6)
+          $itemPortales = false;
+      }
+
+
         ?>
 
       <?php
