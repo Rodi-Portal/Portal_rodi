@@ -1,3 +1,28 @@
+<?php
+    $CI    = &get_instance();
+    $idRol = (int) $CI->session->userdata('idrol');
+    $myId  = (int) $CI->session->userdata('id');
+
+    // “legacy” como hoy (solo para heredar mientras migras)
+    $L_EDITAR         = in_array($idRol, [1, 6, 9], true);
+    $L_CAMBIAR_ESTADO = in_array($idRol, [1, 6, 9], true);
+    $L_ELIMINAR       = in_array($idRol, [1, 6], true);
+    $L_RESET          = in_array($idRol, [1, 6], true);
+    $L_CONFIG         = in_array($idRol, [1, 6], true);
+
+    // -> window.PERM = { ... }
+    echo perms_js_flags([
+        'USR_EDITAR'         => ['admin.usuarios_internos.editar', $L_EDITAR],
+        'USR_CAMBIAR_ESTADO' => ['admin.usuarios_internos.cambiar_estado', $L_CAMBIAR_ESTADO],
+        'USR_ELIMINAR'       => ['admin.usuarios_internos.eliminar', $L_ELIMINAR],
+        'USR_RESET'          => ['admin.usuarios_internos.reset_credenciales', $L_RESET],
+        'USR_CONFIG'         => ['admin.usuarios_internos.config_permisos', $L_CONFIG],
+    ]);
+?>
+<script>
+window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
+</script>
+
 <!-- Begin Page Content -->
 <div class="align-items-center mb-4">
   <div class="row">
@@ -136,7 +161,8 @@
 </div>
 <!-- Modal de Asignacion de  permisos -->
 
-<div class="modal fade" id="modalPermisos" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+<div class="modal fade" id="modalPermisos" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header py-2">
@@ -145,7 +171,9 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body p-0"><!-- aquí se injecta el parcial --></div>
+      <div class="modal-body p-0">
+        <!-- aquí se injecta el parcial -->
+      </div>
     </div>
   </div>
 </div>
@@ -164,6 +192,9 @@ var url = '<?php echo base_url('Cat_UsuarioInternos/getUsuarios'); ?>';
 let rolesVisibles = [1, 6];
 let mostrarColumna = rolesVisibles.includes(idRol);
 $(document).ready(function() {
+
+  const P = window.PERM || {};
+  const SHOW_ACTIONS = !!(P.USR_EDITAR || P.USR_CAMBIAR_ESTADO || P.USR_ELIMINAR || P.USR_RESET || P.USR_CONFIG);
   $('[data-toggle="tooltip"]').tooltip();
 
 
@@ -265,42 +296,57 @@ $(document).ready(function() {
         title: 'Acciones',
         data: 'id_usuario',
         bSortable: false,
-        visible: mostrarColumna,
+        visible: SHOW_ACTIONS,
+
         width: "15%",
         mRender: function(data, type, full) {
-          let editar =
-            '<a id="editar" href="javascript:void(0)" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-pencil-alt" style="font-size:16px;"></i></a> ';
+          const isSelf = Number(data) === window.CURRENT_USER_ID;
 
-          let accion = (full.status == 0) ?
-            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo cambiar-estado" data-id="' +
-            data + '" data-referente="' + full.referente +
-            '" data-status="activar"><i class="fas fa-ban" style="font-size:16px;"></i></a> ' :
-            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_verde cambiar-estado" data-id="' +
-            data + '" data-referente="' + full.referente +
-            '" data-status="desactivar"><i class="far fa-check-circle" style="font-size:16px;"></i></a> ';
+          // Botones condicionados por permisos
+          const editar = P.USR_EDITAR ?
+            '<a id="editar" href="javascript:void(0)" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-pencil-alt" style="font-size:16px;"></i></a> ' :
+            '';
 
-          let eliminar =
+          const estado = P.USR_CAMBIAR_ESTADO ?
+            ((full.status == 0) ?
+              '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo cambiar-estado" data-id="' +
+              data + '" data-referente="' + full.referente +
+              '" data-status="activar"><i class="fas fa-ban" style="font-size:16px;"></i></a> ' :
+              '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_verde cambiar-estado" data-id="' +
+              data + '" data-referente="' + full.referente +
+              '" data-status="desactivar"><i class="far fa-check-circle" style="font-size:16px;"></i></a> '
+            ) :
+            '';
+
+          const eliminar = P.USR_ELIMINAR ?
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_rojo" data-id="' + data +
             '" data-referente="' + full.referente +
-            '" data-action="eliminarUsuario"><i class="fas fa-trash" style="font-size:16px;"></i></a> ';
+            '" data-action="eliminarUsuario"><i class="fas fa-trash" style="font-size:16px;"></i></a> ' :
+            '';
 
-          let credenciales =
+          const credenciales = P.USR_RESET ?
             '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_amarillo" data-correo="' +
             full.correo + '" data-id="' + full.id_datos_generales +
-            '"><i class="fas fa-sync-alt" style="font-size:16px;"></i></a> ';
+            '"><i class="fas fa-sync-alt" style="font-size:16px;"></i></a> ' :
+            '';
 
-          // 👇 Nuevo botón Permisos
-          let permisos =
-            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_morado abrir-permisos" ' +
-            'title="Permisos del usuario" data-id="' + data + '" data-module="">' +
-            '<i class="fas fa-user-shield" style="font-size:16px;"></i></a> ';
+          // Permisos: NO dejar que el propio usuario se los quite (excepto rol 1)
+          // Mostrar el botón “Permisos” si el VISOR tiene el permiso global, incluso en su propia fila.
+          // El bloqueo para no “auto-suicidarse” vive en el backend (ver punto 2).
+          const permisos = P.USR_CONFIG ?
+            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_morado abrir-permisos" title="Permisos del usuario" data-id="' +
+            data + '" data-module=""><i class="fas fa-user-shield" style="font-size:16px;"></i></a> ' :
+            '';
 
+
+          // Si el usuario de la fila es rol 1/6, no muestres cambiar estado ni eliminar (como tenías)
           if (full.id_rol == 1 || full.id_rol == 6) {
             return editar + permisos + credenciales;
           } else {
-            return editar + permisos + accion + eliminar + credenciales;
+            return editar + permisos + estado + eliminar + credenciales;
           }
         }
+
       }
 
 
@@ -869,19 +915,24 @@ function recargarTable() {
   $("#tabla").DataTable().ajax.reload();
 }
 
-var baseUrl = window.BASE_URL || '<?= base_url(); ?>';
+var baseUrl = window.BASE_URL || '<?php echo base_url(); ?>';
 
-  // Click en el botón del DataTable
-$(document).on('click', '.abrir-permisos', function () {
+// Click en el botón del DataTable
+$(document).on('click', '.abrir-permisos', function() {
   const userId = $(this).data('id');
   const module = $(this).data('module') || ''; // puede ir vacío
   $.ajax({
     url: baseUrl + 'permisos/precheck',
     type: 'post',
     dataType: 'json',
-    data: { user_id: userId, module: module }, // si va vacío, server elige
-    beforeSend: function(){ $('.loader').show(); },
-    success: function(res){
+    data: {
+      user_id: userId,
+      module: module
+    }, // si va vacío, server elige
+    beforeSend: function() {
+      $('.loader').show();
+    },
+    success: function(res) {
       $('.loader').fadeOut();
       if (!res || res.ok !== true) {
         Swal.fire('Atención', (res && res.msg) ? res.msg : 'No fue posible abrir el modal.', 'warning');
@@ -889,14 +940,23 @@ $(document).on('click', '.abrir-permisos', function () {
       }
       if (res.fallback && res.fallback_from) {
         // aviso suave (opcional)
-        Swal.fire({icon:'info', title:'Módulo ajustado', html:'Se abrirá: <b>'+res.module+'</b>', timer:1800, showConfirmButton:false});
+        Swal.fire({
+          icon: 'info',
+          title: 'Módulo ajustado',
+          html: 'Se abrirá: <b>' + res.module + '</b>',
+          timer: 1800,
+          showConfirmButton: false
+        });
       }
-      $('#modalPermisos .modal-title').text('Permisos del usuario #' + userId + ' · ' + (res.module || module));
+      $('#modalPermisos .modal-title').text('Permisos del usuario #' + userId + ' · ' + (res.module ||
+        module));
       $('#modalPermisos').modal('show');
-      $('#modalPermisos .modal-body').html('<div class="text-center p-5"><div class="spinner-border"></div><div class="mt-2 text-muted">Cargando…</div></div>');
+      $('#modalPermisos .modal-body').html(
+        '<div class="text-center p-5"><div class="spinner-border"></div><div class="mt-2 text-muted">Cargando…</div></div>'
+      );
       $('#modalPermisos .modal-body').load(res.modal_url);
     },
-    error: function(){
+    error: function() {
       $('.loader').fadeOut();
       Swal.fire('Error', 'No se pudo validar la apertura del modal.', 'error');
     }

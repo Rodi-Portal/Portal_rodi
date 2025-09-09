@@ -232,7 +232,18 @@ class Permisos extends CI_Controller
             return $this->_json(['ok' => false, 'msg' => 'No hay catálogo de permisos activo para el módulo.'], 404);
         }
 
-        $admin_id = (int) ($this->session->userdata('id') ?? 0);
+        $actor_id = (int) ($this->session->userdata('id') ?? 0);
+        if ($user_id === $actor_id) {
+            foreach ($eff as $perm_key => $effect) {
+                if ($perm_key === 'admin.usuarios_internos.config_permisos' && $effect === 'deny') {
+                    // Opción A: ignorar silenciosamente ese cambio
+                    unset($eff[$perm_key]);
+
+                    // Opción B: si prefieres, aborta con mensaje claro
+                    // return $this->_json(['ok'=>false,'msg'=>'No puedes quitarte a ti mismo el permiso de configurar permisos.'], 403);
+                }
+            }
+        }
 
         $this->db->trans_start();
 
@@ -269,7 +280,7 @@ class Permisos extends CI_Controller
                 'scope_type'     => 'global',
                 'scope_value'    => null,
                 'note'           => null,
-                'created_by'     => $admin_id,
+                'created_by'     => $actor_id,
                 'created_at'     => date('Y-m-d H:i:s'),
                 'updated_at'     => date('Y-m-d H:i:s'),
             ]);
