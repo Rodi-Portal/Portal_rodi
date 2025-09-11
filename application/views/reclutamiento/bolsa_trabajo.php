@@ -124,7 +124,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">ATodosll</option>
         <?php
@@ -352,7 +352,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                             <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                           <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -417,7 +417,7 @@
                 onclick="openSubirDocumentos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-upload"></i>
               </a>
-              
+
               <a href="javascript:void(0)" class="btn btn-status btn-cuadro mr-1" data-toggle="tooltip"
                 title="Cambiar Estatus"
                 onclick="openModalStatus(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
@@ -1235,28 +1235,31 @@
     $("#modalStatus").modal("show");
   }
 
-  const STATUS_COLORS = {
-    1: {
-      bg: '#d6d6d6',
-      fg: '#000'
-    },
-    2: {
-      bg: '#87CEFA',
-      fg: '#000'
-    },
-    3: {
-      bg: '#FFD700',
-      fg: '#000'
-    },
-    4: {
-      bg: '#32CD32',
-      fg: '#fff'
-    },
-    5: {
-      bg: '#ff6200ff',
-      fg: '#000'
-    },
-  };
+  if (!window.STATUS_COLORS) {
+    window.STATUS_COLORS = Object.freeze({
+      1: {
+        bg: '#d6d6d6',
+        fg: '#000'
+      },
+      2: {
+        bg: '#87CEFA',
+        fg: '#000'
+      },
+      3: {
+        bg: '#FFD700',
+        fg: '#000'
+      },
+      4: {
+        bg: '#32CD32',
+        fg: '#fff'
+      },
+      5: {
+        bg: '#ff6200ff',
+        fg: '#000'
+      }
+    });
+  }
+
 
   $("#selectStatus").on("change", function() {
     const val = $(this).val();

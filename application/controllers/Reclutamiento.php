@@ -2055,7 +2055,7 @@ class Reclutamiento extends CI_Controller
     {
         // Solo AJAX (opcional)
         // if ( ! $this->input->is_ajax_request()) { show_404(); }
-
+        $data = [];
         $this->output->set_content_type('application/json');
 
         $idReq = (int) $this->input->post('idReq');
@@ -2135,7 +2135,6 @@ class Reclutamiento extends CI_Controller
             return $v;
         };
 
-        $data = [];
         foreach ($allowed as $k) {
             if (array_key_exists($k, $post)) {
                 $data[$k] = $norm($k, $post[$k]);
@@ -3221,6 +3220,26 @@ class Reclutamiento extends CI_Controller
         ]);
 
         echo json_encode(['ok' => true]);
+    }
+
+    public function eliminarAspirante()
+    {
+        $id         = $this->input->post('id');
+        $id_usuario = $this->session->userdata('id');
+        $fecha      = date('Y-m-d H:i:s');
+
+        if ($id) {
+            $this->db->where('id', $id);
+            $this->db->update('requisicion_aspirante', [
+                'eliminado'  => 1,
+                'edicion'      => $fecha,
+                'id_usuario' => $id_usuario,
+            ]);
+
+            echo json_encode(['status' => 'ok']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'ID no recibido']);
+        }
     }
 
 }

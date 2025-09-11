@@ -107,22 +107,24 @@ $(document).ready(function() {
     'placeholder': 'dd/mm/yyyy'
   });
 });
+let dtTabla = null;
 
 function changeDataTable(url) {
+  // si ya existe, destrúyela
   if ($.fn.DataTable.isDataTable('#tabla')) {
-    $('#tabla').DataTable().clear().destroy();
+    dtTabla.destroy();
+    $('#tabla').empty();
   }
-  $('#tabla').empty();
 
-  $('#tabla').DataTable({
-    "pageLength": 25,
-    //"pagingType": "simple",
-    "order": [0, "desc"],
-    "stateSave": true,
-    "serverSide": false,
-    "bDestroy": true,
-    "ajax": url,
-    "columns": [{
+  // crea y GUARDA la referencia global
+  dtTabla = $('#tabla').DataTable({
+    pageLength: 25,
+    order: [0, "desc"],
+    stateSave: true,
+    serverSide: false,
+    bDestroy: true,
+    ajax: url,
+    columns: [{
         title: '#',
         data: 'id',
         "width": "3%",
@@ -189,8 +191,12 @@ function changeDataTable(url) {
         "width": "10%",
         mRender: function(data, type, full) {
           var cvLink =
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.idAsp +
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full
+            .idAsp +
             ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
+          var eliminarAspirante =
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="eliminarAspirante(' + full.idAsp +
+            ')" data-toggle="tooltip" title="Eliminar"><i class="fas fa-upload"></i>Eliminar  Match</a>'
 
           var actualizarDocs =
             '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' +
@@ -241,6 +247,7 @@ function changeDataTable(url) {
             comentarios +
             cvLink +
             actualizarDocs +
+            eliminarAspirante +
             '</div>' +
             '</div>';
         }
@@ -576,12 +583,12 @@ if (typeof baseDocs === 'undefined') {
 
 function abreviarNombreArchivo(nombre, maxLen = 20) {
   if (!nombre || nombre.length <= maxLen) return nombre;
-  const dot  = nombre.lastIndexOf('.');
-  const ext  = (dot > -1 ? nombre.slice(dot) : '');
+  const dot = nombre.lastIndexOf('.');
+  const ext = (dot > -1 ? nombre.slice(dot) : '');
   const base = (dot > -1 ? nombre.slice(0, dot) : nombre);
   if (base.length + ext.length <= maxLen) return nombre;
-  const keep  = maxLen - ext.length - 3; // por '...'
-  const left  = Math.ceil(keep * 0.6);
+  const keep = maxLen - ext.length - 3; // por '...'
+  const left = Math.ceil(keep * 0.6);
   const right = keep - left;
   return base.slice(0, left) + '...' + base.slice(base.length - right) + ext;
 }
@@ -593,7 +600,7 @@ function mostrarFormularioActualizarDocs(id) {
   $tbody.html('<tr><td colspan="5" class="text-center">Cargando…</td></tr>');
 
   $.ajax({
-    url: '<?= site_url('Documentos_Aspirantes/lista/') ?>' + id,
+    url: '<?php echo site_url('Documentos_Aspirantes/lista/')?>' + id,
     type: 'GET',
     dataType: 'json',
     success: function(docs) {
@@ -605,8 +612,8 @@ function mostrarFormularioActualizarDocs(id) {
 
       let filas = '';
       docs.forEach(function(d) {
-        const urlVer  = '<?= site_url('Archivo/ver_aspirante/') ?>' + d.id;
-        const urlDown = '<?= site_url('Archivo/descargar_aspirante/') ?>' + d.id;
+        const urlVer = '<?php echo site_url('Archivo/ver_aspirante/')?>' + d.id;
+        const urlDown = '<?php echo site_url('Archivo/descargar_aspirante/')?>' + d.id;
         const textoLink = abreviarNombreArchivo(d.nombre_archivo, 20);
 
         filas += `
@@ -655,9 +662,12 @@ function mostrarFormularioActualizarDocs(id) {
         const tipo_vista = $(this).is(':checked') ? 1 : 0;
 
         $.ajax({
-          url: '<?= site_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>',
+          url: '<?php echo site_url('Documentos_Aspirantes/actualizar_tipo_vista')?>',
           type: 'POST',
-          data: { id: id, tipo_vista: tipo_vista },
+          data: {
+            id: id,
+            tipo_vista: tipo_vista
+          },
           dataType: 'json',
           success: function(resp) {
             if (resp && resp.ok) {
@@ -669,7 +679,8 @@ function mostrarFormularioActualizarDocs(id) {
                 showConfirmButton: false
               });
             } else {
-              Swal.fire('Error', (resp && resp.message) ? resp.message : 'No se pudo actualizar la vista.', 'error');
+              Swal.fire('Error', (resp && resp.message) ? resp.message :
+                'No se pudo actualizar la vista.', 'error');
             }
           },
           error: function() {
@@ -691,6 +702,57 @@ function mostrarFormularioActualizarDocs(id) {
   });
 }
 
+function eliminarAspirante(idAsp) {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: "Vas a eliminar este aspirante",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Segunda advertencia
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'El aspirante desaparecerá de este listado y el cliente o sucursal no podrá verlo más',
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar'
+      }).then((result2) => {
+        if (result2.isConfirmed) {
+          // Llamada AJAX al backend
+          $.ajax({
+            url: '<?php echo base_url("Reclutamiento/eliminarAspirante") ?>',
+            type: 'POST',
+            data: {
+              id: idAsp
+            },
+            success: function(response) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'El aspirante fue eliminado correctamente'
+              });
+
+              if (dtTabla && $.fn.DataTable.isDataTable('#tabla')) {
+                dtTabla.ajax.reload(null, false); // ← recarga SIN perder paginación
+              }
+            },
+            error: function(xhr, status, error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo eliminar el aspirante. Intenta de nuevo.'
+              });
+            }
+          });
+        }
+      });
+    }
+  });
+}
 
 
 

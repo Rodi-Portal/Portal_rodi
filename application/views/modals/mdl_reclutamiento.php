@@ -2205,7 +2205,7 @@ $(function() {
 
   // 1) Abrir modal y preparar id_aspirante
   window.mostrarFormularioCargaCV = function(id) {
-    console.log('mostrarFormularioCargaCV id:', id);
+    //console.log('mostrarFormularioCargaCV id:', id);
     $('#id_aspirante').val(id);
     $('#id_bolsa').val(id); // si aplicas mismo id, o bórralo si no lo usas
     $modal.modal('show');
