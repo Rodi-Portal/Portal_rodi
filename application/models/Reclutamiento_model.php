@@ -1042,6 +1042,7 @@ class Reclutamiento_model extends CI_Model
         $this->db
             ->select("
             A.*,
+            A.id as idAsp,
 
             TRIM(CONCAT(
                 BT.nombre, ' ',
@@ -1138,7 +1139,7 @@ class Reclutamiento_model extends CI_Model
         $this->db
             ->select("
             A.*,
-
+            A.id as idAsp,
             TRIM(CONCAT(
                 BT.nombre, ' ',
                 COALESCE(BT.paterno, ''), ' ',

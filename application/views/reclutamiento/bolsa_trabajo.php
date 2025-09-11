@@ -124,7 +124,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">ATodosll</option>
         <?php
@@ -352,7 +352,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                             <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -417,6 +417,13 @@
                 onclick="openSubirDocumentos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-upload"></i>
               </a>
+              
+              <a href="javascript:void(0)" class="btn btn-status btn-cuadro mr-1" data-toggle="tooltip"
+                title="Cambiar Estatus"
+                onclick="openModalStatus(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-exchange-alt"></i>
+              </a>
+
             </div>
 
             <div class="alert alert-secondary text-center mt-3" id="divUsuario<?php echo $r->id; ?>">
@@ -1156,6 +1163,159 @@
       }
     });
   }
+
+  function actualizarTarjetaVisualStatus(id, status) {
+    // Mapea clases + colores de respaldo (inline)
+    const map = {
+      1: {
+        cls: 'req_espera',
+        bg: '#6c757d',
+        fg: '#fff',
+        text: 'Estatus: <b>En espera <br></b>'
+      }, // gris
+      2: {
+        cls: 'req_activa',
+        bg: '#17a2b8',
+        fg: '#fff',
+        text: 'Estatus: <b>En Proceso/Aprobado<br></b>'
+      }, // azul cielo
+      3: {
+        cls: 'req_preventiva',
+        bg: '#ffc107',
+        fg: '#212529',
+        text: 'Estatus: <b>Reutilizable/<br></b>'
+      }, // amarillo
+      4: {
+        cls: 'req_positivo',
+        bg: '#28a745',
+        fg: '#fff',
+        text: 'Estatus: <b>Preempleo/Contratado<br></b>'
+      }, // verde
+      5: {
+        cls: 'req_aprobado',
+        bg: '#fd7e14',
+        fg: '#212529',
+        text: 'Estatus: <b>Aprobado con Acuerdo<br></b>'
+      } // naranja
+    };
+
+    const conf = map[parseInt(status, 10)];
+    if (!conf) return;
+
+    // 1) Header de la tarjeta
+    const $header = $("#req_header" + id);
+    if (!$header.length) return;
+
+    // Asegura quitar TODAS las clases de estado conocidas
+    $header.removeClass('req_espera req_activa req_preventiva req_positivo req_aprobado req_negativa');
+
+    // Añade la nueva clase
+    $header.addClass(conf.cls);
+
+    // Fallback: fuerza colores inline por si otro CSS pisa los estilos
+    // (no quita tus clases; solo asegura el color correcto al instante)
+    $header.css({
+      backgroundColor: conf.bg,
+      color: conf.fg
+    });
+
+    // 2) Texto del estatus dentro de la tarjeta
+    const $card = $header.closest('.card');
+    // Si tienes varios .alert-secondary, toma el primero debajo del body
+    const $alertEstatus = $card.find('.alert.alert-secondary').first();
+    if ($alertEstatus.length) {
+      $alertEstatus.html(conf.text);
+    }
+  }
+
+
+  function openModalStatus(idAspirante, statusActual) {
+    $("#statusIdAspirante").val(idAspirante);
+    $("#selectStatus").val(statusActual || "").trigger("change");
+    $("#modalStatus").modal("show");
+  }
+
+  const STATUS_COLORS = {
+    1: {
+      bg: '#d6d6d6',
+      fg: '#000'
+    },
+    2: {
+      bg: '#87CEFA',
+      fg: '#000'
+    },
+    3: {
+      bg: '#FFD700',
+      fg: '#000'
+    },
+    4: {
+      bg: '#32CD32',
+      fg: '#fff'
+    },
+    5: {
+      bg: '#ff6200ff',
+      fg: '#000'
+    },
+  };
+
+  $("#selectStatus").on("change", function() {
+    const val = $(this).val();
+    const s = STATUS_COLORS[val];
+    if (s) {
+      $(this).css({
+        "background-color": s.bg,
+        "color": s.fg
+      });
+    } else {
+      $(this).css({
+        "background-color": "",
+        "color": ""
+      });
+    }
+  });
+
+  function guardarStatusAspirante() {
+    const id = $("#statusIdAspirante").val();
+    const status = $("#selectStatus").val();
+
+    if (!id || !status) {
+      Swal.fire("Atención", "Debes seleccionar un estatus.", "warning");
+      return;
+    }
+
+    $.ajax({
+      url: "<?php echo base_url('Reclutamiento/actualizar_status'); ?>",
+      type: "POST",
+      dataType: "json",
+      data: {
+        id,
+        status
+      },
+      success: function(r) {
+        if (r.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "¡Listo!",
+            text: "Estatus actualizado",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          $("#modalStatus").modal("hide");
+
+          // 🔸 refresca solo la tarjeta visualmente
+          const id = $("#statusIdAspirante").val();
+          const status = $("#selectStatus").val();
+          actualizarTarjetaVisualStatus(id, status);
+        } else {
+          Swal.fire("Error", r.msg || "No fue posible actualizar", "error");
+        }
+      },
+      error: function() {
+        Swal.fire("Error", "Ocurrió un problema al guardar.", "error");
+      }
+    });
+  }
+
 
   async function renombrarDoc(idDoc, nombreActual, nombreArchivo) {
     const porDefecto = (nombreActual && nombreActual.trim()) ?

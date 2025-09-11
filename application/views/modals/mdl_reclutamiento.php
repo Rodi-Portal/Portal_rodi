@@ -399,6 +399,48 @@
     </div>
   </div>
 </div>
+<!-- Modal: Cambiar Estatus -->
+<div class="modal fade" id="modalStatus" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content shadow-lg">
+      
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title mb-0">
+          <i class="fas fa-user-tag me-2"></i> Cambiar estatus
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="statusIdAspirante">
+
+        <div class="form-group">
+          <label for="selectStatus">Estatus del Aspirante</label>
+          <select id="selectStatus" class="form-control">
+            <option value="">-- Selecciona estatus --</option>
+            <option value="1" class="status-1">En espera de asignar a proceso</option>
+            <option value="2" class="status-2">En proceso</option>
+            <option value="3" class="status-3">Reutilizable / Revisar Historial</option>
+            <option value="4" class="status-4">Contratado</option>
+            <option value="5" class="status-5">Aprobado con acuerdo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="guardarStatusAspirante()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 <!-- ESTAMOS AQUI -->
 <div class="modal fade" id="registroCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
@@ -3082,6 +3124,32 @@ $(function() {
   });
 });
 </script>
+
+<style>
+  #selectStatus option.status-1 { background:#d6d6d6; color:#000; }
+  #selectStatus option.status-2 { background:#87CEFA; color:#000; }
+  #selectStatus option.status-3 { background:#FFD700; color:#000; }
+  #selectStatus option.status-4 { background:#32CD32; color:#fff; }
+  #selectStatus option.status-5 { background:#ff6200ff; color:#000; }
+
+  /* que el select también se pinte al elegir */
+  #selectStatus {
+    transition: background-color .15s, color .15s;
+  }
+  /* app.scss o tu hoja de estilos */
+.btn-status {
+  margin-left: 5px;
+  background-color: #6f42c1; /* morado Bootstrap */
+  border-color: #5a379d;
+  color: #fff;
+}
+
+.btn-status:hover {
+  background-color: #59359c;
+  border-color: #45277a;
+}
+
+</style>
 <style>
 .actions {
   gap: .5rem;

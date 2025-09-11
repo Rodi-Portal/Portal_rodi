@@ -776,7 +776,7 @@ class Reclutamiento extends CI_Controller
             echo json_encode([
                 'codigo' => $ok ? 1 : 0,
                 'msg'    => $ok ? 'El aspirante fue actualizado correctamente :)'
-                : 'El aspirante no pudo ser actualizado :(',
+                    : 'El aspirante no pudo ser actualizado :(',
             ]);
             return;
         }
@@ -2805,6 +2805,27 @@ class Reclutamiento extends CI_Controller
         $req['data']            = $this->reclutamiento_model->getAspirantesRequisiciones($id_usuario, $condicion);
         $this->output->set_output(json_encode($req));
     }
+
+    public function getAspirantesPorRequisicion()
+    {
+
+        $id_requisicion = $_GET['id'];
+
+        // echo " aqui  el id  de la requisicion ".$id_requisicion ;
+        if ($this->session->userdata('idrol') == 4) {
+            $id_usuario = $this->session->userdata('id');
+            $condicion  = 'A.id_usuario';
+        } else {
+            $id_usuario = 0;
+            $condicion  = 'A.id_usuario >';
+        }
+        $req['recordsTotal']    = $this->reclutamiento_model->getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id_requisicion);
+        $req['recordsFiltered'] = $this->reclutamiento_model->getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id_requisicion);
+        $req['data']            = $this->reclutamiento_model->getAspirantesPorRequisicion($id_usuario, $condicion, $id_requisicion);
+        $this->output->set_output(json_encode($req));
+
+    }
+
     public function subirCVReqAspirante()
     {
         $this->form_validation->set_rules('id_cv', 'Archivos CV', 'required');
@@ -2882,26 +2903,6 @@ class Reclutamiento extends CI_Controller
         }
 
         echo json_encode($msj);
-    }
-
-    public function getAspirantesPorRequisicion()
-    {
-
-        $id_requisicion = $_GET['id'];
-
-        // echo " aqui  el id  de la requisicion ".$id_requisicion ;
-        if ($this->session->userdata('idrol') == 4) {
-            $id_usuario = $this->session->userdata('id');
-            $condicion  = 'A.id_usuario';
-        } else {
-            $id_usuario = 0;
-            $condicion  = 'A.id_usuario >';
-        }
-        $req['recordsTotal']    = $this->reclutamiento_model->getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id_requisicion);
-        $req['recordsFiltered'] = $this->reclutamiento_model->getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id_requisicion);
-        $req['data']            = $this->reclutamiento_model->getAspirantesPorRequisicion($id_usuario, $condicion, $id_requisicion);
-        $this->output->set_output(json_encode($req));
-
     }
 
     public function getHistorialAspirante()
@@ -3178,7 +3179,7 @@ class Reclutamiento extends CI_Controller
         ]);
     }
 
-       public function eliminar_extra()
+    public function eliminar_extra()
     {
         $id  = $this->input->post('id');
         $key = $this->input->post('key');
@@ -3201,6 +3202,25 @@ class Reclutamiento extends CI_Controller
         } else {
             echo 'error: registro no encontrado';
         }
+    }
+
+    public function actualizar_status()
+    {
+        $id     = (int) $this->input->post('id');
+        $status = (int) $this->input->post('status');
+
+        if ($id <= 0 || $status < 1 || $status > 5) {
+            echo json_encode(['ok' => false, 'msg' => 'Datos inválidos']);
+            return;
+        }
+
+        $this->db->where('id', $id)->update('bolsa_trabajo', [
+            'status'     => $status,
+            'edicion'    => date('Y-m-d H:i:s'),
+            'id_usuario' => $this->session->userdata('id'),
+        ]);
+
+        echo json_encode(['ok' => true]);
     }
 
 }

@@ -184,12 +184,12 @@ function changeDataTable(url) {
 
       {
         title: 'Acciones',
-        data: 'id',
+        data: 'idAsp',
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
           var cvLink =
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.id +
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.idAsp +
             ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
 
           var actualizarDocs =
