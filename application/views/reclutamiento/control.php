@@ -85,6 +85,8 @@
 <!-- /.content-wrapper -->
 <script src="<?php echo base_url('js/whatsapi.js'); ?>"></script>
 <script>
+if (window.__aspirantes_booted) throw 'skip-dup'; window.__aspirantes_booted = true;
+
 $(document).ready(function() {
   var url = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
   changeDataTable(url);
@@ -107,9 +109,10 @@ $(document).ready(function() {
     'placeholder': 'dd/mm/yyyy'
   });
 });
-let dtTabla = null;
+window.dtTabla = window.dtTabla ?? null;
 
-function changeDataTable(url) {
+if (typeof window.changeDataTable !== 'function') {
+  window.changeDataTable = function (url) {
   // si ya existe, destrúyela
   if ($.fn.DataTable.isDataTable('#tabla')) {
     dtTabla.destroy();
@@ -572,8 +575,9 @@ function changeDataTable(url) {
       }
     }
   });
-}
 
+  }; // <-- cierra función
+}
 
 
 if (typeof baseDocs === 'undefined') {
