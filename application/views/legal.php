@@ -68,21 +68,21 @@
     <div class="card-body">
       <h2 class="h4">1. Objeto y Aceptación</h2>
       <ol class="ol-tight">
-        <li>Estos Términos y Condiciones (“Términos”) regulan el acceso y uso de la plataforma (la “Plataforma”) y sus módulos. Al crear una cuenta, acceder o utilizar la Plataforma, usted acepta íntegramente estos Términos.</li>
+        <li>Estos Términos y Condiciones regulan el acceso y uso del Software TalentSafe® y sus módulos. Al crear una cuenta, acceder o utilizar el Software TalentSafe®, usted acepta íntegramente estos Términos.</li>
         <li>Si actúa en representación de una empresa, declara que cuenta con las facultades necesarias para obligarla en los términos aquí establecidos.</li>
       </ol>
 
       <h2 class="h4 mt-4">2. Planes, Precios y Usuarios Adicionales</h2>
       <ol class="ol-tight" start="3">
-        <li>La Plataforma se contrata bajo modalidad de <strong>suscripción mensual</strong> por plan. Los planes y precios vigentes se publican en este sitio o se comunican por escrito al Cliente.</li>
+        <li>El Software TalentSafe® se contrata bajo modalidad de <strong>suscripción mensual</strong> por plan. Los planes y precios vigentes se publican en este sitio o se comunican por escrito al Cliente.</li>
         <li>Los <strong>usuarios adicionales</strong> no incluidos en el plan contratado tienen un costo de <strong>USD $50/mes por usuario</strong>. El sistema informa este costo al momento de su creación.</li>
       </ol>
 
       <h2 class="h4 mt-4">3. Ciclo de Facturación, Corte y Suspensión</h2>
       <ol class="ol-tight" start="5">
         <li>El <strong>día de corte</strong> es el <strong>día 1</strong> de cada mes. El servicio se factura por meses naturales.</li>
-        <li>Si no se recibe el pago correspondiente, el <strong>acceso se retirará el día 5</strong> del mismo mes hasta que se regularice la situación.</li>
-        <li>El Cliente puede optar por no continuar: “<em>si lo quieres lo pagas y si no, simplemente no lo pagas</em>”. En ausencia de pago, se aplicarán las políticas de suspensión y eliminación de datos descritas en estos Términos.</li>
+        <li>Si no se recibe el pago correspondiente, el <strong>acceso se retirará el día 6</strong> del mismo mes hasta que se regularice la situación.</li>
+        <li>El Cliente puede optar por no continuar: “<em>“si lo quieres lo pagas”</em>”. En ausencia de pago, se aplicarán las políticas de suspensión y eliminación de datos descritas en estos Términos.</li>
       </ol>
 
       <h2 class="h4 mt-4">4. Conservación y Eliminación de Datos</h2>
@@ -118,7 +118,7 @@
 
       <h2 class="h4 mt-4">9. Modificaciones</h2>
       <ol class="ol-tight" start="19">
-        <li>Los presentes Términos podrán actualizarse. Los cambios sustanciales se notificarán por medios razonables. El uso continuado de la Plataforma implica la aceptación de las modificaciones.</li>
+        <li>Los presentes Términos podrán actualizarse. Los cambios sustanciales se notificarán por medios razonables. El uso continuado del Software TalentSafe® implica la aceptación de las modificaciones.</li>
       </ol>
 
       <h2 class="h4 mt-4">10. Ley Aplicable y Jurisdicción</h2>
@@ -141,13 +141,13 @@
       <p>Este Aviso de Confidencialidad (“Aviso”) describe los lineamientos bajo los cuales el proveedor de la Plataforma resguarda la información a la que accede y que es proporcionada por el Cliente en el uso de los módulos de Reclutamiento, Preempleo, Empleados, Exempleados y Comunicación.</p>
 
       <h3 class="h5 mt-3">1. Alcance de la Información</h3>
-      <p>La información puede incluir, de manera enunciativa, datos de identificación, laborales y de comunicación interna del Cliente, así como documentos que éste decida cargar a la Plataforma. El Cliente es responsable de obtener las autorizaciones internas y de terceros que correspondan.</p>
+      <p>La información puede incluir, de manera enunciativa, datos de identificación, laborales y de comunicación interna del Cliente, así como documentos que éste decida cargar en el Software TalentSafe®. El Cliente es responsable de obtener las autorizaciones internas y de terceros que correspondan.</p>
 
       <h3 class="h5 mt-3">2. Finalidades</h3>
-      <p>La información se utiliza para la prestación de los servicios contratados, operación de la Plataforma, soporte técnico, mejoras continuas y cumplimiento de obligaciones legales.</p>
+      <p>La información se utiliza para la prestación de los servicios contratados, operación del Software TalentSafe®, soporte técnico, mejoras continuas y cumplimiento de obligaciones legales.</p>
 
       <h3 class="h5 mt-3">3. Medidas de Seguridad</h3>
-      <p>Se aplican medidas razonables de seguridad administrativa, técnica y física para proteger la información contra acceso, uso o divulgación no autorizada. Ningún sistema es infalible, pero se procuran estándares adecuados a la naturaleza del servicio.</p>
+      <p>Se aplican medidas razonables de seguridad administrativa, técnica y física para proteger la información contra acceso, uso o divulgación no autorizada. </p>
 
       <h3 class="h5 mt-3">4. Accesos y Confidencialidad</h3>
       <p>El personal y proveedores que, por función, accedan a la información se encuentran sujetos a obligaciones de confidencialidad. La información sólo se trata para los fines necesarios a la prestación del servicio.</p>
@@ -159,7 +159,7 @@
       <p>Podrán realizarse transferencias o encargos de tratamiento estrictamente necesarios para la operación (p. ej., hosting o soporte), bajo condiciones de confidencialidad y seguridad equivalentes.</p>
 
       <h3 class="h5 mt-3">7. Contacto</h3>
-      <p>Para dudas o solicitudes en materia de confidencialidad, favor de contactar al soporte indicado en la Plataforma.</p>
+      <p>Para dudas o solicitudes en materia de confidencialidad, favor de contactar al soporte indicado en el Software TalentSafe®.</p>
 
       <div class="mt-4 d-flex gap-2">
         <a href="<?= $confidencialidad_url; ?>" class="btn btn-outline-primary">
