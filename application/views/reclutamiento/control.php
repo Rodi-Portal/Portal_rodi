@@ -200,7 +200,7 @@ function changeDataTable(url) {
 
           var actualizarDocs =
             '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' +
-            full.id +
+            full.idAsp +
             ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>';
 
           var comentarios =
