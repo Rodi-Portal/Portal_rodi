@@ -107,479 +107,473 @@ $(document).ready(function() {
     'placeholder': 'dd/mm/yyyy'
   });
 });
-window.dtTabla = window.dtTabla ?? null;
-window.dtTabla = dtTabla;
-if (typeof window.changeDataTable !== 'function') {
-  window.function changeDataTable(url) {
-    // si ya existe, destrúyela
-    if ($.fn.DataTable.isDataTable('#tabla')) {
-      dtTabla.destroy();
-      $('#tabla').empty();
-    }
+let dtTabla = null;
 
-    // crea y GUARDA la referencia global
-    dtTabla = $('#tabla').DataTable({
-      pageLength: 25,
-      order: [0, "desc"],
-      stateSave: true,
-      serverSide: false,
-      bDestroy: true,
-      ajax: url,
-      columns: [{
-          title: '#',
-          data: 'id',
-          "width": "3%",
-          mRender: function(data, type, full) {
-            return data;
-          }
-        },
-        {
-          title: 'Aspirante',
-          data: 'aspirante',
-          bSortable: false,
-          "width": "15%",
-          mRender: function(data, type, full) {
-            return data; //+'<br><small><b>('+full.usuario+')</b></small>';
-          }
-        },
-        {
-          title: 'Sucursal',
-          data: 'nombre_cliente',
-          bSortable: false,
-          "width": "15%",
-          mRender: function(data, type, full) {
-            return '#' + full.id_requisicion + ' ' + full.nombre_cliente;
-          }
-        },
-        {
-          title: 'Puesto',
-          data: 'puesto',
-          bSortable: false,
-          "width": "15%",
-          mRender: function(data, type, full) {
-            return data + '<br>(' + full.numero_vacantes + ' vacantes)';
-          }
-        },
-        {
-          title: 'Contacto',
-          data: 'telefono',
-          bSortable: false,
-          "width": "10%",
-          mRender: function(data, type, full) {
-            const norm = (v, fallback = '--') => {
-              if (v === null || v === undefined) return fallback;
-              if (typeof v === 'string') {
-                const s = v.trim();
-                return (s === '' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') ?
-                  fallback :
-                  s;
-              }
-              return String(v);
-            };
-
-            const tel = norm(full?.telefono, '--');
-            const correo = norm(full?.correo, 'No registrado');
-            const medio = norm(full?.medio_contacto, '--');
-
-            return `<b>Teléfono: </b>${tel}<br><b>Correo: </b>${correo}<br><b>Medio: </b>${medio}`;
-          }
-        },
-
-        {
-          title: 'Acciones',
-          data: 'idAsp',
-          bSortable: false,
-          "width": "10%",
-          mRender: function(data, type, full) {
-            var cvLink =
-              '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full
-              .idAsp +
-              ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
-            var eliminarAspirante =
-              '<a href="javascript:void(0);" class="dropdown-item" onclick="eliminarAspirante(' + full.idAsp +
-              ')" data-toggle="tooltip" title="Eliminar"><i class="fas fa-upload"></i>Eliminar  Match</a>'
-
-            var actualizarDocs =
-              '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' +
-              full.idAsp +
-              ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>';
-
-            var comentarios =
-              '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full
-              .id +
-              ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
-
-            var historial =
-              '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
-            var iniciar_socio =
-              '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Enviar al módulo de Preempleo para candidatos con o sin estudios previos a la contratación."><i class="fas fa-play-circle"></i>Enviar a Preempleo</a>';
-            let ingreso =
-              '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>';
-
-            var acciones = '';
-
-            acciones =
-              '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-              '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
-
-            if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
-              if (full.idCandidato != null && full.idCandidato != '') {
-                acciones = '<b>ESE finalizado</b>';
-              } else {
-                acciones = iniciar_socio + ingreso +
-                  '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-                  '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
-              }
-            } else {
-              if (full.status_final != 'CANCELADO') {
-                acciones = iniciar_socio + ingreso +
-
-                  '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-                  '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
-              }
-            }
-
-
-            return '<div class="btn-group">' +
-              '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
-              '<div class="dropdown-menu">' +
-
-              acciones +
-              historial +
-              comentarios +
-              cvLink +
-              actualizarDocs +
-              eliminarAspirante +
-              '</div>' +
-              '</div>';
-          }
-        },
-        {
-          title: 'Estatus actual',
-          data: null, // Usamos `null` para poder controlar manualmente qué se muestra
-          bSortable: false,
-          width: "10%",
-          render: function(data, type, row) {
-            // console.log("🚀 ~ changeDataTable ~ row:", row)
-            if (row.status_final !== null && row.status_final !== "") {
-              return row.status_final;
-            } else if (row.status != null && row.status != "") {
-              return row.status;
-            } else {
-              return "Registrado";
-            }
-          }
+function changeDataTable(url) {
+  // si ya existe, destrúyela
+  if ($.fn.DataTable.isDataTable('#tabla')) {
+    dtTabla.destroy();
+    $('#tabla').empty();
+  }
+  // crea y GUARDA la referencia global
+  dtTabla = $('#tabla').DataTable({
+    pageLength: 25,
+    order: [0, "desc"],
+    stateSave: true,
+    serverSide: false,
+    bDestroy: true,
+    ajax: url,
+    columns: [{
+        title: '#',
+        data: 'id',
+        "width": "3%",
+        mRender: function(data, type, full) {
+          return data;
         }
-      ],
-      fnDrawCallback: function(oSettings) {
-        $('a[data-toggle="tooltip"]').tooltip({
-          trigger: "hover"
-        });
       },
-      rowCallback: function(row, data) {
-
-        //Color de estatus
-        if (data.status_final == 'CANCELADO') {
-          $('td:eq(6)', row).css({
-            'background-color': '#f8d7da',
-            'color': '#721c24',
-            'font-weight': 'bold'
-          });
+      {
+        title: 'Aspirante',
+        data: 'aspirante',
+        bSortable: false,
+        "width": "15%",
+        mRender: function(data, type, full) {
+          return data; //+'<br><small><b>('+full.usuario+')</b></small>';
         }
-        if (data.status_final == 'BLOQUEADO') {
-          $('td:eq(6)', row).css({
-            'background-color': '#f5c6cb',
-            'color': '#721c24',
-            'font-weight': 'bold'
-          });
+      },
+      {
+        title: 'Sucursal',
+        data: 'nombre_cliente',
+        bSortable: false,
+        "width": "15%",
+        mRender: function(data, type, full) {
+          return '#' + full.id_requisicion + ' ' + full.nombre_cliente;
         }
-        if (data.status_final == 'FINALIZADO') {
-          $('td:eq(6)', row).css({
-            'background-color': '#d4edda',
-            'color': '#155724',
-            'font-weight': 'bold'
-          });
+      },
+      {
+        title: 'Puesto',
+        data: 'puesto',
+        bSortable: false,
+        "width": "15%",
+        mRender: function(data, type, full) {
+          return data + '<br>(' + full.numero_vacantes + ' vacantes)';
         }
-        if (data.status_final == 'COMPLETADO') {
-          $('td:eq(6)', row).css({
-            'background-color': '#c3e6cb',
-            'color': '#155724',
-            'font-weight': 'bold'
-          });
+      },
+      {
+        title: 'Contacto',
+        data: 'telefono',
+        bSortable: false,
+        "width": "10%",
+        mRender: function(data, type, full) {
+          const norm = (v, fallback = '--') => {
+            if (v === null || v === undefined) return fallback;
+            if (typeof v === 'string') {
+              const s = v.trim();
+              return (s === '' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') ?
+                fallback :
+                s;
+            }
+            return String(v);
+          };
+
+          const tel = norm(full?.telefono, '--');
+          const correo = norm(full?.correo, 'No registrado');
+          const medio = norm(full?.medio_contacto, '--');
+
+          return `<b>Teléfono: </b>${tel}<br><b>Correo: </b>${correo}<br><b>Medio: </b>${medio}`;
         }
-        if (!data.status_final || data.status_final.trim() === "") {
-          $('td:eq(6)', row).css({
-            'background-color': '#d1ecf1',
-            'color': '#0c5460',
-            'font-weight': 'bold'
-          });
-        }
+      },
 
+      {
+        title: 'Acciones',
+        data: 'idAsp',
+        bSortable: false,
+        "width": "10%",
+        mRender: function(data, type, full) {
+          var cvLink =
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full
+            .idAsp +
+            ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
+          var eliminarAspirante =
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="eliminarAspirante(' + full.idAsp +
+            ')" data-toggle="tooltip" title="Eliminar"><i class="fas fa-upload"></i>Eliminar  Match</a>'
 
+          var actualizarDocs =
+            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' +
+            full.idAsp +
+            ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>';
 
-        $("a#editar_aspirante", row).bind('click', () => {
-          $("#idAspirante").val(data.id);
-          $("#idBolsa").val(data.id_bolsa_trabajo);
+          var comentarios =
+            '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id +
+            ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
 
-          var nombre = data.aspirante.split(' ');
+          var historial =
+            '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
+          var iniciar_socio =
+            '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Enviar al módulo de Preempleo para candidatos con o sin estudios previos a la contratación."><i class="fas fa-play-circle"></i>Enviar a Preempleo</a>';
+          let ingreso =
+            '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>';
 
-          $('#req_asignada').val(data.id_req).trigger('change'); // Reiniciar Select2
-          $('#nombre').val(nombre[0]);
-          $('#paterno').val(nombre[1]);
-          $('#materno').val(nombre.slice(2).join(' '));
-          $('#domicilio').val(data.domicilio);
-          $('#area_interes').val(data.area_interes);
-          $('#medio').val(data.medio_contacto);
-          $('#telefono1').val(data.telefono);
-          $('#correo1').val(data.correo);
+          var acciones = '';
 
-          if (data.cv != null) {
-            $('#cv_previo').html(
-              '<small><b> (CV previo: </b></small><a href="<?php echo base_url(); ?>_docs/' +
-              data.cv + '" target="_blank">' + data.cv + '</a>)');
+          acciones =
+            '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
+            '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
+
+          if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
+            if (full.idCandidato != null && full.idCandidato != '') {
+              acciones = '<b>ESE finalizado</b>';
+            } else {
+              acciones = iniciar_socio + ingreso +
+                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
+                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+            }
+          } else {
+            if (full.status_final != 'CANCELADO') {
+              acciones = iniciar_socio + ingreso +
+
+                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
+                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+            }
           }
 
-          $("#nuevoAspiranteModal").modal('show');
-        });
-        $('a#accion', row).bind('click', () => {
-          $("#idAspirante").val(data.id);
-          $(".nombreAspirante").text(data.aspirante);
-          $('#idRequisicion').val(data.id_requisicion);
-          $('#semaforo').val(data.semaforo);
-          $('#estatus_aspirante').val(data.status_aspirante);
-          $('#semaforo').val(data.semaforo);
 
-          $("#nuevaAccionModal").modal('show');
+          return '<div class="btn-group">' +
+            '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
+            '<div class="dropdown-menu">' +
+
+            acciones +
+            historial +
+            comentarios +
+            cvLink +
+            actualizarDocs +
+            eliminarAspirante +
+            '</div>' +
+            '</div>';
+        }
+      },
+      {
+        title: 'Estatus actual',
+        data: null, // Usamos `null` para poder controlar manualmente qué se muestra
+        bSortable: false,
+        width: "10%",
+        render: function(data, type, row) {
+          // console.log("🚀 ~ changeDataTable ~ row:", row)
+          if (row.status_final !== null && row.status_final !== "") {
+            return row.status_final;
+          } else if (row.status != null && row.status != "") {
+            return row.status;
+          } else {
+            return "Registrado";
+          }
+        }
+      }
+    ],
+    fnDrawCallback: function(oSettings) {
+      $('a[data-toggle="tooltip"]').tooltip({
+        trigger: "hover"
+      });
+    },
+    rowCallback: function(row, data) {
+
+      //Color de estatus
+      if (data.status_final == 'CANCELADO') {
+        $('td:eq(6)', row).css({
+          'background-color': '#f8d7da',
+          'color': '#721c24',
+          'font-weight': 'bold'
         });
-        $('a#ver_historial', row).bind('click', () => {
-          $("#idAspirante").val(data.id);
-          $(".nombreAspirante").text(data.aspirante);
-          $('#div_historial_aspirante').empty();
-          $.ajax({
-            url: '<?php echo base_url('Reclutamiento/getHistorialAspirante'); ?>',
-            type: 'post',
-            data: {
-              'id': data.id,
-              'tipo_id': 'aspirante'
-            },
-            success: function(res) {
-              var salida = '<table class="table table-striped" style="font-size: 14px">';
-              salida += '<tr style="background: gray;color:white;">';
-              salida += '<th>Fecha</th>';
-              salida += '<th>Estatus</th>';
-              salida += '<th>Comentario / Descripción / Fecha y lugar</th>';
-              salida += '<th>Eliminar Movimiento</th>';
-              salida += '</tr>';
-              if (res != 0) {
-                var dato = JSON.parse(res);
-                for (var i = 0; i < dato.length; i++) {
-                  var aux = dato[i]['creacion'].split(' ');
-                  var f = aux[0].split('-');
-                  var fecha = f[2] + '/' + f[1] + '/' + f[0];
-                  salida += "<tr id='fila_" + dato[i]['id'] + "'>";
-                  salida += '<td>' + fecha + '</td>';
-                  salida += '<td>' + dato[i]['accion'] + '</td>';
-                  salida += '<td>' + dato[i]['descripcion'] + '</td>';
-                  salida +=
-                    '<td><i class="fas fa-trash-alt text-danger" style="cursor:pointer;" onclick="eliminarRegistro(' +
-                    dato[i]['id'] + ')"></i></td>';
-                  salida += "</tr>";
-                }
-              } else {
-                salida += "<tr>";
-                salida += '<td colspan="3" class="text-center"><h5>Sin movimientos</h5></td>';
+      }
+      if (data.status_final == 'BLOQUEADO') {
+        $('td:eq(6)', row).css({
+          'background-color': '#f5c6cb',
+          'color': '#721c24',
+          'font-weight': 'bold'
+        });
+      }
+      if (data.status_final == 'FINALIZADO') {
+        $('td:eq(6)', row).css({
+          'background-color': '#d4edda',
+          'color': '#155724',
+          'font-weight': 'bold'
+        });
+      }
+      if (data.status_final == 'COMPLETADO') {
+        $('td:eq(6)', row).css({
+          'background-color': '#c3e6cb',
+          'color': '#155724',
+          'font-weight': 'bold'
+        });
+      }
+      if (!data.status_final || data.status_final.trim() === "") {
+        $('td:eq(6)', row).css({
+          'background-color': '#d1ecf1',
+          'color': '#0c5460',
+          'font-weight': 'bold'
+        });
+      }
+
+
+
+      $("a#editar_aspirante", row).bind('click', () => {
+        $("#idAspirante").val(data.id);
+        $("#idBolsa").val(data.id_bolsa_trabajo);
+
+        var nombre = data.aspirante.split(' ');
+
+        $('#req_asignada').val(data.id_req).trigger('change'); // Reiniciar Select2
+        $('#nombre').val(nombre[0]);
+        $('#paterno').val(nombre[1]);
+        $('#materno').val(nombre.slice(2).join(' '));
+        $('#domicilio').val(data.domicilio);
+        $('#area_interes').val(data.area_interes);
+        $('#medio').val(data.medio_contacto);
+        $('#telefono1').val(data.telefono);
+        $('#correo1').val(data.correo);
+
+        if (data.cv != null) {
+          $('#cv_previo').html('<small><b> (CV previo: </b></small><a href="<?php echo base_url(); ?>_docs/' +
+            data.cv + '" target="_blank">' + data.cv + '</a>)');
+        }
+
+        $("#nuevoAspiranteModal").modal('show');
+      });
+      $('a#accion', row).bind('click', () => {
+        $("#idAspirante").val(data.id);
+        $(".nombreAspirante").text(data.aspirante);
+        $('#idRequisicion').val(data.id_requisicion);
+        $('#semaforo').val(data.semaforo);
+        $('#estatus_aspirante').val(data.status_aspirante);
+        $('#semaforo').val(data.semaforo);
+
+        $("#nuevaAccionModal").modal('show');
+      });
+      $('a#ver_historial', row).bind('click', () => {
+        $("#idAspirante").val(data.id);
+        $(".nombreAspirante").text(data.aspirante);
+        $('#div_historial_aspirante').empty();
+        $.ajax({
+          url: '<?php echo base_url('Reclutamiento/getHistorialAspirante'); ?>',
+          type: 'post',
+          data: {
+            'id': data.id,
+            'tipo_id': 'aspirante'
+          },
+          success: function(res) {
+            var salida = '<table class="table table-striped" style="font-size: 14px">';
+            salida += '<tr style="background: gray;color:white;">';
+            salida += '<th>Fecha</th>';
+            salida += '<th>Estatus</th>';
+            salida += '<th>Comentario / Descripción / Fecha y lugar</th>';
+            salida += '<th>Eliminar Movimiento</th>';
+            salida += '</tr>';
+            if (res != 0) {
+              var dato = JSON.parse(res);
+              for (var i = 0; i < dato.length; i++) {
+                var aux = dato[i]['creacion'].split(' ');
+                var f = aux[0].split('-');
+                var fecha = f[2] + '/' + f[1] + '/' + f[0];
+                salida += "<tr id='fila_" + dato[i]['id'] + "'>";
+                salida += '<td>' + fecha + '</td>';
+                salida += '<td>' + dato[i]['accion'] + '</td>';
+                salida += '<td>' + dato[i]['descripcion'] + '</td>';
+                salida +=
+                  '<td><i class="fas fa-trash-alt text-danger" style="cursor:pointer;" onclick="eliminarRegistro(' +
+                  dato[i]['id'] + ')"></i></td>';
                 salida += "</tr>";
               }
-              salida += "</table>";
-              $('#div_historial_aspirante').html(salida);
-              $("#historialModal").modal('show');
+            } else {
+              salida += "<tr>";
+              salida += '<td colspan="3" class="text-center"><h5>Sin movimientos</h5></td>';
+              salida += "</tr>";
             }
+            salida += "</table>";
+            $('#div_historial_aspirante').html(salida);
+            $("#historialModal").modal('show');
+          }
+        });
+      });
+
+      $('a#iniciar_socio', row).off('click').bind('click', () => {
+        // --- BLINDAJE INICIAL: limpiar estado mínimo antes de rellenar ---
+        const $modal = $('#registroCandidatoModal');
+
+        // (a) Corrige ID duplicado curp_registro (warning que te sale en consola)
+        const $dups = $modal.find('#curp_registro');
+        if ($dups.length > 1) {
+          $($dups[1]).attr({
+            id: 'curp_check_registro',
+            name: 'curp_check_registro'
           });
+        }
+
+        // (b) Reinicia #puesto SIN perder funcionalidad (vacía y deja base)
+        if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+          $('#puesto').select2('destroy'); // evita múltiples instancias
+        }
+        $('#puesto').empty()
+          .append('<option value="0" selected>N/A</option>')
+          .append('<option value="otro">Otro</option>');
+        $('#puesto_otro').val('').hide();
+
+        // (c) Limpia contenedores que vas a volver a llenar
+        $('#previos').empty();
+        $('#detalles_previo').empty();
+        $('#div_docs_extras').empty();
+
+        // (d) (Opcional) resetea validaciones visibles y loader
+        $('#msj_error').addClass('hidden').empty();
+        $('.loader').hide();
+
+        // --- TU LÓGICA TAL CUAL ---
+        var nombreCompleto = data.aspirante.trim();
+
+        // Dividir el nombre completo en partes
+        var partesNombre = nombreCompleto.split(" ");
+
+        var nombreAspirante = partesNombre[0]; // Primer nombre
+        var apellidoPaterno = partesNombre.length > 1 ? partesNombre[1] : ""; // Primer apellido
+        var apellidoMaterno = partesNombre.length > 2 ? partesNombre[2] : "";
+        var id_cliente = data.id_cliente;
+        let id_position = 0;
+
+        $("#id_cliente_hidden").val(data.id_cliente);
+        $("#clave").val(data.clave);
+        $("#cliente").val(data.nombre_cliente);
+        $("#idAspiranteReq").val(data.id);
+        $("#idRequisicion").val(data.id_requisicion);
+        $("#idBolsaTrabajo").val(data.id_bolsa_trabajo);
+        $('#nombre_registro').val(nombreAspirante)
+        $('#paterno_registro').val(apellidoPaterno)
+        $('#materno_registro').val(apellidoMaterno)
+        $('#celular_registro').val(data.telefono)
+        $('#correo_registro').val(data.correo)
+
+        $('.loader').css("display", "block");
+
+        $.ajax({
+          async: false,
+          url: '<?php echo base_url('Cat_Puestos/getPositionByName'); ?>',
+          type: 'POST',
+          data: {
+            'nombre': data.req_puesto
+          },
+          success: function(res) {
+            id_position = res;
+          }
         });
 
-        $('a#iniciar_socio', row).off('click').bind('click', () => {
-          // --- BLINDAJE INICIAL: limpiar estado mínimo antes de rellenar ---
-          const $modal = $('#registroCandidatoModal');
-
-          // (a) Corrige ID duplicado curp_registro (warning que te sale en consola)
-          const $dups = $modal.find('#curp_registro');
-          if ($dups.length > 1) {
-            $($dups[1]).attr({
-              id: 'curp_check_registro',
-              name: 'curp_check_registro'
-            });
+        $.ajax({
+          async: false,
+          url: '<?php echo base_url('Candidato_Seccion/getHistorialProyectosByCliente'); ?>',
+          type: 'POST',
+          data: {
+            'id_cliente': id_cliente
+          },
+          success: function(res) {
+            $('#previos').html(res);
           }
+        });
 
-          // (b) Reinicia #puesto SIN perder funcionalidad (vacía y deja base)
+        setTimeout(() => {
+          $.ajax({
+            async: false,
+            url: '<?php echo base_url('Cat_Puestos/getAllPositions'); ?>',
+            type: 'POST',
+            success: function(res) {
+              if (res != 0) {
+                let data = JSON.parse(res);
+
+                // 🔒 IMPORTANTE: asegurar base limpia ANTES de append (por si otro flujo lo tocó)
+                if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+                  $('#puesto').select2('destroy');
+                }
+                // Conserva N/A y Otro que dejamos al inicio
+                // Agrega "Selecciona" una sola vez
+                $('#puesto').append('<option value="">Selecciona</option>');
+
+                for (let i = 0; i < data.length; i++) {
+                  $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] +
+                    '</option>');
+                }
+
+                // Quita opciones duplicadas (por si algo previo dejó residuos)
+                const seen = new Set();
+                $('#puesto option').each(function() {
+                  const k = this.value + '|' + (this.textContent || '');
+                  if (seen.has(k)) $(this).remove();
+                  else seen.add(k);
+                });
+
+                // Inicializa select2 una sola vez y dentro del modal
+                $('#puesto').select2({
+                  placeholder: 'Selecciona una opción',
+                  allowClear: true,
+                  width: '100%',
+                  dropdownParent: $('#registroCandidatoModal')
+                });
+
+              } else {
+                $('#puesto').append('<option value="">No hay puestos registrados</option>');
+              }
+            }
+          });
+        }, 200);
+
+        setTimeout(function() {
+          $('#puesto').val(id_position).trigger('change');
+          $('.loader').fadeOut();
+        }, 250);
+        $('#opcion_registro').val('2').trigger('change');
+        // Muestra el modal
+        $('#registroCandidatoModal').modal('show');
+
+        // 🔁 LIMPIEZA AL CERRAR (para siguiente apertura igualita)
+        $('#registroCandidatoModal').one('hidden.bs.modal', function() {
+          // deja el select tal cual base y sin select2
           if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
-            $('#puesto').select2('destroy'); // evita múltiples instancias
+            $('#puesto').select2('destroy');
           }
           $('#puesto').empty()
             .append('<option value="0" selected>N/A</option>')
             .append('<option value="otro">Otro</option>');
           $('#puesto_otro').val('').hide();
 
-          // (c) Limpia contenedores que vas a volver a llenar
-          $('#previos').empty();
-          $('#detalles_previo').empty();
-          $('#div_docs_extras').empty();
-
-          // (d) (Opcional) resetea validaciones visibles y loader
+          // limpia contenedores y estados
+          $('#previos, #detalles_previo, #div_docs_extras').empty();
+          $('#pais_registro, #proyecto_registro, .valor_dinamico').prop('disabled', true).val('');
           $('#msj_error').addClass('hidden').empty();
           $('.loader').hide();
-
-          // --- TU LÓGICA TAL CUAL ---
-          var nombreCompleto = data.aspirante.trim();
-
-          // Dividir el nombre completo en partes
-          var partesNombre = nombreCompleto.split(" ");
-
-          var nombreAspirante = partesNombre[0]; // Primer nombre
-          var apellidoPaterno = partesNombre.length > 1 ? partesNombre[1] : ""; // Primer apellido
-          var apellidoMaterno = partesNombre.length > 2 ? partesNombre[2] : "";
-          var id_cliente = data.id_cliente;
-          let id_position = 0;
-
-          $("#id_cliente_hidden").val(data.id_cliente);
-          $("#clave").val(data.clave);
-          $("#cliente").val(data.nombre_cliente);
-          $("#idAspiranteReq").val(data.id);
-          $("#idRequisicion").val(data.id_requisicion);
-          $("#idBolsaTrabajo").val(data.id_bolsa_trabajo);
-          $('#nombre_registro').val(nombreAspirante)
-          $('#paterno_registro').val(apellidoPaterno)
-          $('#materno_registro').val(apellidoMaterno)
-          $('#celular_registro').val(data.telefono)
-          $('#correo_registro').val(data.correo)
-
-          $('.loader').css("display", "block");
-
-          $.ajax({
-            async: false,
-            url: '<?php echo base_url('Cat_Puestos/getPositionByName'); ?>',
-            type: 'POST',
-            data: {
-              'nombre': data.req_puesto
-            },
-            success: function(res) {
-              id_position = res;
-            }
-          });
-
-          $.ajax({
-            async: false,
-            url: '<?php echo base_url('Candidato_Seccion/getHistorialProyectosByCliente'); ?>',
-            type: 'POST',
-            data: {
-              'id_cliente': id_cliente
-            },
-            success: function(res) {
-              $('#previos').html(res);
-            }
-          });
-
-          setTimeout(() => {
-            $.ajax({
-              async: false,
-              url: '<?php echo base_url('Cat_Puestos/getAllPositions'); ?>',
-              type: 'POST',
-              success: function(res) {
-                if (res != 0) {
-                  let data = JSON.parse(res);
-
-                  // 🔒 IMPORTANTE: asegurar base limpia ANTES de append (por si otro flujo lo tocó)
-                  if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
-                    $('#puesto').select2('destroy');
-                  }
-                  // Conserva N/A y Otro que dejamos al inicio
-                  // Agrega "Selecciona" una sola vez
-                  $('#puesto').append('<option value="">Selecciona</option>');
-
-                  for (let i = 0; i < data.length; i++) {
-                    $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i][
-                        'nombre'
-                      ] +
-                      '</option>');
-                  }
-
-                  // Quita opciones duplicadas (por si algo previo dejó residuos)
-                  const seen = new Set();
-                  $('#puesto option').each(function() {
-                    const k = this.value + '|' + (this.textContent || '');
-                    if (seen.has(k)) $(this).remove();
-                    else seen.add(k);
-                  });
-
-                  // Inicializa select2 una sola vez y dentro del modal
-                  $('#puesto').select2({
-                    placeholder: 'Selecciona una opción',
-                    allowClear: true,
-                    width: '100%',
-                    dropdownParent: $('#registroCandidatoModal')
-                  });
-
-                } else {
-                  $('#puesto').append('<option value="">No hay puestos registrados</option>');
-                }
-              }
-            });
-          }, 200);
-
-          setTimeout(function() {
-            $('#puesto').val(id_position).trigger('change');
-            $('.loader').fadeOut();
-          }, 250);
-          $('#opcion_registro').val('2').trigger('change');
-          // Muestra el modal
-          $('#registroCandidatoModal').modal('show');
-
-          // 🔁 LIMPIEZA AL CERRAR (para siguiente apertura igualita)
-          $('#registroCandidatoModal').one('hidden.bs.modal', function() {
-            // deja el select tal cual base y sin select2
-            if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
-              $('#puesto').select2('destroy');
-            }
-            $('#puesto').empty()
-              .append('<option value="0" selected>N/A</option>')
-              .append('<option value="otro">Otro</option>');
-            $('#puesto_otro').val('').hide();
-
-            // limpia contenedores y estados
-            $('#previos, #detalles_previo, #div_docs_extras').empty();
-            $('#pais_registro, #proyecto_registro, .valor_dinamico').prop('disabled', true).val('');
-            $('#msj_error').addClass('hidden').empty();
-            $('.loader').hide();
-          });
         });
+      });
 
 
 
-        $('a#ingreso_empresa', row).bind('click', () => {
-          $("#idAspirante").val(data.id);
-          $('#ingresoCandidatoModal .nombreRegistro').text(data.nombre)
-          $("#sueldo_acordado").val(data.sueldo_acordado);
-          $("#fecha_ingreso").val(data.fecha_ingreso);
-          $("#pago").val(data.pago);
-          getIngresoCandidato(data.id);
-        });
-      },
-      "language": {
-        "lengthMenu": "Mostrar _MENU_ registros por página",
-        "zeroRecords": "No se encontraron registros",
-        "info": "Mostrando registros de _START_ a _END_ de un total de _TOTAL_ registros",
-        "infoEmpty": "No hay registros disponibles",
-        "infoFiltered": "(Filtrado de _MAX_ registros totales)",
-        "sSearch": "Buscar:",
-        "oPaginate": {
-          "sLast": "Última página",
-          "sFirst": "Primera",
-          "sNext": "Siguiente",
-          "sPrevious": "Anterior"
-        }
+      $('a#ingreso_empresa', row).bind('click', () => {
+        $("#idAspirante").val(data.id);
+        $('#ingresoCandidatoModal .nombreRegistro').text(data.nombre)
+        $("#sueldo_acordado").val(data.sueldo_acordado);
+        $("#fecha_ingreso").val(data.fecha_ingreso);
+        $("#pago").val(data.pago);
+        getIngresoCandidato(data.id);
+      });
+    },
+    "language": {
+      "lengthMenu": "Mostrar _MENU_ registros por página",
+      "zeroRecords": "No se encontraron registros",
+      "info": "Mostrando registros de _START_ a _END_ de un total de _TOTAL_ registros",
+      "infoEmpty": "No hay registros disponibles",
+      "infoFiltered": "(Filtrado de _MAX_ registros totales)",
+      "sSearch": "Buscar:",
+      "oPaginate": {
+        "sLast": "Última página",
+        "sFirst": "Primera",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
       }
-    });
-  }
+    }
+  });
 }
+
 
 
 if (typeof baseDocs === 'undefined') {
@@ -741,12 +735,8 @@ function eliminarAspirante(idAsp) {
                 text: 'El aspirante fue eliminado correctamente'
               });
 
-              if (window.dtTabla && $.fn.DataTable.isDataTable('#tabla')) {
-                // Cierra el modal de éxito hasta que termine la recarga (opcional)
-                window.dtTabla.one('xhr.dt', function() {
-                  // aquí podrías hacer algo post-recarga si quieres
-                });
-                window.dtTabla.ajax.reload(null, false); // mantiene paginación
+              if (dtTabla && $.fn.DataTable.isDataTable('#tabla')) {
+                dtTabla.ajax.reload(null, false); // ← recarga SIN perder paginación
               }
             },
             error: function(xhr, status, error) {
