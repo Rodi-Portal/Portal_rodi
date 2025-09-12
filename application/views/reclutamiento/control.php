@@ -318,7 +318,7 @@ if (typeof window.changeDataTable !== 'function') {
 
 
       $("a#editar_aspirante", row).bind('click', () => {
-        $("#idAspirante").val(data.id);
+        $("#idAspirante").val(data.idAsp);
         $("#idBolsa").val(data.id_bolsa_trabajo);
 
         var nombre = data.aspirante.split(' ');
