@@ -73,7 +73,7 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="tabla" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <table id="tabla" class="table table-bordered" width="100%" cellspacing="0">
           </table>
         </div>
       </div>
@@ -85,41 +85,75 @@
 <!-- /.content-wrapper -->
 <script src="<?php echo base_url('js/whatsapi.js'); ?>"></script>
 <script>
-if (window.__aspirantes_booted) throw 'skip-dup'; window.__aspirantes_booted = true;
+//if (window.__aspirantes_booted) throw 'skip-dup'; window.__aspirantes_booted = true;
+// estado global mínimo
+window.dtTabla = window.dtTabla || null;
+window.DT_MODE = window.DT_MODE || null; // 'progreso' | 'finalizadas'
+
+// borra el state guardado de DataTables para evitar arrastres entre modos
+function clearDTStateFor(id) {
+  try {
+    // limpia keys típicas de stateSave
+    Object.keys(localStorage).forEach(k => {
+      if (k.indexOf('DataTables_') === 0 || k.indexOf('DT_state_' + id) === 0) {
+        localStorage.removeItem(k);
+      }
+    });
+  } catch (e) {}
+}
+
+// cambia url si el modo es el mismo; si cambia modo, destruye y vuelve a crear
+function changeDataTable(url, mode) {
+  const sameMode = (window.DT_MODE === mode);
+
+  if ($.fn.DataTable.isDataTable('#tabla') && window.dtTabla && sameMode) {
+    // mismo modo ⇒ solo cambia URL/recarga
+    const current = window.dtTabla.ajax.url();
+    if (current !== url) window.dtTabla.ajax.url(url).load();
+    else window.dtTabla.ajax.reload(null, false);
+    return;
+  }
+
+  // modo diferente ⇒ reconstruir con columnas del modo correcto
+  if ($.fn.DataTable.isDataTable('#tabla') && window.dtTabla) {
+    try {
+      window.dtTabla.state && window.dtTabla.state.clear && window.dtTabla.state.clear();
+    } catch (e) {}
+    try {
+      window.dtTabla.destroy(true);
+    } catch (e) {}
+  }
+  $('#tabla').empty();
+  clearDTStateFor('tabla');
+
+  if (mode === 'progreso') {
+    buildTableProgreso(url); // ⬅️ usa tus columnas de “En progreso”
+  } else if (mode === 'finalizadas') {
+    buildTableFinalizadas(url); // ⬅️ usa tus columnas de “Finalizadas” (defínela en esa vista)
+  }
+  window.DT_MODE = mode;
+}
 
 $(document).ready(function() {
-  var url = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
-  changeDataTable(url);
+  const URL_EN_PROGRESO = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
+  const URL_POR_REQ     = '<?php echo base_url('Reclutamiento/getAspirantesPorRequisicion'); ?>';
 
-  $('#opcion_requisicion').change(function() {
-    var id = $(this).val();
-    if (id != '') {
-      var baseurl = '<?php echo base_url('Reclutamiento/getAspirantesPorRequisicion'); ?>';
-      var url = baseurl + '?id=' + id;
-      changeDataTable(url);
-    } else {
-      var url = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
-      changeDataTable(url);
-    }
-    //console.log(url+"  esta  es la url "); // Imprimir URL al final
-  });
+  // Al entrar a "En progreso": fuerza modo y URL correctos
+  changeDataTable(URL_EN_PROGRESO, 'progreso');
 
-  //inputmask
-  $('.fecha').inputmask('dd/mm/yyyy', {
-    'placeholder': 'dd/mm/yyyy'
-  });
+  // Filtro por requisición (mismo modo)
+  $(document).off('change.asp', '#opcion_requisicion')
+    .on('change.asp', '#opcion_requisicion', function(){
+      const id  = $(this).val();
+      const url = id ? (URL_POR_REQ + '?id=' + id) : URL_EN_PROGRESO;
+      changeDataTable(url, 'progreso');
+    });
 });
+
 window.dtTabla = window.dtTabla ?? null;
 
-if (typeof window.changeDataTable !== 'function') {
-  window.changeDataTable = function (url) {
-  // si ya existe, destrúyela
-  if ($.fn.DataTable.isDataTable('#tabla')) {
-    dtTabla.destroy();
-    $('#tabla').empty();
-  }
-  // crea y GUARDA la referencia global
-  dtTabla = $('#tabla').DataTable({
+function buildTableProgreso(url) {
+  window.dtTabla = $('#tabla').DataTable({
     pageLength: 25,
     order: [0, "desc"],
     stateSave: true,
@@ -576,8 +610,8 @@ if (typeof window.changeDataTable !== 'function') {
     }
   });
 
-  }; // <-- cierra función
-}
+}; // <-- cierra función
+
 
 
 if (typeof baseDocs === 'undefined') {
@@ -603,7 +637,7 @@ function mostrarFormularioActualizarDocs(id) {
   $tbody.html('<tr><td colspan="5" class="text-center">Cargando…</td></tr>');
 
   $.ajax({
-    url: '<?php echo site_url('Documentos_Aspirantes/lista/')?>' + id,
+    url: '<?php echo site_url('Documentos_Aspirantes/lista/') ?>' + id,
     type: 'GET',
     dataType: 'json',
     success: function(docs) {
@@ -615,8 +649,8 @@ function mostrarFormularioActualizarDocs(id) {
 
       let filas = '';
       docs.forEach(function(d) {
-        const urlVer = '<?php echo site_url('Archivo/ver_aspirante/')?>' + d.id;
-        const urlDown = '<?php echo site_url('Archivo/descargar_aspirante/')?>' + d.id;
+        const urlVer = '<?php echo site_url('Archivo/ver_aspirante/') ?>' + d.id;
+        const urlDown = '<?php echo site_url('Archivo/descargar_aspirante/') ?>' + d.id;
         const textoLink = abreviarNombreArchivo(d.nombre_archivo, 20);
 
         filas += `
@@ -665,7 +699,7 @@ function mostrarFormularioActualizarDocs(id) {
         const tipo_vista = $(this).is(':checked') ? 1 : 0;
 
         $.ajax({
-          url: '<?php echo site_url('Documentos_Aspirantes/actualizar_tipo_vista')?>',
+          url: '<?php echo site_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>',
           type: 'POST',
           data: {
             id: id,

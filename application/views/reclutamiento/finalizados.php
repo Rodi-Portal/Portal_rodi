@@ -60,7 +60,7 @@ if ($reqs) {
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="tabla" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <table id="tablaF" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
           </table>
         </div>
       </div>
@@ -92,7 +92,7 @@ $(document).ready(function() {
 });
 
 function changeDataTable(url) {
-  $('#tabla').DataTable({
+  $('#tablaF').DataTable({
     "pageLength": 25,
     "order": [0, "desc"],
     "stateSave": true,

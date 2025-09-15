@@ -223,76 +223,75 @@ echo $token  */?>
           </div>
         </div>
       </li>
-      <?php } ?>
+      <?php }?>
       <!-- Catalogos -->
 
       <?php
-        // ¿Se muestra el menú "Registrar"?
-        $menuRegistrar = show_if_can(
-          'admin.__menu.ver',
-          in_array(5, $submenus) || in_array((int)$idRol, [1, 6, 9], true)
-        );
+          // ¿Se muestra el menú "Registrar"?
+          $menuRegistrar = show_if_can(
+              'admin.__menu.ver',
+              in_array(5, $submenus) || in_array((int) $idRol, [1, 6, 9], true)
+          );
 
-        // Ítems dentro de "Registrar"
-        $itemUsuariosAdmins = show_if_can(
-          'admin.usuarios_internos.ver',
-          in_array((int)$idRol, [1, 6, 9], true)
-        );
+          // Ítems dentro de "Registrar"
+          $itemUsuariosAdmins = show_if_can(
+              'admin.usuarios_internos.ver',
+              in_array((int) $idRol, [1, 6, 9], true)
+          );
 
-        $itemSucursales = show_if_can(
-          'admin.sucursales.ver',
-          in_array((int)$idRol, [1, 6, 9], true)
-        );
+          $itemSucursales = show_if_can(
+              'admin.sucursales.ver',
+              in_array((int) $idRol, [1, 6, 9], true)
+          );
 
-        // Si quieres dejar Portales con la misma condición legacy de antes:
-    
-      $soloPortal1YRol1 = ((int)$portal === 1 && (int)$idRol === 1);
+          // Si quieres dejar Portales con la misma condición legacy de antes:
 
-      if ($soloPortal1YRol1) {
-          // Aquí sí dejamos que el override per-usuario decida (legacy=true)
-          $itemPortales = show_if_can('admin.portales.ver', true);
-      } else {
-          // Nunca mostrar para otros casos (incluye rol 6)
-          $itemPortales = false;
-      }
+          $soloPortal1YRol1 = ((int) $portal === 1 && (int) $idRol === 1);
 
+          if ($soloPortal1YRol1) {
+              // Aquí sí dejamos que el override per-usuario decida (legacy=true)
+              $itemPortales = show_if_can('admin.portales.ver', true);
+          } else {
+              // Nunca mostrar para otros casos (incluye rol 6)
+              $itemPortales = false;
+          }
 
-        ?>
+      ?>
 
       <?php
-     if ($menuRegistrar): ?>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
-            aria-expanded="true" aria-controls="collapseCatalogos">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Registrar</span>
-          </a>
+      if ($menuRegistrar): ?>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
+          aria-expanded="true" aria-controls="collapseCatalogos">
+          <i class="fas fa-fw fa-folder"></i>
+          <span>Registrar</span>
+        </a>
 
-          <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
+        <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
 
-              <?php if ($itemUsuariosAdmins): ?>
-                <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">
-                  Usuarios Administradores
-                </a>
-              <?php endif; ?>
+            <?php if ($itemUsuariosAdmins): ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">
+              Usuarios Administradores
+            </a>
+            <?php endif; ?>
 
-              <?php if ($itemSucursales): ?>
-                <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">
-                  Sucursales
-                </a>
-              <?php endif; ?>
+            <?php if ($itemSucursales): ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">
+              Sucursales
+            </a>
+            <?php endif; ?>
 
-              <?php if ($itemPortales): ?>
-                <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">
-                  Portales
-                </a>
-              <?php endif; ?>
+            <?php if ($itemPortales): ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">
+              Portales
+            </a>
+            <?php endif; ?>
 
-            </div>
           </div>
-        </li>
-    <?php endif; 
+        </div>
+      </li>
+      <?php endif;
 
       if ($portal == 1 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
@@ -499,8 +498,6 @@ echo $token  */?>
                         </td>
                         <td class="text-nowrap">
                           <!-- Guardar -->
-
-
                           <button type="button" id="btn-save-aviso" class="btn btn-sm btn-link" data-toggle="tooltip"
                             title="Guardar"
                             style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
@@ -551,6 +548,39 @@ echo $token  */?>
                           </button>
                         </td>
                       </tr>
+
+                      <!-- ACUERDO DE CONFIDENCIALIDAD (NUEVO) -->
+                      <tr id="row-confidencialidad">
+                        <td><strong>Acuerdo de confidencialidad</strong></td>
+                        <td>
+                          <div id="estado-confidencialidad" class="small"></div>
+                        </td>
+                        <td>
+                          <input type="file" id="file-confidencialidad" accept="application/pdf"
+                            class="form-control-file">
+                        </td>
+                        <td class="text-nowrap">
+                          <!-- Guardar -->
+                          <button type="button" id="btn-save-confidencialidad" class="btn btn-sm btn-link"
+                            data-toggle="tooltip" title="Guardar"
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
+                            <span class="fas fa-save"
+                              style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
+                              onmouseenter="this.style.transform='scale(1.1)';"
+                              onmouseleave="this.style.transform='none';">
+                            </span>
+                          </button>
+
+                          <!-- Eliminar -->
+                          <button type="button" id="btn-del-confidencialidad" class="btn btn-sm btn-link"
+                            data-toggle="tooltip" title="Eliminar" disabled
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
+                            <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545; margin-left: 25px">
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+
                     </tbody>
                   </table>
                 </div>
@@ -567,6 +597,7 @@ echo $token  */?>
             </div>
           </div>
         </div>
+
 
 
 
@@ -650,9 +681,9 @@ echo $token  */?>
           aviso: 'AV_TL_V1.pdf',
           terminos: 'TM_TL_V1.pdf'
         };
-        const CSRF_NAME = '<?php echo $this->security->get_csrf_token_name();?>';
-        const CSRF_HASH = '<?php echo $this->security->get_csrf_hash();?>';
-        const VIEW_AVISO_BASE = '<?php echo base_url("Avance/ver_aviso/");?>';
+        const CSRF_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
+        const CSRF_HASH = '<?php echo $this->security->get_csrf_hash(); ?>';
+        const VIEW_AVISO_BASE = '<?php echo base_url("Avance/ver_aviso/"); ?>';
 
         function linkDoc(nombre) {
           const safe = encodeURIComponent(nombre || '');
@@ -676,7 +707,7 @@ echo $token  */?>
         function cargarDocumentos() {
           // Trae nombres actuales desde backend
           $.ajax({
-            url: '<?php echo base_url("Avance/documentos_info");?>',
+            url: '<?php echo base_url("Avance/documentos_info"); ?>',
             type: 'POST',
             dataType: 'json',
             data: {
@@ -702,105 +733,173 @@ echo $token  */?>
         // Abrir el modal → cargar estado
         $('#updateAvisoModal').on('show.bs.modal', cargarDocumentos);
 
-        // Guardar (subir) — AVISO
-        $('#btn-save-aviso').on('click', function() {
-          const f = $('#file-aviso')[0].files[0];
-          if (!f) return Swal ? Swal.fire('Selecciona un PDF', '', 'warning') : alert('Selecciona un PDF');
-          subirDocumento('aviso', f);
-        });
+        // ==== Mapa de referencia por tipo de documento ====
+        const DOC = {
+          aviso: {
+            file: '#file-aviso',
+            estado: '#estado-aviso',
+            del: '#btn-del-aviso'
+          },
+          terminos: {
+            file: '#file-terminos',
+            estado: '#estado-terminos',
+            del: '#btn-del-terminos'
+          },
+          confidencialidad: {
+            file: '#file-confidencialidad',
+            estado: '#estado-confidencialidad',
+            del: '#btn-del-confidencialidad'
+          }
+        };
 
-        // Guardar (subir) — TÉRMINOS
-        $('#btn-save-terminos').on('click', function() {
-          const f = $('#file-terminos')[0].files[0];
-          if (!f) return Swal ? Swal.fire('Selecciona un PDF', '', 'warning') : alert('Selecciona un PDF');
-          subirDocumento('terminos', f);
-        });
+        // ==== Utils ====
+        function isPDF(file) {
+          if (!file) return false;
+          // algunos navegadores no setean correctamente type, por eso validamos ambos
+          const byMime = file.type && file.type.toLowerCase() === 'application/pdf';
+          const byExt = /\.pdf$/i.test(file.name || '');
+          return byMime || byExt;
+        }
 
+        function toast(icon, title, text) {
+          if (window.Swal) return Swal.fire({
+            icon,
+            title,
+            text
+          });
+          alert(title || text || (icon === 'success' ? 'OK' : 'Error'));
+        }
+
+        // ==== Guardar/Subir (genérico) ====
         function subirDocumento(tipo, file) {
+          const ref = DOC[tipo];
+          if (!ref) return;
+
+          if (!file) {
+            return toast('warning', 'Selecciona un PDF');
+          }
+          if (!isPDF(file)) {
+            return toast('warning', 'Archivo inválido', 'Debe ser un PDF (.pdf)');
+          }
+
           const fd = new FormData();
           fd.append('tipo', tipo);
           fd.append('archivo', file);
           fd.append(CSRF_NAME, CSRF_HASH);
 
           $.ajax({
-            url: '<?php echo base_url("Avance/documentos_guardar");?>',
+            url: '<?php echo base_url("Avance/documentos_guardar"); ?>',
             type: 'POST',
             data: fd,
             processData: false,
             contentType: false,
             dataType: 'json',
             beforeSend: () => {
-              (tipo === 'aviso' ? $('#estado-aviso') : $('#estado-terminos')).html('Subiendo…');
+              $(ref.estado).html('Subiendo…');
             },
             success: function(r) {
-              if (r.error) {
-                Swal ? Swal.fire('Error', r.error, 'error') : alert(r.error);
+              if (r && r.error) {
+                toast('error', 'Error', r.error);
+                $(ref.estado).html('<span class="text-danger">Error al subir</span>');
                 return;
               }
               // limpiar input
-              (tipo === 'aviso' ? $('#file-aviso') : $('#file-terminos')).val('');
-              Swal ? Swal.fire('¡Guardado!', r.mensaje || 'Documento actualizado.', 'success') : alert(
-                'Documento actualizado.');
-              cargarDocumentos();
+              $(ref.file).val('');
+              // habilitar botón eliminar
+              $(ref.del).prop('disabled', false).css({
+                cursor: 'pointer',
+                opacity: 1
+              });
+              toast('success', '¡Guardado!', (r && r.mensaje) || 'Documento actualizado.');
+              // refresca vista de estados si tienes esta función
+              if (typeof cargarDocumentos === 'function') cargarDocumentos();
+              else if (r && r.url) {
+                $(ref.estado).html('<a href="' + r.url + '" target="_blank">Ver documento</a>');
+              } else {
+                $(ref.estado).html('<span class="text-success">Actualizado</span>');
+              }
             },
             error: function() {
-              Swal ? Swal.fire('Error', 'No se pudo subir el documento.', 'error') : alert(
-                'No se pudo subir el documento.');
-              cargarDocumentos();
+              toast('error', 'Error', 'No se pudo subir el documento.');
+              if (typeof cargarDocumentos === 'function') cargarDocumentos();
             }
           });
         }
 
-        // Eliminar — AVISO
-        $('#btn-del-aviso').on('click', function() {
-          eliminarDocumento('aviso');
-        });
-
-        // Eliminar — TÉRMINOS
-        $('#btn-del-terminos').on('click', function() {
-          eliminarDocumento('terminos');
-        });
-
+        // ==== Eliminar (genérico) ====
         function eliminarDocumento(tipo) {
+          const ref = DOC[tipo];
+          if (!ref) return;
+
           const go = () => {
             $.ajax({
-              url: '<?php echo base_url("Avance/documentos_eliminar");?>',
+              url: '<?php echo base_url("Avance/documentos_eliminar"); ?>',
               type: 'POST',
               dataType: 'json',
               data: {
-                tipo: tipo,
+                tipo,
                 [CSRF_NAME]: CSRF_HASH
               },
               success: function(r) {
-                if (r.error) {
-                  Swal ? Swal.fire('Error', r.error, 'error') : alert(r.error);
-                  return;
+                if (r && r.error) {
+                  return toast('error', 'Error', r.error);
                 }
-                Swal ? Swal.fire('Eliminado', r.mensaje || 'Documento eliminado.', 'success') : alert(
-                  'Documento eliminado.');
-                cargarDocumentos();
+                toast('success', 'Eliminado', (r && r.mensaje) || 'Documento eliminado.');
+                // deshabilitar botón eliminar y limpiar estado
+                $(ref.del).prop('disabled', true).css({
+                  cursor: 'not-allowed',
+                  opacity: .6
+                });
+                if (typeof cargarDocumentos === 'function') cargarDocumentos();
+                else $(ref.estado).html('<span class="text-muted">No cargado</span>');
               },
               error: function() {
-                Swal ? Swal.fire('Error', 'No se pudo eliminar.', 'error') : alert('No se pudo eliminar.');
+                toast('error', 'Error', 'No se pudo eliminar.');
               }
             });
           };
 
           if (window.Swal) {
             Swal.fire({
-                icon: 'warning',
-                title: '¿Eliminar documento?',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-              })
-              .then(r => {
-                if (r.isConfirmed) go();
-              });
+              icon: 'warning',
+              title: '¿Eliminar documento?',
+              showCancelButton: true,
+              confirmButtonText: 'Sí, eliminar',
+              cancelButtonText: 'Cancelar'
+            }).then(r => {
+              if (r.isConfirmed) go();
+            });
           } else {
             if (confirm('¿Eliminar documento?')) go();
           }
         }
+
+        // ==== Handlers de GUARDAR ====
+        $('#btn-save-aviso').on('click', function() {
+          const f = $(DOC.aviso.file)[0].files[0];
+          subirDocumento('aviso', f);
+        });
+
+        $('#btn-save-terminos').on('click', function() {
+          const f = $(DOC.terminos.file)[0].files[0];
+          subirDocumento('terminos', f);
+        });
+
+        $('#btn-save-confidencialidad').on('click', function() {
+          const f = $(DOC.confidencialidad.file)[0].files[0];
+          subirDocumento('confidencialidad', f);
+        });
+
+        // ==== Handlers de ELIMINAR ====
+        $('#btn-del-aviso').on('click', function() {
+          eliminarDocumento('aviso');
+        });
+        $('#btn-del-terminos').on('click', function() {
+          eliminarDocumento('terminos');
+        });
+        $('#btn-del-confidencialidad').on('click', function() {
+          eliminarDocumento('confidencialidad');
+        });
         </script>
 
         <script>
