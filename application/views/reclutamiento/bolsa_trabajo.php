@@ -113,20 +113,21 @@
       <label for="filtrar">Filtrar por:</label>
       <select name="filtrar" id="filtrar" class="form-control">
         <option value="">Seleccionar</option>
-        <option value="En espera">Estatus Pendiente</option>
-        <option value="En proceso">Estatus En Proceso de Reclutamiento</option>
-        <option value="Aceptado">Estatus Aceptado para Iniciar ESE</option>
-        <option value="ESE">Estatus ESE en Progreso</option>
-        <option value="Bloqueado">Estatus Bloqueado</option>
+        <option value="Todos">Todos</option> <!-- NUEVO -->
+        <option value="En espera">En espera</option>
+        <option value="En Proceso / Aprobado">En Proceso / Aprobado</option>
+        <option value="Reutilizable">Reutilizable</option>
+        <option value="Preempleo / Contratado">Preempleo / Contratado</option>
+        <option value="Aprobado con Acuerdo">Aprobado con Acuerdo</option>
+        <option value="Bloqueado">Bloqueado</option> <!-- status = 0 -->
       </select>
     </div>
     <?php $isDisabled = ($this->session->userdata('idrol') == 4) ? 'isDisabled' : ''; ?>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
-      <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <?php echo $isDisabled ?>"
+      <select name="asignar" id="asignar" class="form-control                            <?php echo $isDisabled ?>"
         title="Select">
-        <option value="0">ATodosll</option>
+        <option value="0">Todos</option>
         <?php
             if ($usuarios_asignacion) {
             foreach ($usuarios_asignacion as $row) {?>
@@ -334,7 +335,7 @@
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 3) {
                       $color_estatus       = 'req_preventiva';
-                      $text_estatus        = 'Estatus: <b>Reutilizable/<br></b>';
+                      $text_estatus        = 'Estatus: <b>Reutilizable/Revisar Historial<br></b>';
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 4) {
                       $color_estatus       = 'req_positivo';
@@ -342,7 +343,7 @@
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 5) {
                       $color_estatus       = 'req_aprobado';
-                      $text_estatus        = 'Estatus: <b>Aprobado con Acuerdo<br></b>';
+                      $text_estatus        = 'Estatus: <b>Aprobado con Acuerdo/<br></b>';
                       $disabled_comentario = 'isDisabled';
                   }
 
@@ -352,7 +353,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                           <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                               <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -2245,3 +2246,186 @@
   <!-- Funciones Reclutamiento -->
   <script src="<?php echo base_url(); ?>js/reclutamiento/functions.js"></script>
   <script src="<?php echo base_url(); ?>js/reclutamiento/requisicion.js"></script>
+  <style>
+  /* Estilo base para la fila */
+  .select2-results__option.status-row {
+    padding: 6px 10px;
+    text-transform: uppercase;
+    /* Mayúsculas */
+    font-weight: 600;
+  }
+
+  /* Colores por estado */
+  .select2-results__option.status-all {
+    background-color: #e9ecef;
+    color: #212529;
+  }
+
+  .select2-results__option.status-espera {
+    background-color: #6c757d;
+    color: #ffffff;
+  }
+
+  .select2-results__option.status-proceso {
+    background-color: #17a2b8;
+    color: #ffffff;
+  }
+
+  .select2-results__option.status-reutilizar {
+    background-color: #ffc107;
+    color: #212529;
+  }
+
+  .select2-results__option.status-preempleo {
+    background-color: #28a745;
+    color: #ffffff;
+  }
+
+  .select2-results__option.status-acuerdo {
+    background-color: #fd7e14;
+    color: #212529;
+  }
+
+  .select2-results__option.status-bloqueado {
+    background-color: #dc3545;
+    color: #ffffff;
+  }
+
+  /* Mantén el color en hover/focus */
+  .select2-results__option.status-row.select2-results__option--highlighted {
+    filter: brightness(0.9);
+  }
+
+  /* Chip de selección */
+  .status-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 12px;
+    line-height: 1.2;
+    margin-right: 6px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    text-transform: uppercase;
+    /* Mayúsculas */
+    font-weight: 600;
+  }
+  </style>
+
+  <script>
+  // Namespace seguro
+  window.TS = window.TS || {};
+  // Define una sola vez
+  window.TS.FILTER_STATUS_STYLES = window.TS.FILTER_STATUS_STYLES || Object.freeze({
+    "Todos": {
+      bg: "#e9ecef",
+      fg: "#212529",
+      cls: "status-all",
+      db: null
+    },
+    "En espera": {
+      bg: "#6c757d",
+      fg: "#ffffff",
+      cls: "status-espera",
+      db: 1
+    },
+    "En Proceso / Aprobado": {
+      bg: "#17a2b8",
+      fg: "#ffffff",
+      cls: "status-proceso",
+      db: 2
+    },
+    "Reutilizable": {
+      bg: "#ffc107",
+      fg: "#212529",
+      cls: "status-reutilizar",
+      db: 3
+    },
+    "Preempleo / Contratado": {
+      bg: "#28a745",
+      fg: "#ffffff",
+      cls: "status-preempleo",
+      db: 4
+    },
+    "Aprobado con Acuerdo": {
+      bg: "#fd7e14",
+      fg: "#212529",
+      cls: "status-acuerdo",
+      db: 5
+    },
+    "Bloqueado": {
+      bg: "#dc3545",
+      fg: "#ffffff",
+      cls: "status-bloqueado",
+      db: 0
+    }
+  });
+
+  function initColoredFilter($scope) {
+    const map = window.TS.FILTER_STATUS_STYLES;
+    const $filtrar = ($scope || $(document)).find('#filtrar');
+    if (!$filtrar.length) return;
+
+    if ($filtrar.data('select2')) $filtrar.select2('destroy');
+
+    // Render de opciones
+    function tplResult(state) {
+      if (!state.id) return state.text;
+      return state.text.toUpperCase(); // fila en mayúsculas (CSS + extra)
+    }
+    // Render de selección (chip)
+    function tplSelection(state) {
+      if (!state.id) return state.text;
+      const s = map[state.id];
+      if (!s) return state.text;
+      const $n = $('<span class="status-pill"></span>');
+      $n.css({
+        backgroundColor: s.bg,
+        color: s.fg
+      }).text(state.id.toUpperCase());
+      return $n;
+    }
+
+    $filtrar.select2({
+      placeholder: "Select",
+      allowClear: false,
+      width: '100%',
+      templateResult: tplResult,
+      templateSelection: tplSelection,
+      escapeMarkup: m => m
+    });
+
+    // Pinta filas completas con clase al abrir
+    // Pinta filas completas con clase al abrir (versión robusta con MAYÚSCULAS)
+    $filtrar.off('select2:open.__paintrows__').on('select2:open.__paintrows__', function() {
+      setTimeout(function() {
+        // construye un diccionario auxiliar con claves en MAYÚSCULAS
+        const map = window.TS.FILTER_STATUS_STYLES;
+        const upcaseMap = {};
+        Object.keys(map).forEach(function(k) {
+          upcaseMap[k.toUpperCase()] = map[k]; // referencia al mismo objeto
+        });
+
+        $('.select2-results__option[role="option"]').each(function() {
+          const $li = $(this);
+          const textUp = $li.text().trim().toUpperCase(); // el li ya viene en mayúsculas
+          const s = upcaseMap[textUp]; // buscamos por mayúsculas
+          // limpia nuestras clases previas y aplica la nueva si existe
+          $li.removeClass(
+            'status-row status-all status-espera status-proceso status-reutilizar status-preempleo status-acuerdo status-bloqueado'
+            );
+          if (s && s.cls) {
+            $li.addClass('status-row ' + s.cls);
+          }
+        });
+      }, 0);
+    });
+
+  }
+
+  // Llamadas
+  $(document).ready(function() {
+    initColoredFilter(); // inicial
+  });
+  // Después de AJAX:
+  // $('#module-content').html(data); initColoredFilter($('#module-content'));
+  </script>

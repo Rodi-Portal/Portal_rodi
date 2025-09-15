@@ -200,7 +200,7 @@ class Reclutamiento_model extends CI_Model
             R.id AS idReq,
             R.creacion AS creacionReq,
 
-        
+
             RI.*,
             COALESCE(RI.telefono, 'N/A') AS telIntake,
 
@@ -362,7 +362,7 @@ class Reclutamiento_model extends CI_Model
         if (! empty($condition_area) && ! empty($area)) {
             $this->db->where($condition_area, $area);
         }
-        if (! empty($filterApplicant) && ! empty($filter)) {
+        if ($filterApplicant !== '' && ($filter === 0 || $filter)) {
             $this->db->where($filterApplicant, $filter);
         }
         if (! empty($condition_applicant) && ! empty($id_applicant)) {
@@ -403,7 +403,7 @@ class Reclutamiento_model extends CI_Model
         if (! empty($condition_area) && ! empty($area)) {
             $this->db->where($condition_area, $area);
         }
-        if (! empty($filterApplicant) && ! empty($filter)) {
+        if ($filterApplicant !== '' && ($filter === 0 || $filter)) {
             $this->db->where($filterApplicant, $filter);
         }
         if (! empty($condition_applicant) && ! empty($id_applicant)) {
@@ -1366,7 +1366,7 @@ class Reclutamiento_model extends CI_Model
         $consulta = $this->db->get();
         return $consulta->row();
     }
-      public function getDocumentosBolsa($id)
+    public function getDocumentosBolsa($id)
     {
         $id_portal = $this->session->userdata('idPortal');
 

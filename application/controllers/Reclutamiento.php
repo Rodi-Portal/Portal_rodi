@@ -376,31 +376,43 @@ class Reclutamiento extends CI_Controller
         }
         if (isset($_GET['filter']) && $_GET['filter'] != 'none') {
             $getFilter = $_GET['filter'];
-            if ($getFilter == 'En espera') {
+
+            // "Todos" => no filtra por status
+            if ($getFilter === 'Todos') {
+                $filter          = null;
+                $filterApplicant = '';
+            }
+
+            if ($getFilter === 'En espera') {
                 $filter          = 1;
                 $filterApplicant = 'B.status';
             }
-            if ($getFilter == 'En proceso') {
+            if ($getFilter === 'En Proceso / Aprobado') {
                 $filter          = 2;
                 $filterApplicant = 'B.status';
             }
-            if ($getFilter == 'Aceptado') {
+            if ($getFilter === 'Reutilizable') {
                 $filter          = 3;
                 $filterApplicant = 'B.status';
             }
-            if ($getFilter == 'ESE') {
+            if ($getFilter === 'Preempleo / Contratado') {
                 $filter          = 4;
                 $filterApplicant = 'B.status';
             }
-            if ($getFilter == 'Bloqueado') {
+            if ($getFilter === 'Aprobado con Acuerdo') {
+                $filter          = 5;
+                $filterApplicant = 'B.status';
+            }
+            if ($getFilter === 'Bloqueado') { // <- status 0
                 $filter          = 0;
                 $filterApplicant = 'B.status';
             }
         } else {
             $getFilter       = '';
-            $filter          = '';
-            $filterApplicant = 'B.id !=';
+            $filter          = null;
+            $filterApplicant = '';
         }
+
         if (isset($_GET['user'])) {
             $user    = $_GET['user'];
             $getUser = $_GET['user'];
@@ -3232,7 +3244,7 @@ class Reclutamiento extends CI_Controller
             $this->db->where('id', $id);
             $this->db->update('requisicion_aspirante', [
                 'eliminado'  => 1,
-                'edicion'      => $fecha,
+                'edicion'    => $fecha,
                 'id_usuario' => $id_usuario,
             ]);
 
