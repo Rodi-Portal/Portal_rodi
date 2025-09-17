@@ -1,6 +1,13 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
-
+  <?php echo perms_js_flags([
+    'FIN_REACTIVAR' => ['reclutamiento.reqs.reactivar', true],
+    'FIN_VER_CV'    => ['reclutamiento.finalizadas.ver_cv', true],
+])?>
+  <script>
+  const P = window.PERM || {};
+  const allow = f => (typeof f === 'undefined') ? true : !!f;
+  </script>
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Requisiciones Finalizadas</h1><br>
@@ -10,12 +17,13 @@
 			</span>
 			<span class="text">Registrar aspirante</span>
 		</a-->
+    <?php if (show_if_can('reclutamiento.reqs.reactivar', true)): ?>
     <a href="#" class="btn btn-primary btn-icon-split" data-toggle="modal" data-target="#reactivarRequisicionModal">
-      <span class="icon text-white-50">
-        <i class="fas fa-check-circle"></i>
-      </span>
+      <span class="icon text-white-50"><i class="fas fa-check-circle"></i></span>
       <span class="text">Reactivar Requisición</span>
     </a>
+    <?php endif; ?>
+
     <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
       style="display: none;">
       <span class="icon text-white-50">
@@ -25,7 +33,9 @@
     </a>
   </div>
   <div>
-    <p>En este módulo se muestran las requisiciones de empleo que han sido finalizadas. Puedes consultar el estatus final de cada requisición, ver los comentarios finales y conocer qué aspirante aplicó para la vacante. Además, tienes la opción de reactivar una requisición si es necesario.</p>
+    <p>En este módulo se muestran las requisiciones de empleo que han sido finalizadas. Puedes consultar el estatus
+      final de cada requisición, ver los comentarios finales y conocer qué aspirante aplicó para la vacante. Además,
+      tienes la opción de reactivar una requisición si es necesario.</p>
   </div>
 
   <?php echo $modals; ?>
@@ -42,13 +52,13 @@
       <select class="form-control" name="opcion_requisicion" id="opcion_requisicion">
         <option value="">Todas</option>
         <?php
-if ($reqs) {
-    foreach ($reqs as $req) {?>
+            if ($reqs) {
+            foreach ($reqs as $req) {?>
         <option value="<?php echo $req->id; ?>">
           <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
         </option>
         <?php }
-}?>
+        }?>
       </select><br>
     </div>
   </div>
@@ -99,18 +109,17 @@ function changeDataTable(url) {
     "serverSide": false,
     "bDestroy": true,
     "ajax": url,
-    "columns": [
-      {
+    "columns": [{
         title: '#',
         data: 'id',
         bSortable: false,
         "width": "3%",
         mRender: function(data, type, full) {
 
-          if(data != null){
-          return data;
-          }else{
-          return 'N/A';
+          if (data != null) {
+            return data;
+          } else {
+            return 'N/A';
           }
         }
       },
@@ -120,10 +129,10 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
-             if(data != null){
-        
-          }else{
-          data = 'Sin Aspirantes registrads'
+          if (data != null) {
+
+          } else {
+            data = 'Sin Aspirantes registrads'
           }
           return mostrarDato(data) + '<br><small><b>(' + mostrarDato(full.usuario) + ')</b></small>';
         }
@@ -150,24 +159,30 @@ function changeDataTable(url) {
         title: 'Accion',
         data: 'id',
         bSortable: false,
-        "width": "8%",
+        width: "8%",
         mRender: function(data, type, full) {
-          var cv = (full.cv != null && full.cv != "") ? 
-            '<a href="<?php echo base_url(); ?>_docs/' + full.cv + '" target="_blank" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a> ' :
-            '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable"><i class="fas fa-eye"></i></a> ';
-          return cv;
+          if (!allow(P.FIN_VER_CV)) {
+            return '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable" title="Sin permiso"><i class="fas fa-eye"></i></a>';
+          }
+          if (full.cv) {
+            return '<a href="<?= base_url('_docs/'); ?>' + full.cv + '" target="_blank" class="fa-tooltip icono_datatable" title="Ver CV"><i class="fas fa-eye"></i></a>';
+            // Si prefieres servir por controlador protegido:
+            // return '<a href="<?= site_url('Area/ver_doc/'); ?>' + encodeURIComponent(full.cv) + '" target="_blank" class="fa-tooltip icono_datatable" title="Ver CV"><i class="fas fa-eye"></i></a>';
+          }
+          return '<a href="javascript:void(0);" class="fa-tooltip gris icono_datatable" title="Sin CV"><i class="fas fa-eye"></i></a>';
         }
       },
+
       {
         title: 'Estatus Aspirante',
         data: 'status',
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-              if(data != null){
-        
-          }else{
-          data = 'Sin estatus registrado';
+          if (data != null) {
+
+          } else {
+            data = 'Sin estatus registrado';
           }
           return '<b>' + data + '</b>';
         }
@@ -278,12 +293,14 @@ function changeDataTable(url) {
 
   });
 }
+
 function mostrarDato(valor) {
   if (valor === undefined || valor === null || valor === "") {
     return "No Disponible";
   }
   return valor;
 }
+
 function reactivarsRequisicion() {
   var datos = new FormData();
   datos.append('id', $("#reactivar_req").val());

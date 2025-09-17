@@ -1,5 +1,48 @@
 <!-- Begin Page Content -->
 <div>
+  <?php
+      // Helpers: view_perms y authz ya autoloaded
+      $ROL        = (int) $this->session->userdata('idrol');
+      $TIPO_BOLSA = (int) $this->session->userdata('tipo_bolsa'); // 1 = intake/externo según tu lógica
+
+      $CAN = [
+          // Vista / listado (por si luego lo necesitas)
+          'VER'            => show_if_can('reclutamiento.reqs.ver', true),
+
+          // Botones superiores
+          'CREAR'          => show_if_can('reclutamiento.reqs.crear', ($TIPO_BOLSA === 1) || in_array($ROL, [1, 6, 9], true)),
+          'ASIGNAR'        => show_if_can('reclutamiento.reqs.asignar', $ROL !== 4),
+
+          // Botones en tarjeta
+          'EDITAR'         => show_if_can('reclutamiento.reqs.editar', true),
+          'VER_COMPLETA'   => show_if_can('reclutamiento.reqs.ver_completa', true),
+          'INICIAR'        => show_if_can('reclutamiento.reqs.iniciar', true),
+          'CAMBIAR_STATUS' => show_if_can('reclutamiento.reqs.cambiar_status', true),
+          'PDF'            => show_if_can('reclutamiento.reqs.descargar_pdf', true),
+
+          'ELIMINAR'       => show_if_can('reclutamiento.reqs.eliminar', in_array($ROL, [1], true)),
+          'LINK'       => show_if_can('reclutamiento.reqs.link_requisicion', in_array($ROL, [1], true)),
+          'DETENER'       => show_if_can('reclutamiento.reqs.detener_requisicion', in_array($ROL, [1], true)),
+
+          // Usuarios asignados a la req
+          'USU_ASIG_VER'   => show_if_can('reclutamiento.reqs.usuarios_asig_ver', true),
+          'USU_ASIG_DEL'   => show_if_can('reclutamiento.reqs.usuarios_asig_del', $ROL !== 4),
+      ];
+
+      // (Opcional) Flags para JS (DataTables, habilitar íconos, etc.)
+      echo perms_js_flags([
+          'REQS_CREAR'          => ['reclutamiento.reqs.crear', ($TIPO_BOLSA === 1) || in_array($ROL, [4,1, 6, 9], true)],
+          'REQS_ASIGNAR'        => ['reclutamiento.reqs.asignar', $ROL !== 4],
+          'REQS_EDITAR'         => ['reclutamiento.reqs.editar', true],
+          'REQS_DETENER'         => ['reclutamiento.reqs.detener_requisicion', true],
+          'REQS_VER_COMPLETA'   => ['reclutamiento.reqs.ver_completa', true],
+          'REQS_INICIAR'        => ['reclutamiento.reqs.iniciar', true],
+          'REQS_CAMBIAR_STATUS' => ['reclutamiento.reqs.cambiar_status', true],
+          'REQS_PDF'            => ['reclutamiento.reqs.descargar_pdf', true],
+          'REQS_ELIMINAR'       => ['reclutamiento.reqs.eliminar', in_array($ROL, [1], true)],
+          'REQS_USU_DEL'        => ['reclutamiento.reqs.usuarios_asig_del', $ROL !== 4],
+      ]);
+  ?>
 
   <section class="content-header">
     <div class="row">
@@ -11,12 +54,15 @@
       <div class="col-sm-12 col-md-6 col-lg-6">
         <div class="actions d-flex justify-content-md-end flex-wrap">
           <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
+            <?php if ($CAN['LINK']): ?>
+          <!-- Link General (lo dejo como lo tenías; si quieres amarrarlo a VER, envuélvelo con $CAN['VER']) -->
           <button type="button" class="btn action-btn btn-green" onclick="openQrModal()">
             <span class="icon"><i class="far fa-file-alt"></i></span>
             <span class="text">Link General</span>
           </button>
           <?php endif; ?>
-
+       <?php endif; ?>
+          <?php if ($CAN['CREAR']): ?>
           <?php if ($this->session->userdata('tipo_bolsa') == 1): ?>
           <button type="button" id="btnRegistrarReq" class="btn action-btn btn-blue" onclick="nuevaRequisicionIntake()">
             <span class="icon"><i class="far fa-file-alt"></i></span>
@@ -28,20 +74,16 @@
             <span class="text">Requisición Interna</span>
           </button>
           <?php endif; ?>
+          <?php endif; ?>
 
-          <?php
-              if ($this->session->userdata('idrol') == 4) {
-                  $disabled  = 'disabled';
-                  $textTitle = 'title="No posees permiso para esta acción"';
-              } else { $disabled = '';
-                  $textTitle                            = '';}
-          ?>
-          <button type="button" id="btnOpenAssignToUser" class="btn action-btn btn-purple" onclick="openAssignToUser()"
-            <?php echo $disabled . ' ' . $textTitle; ?>>
+          <?php if ($CAN['ASIGNAR']): ?>
+          <button type="button" id="btnOpenAssignToUser" class="btn action-btn btn-purple" onclick="openAssignToUser()">
             <span class="icon"><i class="fas fa-user-edit"></i></span>
             <span class="text">Asignar Requisición</span>
           </button>
+          <?php endif; ?>
         </div>
+
       </div>
 
     </div>
@@ -119,104 +161,178 @@
 
       <div class="row mb-3">
         <?php foreach ($requisiciones as $r):
-                $hoy            = date('Y-m-d H:i:s');
-                $fecha_registro = ! empty($r->creacionReq) ? fechaTexto($r->creacionReq, 'espanol') : '';
+          $hoy            = date('Y-m-d H:i:s');
+          $fecha_registro = ! empty($r->creacionReq) ? fechaTexto($r->creacionReq, 'espanol') : '';
 
-                // Intake vs clásica
-                $esIntake = (isset($r->tipo) && strtoupper($r->tipo) === 'SOLICITUD' || strtoupper($r->tipo) === 'INTAKE');
+          // Intake vs clásica
+          $esIntake = (isset($r->tipo) && strtoupper($r->tipo) === 'SOLICITUD' || strtoupper($r->tipo) === 'INTAKE');
 
-                if ($esIntake) {
-                    $empresa      = trim((string) ($r->nombre ?? ''));
-                    $comercial    = trim((string) ($r->razon_social ?? ''));
-                    $puestoCard   = ! empty($r->puesto) ? $r->puesto : ($r->plan ?? '');
-                    $telefonoCard = trim((string) ($r->telIntake ?? ''));
-                    $correoCard   = ! empty($r->email) ? trim((string) $r->email) : trim((string) ($r->correo ?? ''));
-                    $contactoCard = trim((string) ($r->nombre_cliente ?? ''));
-                } else {
-                    $empresa      = trim((string) ($r->nombre_cliente ?? ''));
-                    $comercial    = trim((string) ($r->nombre_comercial ?? ''));
-                    $puestoCard   = trim((string) ($r->puesto ?? ''));
-                    $telefonoCard = trim((string) ($r->telefono_cliente ?? ''));
-                    $correoCard   = trim((string) ($r->correo_cliente ?? ''));
-                    $contactoCard = trim((string) ($r->contacto ?? ''));
-                }
+          if ($esIntake) {
+              $empresa      = trim((string) ($r->nombre ?? ''));
+              $comercial    = trim((string) ($r->razon_social ?? ''));
+              $puestoCard   = ! empty($r->puesto) ? $r->puesto : ($r->plan ?? '');
+              $telefonoCard = trim((string) ($r->telIntake ?? ''));
+              $correoCard   = ! empty($r->email) ? trim((string) $r->email) : trim((string) ($r->correo ?? ''));
+              $contactoCard = trim((string) ($r->nombre_cliente ?? ''));
+          } else {
+              $empresa      = trim((string) ($r->nombre_cliente ?? ''));
+              $comercial    = trim((string) ($r->nombre_comercial ?? ''));
+              $puestoCard   = trim((string) ($r->puesto ?? ''));
+              $telefonoCard = trim((string) ($r->telefono_cliente ?? ''));
+              $correoCard   = trim((string) ($r->correo_cliente ?? ''));
+              $contactoCard = trim((string) ($r->contacto ?? ''));
+          }
 
-                $nombres  = empty($comercial) ? $empresa : ($empresa . '<br>' . $comercial);
-                $nombreJS = addslashes($empresa);
+          $nombres  = empty($comercial) ? $empresa : ($empresa . '<br>' . $comercial);
+          $nombreJS = addslashes($empresa);
 
-                // Estatus / botones
-                $color_estatus = '';
-                $text_estatus  = '';
+          // Estatus / botones (respetando permisos)
+          $color_estatus   = '';
+          $text_estatus    = '';
+          $botonProceso    = '';
+          $botonResultados = '';
+          $btnDelete       = '';
 
-                if ((int) $r->status === 1) {
-                    $botonProceso    = '<a href="javascript:void(0)" class="btn btn-success btn-ico" id="btnIniciar' . $r->idReq . '" title="Iniciar proceso" onclick="cambiarStatusRequisicion(' . $r->idReq . ',\'' . $nombreJS . '\', \'iniciar\')"><i class="fas fa-play-circle fa-fw"></i></a>';
-                    $text_estatus    = 'Estatus: <b>En espera</b>';
-                    $botonResultados = '<a href="javascript:void(0)" class="btn btn-success btn-ico isDisabled" title="Ver resultados de los candidatos"><i class="fas fa-file-alt fa-fw"></i></a>';
-                    $btnDelete       = '<a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Requisición" onclick="openDeleteOrder(' . $r->idReq . ',\'' . $nombreJS . '\')"><i class="fas fa-trash fa-fw"></i></a>';
-                }
-                if ((int) $r->status === 2) {
-                    $botonProceso    = '<a href="javascript:void(0)" class="btn btn-danger btn-ico" id="btnIniciar' . $r->idReq . '" title="Detener proceso" onclick="cambiarStatusRequisicion(' . $r->idReq . ',\'' . $nombreJS . '\', \'detener\')"><i class="fas fa-stop fa-fw"></i></a>';
-                    $color_estatus   = 'req_activa';
-                    $text_estatus    = 'Estatus: <b>En proceso de reclutamiento</b>';
-                    $botonResultados = '<a href="javascript:void(0)" class="btn btn-success btn-ico" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos(' . $r->idReq . ',\'' . $nombreJS . '\')"><i class="fas fa-file-alt fa-fw"></i></a>';
-                    $btnDelete       = '<a href="javascript:void(0)" class="btn btn-danger btn-ico isDisabled" title="Eliminar Requisición"><i class="fas fa-trash fa-fw"></i></a>';
-                }
+          if ((int) $r->status === 1) {
+              // SIEMPRE mostrar texto de estatus
+              $text_estatus = 'Estatus: <b>En espera</b>';
 
-                // Usuarios asignados (dedupe)
-                $usuario       = (empty($r->usuario)) ? 'Requisición sin cambios<br>' : 'Úlltimo movimiento: <b>' . $r->usuario . '</b><br>';
-                $data['users'] = $this->reclutamiento_model->getUsersOrder($r->idReq);
-                if (! empty($data['users'])) {
-                    $usersAssigned = 'Usuario Asignado:<br>';
-                    $seen          = [];
-                    foreach ($data['users'] as $user) {
-                        if (isset($seen[$user->id])) {
-                            continue;
-                        }
+              // Botón iniciar solo si tiene permiso
+              if (! empty($CAN['INICIAR'])) {
+                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success btn-ico" id="btnIniciar' . $r->idReq . '" title="Iniciar proceso" onclick="cambiarStatusRequisicion(' . $r->idReq . ',\'' . $nombreJS . '\', \'iniciar\')"><i class="fas fa-play-circle fa-fw"></i></a>';
+              }
 
-                        $seen[$user->id] = true;
-                        $nombreUsuario   = htmlspecialchars($user->usuario, ENT_QUOTES, 'UTF-8');
-                        if ($this->session->userdata('idrol') == 4) {
-                            $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $nombreUsuario . '</b></div>';
-                        } else {
-                            $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '">
-			                          <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
-			                              onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
-			                              <i class="fas fa-user-times fa-fw"></i>
-			                          </a> <b>' . $nombreUsuario . '</b></div>';
-                        }
-                    }
-                } else {
-                    $usersAssigned = 'No Asignada aun';
-                }
-                unset($data['users']);
+              // Ver resultados (lo dejo como estaba, si luego quieres permiso, lo amarramos)
+              $botonResultados = '<a href="javascript:void(0)" class="btn btn-success btn-ico isDisabled" title="Ver resultados de los candidatos"><i class="fas fa-file-alt fa-fw"></i></a>';
 
-                // Botón editar
-                $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA')
-                    ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar Requisición"
-			                onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
-			                <i class="fas fa-edit fa-fw"></i></a>'
-                    : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar SOLICITUD" onclick="openUpdateOrderIntake(' . (int) $r->idReq . ')">
-			                <i class="fas fa-edit fa-fw"></i>
-			              </a>';
+              // Eliminar solo con permiso
+              if (! empty($CAN['ELIMINAR'])) {
+                  $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Requisición" onclick="openDeleteOrder(' . $r->idReq . ',\'' . $nombreJS . '\')"><i class="fas fa-trash fa-fw"></i></a>';
+              }
+          }
 
-                $totalOrders = count($requisiciones);
-                $moveOrder   = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
-            ?>
+          if ((int) $r->status === 2) {
+              $color_estatus = 'req_activa';
+              $text_estatus  = 'Estatus: <b>En proceso de reclutamiento</b>';
+
+              // Botón detener solo si tiene permiso de cambiar status
+              if (! empty($CAN['DETENER'])) {
+                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-danger btn-ico" id="btnIniciar' . $r->idReq . '" title="Detener proceso" onclick="cambiarStatusRequisicion(' . $r->idReq . ',\'' . $nombreJS . '\', \'detener\')"><i class="fas fa-stop fa-fw"></i></a>';
+              }
+
+              $botonResultados = '<a href="javascript:void(0)" class="btn btn-success btn-ico" title="Ver resultados de los candidatos" onclick="verExamenesCandidatos(' . $r->idReq . ',\'' . $nombreJS . '\')"><i class="fas fa-file-alt fa-fw"></i></a>';
+
+              // Si está en proceso, mantener el isDisabled original del eliminar
+                if (! empty($CAN['ELIMINAR'])) {
+              $btnDelete = '<a href="javascript:void(0)" class="btn btn-danger btn-ico isDisabled" title="Eliminar Requisición"><i class="fas fa-trash fa-fw"></i></a>';
+          }
+        }
+
+          // Usuarios asignados (dedupe)
+          $usuario       = (empty($r->usuario)) ? 'Requisición sin cambios<br>' : 'Úlltimo movimiento: <b>' . $r->usuario . '</b><br>';
+          $data['users'] = $this->reclutamiento_model->getUsersOrder($r->idReq);
+          if (! empty($data['users'])) {
+              $usersAssigned = 'Usuario Asignado:<br>';
+              $seen          = [];
+              foreach ($data['users'] as $user) {
+                  if (isset($seen[$user->id])) {
+                      continue;
+                  }
+
+                  $seen[$user->id] = true;
+                  $nombreUsuario   = htmlspecialchars($user->usuario, ENT_QUOTES, 'UTF-8');
+
+                  // Quitar/eliminar usuario asignado SOLO si tiene permiso (sin cambiar IDs)
+                  if (! empty($CAN['USU_ASIG_DEL'])) {
+                      $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '">
+	            <a href="javascript:void(0)" class="btn btn-danger btn-ico" title="Eliminar Usuario de la Requisición"
+	               onclick="openDeleteUserOrder(' . $user->id . ',' . $user->id_requisicion . ',\'' . $nombreUsuario . '\')">
+	               <i class="fas fa-user-times fa-fw"></i>
+	            </a> <b>' . $nombreUsuario . '</b></div>';
+                  } else {
+                      $usersAssigned .= '<div class="mb-1" id="divUser' . $user->id . '"><b>' . $nombreUsuario . '</b></div>';
+                  }
+              }
+          } else {
+              $usersAssigned = 'No Asignada aun';
+          }
+          unset($data['users']);
+
+          // Botón editar (respeta permiso, sin tocar IDs)
+          $btnExpress = '';
+          if (! empty($CAN['EDITAR'])) {
+              $btnExpress = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA')
+                  ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar Requisición"
+	             onclick="openUpdateOrder(' . $r->idReq . ',\'' . $nombreJS . '\',\'' . $nombreJS . '\',\'' . addslashes($puestoCard) . '\')">
+	             <i class="fas fa-edit fa-fw"></i></a>'
+                  : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Editar SOLICITUD" onclick="openUpdateOrderIntake(' . (int) $r->idReq . ')">
+	             <i class="fas fa-edit fa-fw"></i></a>';
+          }
+
+          // Detalles (VER_COMPLETA)
+          $btnDetalles = '';
+          if (! empty($CAN['VER_COMPLETA'])) {
+              $btnDetalles = ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA')
+                  ? '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Ver detalles"
+	             onclick="verDetalles(' . (int) $r->idReq . ')">
+	             <i class="fas fa-info-circle fa-fw"></i>
+	           </a>'
+                  : '<a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Ver detalles"
+	             onclick="verDetallesIntake(' . (int) $r->idReq . ')">
+	             <i class="fas fa-info-circle fa-fw"></i>
+	           </a>';
+          }
+
+          // PDF
+          $btnPDF = '';
+          if (! empty($CAN['PDF'])) {
+              if ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA') {
+                  $btnPDF =
+                  '<form method="POST" action="' . base_url('Reclutamiento/getOrderPDF') . '">
+	            <input type="hidden" name="idReq" value="' . (int) $r->idReq . '">
+	            <button type="submit" class="btn btn-danger btn-ico" title="Descargar PDF">
+	              <i class="fas fa-file-pdf fa-fw"></i>
+	            </button>
+	          </form>';
+              } else {
+                  $btnPDF =
+                  '<form method="POST" action="' . base_url('Reclutamiento/getOrderPDFIntake') . '">
+	            <input type="hidden" name="idReq" value="' . (int) $r->idReq . '">
+	            <button type="submit" class="btn btn-danger btn-ico" title="Descargar PDF">
+	              <i class="fas fa-file-pdf fa-fw"></i>
+	            </button>
+	          </form>';
+              }
+          }
+
+          // Asignar sucursal (solo intake) — amarrado a permiso ASIGNAR
+          $btnAsignarSucursal = '';
+          if ($esIntake && ! empty($CAN['ASIGNAR'])) {
+              $btnAsignarSucursal =
+              '<button type="button" class="btn btn-success btn-ico btn-asignar-sucursal" title="Asignar a sucursal"
+	           data-idreq="' . (int) $r->idReq . '"
+	           data-sucursal="' . (isset($r->id_sucursal) ? (int) $r->id_sucursal : 0) . '">
+	           <i class="fas fa-store fa-fw"></i>
+	         </button>';
+          }
+
+          $totalOrders = count($requisiciones);
+          $moveOrder   = ($totalOrders > 1) ? '' : 'offset-md-4 offset-lg-4';
+      ?>
         <div class="col-sm-12 col-md-4 col-lg-4 mb-5<?php echo $moveOrder ?>">
           <div class="card text-center tarjeta" id="<?php echo 'tarjeta' . (int) $r->idReq; ?>">
-            <div class="card-header	                                    <?php echo $color_estatus ?>">
+            <div class="card-header	                                <?php echo $color_estatus ?>">
               <div class="d-flex align-items-center">
                 <span class="text-uppercase text-truncate d-block w-100">
                   <strong>
                     #<?php echo (int) $r->idReq ?>
                     <?php
-                                // usar $nombres tal cual, pero para el header: <br> → espacio, trim y colapsar espacios
-                                $headerNombre = preg_replace(
-                                    '/\s+/', ' ',
-                                    trim(str_ireplace(['<br>', '<br/>', '<br />'], ' ', (string) $nombres))
-                                );
-                                echo ' ' . html_escape($headerNombre);
-                            ?>
+                            $headerNombre = preg_replace(
+                                '/\s+/', ' ',
+                                trim(str_ireplace(['<br>', '<br/>', '<br />'], ' ', (string) $nombres))
+                            );
+                            echo ' ' . html_escape($headerNombre);
+                        ?>
                   </strong>
                 </span>
 
@@ -253,44 +369,12 @@
 
               <!-- Barra uniforme de botones -->
               <div class="btnbar">
-                <?php echo $btnExpress;
-                if ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA') { ?>
-                <a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Ver detalles"
-                  onclick="verDetalles(<?php echo (int) $r->idReq ?>)">
-                  <i class="fas fa-info-circle fa-fw"></i>
-                </a>
-                <?php } else {?>
-
-                <a href="javascript:void(0)" class="btn btn-primary btn-ico" title="Ver detalles"
-                  onclick="verDetallesIntake(<?php echo (int) $r->idReq ?>)">
-                  <i class="fas fa-info-circle fa-fw"></i>
-                </a>
-                <?php }?>
-
+                <?php echo $btnExpress; ?>
+                <?php echo $btnDetalles; ?>
                 <span id="divIniciar<?php echo (int) $r->idReq ?>"><?php echo $botonProceso ?></span>
-                <?php if ($r->tipo == 'INTERNA' || $r->tipo == 'COMPLETA') {?>
-                <form method="POST" action="<?php echo base_url('Reclutamiento/getOrderPDF'); ?>">
-                  <input type="hidden" name="idReq" value="<?php echo (int) $r->idReq ?>">
-                  <button type="submit" class="btn btn-danger btn-ico" title="Descargar PDF">
-                    <i class="fas fa-file-pdf fa-fw"></i>
-                  </button>
-                </form>
-                <?php } else {?>
-                <form method="POST" action="<?php echo base_url('Reclutamiento/getOrderPDFIntake'); ?>">
-                  <input type="hidden" name="idReq" value="<?php echo (int) $r->idReq ?>">
-                  <button type="submit" class="btn btn-danger btn-ico" title="Descargar PDF">
-                    <i class="fas fa-file-pdf fa-fw"></i>
-                  </button>
-                </form>
-                <?php }?>
-                <?php echo $btnDelete ?>
-                <?php if ($esIntake): ?>
-                <button type="button" class="btn btn-success btn-ico btn-asignar-sucursal" title="Asignar a sucursal"
-                  data-idreq="<?php echo (int) $r->idReq; ?>"
-                  data-sucursal="<?php echo isset($r->id_sucursal) ? (int) $r->id_sucursal : 0; ?>">
-                  <i class="fas fa-store fa-fw"></i>
-                </button>
-    <?php endif; ?>
+                <?php echo $btnPDF; ?>
+                <?php echo $btnDelete; ?>
+                <?php echo $btnAsignarSucursal; ?>
               </div>
 
               <div class="alert alert-secondary text-left mt-3" id="divUsuario<?php echo (int) $r->idReq; ?>">
@@ -305,6 +389,7 @@
         </div>
         <?php endforeach; ?>
       </div>
+
       <?php endif; ?>
     </div>
 
@@ -1650,7 +1735,7 @@ $(function() {
       data.id_cliente = idCliente; // si viene, envíalo
     }
     // Si además tu endpoint requiere id_portal explícito, agrégalo:
-    // data.id_portal =                                                                                                                                                                                         <?php echo (int) $this->session->userdata('id_portal_token'); ?>;
+    // data.id_portal =                                                                                                                                                                                                                                                              <?php echo (int) $this->session->userdata('id_portal_token'); ?>;
 
     // CSRF opcional
     var csrf = csrfPair();

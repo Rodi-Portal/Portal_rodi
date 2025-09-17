@@ -1,5 +1,20 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
+  <?php echo perms_js_flags([
+    'ASP_VER_INFO'           => ['reclutamiento.aspirantes.ver_info', true],
+    'ASP_EDITAR'             => ['reclutamiento.aspirantes.editar', true],
+    'ASP_ASIGNAR_REQ'        => ['reclutamiento.aspirantes.asignar_req', true],
+    'ASP_REGISTRAR_MOV'      => ['reclutamiento.aspirantes.registrar_mov', true],
+    'ASP_VER_HIST'           => ['reclutamiento.aspirantes.ver_historial', true],
+    'ASP_VER_EMPLEOS'        => ['reclutamiento.aspirantes.ver_empleos', true],
+    'ASP_CARGAR_DOCS'        => ['reclutamiento.aspirantes.cargar_docs', true],
+    'ASP_ACTUALIZAR_DOCS'    => ['reclutamiento.aspirantes.actualizar_docs', true],
+    'ASP_CARGAR_COMENTS'     => ['reclutamiento.aspirantes.cargar_coments', true],
+    'ASP_BLOQUEAR'           => ['reclutamiento.aspirantes.bloquear', true],
+    'ASP_ELIMINAR_ASP'       => ['reclutamiento.aspirantes.eliminar_aspirante', true],
+    'ASP_COMENTARIOS'        => ['reclutamiento.aspirantes.comentarios_cliente', true],
+    'ASP_CAMBIAR_STATUS_REQ' => ['reclutamiento.aspirantes.cambiar_status_req', true],
+])?>
 
   <section class="content-header">
     <div class="row align-items-center">
@@ -8,21 +23,21 @@
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-6 d-flex justify-content-end">
+        <?php if (show_if_can('reclutamiento.aspirantes.asignar_req', true)): ?>
         <button type="button" class="btn btn-primary btn-icon-split mr-2" id="btn_nuevo" onclick="openAddApplicant()">
-          <span class="icon text-white-50">
-            <i class="fas fa-user-plus"></i>
-          </span>
-          <span class="text">Registrar
-            aspirante a requicision
-          </span>
+          <span class="icon text-white-50"><i class="fas fa-user-plus"></i></span>
+          <span class="text">Registrar aspirante a requisición</span>
         </button>
+        <?php endif; ?>
+
+        <?php if (show_if_can('reclutamiento.aspirantes.cambiar_status_req', true)): ?>
         <button type="button" class="btn btn-primary btn-icon-split" data-toggle="modal"
           data-target="#estatusRequisicionModal">
-          <span class="icon text-white-50">
-            <i class="fas fa-exchange-alt"></i>
-          </span>
-          <span class="text">Cambiar estatus Requisicion</span>
+          <span class="icon text-white-50"><i class="fas fa-exchange-alt"></i></span>
+          <span class="text">Cambiar estatus Requisición</span>
         </button>
+        <?php endif; ?>
+
       </div>
     </div>
   </section>
@@ -89,6 +104,8 @@
 // estado global mínimo
 window.dtTabla = window.dtTabla || null;
 window.DT_MODE = window.DT_MODE || null; // 'progreso' | 'finalizadas'
+const P = window.PERM || {};
+const allow = f => (typeof f === 'undefined') ? true : !!f; // si no existe, permitir
 
 // borra el state guardado de DataTables para evitar arrastres entre modos
 function clearDTStateFor(id) {
@@ -136,15 +153,15 @@ function changeDataTable(url, mode) {
 
 $(document).ready(function() {
   const URL_EN_PROGRESO = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
-  const URL_POR_REQ     = '<?php echo base_url('Reclutamiento/getAspirantesPorRequisicion'); ?>';
+  const URL_POR_REQ = '<?php echo base_url('Reclutamiento/getAspirantesPorRequisicion'); ?>';
 
   // Al entrar a "En progreso": fuerza modo y URL correctos
   changeDataTable(URL_EN_PROGRESO, 'progreso');
 
   // Filtro por requisición (mismo modo)
   $(document).off('change.asp', '#opcion_requisicion')
-    .on('change.asp', '#opcion_requisicion', function(){
-      const id  = $(this).val();
+    .on('change.asp', '#opcion_requisicion', function() {
+      const id = $(this).val();
       const url = id ? (URL_POR_REQ + '?id=' + id) : URL_EN_PROGRESO;
       changeDataTable(url, 'progreso');
     });
@@ -225,69 +242,81 @@ function buildTableProgreso(url) {
         data: 'idAsp',
         bSortable: false,
         "width": "10%",
-        mRender: function(data, type, full) {
-          var cvLink =
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full
-            .idAsp +
-            ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
-          var eliminarAspirante =
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="eliminarAspirante(' + full.idAsp +
-            ')" data-toggle="tooltip" title="Eliminar"><i class="fas fa-upload"></i>Eliminar  Match</a>'
+        mRender: function (data, type, full) {
 
-          var actualizarDocs =
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' +
-            full.idAsp +
-            ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>';
+          // Botones individuales (se muestran sólo si el permiso lo permite)
+          var cvLink = allow(P.ASP_CARGAR_DOCS)
+            ? '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.idAsp + ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
+            : '';
 
-          var comentarios =
-            '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id +
-            ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
+          var eliminarAspirante = allow(P.ASP_ELIMINAR_ASP)
+            ? '<a href="javascript:void(0);" class="dropdown-item" onclick="eliminarAspirante(' + full.idAsp + ')" data-toggle="tooltip" title="Eliminar"><i class="fas fa-upload"></i>Eliminar  Match</a>'
+            : '';
 
-          var historial =
-            '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
-          var iniciar_socio =
-            '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Enviar al módulo de Preempleo para candidatos con o sin estudios previos a la contratación."><i class="fas fa-play-circle"></i>Enviar a Preempleo</a>';
-          let ingreso =
-            '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>';
+          var actualizarDocs = allow(P.ASP_ACTUALIZAR_DOCS)
+            ? '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' + full.idAsp + ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>'
+            : '';
 
+          var comentarios = allow(P.ASP_COMENTARIOS)
+            ? '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id + ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>'
+            : '';
+
+          var historial = allow(P.ASP_VER_HIST)
+            ? '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>'
+            : '';
+
+          var iniciar_socio = allow(P.ASP_CAMBIAR_STATUS_REQ)
+            ? '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Enviar al módulo de Preempleo para candidatos con o sin estudios previos a la contratación."><i class="fas fa-play-circle"></i>Enviar a Preempleo</a>'
+            : '';
+
+          // No tienes perm. dedicado para “Registro de ingreso” en este módulo; lo amarro a registrar_mov
+          var ingreso = allow(P.ASP_REGISTRAR_MOV)
+            ? '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>'
+            : '';
+
+          // Acciones “core” que usan los IDs que ya bindeas (#editar_aspirante y #accion)
           var acciones = '';
+          if (allow(P.ASP_EDITAR)) {
+            acciones += '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>';
+          }
+          if (allow(P.ASP_REGISTRAR_MOV)) {
+            acciones += '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
+          }
 
-          acciones =
-            '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-            '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
-
+          // Lógica original de status, pero respetando permisos
           if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
             if (full.idCandidato != null && full.idCandidato != '') {
               acciones = '<b>ESE finalizado</b>';
             } else {
-              acciones = iniciar_socio + ingreso +
-                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+              acciones = (allow(P.ASP_CAMBIAR_STATUS_REQ) ? iniciar_socio : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? ingreso : '')
+                      + (allow(P.ASP_EDITAR) ? '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>' : '');
             }
           } else {
             if (full.status_final != 'CANCELADO') {
-              acciones = iniciar_socio + ingreso +
-
-                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+              acciones = (allow(P.ASP_CAMBIAR_STATUS_REQ) ? iniciar_socio : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? ingreso : '')
+                      + (allow(P.ASP_EDITAR) ? '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>' : '');
             }
           }
 
+          // Arma el menú final
+          var menu = acciones + historial + comentarios + cvLink + actualizarDocs + eliminarAspirante;
 
-          return '<div class="btn-group">' +
-            '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
-            '<div class="dropdown-menu">' +
+          // Si no hay nada que mostrar, no pintes el botón Acciones
+          if (!menu || !menu.trim()) return '';
 
-            acciones +
-            historial +
-            comentarios +
-            cvLink +
-            actualizarDocs +
-            eliminarAspirante +
-            '</div>' +
-            '</div>';
+          return '<div class="btn-group">'
+              +   '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>'
+              +   '<div class="dropdown-menu">'
+              +      menu
+              +   '</div>'
+              + '</div>';
         }
       },
+
       {
         title: 'Estatus actual',
         data: null, // Usamos `null` para poder controlar manualmente qué se muestra

@@ -20,8 +20,29 @@
   /* súbelo hasta que se vea igual que los demás */
 }
 </style>
+
+
 <!-- Begin Page Content -->
 <div class="container-fluid">
+  <?php
+      // Permisos del módulo Bolsa de Trabajo (solo se aplican si existen overrides)
+      $CAN = [
+          'DESCARGAR_PLANTILLA' => user_can('reclutamiento.bolsa_trabajo.descargar_plantilla', true),
+          'SUBIR_PLANTILLA'     => user_can('reclutamiento.bolsa_trabajo.subir_plantilla', true),
+          'CREAR_REQUISICION'   => user_can('reclutamiento.bolsa_trabajo.crear_requisicion', true),
+          'ASIGNAR_ASPIRANTE'   => user_can('reclutamiento.bolsa_trabajo.asignar_aspirante', true),
+          'GENERAR_LINK'        => user_can('reclutamiento.bolsa_trabajo.generar_link_registro', true),
+
+          'VER_DETALLES'        => user_can('reclutamiento.bolsa_trabajo.ver_detalles', true),
+          'ASIGNARLO_REQ'       => user_can('reclutamiento.bolsa_trabajo.asignarlo_requisicion', true),
+          'BLOQUEAR'            => user_can('reclutamiento.bolsa_trabajo.bloquear_aspirante', true),
+          'EDITAR'              => user_can('reclutamiento.bolsa_trabajo.editar_aspirante', true),
+          'SUBIR_DOCS'          => user_can('reclutamiento.bolsa_trabajo.subir_docs', true),
+          'CAMBIAR_STATUS'      => user_can('reclutamiento.bolsa_trabajo.cambiar_status', true),
+          'VER_EMPLEOS'          => user_can('reclutamiento.bolsa_trabajo.ver_empleos', true),
+          'VER_MOVIMIENTOS'      => user_can('reclutamiento.bolsa_trabajo.ver_movimientos', true),
+      ];
+  ?>
   <section class="content-header">
     <div class="row align-items-center">
       <div class="col-sm-12 col-md-3 col-lg-3 mb-1 d-flex align-items-center">
@@ -30,58 +51,58 @@
 
       <div class="col-sm-12 col-md-9 col-lg-9 mb-1 d-flex justify-content-end">
         <div class="btn-group d-none d-md-flex" role="group" aria-label="Buttons for large screens">
+          <?php if ($CAN['DESCARGAR_PLANTILLA']): ?>
           <button type="button" id="btnDownloadTemplate" class="btn btn-info btn-icon-split"
             onclick="descargarFormato()">
-            <span class="icon text-white-50">
-              <i class="fas fa-download"></i>
-            </span>
+            <span class="icon text-white-50"><i class="fas fa-download"></i></span>
             <span class="text">Descargar Plantilla</span>
           </button>
+          <?php endif; ?>
+
+          <?php if ($CAN['SUBIR_PLANTILLA']): ?>
           <button type="button" id="btnUploadCandidates" class="btn btn-success btn-icon-split"
             onclick="openUploadCSV()">
-            <span class="icon text-white-50">
-              <i class="fas fa-upload"></i>
-            </span>
+            <span class="icon text-white-50"><i class="fas fa-upload"></i></span>
             <span class="text">Subir Aspirantes</span>
           </button>
-          <button type="button" id="btnNewRequisition" class="btn btn-navy btn-icon-split" onclick="nuevaRequisicion()">
-            <span class="icon text-white-50">
-              <i class="far fa-file-alt"></i>
-            </span>
+          <?php endif; ?>
+
+          <?php if ($CAN['CREAR_REQUISICION']): ?>
+          <button type="button" id="btnNewRequisition" class="btn btn-navy btn-icon-split" onclick="nuevaRequisicion">
+            <span class="icon text-white-50"><i class="far fa-file-alt"></i></span>
             <span class="text">Nueva Requisicion</span>
           </button>
+          <?php endif; ?>
+
           <?php
               if ($this->session->userdata('idrol') == 4) {
                   $disabled  = 'disabled';
                   $textTitle = 'title="You do not have permission for this action"';
-              } else {
-                  $disabled  = '';
-                  $textTitle = '';
-          }?>
+              } else { $disabled = '';
+                  $textTitle                            = '';}
+          ?>
+          <?php if ($CAN['ASIGNAR_ASPIRANTE']): ?>
           <button type="button" id="btnAssignCandidate" class="btn btn-navy btn-icon-split" onclick="openAssignToUser()"
             <?php echo $disabled; ?>>
-            <span class="icon text-white-50">
-              <i class="fas fa-user-edit"></i>
-            </span>
+            <span class="icon text-white-50"><i class="fas fa-user-edit"></i></span>
             <span class="text">Asignar Aspirante</span>
           </button>
+          <?php endif; ?>
         </div>
+
       </div>
 
     </div>
-    <?php if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {?>
+    <?php if (($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) && $CAN['GENERAR_LINK']): ?>
     <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
       <button type="button" id="generarLink" class="btn"
-        style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
+        style="background-color:#FFD700;color:#000;border:none;font-weight:bold;border-radius:8px;box-shadow:0px 2px 6px rgba(0,0,0,0.2);"
         data-toggle="modal" data-target="#modalGenerarLink" <?php echo $disabled; ?>>
-
-        <span class="icon text-white-50">
-          <i class="fas fa-user-edit" style="color: #000;"></i>
-        </span>
+        <span class="icon text-white-50"><i class="fas fa-user-edit" style="color:#000;"></i></span>
         <span class="text">Generar Link</span>
       </button>
     </div>
-    <?php }?>
+    <?php endif; ?>
 
   </section>
   <br>
@@ -125,7 +146,8 @@
     <?php $isDisabled = ($this->session->userdata('idrol') == 4) ? 'isDisabled' : ''; ?>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
-      <select name="asignar" id="asignar" class="form-control                            <?php echo $isDisabled ?>"
+      <select name="asignar" id="asignar"
+        class="form-control                                                                                                                                               <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">Todos</option>
         <?php
@@ -291,17 +313,37 @@
                   }
 
                   $domicilio1 = implode(', ', $partesDomicilio);
+                  // --- Botón Asignarlo a Requisición según permiso ---
+                  $canAssign    = ! empty($CAN['ASIGNARLO_REQ']);
+                  $botonProceso = '';
                   // --- Definir el botón UNA SOLA VEZ ---
-                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('
-                  . $r->id . ',\''
-                  . addslashes($nombre1) . '\',\''
-                  . addslashes($paterno1) . '\',\''
-                  . addslashes($materno1) . '\',\''
-                  . addslashes($telefono) . '\',\''
-                  . addslashes($medio_contacto) . '\',\''
-                  . addslashes($area_interes) . '\',\''
-                  . addslashes($domicilio1) . '\',\''
-                  . addslashes($correo) . '\')"><i class="fas fa-play-circle"></i></a>';
+                  if ((int) $r->status === 0) {
+                      // Bloqueado: si tiene permiso, lo mostramos deshabilitado (como hoy)
+                      if ($canAssign) {
+                          $botonProceso = '
+                          <a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1 isDisabled"
+                            data-toggle="tooltip" title="Asignarlo a Requisición">
+                            <i class="fas fa-play"></i>
+                          </a>';
+                      }
+                  } else {
+                      // Asignable
+                      if ($canAssign) {
+                          $botonProceso = '
+                          <a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1" id="btnIniciar' . $r->id . '"data-toggle="tooltip" title="Asignarlo a Requisición"  onclick="openAddApplicant('
+                          . $r->id . ',\''
+                          . addslashes($nombre1) . '\',\''
+                          . addslashes($paterno1) . '\',\''
+                          . addslashes($materno1) . '\',\''
+                          . addslashes($telefono) . '\',\''
+                          . addslashes($medio_contacto) . '\',\''
+                          . addslashes($area_interes) . '\',\''
+                          . addslashes($domicilio1) . '\',\''
+                          . addslashes($correo) . '\')">
+                          <i class="fas fa-play-circle"></i>
+                        </a>';
+                      }
+                  }
 
                   // --- Excepción para status 0: botón deshabilitado y otros cambios ---
                   if ($r->status == 0) {
@@ -353,7 +395,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                                                                                                               <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                         <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -373,57 +415,70 @@
             <h5 class="card-text">Teléfono: <b><?php echo $telefono; ?></b></h5>
             <div class="alert alert-secondary text-center mt-3"><?php echo $text_estatus ?></div>
             <div class="d-flex justify-content-center align-items-center flex-nowrap">
+              <?php if (! empty($CAN['VER_DETALLES'])): ?>
               <a href="javascript:void(0)" class="btn btn-primary btn-cuadro mr-1" data-toggle="tooltip"
-                title="Ver detalles" onclick="verDetalles(<?php echo $r->id; ?>)">
+                title="Ver detalles" onclick="verDetalles(<?php echo (int) $r->id; ?>)">
                 <i class="fas fa-info-circle"></i>
               </a>
-
+              <?php endif; ?>
+              <?php if (! empty($CAN['VER_EMPLEOS'])): ?>
               <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
                 title="Ver empleos"
                 onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-user-tie"></i>
               </a>
-
+              <?php endif; ?>
+              <?php if (! empty($CAN['VER_MOVIMIENTOS'])): ?>
               <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
                 title="Historial de movimientos"
                 onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-history"></i>
               </a>
-
+              <?php endif; ?>
               <!-- Botón proceso -->
               <?php echo $botonProceso; ?>
 
-              <?php if ($r->status == 0): ?>
+              <?php if ((int) $r->status === 0): ?>
+              <?php if (! empty($CAN['BLOQUEAR'])): ?>
               <a href="javascript:void(0)" class="btn btn-success btn-cuadro mr-1 unlockButton" data-toggle="tooltip"
                 title="Desbloquear persona"
-                onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo (int) $r->id; ?>)">
                 <i class="fas fa-lock-open"></i>
               </a>
+              <?php endif; ?>
               <?php else: ?>
+              <?php if (! empty($CAN['BLOQUEAR'])): ?>
               <a href="javascript:void(0)" class="btn btn-danger btn-cuadro mr-1" data-toggle="tooltip"
                 title="Bloquear persona"
-                onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo (int) $r->id; ?>)">
                 <i class="fas fa-ban"></i>
               </a>
               <?php endif; ?>
+              <?php endif; ?>
 
+              <?php if (! empty($CAN['EDITAR'])): ?>
               <a href="javascript:void(0)" class="btn btn-warning btn-cuadro mr-1" data-toggle="tooltip"
                 title="Editar aspirante"
-                onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                onclick="openUpdateApplicant(<?php echo (int) $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-edit"></i>
               </a>
+              <?php endif; ?>
 
+              <?php if (! empty($CAN['SUBIR_DOCS'])): ?>
               <a href="javascript:void(0)" class="btn btn-secondary btn-cuadro" data-toggle="tooltip"
                 title="Subir documentos"
-                onclick="openSubirDocumentos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                onclick="openSubirDocumentos(<?php echo (int) $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-upload"></i>
               </a>
+              <?php endif; ?>
 
+              <?php if (! empty($CAN['CAMBIAR_STATUS'])): ?>
               <a href="javascript:void(0)" class="btn btn-status btn-cuadro mr-1" data-toggle="tooltip"
                 title="Cambiar Estatus"
-                onclick="openModalStatus(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                onclick="openModalStatus(<?php echo (int) $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-exchange-alt"></i>
               </a>
+              <?php endif; ?>
 
             </div>
 
@@ -2412,7 +2467,7 @@
           // limpia nuestras clases previas y aplica la nueva si existe
           $li.removeClass(
             'status-row status-all status-espera status-proceso status-reutilizar status-preempleo status-acuerdo status-bloqueado'
-            );
+          );
           if (s && s.cls) {
             $li.addClass('status-row ' + s.cls);
           }
