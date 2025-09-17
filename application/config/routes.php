@@ -68,6 +68,7 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['legal']                = 'legal/index';
 $route['legal/download/(:any)'] = 'legal/download/$1';
+$route['portal/doc/(:any)'] = 'Archivo/ver_portal_doc/$1';
 
 $route['permisos/precheck'] = 'permisos/precheck';
 $route['permisos/usuario/(:num)'] = 'permisos/usuario/$1';

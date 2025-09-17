@@ -137,95 +137,152 @@ class Archivo extends CI_Controller
         fclose($fp);
         exit;
     }
+    public function ver_portal_doc($tipo = '')
+    {
+        if (! $this->session->userdata('id')) {show_404();}
 
-  
-public function ver_aspirante($id)
-{
-    $this->_serve_doc_aspirante((int)$id, false); // inline si tipo_vista==1
-}
+        $id_portal = (int) $this->session->userdata('idPortal');
+        if (empty($id_portal)) {show_404();}
 
-public function descargar_aspirante($id)
-{
-    $this->_serve_doc_aspirante((int)$id, true);  // fuerza descarga
-}
+        $tipo = strtolower(trim((string) $tipo));
+        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {show_404();}
 
-private function _serve_doc_aspirante(int $id, bool $forceDownload)
-{
-    if ($id <= 0) { show_404(); }
+        // === Ambos en _avisosPortal/ porque ahí tienes los defaults ===
+        $upload_dir   = rtrim(FCPATH, '/\\') . '/_avisosPortal/';
+        $defaults_dir = $upload_dir;
 
-    // 1) Sesión obligatoria (ajusta a tu lógica)
-    if (! $this->session->userdata('id')) { show_404(); }
+        if (! is_dir($upload_dir)) {@mkdir($upload_dir, 0775, true);}
+        if (! is_dir($defaults_dir)) {@mkdir($defaults_dir, 0775, true);}
 
-    // 2) Registro en BD
-    $this->load->database(); // por si no está autoload
-    $doc = $this->db->get_where('documentos_aspirante', [
-        'id'        => $id,
-        'eliminado' => 0,
-    ])->row();
-    if (! $doc) { show_404(); }
+        $map = [
+            'aviso'            => ['db' => 'aviso', 'def' => 'AV_TL_V1.pdf'],
+            'terminos'         => ['db' => 'terminos', 'def' => 'TM_TL_V1.pdf'],
+            'confidencialidad' => ['db' => 'confidencialidad', 'def' => 'AC_TL_V1.docx'],
+        ];
 
-    // 3) Ruta física correcta (carpeta + nombre)
-    $filename = basename((string)$doc->nombre_archivo);      // sanitiza
-    $baseDir  = rtrim(FCPATH, '/\\') . '/_docs/';            // tu carpeta objetivo
-    $fileAbs  = $baseDir . $filename;                        // <- ¡aquí faltaba el $filename!
+        // Trae nombre guardado en DB (p.ej. "23_avisoPrivacidad.pdf")
+        $row    = $this->cat_portales_model->getDocs($id_portal);
+        $nombre = $row ? ($row->{$map[$tipo]['db']} ?? null) : null;
 
-    if (!is_file($fileAbs) || !is_readable($fileAbs)) {
-        log_message('error', "Archivo no encontrado o no legible: {$fileAbs} (doc_id={$id})");
-        show_404();
-    }
-
-    // 4) MIME, nombre y disposición
-    $ext  = strtolower(pathinfo($fileAbs, PATHINFO_EXTENSION));
-    $mime = $this->_detect_mime($fileAbs, $ext);
-
-    // Inline si tipo_vista == 1 y no se fuerza descarga (default inline si no existe la col)
-    $inline = (!$forceDownload && (isset($doc->tipo_vista) ? (int)$doc->tipo_vista === 1 : true));
-
-    // Nombre “bonito” de salida
-    $downloadName = $this->_nice_name($doc->nombre_personalizado ?: 'documento', $ext);
-    $ascii        = preg_replace('/[^A-Za-z0-9\._-]+/', '_', $downloadName);
-
-    // 5) Cabeceras y stream
-    header('Content-Type: ' . $mime);
-    header('Content-Length: ' . filesize($fileAbs));
-    header('X-Content-Type-Options: nosniff');
-    header('Cache-Control: private, max-age=0, must-revalidate');
-
-    $disp = $inline ? 'inline' : 'attachment';
-    header("Content-Disposition: $disp; filename=\"{$ascii}\"; filename*=UTF-8''" . rawurlencode($downloadName));
-
-    @readfile($fileAbs);
-    exit;
-}
-
-private function _nice_name(string $base, string $ext): string
-{
-    $s = @iconv('UTF-8', 'ASCII//TRANSLIT', $base);
-    $s = strtolower(trim(preg_replace('/[^a-z0-9\._-]+/i', '_', $s), '_'));
-    return $s . ($ext ? '.' . $ext : '');
-}
-
-private function _detect_mime($path, $ext)
-{
-    if (function_exists('finfo_open')) {
-        $f = finfo_open(FILEINFO_MIME_TYPE);
-        if ($f) {
-            $m = finfo_file($f, $path);
-            finfo_close($f);
-            if ($m) return $m;
+        // Si hay archivo propio y existe físicamente -> úsalo; si no -> usa el default en la MISMA carpeta
+        if ($nombre && is_file($upload_dir . $nombre)) {
+            $fileAbs = $upload_dir . $nombre;
+        } else {
+            $fileAbs = $defaults_dir . $map[$tipo]['def'];
         }
+
+        // Si tampoco existe el default, 404
+        if (! is_file($fileAbs) || ! is_readable($fileAbs)) {show_404();}
+
+        $ext  = strtolower(pathinfo($fileAbs, PATHINFO_EXTENSION));
+        $mime = $this->_detect_mime($fileAbs, $ext);
+
+        $forceDownload = (bool) $this->input->get('dl');
+        $disp          = $forceDownload ? 'attachment' : 'inline';
+
+        $downloadName = basename($fileAbs);
+        $ascii        = preg_replace('/[^A-Za-z0-9\._-]+/', '_', $downloadName);
+
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($fileAbs));
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header("Content-Disposition: $disp; filename=\"{$ascii}\"; filename*=UTF-8''" . rawurlencode($downloadName));
+
+        @readfile($fileAbs);
+        exit;
     }
-    $map = [
-        'pdf'=>'application/pdf','doc'=>'application/msword',
-        'docx'=>'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'xls'=>'application/vnd.ms-excel',
-        'xlsx'=>'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'png'=>'image/png','jpg'=>'image/jpeg','jpeg'=>'image/jpeg','gif'=>'image/gif','bmp'=>'image/bmp',
-        'txt'=>'text/plain','csv'=>'text/csv',
-        'mp4'=>'video/mp4','mov'=>'video/quicktime','avi'=>'video/x-msvideo','wmv'=>'video/x-ms-wmv',
-        'mkv'=>'video/x-matroska','webm'=>'video/webm',
-    ];
-    return $map[$ext] ?? 'application/octet-stream';
-}
+
+    public function ver_aspirante($id)
+    {
+        $this->_serve_doc_aspirante((int) $id, false); // inline si tipo_vista==1
+    }
+
+    public function descargar_aspirante($id)
+    {
+        $this->_serve_doc_aspirante((int) $id, true); // fuerza descarga
+    }
+
+    private function _serve_doc_aspirante(int $id, bool $forceDownload)
+    {
+        if ($id <= 0) {show_404();}
+
+        // 1) Sesión obligatoria (ajusta a tu lógica)
+        if (! $this->session->userdata('id')) {show_404();}
+
+                                 // 2) Registro en BD
+        $this->load->database(); // por si no está autoload
+        $doc = $this->db->get_where('documentos_aspirante', [
+            'id'        => $id,
+            'eliminado' => 0,
+        ])->row();
+        if (! $doc) {show_404();}
+
+                                                             // 3) Ruta física correcta (carpeta + nombre)
+        $filename = basename((string) $doc->nombre_archivo); // sanitiza
+        $baseDir  = rtrim(FCPATH, '/\\') . '/_docs/';        // tu carpeta objetivo
+        $fileAbs  = $baseDir . $filename;                    // <- ¡aquí faltaba el $filename!
+
+        if (! is_file($fileAbs) || ! is_readable($fileAbs)) {
+            log_message('error', "Archivo no encontrado o no legible: {$fileAbs} (doc_id={$id})");
+            show_404();
+        }
+
+        // 4) MIME, nombre y disposición
+        $ext  = strtolower(pathinfo($fileAbs, PATHINFO_EXTENSION));
+        $mime = $this->_detect_mime($fileAbs, $ext);
+
+        // Inline si tipo_vista == 1 y no se fuerza descarga (default inline si no existe la col)
+        $inline = (! $forceDownload && (isset($doc->tipo_vista) ? (int) $doc->tipo_vista === 1 : true));
+
+        // Nombre “bonito” de salida
+        $downloadName = $this->_nice_name($doc->nombre_personalizado ?: 'documento', $ext);
+        $ascii        = preg_replace('/[^A-Za-z0-9\._-]+/', '_', $downloadName);
+
+        // 5) Cabeceras y stream
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($fileAbs));
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, max-age=0, must-revalidate');
+
+        $disp = $inline ? 'inline' : 'attachment';
+        header("Content-Disposition: $disp; filename=\"{$ascii}\"; filename*=UTF-8''" . rawurlencode($downloadName));
+
+        @readfile($fileAbs);
+        exit;
+    }
+
+    private function _nice_name(string $base, string $ext): string
+    {
+        $s = @iconv('UTF-8', 'ASCII//TRANSLIT', $base);
+        $s = strtolower(trim(preg_replace('/[^a-z0-9\._-]+/i', '_', $s), '_'));
+        return $s . ($ext ? '.' . $ext : '');
+    }
+
+    private function _detect_mime($path, $ext)
+    {
+        if (function_exists('finfo_open')) {
+            $f = finfo_open(FILEINFO_MIME_TYPE);
+            if ($f) {
+                $m = finfo_file($f, $path);
+                finfo_close($f);
+                if ($m) {
+                    return $m;
+                }
+
+            }
+        }
+        $map = [
+            'pdf'  => 'application/pdf', 'doc'   => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls'  => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'png'  => 'image/png', 'jpg'         => 'image/jpeg', 'jpeg'     => 'image/jpeg', 'gif'      => 'image/gif', 'bmp' => 'image/bmp',
+            'txt'  => 'text/plain', 'csv'        => 'text/csv',
+            'mp4'  => 'video/mp4', 'mov'         => 'video/quicktime', 'avi' => 'video/x-msvideo', 'wmv' => 'video/x-ms-wmv',
+            'mkv'  => 'video/x-matroska', 'webm' => 'video/webm',
+        ];
+        return $map[$ext] ?? 'application/octet-stream';
+    }
 
 }

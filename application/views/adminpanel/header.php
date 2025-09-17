@@ -690,22 +690,41 @@ echo $token  */?>
           return `<a href="${VIEW_AVISO_BASE}${safe}" target="_blank">Ver documento</a>`;
         }
 
-        function pintarEstado(tipo, actual, porDefecto) {
-          const has = !!actual;
-          const html = has ?
-            `Archivo actual: ${linkDoc(actual)}` :
-            `No hay archivo cargado. Se usará por defecto: ${linkDoc(porDefecto)}`;
-          const el = (tipo === 'aviso') ? $('#estado-aviso') : $('#estado-terminos');
-          el.html(html)
-            .removeClass('text-danger')
-            .toggleClass('text-muted', !has);
-          // habilitar/eliminar según haya actual
-          const delBtn = (tipo === 'aviso') ? $('#btn-del-aviso') : $('#btn-del-terminos');
-          delBtn.prop('disabled', !has);
+        function pintarEstado(tipo, tieneActual) {
+          const ref = DOC[tipo];
+          if (!ref) return;
+
+          // Siempre apuntamos al controlador. Él decide: archivo propio o default.
+          const urlVer = '<?php echo base_url("portal/doc"); ?>/' + tipo;
+
+          if (tieneActual) {
+            $(ref.estado).html(
+              `<div>
+         <span class="text-success">Actual:&nbsp;</span>
+         <a href="${urlVer}" target="_blank" rel="noopener">Ver documento</a>
+         <div class="text-muted">Si eliminas, volverá al por defecto.</div>
+       </div>`
+            );
+            $(ref.del).prop('disabled', false).css({
+              cursor: 'pointer',
+              opacity: 1
+            });
+          } else {
+            $(ref.estado).html(
+              `<div>
+         <span class="text-muted">Por defecto:&nbsp;</span>
+         <a href="${urlVer}" target="_blank" rel="noopener">Ver documento por defecto</a>
+       </div>`
+            );
+            $(ref.del).prop('disabled', true).css({
+              cursor: 'not-allowed',
+              opacity: .6
+            });
+          }
         }
 
+
         function cargarDocumentos() {
-          // Trae nombres actuales desde backend
           $.ajax({
             url: '<?php echo base_url("Avance/documentos_info"); ?>',
             type: 'POST',
@@ -714,24 +733,31 @@ echo $token  */?>
               [CSRF_NAME]: CSRF_HASH
             },
             success: function(r) {
-              const aviso = r.aviso_actual ?? null;
-              const terminos = r.terminos_actual ?? null;
-              const defAviso = r.default_aviso || DEFAULTS.aviso;
-              const defTerm = r.default_terminos || DEFAULTS.terminos;
-
-              pintarEstado('aviso', aviso, defAviso);
-              pintarEstado('terminos', terminos, defTerm);
+              if (r.error) {
+                $('#estado-aviso, #estado-terminos, #estado-confidencialidad')
+                  .html('<span class="text-danger">Error al cargar estado.</span>');
+                $('#btn-del-aviso, #btn-del-terminos, #btn-del-confidencialidad')
+                  .prop('disabled', true);
+                return;
+              }
+              pintarEstado('aviso', !!r.aviso_tiene);
+              pintarEstado('terminos', !!r.terminos_tiene);
+              pintarEstado('confidencialidad', !!r.confidencialidad_tiene);
             },
             error: function() {
-              $('#estado-aviso, #estado-terminos').html(
-                '<span class="text-danger">Error al cargar estado.</span>');
-              $('#btn-del-aviso, #btn-del-terminos').prop('disabled', true);
+              $('#estado-aviso, #estado-terminos, #estado-confidencialidad')
+                .html('<span class="text-danger">Error al cargar estado.</span>');
+              $('#btn-del-aviso, #btn-del-terminos, #btn-del-confidencialidad')
+                .prop('disabled', true);
             }
           });
         }
 
-        // Abrir el modal → cargar estado
+        // Asegúrate de mantener esto:
         $('#updateAvisoModal').on('show.bs.modal', cargarDocumentos);
+
+
+        // Abrir el modal → cargar estado
 
         // ==== Mapa de referencia por tipo de documento ====
         const DOC = {

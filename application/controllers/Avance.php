@@ -325,17 +325,15 @@ class Avance extends CI_Controller
     {
         $this->output->set_content_type('application/json');
 
-        $id_portal = $this->session->userdata('idPortal');
-        $row       = $this->cat_portales_model->getDocs($id_portal); // columnas: 'aviso', 'terminos', 'confidencialidad'
+        $id_portal = (int) $this->session->userdata('idPortal');
+        if (empty($id_portal)) {echo json_encode(['error' => 'Sesión sin idPortal']);return;}
+
+        $row = $this->cat_portales_model->getDocs($id_portal); // columnas: aviso, terminos, confidencialidad
 
         echo json_encode([
-            'aviso_actual'             => $row->aviso ?? null,
-            'terminos_actual'          => $row->terminos ?? null,
-            'confidencialidad_actual'  => $row->confidencialidad ?? null,
-            // defaults (ajústalos si ya tienes otros nombres por defecto)
-            'default_aviso'            => 'AV_TL_V1.pdf',
-            'default_terminos'         => 'TM_TL_V1.pdf',
-            'default_confidencialidad' => 'AC_TL_V1.pdf',
+            'aviso_tiene'            => ! empty($row->aviso),
+            'terminos_tiene'         => ! empty($row->terminos),
+            'confidencialidad_tiene' => ! empty($row->confidencialidad),
         ]);
     }
 
