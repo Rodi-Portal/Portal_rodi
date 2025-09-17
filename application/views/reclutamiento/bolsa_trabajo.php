@@ -39,8 +39,8 @@
           'EDITAR'              => user_can('reclutamiento.bolsa_trabajo.editar_aspirante', true),
           'SUBIR_DOCS'          => user_can('reclutamiento.bolsa_trabajo.subir_docs', true),
           'CAMBIAR_STATUS'      => user_can('reclutamiento.bolsa_trabajo.cambiar_status', true),
-          'VER_EMPLEOS'          => user_can('reclutamiento.bolsa_trabajo.ver_empleos', true),
-          'VER_MOVIMIENTOS'      => user_can('reclutamiento.bolsa_trabajo.ver_movimientos', true),
+          'VER_EMPLEOS'         => user_can('reclutamiento.bolsa_trabajo.ver_empleos', true),
+          'VER_MOVIMIENTOS'     => user_can('reclutamiento.bolsa_trabajo.ver_movimientos', true),
       ];
   ?>
   <section class="content-header">
@@ -147,7 +147,7 @@
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                               <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                          <?php echo $isDisabled ?>"
         title="Select">
         <option value="0">Todos</option>
         <?php
@@ -395,7 +395,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                         <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                       <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -2126,24 +2126,44 @@
             const keySlug = slugKey(keyDefault);
 
             const htmlNuevo = `
-            <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${keySlug}">
-              <div class="card shadow-sm h-100">
-                <div class="card-body d-flex flex-column">
-                  <label class="font-weight-bold mb-2">Nuevo campo extra</label>
-                  <div class="d-flex mb-2">
-                    <input type="text" class="form-control llave-extra mr-2"
-                          placeholder="Nombre de la llave" value="${keySlug}">
-                    <!-- IMPORTANTE: el valor SIEMPRE tiene name="extra_<slug>" -->
-                    <input type="text" class="form-control valor-extra mr-2"
-                          name="extra_${keySlug}" placeholder="Valor" value="">
-                    <button type="button" class="btn btn-sm btn-danger eliminar-extra" data-key="${keySlug}">
-                      <i class="fas fa-trash"></i>
-                    </button>
+                <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${keySlug}">
+                  <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+
+                      <!-- REEMPLAZA EL BLOQUE HORIZONTAL POR ESTO (vertical): -->
+                    <label class="mb-1 font-weight-bold">Nombre del campo</label>
+                    <input
+                      type="text"
+                      class="form-control llave-extra"
+                      placeholder="Escribe el nombre del campo (sin espacios). Ej.: curp, rfc, talla_playera, linkedin"
+                      value="">
+                
+
+                    <!-- Valor/contenido (abajo) -->
+                    <label class="mb-1 font-weight-bold mt-3">Contenido del campo</label>
+                    <div class="d-flex align-items-start">
+                      <input
+                        type="text"
+                        class="form-control valor-extra"
+                        name="extra_${keySlug}"
+                        placeholder="Escribe el contenido/valor. Ej.: ABCD001122HDFLRS05 / M / https://linkedin.com/in/usuario"
+                        value="">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger ml-2 eliminar-extra"
+                        data-key="${keySlug}"
+                        title="Eliminar este campo"
+                        aria-label="Eliminar este campo">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+
+                      
+                      <!-- FIN DEL CAMBIO -->
+                    </div>
                   </div>
-                  <small class="text-muted">Se enviará como <code>extra_${keySlug}</code></small>
-                </div>
-              </div>
-            </div>`;
+                </div>`;
+
             $('#extras_update .row').append(htmlNuevo);
           });
           $(document).on('input', '.llave-extra', function() {
