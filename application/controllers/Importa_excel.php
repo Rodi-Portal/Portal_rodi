@@ -43,7 +43,7 @@ class Importa_excel extends CI_Controller
      */
     public function importar()
     {
-        $this->output->set_content_type('application/json');
+        $this->output->set_content_type('application/json', 'utf-8');
 
         if (empty($_FILES['archivo_excel']['name'])) {
             return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Sube un archivo Excel']));
@@ -65,7 +65,23 @@ class Importa_excel extends CI_Controller
         if (count($rows) < 2) {
             return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Excel vacío']));
         }
+        $toUtf8 = function ($s) {
+            if ($s === null) {
+                return null;
+            }
 
+            $s = (string) $s;
+            // Detecta y convierte a UTF-8 si viniera raro (CSV antiguos, copy/paste)
+            $enc = mb_detect_encoding($s, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true) ?: 'UTF-8';
+            if ($enc !== 'UTF-8') {
+                $s = iconv($enc, 'UTF-8//IGNORE', $s);
+            }
+            // Normaliza acentos compuestos (NFC)
+            if (class_exists('Normalizer')) {
+                $s = Normalizer::normalize($s, Normalizer::FORM_C);
+            }
+            return trim($s);
+        };
         // Cabeceras robustas (evita trim(null))
         $rawHeaders = $rows[1] ?? [];
         $headers    = [];
@@ -80,7 +96,7 @@ class Importa_excel extends CI_Controller
         foreach ($headers as $colLetter => $title) {$index[$title] = $colLetter;}
 
         // ===== Helpers lectura =====
-        $get = function ($row, $names) use ($index) {
+        $get = function ($row, $names) use ($index, $toUtf8) {
             $names = is_array($names) ? $names : [$names];
             foreach ($names as $name) {
                 if (isset($index[$name])) {
@@ -138,14 +154,6 @@ class Importa_excel extends CI_Controller
 
             try { $b = new DateTime($ymd);
                 $t                             = new DateTime('today');return (int) $b->diff($t)->y;} catch (Exception $e) {return null;}
-        };
-        $toLatin1 = function ($s) {
-            if ($s === null) {
-                return null;
-            }
-
-            $out = @iconv('UTF-8', 'ISO-8859-1//TRANSLIT', (string) $s);
-            return $out !== false ? $out : (string) $s;
         };
 
         // ===== Nombres de columnas =====
@@ -205,7 +213,7 @@ class Importa_excel extends CI_Controller
         for ($i = 2; $i <= count($rows); $i++) {
             $r = $rows[$i] ?? [];
 
-            $fullName = isset($index[$X_NOMBRE_COMPLETO]) ? trim((string) ($r[$index[$X_NOMBRE_COMPLETO]] ?? '')) : '';
+            $fullName = isset($index[$X_NOMBRE_COMPLETO]) ? $toUtf8(trim((string) ($r[$index[$X_NOMBRE_COMPLETO]] ?? ''))) : '';
             $np       = $splitNombre($fullName);
             if ($fullName === '') {$errores[] = "Fila $i: nombre vacío";
                 continue;}
@@ -259,10 +267,10 @@ class Importa_excel extends CI_Controller
                 'edicion'          => null,
                 'id_portal'        => $id_portal,
                 'id_usuario'       => $id_usuario,
-                'nombre'           => $toLatin1($np['nombre']),
-                'paterno'          => $toLatin1($np['paterno']),
-                'materno'          => $toLatin1($np['materno']),
-                'domicilio'        => $toLatin1($domicilio_bt),
+                'nombre'           => $toUtf8($np['nombre']),
+                'paterno'          => $toUtf8($np['paterno']),
+                'materno'          => $toUtf8($np['materno']),
+                'domicilio'        => $toUtf8($domicilio_bt),
                 'fecha_nacimiento' => $fecha_nac_bt,
                 'edad'             => $calcEdad($fecha_nac_bt),
                 'telefono'         => preg_replace('/\D+/', '', (string) $telefono_bt),
@@ -277,8 +285,8 @@ class Importa_excel extends CI_Controller
                 'idiomas'          => null,
                 'maquinas'         => null,
                 'software'         => null,
-                'medio_contacto'   => $toLatin1($medio_contacto_bt),
-                'area_interes'     => $toLatin1($area_interes_bt),
+                'medio_contacto'   => $toUtf8($medio_contacto_bt),
+                'area_interes'     => $toUtf8($area_interes_bt),
                 'sueldo_deseado'   => $sueldo_deseado_bt !== null ? (string) $sueldo_deseado_bt : null,
                 'otros_ingresos'   => null,
                 'viajar'           => null,
@@ -335,7 +343,7 @@ class Importa_excel extends CI_Controller
                 continue;
             }
 
-// ======================================================================
+            // ======================================================================
 
             $this->db->trans_start();
 

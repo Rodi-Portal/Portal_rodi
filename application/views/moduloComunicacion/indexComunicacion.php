@@ -2,6 +2,58 @@
 <link rel="stylesheet" href="<?= base_url('public/comunicacion/comunicacion_vue3.css'); ?>">
 <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 
+<?php
+// ===== 1) Slugs del módulo que vas a usar en el front =====
+$SLUGS = [
+  'comunicacion.sucursales.seleccionar_multiple',
+  'comunicacion.nomina.periodos.ver',
+  'comunicacion.nomina.periodos.crear',
+  'comunicacion.nomina.periodos.editar',
+  'comunicacion.nomina.prenomina.crear',
+  'comunicacion.nomina.prenomina.editar',
+  'comunicacion.nomina.prenomina.descargar_excel',
+  'comunicacion.nomina.prenomina.modificar_celdas',
+  'comunicacion.nomina.historial.ver',
+  'comunicacion.nomina.historial.editar',
+  'comunicacion.calendario.ver_meses',
+  'comunicacion.calendario.registrar_evento',
+  'comunicacion.calendario.guardar_eventos',
+  'comunicacion.calendario.eliminar_evento',
+  'comunicacion.calendario.ver_dia',
+  'comunicacion.calendario.descargar_evento',
+  'comunicacion.mensajeria.configurar_columnas',
+  'comunicacion.mensajeria.crear_plantilla',
+  'comunicacion.mensajeria.actualizar_plantilla',
+  'comunicacion.mensajeria.enviar_masivo',
+  'comunicacion.recordatorios.ver',
+  'comunicacion.recordatorios.crear',
+  'comunicacion.recordatorios.editar',
+  'comunicacion.recordatorios.eliminar',
+];
+
+// ===== 2) Calcula cuáles están permitidos para el usuario actual =====
+// Usamos tu helper user_can(). El segundo parámetro (legacy) = false por seguridad si no hay override.
+$ALLOWED = [];
+foreach ($SLUGS as $slug) {
+  if (user_can($slug, false)) $ALLOWED[] = $slug;
+}
+?>
+
+<!-- 3) Expone permisos al front -->
+<script>
+  // Slugs permitidos para el usuario actual (leerá comunicacion-vue3.js)
+  window.APP_PERMS = <?= json_encode($ALLOWED) ?>;
+  console.log("🚀 ~ APP_PERMS:", window.APP_PERMS);
+
+  // Helper de permisos compartido (Vue 2/3)
+  window.$perms = {
+    set: new Set(window.APP_PERMS || []),
+    can(p)      { return this.set.has(p); },
+    canAny(arr) { return arr.some(p => this.set.has(p)); },
+    canAll(arr) { return arr.every(p => this.set.has(p)); }
+  };
+</script>
+
 <?php if ($this->session->userdata('idrol') == 11 || $this->session->userdata('idrol') == 4) { ?>
   <div class="seccion" id="seccion1">
     <h3 style="text-align:center;font-size:2em;color:blue;">No tienes acceso a este módulo</h3>
@@ -21,12 +73,12 @@
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app')) {
-      window.mountVueApp('#app');
+      window.mountVueApp('#app'); // dentro de esa función instalaremos v-can / $can
     }
   });
 </script>
 
- <style>
+<style>
 /* Asegura altura base */
 html, body {
   height: 100%;
@@ -36,11 +88,11 @@ html, body {
 
 /* Contenedor que se ajusta al viewport y evita cortes */
 .vh-lock {
-  height: 100vh;                 /* bloquea al alto de pantalla */
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;              /* nada se sale de aquí */
-  min-height: 0;                 /* clave cuando ancestro es flex */
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* Donde vive el scroll real */
@@ -48,18 +100,15 @@ html, body {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;                 /* importantísimo en flex children */
-  overflow: auto;                /* el scroll va aquí */
+  min-height: 0;
+  overflow: auto;
 }
 
 /* Si hay más wrappers flex dentro del componente, esto ayuda */
 #app > * {
-  min-height: 0;                 /* evita que hijos hagan “auto” y corten */
+  min-height: 0;
 }
 
 /* Si tu .seccion original tenía reglas, mantenlas suaves */
-.seccion {
-  /* nada de overflow aquí; lo controla .vh-scroll */
-}
-
- </style>
+.seccion { /* el scroll lo controla .vh-scroll */ }
+</style>
