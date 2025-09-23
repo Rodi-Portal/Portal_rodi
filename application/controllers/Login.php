@@ -70,10 +70,8 @@ class Login extends CI_Controller
                     "logo"         => $usuario->logo,
                     "aviso"        => $usuario->aviso,
                     "terminos"     => $usuario->terminos,
-                    "emp"        => $usuario->emp,
-                    "former"     => $usuario->former,
-
-
+                    "emp"          => $usuario->emp,
+                    "former"       => $usuario->former,
 
                 ];
                 if ($usuario->id_rol == 1 || $usuario->id_rol == 6) {
@@ -99,7 +97,19 @@ class Login extends CI_Controller
                 }
 
                 $this->session->set_userdata($usuario_data);
-                if ($ver == 0 || $ver == 20) {
+
+                if ($this->session->userdata('idPortal') == 11) {
+                    $id_datos = $usuario->idDatos;
+                    if ($usuario->id_rol != 3) {
+                        $this->session->set_userdata('tipo_acceso', 'usuario');
+
+                    } else {
+                        $this->session->set_userdata('tipo_acceso', 'visitador');
+
+                    }
+
+                    $this->session_verificada();
+                } elseif ($ver == 0 || $ver == 20) {
 
                     $codigo_autenticacion = $this->generar_codigo_autenticacion();
 
@@ -157,7 +167,7 @@ class Login extends CI_Controller
                         "espectador"   => $cliente->espectador,
                         "logueado"     => true,
                         "tipo_bolsa"   => $cliente->tipo_bolsa,
-                        "link"        => $cliente->link,
+                        "link"         => $cliente->link,
                     ];
 
                     /*    echo '<pre>';
@@ -180,14 +190,15 @@ class Login extends CI_Controller
                         'ip'           => $_SERVER['REMOTE_ADDR'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'],
                         'ingreso'      => date('Y-m-d H:i:s'),
                     ];
-                    
 
                     $this->usuario_model->addSesion($sesion);
                     $ver = $cliente->verificacion;
                     if ($this->session->userdata('tipo') == 2) {
                         $this->session->set_userdata('tipo_acceso', 'cliente_ingles');
+                        if ($this->session->userdata('idPortal') == 11) {
 
-                        if ($ver == 0 || $ver == 10) {
+                            $this->session_verificada();
+                        } elseif ($ver == 0 || $ver == 10) {
 
                             $codigo_autenticacion = $this->generar_codigo_autenticacion();
                             redirect('Login/verifyView');
@@ -361,8 +372,6 @@ class Login extends CI_Controller
 
         $resultado = $this->usuario_model->actualizarVerificacion($data, $id);
 
-        
-
         $tipo_acceso = $this->session->userdata('tipo_acceso');
         //var_dump($tipo_acceso);
         // Verificar si el código ingresado coincide con el código de autenticación
@@ -450,7 +459,6 @@ class Login extends CI_Controller
 
                         $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
 
-
                         $this->session->set_userdata('notPago', $resultadoPago);
                         if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
 
@@ -499,7 +507,7 @@ class Login extends CI_Controller
                     $usuario = ['password' => $password, 'verificacion' => 1];
                     $this->usuario_model->forgotenPass($usuario, $id);
 
-                    if (!empty($correo)) {
+                    if (! empty($correo)) {
                         $this->load->library('phpmailer_lib');
                         $mail = $this->phpmailer_lib->load();
                         $mail->isSMTP();

@@ -44,4 +44,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /_documentosBolsa/*
 /_perfiEmpleado/*
 /_evaluacionesPortal/*
+/_recordatorios/*
+/_archivo_calendario/*
 /public/*
