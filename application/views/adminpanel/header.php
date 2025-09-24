@@ -220,6 +220,12 @@ echo $token  */?>
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
             <?php }?>
+                        <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+
+              <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
+              title="Proceso de reclutamiento"
+              href="<?php echo site_url('Reporte/reporte_exempleados_index') ?>">Exempleados.</a>
+            <?php }?>
           </div>
         </div>
       </li>

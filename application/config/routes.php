@@ -77,3 +77,10 @@ $route['permisos/guardar'] = 'permisos/guardar';
 
 $route['Archivo/ver_aspirante/(:num)']       = 'Archivo/ver_aspirante/$1';
 $route['Archivo/descargar_aspirante/(:num)'] = 'Archivo/descargar_aspirante/$1';
+
+//calendario
+$route['archivo/ver_calendario_id/(:num)']     = 'archivo/ver_calendario_id/$1';
+$route['archivo/descargar_calendario/(:num)']  = 'archivo/descargar_calendario/$1';
+
+// (Opcional, si también quieres por nombre de archivo)
+$route['archivo/ver_calendario/(:any)']        = 'archivo/ver_calendario/$1';

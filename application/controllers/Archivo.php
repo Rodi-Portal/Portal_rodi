@@ -252,6 +252,70 @@ class Archivo extends CI_Controller
         exit;
     }
 
+    public function ver_calendario_id($id)
+    {
+        $this->_serve_doc_calendario((int) $id, false); // inline (para ver)
+    }
+
+    public function descargar_calendario($id)
+    {
+        $this->_serve_doc_calendario((int) $id, true); // attachment (para descargar)
+    }
+
+    private function _serve_doc_calendario(int $id, bool $forceDownload)
+    {
+        if ($id <= 0) {show_404();}
+        if (! $this->session->userdata('id')) {show_404();}
+
+        $this->load->database();
+        // Solo pedimos la columna que SÍ existe
+        $doc = $this->db->select('archivo')
+            ->get_where('calendario_eventos', ['id' => $id, 'eliminado' => 0])
+            ->row();
+        if (! $doc) {show_404();}
+
+        $filename = basename((string) $doc->archivo);
+        $baseDir  = rtrim(FCPATH, '/\\') . '/_archivo_calendario/';
+        $fileAbs  = $baseDir . $filename;
+
+        clearstatcache(true, $fileAbs);
+        if (! is_file($fileAbs) || ! is_readable($fileAbs)) {show_404();}
+
+        $size = filesize($fileAbs);
+        if ($size === 0) {show_404();}
+
+        // Limpia cualquier salida previa para no corromper binarios
+        while (ob_get_level()) {@ob_end_clean();}
+        @ini_set('zlib.output_compression', 'Off');
+
+        $ext  = strtolower(pathinfo($fileAbs, PATHINFO_EXTENSION));
+        $mime = $this->_detect_mime($fileAbs, $ext) ?: 'application/octet-stream';
+
+        // (Opcional) en dev, si embebes en iframe desde Vite 5173:
+        // header_remove('X-Frame-Options');
+        // header("Content-Security-Policy: frame-ancestors 'self' http://localhost:5173 http://127.0.0.1:5173");
+
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // ✅ usa el mismo filename como nombre de descarga
+        $downloadName = $filename;
+        $ascii        = preg_replace('/[^A-Za-z0-9\._-]+/', '_', $downloadName);
+
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . $size);
+        $disp = $forceDownload ? 'attachment' : 'inline';
+        header("Content-Disposition: $disp; filename=\"{$ascii}\"; filename*=UTF-8''" . rawurlencode($downloadName));
+
+        $fp = fopen($fileAbs, 'rb');if (! $fp) {show_404();}
+        @set_time_limit(0);
+        fpassthru($fp);
+        fclose($fp);
+        exit;
+    }
+
     private function _nice_name(string $base, string $ext): string
     {
         $s = @iconv('UTF-8', 'ASCII//TRANSLIT', $base);
