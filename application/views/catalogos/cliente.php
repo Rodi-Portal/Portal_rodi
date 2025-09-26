@@ -343,6 +343,7 @@ $(document).ready(function() {
         $("#password").val(data.password_contacto).hide().prev("label").hide();
         $("#generarPass").hide();
         $("#passLabel").hide();
+        $("#togglePass").hide();
         // Ocultar elementos
 
 
