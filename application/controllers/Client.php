@@ -1467,7 +1467,6 @@ class Client extends Custom_Controller
                         'id_usuario'       => $id_usuario,
                         'nombre'           => $nombre,
                         'paterno'          => $paterno,
-                        'fecha_nacimiento' => $fechaNacimiento,
                         'materno'          => $materno,
                         'telefono'         => $cel,
                         'correo'           => $correo,
