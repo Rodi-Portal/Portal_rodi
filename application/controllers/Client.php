@@ -1386,77 +1386,116 @@ class Client extends Custom_Controller
                 }
 
             } else {
-                $id_bolsa = $this->input->post('id_bolsa_trabajo');
+                $id_bolsa       = $this->input->post('id_bolsa_trabajo');
+                $candidatoBolsa = $this->reclutamiento_model->getBolsaTrabajoById($id_bolsa);
 
-                $candidatoBolsa  = $this->reclutamiento_model->getBolsaTrabajoById($id_bolsa);
-                $fechaNacimiento = $candidatoBolsa->fecha_nacimiento;
+                if (! empty($candidatoBolsa)) {
+                    // Si SÍ existe el candidato en la bolsa
+                    $fechaNacimiento = $candidatoBolsa->fecha_nacimiento ?? null;
+                    $pais            = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
 
-                $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
-
-                $data = [
-                    // datos  para  tabla  candidato
-                    'creacion'         => $date,
-                    'edicion'          => $date,
-                    'id_portal'        => $id_portal,
-                    'id_cliente'       => $id_cliente,
-                    'id_usuario'       => $id_usuario,
-                    'nombre'           => $nombre,
-                    'paterno'          => $paterno,
-                    'fecha_nacimiento' => $fechaNacimiento,
-                    'materno'          => $materno,
-                    'telefono'         => $cel,
-                    'correo'           => $correo,
-                    'puesto'           => ! empty($puesto_otro) ? $puesto_otro : $puesto,
-                    'nss'              => $nss,
-                    'curp'             => $curp,
-                    'status'           => 3,
-                    'eliminado'        => 0,
-                ];
-
-                $resultado = $this->candidato_avance_model->registrarPreEmpleadoConDomicilio($data, $pais);
-                if ($resultado > 0) {
-                    $msj = [
-                        'codigo' => 1,
-                        'msg'    => "Success",
+                    $data = [
+                        'creacion'         => $date,
+                        'edicion'          => $date,
+                        'id_portal'        => $id_portal,
+                        'id_cliente'       => $id_cliente,
+                        'id_usuario'       => $id_usuario,
+                        'nombre'           => $nombre,
+                        'paterno'          => $paterno,
+                        'fecha_nacimiento' => $fechaNacimiento,
+                        'materno'          => $materno,
+                        'telefono'         => $cel,
+                        'correo'           => $correo,
+                        'puesto'           => ! empty($puesto_otro) ? $puesto_otro : $puesto,
+                        'nss'              => $nss,
+                        'curp'             => $curp,
+                        'status'           => 3,
+                        'eliminado'        => 0,
                     ];
-                    $extrasJson = $candidatoBolsa->extras; // el JSON que viene de la bolsa
-                    if ($resultado > 0 && $extrasJson != null) {
-                        $permitidos = [
-                            'ups', 'aviso', 'cedula', 'correo', 'estado', 'mini_ups', 'camara_pc', 'direccion',
-                            'tipo_fibra', 'fibra_optica', 'microfono_pc', 'lugar_alterno', 'plan_internet',
-                            'racionamiento', 'auriculares_pc', 'planta_electrica', 'recursos_propios',
-                            'fallas_electricas', 'proveedor_internet', 'detalle_racionamiento',
+
+                    $resultado = $this->candidato_avance_model->registrarPreEmpleadoConDomicilio($data, $pais);
+
+                    if ($resultado > 0) {
+                        $msj = [
+                            'codigo' => 1,
+                            'msg'    => "Success",
                         ];
 
-                        // Estrategia 1: reemplazar todo (borra e inserta)
-                        $this->reclutamiento_model->reemplazarExtrasDesdeJson($resultado, $extrasJson, $permitidos);
-                        $respLink = $this->_generarLinkEmpleado($resultado, (int) $id_portal);
+                        $extrasJson = $candidatoBolsa->extras ?? null; // el JSON que viene de la bolsa
+                        if (! empty($extrasJson)) {
+                            $permitidos = [
+                                'ups', 'aviso', 'cedula', 'correo', 'estado', 'mini_ups', 'camara_pc', 'direccion',
+                                'tipo_fibra', 'fibra_optica', 'microfono_pc', 'lugar_alterno', 'plan_internet',
+                                'racionamiento', 'auriculares_pc', 'planta_electrica', 'recursos_propios',
+                                'fallas_electricas', 'proveedor_internet', 'detalle_racionamiento',
+                            ];
 
-                        if (! empty($respLink['success'])) {
-                            // Opcional: agrega el link/qr a tu respuesta
-                            $msj = [
-                                'codigo' => 1,
-                                'msg'    => 'Success',
-                                'link'   => $respLink['link'] ?? null,
-                                'qr'     => $respLink['qr'] ?? null,
-                                'sha'    => $respLink['sha'] ?? null, // huella corta útil para debug
-                            ];
-                        } else {
-                            // Si falló la generación del link, no detiene el flujo del alta
-                            log_message('error', 'No se pudo generar link para empleado ' . $resultado . ': ' . ($respLink['error'] ?? ''));
-                            $msj = [
-                                'codigo' => 1,
-                                'msg'    => 'Empleado creado, pero falló la generación del link',
-                            ];
+                            $this->reclutamiento_model->reemplazarExtrasDesdeJson($resultado, $extrasJson, $permitidos);
+                            $respLink = $this->_generarLinkEmpleado($resultado, (int) $id_portal);
+
+                            if (! empty($respLink['success'])) {
+                                $msj = [
+                                    'codigo' => 1,
+                                    'msg'    => 'Success',
+                                    'link'   => $respLink['link'] ?? null,
+                                    'qr'     => $respLink['qr'] ?? null,
+                                    'sha'    => $respLink['sha'] ?? null,
+                                ];
+                            } else {
+                                log_message('error', 'No se pudo generar link para empleado ' . $resultado . ': ' . ($respLink['error'] ?? ''));
+                                $msj = [
+                                    'codigo' => 1,
+                                    'msg'    => 'Empleado creado, pero falló la generación del link',
+                                ];
+                            }
                         }
+                    } else {
+                        $msj = [
+                            'codigo' => 0,
+                            'msg'    => "Error al registrar candidato",
+                        ];
                     }
+
                 } else {
-                    $msj = [
+                    $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
+
+                    $data = [
+                        'creacion'         => $date,
+                        'edicion'          => $date,
+                        'id_portal'        => $id_portal,
+                        'id_cliente'       => $id_cliente,
+                        'id_usuario'       => $id_usuario,
+                        'nombre'           => $nombre,
+                        'paterno'          => $paterno,
+                        'fecha_nacimiento' => $fechaNacimiento,
+                        'materno'          => $materno,
+                        'telefono'         => $cel,
+                        'correo'           => $correo,
+                        'puesto'           => ! empty($puesto_otro) ? $puesto_otro : $puesto,
+                        'nss'              => $nss,
+                        'curp'             => $curp,
+                        'status'           => 3,
+                        'eliminado'        => 0,
+                    ];
+
+                    $resultado = $this->candidato_avance_model->registrarPreEmpleadoConDomicilio($data, $pais);
+
+                    if ($resultado > 0) {
+                        $msj = [
+                            'codigo' => 1,
+                            'msg'    => "Success",
+                        ];
+                        
+                    } else {
+                        $msj = [
+                            'codigo' => 0,
+                            'msg'    => "Error al registrar candidato",
+                        ];
+                    }$msj = [
                         'codigo' => 0,
-                        'msg'    => "Error",
+                        'msg'    => "No se encontró información en la bolsa de trabajo",
                     ];
                 }
-
             }
 
         }
