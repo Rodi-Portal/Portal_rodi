@@ -1388,6 +1388,9 @@ class Client extends Custom_Controller
             } else {
                 $id_bolsa       = $this->input->post('id_bolsa_trabajo');
                 $candidatoBolsa = $this->reclutamiento_model->getBolsaTrabajoById($id_bolsa);
+                if ($id_cliente === '0' || $id_cliente === 0) {
+                    $id_cliente = null;
+                }
 
                 if (! empty($candidatoBolsa)) {
                     // Si SÍ existe el candidato en la bolsa
@@ -1398,7 +1401,7 @@ class Client extends Custom_Controller
                         'creacion'         => $date,
                         'edicion'          => $date,
                         'id_portal'        => $id_portal,
-                        'id_cliente'       => $id_cliente,
+                        'id_cliente'       => $id_cliente ?? null,
                         'id_usuario'       => $id_usuario,
                         'nombre'           => $nombre,
                         'paterno'          => $paterno,
@@ -1457,24 +1460,25 @@ class Client extends Custom_Controller
                     }
 
                 } else {
+              
                     $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
 
                     $data = [
-                        'creacion'         => $date,
-                        'edicion'          => $date,
-                        'id_portal'        => $id_portal,
-                        'id_cliente'       => $id_cliente,
-                        'id_usuario'       => $id_usuario,
-                        'nombre'           => $nombre,
-                        'paterno'          => $paterno,
-                        'materno'          => $materno,
-                        'telefono'         => $cel,
-                        'correo'           => $correo,
-                        'puesto'           => ! empty($puesto_otro) ? $puesto_otro : $puesto,
-                        'nss'              => $nss,
-                        'curp'             => $curp,
-                        'status'           => 3,
-                        'eliminado'        => 0,
+                        'creacion'   => $date,
+                        'edicion'    => $date,
+                        'id_portal'  => $id_portal,
+                        'id_cliente' => $id_cliente,
+                        'id_usuario' => $id_usuario,
+                        'nombre'     => $nombre,
+                        'paterno'    => $paterno,
+                        'materno'    => $materno,
+                        'telefono'   => $cel,
+                        'correo'     => $correo,
+                        'puesto'     => ! empty($puesto_otro) ? $puesto_otro : $puesto,
+                        'nss'        => $nss,
+                        'curp'       => $curp,
+                        'status'     => 3,
+                        'eliminado'  => 0,
                     ];
 
                     $resultado = $this->candidato_avance_model->registrarPreEmpleadoConDomicilio($data, $pais);
@@ -1484,16 +1488,13 @@ class Client extends Custom_Controller
                             'codigo' => 1,
                             'msg'    => "Success",
                         ];
-                        
+
                     } else {
                         $msj = [
                             'codigo' => 0,
                             'msg'    => "Error al registrar candidato",
                         ];
-                    }$msj = [
-                        'codigo' => 0,
-                        'msg'    => "No se encontró información en la bolsa de trabajo",
-                    ];
+                    }
                 }
             }
 
