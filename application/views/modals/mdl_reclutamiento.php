@@ -403,7 +403,7 @@
 <div class="modal fade" id="modalStatus" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-md">
     <div class="modal-content shadow-lg">
-      
+
       <div class="modal-header bg-primary text-white py-2">
         <h5 class="modal-title mb-0">
           <i class="fas fa-user-tag me-2"></i> Cambiar estatus
@@ -528,7 +528,7 @@
                     if ($paises != null) {
                         foreach ($paises as $p) {
                         $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
-                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <option value="<?php echo $p->nombre; ?>"<?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
                     }
                     }
@@ -2079,7 +2079,7 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
       allowClear: true,
       dropdownParent: $modal, // muy importante en modales
       ajax: {
-        url: '<?php echo site_url('Area/select2');?>',
+        url: '<?php echo site_url('Area/select2'); ?>',
         dataType: 'json',
         delay: 250,
         data: p => ({
@@ -2097,7 +2097,7 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
     });
 
     if (preselectedId) {
-      $.getJSON('<?php echo site_url('Area/get/');?>' + preselectedId, function(item) {
+      $.getJSON('<?php echo site_url('Area/get/'); ?>' + preselectedId, function(item) {
         if (item && item.id) {
           const opt = new Option(item.text, item.id, true, true);
           $sel.append(opt).trigger('change');
@@ -2459,79 +2459,102 @@ document.getElementById('accion_aspirante').addEventListener('change', function(
 var pag = 1;
 
 // Oculta secciones al cargar el script
-$('.div_info_project, .div_info_projectt, .div_project, \
-   .div_info_previo, .div_previo, \
-   .div_info_check, .div_check, \
-   .div_info_test, .div_test, \
-   .div_info_extra, .div_extra, \
-   #detalles_previo').addClass('d-none');
+// --- Lista única de secciones dinámicas ---
+(function ($) {
+  // ---- Selectores de todos los bloques dinámicos ----
+  const BLOQUES = [
+    '.div_info_project', '.div_info_projectt', '.div_project',
+    '.div_info_previo', '.div_previo',
+    '.div_info_check', '.div_check',
+    '.div_info_test', '.div_test',
+    '.div_info_extra', '.div_extra',
+    '#detalles_previo'
+  ].join(', ');
 
-// Al cerrar el modal: SOLO resetea dinámicos, NO borres datos del aspirante ni #previos
-$('#registroCandidatoModal').off('hidden.bs.modal').on('hidden.bs.modal', function(e) {
-  // Oculta todo lo dinámico
-  $('.div_info_project, .div_info_projectt, .div_project, \
-     .div_info_previo, .div_previo, \
-     .div_info_check, .div_check, \
-     .div_info_test, .div_test, \
-     .div_info_extra, .div_extra, \
-     #detalles_previo').addClass('d-none');
+  // Limpia estilos inline de display (por si quedaron display:none)
+  $(BLOQUES).each(function () { this.style && (this.style.display = ''); });
 
-  // Mensajes
-  $("#registroCandidatoModal #msj_error").hide().empty();
+  // 1) Al mostrar el modal, dispara el change del combo para pintar el estado actual
+  $(document)
+    .off('shown.bs.modal.registro', '#registroCandidatoModal')
+    .on('shown.bs.modal.registro', '#registroCandidatoModal', function () {
+      const $sel = $('#opcion_registro');
+      if (!$sel.length) {
+        console.warn('[registro] No existe #opcion_registro');
+        return;
+      }
+      console.log('[registro] modal shown; valor actual:', $sel.val());
+      $sel.trigger('change');
+    });
 
-  // Limpia SOLO contenedores dinámicos (conserva lista #previos y datos del aspirante)
-  $('#detalles_previo, #div_docs_extras').empty();
+  // 2) Cambio de opción (delegado y namespaced)
+  $(document)
+    .off('change.registro', '#opcion_registro')
+    .on('change.registro', '#opcion_registro', function () {
+      const opcion = String(this.value);
+      console.log('[registro] change opcion_registro =', opcion);
 
-  // Deshabilita y limpia selects DINÁMICOS de "nuevo proyecto" (no usado)
-  $('select.valor_dinamico').prop('disabled', true).empty();
-  $('#pais_registro, #pais_previo').prop('disabled', true).val('');
-  $('#proyecto_registro').prop('disabled', true).val('');
+      // Oculta todo
+      $(BLOQUES).addClass('d-none');
 
-  // “Puesto: otro”
-  $('#puesto_otro').val('').hide();
+      // Nunca mostrar (siempre ocultos)
+      $('.div_info_project, .div_info_projectt, .div_project, .div_info_check, .div_check, .div_info_extra, .div_extra')
+        .addClass('d-none');
 
-  // Exámenes → a 0 (no vaciamos opciones)
-  $('#examen_registro').val('0');
-  $('#examen_medico').val('0');
-  $('#examen_psicometrico').val('0');
+      if (opcion === '0') {
+        // Proyecto anterior + Exámenes
+        $('.div_info_previo, .div_previo, .div_info_test, .div_test, #detalles_previo')
+          .removeClass('d-none')
+          .each(function () { this.style.display = ''; });
+        console.log('[registro] mostrando: previo + test');
+      } else if (opcion === '1') {
+        // Solo exámenes
+        $('.div_info_test, .div_test')
+          .removeClass('d-none')
+          .each(function () { this.style.display = ''; });
+        console.log('[registro] mostrando: solo test');
+      } else {
+        console.log('[registro] mostrando: nada extra');
+      }
+    });
 
-  // Sin selección por defecto; el usuario elige 0/1 cuando reabra
-  $('#opcion_registro').val('').trigger('change');
+  // 3) Al cerrar el modal: reset SOLO lo dinámico (no borra datos del aspirante)
+  $(document)
+    .off('hidden.bs.modal.registro', '#registroCandidatoModal')
+    .on('hidden.bs.modal.registro', '#registroCandidatoModal', function () {
+      $(BLOQUES).addClass('d-none');
+      $("#registroCandidatoModal #msj_error").hide().empty();
 
-  // IMPORTANTE: NO hacer
-  // $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
-  // para no perder datos del aspirante ni la lista de #previos
-});
+      $('#detalles_previo, #div_docs_extras').empty();
 
-// Handler de la opción: 0 (Previo+Exámenes), 1 (Exámenes), 2 (Nada)
-$('#opcion_registro').off('change').on('change', function() {
-  const opcion = $(this).val();
+      $('select.valor_dinamico').prop('disabled', true).empty();
+      $('#pais_registro, #pais_previo').prop('disabled', true).val('');
+      $('#proyecto_registro').prop('disabled', true).val('');
 
-  // Oculta absolutamente todo lo que es visible/ocultable
-  $('.div_info_project, .div_info_projectt, .div_project, \
-     .div_info_previo, .div_previo, \
-     .div_info_check, .div_check, \
-     .div_info_test, .div_test, \
-     .div_info_extra, .div_extra, \
-     #detalles_previo').addClass('d-none');
+      $('#puesto_otro').val('').hide();
 
-  // Nunca mostrar: nuevo proyecto / checks / extras
-  $('.div_info_project, .div_info_projectt, .div_project, .div_info_check, .div_check, .div_info_extra, .div_extra')
-    .addClass('d-none');
+      $('#examen_registro').val('0');
+      $('#examen_medico').val('0');
+      $('#examen_psicometrico').val('0');
 
-  if (opcion === '0') {
-    // Proyecto anterior + Exámenes
-    $('.div_info_previo, .div_previo').removeClass('d-none');
-    $('.div_info_test, .div_test').removeClass('d-none');
-    // Deja contenedor visible para que tu AJAX lo llene
-    $('#detalles_previo').removeClass('d-none');
+      // Sin selección por defecto; al reabrir, shown.bs.modal ejecuta el change
+      $('#opcion_registro').val('');
+      console.log('[registro] modal hidden; reseteado');
+    });
 
-  } else if (opcion === '1') {
-    // Solo exámenes
-    $('.div_info_test, .div_test').removeClass('d-none');
+  // (Opcional) Select2
+  if ($.fn.select2) {
+    $(document).on('hidden.bs.modal.registro', '#registroCandidatoModal', function () {
+      if ($('#puesto').hasClass('select2-hidden-accessible')) {
+        $('#puesto').select2('destroy');
+      }
+    });
   }
-  // '2' o '' => no mostrar nada extra
-});
+})(jQuery);
+
+
+
+
 
 // (Opcional) Si usas Select2 en #puesto, destrúyelo al cerrar
 if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
