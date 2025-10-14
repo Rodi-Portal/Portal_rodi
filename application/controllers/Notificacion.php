@@ -7,6 +7,9 @@ class Notificacion extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+
+     if ($this->input->is_cli_request()) return;
+
         if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
