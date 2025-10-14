@@ -7,7 +7,7 @@ class Notificacion extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('id')) {
+        if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
         $this->load->library('usuario_sesion');
@@ -16,6 +16,7 @@ class Notificacion extends CI_Controller
 /*Notificaciones    via  Whatsapp  o correo*/
     public function obtener_estado_empleado($id_portal, $id_cliente)
     {
+
         $api_url = API_URL;
         // URL del endpoint
         $url = $api_url . 'empleados/status?id_portal=' . $id_portal . '&id_cliente=' . $id_cliente;
@@ -39,7 +40,7 @@ class Notificacion extends CI_Controller
         // Cerrar la conexión cURL
         curl_close($ch);
 
-        // Decodificar la respuesta JSON
+                                             // Decodificar la respuesta JSON
         return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
     }
 
@@ -79,7 +80,7 @@ class Notificacion extends CI_Controller
                     $modulos[] = "<li>Expedienete</li>";
                 }
                 // Si hay módulos vencidos, enviar notificación por correo
-                if (!empty($modulos)) {
+                if (! empty($modulos)) {
 
                     // Enviar correos si la opción está activada
                     if ($registro->correo == 1) {
@@ -87,7 +88,7 @@ class Notificacion extends CI_Controller
                         $correos = array_unique(array_filter([$registro->correo1, $registro->correo2]));
 
                         // Llamada a la función para enviar los correos solo si el arreglo no está vacío
-                        if (!empty($correos)) {
+                        if (! empty($correos)) {
                             $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
                         }
                     }
@@ -95,8 +96,8 @@ class Notificacion extends CI_Controller
                     // Enviar WhatsApp si la opción está activada
                     if ($registro->whatsapp == 1) {
                         $telefonos = array_filter([
-                            !empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
-                            !empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
+                            ! empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
+                            ! empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
                         ]);
 
                         // Define los submódulos como texto para el mensaje
@@ -105,8 +106,8 @@ class Notificacion extends CI_Controller
                         }, $modulos));
 
                         // Enviar WhatsApp a los teléfonos válidos
-                        if (!empty($telefonos)) {
-                            $this->enviar_whatsapp($telefonos,$registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
+                        if (! empty($telefonos)) {
+                            $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
                         }
 
                         // Depuración en el navegador
@@ -122,17 +123,19 @@ class Notificacion extends CI_Controller
 
     public function enviar_notificaciones_cron_job()
     {
+        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+
         if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
             show_404(); // o mostrar acceso no autorizado
             return;
         }
-        
+
         // Horarios específicos para ejecución del cron job
         $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
-    
+
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones_por_horarios();
-    
+
         // Filtra los registros por los horarios predefinidos
         $registros_filtrados = [];
         foreach ($registros as $registro) {
@@ -141,65 +144,65 @@ class Notificacion extends CI_Controller
                 $registros_filtrados[] = $registro;
             }
         }
-    
+
         if (empty($registros_filtrados)) {
             echo "<script>console.log('No hay registros para procesar en este horario del cron job.');</script>";
             return;
         }
-    
+
         foreach ($registros_filtrados as $registro) {
             // Obtener estado del empleado desde la API
             $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente);
-    
+
             if ($estado && ($estado['statusDocuments'] === 'rojo' || $estado['statusCursos'] === 'rojo' || $estado['statusEvaluaciones'] === 'rojo')) {
-    
+
                 $modulos = [];
-    
+
                 if ($registro->cursos == 1 && $estado['statusCursos'] === 'rojo') {
                     $modulos[] = "<li>Cursos</li>";
                 }
-    
+
                 if ($registro->evaluaciones == 1 && $estado['statusEvaluaciones'] === 'rojo') {
                     $modulos[] = "<li>Evaluaciones</li>";
                 }
-    
+
                 if ($registro->expediente == 1 && $estado['statusDocuments'] === 'rojo') {
                     $modulos[] = "<li>Expediente</li>";
                 }
-    
-                if (!empty($modulos)) {
+
+                if (! empty($modulos)) {
                     // Enviar correos
                     if ($registro->correo == 1) {
                         $correos = array_unique(array_filter([$registro->correo1, $registro->correo2]));
-                        if (!empty($correos)) {
+                        if (! empty($correos)) {
                             $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
                         }
                     }
-    
+
                     // Enviar WhatsApp
                     if ($registro->whatsapp == 1) {
                         $telefonos = array_filter([
-                            !empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
-                            !empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
+                            ! empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
+                            ! empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
                         ]);
-    
+
                         $submodulos = implode(", ", array_map(function ($modulo) {
                             return strip_tags($modulo);
                         }, $modulos));
-    
-                        if (!empty($telefonos)) {
+
+                        if (! empty($telefonos)) {
                             $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
                         }
-    
+
                         echo "<script>console.log('Enviando WhatsApp para ID: {$registro->id}', " . json_encode($telefonos) . ");</script>";
                     }
                 }
-    
+
                 echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
             }
         }
     }
-    /*Envio de  notificaciones  whastapp */
+    /*Envio de  notificaciones  whastapp*/
     public function enviar_whatsapp($telefonos, $portal , $sucursal, $submodulos, $template)
     {
         $api_url = API_URL;
@@ -222,7 +225,7 @@ class Notificacion extends CI_Controller
         }
 
         foreach ($telefonos as $telefono) {
-           
+
             $payload = [
                 'phone' => $telefono,
                 'template' => $template,
@@ -267,6 +270,134 @@ class Notificacion extends CI_Controller
               }
         }
     }
+    
+    /*
+ public function enviar_whatsapp($telefonos, $portal , $sucursal, $submodulos, $template)
+{
+    // 1) Base del API (compat con tu constante)
+    $api_base = defined('API_URL') ? API_URL : null;
+    if (empty($api_base) || !is_string($api_base)) {
+        $msg = 'API_URL no está definida (o es vacía). Configúrala antes de usar WhatsApp.';
+        log_message('error', '[WA] ' . $msg);
+        if (!$this->input->is_cli_request()) {
+            echo "<script>console.error('{$msg}');</script>";
+        }
+        return false;
+    }
+    $api_base = rtrim($api_base, '/');
+    $url = $api_base . '/send-notification';
+
+    // 2) Asegurar que $telefonos sea arreglo y no vacío
+    if (!is_array($telefonos)) $telefonos = [$telefonos];
+    $telefonos = array_values(array_filter($telefonos, function ($t) {
+        return is_string($t) && trim($t) !== '';
+    }));
+    if (empty($telefonos)) {
+        $msg = 'No se proporcionaron números de teléfono válidos para enviar WhatsApp.';
+        log_message('error', '[WA] ' . $msg);
+        if (!$this->input->is_cli_request()) {
+            echo "<script>console.error('{$msg}');</script>";
+        }
+        return false;
+    }
+
+    // 3) Normaliza a E.164 básico (+52..., sin espacios/guiones)
+    $telefonos = array_map(function ($t) {
+        $t = preg_replace('/\s+|-/', '', $t);       // quita espacios y guiones
+        if (strpos($t, '+') !== 0) {                // si no empieza con +, deja solo dígitos
+            $t = preg_replace('/\D+/', '', $t);
+        }
+        return $t;
+    }, $telefonos);
+
+    // 4) Headers (si tu API requiere token, agrégalo aquí)
+    $headers = [
+        'Content-Type: application/json',
+        'Accept: application/json',
+        // 'Authorization: Bearer ' . config_item('whatsapp_api_key'), // <— si aplica
+    ];
+
+    $fallidos = [];
+    $enviados = [];
+
+    foreach ($telefonos as $telefono) {
+        $payload = [
+            'phone'           => $telefono,
+            'template'        => $template,
+            'nombre_cliente'  => $portal,
+            'submodulo'       => $submodulos,
+            'sucursales'      => $sucursal,
+        ];
+
+        // 5) cURL con timeouts y manejo de errores
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_POST           => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
+            CURLOPT_TIMEOUT        => 20,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            // SOLO para pruebas locales con SSL propio:
+            // CURLOPT_SSL_VERIFYPEER => false,
+            // CURLOPT_SSL_VERIFYHOST => 0,
+        ]);
+
+        $response = curl_exec($ch);
+        $errno    = curl_errno($ch);
+        $errstr   = curl_error($ch);
+        $http     = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($errno) {
+            $motivo = "cURL({$errno}): {$errstr}";
+            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo];
+            log_message('error', "[WA] {$telefono} {$motivo}");
+            continue;
+        }
+
+        if ($response === false || $response === '') {
+            $motivo = "Respuesta vacía (HTTP {$http})";
+            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo];
+            log_message('error', "[WA] {$telefono} {$motivo}");
+            continue;
+        }
+
+        $json = json_decode($response, true);
+        if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
+            $motivo = "Respuesta no JSON (HTTP {$http})";
+            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo, 'resp' => $response];
+            log_message('error', "[WA] {$telefono} {$motivo} -> {$response}");
+            continue;
+        }
+
+        if (isset($json['status']) && $json['status'] === 'success') {
+            $enviados[] = $telefono;
+            log_message('info', "[WA] OK {$telefono} (HTTP {$http})");
+        } else {
+            $msg = $json['message'] ?? 'Error desconocido';
+            $motivo = "{$msg} (HTTP {$http})";
+            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo, 'resp' => $json];
+            log_message('error', "[WA] FALLÓ {$telefono} {$motivo} / Resp: " . json_encode($json));
+        }
+    }
+
+    // 6) SOLO imprimir en consola los que NO funcionaron (si no es CLI)
+    if (!$this->input->is_cli_request()) {
+        if (!empty($fallidos)) {
+            $js = json_encode($fallidos, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            echo "<script>console.error('WhatsApp fallidos:', {$js});</script>";
+        } else {
+            // Si prefieres NO imprimir nada cuando todo va bien, comenta esta línea:
+            $js = json_encode($enviados, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            echo "<script>console.log('WhatsApp enviados:', {$js});</script>";
+        }
+    }
+
+    return empty($fallidos);
+}*/
+
 
 /*correos  para  notificaciones */
     public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
@@ -275,14 +406,14 @@ class Notificacion extends CI_Controller
         $mail = $this->phpmailer_lib->load();
 
         try {
-            // Configuración del servidor SMTP
-            $mail->isSMTP(); // Establecer el envío usando SMTP
-            $mail->Host = 'mail.talentsafecontrol.com'; // Servidor SMTP
-            $mail->SMTPAuth = true;
-            $mail->Username = 'soporte@talentsafecontrol.com';
-            $mail->Password = 'FQ{[db{}%ja-';
+                                                              // Configuración del servidor SMTP
+            $mail->isSMTP();                                  // Establecer el envío usando SMTP
+            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'soporte@talentsafecontrol.com';
+            $mail->Password   = 'FQ{[db{}%ja-';
             $mail->SMTPSecure = 'ssl';
-            $mail->Port = 465; // Puerto SMTP
+            $mail->Port       = 465; // Puerto SMTP
 
             // Remitente
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
@@ -306,7 +437,7 @@ class Notificacion extends CI_Controller
             // Agregar los módulos seleccionados al mensaje
 
             // Agregar los módulos seleccionados al mensaje
-            if (!empty($modulos)) {
+            if (! empty($modulos)) {
                 $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
             }
 
@@ -327,7 +458,7 @@ class Notificacion extends CI_Controller
 // aqui termina   la funcion notificaciones  via  whatsapp   y correos
     public function alertaNuevoCandidato()
     {
-        $Pusher_Opciones = array(
+        $Pusher_Opciones = [
             //"scheme" => "http",
             //"host" => "tudominio.com", //"The HOST option overrides the CLUSTER option!"
             //"port" => 80,
@@ -338,13 +469,13 @@ class Notificacion extends CI_Controller
             //"curl_options" => array(
             //CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
             //)
-        );
+        ];
 
-        $options = array(
-            'cluster' => 'mt1',
-            'useTLS' => true,
+        $options = [
+            'cluster'   => 'mt1',
+            'useTLS'    => true,
             "encrypted" => false,
-        );
+        ];
         $pusher = new Pusher\Pusher(
             '1c1dc3822919195c87be',
             'aebe2c78bb647fffeb02',
@@ -352,10 +483,10 @@ class Notificacion extends CI_Controller
             $options
         );
 
-        $Mi_Info = array(
+        $Mi_Info = [
             "notificacion" => $this->input->post('mensaje'),
-            "timestamp" => time(),
-        );
+            "timestamp"    => time(),
+        ];
 
         //$data['message'] = 'hello world';
         $pusher->trigger('rodicontrol-channel', 'my-event', $Mi_Info);
@@ -363,16 +494,16 @@ class Notificacion extends CI_Controller
 
     public function marcar_visto()
     {
-        $id = $this->input->post('id');
-        $date = date('Y-m-d H:i:s');
+        $id         = $this->input->post('id');
+        $date       = date('Y-m-d H:i:s');
         $id_usuario = $this->session->userdata('id');
-        $data = array(
-            'visto' => 1,
+        $data       = [
+            'visto'   => 1,
             'edicion' => date('Y-m-d H:i:s'),
-        );
+        ];
         $this->notificacion_model->update($data, $id);
         $contador = $this->notificacion_model->get_by_usuario($id_usuario, [0]);
-        if (!empty($contador)) {
+        if (! empty($contador)) {
             echo count($contador);
         } else {
             echo $contador = 0;
@@ -408,18 +539,18 @@ class Notificacion extends CI_Controller
 
     public function get_by_usuario()
     {
-        $id_usuario = $this->session->userdata('id');
+        $id_usuario     = $this->session->userdata('id');
         $notificaciones = '';
         if ($this->session->userdata('tipo') == 1) {
             $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
         }
-        if (!empty($notificaciones)) {
+        if (! empty($notificaciones)) {
             $contador = 0;
-            $html = '';
+            $html     = '';
             foreach ($notificaciones as $row) {
-                $fechaCreacion = fechaTexto($row->creacion, 'espanol');
-                $colorNotificacion = ($row->visto == 0) ? '#c7eafc' : 'transparent';
-                $iconoNotificacion = ($row->visto == 0) ? '<i class="fas fa-exclamation text-white"></i>' : '<i class="fas fa-check text-white"></i>';
+                $fechaCreacion          = fechaTexto($row->creacion, 'espanol');
+                $colorNotificacion      = ($row->visto == 0) ? '#c7eafc' : 'transparent';
+                $iconoNotificacion      = ($row->visto == 0) ? '<i class="fas fa-exclamation text-white"></i>' : '<i class="fas fa-check text-white"></i>';
                 $fondoIconoNotificacion = ($row->visto == 0) ? 'bg-warning' : 'bg-primary';
                 if ($row->visto == 0) {
                     $contador++;
@@ -434,7 +565,7 @@ class Notificacion extends CI_Controller
                 $html .= '<a class="dropdown-item d-flex align-items-center notificacion" data-id="' . $row->id . '" data-visto="' . $row->visto . '" id="mensaje' . $row->id . '" style="background-color:' . $colorNotificacion . '" href="#"><div class="mr-3"><div class="icon-circle ' . $fondoIconoNotificacion . '" id="icono' . $row->id . '">' . $iconoNotificacion . '</div></div><div><div class="small text-gray-800">' . $fechaCreacion . '</div><span class="font-weight-bold"> ' . $row->mensaje . ' </span></div></a>';
             }
 
-            $data['notificaciones'] = $html;
+            $data['notificaciones']         = $html;
             $data['contadorNotificaciones'] = $contador;
             echo json_encode($data);
         } else {
