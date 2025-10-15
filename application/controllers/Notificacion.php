@@ -137,7 +137,7 @@ class Notificacion extends CI_Controller
         $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
 
         $this->load->model('Notificacion_model');
-        $registros = $this->Notificacion_model->get_notificaciones_por_horarios();
+        $registros = $this->Notificacion_model->get_notificaciones();
 
         // Filtra los registros por los horarios predefinidos
         $registros_filtrados = [];
@@ -273,7 +273,60 @@ class Notificacion extends CI_Controller
               }
         }
     }
-    
+    public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
+    {
+        $this->load->library('phpmailer_lib');
+        $mail = $this->phpmailer_lib->load();
+
+        try {
+                                                              // Configuración del servidor SMTP
+            $mail->isSMTP();                                  // Establecer el envío usando SMTP
+            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'soporte@talentsafecontrol.com';
+            $mail->Password   = 'FQ{[db{}%ja-';
+            $mail->SMTPSecure = 'ssl';
+            $mail->Port       = 465; // Puerto SMTP
+
+            // Remitente
+            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
+
+            // Destinatarios
+            foreach ($destinatarios as $correo) {
+                $mail->addAddress($correo); // Agrega el destinatario
+            }
+
+            // Asunto
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Notificación TalentSafe Control';
+
+            // Cuerpo del mensaje con los módulos
+            $mensaje = "
+          <h3>Excelente día,</h3>
+          <p>Te recordamos que tienes algunos  archivos por  vencer en tu sucursal: " . $nombrecliente . " en los siguientes módulos:</p>
+          <ul>";
+
+            // Agregar los módulos seleccionados al mensaje
+
+            // Agregar los módulos seleccionados al mensaje
+            if (! empty($modulos)) {
+                $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
+            }
+
+            $mensaje .= "</ul>
+          <p>Por favor ingresa a <a href='https://portal.talentsafecontrol.com' target='_blank'>TalentSafeControl</a> y realiza las actualizaciones pertinentes.</p>
+          <p>Saludos cordiales,<br>El equipo de TalentSafeControl</p>";
+
+            $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
+
+            // Enviar el correo
+            $mail->send();
+            echo "<script>console.log('Correo enviado a: {$correo}');</script>";
+        } catch (Exception $e) {
+            echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
+        }
+    }
     /*
  public function enviar_whatsapp($telefonos, $portal , $sucursal, $submodulos, $template)
 {
@@ -403,60 +456,7 @@ class Notificacion extends CI_Controller
 
 
 /*correos  para  notificaciones */
-    public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
-    {
-        $this->load->library('phpmailer_lib');
-        $mail = $this->phpmailer_lib->load();
-
-        try {
-                                                              // Configuración del servidor SMTP
-            $mail->isSMTP();                                  // Establecer el envío usando SMTP
-            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'soporte@talentsafecontrol.com';
-            $mail->Password   = 'FQ{[db{}%ja-';
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port       = 465; // Puerto SMTP
-
-            // Remitente
-            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
-
-            // Destinatarios
-            foreach ($destinatarios as $correo) {
-                $mail->addAddress($correo); // Agrega el destinatario
-            }
-
-            // Asunto
-            $mail->isHTML(true);
-            $mail->CharSet = 'UTF-8';
-            $mail->Subject = 'Notificación TalentSafe Control';
-
-            // Cuerpo del mensaje con los módulos
-            $mensaje = "
-          <h3>Excelente día,</h3>
-          <p>Te recordamos que tienes algunos  archivos por  vencer en tu sucursal: " . $nombrecliente . " en los siguientes módulos:</p>
-          <ul>";
-
-            // Agregar los módulos seleccionados al mensaje
-
-            // Agregar los módulos seleccionados al mensaje
-            if (! empty($modulos)) {
-                $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
-            }
-
-            $mensaje .= "</ul>
-          <p>Por favor ingresa a <a href='https://portal.talentsafecontrol.com' target='_blank'>TalentSafeControl</a> y realiza las actualizaciones pertinentes.</p>
-          <p>Saludos cordiales,<br>El equipo de TalentSafeControl</p>";
-
-            $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
-
-            // Enviar el correo
-            $mail->send();
-            echo "<script>console.log('Correo enviado a: {$correo}');</script>";
-        } catch (Exception $e) {
-            echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
-        }
-    }
+    
 
 // aqui termina   la funcion notificaciones  via  whatsapp   y correos
     public function alertaNuevoCandidato()
