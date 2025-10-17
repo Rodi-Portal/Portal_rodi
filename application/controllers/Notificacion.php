@@ -8,7 +8,9 @@ class Notificacion extends CI_Controller
     {
         parent::__construct();
 
-     if ($this->input->is_cli_request()) return;
+        if ($this->input->is_cli_request()) {
+            return;
+        }
 
         if (! $this->session->userdata('id')) {
             redirect('Login/index');
@@ -123,7 +125,7 @@ class Notificacion extends CI_Controller
             echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
         }
     }
-
+    /*
     public function enviar_notificaciones_cron_job()
     {
         $token = $this->uri->segment(3) ?: $this->input->get('token', true);
@@ -134,10 +136,15 @@ class Notificacion extends CI_Controller
         }
 
         // Horarios específicos para ejecución del cron job
-        $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
+        /* $horarios_cron = ['09:00 AM', '03:00 PM', '07:00 PM'];
 
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones();
+        
+        $tz         = new DateTimeZone('America/Mexico_City');
+        $slotActual = (new DateTime('now', $tz))->format('h:i A'); // "09:00 AM" o "03:00 PM" o "07:00 PM"
+
+        $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual);
 
         // Filtra los registros por los horarios predefinidos
         $registros_filtrados = [];
@@ -185,8 +192,8 @@ class Notificacion extends CI_Controller
                     // Enviar WhatsApp
                     if ($registro->whatsapp == 1) {
                         $telefonos = array_filter([
-                            ! empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
-                            ! empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
+                            !empty($registro->telefono1) ? $registro->ladaSeleccionada . $registro->telefono1 : null,
+                            !empty($registro->telefono2) ? $registro->ladaSeleccionada2 . $registro->telefono2 : null,
                         ]);
 
                         $submodulos = implode(", ", array_map(function ($modulo) {
@@ -204,21 +211,102 @@ class Notificacion extends CI_Controller
                 echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
             }
         }
+    }  
+    */
+
+    public function enviar_notificaciones_cron_job()
+    {
+        // --- Validación del token ---
+        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+            show_404();
+            return;
+        }
+
+        // --- Determinar el horario actual ---
+        $tz              = new DateTimeZone('America/Mexico_City');
+        $slotActual      = (new DateTime('now', $tz))->format('h:i A'); // Ej: "09:00 AM"
+        $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
+
+        if (! in_array($slotActual, $horariosValidos, true)) {
+            log_message('info', "[CRON] Llamado fuera de horario válido: {$slotActual}");
+            return;
+        }
+
+        // --- Cargar modelo y obtener notificaciones ---
+        $this->load->model('Notificacion_model');
+        $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual);
+
+        if (empty($registros)) {
+            log_message('info', "[CRON] No hay registros para procesar en {$slotActual}");
+            return;
+        }
+
+        // --- Procesar registros ---
+        foreach ($registros as $registro) {
+            $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente);
+            if (! $estado) {
+                log_message('error', "[CRON] No se pudo obtener estado para ID: {$registro->id}");
+                continue;
+            }
+
+            // Verificar módulos en rojo
+            $modulos = [];
+            if ((int) $registro->cursos === 1 && ($estado['statusCursos'] ?? '') === 'rojo') {
+                $modulos[] = "<li>Cursos</li>";
+            }
+            if ((int) $registro->evaluaciones === 1 && ($estado['statusEvaluaciones'] ?? '') === 'rojo') {
+                $modulos[] = "<li>Evaluaciones</li>";
+            }
+            if ((int) $registro->expediente === 1 && ($estado['statusDocuments'] ?? '') === 'rojo') {
+                $modulos[] = "<li>Expediente</li>";
+            }
+
+            if (empty($modulos)) {
+                continue; // nada que notificar
+            }
+
+            // --- Enviar correo ---
+            if ((int) $registro->correo === 1) {
+                $correos = array_values(array_unique(array_filter([$registro->correo1 ?? null, $registro->correo2 ?? null])));
+                if (! empty($correos)) {
+                    $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
+                    log_message('info', "[CRON] Correo enviado a ID {$registro->id}: " . implode(', ', $correos));
+                }
+            }
+
+            // --- Enviar WhatsApp ---
+            if ((int) $registro->whatsapp === 1) {
+                $telefonos = array_filter([
+                    ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
+                    ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
+                ]);
+
+                if (! empty($telefonos)) {
+                    $submodulos = implode(", ", array_map(static fn($li) => strip_tags($li), $modulos));
+                    $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
+                    log_message('info', "[CRON] WhatsApp enviado a ID {$registro->id}: " . implode(', ', $telefonos));
+                }
+            }
+        }
+
+        log_message('info', "[CRON] Finalizado envío de notificaciones para slot {$slotActual}");
     }
+
     /*Envio de  notificaciones  whastapp*/
-    public function enviar_whatsapp($telefonos, $portal , $sucursal, $submodulos, $template)
+    public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
     {
         $api_url = API_URL;
-        $url = $api_url . 'send-notification';
+        $url     = $api_url . 'send-notification';
 
         // Asegurarse de que $telefonos sea un array
-        if (!is_array($telefonos)) {
+        if (! is_array($telefonos)) {
             $telefonos = [$telefonos]; // Convierte a array si no lo es
         }
 
         // Filtra valores vacíos o no válidos
         $telefonos = array_filter($telefonos, function ($telefono) {
-            return !empty($telefono) && is_string($telefono); // Acepta solo cadenas no vacías
+            return ! empty($telefono) && is_string($telefono); // Acepta solo cadenas no vacías
         });
 
         // Verifica si hay teléfonos válidos
@@ -230,11 +318,11 @@ class Notificacion extends CI_Controller
         foreach ($telefonos as $telefono) {
 
             $payload = [
-                'phone' => $telefono,
-                'template' => $template,
+                'phone'          => $telefono,
+                'template'       => $template,
                 'nombre_cliente' => $portal,
-                'submodulo' => $submodulos,
-                'sucursales' => $sucursal, // Cambiar si tienes el dato de sucursales
+                'submodulo'      => $submodulos,
+                'sucursales'     => $sucursal, // Cambiar si tienes el dato de sucursales
             ];
 
             // Inicializa cURL
@@ -270,7 +358,7 @@ class Notificacion extends CI_Controller
             } else {
                 $error_message = $result['message'] ?? 'Error desconocido';
                 log_message('info', 'Enviando WhatsApp a: ' . implode(', ', $telefonos));
-              }
+            }
         }
     }
     public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
@@ -454,9 +542,7 @@ class Notificacion extends CI_Controller
     return empty($fallidos);
 }*/
 
-
 /*correos  para  notificaciones */
-    
 
 // aqui termina   la funcion notificaciones  via  whatsapp   y correos
     public function alertaNuevoCandidato()
