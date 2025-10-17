@@ -8,11 +8,10 @@ class Notificacion extends CI_Controller
     {
         parent::__construct();
 
-        if (is_cli()) {
-        // Evita cargar librerías innecesarias o redirecciones
-        return;
-    }
-
+        if (php_sapi_name() === 'cli' || defined('STDIN')) {
+            // Evita cargar sesión ni validar usuario
+            return;
+        }
         if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
@@ -93,7 +92,7 @@ class Notificacion extends CI_Controller
 
         return $data; // ['statusDocuments'=>..., 'statusCursos'=>..., 'statusEvaluaciones'=>...]
     }
- public function enviar_notificaciones_cron_job()
+    public function enviar_notificaciones_cron_job()
     {
         // --- Validación del token ---
         $token = $this->uri->segment(3) ?: $this->input->get('token', true);
@@ -416,8 +415,6 @@ class Notificacion extends CI_Controller
         }
     }
     */
-
-   
 
     /*Envio de  notificaciones  whastapp*/
     public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
@@ -789,10 +786,4 @@ class Notificacion extends CI_Controller
         }
     }
 
-}
-if (!function_exists('is_cli')) {
-    function is_cli()
-    {
-        return (php_sapi_name() === 'cli' || defined('STDIN'));
-    }
 }
