@@ -6,6 +6,12 @@ class Notificacion extends CI_Controller
 
     public function __construct()
     {
+        // --- Silenciar advertencias solo si se ejecuta desde CLI (cron) ---
+        if (php_sapi_name() === 'cli' || defined('STDIN')) {
+            error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
+            ini_set('display_errors', 0);
+        }
+
         parent::__construct();
 
         if (php_sapi_name() === 'cli' || defined('STDIN')) {
