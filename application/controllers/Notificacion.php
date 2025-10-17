@@ -7,9 +7,15 @@ class Notificacion extends CI_Controller
     public function __construct()
     {
         // --- Silenciar advertencias solo si se ejecuta desde CLI (cron) ---
+        // --- Si se ejecuta desde CLI (cron) ---
         if (php_sapi_name() === 'cli' || defined('STDIN')) {
+            // Desactivar sesiones y salida de errores visibles
             error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
             ini_set('display_errors', 0);
+            ini_set('session.use_cookies', 0);
+            ini_set('session.use_only_cookies', 0);
+            ini_set('session.cache_limiter', '');
+            return; // Salimos antes de cargar parent::__construct()
         }
 
         parent::__construct();
