@@ -58,8 +58,14 @@ $autoload['packages'] = array();
 |
 |    $autoload['libraries'] = array('user_agent' => 'ua');
  */
-$autoload['libraries'] = array('session', 'database', 'form_validation', 'email');
-
+//$autoload['libraries'] = array('session', 'database', 'form_validation', 'email');
+if (function_exists('is_cli') && is_cli()) {
+    // CLI: no cargamos 'session' ni 'form_validation'
+    $autoload['libraries'] = array('database', 'email');
+} else {
+    // WEB normal
+    $autoload['libraries'] = array('session', 'database', 'form_validation', 'email');
+}
 /*
 | -------------------------------------------------------------------
 |  Auto-load Drivers
