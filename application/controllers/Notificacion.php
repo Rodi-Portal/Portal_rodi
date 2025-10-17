@@ -19,6 +19,7 @@ class Notificacion extends CI_Controller
         $this->usuario_sesion->checkStatusBD();
     }
 /*Notificaciones    via  Whatsapp  o correo*/
+/*
     public function obtener_estado_empleado($id_portal, $id_cliente)
     {
 
@@ -47,6 +48,49 @@ class Notificacion extends CI_Controller
 
                                              // Decodificar la respuesta JSON
         return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
+    }*/
+    public function obtener_estado_empleado($id_portal, $id_cliente, $status = null)
+    {
+        $api_url = rtrim(API_URL, '/'); // por si trae '/'
+        $params  = array_filter([
+            'id_portal'  => $id_portal,
+            'id_cliente' => $id_cliente,
+            'status'     => $status, // null => no se incluye
+        ], static function ($v) {return $v !== null && $v !== '';});
+
+        $url = $api_url . '/empleados/status?' . http_build_query($params);
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 20,
+        ]);
+
+        $response = curl_exec($ch);
+
+        if ($response === false) {
+            // Mejor log que echo en cron
+            log_message('error', 'Error cURL obtener_estado_empleado: ' . curl_error($ch));
+            curl_close($ch);
+            return null;
+        }
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode < 200 || $httpCode >= 300) {
+            log_message('error', "HTTP {$httpCode} en obtener_estado_empleado: {$url}");
+            return null;
+        }
+
+        $data = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            log_message('error', 'JSON inválido en obtener_estado_empleado: ' . json_last_error_msg());
+            return null;
+        }
+
+        return $data; // ['statusDocuments'=>..., 'statusCursos'=>..., 'statusEvaluaciones'=>...]
     }
 
     public function enviar_notificaciones_inmediatamente()
@@ -140,7 +184,7 @@ class Notificacion extends CI_Controller
 
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones();
-        
+
         $tz         = new DateTimeZone('America/Mexico_City');
         $slotActual = (new DateTime('now', $tz))->format('h:i A'); // "09:00 AM" o "03:00 PM" o "07:00 PM"
 
@@ -211,7 +255,7 @@ class Notificacion extends CI_Controller
                 echo "<script>console.log('Módulos seleccionados para ID: {$registro->id}', " . json_encode($modulos) . ");</script>";
             }
         }
-    }  
+    }
     */
 
     public function enviar_notificaciones_cron_job()
@@ -291,6 +335,87 @@ class Notificacion extends CI_Controller
         }
 
         log_message('info', "[CRON] Finalizado envío de notificaciones para slot {$slotActual}");
+    }
+    public function enviar_notificaciones_exempleados_cron_job()
+    {
+        // --- Token de seguridad ---
+        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+            show_404();
+            return;
+        }
+
+        // --- Determinar el horario actual (cron corre 09:00 / 15:00 / 19:00) ---
+        $tz              = new DateTimeZone('America/Mexico_City');
+        $slotActual      = (new DateTime('now', $tz))->format('h:i A'); // "09:00 AM", "03:00 PM" o "07:00 PM"
+        $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
+        if (! in_array($slotActual, $horariosValidos, true)) {
+            log_message('info', "[CRON EX] Llamado fuera de horario válido: {$slotActual}");
+            return;
+        }
+
+        // --- Cargar modelo y obtener notificaciones de EX (status=2) para el slot ---
+        $this->load->model('Notificacion_model');
+        $registros = $this->Notificacion_model->get_notificaciones_exempleados_por_slot($slotActual);
+
+        if (empty($registros)) {
+            log_message('info', "[CRON EX] No hay registros para procesar en {$slotActual}");
+            return;
+        }
+
+        // --- Procesar registros ---
+        foreach ($registros as $registro) {
+            // 1) Obtener estado SOLO para ex (status=2): nos interesa statusDocuments
+            $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente, 2);
+            if (! $estado) {
+                log_message('error', "[CRON EX] No se pudo obtener estado para ID={$registro->id} (portal={$registro->id_portal}, cliente={$registro->id_cliente})");
+                continue;
+            }
+
+            // 2) Enviar SOLO si documentos están en rojo
+            if (strcasecmp($estado['statusDocuments'] ?? '', 'rojo') !== 0) {
+                log_message('info', "[CRON EX] Sin documentos en rojo para ID={$registro->id}");
+                continue;
+            }
+
+            // 3) Único módulo relevante para ex: Documentos
+            $modulos = ["<li>Documentos</li>"];
+
+            // 4) Enviar correo (si está habilitado y hay destinatarios)
+            if ((int) $registro->correo === 1) {
+                $correos = array_values(array_unique(array_filter([$registro->correo1 ?? null, $registro->correo2 ?? null])));
+                if (! empty($correos)) {
+                    $this->enviar_correo(
+                        $correos,
+                        'Notificación TalentSafe Control - Ex Empleados',
+                        $modulos,
+                        $registro->nombre ?? "Ex Empleado"
+                    );
+                    log_message('info', "[CRON EX] Correo enviado a ID={$registro->id}: " . implode(', ', $correos));
+                }
+            }
+
+            // 5) Enviar WhatsApp (si está habilitado y hay teléfonos)
+            if ((int) $registro->whatsapp === 1) {
+                $telefonos = array_filter([
+                    ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
+                    ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
+                ]);
+
+                if (! empty($telefonos)) {
+                    $this->enviar_whatsapp(
+                        $telefonos,
+                        $registro->nombrePortal ?? 'Portal',
+                        $registro->nombre ?? 'Ex Empleado',
+                        'Documentos',
+                        'notificacion_exempleados'
+                    );
+                    log_message('info', "[CRON EX] WhatsApp enviado a ID={$registro->id}: " . implode(', ', $telefonos));
+                }
+            }
+        }
+
+        log_message('info', "[CRON EX] Finalizado envío de notificaciones de ex-empleados para {$slotActual}");
     }
 
     /*Envio de  notificaciones  whastapp*/
