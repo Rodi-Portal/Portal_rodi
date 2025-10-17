@@ -172,6 +172,8 @@ class Notificacion extends CI_Controller
     }
     public function enviar_notificaciones_exempleados_cron_job()
     {
+        log_message('error', '[CRON EX] Iniciando notificaciones de exempleados...');
+
         // --- Token de seguridad ---
         $token = $this->uri->segment(3) ?: $this->input->get('token', true);
         if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
@@ -247,6 +249,8 @@ class Notificacion extends CI_Controller
                     log_message('info', "[CRON EX] WhatsApp enviado a ID={$registro->id}: " . implode(', ', $telefonos));
                 }
             }
+            log_message('error', '[CRON EX] Finalizado envío de notificaciones.');
+
         }
 
         log_message('info', "[CRON EX] Finalizado envío de notificaciones de ex-empleados para {$slotActual}");
