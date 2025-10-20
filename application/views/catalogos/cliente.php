@@ -70,8 +70,7 @@
           <div class="col-md-9">
             <label>Generar Contraseña*</label>
             <div class="input-group">
-              <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="8"
-                readonly>
+              <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="20">
               <div class="input-group-append">
                 <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
               </div>
@@ -323,65 +322,68 @@ $(document).ready(function() {
       });
     },
     rowCallback: function(row, data) {
-    // antes: $("a#editar", row).bind('click', () => { ... });
-    $("a.act-editar", row).off('click').on('click', () => {
-      resetModal(); // asumes que ya existe
+      // antes: $("a#editar", row).bind('click', () => { ... });
+      $("a.act-editar", row).off('click').on('click', () => {
+        resetModal(); // asumes que ya existe
 
-      $("#idCliente").val(data.idCliente);
-      $("#idFacturacion").val(data.dFac);
-      $("#idDomicilios").val(data.dDom);
-      $("#idGenerales").val(data.dGen);
+        $("#idCliente").val(data.idCliente);
+        $("#idFacturacion").val(data.dFac);
+        $("#idDomicilios").val(data.dDom);
+        $("#idGenerales").val(data.dGen);
 
-      $("#titulo_nuevo_modal").text("Editar cliente");
+        $("#titulo_nuevo_modal").text("Editar cliente");
 
-      // Generales
-      $("#nombre").val(data.nombre);
-      $("#clave").val(data.clave);
-      $("#empleados").val(data.max_colaboradores);
+        // Generales
+        $("#nombre").val(data.nombre);
+        $("#clave").val(data.clave);
+        $("#empleados").val(data.max_colaboradores);
 
-      // Domicilio
-      $("#item-details-countryValue").val(data.pais);
-      $("#item-details-stateValue").val(data.estado);
-      $("#item-details-cityValue").val(data.ciudad);
-      $("#numero_exterior").val(data.exterior);
-      $("#numero_interior").val(data.interior);
-      $("#calle").val(data.calle);
-      $("#cp").val(data.cp);
-      $("#colonia").val(data.colonia);
+        // Domicilio
+        $("#item-details-countryValue").val(data.pais);
+        $("#item-details-stateValue").val(data.estado);
+        $("#item-details-cityValue").val(data.ciudad);
+        $("#numero_exterior").val(data.exterior);
+        $("#numero_interior").val(data.interior);
+        $("#calle").val(data.calle);
+        $("#cp").val(data.cp);
+        $("#colonia").val(data.colonia);
 
-      // Facturación
-      $("#razon_social").val(data.razon_social);
-      $("#telefono").val(data.telefono_contacto);
-      $("#correo").val(data.correo_contacto);
-      $("#nombre_contacto").val(data.nombre_contacto);
-      $("#apellido_contacto").val(data.apellido_contacto);
-      $("#rfc").val(data.rfc);
-      $("#regimen").val(data.regimen);
-      $("#forma_pago").val(data.forma_pago).change();
-      $("#metodo_pago").val(data.metodo_pago).change();
-      $("#uso_cfdi").val(data.uso_cfdi);
+        // Facturación
+        $("#razon_social").val(data.razon_social);
+        $("#telefono").val(data.telefono_contacto);
+        $("#correo").val(data.correo_contacto);
+        $("#nombre_contacto").val(data.nombre_contacto);
+        $("#apellido_contacto").val(data.apellido_contacto);
+        $("#rfc").val(data.rfc);
+        $("#regimen").val(data.regimen);
+        $("#forma_pago").val(data.forma_pago).change();
+        $("#metodo_pago").val(data.metodo_pago).change();
+        $("#uso_cfdi").val(data.uso_cfdi);
 
-      // Password/contacto (ocultos en edición)
-      $("#password").val(data.password_contacto).hide().prev("label").hide();
-      $("#generarPass").hide();
-      $("#passLabel").hide();
-      $("#togglePass").hide();
+        // Password/contacto (ocultos en edición)
+        $("#password").val(data.password_contacto).hide().prev("label").hide();
+        $("#generarPass").hide();
+        $("#passLabel").hide();
+        $("#togglePass").hide();
 
-      // Mostrar el modal
-      $("#newModal").modal("show");
-    });
+        // Mostrar el modal
+        $("#newModal").modal("show");
+      });
 
-    // (opcional) al cerrar el modal, limpiar por si algo quedó
-    $("#newModal").off('hidden.bs.modal').on('hidden.bs.modal', function () {
-      // si ya tienes resetModal(), úsalo:
-      if (typeof resetModal === 'function') { resetModal(); return; }
-      // mínimo: limpia campos esenciales
-      $(this).find('form')[0]?.reset?.();
-      $(this).find('input, select, textarea').val('');
-      $("#password").show().prev("label").show();
-      $("#generarPass, #passLabel, #togglePass").show();
-      $("#titulo_nuevo_modal").text("Nuevo cliente");
-    });
+      // (opcional) al cerrar el modal, limpiar por si algo quedó
+      $("#newModal").off('hidden.bs.modal').on('hidden.bs.modal', function() {
+        // si ya tienes resetModal(), úsalo:
+        if (typeof resetModal === 'function') {
+          resetModal();
+          return;
+        }
+        // mínimo: limpia campos esenciales
+        $(this).find('form')[0]?.reset?.();
+        $(this).find('input, select, textarea').val('');
+        $("#password").show().prev("label").show();
+        $("#generarPass, #passLabel, #togglePass").show();
+        $("#titulo_nuevo_modal").text("Nuevo cliente");
+      });
 
       $("a.act-activar", row).off('click').on('click', () => {
         mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente);
@@ -551,86 +553,89 @@ $(document).ready(function() {
         }
       });
       // handler del botón "Ver accesos" por fila (con clase)
-$("a.act-acceso", row).off('click').on('click', () => {
-  // pinta el nombre en el título
-  $(".nombreCliente").text(data.nombre);
-  // limpia el contenedor por si quedó algo de la vez anterior
-  $("#div_accesos").empty();
-  // loader
-  mostrarLoader();
-
-  $.ajax({
-    url : '<?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
-    type: 'post',
-    data: { id_cliente: data.idCliente },
-    success: function(res) {
-      // quita loader
-      ocultarLoader();
-      // OJO: res suele ser string; compara contra "0"
-      if (res && res !== "0") {
-        const datos  = JSON.parse(res);
-        const salida = generarTabla(datos);
-        $("#div_accesos").html(salida);
-      } else {
-        mostrarMensajeNoRegistros();
-        $("#div_accesos").html('<div class="text-center py-3">Sin accesos.</div>');
-      }
-    },
-    error: function() {
-      ocultarLoader();
-      $("#div_accesos").html('<div class="text-danger text-center py-3">Error al cargar accesos.</div>');
-    }
-  });
-
-  // muestra el modal
-  $("#accesosClienteModal").modal('show');
-});
-
-// Al cerrar el modal: limpiar (mínimo indispensable)
-$("#accesosClienteModal").off('hidden.bs.modal').on('hidden.bs.modal', function () {
-  $(".nombreCliente").text('');
-  $("#div_accesos").empty();
-});
-
-
-
-/*
-  
-
-      
-      $("a#acceso", row).bind('click', () => {
+      $("a.act-acceso", row).off('click').on('click', () => {
+        // pinta el nombre en el título
         $(".nombreCliente").text(data.nombre);
+        // limpia el contenedor por si quedó algo de la vez anterior
+        $("#div_accesos").empty();
+        // loader
         mostrarLoader();
 
         $.ajax({
           url: '<?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
           type: 'post',
           data: {
-            'id_cliente': data.idCliente
-          },
-          beforeSend: function() {
-            mostrarLoader();
+            id_cliente: data.idCliente
           },
           success: function(res) {
+            // quita loader
             ocultarLoader();
-            console.log(res);
-            if (res !== 0) {
-              let datos = JSON.parse(res);
-              let salida = generarTabla(datos);
+            // OJO: res suele ser string; compara contra "0"
+            if (res && res !== "0") {
+              const datos = JSON.parse(res);
+              const salida = generarTabla(datos);
               $("#div_accesos").html(salida);
             } else {
               mostrarMensajeNoRegistros();
+              $("#div_accesos").html('<div class="text-center py-3">Sin accesos.</div>');
             }
+          },
+          error: function() {
+            ocultarLoader();
+            $("#div_accesos").html(
+              '<div class="text-danger text-center py-3">Error al cargar accesos.</div>');
           }
         });
 
-        mostrarModal();
+        // muestra el modal
+        $("#accesosClienteModal").modal('show');
       });
 
-      function mostrarModal() {
-        $("#accesosClienteModal").modal('show');
-      }
-        */
+      // Al cerrar el modal: limpiar (mínimo indispensable)
+      $("#accesosClienteModal").off('hidden.bs.modal').on('hidden.bs.modal', function() {
+        $(".nombreCliente").text('');
+        $("#div_accesos").empty();
+      });
+
+
+
+      /*
+        
+
+            
+            $("a#acceso", row).bind('click', () => {
+              $(".nombreCliente").text(data.nombre);
+              mostrarLoader();
+
+              $.ajax({
+                url: '< ?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
+                type: 'post',
+                data: {
+                  'id_cliente': data.idCliente
+                },
+                beforeSend: function() {
+                  mostrarLoader();
+                },
+                success: function(res) {
+                  ocultarLoader();
+                  console.log(res);
+                  if (res !== 0) {
+                    let datos = JSON.parse(res);
+                    let salida = generarTabla(datos);
+                    $("#div_accesos").html(salida);
+                  } else {
+                    mostrarMensajeNoRegistros();
+                  }
+                }
+              });
+
+              mostrarModal();
+            });
+
+            function mostrarModal() {
+              $("#accesosClienteModal").modal('show');
+            }
+              */
 
       function mostrarLoader() {
         $('.loader').css("display", "block");

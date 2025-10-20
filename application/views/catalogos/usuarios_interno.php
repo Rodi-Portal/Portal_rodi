@@ -141,7 +141,7 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
           <div class="col-md-9">
             <label>Generate password *</label>
             <div class="input-group">
-              <input type="text" class="form-control" name="password" id="password" maxlength="8" readonly>
+              <input type="text" class="form-control" name="password" id="password" maxlength="20">
               <div class="input-group-append">
                 <button type="button" class="btn btn-primary" onclick="generarPassword()">Generar</button>
               </div>
