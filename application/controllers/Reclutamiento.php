@@ -2085,7 +2085,7 @@ class Reclutamiento extends CI_Controller
         // —— WHITELIST de campos que SÍ actualizamos en requisicion_intake ——
         $allowed = [
             // Identificación / contacto
-            'nombre_cliente', 'razon_social', 'email', 'telefono', 'sitio_web', 'metodo_comunicacion','actividad','nit',
+            'nombre_cliente', 'razon_social', 'email', 'telefono', 'sitio_web', 'metodo_comunicacion', 'actividad', 'nit',
             // Empresa / ubicación
             'pais_empresa', 'pais_otro',
             // Reclutamiento / posición
@@ -2101,10 +2101,6 @@ class Reclutamiento extends CI_Controller
 
         // Normalizaciones simples
         $norm = function ($k, $v) {
-            if ($v === null) {
-                return null;
-            }
-
             $v = is_string($v) ? trim($v) : $v;
 
             // fechas -> YYYY-MM-DD
@@ -2113,19 +2109,19 @@ class Reclutamiento extends CI_Controller
                     return null;
                 }
 
-                // Intenta detectar dd/mm/yyyy ó yyyy-mm-dd
                 if (preg_match('~^(\d{2})/(\d{2})/(\d{4})$~', $v, $m)) {
                     return "{$m[3]}-{$m[2]}-{$m[1]}";
                 }
+
                 if (preg_match('~^(\d{4})[-/](\d{2})[-/](\d{2})$~', $v, $m)) {
                     return "{$m[1]}-{$m[2]}-{$m[3]}";
                 }
-                // fallback: strtotime
+
                 $ts = strtotime($v);
                 return $ts ? date('Y-m-d', $ts) : null;
             }
 
-            // si/no -> minúsculas consistentes
+            // si/no
             if (in_array($k, ['requiere_voip', 'usa_crm', 'miembro_bni'], true)) {
                 $v = mb_strtolower((string) $v);
                 if ($v === 'si' || $v === 'sí') {
@@ -2141,10 +2137,15 @@ class Reclutamiento extends CI_Controller
 
             // email básico
             if ($k === 'email' && $v !== '' && ! filter_var($v, FILTER_VALIDATE_EMAIL)) {
-                return ''; // inválido -> lo vaciamos o valida antes y devuelve error
+                return '';
             }
 
-            return $v;
+            // Permitir vacío para actividad y nit
+            if (in_array($k, ['actividad', 'nit'], true)) {
+                return $v; // aunque sea ''
+            }
+
+            return $v === '' ? null : $v; // para otros campos vacíos opcional
         };
 
         foreach ($allowed as $k) {
