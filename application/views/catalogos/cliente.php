@@ -1,8 +1,8 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
-<?php
-    // justo arriba del <script> donde configuras DataTables
-    $idRol = $this->session->userdata('idrol'); ?>
+  <?php
+      // justo arriba del <script> donde configuras DataTables
+  $idRol = $this->session->userdata('idrol'); ?>
   <!-- Page Heading -->
   <div class="align-items-center mb-4">
     <div class="row justify-content-between align-items-center">
@@ -227,11 +227,15 @@ $(document).ready(function() {
         render: function(data, type, full) {
           const can = k => !!(window.PERM && window.PERM[k]);
           const html = [];
+          const nombre = (full.nombre || '').replace(/"/g, '&quot;');
 
           // Editar
           if (can('suc_editar')) {
             html.push(
-              '<a id="editar" href="javascript:void(0)" data-toggle="tooltip" title="Editar" class="fa-tooltip icono_datatable icono_azul_oscuro"><i class="fas fa-edit"></i></a>'
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Editar" ' +
+              'class="act-editar fa-tooltip icono_datatable icono_azul_oscuro" ' +
+              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
+              '<i class="fas fa-edit"></i></a>'
             );
           }
 
@@ -239,50 +243,67 @@ $(document).ready(function() {
           if (can('suc_estado')) {
             html.push(
               (Number(full.status) === 0) ?
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" id="activar" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-ban"></i></a>' :
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" id="desactivar" class="fa-tooltip icono_datatable icono_verde"><i class="far fa-check-circle"></i></a>'
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" ' +
+              'class="act-activar fa-tooltip icono_datatable icono_rojo" ' +
+              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
+              '<i class="fas fa-ban"></i></a>' :
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" ' +
+              'class="act-desactivar fa-tooltip icono_datatable icono_verde" ' +
+              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
+              '<i class="far fa-check-circle"></i></a>'
             );
           }
 
           // Eliminar
           if (can('suc_eliminar')) {
             html.push(
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" id="eliminar" class="fa-tooltip icono_datatable icono_gris"><i class="fas fa-trash"></i></a>'
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" ' +
+              'class="act-eliminar fa-tooltip icono_datatable icono_gris" ' +
+              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
+              '<i class="fas fa-trash"></i></a>'
             );
           }
 
-          // Ver accesos (usa el mismo permiso de ver listado)
+          // Ver accesos (modal)
           if (can('suc_ver_accesos')) {
             html.push(
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" id="acceso" class="fa-tooltip icono_datatable icono_azul_claro"><i class="fas fa-sign-in-alt"></i></a>'
+              '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" ' +
+              'class="act-acceso fa-tooltip icono_datatable icono_azul_claro" ' +
+              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
+              '<i class="fas fa-sign-in-alt"></i></a>'
             );
           }
 
-          // Bloquear / Desbloquear (puedes usar el mismo permiso de estado o definir otro)
+          // Bloquear / Desbloquear
           if (can('suc_estado')) {
             html.push(
               (String(full.bloqueado) === 'NO') ?
-              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" id="bloquear_cliente" class="fa-tooltip icono_datatable icono_verde"><i class="fas fa-user-check"></i></a> ' :
-              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" id="desbloquear_cliente" class="fa-tooltip icono_datatable icono_rojo"><i class="fas fa-user-lock"></i></a> '
+              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" ' +
+              'class="act-bloquear fa-tooltip icono_datatable icono_verde" ' +
+              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
+              '<i class="fas fa-user-check"></i></a> ' :
+              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" ' +
+              'class="act-desbloquear fa-tooltip icono_datatable icono_rojo" ' +
+              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
+              '<i class="fas fa-user-lock"></i></a> '
             );
           }
 
           // Crear/Actualizar Links (solo si tipo_bolsa == 1)
           if (can('suc_generar_link') && Number(full.tipo_bolsa) === 1) {
-            const nombre = (full.nombre || '').replace(/"/g, '&quot;');
-            html.push(`
-        <a href="javascript:void(0)"
-           class="link-requisicion fa-tooltip icono_datatable icono_azul_claro"
-           data-id-cliente="${full.idCliente}"
-           data-nombre="${nombre}">
-           <i class="fas fa-external-link-alt"></i>
-        </a>
-      `);
+            html.push(
+              '<a href="javascript:void(0)" ' +
+              'class="link-requisicion fa-tooltip icono_datatable icono_azul_claro" ' +
+              'data-id-cliente="' + full.idCliente + '" data-nombre="' + nombre + '" ' +
+              'data-toggle="tooltip" title="Generar link">' +
+              '<i class="fas fa-external-link-alt"></i></a>'
+            );
           }
 
           return html.join(' ');
         }
       }
+
 
     ],
     "columnDefs": [{
@@ -302,68 +323,80 @@ $(document).ready(function() {
       });
     },
     rowCallback: function(row, data) {
-      $("a#editar", row).bind('click', () => {
-        resetModal();
+    // antes: $("a#editar", row).bind('click', () => { ... });
+    $("a.act-editar", row).off('click').on('click', () => {
+      resetModal(); // asumes que ya existe
 
-        $("#idCliente").val(data.idCliente);
-        $("#idFacturacion").val(data.dFac);
-        $("#idDomicilios").val(data.dDom);
-        $("#idGenerales").val(data.dGen);
+      $("#idCliente").val(data.idCliente);
+      $("#idFacturacion").val(data.dFac);
+      $("#idDomicilios").val(data.dDom);
+      $("#idGenerales").val(data.dGen);
 
-        $("#titulo_nuevo_modal").text("Editar cliente");
+      $("#titulo_nuevo_modal").text("Editar cliente");
 
-        // Generales
-        $("#nombre").val(data.nombre);
-        $("#clave").val(data.clave);
-        $("#empleados").val(data.max_colaboradores);
-        // Domicilio
-        $("#item-details-countryValue").val(data.pais);
-        $("#item-details-stateValue").val(data.estado);
-        $("#item-details-cityValue").val(data.ciudad);
-        $("#numero_exterior").val(data.exterior);
-        $("#numero_interior").val(data.interior);
-        $("#calle").val(data.calle);
-        $("#cp").val(data.cp);
+      // Generales
+      $("#nombre").val(data.nombre);
+      $("#clave").val(data.clave);
+      $("#empleados").val(data.max_colaboradores);
 
-        $("#colonia").val(data.colonia);
+      // Domicilio
+      $("#item-details-countryValue").val(data.pais);
+      $("#item-details-stateValue").val(data.estado);
+      $("#item-details-cityValue").val(data.ciudad);
+      $("#numero_exterior").val(data.exterior);
+      $("#numero_interior").val(data.interior);
+      $("#calle").val(data.calle);
+      $("#cp").val(data.cp);
+      $("#colonia").val(data.colonia);
 
-        // Datos de Facturación
-        $("#razon_social").val(data.razon_social);
-        $("#telefono").val(data.telefono_contacto);
-        $("#correo").val(data.correo_contacto);
+      // Facturación
+      $("#razon_social").val(data.razon_social);
+      $("#telefono").val(data.telefono_contacto);
+      $("#correo").val(data.correo_contacto);
+      $("#nombre_contacto").val(data.nombre_contacto);
+      $("#apellido_contacto").val(data.apellido_contacto);
+      $("#rfc").val(data.rfc);
+      $("#regimen").val(data.regimen);
+      $("#forma_pago").val(data.forma_pago).change();
+      $("#metodo_pago").val(data.metodo_pago).change();
+      $("#uso_cfdi").val(data.uso_cfdi);
 
-        $("#nombre_contacto").val(data.nombre_contacto);
-        $("#apellido_contacto").val(data.apellido_contacto);
-        $("#rfc").val(data.rfc);
-        $("#regimen").val(data.regimen);
-        $("#forma_pago").val(data.forma_pago).change();
-        $("#metodo_pago").val(data.metodo_pago).change();
-        $("#uso_cfdi").val(data.uso_cfdi);
+      // Password/contacto (ocultos en edición)
+      $("#password").val(data.password_contacto).hide().prev("label").hide();
+      $("#generarPass").hide();
+      $("#passLabel").hide();
+      $("#togglePass").hide();
 
-        $("#password").val(data.password_contacto).hide().prev("label").hide();
-        $("#generarPass").hide();
-        $("#passLabel").hide();
-        $("#togglePass").hide();
-        // Ocultar elementos
+      // Mostrar el modal
+      $("#newModal").modal("show");
+    });
 
+    // (opcional) al cerrar el modal, limpiar por si algo quedó
+    $("#newModal").off('hidden.bs.modal').on('hidden.bs.modal', function () {
+      // si ya tienes resetModal(), úsalo:
+      if (typeof resetModal === 'function') { resetModal(); return; }
+      // mínimo: limpia campos esenciales
+      $(this).find('form')[0]?.reset?.();
+      $(this).find('input, select, textarea').val('');
+      $("#password").show().prev("label").show();
+      $("#generarPass, #passLabel, #togglePass").show();
+      $("#titulo_nuevo_modal").text("Nuevo cliente");
+    });
 
-        // Mostrar el modal
-        $("#newModal").modal("show");
+      $("a.act-activar", row).off('click').on('click', () => {
+        mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente);
       });
-      $("a#activar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente)
+      $("a.act-desactivar", row).off('click').on('click', () => {
+        mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.idCliente);
       });
-      $("a#desactivar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.idCliente)
+      $("a.act-bloquear", row).off('click').on('click', () => {
+        mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.idCliente);
       });
-      $("a#bloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.idCliente)
+      $("a.act-desbloquear", row).off('click').on('click', () => {
+        mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.idCliente);
       });
-      $("a#desbloquear_cliente", row).bind('click', () => {
-        mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.idCliente)
-      });
-      $("a#eliminar", row).bind('click', () => {
-        mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idCliente)
+      $("a.act-eliminar", row).off('click').on('click', () => {
+        mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idCliente);
       });
 
       $(row).find('a.link-requisicion').off('click').on('click', function() {
@@ -517,9 +550,54 @@ $(document).ready(function() {
           generar();
         }
       });
+      // handler del botón "Ver accesos" por fila (con clase)
+$("a.act-acceso", row).off('click').on('click', () => {
+  // pinta el nombre en el título
+  $(".nombreCliente").text(data.nombre);
+  // limpia el contenedor por si quedó algo de la vez anterior
+  $("#div_accesos").empty();
+  // loader
+  mostrarLoader();
+
+  $.ajax({
+    url : '<?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
+    type: 'post',
+    data: { id_cliente: data.idCliente },
+    success: function(res) {
+      // quita loader
+      ocultarLoader();
+      // OJO: res suele ser string; compara contra "0"
+      if (res && res !== "0") {
+        const datos  = JSON.parse(res);
+        const salida = generarTabla(datos);
+        $("#div_accesos").html(salida);
+      } else {
+        mostrarMensajeNoRegistros();
+        $("#div_accesos").html('<div class="text-center py-3">Sin accesos.</div>');
+      }
+    },
+    error: function() {
+      ocultarLoader();
+      $("#div_accesos").html('<div class="text-danger text-center py-3">Error al cargar accesos.</div>');
+    }
+  });
+
+  // muestra el modal
+  $("#accesosClienteModal").modal('show');
+});
+
+// Al cerrar el modal: limpiar (mínimo indispensable)
+$("#accesosClienteModal").off('hidden.bs.modal').on('hidden.bs.modal', function () {
+  $(".nombreCliente").text('');
+  $("#div_accesos").empty();
+});
 
 
 
+/*
+  
+
+      
       $("a#acceso", row).bind('click', () => {
         $(".nombreCliente").text(data.nombre);
         mostrarLoader();
@@ -535,7 +613,7 @@ $(document).ready(function() {
           },
           success: function(res) {
             ocultarLoader();
-            //console.log(res);
+            console.log(res);
             if (res !== 0) {
               let datos = JSON.parse(res);
               let salida = generarTabla(datos);
@@ -552,6 +630,7 @@ $(document).ready(function() {
       function mostrarModal() {
         $("#accesosClienteModal").modal('show');
       }
+        */
 
       function mostrarLoader() {
         $('.loader').css("display", "block");
