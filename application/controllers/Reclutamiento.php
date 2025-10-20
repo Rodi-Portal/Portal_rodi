@@ -2085,7 +2085,7 @@ class Reclutamiento extends CI_Controller
         // —— WHITELIST de campos que SÍ actualizamos en requisicion_intake ——
         $allowed = [
             // Identificación / contacto
-            'nombre_cliente', 'razon_social', 'email', 'telefono', 'sitio_web', 'metodo_comunicacion',
+            'nombre_cliente', 'razon_social', 'email', 'telefono', 'sitio_web', 'metodo_comunicacion','actividad','nit',
             // Empresa / ubicación
             'pais_empresa', 'pais_otro',
             // Reclutamiento / posición
