@@ -6,30 +6,24 @@ class Notificacion extends CI_Controller
 
     public function __construct()
     {
-        // --- Silenciar advertencias solo si se ejecuta desde CLI (cron) ---
-        // --- Si se ejecuta desde CLI (cron) ---
-        if (php_sapi_name() === 'cli' || defined('STDIN')) {
-            // Desactivar sesiones y salida de errores visibles
+        parent::__construct(); // ← siempre primero (así $this->uri existe también en CLI)
+
+        // Si se ejecuta desde CLI (cron), silenciamos y no validamos sesión
+        if (function_exists('is_cli') && is_cli()) {
             error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
             ini_set('display_errors', 0);
-            ini_set('session.use_cookies', 0);
-            ini_set('session.use_only_cookies', 0);
-            ini_set('session.cache_limiter', '');
-            return; // Salimos antes de cargar parent::__construct()
-        }
-
-        parent::__construct();
-
-        if (php_sapi_name() === 'cli' || defined('STDIN')) {
-            // Evita cargar sesión ni validar usuario
+            // nada de validar login ni cargar usuario_sesion en CLI
             return;
         }
+
+        // Flujo WEB normal
         if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
     }
+
 /*Notificaciones    via  Whatsapp  o correo*/
 /*
     public function obtener_estado_empleado($id_portal, $id_cliente)
@@ -107,11 +101,11 @@ class Notificacion extends CI_Controller
     public function enviar_notificaciones_cron_job()
     {
         // --- Validación del token ---
-        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+        /* $token = $this->uri->segment(3) ?: $this->input->get('token', true);
         if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
             show_404();
             return;
-        }
+        }*/
 
         // --- Determinar el horario actual ---
         $tz              = new DateTimeZone('America/Mexico_City');
@@ -184,8 +178,6 @@ class Notificacion extends CI_Controller
     }
     public function enviar_notificaciones_exempleados_cron_job()
     {
-        log_message('error', '[CRON EX] Iniciando notificaciones de exempleados...');
-
         // --- Token de seguridad ---
         $token = $this->uri->segment(3) ?: $this->input->get('token', true);
         if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
@@ -193,16 +185,38 @@ class Notificacion extends CI_Controller
             return;
         }
 
-        // --- Determinar el horario actual (cron corre 09:00 / 15:00 / 19:00) ---
+        log_message('info', '[CRON EX] Iniciando notificaciones de ex-empleados...');
+
+        // --- Determinar el horario actual (con ventana de gracia ±15 min) ---
         $tz              = new DateTimeZone('America/Mexico_City');
-        $slotActual      = (new DateTime('now', $tz))->format('h:i A'); // "09:00 AM", "03:00 PM" o "07:00 PM"
+        $ahora           = new DateTime('now', $tz);
         $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        if (! in_array($slotActual, $horariosValidos, true)) {
-            log_message('info', "[CRON EX] Llamado fuera de horario válido: {$slotActual}");
+        $graciaMinutos   = 15;
+        $slotActual      = null;
+
+        foreach ($horariosValidos as $h) {
+            $horaSlot = DateTime::createFromFormat('h:i A', $h, $tz);
+            if (! $horaSlot) {
+                continue;
+            }
+
+            $diff = abs($ahora->getTimestamp() - $horaSlot->getTimestamp()) / 60; // diferencia en minutos
+
+            if ($diff <= $graciaMinutos) {
+                $slotActual = $h;
+                break;
+            }
+        }
+
+        // Si está fuera de los horarios válidos, no ejecutar
+        if ($slotActual === null) {
+            log_message('info', "[CRON EX] Fuera de ventana de gracia (" . $ahora->format('h:i A') . ")");
             return;
         }
 
-        // --- Cargar modelo y obtener notificaciones de EX (status=2) para el slot ---
+        log_message('info', "[CRON EX] Ejecutando slot {$slotActual}");
+
+        // --- Cargar modelo y obtener notificaciones de ex empleados (status=2) ---
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones_exempleados_por_slot($slotActual);
 
@@ -213,37 +227,43 @@ class Notificacion extends CI_Controller
 
         // --- Procesar registros ---
         foreach ($registros as $registro) {
-            // 1) Obtener estado SOLO para ex (status=2): nos interesa statusDocuments
+            log_message('info', "[CRON EX] Procesando ID={$registro->id} (portal={$registro->id_portal}, cliente={$registro->id_cliente})");
+
+            // 1) Obtener estado del ex empleado (status=2)
             $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente, 2);
             if (! $estado) {
-                log_message('error', "[CRON EX] No se pudo obtener estado para ID={$registro->id} (portal={$registro->id_portal}, cliente={$registro->id_cliente})");
+                log_message('error', "[CRON EX] No se pudo obtener estado para ID={$registro->id}");
                 continue;
             }
 
-            // 2) Enviar SOLO si documentos están en rojo
+            // 2) Enviar solo si documentos están en rojo
             if (strcasecmp($estado['statusDocuments'] ?? '', 'rojo') !== 0) {
                 log_message('info', "[CRON EX] Sin documentos en rojo para ID={$registro->id}");
                 continue;
             }
 
-            // 3) Único módulo relevante para ex: Documentos
+            // 3) Módulo relevante: Documentos
             $modulos = ["<li>Documentos</li>"];
 
-            // 4) Enviar correo (si está habilitado y hay destinatarios)
+            // 4) Enviar correo si está habilitado
             if ((int) $registro->correo === 1) {
                 $correos = array_values(array_unique(array_filter([$registro->correo1 ?? null, $registro->correo2 ?? null])));
                 if (! empty($correos)) {
-                    $this->enviar_correo(
-                        $correos,
-                        'Notificación TalentSafe Control - Ex Empleados',
-                        $modulos,
-                        $registro->nombre ?? "Ex Empleado"
-                    );
-                    log_message('info', "[CRON EX] Correo enviado a ID={$registro->id}: " . implode(', ', $correos));
+                    try {
+                        $this->enviar_correo(
+                            $correos,
+                            'Notificación TalentSafe Control - Ex Empleados',
+                            $modulos,
+                            $registro->nombre ?? "Ex Empleado"
+                        );
+                        log_message('info', "[CRON EX] Correo enviado a ID={$registro->id}: " . implode(', ', $correos));
+                    } catch (Exception $e) {
+                        log_message('error', "[CRON EX] Error al enviar correo a ID={$registro->id}: " . $e->getMessage());
+                    }
                 }
             }
 
-            // 5) Enviar WhatsApp (si está habilitado y hay teléfonos)
+            // 5) Enviar WhatsApp si está habilitado
             if ((int) $registro->whatsapp === 1) {
                 $telefonos = array_filter([
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
@@ -251,22 +271,140 @@ class Notificacion extends CI_Controller
                 ]);
 
                 if (! empty($telefonos)) {
-                    $this->enviar_whatsapp(
-                        $telefonos,
-                        $registro->nombrePortal ?? 'Portal',
-                        $registro->nombre ?? 'Ex Empleado',
-                        'Documentos',
-                        'notificacion_exempleados'
-                    );
-                    log_message('info', "[CRON EX] WhatsApp enviado a ID={$registro->id}: " . implode(', ', $telefonos));
+                    try {
+                        $this->enviar_whatsapp(
+                            $telefonos,
+                            $registro->nombrePortal ?? 'Portal',
+                            $registro->nombre ?? 'Ex Empleado',
+                            'Documentos',
+                            'notificacion_exempleados'
+                        );
+                        log_message('info', "[CRON EX] WhatsApp enviado a ID={$registro->id}: " . implode(', ', $telefonos));
+                    } catch (Exception $e) {
+                        log_message('error', "[CRON EX] Error al enviar WhatsApp a ID={$registro->id}: " . $e->getMessage());
+                    }
                 }
             }
-            log_message('error', '[CRON EX] Finalizado envío de notificaciones.');
-
         }
 
-        log_message('info', "[CRON EX] Finalizado envío de notificaciones de ex-empleados para {$slotActual}");
+        log_message('info', "[CRON EX] Finalizado envío de notificaciones de ex empleados para {$slotActual}");
     }
+
+    public function enviar_notificaciones_cron_job2()
+    {
+        // --- Validación del token ---
+        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+            show_404();
+            return;
+        }
+
+        // --- Determinar horario actual ---
+        $tz    = new DateTimeZone('America/Mexico_City');
+        $ahora = new DateTime('now', $tz);
+
+        $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
+        $graciaMinutos   = 15;
+        $slotActual      = null;
+
+        foreach ($horariosValidos as $h) {
+            $horaSlot = DateTime::createFromFormat('h:i A', $h, $tz);
+            if (! $horaSlot) {
+                continue;
+            }
+
+            $diff = abs($ahora->getTimestamp() - $horaSlot->getTimestamp()) / 60;
+            if ($diff <= $graciaMinutos) {
+                $slotActual = $h;
+                break;
+            }
+        }
+
+        if ($slotActual === null) {
+            log_message('info', "[CRON] Fuera de ventana de gracia (" . $ahora->format('h:i A') . ")");
+            return;
+        }
+
+        log_message('info', "[CRON] Iniciando ejecución, slot: {$slotActual}");
+
+        // --- Cargar modelo y obtener notificaciones ---
+        $this->load->model('Notificacion_model');
+        $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual);
+
+        if (empty($registros)) {
+            log_message('info', "[CRON] No hay registros para procesar en {$slotActual}");
+            return;
+        }
+
+        foreach ($registros as $registro) {
+            log_message('info', "[CRON] Procesando ID {$registro->id} (Portal {$registro->id_portal}, Cliente {$registro->id_cliente})");
+
+            $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente);
+            if (! $estado) {
+                log_message('error', "[CRON] No se pudo obtener estado para ID {$registro->id}");
+                continue;
+            }
+
+            // --- Verificar módulos en rojo ---
+            $modulos = [];
+            if ((int) $registro->cursos === 1 && ($estado['statusCursos'] ?? '') === 'rojo') {
+                $modulos[] = "Cursos";
+            }
+
+            if ((int) $registro->evaluaciones === 1 && ($estado['statusEvaluaciones'] ?? '') === 'rojo') {
+                $modulos[] = "Evaluaciones";
+            }
+
+            if ((int) $registro->expediente === 1 && ($estado['statusDocuments'] ?? '') === 'rojo') {
+                $modulos[] = "Expediente";
+            }
+
+            if (empty($modulos)) {
+                log_message('info', "[CRON] ID {$registro->id}: sin módulos en rojo (nada que notificar)");
+                continue;
+            }
+
+            // --- Enviar correo ---
+            if ((int) $registro->correo === 1) {
+                $correos = array_values(array_unique(array_filter([$registro->correo1 ?? null, $registro->correo2 ?? null])));
+                if (! empty($correos)) {
+                    try {
+                        $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
+                        log_message('info', "[CRON] Correo enviado a ID {$registro->id}: " . implode(', ', $correos));
+                    } catch (Exception $e) {
+                        log_message('error', "[CRON] Error enviando correo a ID {$registro->id}: " . $e->getMessage());
+                    }
+                }
+            }
+
+            // --- Enviar WhatsApp ---
+            if ((int) $registro->whatsapp === 1) {
+                $telefonos = array_filter([
+                    ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
+                    ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
+                ]);
+
+                if (! empty($telefonos)) {
+                    try {
+                        $submodulos = implode(", ", $modulos);
+                        $this->enviar_whatsapp(
+                            $telefonos,
+                            $registro->nombrePortal,
+                            $registro->nombre,
+                            $submodulos,
+                            'notificacion_empleados'
+                        );
+                        log_message('info', "[CRON] WhatsApp enviado a ID {$registro->id}: " . implode(', ', $telefonos));
+                    } catch (Exception $e) {
+                        log_message('error', "[CRON] Error enviando WhatsApp a ID {$registro->id}: " . $e->getMessage());
+                    }
+                }
+            }
+        }
+
+        log_message('info', "[CRON] Finalizado ciclo de notificaciones para slot {$slotActual}");
+    }
+
     public function enviar_notificaciones_inmediatamente()
     {
         $this->load->model('Notificacion_model');

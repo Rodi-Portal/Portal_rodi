@@ -82,31 +82,34 @@ class Notificacion_model extends CI_Model
     }
     public function get_notificaciones_por_slot($slot)
     {
-        // Asegurar que el slot esté en la misma collation que la columna
-        $slot = $this->db->escape_str($slot);
+        $slot = trim($this->db->escape_str($slot));
 
         $this->db->select('ne.*, c.nombre, P.nombre AS nombrePortal');
         $this->db->from('notificaciones_empleados AS ne');
         $this->db->join('cliente AS c', 'c.id = ne.id_cliente', 'left');
         $this->db->join('portal  AS P', 'P.id = ne.id_portal', 'left');
 
-        // Solo registros activos y con notificaciones habilitadas
         $this->db->where('ne.notificacionesActivas', 1);
         $this->db->where('ne.status', 1);
 
-        // Correo o WhatsApp activos
         $this->db->group_start()
             ->where('ne.correo', 1)
             ->or_where('ne.whatsapp', 1)
             ->group_end();
 
-        // Coincidencia exacta del slot dentro del CSV (tolerante a espacios)
-        // Evita collation mix usando COLLATE en ambos lados
-        $pattern = "(^|,\\s*){$slot}(,|\\s*$)";
-        $this->db->where("(ne.horarios COLLATE utf8mb4_general_ci) REGEXP '{$pattern}'", null, false);
+        // 🔹 Filtro flexible por hora
+        $this->db->group_start();
+        $this->db->like('ne.horarios', $slot);
+        $this->db->group_end();
 
-        // Ejecutar y devolver
+        // DEBUG: ver query y resultados
         $query = $this->db->get();
+        echo "<pre>";
+        echo "SQL ejecutado:\n" . $this->db->last_query() . "\n";
+        echo "Resultados: " . $query->num_rows() . "\n";
+        print_r($query->result());
+        echo "</pre>";
+
         return $query->result();
     }
 
