@@ -113,4 +113,64 @@ class Notificacion_model extends CI_Model
         return $query->result();
     }
 
+ public function get_recordatorios_para_slot($slot, $hoyYmd, $debug = false)
+{
+    // --- Selección con join entre recordatorios (fechas) y notificaciones_recordatorios (configuración/envío) ---
+    $this->db->select("
+        r.*,
+        nr.notificaciones_activas,
+        nr.status           AS status_cfg,
+        nr.correo           AS correo_cfg,
+        nr.correo1          AS correo1_cfg,
+        nr.correo2          AS correo2_cfg,
+        nr.whatsapp         AS whatsapp_cfg,
+        nr.lada1            AS lada1_cfg,
+        nr.telefono1        AS telefono1_cfg,
+        nr.lada2            AS lada2_cfg,
+        nr.telefono2        AS telefono2_cfg
+    ", false);
+
+    $this->db->from('recordatorio AS r');
+    $this->db->join(
+        'notificaciones_recordatorios AS nr',
+        'nr.id_portal = r.id_portal AND nr.id_cliente = r.id_cliente',
+        'left'
+    );
+
+    // --- Activos en ambas tablas ---
+    $this->db->where('r.activo', 1);
+    $this->db->where('r.eliminado', 0);
+    $this->db->where('nr.notificaciones_activas', 1);
+    $this->db->where('nr.status', 1);
+
+    // --- Filtro por slot (horario) dentro del SET ---
+    // Ejemplo: '09:00 AM,03:00 PM,07:00 PM'
+    $this->db->like('nr.horarios', $slot);
+
+    // --- Condición de anticipación ---
+    // recordatorios.proxima_fecha <= (hoy + dias_anticipacion)
+    $hoyEsc = $this->db->escape($hoyYmd);
+    $this->db->where("r.proxima_fecha IS NOT NULL", null, false);
+    $this->db->where("r.proxima_fecha <= DATE_ADD({$hoyEsc}, INTERVAL r.dias_anticipacion DAY)", null, false);
+
+    $query = $this->db->get();
+
+    if ($debug) {
+        echo "SQL ejecutada:\n" . $this->db->last_query() . "\n";
+        echo "Resultados: " . $query->num_rows() . "\n";
+    }
+
+    return $query->result();
 }
+
+public function actualizar_proxima_fecha($id, $nuevaFechaYmd)
+{
+    $this->db->where('id', $id)->update('recordatorio', [
+        'proxima_fecha' => $nuevaFechaYmd,
+    ]);
+}
+
+}
+
+
+

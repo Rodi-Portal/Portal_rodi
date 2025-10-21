@@ -405,6 +405,126 @@ class Notificacion extends CI_Controller
         log_message('info', "[CRON] Finalizado ciclo de notificaciones para slot {$slotActual}");
     }
 
+public function enviar_recordatorios_cron_job_debug_v2()
+{
+    // --- Token de seguridad ---
+    $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+    if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+        show_404();
+        return;
+    }
+
+    echo "<pre>";
+    echo "[REC CRON] Iniciando...\n";
+
+    // --- Determinar slot actual con ventana de gracia ---
+    $tz    = new DateTimeZone('America/Mexico_City');
+    $ahora = new DateTime('now', $tz);
+    $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
+
+    $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
+    $graciaMinutos   = 999; // forzado para pruebas (ajusta luego a 15)
+    $slotActual      = null;
+
+    foreach ($horariosValidos as $h) {
+        $horaSlot = DateTime::createFromFormat('h:i A', $h, $tz);
+        if (!$horaSlot) continue;
+        $diff = abs($ahora->getTimestamp() - $horaSlot->getTimestamp()) / 60;
+        if ($diff <= $graciaMinutos) { $slotActual = $h; break; }
+    }
+
+    if ($slotActual === null) {
+        echo "[REC CRON] ⏱️ Fuera de ventana (" . $ahora->format('h:i A') . ")\n";
+        echo "</pre>";
+        return;
+    }
+
+    echo "[REC CRON] 🕐 Slot actual: {$slotActual} | Hoy: {$hoy}\n";
+
+    // --- Consultar recordatorios ---
+        $this->load->model('Notificacion_model');
+    $registros = $this->Notificacion_model->get_recordatorios_para_slot($slotActual, $hoy, true);
+
+    echo "[REC CRON] Registros encontrados: " . count($registros) . "\n";
+
+    if (empty($registros)) {
+        echo "[REC CRON] ❌ No hay recordatorios dentro del rango.\n";
+        echo "</pre>";
+        return;
+    }
+
+    // --- Procesar ---
+    foreach ($registros as $r) {
+        echo "\n----------------------------------------\n";
+        echo "🆔 ID={$r->id} | Cliente={$r->id_cliente} | Portal={$r->id_portal}\n";
+        echo "📌 {$r->nombre} ({$r->tipo})\n";
+        echo "📅 Fecha base: {$r->fecha_base} | Próxima: {$r->proxima_fecha}\n";
+        echo "⏳ Anticipación: {$r->dias_anticipacion} días\n";
+
+        // Calcular días restantes
+        $dtHoy    = new DateTime($hoy, $tz);
+        $dtTarget = new DateTime($r->proxima_fecha, $tz);
+        $diasRest = (int)$dtHoy->diff($dtTarget)->format('%r%a');
+
+        // Clasificar estado
+        if ($diasRest < 0) {
+            $estado = "✅ VENCIDO (hace " . abs($diasRest) . " días)";
+        } elseif ($diasRest <= $r->dias_anticipacion) {
+            $estado = "⚠️ Por vencer (faltan {$diasRest} días)";
+        } else {
+            $estado = "🕒 Aún no entra en rango";
+        }
+        echo "📆 Estado: {$estado}\n";
+
+        // Depurar configuración y canales
+        echo "🔧 Config: notificaciones_activas={$r->notificaciones_activas}, status_cfg={$r->status_cfg}\n";
+        echo "📨 Canales: correo=" . ($r->correo_cfg ? "✅" : "❌") .
+             " | whatsapp=" . ($r->whatsapp_cfg ? "✅" : "❌") . "\n";
+
+        // Filtrar correos válidos
+        $correos = array_values(array_unique(array_filter([
+            $r->correo1_cfg ?: null,
+            $r->correo2_cfg ?: null
+        ], static fn($v) => !empty($v) && filter_var($v, FILTER_VALIDATE_EMAIL))));
+        
+        // Filtrar teléfonos válidos
+        $tels = array_values(array_unique(array_filter([
+            (!empty($r->telefono1_cfg) && !empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
+            (!empty($r->telefono2_cfg) && !empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
+        ], static fn($v) => strlen(preg_replace('/\D/', '', $v)) >= 10)));
+
+        echo "📧 Emails: " . (empty($correos) ? "(ninguno válido)" : implode(', ', $correos)) . "\n";
+        echo "📱 Teléfonos: " . (empty($tels) ? "(ninguno válido)" : implode(', ', $tels)) . "\n";
+
+        // Simular envío
+        if ($r->correo_cfg && !empty($correos)) {
+            echo "🚀 Enviaría CORREO: \"Recordatorio {$r->nombre}\" a " . implode(', ', $correos) . "\n";
+        } else {
+            echo "✉️ No se envía correo.\n";
+        }
+
+        if ($r->whatsapp_cfg && !empty($tels)) {
+            echo "📲 Enviaría WHATSAPP: \"{$r->nombre} - vence {$r->proxima_fecha}\" a " . implode(', ', $tels) . "\n";
+        } else {
+            echo "💬 No se envía WhatsApp.\n";
+        }
+
+        // Calcular nueva fecha si es mensual
+        if ($r->tipo === 'mensual') {
+            $nueva = (new DateTime($r->proxima_fecha, $tz))
+                        ->modify("+{$r->intervalo_meses} month")
+                        ->format('Y-m-d');
+            echo "🔁 Próxima fecha (preview): {$nueva}\n";
+        } else {
+            echo "🔒 Tipo único: no se reprograma.\n";
+        }
+    }
+
+    echo "\n[REC CRON] ✅ Fin de simulación.\n";
+    echo "</pre>";
+}
+
+
     public function enviar_notificaciones_inmediatamente()
     {
         $this->load->model('Notificacion_model');
