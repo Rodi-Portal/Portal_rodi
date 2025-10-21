@@ -95,7 +95,7 @@ class Notificacion extends CI_Controller
             log_message('error', 'JSON inválido en obtener_estado_empleado: ' . json_last_error_msg());
             return null;
         }
-
+  
         return $data; // ['statusDocuments'=>..., 'statusCursos'=>..., 'statusEvaluaciones'=>...]
     }
     public function enviar_notificaciones_cron_job()
@@ -179,11 +179,11 @@ class Notificacion extends CI_Controller
     public function enviar_notificaciones_exempleados_cron_job()
     {
         // --- Token de seguridad ---
-        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+      /*  $token = $this->uri->segment(3) ?: $this->input->get('token', true);
         if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
             show_404();
             return;
-        }
+        }*/
 
         log_message('info', '[CRON EX] Iniciando notificaciones de ex-empleados...');
 
@@ -191,7 +191,7 @@ class Notificacion extends CI_Controller
         $tz              = new DateTimeZone('America/Mexico_City');
         $ahora           = new DateTime('now', $tz);
         $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        $graciaMinutos   = 15;
+        $graciaMinutos   = 999;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {
@@ -231,6 +231,7 @@ class Notificacion extends CI_Controller
 
             // 1) Obtener estado del ex empleado (status=2)
             $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente, 2);
+            
             if (! $estado) {
                 log_message('error', "[CRON EX] No se pudo obtener estado para ID={$registro->id}");
                 continue;
@@ -292,19 +293,11 @@ class Notificacion extends CI_Controller
 
     public function enviar_notificaciones_cron_job2()
     {
-        // --- Validación del token ---
-        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
-        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
-            show_404();
-            return;
-        }
-
-        // --- Determinar horario actual ---
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
 
         $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        $graciaMinutos   = 15;
+        $graciaMinutos   = 999;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {
@@ -321,63 +314,50 @@ class Notificacion extends CI_Controller
         }
 
         if ($slotActual === null) {
-            log_message('info', "[CRON] Fuera de ventana de gracia (" . $ahora->format('h:i A') . ")");
             return;
         }
 
-        log_message('info', "[CRON] Iniciando ejecución, slot: {$slotActual}");
-
-        // --- Cargar modelo y obtener notificaciones ---
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual);
 
         if (empty($registros)) {
-            log_message('info', "[CRON] No hay registros para procesar en {$slotActual}");
             return;
         }
 
         foreach ($registros as $registro) {
-            log_message('info', "[CRON] Procesando ID {$registro->id} (Portal {$registro->id_portal}, Cliente {$registro->id_cliente})");
-
             $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente);
             if (! $estado) {
-                log_message('error', "[CRON] No se pudo obtener estado para ID {$registro->id}");
                 continue;
             }
 
-            // --- Verificar módulos en rojo ---
             $modulos = [];
             if ((int) $registro->cursos === 1 && ($estado['statusCursos'] ?? '') === 'rojo') {
                 $modulos[] = "Cursos";
             }
-
             if ((int) $registro->evaluaciones === 1 && ($estado['statusEvaluaciones'] ?? '') === 'rojo') {
                 $modulos[] = "Evaluaciones";
             }
-
             if ((int) $registro->expediente === 1 && ($estado['statusDocuments'] ?? '') === 'rojo') {
                 $modulos[] = "Expediente";
             }
 
             if (empty($modulos)) {
-                log_message('info', "[CRON] ID {$registro->id}: sin módulos en rojo (nada que notificar)");
                 continue;
             }
 
-            // --- Enviar correo ---
+            // --- Envío por correo ---
             if ((int) $registro->correo === 1) {
                 $correos = array_values(array_unique(array_filter([$registro->correo1 ?? null, $registro->correo2 ?? null])));
                 if (! empty($correos)) {
                     try {
                         $this->enviar_correo($correos, 'Notificación TalentSafe Control', $modulos, $registro->nombre);
-                        log_message('info', "[CRON] Correo enviado a ID {$registro->id}: " . implode(', ', $correos));
                     } catch (Exception $e) {
-                        log_message('error', "[CRON] Error enviando correo a ID {$registro->id}: " . $e->getMessage());
+                        // Se puede registrar en log_message('error', ...) si deseas
                     }
                 }
             }
 
-            // --- Enviar WhatsApp ---
+            // --- Envío por WhatsApp ---
             if ((int) $registro->whatsapp === 1) {
                 $telefonos = array_filter([
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
@@ -389,141 +369,196 @@ class Notificacion extends CI_Controller
                         $submodulos = implode(", ", $modulos);
                         $this->enviar_whatsapp(
                             $telefonos,
-                            $registro->nombrePortal,
-                            $registro->nombre,
+                            $registro->nombrePortal ?? 'Portal',
+                            $registro->nombre ?? 'Sucursal',
                             $submodulos,
                             'notificacion_empleados'
                         );
-                        log_message('info', "[CRON] WhatsApp enviado a ID {$registro->id}: " . implode(', ', $telefonos));
                     } catch (Exception $e) {
-                        log_message('error', "[CRON] Error enviando WhatsApp a ID {$registro->id}: " . $e->getMessage());
+                        // log_message('error', $e->getMessage());
                     }
                 }
             }
         }
-
-        log_message('info', "[CRON] Finalizado ciclo de notificaciones para slot {$slotActual}");
     }
 
-public function enviar_recordatorios_cron_job_debug_v2()
-{
-    // --- Token de seguridad ---
-    $token = $this->uri->segment(3) ?: $this->input->get('token', true);
-    if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
-        show_404();
-        return;
+    public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
+    {
+        $this->load->library('phpmailer_lib');
+        $mail = $this->phpmailer_lib->load();
+
+        try {
+                                                              // Configuración del servidor SMTP
+            $mail->isSMTP();                                  // Establecer el envío usando SMTP
+            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'soporte@talentsafecontrol.com';
+            $mail->Password   = 'FQ{[db{}%ja-';
+            $mail->SMTPSecure = 'ssl';
+            $mail->Port       = 465; // Puerto SMTP
+
+            // Remitente
+            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
+
+            // Destinatarios
+            foreach ($destinatarios as $correo) {
+                $mail->addAddress($correo); // Agrega el destinatario
+            }
+
+            // Asunto
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = 'Notificación TalentSafe Control';
+
+            // Cuerpo del mensaje con los módulos
+            $mensaje = "
+          <h3>Excelente día,</h3>
+          <p>Te recordamos que tienes algunos  archivos por  vencer en tu sucursal: " . $nombrecliente . " en los siguientes módulos:</p>
+          <ul>";
+
+            // Agregar los módulos seleccionados al mensaje
+
+            // Agregar los módulos seleccionados al mensaje
+            if (! empty($modulos)) {
+                $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
+            }
+
+            $mensaje .= "</ul>
+          <p>Por favor ingresa a <a href='https://portal.talentsafecontrol.com' target='_blank'>TalentSafeControl</a> y realiza las actualizaciones pertinentes.</p>
+          <p>Saludos cordiales,<br>El equipo de TalentSafeControl</p>";
+
+            $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
+
+            // Enviar el correo
+            $mail->send();
+            echo "<script>console.log('Correo enviado a: {$correo}');</script>";
+        } catch (Exception $e) {
+            echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
+        }
     }
 
-    echo "<pre>";
-    echo "[REC CRON] Iniciando...\n";
+    public function enviar_recordatorios_cron_job_debug_v2()
+    {
+        // --- Token de seguridad ---
+        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+            show_404();
+            return;
+        }
 
-    // --- Determinar slot actual con ventana de gracia ---
-    $tz    = new DateTimeZone('America/Mexico_City');
-    $ahora = new DateTime('now', $tz);
-    $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
+        echo "<pre>";
+        echo "[REC CRON] Iniciando...\n";
 
-    $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-    $graciaMinutos   = 999; // forzado para pruebas (ajusta luego a 15)
-    $slotActual      = null;
+        // --- Determinar slot actual con ventana de gracia ---
+        $tz    = new DateTimeZone('America/Mexico_City');
+        $ahora = new DateTime('now', $tz);
+        $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
 
-    foreach ($horariosValidos as $h) {
-        $horaSlot = DateTime::createFromFormat('h:i A', $h, $tz);
-        if (!$horaSlot) continue;
-        $diff = abs($ahora->getTimestamp() - $horaSlot->getTimestamp()) / 60;
-        if ($diff <= $graciaMinutos) { $slotActual = $h; break; }
-    }
+        $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
+        $graciaMinutos   = 999; // forzado para pruebas (ajusta luego a 15)
+        $slotActual      = null;
 
-    if ($slotActual === null) {
-        echo "[REC CRON] ⏱️ Fuera de ventana (" . $ahora->format('h:i A') . ")\n";
-        echo "</pre>";
-        return;
-    }
+        foreach ($horariosValidos as $h) {
+            $horaSlot = DateTime::createFromFormat('h:i A', $h, $tz);
+            if (! $horaSlot) {
+                continue;
+            }
 
-    echo "[REC CRON] 🕐 Slot actual: {$slotActual} | Hoy: {$hoy}\n";
+            $diff = abs($ahora->getTimestamp() - $horaSlot->getTimestamp()) / 60;
+            if ($diff <= $graciaMinutos) {$slotActual = $h;
+                break;}
+        }
 
-    // --- Consultar recordatorios ---
+        if ($slotActual === null) {
+            echo "[REC CRON] ⏱️ Fuera de ventana (" . $ahora->format('h:i A') . ")\n";
+            echo "</pre>";
+            return;
+        }
+
+        echo "[REC CRON] 🕐 Slot actual: {$slotActual} | Hoy: {$hoy}\n";
+
+        // --- Consultar recordatorios ---
         $this->load->model('Notificacion_model');
-    $registros = $this->Notificacion_model->get_recordatorios_para_slot($slotActual, $hoy, true);
+        $registros = $this->Notificacion_model->get_recordatorios_para_slot($slotActual, $hoy, true);
 
-    echo "[REC CRON] Registros encontrados: " . count($registros) . "\n";
+        echo "[REC CRON] Registros encontrados: " . count($registros) . "\n";
 
-    if (empty($registros)) {
-        echo "[REC CRON] ❌ No hay recordatorios dentro del rango.\n";
+        if (empty($registros)) {
+            echo "[REC CRON] ❌ No hay recordatorios dentro del rango.\n";
+            echo "</pre>";
+            return;
+        }
+
+        // --- Procesar ---
+        foreach ($registros as $r) {
+            echo "\n----------------------------------------\n";
+            echo "🆔 ID={$r->id} | Cliente={$r->id_cliente} | Portal={$r->id_portal}\n";
+            echo "📌 {$r->nombre} ({$r->tipo})\n";
+            echo "📅 Fecha base: {$r->fecha_base} | Próxima: {$r->proxima_fecha}\n";
+            echo "⏳ Anticipación: {$r->dias_anticipacion} días\n";
+
+            // Calcular días restantes
+            $dtHoy    = new DateTime($hoy, $tz);
+            $dtTarget = new DateTime($r->proxima_fecha, $tz);
+            $diasRest = (int) $dtHoy->diff($dtTarget)->format('%r%a');
+
+            // Clasificar estado
+            if ($diasRest < 0) {
+                $estado = "✅ VENCIDO (hace " . abs($diasRest) . " días)";
+            } elseif ($diasRest <= $r->dias_anticipacion) {
+                $estado = "⚠️ Por vencer (faltan {$diasRest} días)";
+            } else {
+                $estado = "🕒 Aún no entra en rango";
+            }
+            echo "📆 Estado: {$estado}\n";
+
+            // Depurar configuración y canales
+            echo "🔧 Config: notificaciones_activas={$r->notificaciones_activas}, status_cfg={$r->status_cfg}\n";
+            echo "📨 Canales: correo=" . ($r->correo_cfg ? "✅" : "❌") .
+                " | whatsapp=" . ($r->whatsapp_cfg ? "✅" : "❌") . "\n";
+
+            // Filtrar correos válidos
+            $correos = array_values(array_unique(array_filter([
+                $r->correo1_cfg ?: null,
+                $r->correo2_cfg ?: null,
+            ], static fn($v) => ! empty($v) && filter_var($v, FILTER_VALIDATE_EMAIL))));
+
+            // Filtrar teléfonos válidos
+            $tels = array_values(array_unique(array_filter([
+                (! empty($r->telefono1_cfg) && ! empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
+                (! empty($r->telefono2_cfg) && ! empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
+            ], static fn($v) => strlen(preg_replace('/\D/', '', $v)) >= 10)));
+
+            echo "📧 Emails: " . (empty($correos) ? "(ninguno válido)" : implode(', ', $correos)) . "\n";
+            echo "📱 Teléfonos: " . (empty($tels) ? "(ninguno válido)" : implode(', ', $tels)) . "\n";
+
+            // Simular envío
+            if ($r->correo_cfg && ! empty($correos)) {
+                echo "🚀 Enviaría CORREO: \"Recordatorio {$r->nombre}\" a " . implode(', ', $correos) . "\n";
+            } else {
+                echo "✉️ No se envía correo.\n";
+            }
+
+            if ($r->whatsapp_cfg && ! empty($tels)) {
+                echo "📲 Enviaría WHATSAPP: \"{$r->nombre} - vence {$r->proxima_fecha}\" a " . implode(', ', $tels) . "\n";
+            } else {
+                echo "💬 No se envía WhatsApp.\n";
+            }
+
+            // Calcular nueva fecha si es mensual
+            if ($r->tipo === 'mensual') {
+                $nueva = (new DateTime($r->proxima_fecha, $tz))
+                    ->modify("+{$r->intervalo_meses} month")
+                    ->format('Y-m-d');
+                echo "🔁 Próxima fecha (preview): {$nueva}\n";
+            } else {
+                echo "🔒 Tipo único: no se reprograma.\n";
+            }
+        }
+
+        echo "\n[REC CRON] ✅ Fin de simulación.\n";
         echo "</pre>";
-        return;
     }
-
-    // --- Procesar ---
-    foreach ($registros as $r) {
-        echo "\n----------------------------------------\n";
-        echo "🆔 ID={$r->id} | Cliente={$r->id_cliente} | Portal={$r->id_portal}\n";
-        echo "📌 {$r->nombre} ({$r->tipo})\n";
-        echo "📅 Fecha base: {$r->fecha_base} | Próxima: {$r->proxima_fecha}\n";
-        echo "⏳ Anticipación: {$r->dias_anticipacion} días\n";
-
-        // Calcular días restantes
-        $dtHoy    = new DateTime($hoy, $tz);
-        $dtTarget = new DateTime($r->proxima_fecha, $tz);
-        $diasRest = (int)$dtHoy->diff($dtTarget)->format('%r%a');
-
-        // Clasificar estado
-        if ($diasRest < 0) {
-            $estado = "✅ VENCIDO (hace " . abs($diasRest) . " días)";
-        } elseif ($diasRest <= $r->dias_anticipacion) {
-            $estado = "⚠️ Por vencer (faltan {$diasRest} días)";
-        } else {
-            $estado = "🕒 Aún no entra en rango";
-        }
-        echo "📆 Estado: {$estado}\n";
-
-        // Depurar configuración y canales
-        echo "🔧 Config: notificaciones_activas={$r->notificaciones_activas}, status_cfg={$r->status_cfg}\n";
-        echo "📨 Canales: correo=" . ($r->correo_cfg ? "✅" : "❌") .
-             " | whatsapp=" . ($r->whatsapp_cfg ? "✅" : "❌") . "\n";
-
-        // Filtrar correos válidos
-        $correos = array_values(array_unique(array_filter([
-            $r->correo1_cfg ?: null,
-            $r->correo2_cfg ?: null
-        ], static fn($v) => !empty($v) && filter_var($v, FILTER_VALIDATE_EMAIL))));
-        
-        // Filtrar teléfonos válidos
-        $tels = array_values(array_unique(array_filter([
-            (!empty($r->telefono1_cfg) && !empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
-            (!empty($r->telefono2_cfg) && !empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
-        ], static fn($v) => strlen(preg_replace('/\D/', '', $v)) >= 10)));
-
-        echo "📧 Emails: " . (empty($correos) ? "(ninguno válido)" : implode(', ', $correos)) . "\n";
-        echo "📱 Teléfonos: " . (empty($tels) ? "(ninguno válido)" : implode(', ', $tels)) . "\n";
-
-        // Simular envío
-        if ($r->correo_cfg && !empty($correos)) {
-            echo "🚀 Enviaría CORREO: \"Recordatorio {$r->nombre}\" a " . implode(', ', $correos) . "\n";
-        } else {
-            echo "✉️ No se envía correo.\n";
-        }
-
-        if ($r->whatsapp_cfg && !empty($tels)) {
-            echo "📲 Enviaría WHATSAPP: \"{$r->nombre} - vence {$r->proxima_fecha}\" a " . implode(', ', $tels) . "\n";
-        } else {
-            echo "💬 No se envía WhatsApp.\n";
-        }
-
-        // Calcular nueva fecha si es mensual
-        if ($r->tipo === 'mensual') {
-            $nueva = (new DateTime($r->proxima_fecha, $tz))
-                        ->modify("+{$r->intervalo_meses} month")
-                        ->format('Y-m-d');
-            echo "🔁 Próxima fecha (preview): {$nueva}\n";
-        } else {
-            echo "🔒 Tipo único: no se reprograma.\n";
-        }
-    }
-
-    echo "\n[REC CRON] ✅ Fin de simulación.\n";
-    echo "</pre>";
-}
-
 
     public function enviar_notificaciones_inmediatamente()
     {
@@ -690,7 +725,7 @@ public function enviar_recordatorios_cron_job_debug_v2()
     }
     */
 
-    /*Envio de  notificaciones  whastapp*/
+   // Envio de  notificaciones  whastapp
     public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
     {
         $api_url = API_URL;
@@ -758,186 +793,9 @@ public function enviar_recordatorios_cron_job_debug_v2()
             }
         }
     }
-    public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
-    {
-        $this->load->library('phpmailer_lib');
-        $mail = $this->phpmailer_lib->load();
 
-        try {
-                                                              // Configuración del servidor SMTP
-            $mail->isSMTP();                                  // Establecer el envío usando SMTP
-            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'soporte@talentsafecontrol.com';
-            $mail->Password   = 'FQ{[db{}%ja-';
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port       = 465; // Puerto SMTP
 
-            // Remitente
-            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
-
-            // Destinatarios
-            foreach ($destinatarios as $correo) {
-                $mail->addAddress($correo); // Agrega el destinatario
-            }
-
-            // Asunto
-            $mail->isHTML(true);
-            $mail->CharSet = 'UTF-8';
-            $mail->Subject = 'Notificación TalentSafe Control';
-
-            // Cuerpo del mensaje con los módulos
-            $mensaje = "
-          <h3>Excelente día,</h3>
-          <p>Te recordamos que tienes algunos  archivos por  vencer en tu sucursal: " . $nombrecliente . " en los siguientes módulos:</p>
-          <ul>";
-
-            // Agregar los módulos seleccionados al mensaje
-
-            // Agregar los módulos seleccionados al mensaje
-            if (! empty($modulos)) {
-                $mensaje .= implode('', $modulos); // Convertir el arreglo de módulos en una lista HTML
-            }
-
-            $mensaje .= "</ul>
-          <p>Por favor ingresa a <a href='https://portal.talentsafecontrol.com' target='_blank'>TalentSafeControl</a> y realiza las actualizaciones pertinentes.</p>
-          <p>Saludos cordiales,<br>El equipo de TalentSafeControl</p>";
-
-            $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
-
-            // Enviar el correo
-            $mail->send();
-            echo "<script>console.log('Correo enviado a: {$correo}');</script>";
-        } catch (Exception $e) {
-            echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
-        }
-    }
-    /*
- public function enviar_whatsapp($telefonos, $portal , $sucursal, $submodulos, $template)
-{
-    // 1) Base del API (compat con tu constante)
-    $api_base = defined('API_URL') ? API_URL : null;
-    if (empty($api_base) || !is_string($api_base)) {
-        $msg = 'API_URL no está definida (o es vacía). Configúrala antes de usar WhatsApp.';
-        log_message('error', '[WA] ' . $msg);
-        if (!$this->input->is_cli_request()) {
-            echo "<script>console.error('{$msg}');</script>";
-        }
-        return false;
-    }
-    $api_base = rtrim($api_base, '/');
-    $url = $api_base . '/send-notification';
-
-    // 2) Asegurar que $telefonos sea arreglo y no vacío
-    if (!is_array($telefonos)) $telefonos = [$telefonos];
-    $telefonos = array_values(array_filter($telefonos, function ($t) {
-        return is_string($t) && trim($t) !== '';
-    }));
-    if (empty($telefonos)) {
-        $msg = 'No se proporcionaron números de teléfono válidos para enviar WhatsApp.';
-        log_message('error', '[WA] ' . $msg);
-        if (!$this->input->is_cli_request()) {
-            echo "<script>console.error('{$msg}');</script>";
-        }
-        return false;
-    }
-
-    // 3) Normaliza a E.164 básico (+52..., sin espacios/guiones)
-    $telefonos = array_map(function ($t) {
-        $t = preg_replace('/\s+|-/', '', $t);       // quita espacios y guiones
-        if (strpos($t, '+') !== 0) {                // si no empieza con +, deja solo dígitos
-            $t = preg_replace('/\D+/', '', $t);
-        }
-        return $t;
-    }, $telefonos);
-
-    // 4) Headers (si tu API requiere token, agrégalo aquí)
-    $headers = [
-        'Content-Type: application/json',
-        'Accept: application/json',
-        // 'Authorization: Bearer ' . config_item('whatsapp_api_key'), // <— si aplica
-    ];
-
-    $fallidos = [];
-    $enviados = [];
-
-    foreach ($telefonos as $telefono) {
-        $payload = [
-            'phone'           => $telefono,
-            'template'        => $template,
-            'nombre_cliente'  => $portal,
-            'submodulo'       => $submodulos,
-            'sucursales'      => $sucursal,
-        ];
-
-        // 5) cURL con timeouts y manejo de errores
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL            => $url,
-            CURLOPT_POST           => true,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            CURLOPT_TIMEOUT        => 20,
-            CURLOPT_CONNECTTIMEOUT => 5,
-            // SOLO para pruebas locales con SSL propio:
-            // CURLOPT_SSL_VERIFYPEER => false,
-            // CURLOPT_SSL_VERIFYHOST => 0,
-        ]);
-
-        $response = curl_exec($ch);
-        $errno    = curl_errno($ch);
-        $errstr   = curl_error($ch);
-        $http     = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($errno) {
-            $motivo = "cURL({$errno}): {$errstr}";
-            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo];
-            log_message('error', "[WA] {$telefono} {$motivo}");
-            continue;
-        }
-
-        if ($response === false || $response === '') {
-            $motivo = "Respuesta vacía (HTTP {$http})";
-            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo];
-            log_message('error', "[WA] {$telefono} {$motivo}");
-            continue;
-        }
-
-        $json = json_decode($response, true);
-        if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
-            $motivo = "Respuesta no JSON (HTTP {$http})";
-            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo, 'resp' => $response];
-            log_message('error', "[WA] {$telefono} {$motivo} -> {$response}");
-            continue;
-        }
-
-        if (isset($json['status']) && $json['status'] === 'success') {
-            $enviados[] = $telefono;
-            log_message('info', "[WA] OK {$telefono} (HTTP {$http})");
-        } else {
-            $msg = $json['message'] ?? 'Error desconocido';
-            $motivo = "{$msg} (HTTP {$http})";
-            $fallidos[] = ['phone' => $telefono, 'motivo' => $motivo, 'resp' => $json];
-            log_message('error', "[WA] FALLÓ {$telefono} {$motivo} / Resp: " . json_encode($json));
-        }
-    }
-
-    // 6) SOLO imprimir en consola los que NO funcionaron (si no es CLI)
-    if (!$this->input->is_cli_request()) {
-        if (!empty($fallidos)) {
-            $js = json_encode($fallidos, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            echo "<script>console.error('WhatsApp fallidos:', {$js});</script>";
-        } else {
-            // Si prefieres NO imprimir nada cuando todo va bien, comenta esta línea:
-            $js = json_encode($enviados, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            echo "<script>console.log('WhatsApp enviados:', {$js});</script>";
-        }
-    }
-
-    return empty($fallidos);
-}*/
+   
 
 /*correos  para  notificaciones */
 
