@@ -155,10 +155,10 @@ class Notificacion_model extends CI_Model
 
     $query = $this->db->get();
 
-    if ($debug) {
+   /* if ($debug) {
         echo "SQL ejecutada:\n" . $this->db->last_query() . "\n";
         echo "Resultados: " . $query->num_rows() . "\n";
-    }
+    }*/
 
     return $query->result();
 }
