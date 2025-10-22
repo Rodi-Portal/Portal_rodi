@@ -135,70 +135,144 @@ class Notificacion_model extends CI_Model
 
         // DEBUG: ver query y resultados
         $query = $this->db->get();
-        echo "<pre>";
+        /*echo "<pre>";
         echo "SQL ejecutado:\n" . $this->db->last_query() . "\n";
         echo "Resultados: " . $query->num_rows() . "\n";
         print_r($query->result());
-        echo "</pre>";
+        echo "</pre>"; */
 
         return $query->result();
     }
 
     public function get_recordatorios_para_slot($slot, $hoyYmd, $debug = false)
     {
-        // --- Selección con join entre recordatorios (fechas) y notificaciones_recordatorios (configuración/envío) ---
+                                                                      // Normaliza el slot a formatos comparables
+        $slot = strtoupper(trim(str_replace(['.', ' '], '', $slot))); // "9am" -> "9AM"
+
         $this->db->select("
         r.*,
         nr.notificaciones_activas,
-        nr.status           AS status_cfg,
-        nr.correo           AS correo_cfg,
-        nr.correo1          AS correo1_cfg,
-        nr.correo2          AS correo2_cfg,
-        nr.whatsapp         AS whatsapp_cfg,
-        nr.lada1            AS lada1_cfg,
-        nr.telefono1        AS telefono1_cfg,
-        nr.lada2            AS lada2_cfg,
-        nr.telefono2        AS telefono2_cfg
+        nr.status AS status_cfg,
+        nr.correo AS correo_cfg,
+        nr.correo1 AS correo1_cfg,
+        nr.correo2 AS correo2_cfg,
+        nr.whatsapp AS whatsapp_cfg,
+        nr.lada1 AS lada1_cfg,
+        nr.telefono1 AS telefono1_cfg,
+        nr.lada2 AS lada2_cfg,
+        nr.telefono2 AS telefono2_cfg
     ", false);
 
         $this->db->from('recordatorio AS r');
         $this->db->join(
             'notificaciones_recordatorios AS nr',
-            'nr.id_portal = r.id_portal AND nr.id_cliente = r.id_cliente',
+            'nr.id_portal = r.id_portal AND nr.id_cliente = r.id_cliente AND nr.notificaciones_activas = 1 AND nr.status = 1',
             'left'
         );
 
-        // --- Activos en ambas tablas ---
+        // Filtros básicos
         $this->db->where('r.activo', 1);
         $this->db->where('r.eliminado', 0);
-        $this->db->where('nr.notificaciones_activas', 1);
-        $this->db->where('nr.status', 1);
+        $this->db->where('r.proxima_fecha IS NOT NULL', null, false);
 
-        // --- Filtro por slot (horario) dentro del SET ---
-        // Ejemplo: '09:00 AM,03:00 PM,07:00 PM'
-        $this->db->like('nr.horarios', $slot);
-
-        // --- Condición de anticipación ---
-        // recordatorios.proxima_fecha <= (hoy + dias_anticipacion)
+        // Filtro por anticipación
         $hoyEsc = $this->db->escape($hoyYmd);
-        $this->db->where("r.proxima_fecha IS NOT NULL", null, false);
         $this->db->where("r.proxima_fecha <= DATE_ADD({$hoyEsc}, INTERVAL r.dias_anticipacion DAY)", null, false);
+
+        // --- Filtro flexible de horario ---
+        $this->db->group_start()
+            ->like('REPLACE(REPLACE(UPPER(nr.horarios), " ", ""), ".", "")', $slot)
+            ->group_end();
 
         $query = $this->db->get();
 
-        /* if ($debug) {
-        echo "SQL ejecutada:\n" . $this->db->last_query() . "\n";
-        echo "Resultados: " . $query->num_rows() . "\n";
-    }*/
+        if ($debug) {
+            echo "SQL ejecutada:\n" . $this->db->last_query() . "\n";
+            echo "Resultados: " . $query->num_rows() . "\n";
+
+            $i = 1;
+            foreach ($query->result() as $r) {
+                echo "#{$i} ID={$r->id} | cliente={$r->id_cliente} | portal={$r->id_portal} | prox={$r->proxima_fecha} | dias_ant={$r->dias_anticipacion} | horarios=" . ($r->horarios ?? '(sin nr.horarios)') . " | correo_cfg={$r->correo_cfg} | whatsapp_cfg={$r->whatsapp_cfg}\n";
+                $i++;
+            }
+        }
 
         return $query->result();
     }
+public function get_recordatorios_para_slot_window($slot, $hoyYmd, $debug = false)
+{
+    // Normaliza el slot comparador: "9am" -> "9AM", "09:00 AM" -> "09:00AM"
+    $needle = strtoupper(trim(str_replace([' ', '.'], '', $slot))); // sin espacios ni puntos
 
-    public function actualizar_proxima_fecha($id, $nuevaFechaYmd)
-    {
-        $this->db->where('id', $id)->update('recordatorio', [
-            'proxima_fecha' => $nuevaFechaYmd,
-        ]);
+    $this->db->select("
+        r.*,
+        nr.notificaciones_activas,
+        nr.status AS status_cfg,
+        nr.correo AS correo_cfg,
+        nr.correo1 AS correo1_cfg,
+        nr.correo2 AS correo2_cfg,
+        nr.whatsapp AS whatsapp_cfg,
+        nr.lada1 AS lada1_cfg,
+        nr.telefono1 AS telefono1_cfg,
+        nr.lada2 AS lada2_cfg,
+        nr.telefono2 AS telefono2_cfg,
+        p.nombre as portal,
+        c.nombre as cliente
+    ", false);
+
+    $this->db->from('recordatorio AS r');
+    $this->db->join(
+        'notificaciones_recordatorios AS nr',
+        'nr.id_portal = r.id_portal AND nr.id_cliente = r.id_cliente AND nr.notificaciones_activas = 1 AND nr.status = 1',
+        'left'
+    );
+      $this->db->join(
+        'portal AS p',
+        'r.id_portal = p.id',
+        'left'
+    );
+          $this->db->join(
+        'Cliente AS c',
+        'r.id_cliente = c.id',
+        'left'
+    );
+
+    // Activos
+    $this->db->where('r.activo', 1);
+    $this->db->where('r.eliminado', 0);
+    $this->db->where('r.proxima_fecha IS NOT NULL', null, false);
+
+    // Ventana correcta: HOY <= proxima <= HOY + dias_anticipacion
+    $hoyEsc = $this->db->escape($hoyYmd);
+    $this->db->where("r.proxima_fecha >= {$hoyEsc}", null, false);
+    $this->db->where("r.proxima_fecha <= DATE_ADD({$hoyEsc}, INTERVAL r.dias_anticipacion DAY)", null, false);
+
+    // Filtro flexible por horarios (solo los que tengan nr.horarios y contenga el slot normalizado)
+    $this->db->group_start()
+        ->like('REPLACE(REPLACE(UPPER(nr.horarios), " ", ""), ".", "")', $needle)
+        ->group_end();
+
+    $query = $this->db->get();
+
+    if ($debug) {
+        echo "SQL ejecutada:\n" . $this->db->last_query() . "\n";
+        echo "Resultados: " . $query->num_rows() . "\n";
+        $i = 1;
+        foreach ($query->result() as $r) {
+            $h = isset($r->horarios) ? $r->horarios : '(sin nr.horarios)';
+            echo "#{$i} ID={$r->id} | cliente={$r->id_cliente} | portal={$r->id_portal} | prox={$r->proxima_fecha} | dias_ant={$r->dias_anticipacion} | horarios={$h} | correo_cfg={$r->correo_cfg} | whatsapp_cfg={$r->whatsapp_cfg}\n";
+            $i++;
+        }
     }
+
+    return $query->result();
+}
+
+/** Actualiza proxima_fecha de un recordatorio */
+public function actualizar_proxima_fecha($id_recordatorio, $nuevaFechaYmd)
+{
+    return $this->db->where('id', (int)$id_recordatorio)
+                    ->update('recordatorio', ['proxima_fecha' => $nuevaFechaYmd]);
+}
 
 }

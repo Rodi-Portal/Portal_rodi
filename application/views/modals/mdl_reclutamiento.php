@@ -528,7 +528,7 @@
                     if ($paises != null) {
                         foreach ($paises as $p) {
                         $default = ($p->nombre == 'México') ? 'selected' : ''; ?>
-                <option value="<?php echo $p->nombre; ?>"<?php echo $default ?>><?php echo $p->nombre; ?></option>
+                <option value="<?php echo $p->nombre; ?>" <?php echo $default ?>><?php echo $p->nombre; ?></option>
                 <?php
                     }
                     }
@@ -1680,7 +1680,8 @@
       </div>
       <div class="modal-body">
         <?php if ($this->session->userdata('tipo_bolsa') > 0) {?>
-        <form action="<?php echo base_url('Importa_excel/importar'); ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo base_url('Importa_excel/importar'); ?>" method="post" enctype="multipart/form-data"
+          id="form-importar-excel">
           <input type="hidden" name="id_portal">
           <input type="hidden" name="id_cliente"><!-- si aplica -->
           <div class="form-group">
@@ -2460,7 +2461,7 @@ var pag = 1;
 
 // Oculta secciones al cargar el script
 // --- Lista única de secciones dinámicas ---
-(function ($) {
+(function($) {
   // ---- Selectores de todos los bloques dinámicos ----
   const BLOQUES = [
     '.div_info_project', '.div_info_projectt', '.div_project',
@@ -2472,12 +2473,14 @@ var pag = 1;
   ].join(', ');
 
   // Limpia estilos inline de display (por si quedaron display:none)
-  $(BLOQUES).each(function () { this.style && (this.style.display = ''); });
+  $(BLOQUES).each(function() {
+    this.style && (this.style.display = '');
+  });
 
   // 1) Al mostrar el modal, dispara el change del combo para pintar el estado actual
   $(document)
     .off('shown.bs.modal.registro', '#registroCandidatoModal')
-    .on('shown.bs.modal.registro', '#registroCandidatoModal', function () {
+    .on('shown.bs.modal.registro', '#registroCandidatoModal', function() {
       const $sel = $('#opcion_registro');
       if (!$sel.length) {
         console.warn('[registro] No existe #opcion_registro');
@@ -2490,7 +2493,7 @@ var pag = 1;
   // 2) Cambio de opción (delegado y namespaced)
   $(document)
     .off('change.registro', '#opcion_registro')
-    .on('change.registro', '#opcion_registro', function () {
+    .on('change.registro', '#opcion_registro', function() {
       const opcion = String(this.value);
       console.log('[registro] change opcion_registro =', opcion);
 
@@ -2505,13 +2508,17 @@ var pag = 1;
         // Proyecto anterior + Exámenes
         $('.div_info_previo, .div_previo, .div_info_test, .div_test, #detalles_previo')
           .removeClass('d-none')
-          .each(function () { this.style.display = ''; });
+          .each(function() {
+            this.style.display = '';
+          });
         console.log('[registro] mostrando: previo + test');
       } else if (opcion === '1') {
         // Solo exámenes
         $('.div_info_test, .div_test')
           .removeClass('d-none')
-          .each(function () { this.style.display = ''; });
+          .each(function() {
+            this.style.display = '';
+          });
         console.log('[registro] mostrando: solo test');
       } else {
         console.log('[registro] mostrando: nada extra');
@@ -2521,7 +2528,7 @@ var pag = 1;
   // 3) Al cerrar el modal: reset SOLO lo dinámico (no borra datos del aspirante)
   $(document)
     .off('hidden.bs.modal.registro', '#registroCandidatoModal')
-    .on('hidden.bs.modal.registro', '#registroCandidatoModal', function () {
+    .on('hidden.bs.modal.registro', '#registroCandidatoModal', function() {
       $(BLOQUES).addClass('d-none');
       $("#registroCandidatoModal #msj_error").hide().empty();
 
@@ -2544,7 +2551,7 @@ var pag = 1;
 
   // (Opcional) Select2
   if ($.fn.select2) {
-    $(document).on('hidden.bs.modal.registro', '#registroCandidatoModal', function () {
+    $(document).on('hidden.bs.modal.registro', '#registroCandidatoModal', function() {
       if ($('#puesto').hasClass('select2-hidden-accessible')) {
         $('#puesto').select2('destroy');
       }
@@ -3103,66 +3110,167 @@ function renderResultado(resp) {
 // ===== Interceptar ese único form y mandar por AJAX =====
 $(function() {
   // Selecciona exactamente tu form por su action (contiene Importa_excel/importar)
-  $('form[action*="Importa_excel/importar"]').on('submit', function(e) {
-    e.preventDefault();
+  // ====================== Configuración ======================
+  const THRESH_MB = 8; // umbral: si el archivo >= 8MB se usa importar_streaming
+  // ===========================================================
 
-    const form = this;
-    const fd = new FormData(form);
-
-    // (Opcional) Si tienes CSRF activo en CI3, descomenta y ajusta:
-    // fd.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
-
-    $.ajax({
-      url: $(form).attr('action'), // usa la URL del form
-      method: 'POST',
-      data: fd,
-      processData: false,
-      contentType: false,
-      beforeSend: function() {
-        Swal.fire({
-          title: 'Importando...',
-          text: 'Por favor espera',
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading()
-        });
-      },
-      success: function(resp) {
-        // Si el backend devuelve JSON como string, parsea:
-        if (typeof resp === 'string') {
-          try {
-            resp = JSON.parse(resp);
-          } catch (e) {
-            resp = {
-              ok: false,
-              msg: 'Respuesta no válida'
-            };
-          }
+  (function($) {
+    // Fallback muy simple por si no existe renderResultado en tu proyecto
+    if (typeof window.renderResultado !== 'function') {
+      window.renderResultado = function(resp) {
+        if (!resp || typeof resp !== 'object') {
+          Swal.fire('Error', 'Respuesta no válida del servidor', 'error');
+          return;
         }
-        renderResultado(resp);
-      },
-      error: function() {
-        Swal.fire('Error', 'No se pudo contactar al servidor', 'error');
-      }
+        if (resp.ok) {
+          const det = [
+            'Bolsa insertados: ' + (resp.bolsa_insertados ?? 0),
+            'Empleados insertados: ' + (resp.empleados_insertados ?? 0),
+            'Extras empleados: ' + (resp.empleado_extras_rows ?? 0),
+            (resp.errores && resp.errores.length ? ('Errores: ' + resp.errores.length) : ''),
+            (resp.fallas_descargas && resp.fallas_descargas.length ? ('Fallas descargas: ' + resp
+              .fallas_descargas.length) : '')
+          ].filter(Boolean).join('<br>');
+          Swal.fire({
+            icon: 'success',
+            title: 'Importación completa',
+            html: det
+          });
+        } else {
+          Swal.fire('Error', resp.msg || 'Importación fallida', 'error');
+        }
+      };
+    }
+
+    $(function() {
+      // Selecciona exactamente el form por id (más seguro)
+      $('#form-importar-excel').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = this;
+        const $form = $(form);
+        const fd = new FormData(form);
+
+        // Localiza el input file
+        const $fileInput = $form.find('input[type="file"][name="archivo_excel"]');
+        const file = $fileInput.length ? ($fileInput[0].files[0] || null) : null;
+
+        if (!file) {
+          Swal.fire('Falta archivo', 'Selecciona un Excel antes de importar', 'warning');
+          return;
+        }
+
+        // Heurística por tamaño para decidir endpoint
+        const sizeMB = file.size / (1024 * 1024);
+        const useStreaming = sizeMB >= THRESH_MB;
+
+        // Construye la URL final según el modo
+        let actionUrl = $form.attr('action') || '';
+        if (useStreaming && /importar(?:\/)?$/i.test(actionUrl)) {
+          actionUrl = actionUrl.replace(/importar(?:\/)?$/i, 'importar_streaming');
+        } else if (!useStreaming && /importar_streaming(?:\/)?$/i.test(actionUrl)) {
+          actionUrl = actionUrl.replace(/importar_streaming(?:\/)?$/i, 'importar');
+        }
+
+        // Bandera para logging en backend (opcional)
+        fd.append('modo_import', useStreaming ? 'streaming' : 'normal');
+
+        // (Opcional) CSRF de CI3 si lo usas:
+        // fd.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
+
+        $.ajax({
+          url: actionUrl,
+          method: 'POST',
+          data: fd,
+          processData: false,
+          contentType: false,
+          xhr: function() {
+            const xhr = new window.XMLHttpRequest();
+            // barra de progreso de subida
+            xhr.upload.addEventListener('progress', function(evt) {
+              if (evt.lengthComputable) {
+                const pct = Math.round((evt.loaded / evt.total) * 100);
+                Swal.update({
+                  title: useStreaming ? 'Importando (streaming)...' : 'Importando...',
+                  html: `Subiendo archivo: <b>${pct}%</b><br>Tamaño: ${sizeMB.toFixed(2)} MB`
+                });
+              }
+            });
+            return xhr;
+          },
+          beforeSend: function() {
+            Swal.fire({
+              title: useStreaming ? 'Importando (streaming)...' : 'Importando...',
+              text: 'Por favor espera',
+              allowOutsideClick: false,
+              didOpen: () => Swal.showLoading()
+            });
+          },
+          success: function(resp) {
+            // Asegura objeto JSON
+            if (typeof resp === 'string') {
+              try {
+                resp = JSON.parse(resp);
+              } catch (e) {
+                resp = {
+                  ok: false,
+                  msg: 'Respuesta no válida del servidor'
+                };
+              }
+            }
+            renderResultado(resp);
+          },
+          error: function(xhr) {
+            let msg = 'No se pudo contactar al servidor';
+            try {
+              const j = JSON.parse(xhr.responseText);
+              if (j && (j.msg || j.message)) msg = j.msg || j.message;
+            } catch (_) {}
+            Swal.fire('Error', msg, 'error');
+          }
+        });
+      });
     });
-  });
+  })(jQuery);
 });
 </script>
 
 <style>
-  #selectStatus option.status-1 { background:#d6d6d6; color:#000; }
-  #selectStatus option.status-2 { background:#87CEFA; color:#000; }
-  #selectStatus option.status-3 { background:#FFD700; color:#000; }
-  #selectStatus option.status-4 { background:#32CD32; color:#fff; }
-  #selectStatus option.status-5 { background:#ff6200ff; color:#000; }
+#selectStatus option.status-1 {
+  background: #d6d6d6;
+  color: #000;
+}
 
-  /* que el select también se pinte al elegir */
-  #selectStatus {
-    transition: background-color .15s, color .15s;
-  }
-  /* app.scss o tu hoja de estilos */
+#selectStatus option.status-2 {
+  background: #87CEFA;
+  color: #000;
+}
+
+#selectStatus option.status-3 {
+  background: #FFD700;
+  color: #000;
+}
+
+#selectStatus option.status-4 {
+  background: #32CD32;
+  color: #fff;
+}
+
+#selectStatus option.status-5 {
+  background: #ff6200ff;
+  color: #000;
+}
+
+/* que el select también se pinte al elegir */
+#selectStatus {
+  transition: background-color .15s, color .15s;
+}
+
+/* app.scss o tu hoja de estilos */
 .btn-status {
   margin-left: 5px;
-  background-color: #6f42c1; /* morado Bootstrap */
+  background-color: #6f42c1;
+  /* morado Bootstrap */
   border-color: #5a379d;
   color: #fff;
 }
@@ -3171,7 +3279,6 @@ $(function() {
   background-color: #59359c;
   border-color: #45277a;
 }
-
 </style>
 <style>
 .actions {

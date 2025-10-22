@@ -95,7 +95,7 @@ class Notificacion extends CI_Controller
             log_message('error', 'JSON inválido en obtener_estado_empleado: ' . json_last_error_msg());
             return null;
         }
-  
+
         return $data; // ['statusDocuments'=>..., 'statusCursos'=>..., 'statusEvaluaciones'=>...]
     }
     public function enviar_notificaciones_cron_job()
@@ -179,7 +179,7 @@ class Notificacion extends CI_Controller
     public function enviar_notificaciones_exempleados_cron_job()
     {
         // --- Token de seguridad ---
-      /*  $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+        /*  $token = $this->uri->segment(3) ?: $this->input->get('token', true);
         if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
             show_404();
             return;
@@ -231,7 +231,7 @@ class Notificacion extends CI_Controller
 
             // 1) Obtener estado del ex empleado (status=2)
             $estado = $this->obtener_estado_empleado($registro->id_portal, $registro->id_cliente, 2);
-            
+
             if (! $estado) {
                 log_message('error', "[CRON EX] No se pudo obtener estado para ID={$registro->id}");
                 continue;
@@ -273,11 +273,11 @@ class Notificacion extends CI_Controller
 
                 if (! empty($telefonos)) {
                     try {
-                        $this->enviar_whatsapp(
+                        $this->enviar_whatsapp_ex(
                             $telefonos,
                             $registro->nombrePortal ?? 'Portal',
-                            $registro->nombre ?? 'Ex Empleado',
-                            'Documentos',
+                            $registro->nombre ?? 'Sucursal',
+                            'Exempleados',
                             'notificacion_exempleados'
                         );
                         log_message('info', "[CRON EX] WhatsApp enviado a ID={$registro->id}: " . implode(', ', $telefonos));
@@ -436,128 +436,232 @@ class Notificacion extends CI_Controller
             echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
         }
     }
-
-    public function enviar_recordatorios_cron_job_debug_v2()
+   
+    public function enviar_recordatorios_cron_job_run()
     {
-        // --- Token de seguridad ---
-        $token = $this->uri->segment(3) ?: $this->input->get('token', true);
-        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
-            show_404();
-            return;
-        }
-
-        echo "<pre>";
-        echo "[REC CRON] Iniciando...\n";
-
-        // --- Determinar slot actual con ventana de gracia ---
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
         $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
 
-        $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        $graciaMinutos   = 999; // forzado para pruebas (ajusta luego a 15)
+        // Acepta variantes: "09:00 AM", "9am", "9 am", “3:00 PM”, “3pm”, etc.
+        $horariosValidos = ['09:00 AM', '3:00 PM', '7:00 PM', '9am', '3pm', '7pm', '9 am', '3 pm', '7 pm'];
+        $graciaMinutos   = 999;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {
-            $horaSlot = DateTime::createFromFormat('h:i A', $h, $tz);
-            if (! $horaSlot) {
+                                                          // Normaliza y trata de parsear en 12h
+            $h1   = strtoupper(str_replace(' ', '', $h)); // "9am" -> "9AM", "09:00AM"
+            $slot = DateTime::createFromFormat('gA', $h1, $tz);
+            if (! $slot) {
+                $slot = DateTime::createFromFormat('g:iA', $h1, $tz);
+            }
+            if (! $slot) {
                 continue;
             }
 
-            $diff = abs($ahora->getTimestamp() - $horaSlot->getTimestamp()) / 60;
+            $diff = abs($ahora->getTimestamp() - $slot->getTimestamp()) / 60;
             if ($diff <= $graciaMinutos) {$slotActual = $h;
                 break;}
         }
 
         if ($slotActual === null) {
-            echo "[REC CRON] ⏱️ Fuera de ventana (" . $ahora->format('h:i A') . ")\n";
-            echo "</pre>";
+            // Fuera de la ventana de gracia: no hace nada.
             return;
         }
 
-        echo "[REC CRON] 🕐 Slot actual: {$slotActual} | Hoy: {$hoy}\n";
-
-        // --- Consultar recordatorios ---
         $this->load->model('Notificacion_model');
-        $registros = $this->Notificacion_model->get_recordatorios_para_slot($slotActual, $hoy, true);
 
-        echo "[REC CRON] Registros encontrados: " . count($registros) . "\n";
+        // Trae recordatorios cuyo vencimiento esté en rango (<= hoy + anticipación)
+        // y cuyo horario coincida con el slot actual.
+        $registros = $this->Notificacion_model->get_recordatorios_para_slot_window($slotActual, $hoy, false);
 
         if (empty($registros)) {
-            echo "[REC CRON] ❌ No hay recordatorios dentro del rango.\n";
-            echo "</pre>";
             return;
         }
 
-        // --- Procesar ---
         foreach ($registros as $r) {
-            echo "\n----------------------------------------\n";
-            echo "🆔 ID={$r->id} | Cliente={$r->id_cliente} | Portal={$r->id_portal}\n";
-            echo "📌 {$r->nombre} ({$r->tipo})\n";
-            echo "📅 Fecha base: {$r->fecha_base} | Próxima: {$r->proxima_fecha}\n";
-            echo "⏳ Anticipación: {$r->dias_anticipacion} días\n";
+            // ====== CORREO ======
+            if ((int) $r->correo_cfg === 1) {
+                $correos = array_values(array_unique(array_filter([
+                    $r->correo1_cfg ?: null,
+                    $r->correo2_cfg ?: null,
+                ], static function ($v) {
+                    return ! empty($v) && filter_var($v, FILTER_VALIDATE_EMAIL);
+                })));
 
-            // Calcular días restantes
-            $dtHoy    = new DateTime($hoy, $tz);
-            $dtTarget = new DateTime($r->proxima_fecha, $tz);
-            $diasRest = (int) $dtHoy->diff($dtTarget)->format('%r%a');
-
-            // Clasificar estado
-            if ($diasRest < 0) {
-                $estado = "✅ VENCIDO (hace " . abs($diasRest) . " días)";
-            } elseif ($diasRest <= $r->dias_anticipacion) {
-                $estado = "⚠️ Por vencer (faltan {$diasRest} días)";
-            } else {
-                $estado = "🕒 Aún no entra en rango";
-            }
-            echo "📆 Estado: {$estado}\n";
-
-            // Depurar configuración y canales
-            echo "🔧 Config: notificaciones_activas={$r->notificaciones_activas}, status_cfg={$r->status_cfg}\n";
-            echo "📨 Canales: correo=" . ($r->correo_cfg ? "✅" : "❌") .
-                " | whatsapp=" . ($r->whatsapp_cfg ? "✅" : "❌") . "\n";
-
-            // Filtrar correos válidos
-            $correos = array_values(array_unique(array_filter([
-                $r->correo1_cfg ?: null,
-                $r->correo2_cfg ?: null,
-            ], static fn($v) => ! empty($v) && filter_var($v, FILTER_VALIDATE_EMAIL))));
-
-            // Filtrar teléfonos válidos
-            $tels = array_values(array_unique(array_filter([
-                (! empty($r->telefono1_cfg) && ! empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
-                (! empty($r->telefono2_cfg) && ! empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
-            ], static fn($v) => strlen(preg_replace('/\D/', '', $v)) >= 10)));
-
-            echo "📧 Emails: " . (empty($correos) ? "(ninguno válido)" : implode(', ', $correos)) . "\n";
-            echo "📱 Teléfonos: " . (empty($tels) ? "(ninguno válido)" : implode(', ', $tels)) . "\n";
-
-            // Simular envío
-            if ($r->correo_cfg && ! empty($correos)) {
-                echo "🚀 Enviaría CORREO: \"Recordatorio {$r->nombre}\" a " . implode(', ', $correos) . "\n";
-            } else {
-                echo "✉️ No se envía correo.\n";
+                if (! empty($correos)) {
+                    try {
+                        // Mensaje simple: asunto y una línea con fecha de vencimiento
+                        $this->enviar_correo(
+                            $correos,
+                            "Recordatorio {$r->nombre}",
+                            ["<li>{$r->nombre} - vence {$r->proxima_fecha}</li>"],
+                            $r->nombre ?? 'Recordatorio'
+                        );
+                    } catch (Exception $e) { /* log_message('error', $e->getMessage()); */}
+                }
             }
 
-            if ($r->whatsapp_cfg && ! empty($tels)) {
-                echo "📲 Enviaría WHATSAPP: \"{$r->nombre} - vence {$r->proxima_fecha}\" a " . implode(', ', $tels) . "\n";
-            } else {
-                echo "💬 No se envía WhatsApp.\n";
+            // ====== WHATSAPP (plantilla de recordatorios) ======
+            if ((int) $r->whatsapp_cfg === 1) {
+                $tels = array_values(array_unique(array_filter([
+                    (! empty($r->telefono1_cfg) && ! empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
+                    (! empty($r->telefono2_cfg) && ! empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
+                ], static function ($v) {
+                    if ($v === null) {
+                        return false;
+                    }
+
+                    $digits = preg_replace('/\D+/', '', (string) $v);
+                    return strlen($digits) >= 10;
+                })));
+
+                if (! empty($tels)) {
+                    try {
+                        // Ajusta textos a lo que pide tu PLANTILLA:
+                        // Recordatorio {{portal}}
+                        // • Sucursal: {{cliente}}
+                        // • Asunto: {{recordatorio}}
+                        // • Detalle: {{mensaje}}
+                        // • Fecha de vencimiento: {{fecha}}
+
+                        $portal     = $r->portal ?? 'TalentSafe';
+                        $cliente    = $r->cliente ?? 'Sucursal';
+                        $asunto     = $r->nombre;                       // nombre del recordatorio
+                        $detalle    = $r->descripcion ?? 'Sin detalle'; // texto libre opcional
+                        $venceFecha = (new DateTime($r->proxima_fecha, $tz))->format('d/m/Y');
+
+                        $this->enviar_whatsapp_recordatorio(
+                            $tels,
+                            $portal,                     // {{portal}}
+                            $cliente,                    // {{cliente}}
+                            $asunto,                     // {{recordatorio}}
+                            $detalle,                    // {{mensaje}}
+                            $venceFecha,                 // {{fecha}}
+                            'notificacion_recordatorios' // nombre de plantilla en WABA
+                        );
+                    } catch (Exception $e) { /* log_message('error', $e->getMessage()); */}
+                }
             }
 
-            // Calcular nueva fecha si es mensual
-            if ($r->tipo === 'mensual') {
-                $nueva = (new DateTime($r->proxima_fecha, $tz))
-                    ->modify("+{$r->intervalo_meses} month")
-                    ->format('Y-m-d');
-                echo "🔁 Próxima fecha (preview): {$nueva}\n";
-            } else {
-                echo "🔒 Tipo único: no se reprograma.\n";
+            // ====== RE-PROGRAMACIÓN DE FECHA ======
+            // Si HOY == proxima_fecha, se avanza la proxima_fecha según configuración
+            if ($hoy === $r->proxima_fecha) {
+                $nueva = $this->calcularProximaFecha($r, $tz);
+                if ($nueva !== null) {
+                    $this->Notificacion_model->actualizar_proxima_fecha($r->id, $nueva);
+                }
             }
         }
+    }
 
-        echo "\n[REC CRON] ✅ Fin de simulación.\n";
-        echo "</pre>";
+/**
+ * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
+ * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
+ */
+
+
+    private function enviar_whatsapp_recordatorio($telefonos, $portal, $cliente, $recordatorio, $mensaje, $fecha, $template = 'notificacion_recordatorio')
+    {
+        $base = rtrim(API_URL, '/'); // define(API_URL, 'http://localhost:8000/api'); por ejemplo
+        $url  = $base . '/send-notification-recordatorio';
+
+        if (! is_array($telefonos)) {
+            $telefonos = [$telefonos];
+        }
+
+        // Normaliza y filtra teléfonos válidos
+        $telefonos = array_values(array_filter(array_map(function ($t) {
+            if (! is_string($t) || $t === '') {
+                return null;
+            }
+
+            $digits = preg_replace('/\D+/', '', $t);
+            return (strlen($digits) >= 10) ? $t : null;
+        }, $telefonos)));
+
+        if (empty($telefonos)) {
+            log_message('error', '[WA-REC] No hay teléfonos válidos.');
+            return;
+        }
+
+        foreach ($telefonos as $phone) {
+            $payload = [
+                'phone'        => $phone,
+                'template'     => $template,
+                'portal'       => (string) $portal,
+                'cliente'      => (string) $cliente,
+                'recordatorio' => (string) $recordatorio,
+                'mensaje'      => (string) $mensaje,
+                'fecha'        => (string) $fecha,
+            ];
+
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL            => $url,
+                CURLOPT_POST           => true,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER     => [
+                    'Content-Type: application/json',
+                    'Accept: application/json',
+                ],
+                CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
+                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_TIMEOUT        => 25,
+            ]);
+
+            $response = curl_exec($ch);
+            if ($response === false) {
+                log_message('error', '[WA-REC] cURL error (' . $phone . '): ' . curl_error($ch));
+                curl_close($ch);
+                continue;
+            }
+
+            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            $json = json_decode($response, true);
+            if ($code >= 200 && $code < 300 && isset($json['status']) && $json['status'] === 'success') {
+                log_message('info', '[WA-REC] Enviado OK a ' . $phone);
+            } else {
+                $msg = $json['message'] ?? $response;
+                // log_message('error', "[WA-REC] Falló envío a {$phone} (HTTP {$code}) {$msg}");
+            }
+        }
+    }
+
+/**
+ * Avanza la próxima fecha para recordatorios recurrentes.
+ * Soporta tipo = 'mensual' usando intervalo_meses (1=mensual, 2=bimestral, 3=trimestral, 6=semestral, 12=anual).
+ * Para 'unico' devuelve null (no cambia).
+ */
+    private function calcularProximaFecha($r, DateTimeZone $tz)
+    {
+        // Si no es recurrente, no actualizar
+        if (isset($r->tipo) && strtolower($r->tipo) === 'unico') {
+            return null;
+        }
+
+        $base = null;
+        if (! empty($r->proxima_fecha)) {
+            $base = DateTime::createFromFormat('Y-m-d', $r->proxima_fecha, $tz);
+        } elseif (! empty($r->fecha_base)) {
+            $base = DateTime::createFromFormat('Y-m-d', $r->fecha_base, $tz);
+        }
+
+        if (! $base) {
+            return null;
+        }
+
+        // Por defecto 1 mes si no viene intervalo_meses
+        $intervalo = (int) ($r->intervalo_meses ?? 1);
+        if ($intervalo <= 0) {
+            $intervalo = 1;
+        }
+
+        // Avanza meses
+        $base->modify("+{$intervalo} month");
+        return $base->format('Y-m-d');
     }
 
     public function enviar_notificaciones_inmediatamente()
@@ -725,7 +829,7 @@ class Notificacion extends CI_Controller
     }
     */
 
-   // Envio de  notificaciones  whastapp
+    // Envio de  notificaciones  whastapp
     public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
     {
         $api_url = API_URL;
@@ -794,12 +898,77 @@ class Notificacion extends CI_Controller
         }
     }
 
+    public function enviar_whatsapp_ex($telefonos, $portal, $sucursal, $submodulos, $template)
+    {
+        $api_url = API_URL;
+        $url     = $api_url . 'send-notification-ex';
 
-   
+        // Asegurarse de que $telefonos sea un array
+        if (! is_array($telefonos)) {
+            $telefonos = [$telefonos]; // Convierte a array si no lo es
+        }
 
-/*correos  para  notificaciones */
+        // Filtra valores vacíos o no válidos
+        $telefonos = array_filter($telefonos, function ($telefono) {
+            return ! empty($telefono) && is_string($telefono); // Acepta solo cadenas no vacías
+        });
 
-// aqui termina   la funcion notificaciones  via  whatsapp   y correos
+        // Verifica si hay teléfonos válidos
+        if (empty($telefonos)) {
+            log_message('error', 'No se proporcionaron números de teléfono válidos para enviar WhatsApp.');
+            return;
+        }
+
+        foreach ($telefonos as $telefono) {
+
+            $payload = [
+                'phone'    => $telefono,
+                'portal'   => $portal,
+                'modulo'   => $submodulos,
+                'sucursal' => $sucursal,
+            ];
+
+         
+            // Inicializa cURL
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+
+            // Ejecuta la solicitud
+            $response = curl_exec($ch);
+
+            // Maneja errores de cURL
+            if (curl_errno($ch)) {
+                log_message('error', 'Error de cURL: ' . curl_error($ch));
+                curl_close($ch);
+                continue;
+            }
+
+            // Cierra cURL
+            curl_close($ch);
+
+            // Decodifica la respuesta
+            $result = json_decode($response, true);
+
+            // Manejo de la respuesta
+            if (isset($result['status']) && $result['status'] === 'success') {
+                log_message('info', 'WhatsApp enviado correctamente a ' . $telefono);
+            } else {
+                $error_message = $result['message'] ?? 'Error desconocido';
+                log_message('info', 'Enviando WhatsApp a: ' . implode(', ', $telefonos));
+            }
+        }
+    }
+
+    /*correos  para  notificaciones */
+
+    // aqui termina   la funcion notificaciones  via  whatsapp   y correos
     public function alertaNuevoCandidato()
     {
         $Pusher_Opciones = [
