@@ -161,14 +161,12 @@ class Notificacion extends CI_Controller
 
             // --- Enviar WhatsApp ---
             if ((int) $registro->whatsapp === 1) {
-                /*$telefonos = array_filter([
+                $telefonos = array_filter([
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
                     ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
                 ]);
-                */
-                $telefonos = array_filter([
-                    '+523332249141', // tu número
-                ]);
+                
+              
                 if (! empty($telefonos)) {
                     $submodulos = implode(", ", array_map(static fn($li) => strip_tags($li), $modulos));
                     $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
@@ -269,15 +267,11 @@ class Notificacion extends CI_Controller
 
             // 5) Enviar WhatsApp si está habilitado
             if ((int) $registro->whatsapp === 1) {
-                /*$telefonos = array_filter([
+                $telefonos = array_filter([
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
                     ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
                 ]);
-                */
-
-                $telefonos = array_filter([
-                    '+523332249141', // tu número
-                ]);
+                
 
                 if (! empty($telefonos)) {
                     try {
@@ -513,7 +507,7 @@ class Notificacion extends CI_Controller
 
             // ====== WHATSAPP (plantilla de recordatorios) ======
             if ((int) $r->whatsapp_cfg === 1) {
-                /*
+                
                 $tels = array_values(array_unique(array_filter([
                     (! empty($r->telefono1_cfg) && ! empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
                     (! empty($r->telefono2_cfg) && ! empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
@@ -525,10 +519,7 @@ class Notificacion extends CI_Controller
                     $digits = preg_replace('/\D+/', '', (string) $v);
                     return strlen($digits) >= 10;
                 })));
-                */
-                $tels = array_filter([
-                    '+523332249141', // tu número
-                ]);
+                
                 if (! empty($tels)) {
                     try {
                         // Ajusta textos a lo que pide tu PLANTILLA:
