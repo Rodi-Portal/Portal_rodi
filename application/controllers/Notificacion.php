@@ -166,7 +166,7 @@ class Notificacion extends CI_Controller
                     ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
                 ]);
                 */
-                 $telefonos = array_filter([
+                $telefonos = array_filter([
                     '+523332249141', // tu número
                 ]);
                 if (! empty($telefonos)) {
@@ -526,7 +526,7 @@ class Notificacion extends CI_Controller
                     return strlen($digits) >= 10;
                 })));
                 */
-                 $tels = array_filter([
+                $tels = array_filter([
                     '+523332249141', // tu número
                 ]);
                 if (! empty($tels)) {

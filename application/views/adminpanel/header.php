@@ -301,6 +301,10 @@ echo $token  */?>
 
       if ($portal == 1 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
+      <button id="enviarNotificacionesBtnex">Enviar Notificaciones</button>
+      <button id="enviarNotificacionesBtnrec">Enviar Notificaciones</button>
+
+
       <div id="resultados"></div>
 
       <button id="enviarCvsBtn">Enviar CVS</button>
@@ -1283,7 +1287,35 @@ echo $token  */?>
         // Al hacer clic en el botón
         $('#enviarNotificacionesBtn').on('click', function() {
           $.ajax({
-            url: '<?php echo base_url("Notificacion/enviar_notificaciones_inmediatamente"); ?>', // Ruta a la función
+            url: '<?php echo base_url("Notificacion/enviar_notificaciones_cron_job2"); ?>', // Ruta a la función
+            type: 'GET', // Método GET
+            dataType: 'json', // Esperamos una respuesta en formato JSON
+            success: function(response) {
+              // Mostrar la respuesta en el div
+              $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
+            },
+            error: function(xhr, status, error) {
+              console.log("Error: " + error); // Si ocurre algún error
+            }
+          });
+        });
+                $('#enviarNotificacionesBtnex').on('click', function() {
+          $.ajax({
+            url: '<?php echo base_url("Notificacion/enviar_notificaciones_exempleados_cron_job"); ?>', // Ruta a la función
+            type: 'GET', // Método GET
+            dataType: 'json', // Esperamos una respuesta en formato JSON
+            success: function(response) {
+              // Mostrar la respuesta en el div
+              $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
+            },
+            error: function(xhr, status, error) {
+              console.log("Error: " + error); // Si ocurre algún error
+            }
+          });
+        });
+                $('#enviarNotificacionesBtnrec').on('click', function() {
+          $.ajax({
+            url: '<?php echo base_url("Notificacion/enviar_recordatorios_cron_job_run"); ?>', // Ruta a la función
             type: 'GET', // Método GET
             dataType: 'json', // Esperamos una respuesta en formato JSON
             success: function(response) {
