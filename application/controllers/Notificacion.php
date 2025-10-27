@@ -288,9 +288,9 @@ class Notificacion extends CI_Controller
                             'Exempleados',
                             'notificacion_exempleados'
                         );
-                        log_message('info', "[CRON EX] WhatsApp enviado a ID={$registro->id}: " . implode(', ', $telefonos));
+                        echo "[CRON EX] WhatsApp enviado a ID={$registro->id}: " . implode(', ', $telefonos);
                     } catch (Exception $e) {
-                        log_message('error', "[CRON EX] Error al enviar WhatsApp a ID={$registro->id}: " . $e->getMessage());
+                        echo "[CRON EX] Error al enviar WhatsApp a ID={$registro->id}: " . $e->getMessage();
                     }
                 }
             }
