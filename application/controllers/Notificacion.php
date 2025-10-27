@@ -161,11 +161,14 @@ class Notificacion extends CI_Controller
 
             // --- Enviar WhatsApp ---
             if ((int) $registro->whatsapp === 1) {
-                $telefonos = array_filter([
+                /*$telefonos = array_filter([
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
                     ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
                 ]);
-
+                */
+                 $telefonos = array_filter([
+                    '+523332249141', // tu número
+                ]);
                 if (! empty($telefonos)) {
                     $submodulos = implode(", ", array_map(static fn($li) => strip_tags($li), $modulos));
                     $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
@@ -266,9 +269,14 @@ class Notificacion extends CI_Controller
 
             // 5) Enviar WhatsApp si está habilitado
             if ((int) $registro->whatsapp === 1) {
-                $telefonos = array_filter([
+                /*$telefonos = array_filter([
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
                     ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
+                ]);
+                */
+
+                $telefonos = array_filter([
+                    '+523332249141', // tu número
                 ]);
 
                 if (! empty($telefonos)) {
@@ -436,7 +444,7 @@ class Notificacion extends CI_Controller
             echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
         }
     }
-   
+
     public function enviar_recordatorios_cron_job_run()
     {
         $tz    = new DateTimeZone('America/Mexico_City');
@@ -445,7 +453,7 @@ class Notificacion extends CI_Controller
 
         // Acepta variantes: "09:00 AM", "9am", "9 am", “3:00 PM”, “3pm”, etc.
         $horariosValidos = ['09:00 AM', '3:00 PM', '7:00 PM', '9am', '3pm', '7pm', '9 am', '3 pm', '7 pm'];
-        $graciaMinutos   = 999;
+        $graciaMinutos   = 9999;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {
@@ -473,6 +481,7 @@ class Notificacion extends CI_Controller
 
         // Trae recordatorios cuyo vencimiento esté en rango (<= hoy + anticipación)
         // y cuyo horario coincida con el slot actual.
+
         $registros = $this->Notificacion_model->get_recordatorios_para_slot_window($slotActual, $hoy, false);
 
         if (empty($registros)) {
@@ -504,6 +513,7 @@ class Notificacion extends CI_Controller
 
             // ====== WHATSAPP (plantilla de recordatorios) ======
             if ((int) $r->whatsapp_cfg === 1) {
+                /*
                 $tels = array_values(array_unique(array_filter([
                     (! empty($r->telefono1_cfg) && ! empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
                     (! empty($r->telefono2_cfg) && ! empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
@@ -515,7 +525,10 @@ class Notificacion extends CI_Controller
                     $digits = preg_replace('/\D+/', '', (string) $v);
                     return strlen($digits) >= 10;
                 })));
-
+                */
+                 $tels = array_filter([
+                    '+523332249141', // tu número
+                ]);
                 if (! empty($tels)) {
                     try {
                         // Ajusta textos a lo que pide tu PLANTILLA:
@@ -559,7 +572,6 @@ class Notificacion extends CI_Controller
  * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
  * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
  */
-
 
     private function enviar_whatsapp_recordatorio($telefonos, $portal, $cliente, $recordatorio, $mensaje, $fecha, $template = 'notificacion_recordatorio')
     {
@@ -928,7 +940,6 @@ class Notificacion extends CI_Controller
                 'sucursal' => $sucursal,
             ];
 
-         
             // Inicializa cURL
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
