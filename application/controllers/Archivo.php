@@ -349,58 +349,60 @@ class Archivo extends CI_Controller
         return $map[$ext] ?? 'application/octet-stream';
     }
 
-    public function ver_psicometrico($filename = '')
-    {
-        // 1️⃣ Verifica sesión (ajusta según tu lógica)
-        if (! $this->session->userdata('id')) {
-            show_404(); // o redirige al login si lo prefieres
-        }
-
-        // 2️⃣ Sanitiza el nombre del archivo
-        $filename = urldecode((string) $filename);
-        $filename = basename($filename); // evita path traversal tipo "../"
-        if ($filename === '') {
-            show_404();
-        }
-
-        // 3️⃣ Validar extensión permitida
-        $ext     = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $allowed = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg'];
-        if (! in_array($ext, $allowed, true)) {
-            show_404();
-        }
-
-        // 4️⃣ Ruta física del directorio _psicometria
-        $base_path_psico = rtrim(FCPATH, '/') . '/_psicometria/';
-        if (! is_dir($base_path_psico)) {
-            @mkdir($base_path_psico, 0750, true);
-        }
-
-        // 5️⃣ Archivo completo
-        $full = $base_path_psico . $filename;
-        if (! is_file($full) || ! is_readable($full)) {
-            show_404();
-        }
-
-        // 6️⃣ Detecta MIME y sirve el archivo
-        $mime        = $this->_detect_mime($full, $ext);
-        $disposition = $this->input->get('dl') ? 'attachment' : 'inline';
-        $safe        = rawurlencode($filename);
-
-        header('Content-Type: ' . $mime);
-        header('Content-Length: ' . filesize($full));
-        header('Content-Disposition: ' . $disposition . '; filename="' . $safe . '"; filename*=UTF-8\'\'' . $safe);
-        header('X-Content-Type-Options: nosniff');
-
-        @set_time_limit(0);
-        $fp = fopen($full, 'rb');
-        while (! feof($fp)) {
-            echo fread($fp, 8192);
-            @ob_flush();
-            flush();
-        }
-        fclose($fp);
-        exit;
+public function ver_psicometrico($filename = '')
+{
+    // 1️⃣ Verificar sesión
+    if (! $this->session->userdata('id')) {
+        show_404();
     }
+
+    // 2️⃣ Sanitizar nombre
+    $filename = basename(urldecode((string) $filename));
+    if ($filename === '') {
+        show_404();
+    }
+
+    // 3️⃣ Validar extensión
+    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    $allowed = ['pdf','doc','docx','ppt','pptx','xls','xlsx','png','jpg','jpeg'];
+    if (! in_array($ext, $allowed, true)) {
+        show_404();
+    }
+
+    // 4️⃣ Ruta física segura
+    $base_path_psico = rtrim(FCPATH, '/') . '/_psicometria/';
+    $full = $base_path_psico . $filename;
+
+    if (! is_file($full) || ! is_readable($full)) {
+        log_message('error', "Archivo psicométrico no encontrado: {$full}");
+        show_404();
+    }
+
+    // 🔒 5️⃣ Limpia todo buffer previo y evita compresión
+    while (ob_get_level()) { @ob_end_clean(); }
+    @ini_set('zlib.output_compression', 'Off');
+
+    // 6️⃣ Detectar MIME
+    $mime = $this->_detect_mime($full, $ext);
+    $disposition = $this->input->get('dl') ? 'attachment' : 'inline';
+    $safe = rawurlencode($filename);
+
+    // 7️⃣ Enviar headers limpios
+    header('Content-Type: ' . $mime);
+    header('Content-Length: ' . filesize($full));
+    header('Content-Disposition: ' . $disposition . '; filename="' . $safe . '"; filename*=UTF-8\'\'' . $safe);
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+
+    // 8️⃣ Leer el archivo directamente y terminar
+    $handle = fopen($full, 'rb');
+    if ($handle) {
+        fpassthru($handle);
+        fclose($handle);
+    }
+    exit;
+}
+
 
 }
