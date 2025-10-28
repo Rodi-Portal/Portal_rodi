@@ -20,8 +20,29 @@
   /* súbelo hasta que se vea igual que los demás */
 }
 </style>
+
+
 <!-- Begin Page Content -->
 <div class="container-fluid">
+  <?php
+      // Permisos del módulo Bolsa de Trabajo (solo se aplican si existen overrides)
+      $CAN = [
+          'DESCARGAR_PLANTILLA' => user_can('reclutamiento.bolsa_trabajo.descargar_plantilla', true),
+          'SUBIR_PLANTILLA'     => user_can('reclutamiento.bolsa_trabajo.subir_plantilla', true),
+          'CREAR_REQUISICION'   => user_can('reclutamiento.bolsa_trabajo.crear_requisicion', true),
+          'ASIGNAR_ASPIRANTE'   => user_can('reclutamiento.bolsa_trabajo.asignar_aspirante', true),
+          'GENERAR_LINK'        => user_can('reclutamiento.bolsa_trabajo.generar_link_registro', true),
+
+          'VER_DETALLES'        => user_can('reclutamiento.bolsa_trabajo.ver_detalles', true),
+          'ASIGNARLO_REQ'       => user_can('reclutamiento.bolsa_trabajo.asignarlo_requisicion', true),
+          'BLOQUEAR'            => user_can('reclutamiento.bolsa_trabajo.bloquear_aspirante', true),
+          'EDITAR'              => user_can('reclutamiento.bolsa_trabajo.editar_aspirante', true),
+          'SUBIR_DOCS'          => user_can('reclutamiento.bolsa_trabajo.subir_docs', true),
+          'CAMBIAR_STATUS'      => user_can('reclutamiento.bolsa_trabajo.cambiar_status', true),
+          'VER_EMPLEOS'         => user_can('reclutamiento.bolsa_trabajo.ver_empleos', true),
+          'VER_MOVIMIENTOS'     => user_can('reclutamiento.bolsa_trabajo.ver_movimientos', true),
+      ];
+  ?>
   <section class="content-header">
     <div class="row align-items-center">
       <div class="col-sm-12 col-md-3 col-lg-3 mb-1 d-flex align-items-center">
@@ -30,58 +51,58 @@
 
       <div class="col-sm-12 col-md-9 col-lg-9 mb-1 d-flex justify-content-end">
         <div class="btn-group d-none d-md-flex" role="group" aria-label="Buttons for large screens">
+          <?php if ($CAN['DESCARGAR_PLANTILLA']): ?>
           <button type="button" id="btnDownloadTemplate" class="btn btn-info btn-icon-split"
             onclick="descargarFormato()">
-            <span class="icon text-white-50">
-              <i class="fas fa-download"></i>
-            </span>
+            <span class="icon text-white-50"><i class="fas fa-download"></i></span>
             <span class="text">Descargar Plantilla</span>
           </button>
+          <?php endif; ?>
+
+          <?php if ($CAN['SUBIR_PLANTILLA']): ?>
           <button type="button" id="btnUploadCandidates" class="btn btn-success btn-icon-split"
             onclick="openUploadCSV()">
-            <span class="icon text-white-50">
-              <i class="fas fa-upload"></i>
-            </span>
+            <span class="icon text-white-50"><i class="fas fa-upload"></i></span>
             <span class="text">Subir Aspirantes</span>
           </button>
-          <button type="button" id="btnNewRequisition" class="btn btn-navy btn-icon-split" onclick="nuevaRequisicion()">
-            <span class="icon text-white-50">
-              <i class="far fa-file-alt"></i>
-            </span>
+          <?php endif; ?>
+
+          <?php if ($CAN['CREAR_REQUISICION']): ?>
+          <button type="button" id="btnNewRequisition" class="btn btn-navy btn-icon-split" onclick="nuevaRequisicion">
+            <span class="icon text-white-50"><i class="far fa-file-alt"></i></span>
             <span class="text">Nueva Requisicion</span>
           </button>
+          <?php endif; ?>
+
           <?php
               if ($this->session->userdata('idrol') == 4) {
                   $disabled  = 'disabled';
                   $textTitle = 'title="You do not have permission for this action"';
-              } else {
-                  $disabled  = '';
-                  $textTitle = '';
-          }?>
+              } else { $disabled = '';
+                  $textTitle                            = '';}
+          ?>
+          <?php if ($CAN['ASIGNAR_ASPIRANTE']): ?>
           <button type="button" id="btnAssignCandidate" class="btn btn-navy btn-icon-split" onclick="openAssignToUser()"
             <?php echo $disabled; ?>>
-            <span class="icon text-white-50">
-              <i class="fas fa-user-edit"></i>
-            </span>
+            <span class="icon text-white-50"><i class="fas fa-user-edit"></i></span>
             <span class="text">Asignar Aspirante</span>
           </button>
+          <?php endif; ?>
         </div>
+
       </div>
 
     </div>
-    <?php if ($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) {?>
+    <?php if (($this->session->userdata('idrol') == 1 || $this->session->userdata('idrol') == 6) && $CAN['GENERAR_LINK']): ?>
     <div class="mb-3 text-right" data-toggle="tooltip" <?php echo $textTitle; ?>>
       <button type="button" id="generarLink" class="btn"
-        style="background-color: #FFD700; color: #000; border: none; font-weight: bold; border-radius: 8px; box-shadow: 0px 2px 6px rgba(0,0,0,0.2);"
+        style="background-color:#FFD700;color:#000;border:none;font-weight:bold;border-radius:8px;box-shadow:0px 2px 6px rgba(0,0,0,0.2);"
         data-toggle="modal" data-target="#modalGenerarLink" <?php echo $disabled; ?>>
-
-        <span class="icon text-white-50">
-          <i class="fas fa-user-edit" style="color: #000;"></i>
-        </span>
+        <span class="icon text-white-50"><i class="fas fa-user-edit" style="color:#000;"></i></span>
         <span class="text">Generar Link</span>
       </button>
     </div>
-    <?php }?>
+    <?php endif; ?>
 
   </section>
   <br>
@@ -113,20 +134,22 @@
       <label for="filtrar">Filtrar por:</label>
       <select name="filtrar" id="filtrar" class="form-control">
         <option value="">Seleccionar</option>
-        <option value="En espera">Estatus Pendiente</option>
-        <option value="En proceso">Estatus En Proceso de Reclutamiento</option>
-        <option value="Aceptado">Estatus Aceptado para Iniciar ESE</option>
-        <option value="ESE">Estatus ESE en Progreso</option>
-        <option value="Bloqueado">Estatus Bloqueado</option>
+        <option value="Todos">Todos</option> <!-- NUEVO -->
+        <option value="En espera">En espera</option>
+        <option value="En Proceso / Aprobado">En Proceso / Aprobado</option>
+        <option value="Reutilizable">Reutilizable</option>
+        <option value="Preempleo / Contratado">Preempleo / Contratado</option>
+        <option value="Aprobado con Acuerdo">Aprobado con Acuerdo</option>
+        <option value="Bloqueado">Bloqueado</option> <!-- status = 0 -->
       </select>
     </div>
     <?php $isDisabled = ($this->session->userdata('idrol') == 4) ? 'isDisabled' : ''; ?>
     <div class="col-sm-12 col-md-2 col-lg-2 mb-1">
       <label for="asignar">Asignado a:</label>
       <select name="asignar" id="asignar"
-        class="form-control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       <?php echo $isDisabled ?>"
+        class="form-control                                                                                                                                                                          <?php echo $isDisabled ?>"
         title="Select">
-        <option value="0">ATodosll</option>
+        <option value="0">Todos</option>
         <?php
             if ($usuarios_asignacion) {
             foreach ($usuarios_asignacion as $row) {?>
@@ -290,17 +313,37 @@
                   }
 
                   $domicilio1 = implode(', ', $partesDomicilio);
+                  // --- Botón Asignarlo a Requisición según permiso ---
+                  $canAssign    = ! empty($CAN['ASIGNARLO_REQ']);
+                  $botonProceso = '';
                   // --- Definir el botón UNA SOLA VEZ ---
-                  $botonProceso = '<a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1" id="btnIniciar' . $r->id . '" data-toggle="tooltip" title="Asignarlo a Requisición" onclick="openAddApplicant('
-                  . $r->id . ',\''
-                  . addslashes($nombre1) . '\',\''
-                  . addslashes($paterno1) . '\',\''
-                  . addslashes($materno1) . '\',\''
-                  . addslashes($telefono) . '\',\''
-                  . addslashes($medio_contacto) . '\',\''
-                  . addslashes($area_interes) . '\',\''
-                  . addslashes($domicilio1) . '\',\''
-                  . addslashes($correo) . '\')"><i class="fas fa-play-circle"></i></a>';
+                  if ((int) $r->status === 0) {
+                      // Bloqueado: si tiene permiso, lo mostramos deshabilitado (como hoy)
+                      if ($canAssign) {
+                          $botonProceso = '
+                          <a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1 isDisabled"
+                            data-toggle="tooltip" title="Asignarlo a Requisición">
+                            <i class="fas fa-play"></i>
+                          </a>';
+                      }
+                  } else {
+                      // Asignable
+                      if ($canAssign) {
+                          $botonProceso = '
+                          <a href="javascript:void(0)" class="btn btn-success  btn-cuadro mr-1" id="btnIniciar' . $r->id . '"data-toggle="tooltip" title="Asignarlo a Requisición"  onclick="openAddApplicant('
+                          . $r->id . ',\''
+                          . addslashes($nombre1) . '\',\''
+                          . addslashes($paterno1) . '\',\''
+                          . addslashes($materno1) . '\',\''
+                          . addslashes($telefono) . '\',\''
+                          . addslashes($medio_contacto) . '\',\''
+                          . addslashes($area_interes) . '\',\''
+                          . addslashes($domicilio1) . '\',\''
+                          . addslashes($correo) . '\')">
+                          <i class="fas fa-play-circle"></i>
+                        </a>';
+                      }
+                  }
 
                   // --- Excepción para status 0: botón deshabilitado y otros cambios ---
                   if ($r->status == 0) {
@@ -334,7 +377,7 @@
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 3) {
                       $color_estatus       = 'req_preventiva';
-                      $text_estatus        = 'Estatus: <b>Reutilizable/<br></b>';
+                      $text_estatus        = 'Estatus: <b>Reutilizable/Revisar Historial<br></b>';
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 4) {
                       $color_estatus       = 'req_positivo';
@@ -342,7 +385,7 @@
                       $disabled_comentario = 'isDisabled';
                   } elseif ($r->status == 5) {
                       $color_estatus       = 'req_aprobado';
-                      $text_estatus        = 'Estatus: <b>Aprobado con Acuerdo<br></b>';
+                      $text_estatus        = 'Estatus: <b>Aprobado con Acuerdo/<br></b>';
                       $disabled_comentario = 'isDisabled';
                   }
 
@@ -352,7 +395,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                                                                                                                                                                       <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -372,51 +415,71 @@
             <h5 class="card-text">Teléfono: <b><?php echo $telefono; ?></b></h5>
             <div class="alert alert-secondary text-center mt-3"><?php echo $text_estatus ?></div>
             <div class="d-flex justify-content-center align-items-center flex-nowrap">
+              <?php if (! empty($CAN['VER_DETALLES'])): ?>
               <a href="javascript:void(0)" class="btn btn-primary btn-cuadro mr-1" data-toggle="tooltip"
-                title="Ver detalles" onclick="verDetalles(<?php echo $r->id; ?>)">
+                title="Ver detalles" onclick="verDetalles(<?php echo (int) $r->id; ?>)">
                 <i class="fas fa-info-circle"></i>
               </a>
-
+              <?php endif; ?>
+              <?php if (! empty($CAN['VER_EMPLEOS'])): ?>
               <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
                 title="Ver empleos"
                 onclick="verEmpleos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-user-tie"></i>
               </a>
-
+              <?php endif; ?>
+              <?php if (! empty($CAN['VER_MOVIMIENTOS'])): ?>
               <a href="javascript:void(0)" class="btn btn-info btn-cuadro mr-1" data-toggle="tooltip"
                 title="Historial de movimientos"
                 onclick="verHistorialMovimientos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-history"></i>
               </a>
-
+              <?php endif; ?>
               <!-- Botón proceso -->
               <?php echo $botonProceso; ?>
 
-              <?php if ($r->status == 0): ?>
+              <?php if ((int) $r->status === 0): ?>
+              <?php if (! empty($CAN['BLOQUEAR'])): ?>
               <a href="javascript:void(0)" class="btn btn-success btn-cuadro mr-1 unlockButton" data-toggle="tooltip"
                 title="Desbloquear persona"
-                onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                onclick="mostrarMensajeConfirmacion('Desbloquear Aspirante','<?php echo addslashes($nombreCompleto) ?>',<?php echo (int) $r->id; ?>)">
                 <i class="fas fa-lock-open"></i>
               </a>
+              <?php endif; ?>
               <?php else: ?>
+              <?php if (! empty($CAN['BLOQUEAR'])): ?>
               <a href="javascript:void(0)" class="btn btn-danger btn-cuadro mr-1" data-toggle="tooltip"
                 title="Bloquear persona"
-                onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo $r->id; ?>)">
+                onclick="mostrarMensajeConfirmacion('bloquear proceso bolsa trabajo','<?php echo addslashes($nombreCompleto) ?>',<?php echo (int) $r->id; ?>)">
                 <i class="fas fa-ban"></i>
               </a>
               <?php endif; ?>
+              <?php endif; ?>
 
+              <?php if (! empty($CAN['EDITAR'])): ?>
               <a href="javascript:void(0)" class="btn btn-warning btn-cuadro mr-1" data-toggle="tooltip"
                 title="Editar aspirante"
-                onclick="openUpdateApplicant(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                onclick="openUpdateApplicant(<?php echo (int) $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-edit"></i>
               </a>
+              <?php endif; ?>
 
+              <?php if (! empty($CAN['SUBIR_DOCS'])): ?>
               <a href="javascript:void(0)" class="btn btn-secondary btn-cuadro" data-toggle="tooltip"
                 title="Subir documentos"
-                onclick="openSubirDocumentos(<?php echo $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                onclick="openSubirDocumentos(<?php echo (int) $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
                 <i class="fas fa-upload"></i>
               </a>
+              <?php endif; ?>
+
+              <?php if (! empty($CAN['CAMBIAR_STATUS'])): ?>
+              <a href="javascript:void(0)" class="btn btn-status btn-cuadro mr-1" data-toggle="tooltip"
+                title="Cambiar Estatus"
+                onclick="openModalStatus(<?php echo (int) $r->id; ?>,'<?php echo addslashes($nombreCompleto) ?>')">
+                <i class="fas fa-exchange-alt"></i>
+              </a>
+              <?php endif; ?>
+
             </div>
 
             <div class="alert alert-secondary text-center mt-3" id="divUsuario<?php echo $r->id; ?>">
@@ -1156,6 +1219,162 @@
       }
     });
   }
+
+  function actualizarTarjetaVisualStatus(id, status) {
+    // Mapea clases + colores de respaldo (inline)
+    const map = {
+      1: {
+        cls: 'req_espera',
+        bg: '#6c757d',
+        fg: '#fff',
+        text: 'Estatus: <b>En espera <br></b>'
+      }, // gris
+      2: {
+        cls: 'req_activa',
+        bg: '#17a2b8',
+        fg: '#fff',
+        text: 'Estatus: <b>En Proceso/Aprobado<br></b>'
+      }, // azul cielo
+      3: {
+        cls: 'req_preventiva',
+        bg: '#ffc107',
+        fg: '#212529',
+        text: 'Estatus: <b>Reutilizable/<br></b>'
+      }, // amarillo
+      4: {
+        cls: 'req_positivo',
+        bg: '#28a745',
+        fg: '#fff',
+        text: 'Estatus: <b>Preempleo/Contratado<br></b>'
+      }, // verde
+      5: {
+        cls: 'req_aprobado',
+        bg: '#fd7e14',
+        fg: '#212529',
+        text: 'Estatus: <b>Aprobado con Acuerdo<br></b>'
+      } // naranja
+    };
+
+    const conf = map[parseInt(status, 10)];
+    if (!conf) return;
+
+    // 1) Header de la tarjeta
+    const $header = $("#req_header" + id);
+    if (!$header.length) return;
+
+    // Asegura quitar TODAS las clases de estado conocidas
+    $header.removeClass('req_espera req_activa req_preventiva req_positivo req_aprobado req_negativa');
+
+    // Añade la nueva clase
+    $header.addClass(conf.cls);
+
+    // Fallback: fuerza colores inline por si otro CSS pisa los estilos
+    // (no quita tus clases; solo asegura el color correcto al instante)
+    $header.css({
+      backgroundColor: conf.bg,
+      color: conf.fg
+    });
+
+    // 2) Texto del estatus dentro de la tarjeta
+    const $card = $header.closest('.card');
+    // Si tienes varios .alert-secondary, toma el primero debajo del body
+    const $alertEstatus = $card.find('.alert.alert-secondary').first();
+    if ($alertEstatus.length) {
+      $alertEstatus.html(conf.text);
+    }
+  }
+
+
+  function openModalStatus(idAspirante, statusActual) {
+    $("#statusIdAspirante").val(idAspirante);
+    $("#selectStatus").val(statusActual || "").trigger("change");
+    $("#modalStatus").modal("show");
+  }
+
+  if (!window.STATUS_COLORS) {
+    window.STATUS_COLORS = Object.freeze({
+      1: {
+        bg: '#d6d6d6',
+        fg: '#000'
+      },
+      2: {
+        bg: '#87CEFA',
+        fg: '#000'
+      },
+      3: {
+        bg: '#FFD700',
+        fg: '#000'
+      },
+      4: {
+        bg: '#32CD32',
+        fg: '#fff'
+      },
+      5: {
+        bg: '#ff6200ff',
+        fg: '#000'
+      }
+    });
+  }
+
+
+  $("#selectStatus").on("change", function() {
+    const val = $(this).val();
+    const s = STATUS_COLORS[val];
+    if (s) {
+      $(this).css({
+        "background-color": s.bg,
+        "color": s.fg
+      });
+    } else {
+      $(this).css({
+        "background-color": "",
+        "color": ""
+      });
+    }
+  });
+
+  function guardarStatusAspirante() {
+    const id = $("#statusIdAspirante").val();
+    const status = $("#selectStatus").val();
+
+    if (!id || !status) {
+      Swal.fire("Atención", "Debes seleccionar un estatus.", "warning");
+      return;
+    }
+
+    $.ajax({
+      url: "<?php echo base_url('Reclutamiento/actualizar_status'); ?>",
+      type: "POST",
+      dataType: "json",
+      data: {
+        id,
+        status
+      },
+      success: function(r) {
+        if (r.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "¡Listo!",
+            text: "Estatus actualizado",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          $("#modalStatus").modal("hide");
+
+          // 🔸 refresca solo la tarjeta visualmente
+          const id = $("#statusIdAspirante").val();
+          const status = $("#selectStatus").val();
+          actualizarTarjetaVisualStatus(id, status);
+        } else {
+          Swal.fire("Error", r.msg || "No fue posible actualizar", "error");
+        }
+      },
+      error: function() {
+        Swal.fire("Error", "Ocurrió un problema al guardar.", "error");
+      }
+    });
+  }
+
 
   async function renombrarDoc(idDoc, nombreActual, nombreArchivo) {
     const porDefecto = (nombreActual && nombreActual.trim()) ?
@@ -1907,24 +2126,44 @@
             const keySlug = slugKey(keyDefault);
 
             const htmlNuevo = `
-            <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${keySlug}">
-              <div class="card shadow-sm h-100">
-                <div class="card-body d-flex flex-column">
-                  <label class="font-weight-bold mb-2">Nuevo campo extra</label>
-                  <div class="d-flex mb-2">
-                    <input type="text" class="form-control llave-extra mr-2"
-                          placeholder="Nombre de la llave" value="${keySlug}">
-                    <!-- IMPORTANTE: el valor SIEMPRE tiene name="extra_<slug>" -->
-                    <input type="text" class="form-control valor-extra mr-2"
-                          name="extra_${keySlug}" placeholder="Valor" value="">
-                    <button type="button" class="btn btn-sm btn-danger eliminar-extra" data-key="${keySlug}">
-                      <i class="fas fa-trash"></i>
-                    </button>
+                <div class="col-md-4 col-sm-12 mb-3 extra-dinamico" data-key="${keySlug}">
+                  <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+
+                      <!-- REEMPLAZA EL BLOQUE HORIZONTAL POR ESTO (vertical): -->
+                    <label class="mb-1 font-weight-bold">Nombre del campo</label>
+                    <input
+                      type="text"
+                      class="form-control llave-extra"
+                      placeholder="Escribe el nombre del campo (sin espacios). Ej.: curp, rfc, talla_playera, linkedin"
+                      value="">
+                
+
+                    <!-- Valor/contenido (abajo) -->
+                    <label class="mb-1 font-weight-bold mt-3">Contenido del campo</label>
+                    <div class="d-flex align-items-start">
+                      <input
+                        type="text"
+                        class="form-control valor-extra"
+                        name="extra_${keySlug}"
+                        placeholder="Escribe el contenido/valor. Ej.: ABCD001122HDFLRS05 / M / https://linkedin.com/in/usuario"
+                        value="">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger ml-2 eliminar-extra"
+                        data-key="${keySlug}"
+                        title="Eliminar este campo"
+                        aria-label="Eliminar este campo">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+
+                      
+                      <!-- FIN DEL CAMBIO -->
+                    </div>
                   </div>
-                  <small class="text-muted">Se enviará como <code>extra_${keySlug}</code></small>
-                </div>
-              </div>
-            </div>`;
+                </div>`;
+
             $('#extras_update .row').append(htmlNuevo);
           });
           $(document).on('input', '.llave-extra', function() {
@@ -2082,3 +2321,186 @@
   <!-- Funciones Reclutamiento -->
   <script src="<?php echo base_url(); ?>js/reclutamiento/functions.js"></script>
   <script src="<?php echo base_url(); ?>js/reclutamiento/requisicion.js"></script>
+  <style>
+  /* Estilo base para la fila */
+  .select2-results__option.status-row {
+    padding: 6px 10px;
+    text-transform: uppercase;
+    /* Mayúsculas */
+    font-weight: 600;
+  }
+
+  /* Colores por estado */
+  .select2-results__option.status-all {
+    background-color: #e9ecef;
+    color: #212529;
+  }
+
+  .select2-results__option.status-espera {
+    background-color: #6c757d;
+    color: #ffffff;
+  }
+
+  .select2-results__option.status-proceso {
+    background-color: #17a2b8;
+    color: #ffffff;
+  }
+
+  .select2-results__option.status-reutilizar {
+    background-color: #ffc107;
+    color: #212529;
+  }
+
+  .select2-results__option.status-preempleo {
+    background-color: #28a745;
+    color: #ffffff;
+  }
+
+  .select2-results__option.status-acuerdo {
+    background-color: #fd7e14;
+    color: #212529;
+  }
+
+  .select2-results__option.status-bloqueado {
+    background-color: #dc3545;
+    color: #ffffff;
+  }
+
+  /* Mantén el color en hover/focus */
+  .select2-results__option.status-row.select2-results__option--highlighted {
+    filter: brightness(0.9);
+  }
+
+  /* Chip de selección */
+  .status-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 12px;
+    line-height: 1.2;
+    margin-right: 6px;
+    border: 1px solid rgba(0, 0, 0, .08);
+    text-transform: uppercase;
+    /* Mayúsculas */
+    font-weight: 600;
+  }
+  </style>
+
+  <script>
+  // Namespace seguro
+  window.TS = window.TS || {};
+  // Define una sola vez
+  window.TS.FILTER_STATUS_STYLES = window.TS.FILTER_STATUS_STYLES || Object.freeze({
+    "Todos": {
+      bg: "#e9ecef",
+      fg: "#212529",
+      cls: "status-all",
+      db: null
+    },
+    "En espera": {
+      bg: "#6c757d",
+      fg: "#ffffff",
+      cls: "status-espera",
+      db: 1
+    },
+    "En Proceso / Aprobado": {
+      bg: "#17a2b8",
+      fg: "#ffffff",
+      cls: "status-proceso",
+      db: 2
+    },
+    "Reutilizable": {
+      bg: "#ffc107",
+      fg: "#212529",
+      cls: "status-reutilizar",
+      db: 3
+    },
+    "Preempleo / Contratado": {
+      bg: "#28a745",
+      fg: "#ffffff",
+      cls: "status-preempleo",
+      db: 4
+    },
+    "Aprobado con Acuerdo": {
+      bg: "#fd7e14",
+      fg: "#212529",
+      cls: "status-acuerdo",
+      db: 5
+    },
+    "Bloqueado": {
+      bg: "#dc3545",
+      fg: "#ffffff",
+      cls: "status-bloqueado",
+      db: 0
+    }
+  });
+
+  function initColoredFilter($scope) {
+    const map = window.TS.FILTER_STATUS_STYLES;
+    const $filtrar = ($scope || $(document)).find('#filtrar');
+    if (!$filtrar.length) return;
+
+    if ($filtrar.data('select2')) $filtrar.select2('destroy');
+
+    // Render de opciones
+    function tplResult(state) {
+      if (!state.id) return state.text;
+      return state.text.toUpperCase(); // fila en mayúsculas (CSS + extra)
+    }
+    // Render de selección (chip)
+    function tplSelection(state) {
+      if (!state.id) return state.text;
+      const s = map[state.id];
+      if (!s) return state.text;
+      const $n = $('<span class="status-pill"></span>');
+      $n.css({
+        backgroundColor: s.bg,
+        color: s.fg
+      }).text(state.id.toUpperCase());
+      return $n;
+    }
+
+    $filtrar.select2({
+      placeholder: "Select",
+      allowClear: false,
+      width: '100%',
+      templateResult: tplResult,
+      templateSelection: tplSelection,
+      escapeMarkup: m => m
+    });
+
+    // Pinta filas completas con clase al abrir
+    // Pinta filas completas con clase al abrir (versión robusta con MAYÚSCULAS)
+    $filtrar.off('select2:open.__paintrows__').on('select2:open.__paintrows__', function() {
+      setTimeout(function() {
+        // construye un diccionario auxiliar con claves en MAYÚSCULAS
+        const map = window.TS.FILTER_STATUS_STYLES;
+        const upcaseMap = {};
+        Object.keys(map).forEach(function(k) {
+          upcaseMap[k.toUpperCase()] = map[k]; // referencia al mismo objeto
+        });
+
+        $('.select2-results__option[role="option"]').each(function() {
+          const $li = $(this);
+          const textUp = $li.text().trim().toUpperCase(); // el li ya viene en mayúsculas
+          const s = upcaseMap[textUp]; // buscamos por mayúsculas
+          // limpia nuestras clases previas y aplica la nueva si existe
+          $li.removeClass(
+            'status-row status-all status-espera status-proceso status-reutilizar status-preempleo status-acuerdo status-bloqueado'
+          );
+          if (s && s.cls) {
+            $li.addClass('status-row ' + s.cls);
+          }
+        });
+      }, 0);
+    });
+
+  }
+
+  // Llamadas
+  $(document).ready(function() {
+    initColoredFilter(); // inicial
+  });
+  // Después de AJAX:
+  // $('#module-content').html(data); initColoredFilter($('#module-content'));
+  </script>

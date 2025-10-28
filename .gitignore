@@ -7,8 +7,6 @@ application/logs/*
 !application/logs/index.html
 
 !application/*/.htaccess
-application/views/login/login_view.php
-application/views/login/verify_view.php
 
 application/session/*
 application/ci_sessions/*
@@ -17,36 +15,36 @@ composer.lock
 application/config/constants.php 
 application/config/config.php
 application/config/database.php
-
+application/config/keys/*
 .htaccess
 cpanel.yml
-# Subidas/archivos generados por la app
-/_evaluaciones/
-/_evaluacionesPortal/
-
-# Assets generados (ajusta a tus carpetas reales)
-public/comunicacion/
-public/*
 
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
-application/config/keys/*
 /_doping/
-/_adjuntos/
-/_clinico/
 /_const/
-/_logosPortal/
-/_docs/
-/_facturasdoping/
-/_psicometria/
-/_estudios/
-/_beca/
-/_portal_files/
-/_qrconsult/
-/_examEmpleado/
-/_cursos/
-/_documentEmpleado/
-/_documentosBolsa/
-/_perfiEmpleado/
+/_adjuntos/*
+/_clinico/*
+/_docs/*
+/_facturasdoping/*
+/_avisosPortal/*
+/_psicometria/*
+/_estudios/*
+/_beca/*
+/_img/*
+/_logosPortal/*
+/_portal_files/*
+/_logosPortal/*
+/_qrconsult/*
+/_examEmpleado/*
+/_cursos/*
+/_documentEmpleado/*
+/_perfilEmpleado/*
+
+/_documentosBolsa/*
+/_evaluacionesPortal/*
+/_recordatorios/*
+/_archivo_calendario/*
+/public/*

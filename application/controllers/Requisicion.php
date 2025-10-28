@@ -207,7 +207,6 @@ class Requisicion extends CI_Controller
             $req = array(
                 'creacion' => $date,
                 'edicion' => $date,
-
                 'id_portal' => $id_portal,
                 'id_usuario_cliente' => $id_usuario,
                 'id_cliente' => $id_cliente,
@@ -314,5 +313,43 @@ class Requisicion extends CI_Controller
             echo json_encode($msj);
         }
 
+    }
+
+
+    public function asignar_sucursal() {
+        $idReq      = (int)$this->input->post('idReq');
+        $idSucursal = (int)$this->input->post('id_sucursal');
+        $id_portal  = (int) ($this->session->userdata('idPortal') ?: 0);
+
+        if ($idReq <= 0 || $idSucursal <= 0) {
+            return $this->_json(false, 'Datos incompletos');
+        }
+
+        $this->db->trans_start();
+        // Si tu tabla tiene id_portal, filtra también aquí:
+        $this->db->where('id', $idReq);
+        if ($id_portal) $this->db->where('id_portal', $id_portal);
+        $ok = $this->db->update('requisicion', [
+            'id_cliente' => $idSucursal,
+            'edicion'     => date('Y-m-d H:i:s'),
+        ]);
+        $this->db->trans_complete();
+
+        if (!$ok) return $this->_json(false, 'No se pudo guardar');
+
+        // Trae nombre para pintar en UI
+        $suc = $this->db->select('nombre')->get_where('cliente', [
+            'id'        => $idSucursal,
+            'eliminado' => 0,
+            'id_portal' => $id_portal
+        ])->row('nombre');
+
+        return $this->_json(true, 'Asignado', ['sucursal' => $suc]);
+    }
+
+    private function _json($ok, $msg, $extra = []) {
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(array_merge(['ok' => $ok, 'msg' => $msg], $extra)));
     }
 }

@@ -32,6 +32,7 @@ class Documentos_Aspirantes extends CI_Controller
         $docs = $this->db->select('id, nombre_personalizado, nombre_archivo, fecha_subida, tipo_vista')
             ->from('documentos_aspirante')
             ->where('id_aspirante', $id_bolsa)
+            ->where('tipo_vista', 1)
             ->where('eliminado', 0)
             ->order_by('fecha_subida', 'DESC')
             ->get()
@@ -172,38 +173,67 @@ class Documentos_Aspirantes extends CI_Controller
  */
     public function subir()
     {
-        // ───────────────────────────────────────────────────
-        // 1. Datos básicos
-        // ───────────────────────────────────────────────────
-        $id_bolsa   = $this->input->post('id_aspirante') ?: $this->input->post('id_aspirante');
-        $id_usuario = $this->session->userdata('id') ?: 0; // asegúrate de tener sesión
-        $nombres    = $this->input->post('nombres_archivos');
+        $this->output->set_content_type('application/json');
 
-                                           // Carpeta de destino
-        $upload_path = LINKASPIRANTESDOCS; // constante definida en config
+        // ───────────────────────────────────────────────────
+        // 1) Datos básicos
+        // ───────────────────────────────────────────────────
+        // Toma primero id_bolsa (si lo mandas) o id_aspirante como fallback
+        $id_bolsa   = $this->input->post('id_bolsa') ?: $this->input->post('id_aspirante');
+        $id_usuario = $this->session->userdata('id') ?: 0;
+
+        // nombres_archivos puede venir como arreglo o string/JSON
+        $nombres = $this->input->post('nombres_archivos');
+        if (is_string($nombres)) {
+            $json = json_decode($nombres, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $nombres = $json;
+            }
+
+        }
+        if (! is_array($nombres)) {
+            $nombres = (array) $nombres;
+        }
+
+                                           // Carpeta destino
+        $upload_path = LINKASPIRANTESDOCS; // tu constante
         if (! is_dir($upload_path)) {
-            mkdir($upload_path, 0777, true);
+            @mkdir($upload_path, 0777, true);
         }
 
         // ───────────────────────────────────────────────────
-        // 2. Validación de archivos recibidos
+        // 2) Detectar clave de archivos y normalizar a arreglo
         // ───────────────────────────────────────────────────
-        if (empty($_FILES['file']['name']) || ! is_array($_FILES['file']['name'])) {
+        $filesKey = null;
+        if (isset($_FILES['files'])) {
+            $filesKey = 'files';
+        } elseif (isset($_FILES['file'])) {
+            $filesKey = 'file';
+        } else {
             return $this->output_json(false, 'No se recibieron archivos');
         }
 
-        $total_files = count($_FILES['file']['name']);
-        if ($total_files !== count($nombres)) {
-            return $this->output_json(false, 'Faltan nombres personalizados para uno o más archivos');
+        // Si vino un solo archivo plano, conviértelo a estructura de arreglos
+        if (! is_array($_FILES[$filesKey]['name'])) {
+            foreach (['name', 'type', 'tmp_name', 'error', 'size'] as $k) {
+                $_FILES[$filesKey][$k] = [$_FILES[$filesKey][$k]];
+            }
+        }
+
+        $total_files = count($_FILES[$filesKey]['name']);
+
+        // Si mandaron 1 nombre para todos, lo replicamos; si mandaron ninguno, se pondrá fallback por archivo.
+        if (count($nombres) === 1 && $total_files > 1) {
+            $nombres = array_fill(0, $total_files, (string) $nombres[0]);
         }
 
         // ───────────────────────────────────────────────────
-        // 3. Configuración base de la librería Upload
+        // 3) Configuración Upload
         // ───────────────────────────────────────────────────
         $base_config = [
             'upload_path'   => $upload_path,
             'allowed_types' => 'pdf|jpg|jpeg|png|gif|bmp|mp4|mov|avi|wmv|mkv|webm',
-            'max_size'      => 25600, // 25 MB en KB
+            'max_size'      => 25600, // 25 MB (en KB para CI3)
             'encrypt_name'  => true,
         ];
 
@@ -211,33 +241,35 @@ class Documentos_Aspirantes extends CI_Controller
         $responses = [];
 
         // ───────────────────────────────────────────────────
-        // 4. Procesar cada archivo
+        // 4) Subir cada archivo
         // ───────────────────────────────────────────────────
         for ($i = 0; $i < $total_files; $i++) {
-
-            // Remapea a 'single_file' para usar la librería Upload
+            // Remap a un solo archivo para la librería Upload
             $_FILES['single_file'] = [
-                'name'     => $_FILES['file']['name'][$i],
-                'type'     => $_FILES['file']['type'][$i],
-                'tmp_name' => $_FILES['file']['tmp_name'][$i],
-                'error'    => $_FILES['file']['error'][$i],
-                'size'     => $_FILES['file']['size'][$i],
+                'name'     => $_FILES[$filesKey]['name'][$i],
+                'type'     => $_FILES[$filesKey]['type'][$i],
+                'tmp_name' => $_FILES[$filesKey]['tmp_name'][$i],
+                'error'    => $_FILES[$filesKey]['error'][$i],
+                'size'     => $_FILES[$filesKey]['size'][$i],
             ];
 
-            // Carga la librería con sufijo único
+            // Inicializa la librería (handler distinto por iteración)
             $this->load->library('upload', $base_config, 'u' . $i);
 
             if ($this->{'u' . $i}->do_upload('single_file')) {
+                $data = $this->{'u' . $i}->data(); // info del archivo
 
-                $data = $this->{'u' . $i}->data(); // info del archivo subido
+                // Nombre personalizado con fallback al nombre base del archivo
+                $nombrePersonal = isset($nombres[$i]) && trim((string) $nombres[$i]) !== ''
+                    ? trim((string) $nombres[$i])
+                    : pathinfo($_FILES['single_file']['name'], PATHINFO_FILENAME);
 
                 // Guarda en BD
                 $this->db->insert('documentos_aspirante', [
                     'id_aspirante'         => $id_bolsa,
                     'id_usuario'           => $id_usuario,
-                    'nombre_personalizado' => $nombres[$i],
+                    'nombre_personalizado' => $nombrePersonal,
                     'nombre_archivo'       => $data['file_name'],
-
                     'fecha_subida'         => date('Y-m-d H:i:s'),
                     'fecha_actualizacion'  => date('Y-m-d H:i:s'),
                     'eliminado'            => 0,
@@ -245,29 +277,30 @@ class Documentos_Aspirantes extends CI_Controller
 
                 $responses[] = [
                     'success' => true,
-                    'file'    => $data['file_name'],
+                    'file'    => $_FILES['single_file']['name'],
+                    'stored'  => $data['file_name'],
+                    'label'   => $nombrePersonal,
                 ];
-
             } else {
-                // (1)  Mensaje original en inglés
                 $raw = strip_tags($this->{'u' . $i}->display_errors('', ''));
-
-                                                                         // (2)  Conviértelo en texto en ESPAÑOL
-                $msg = $this->traducir_error_upload($raw, $base_config); // ← nueva función
+                $msg = method_exists($this, 'traducir_error_upload')
+                    ? $this->traducir_error_upload($raw, $base_config)
+                    : $raw;
 
                 $responses[] = [
                     'success' => false,
                     'file'    => $_FILES['single_file']['name'],
-                    'error'   => $msg, // ← ya traducido
+                    'error'   => $msg,
                 ];
             }
         }
 
         // ───────────────────────────────────────────────────
-        // 5. Devuelve JSON
+        // 5) Respuesta JSON
         // ───────────────────────────────────────────────────
         return $this->output_json(true, 'Proceso terminado', $responses);
     }
+
     private function output_json($ok, $msg, $data = [])
     {
         return $this->output

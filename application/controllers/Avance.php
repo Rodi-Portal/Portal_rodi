@@ -325,14 +325,15 @@ class Avance extends CI_Controller
     {
         $this->output->set_content_type('application/json');
 
-        $id_portal = $this->session->userdata('idPortal');
-        $row       = $this->cat_portales_model->getDocs($id_portal); // debe regresar columnas 'aviso' y 'terminos'
+        $id_portal = (int) $this->session->userdata('idPortal');
+        if (empty($id_portal)) {echo json_encode(['error' => 'Sesión sin idPortal']);return;}
+
+        $row = $this->cat_portales_model->getDocs($id_portal); // columnas: aviso, terminos, confidencialidad
 
         echo json_encode([
-            'aviso_actual'     => $row->aviso ?? null,
-            'terminos_actual'  => $row->terminos ?? null,
-            'default_aviso'    => 'AV_TL_V1.pdf',
-            'default_terminos' => 'TM_TL_V1.pdf',
+            'aviso_tiene'            => ! empty($row->aviso),
+            'terminos_tiene'         => ! empty($row->terminos),
+            'confidencialidad_tiene' => ! empty($row->confidencialidad),
         ]);
     }
 
@@ -340,31 +341,39 @@ class Avance extends CI_Controller
     {
         $this->output->set_content_type('application/json');
 
-        $id_portal = $this->session->userdata('idPortal');
-        $tipo      = $this->input->post('tipo'); // 'aviso' | 'terminos'
+        $id_portal = (int) $this->session->userdata('idPortal');
+        $tipo      = $this->input->post('tipo'); // 'aviso' | 'terminos' | 'confidencialidad'
 
         if (empty($id_portal)) {
             echo json_encode(['error' => 'Sesión sin idPortal']);return;
         }
-        if (! in_array($tipo, ['aviso', 'terminos'], true)) {
+        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
             echo json_encode(['error' => 'Tipo inválido']);return;
         }
         if (empty($_FILES['archivo']['name'])) {
             echo json_encode(['error' => 'Selecciona un PDF']);return;
         }
 
-                                                   // Directorio destino (el mismo que ya usas)
-        $upload_path = FCPATH . '/_avisosPortal/'; // OJO: carpeta existente y con permisos de escritura
+        // Directorio destino (EXISTENTE y con permisos de escritura)
+        $upload_path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
         if (! is_dir($upload_path)) {
             @mkdir($upload_path, 0775, true);
         }
 
-        // Nombre final por tipo
-        $nombre_final = $id_portal . ($tipo === 'aviso'
-            ? '_avisoPrivacidad.pdf'
-            : '_terminosCondiciones.pdf');
+        // Nombre final por tipo (prefijo con id_portal)
+        switch ($tipo) {
+            case 'aviso':
+                $nombre_final = $id_portal . '_avisoPrivacidad.pdf';
+                break;
+            case 'terminos':
+                $nombre_final = $id_portal . '_terminosCondiciones.pdf';
+                break;
+            case 'confidencialidad':
+                $nombre_final = $id_portal . '_acuerdoConfidencialidad.pdf';
+                break;
+        }
 
-        // Config de subida (como en tu guardar_aviso)
+        // Config de subida
         $config = [
             'upload_path'   => $upload_path,
             'allowed_types' => 'pdf',
@@ -375,24 +384,30 @@ class Avance extends CI_Controller
 
         $this->load->library('upload', $config);
 
-        // El campo se llama 'archivo' (porque así lo mandas en FormData)
         if (! $this->upload->do_upload('archivo')) {
             $error = strip_tags($this->upload->display_errors('', ''));
             echo json_encode(['error' => 'Error al subir: ' . $error]);
             return;
         }
 
-        // Si llegó aquí, ya se guardó con el nombre final
+        // Persistimos en DB (campo = nombre del tipo)
         $this->cat_portales_model->updateDocs($id_portal, [
-            $tipo     => $nombre_final, // 'aviso' o 'terminos'
+            $tipo     => $nombre_final, // 'aviso' | 'terminos' | 'confidencialidad'
             'edicion' => date('Y-m-d H:i:s'),
         ]);
+
+        // URL para previsualizar/descargar (si ya tienes ver_aviso/ver_terminos, añade ver_confidencialidad o usa un ver_doc genérico)
+        $ver_endpoint = [
+            'aviso'            => 'ver_aviso/',
+            'terminos'         => 'ver_terminos/',
+            'confidencialidad' => 'ver_confidencialidad/',
+        ][$tipo];
 
         echo json_encode([
             'status'  => 'success',
             'mensaje' => ucfirst($tipo) . ' actualizado.',
             'archivo' => $nombre_final,
-            'ver_url' => base_url('Avance/' . ($tipo === 'aviso' ? 'ver_aviso/' : 'ver_terminos/') . rawurlencode($nombre_final)),
+            'ver_url' => base_url('Avance/' . $ver_endpoint . rawurlencode($nombre_final)),
         ]);
     }
 
@@ -400,19 +415,24 @@ class Avance extends CI_Controller
     {
         $this->output->set_content_type('application/json');
 
-        $id_portal = $this->session->userdata('idPortal');
+        $id_portal = (int) $this->session->userdata('idPortal');
         $tipo      = $this->input->post('tipo');
-        if (! in_array($tipo, ['aviso', 'terminos'], true)) {echo json_encode(['error' => 'Tipo inválido']);return;}
+
+        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
+            echo json_encode(['error' => 'Tipo inválido']);return;
+        }
 
         $row     = $this->cat_portales_model->getDocs($id_portal);
         $current = $row ? ($row->{$tipo} ?? null) : null;
         if (! $current) {echo json_encode(['error' => 'No hay archivo para eliminar']);return;}
 
-        $path = FCPATH . '/_avisosPortal/' . $id_portal . '/' . $current;
+        // Borramos del mismo lugar donde guardamos
+        $path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR . $current;
         if (is_file($path)) {
             @unlink($path);
         }
 
+        // Limpiamos columna
         $this->cat_portales_model->updateDocs($id_portal, [$tipo => null]);
 
         echo json_encode(['status' => 'success', 'mensaje' => ucfirst($tipo) . ' eliminado.']);

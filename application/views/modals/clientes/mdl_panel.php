@@ -129,7 +129,7 @@
       <!-- encabezado ---------------------------------------------------- -->
       <div class="modal-header bg-primary text-white py-2">
         <h5 class="modal-title mb-0">
-          <i class="fas fa-folder-open mr-2"></i> Documentos del aspirante
+          <i class="fas fa-folder-open mr-2"></i> Documentos del aspirante1
         </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -192,3 +192,85 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* ====== Modal header ====== */
+#modalArchivos .modal-header {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  color: #fff;
+  border-bottom: 0;
+}
+#modalArchivos .modal-header .close { color:#fff; opacity:.9; }
+
+/* ====== Tabla ====== */
+#tablaArchivos.table {
+  border-collapse: separate;
+  border-spacing: 0 8px; /* filas separadas como "cards" */
+}
+#tablaArchivos thead th {
+  background: #f8fafc;
+  border: 0;
+  font-weight: 600;
+  color: #334155;
+  position: sticky; top: 0; z-index: 2;  /* encabezado fijo */
+}
+#tablaArchivos tbody tr {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 0 rgba(15,23,42,.04);
+}
+#tablaArchivos tbody tr:hover {
+  box-shadow: 0 8px 28px rgba(15,23,42,.08);
+  transform: translateY(-1px);
+}
+#tablaArchivos tbody td {
+  border: 0 !important;
+  padding: 10px 14px;
+  vertical-align: middle;
+}
+
+/* ====== Columna "Nombre" con avatar de tipo ====== */
+.doc-item {
+  display:flex; align-items:center; min-width:0;
+}
+.doc-avatar {
+  width:40px; height:40px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  margin-right:12px; flex:0 0 40px;
+  font-size:16px; color:#0f172a;
+}
+.doc-avatar.pdf   { background:#fee2e2; color:#991b1b; }
+.doc-avatar.image { background:#dcfce7; color:#065f46; }
+.doc-avatar.video { background:#dbeafe; color:#1d4ed8; }
+.doc-avatar.other { background:#f1f5f9; color:#334155; }
+
+.doc-text { min-width:0; }               /* contenedor del texto */
+.doc-title {
+  font-weight:600; color:#0f172a; margin:0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.doc-sub {
+  margin:0; font-size:.85rem; color:#64748b;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* ====== Botón de acción (ojo) ====== */
+.btn-eye {
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  width:36px; height:36px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  color:#334155;
+  transition: box-shadow .2s ease, transform .05s ease, background .2s ease;
+}
+.btn-eye:hover {
+  background:#f8fafc; box-shadow:0 6px 20px rgba(2,6,23,.10);
+}
+
+/* Mensaje sin docs */
+#msgSinDocs {
+  border:2px dashed #e2e8f0; border-radius:12px; margin:16px;
+  background:#f8fafc;
+}
+
+</style>

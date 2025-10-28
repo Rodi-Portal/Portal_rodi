@@ -1,5 +1,20 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
+  <?php echo perms_js_flags([
+    'ASP_VER_INFO'           => ['reclutamiento.aspirantes.ver_info', true],
+    'ASP_EDITAR'             => ['reclutamiento.aspirantes.editar', true],
+    'ASP_ASIGNAR_REQ'        => ['reclutamiento.aspirantes.asignar_req', true],
+    'ASP_REGISTRAR_MOV'      => ['reclutamiento.aspirantes.registrar_mov', true],
+    'ASP_VER_HIST'           => ['reclutamiento.aspirantes.ver_historial', true],
+    'ASP_VER_EMPLEOS'        => ['reclutamiento.aspirantes.ver_empleos', true],
+    'ASP_CARGAR_DOCS'        => ['reclutamiento.aspirantes.cargar_docs', true],
+    'ASP_ACTUALIZAR_DOCS'    => ['reclutamiento.aspirantes.actualizar_docs', true],
+    'ASP_CARGAR_COMENTS'     => ['reclutamiento.aspirantes.cargar_coments', true],
+    'ASP_BLOQUEAR'           => ['reclutamiento.aspirantes.bloquear', true],
+    'ASP_ELIMINAR_ASP'       => ['reclutamiento.aspirantes.eliminar_aspirante', true],
+    'ASP_COMENTARIOS'        => ['reclutamiento.aspirantes.comentarios_cliente', true],
+    'ASP_CAMBIAR_STATUS_REQ' => ['reclutamiento.aspirantes.cambiar_status_req', true],
+])?>
 
   <section class="content-header">
     <div class="row align-items-center">
@@ -8,21 +23,21 @@
       </div>
 
       <div class="col-sm-12 col-md-6 col-lg-6 d-flex justify-content-end">
+        <?php if (show_if_can('reclutamiento.aspirantes.asignar_req', true)): ?>
         <button type="button" class="btn btn-primary btn-icon-split mr-2" id="btn_nuevo" onclick="openAddApplicant()">
-          <span class="icon text-white-50">
-            <i class="fas fa-user-plus"></i>
-          </span>
-          <span class="text">Registrar
-            aspirante a requicision
-          </span>
+          <span class="icon text-white-50"><i class="fas fa-user-plus"></i></span>
+          <span class="text">Registrar aspirante a requisición</span>
         </button>
+        <?php endif; ?>
+
+        <?php if (show_if_can('reclutamiento.aspirantes.cambiar_status_req', true)): ?>
         <button type="button" class="btn btn-primary btn-icon-split" data-toggle="modal"
           data-target="#estatusRequisicionModal">
-          <span class="icon text-white-50">
-            <i class="fas fa-exchange-alt"></i>
-          </span>
-          <span class="text">Cambiar estatus Requisicion</span>
+          <span class="icon text-white-50"><i class="fas fa-exchange-alt"></i></span>
+          <span class="text">Cambiar estatus Requisición</span>
         </button>
+        <?php endif; ?>
+
       </div>
     </div>
   </section>
@@ -56,8 +71,8 @@
         <?php
             if ($reqs) {
             foreach ($reqs as $req) {?>
-        <option value="<?php echo $req->id; ?>">
-          <?php echo '#' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+        <option value="<?php echo $req->idReq; ?>">
+          <?php echo '#' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
         </option>
         <?php
             header('Content-Type: text/html; charset=utf-8');}
@@ -73,7 +88,7 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table id="tabla" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <table id="tabla" class="table table-bordered" width="100%" cellspacing="0">
           </table>
         </div>
       </div>
@@ -85,44 +100,84 @@
 <!-- /.content-wrapper -->
 <script src="<?php echo base_url('js/whatsapi.js'); ?>"></script>
 <script>
-$(document).ready(function() {
-  var url = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
-  changeDataTable(url);
+//if (window.__aspirantes_booted) throw 'skip-dup'; window.__aspirantes_booted = true;
+// estado global mínimo
+window.dtTabla = window.dtTabla || null;
+window.DT_MODE = window.DT_MODE || null; // 'progreso' | 'finalizadas'
+const P = window.PERM || {};
+const allow = f => (typeof f === 'undefined') ? true : !!f; // si no existe, permitir
 
-  $('#opcion_requisicion').change(function() {
-    var id = $(this).val();
-    if (id != '') {
-      var baseurl = '<?php echo base_url('Reclutamiento/getAspirantesPorRequisicion'); ?>';
-      var url = baseurl + '?id=' + id;
-      changeDataTable(url);
-    } else {
-      var url = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
-      changeDataTable(url);
-    }
-    //console.log(url+"  esta  es la url "); // Imprimir URL al final
-  });
+// borra el state guardado de DataTables para evitar arrastres entre modos
+function clearDTStateFor(id) {
+  try {
+    // limpia keys típicas de stateSave
+    Object.keys(localStorage).forEach(k => {
+      if (k.indexOf('DataTables_') === 0 || k.indexOf('DT_state_' + id) === 0) {
+        localStorage.removeItem(k);
+      }
+    });
+  } catch (e) {}
+}
 
-  //inputmask
-  $('.fecha').inputmask('dd/mm/yyyy', {
-    'placeholder': 'dd/mm/yyyy'
-  });
-});
+// cambia url si el modo es el mismo; si cambia modo, destruye y vuelve a crear
+function changeDataTable(url, mode) {
+  const sameMode = (window.DT_MODE === mode);
 
-function changeDataTable(url) {
-  if ($.fn.DataTable.isDataTable('#tabla')) {
-    $('#tabla').DataTable().clear().destroy();
+  if ($.fn.DataTable.isDataTable('#tabla') && window.dtTabla && sameMode) {
+    // mismo modo ⇒ solo cambia URL/recarga
+    const current = window.dtTabla.ajax.url();
+    if (current !== url) window.dtTabla.ajax.url(url).load();
+    else window.dtTabla.ajax.reload(null, false);
+    return;
+  }
+
+  // modo diferente ⇒ reconstruir con columnas del modo correcto
+  if ($.fn.DataTable.isDataTable('#tabla') && window.dtTabla) {
+    try {
+      window.dtTabla.state && window.dtTabla.state.clear && window.dtTabla.state.clear();
+    } catch (e) {}
+    try {
+      window.dtTabla.destroy(true);
+    } catch (e) {}
   }
   $('#tabla').empty();
+  clearDTStateFor('tabla');
 
-  $('#tabla').DataTable({
-    "pageLength": 25,
-    //"pagingType": "simple",
-    "order": [0, "desc"],
-    "stateSave": true,
-    "serverSide": false,
-    "bDestroy": true,
-    "ajax": url,
-    "columns": [{
+  if (mode === 'progreso') {
+    buildTableProgreso(url); // ⬅️ usa tus columnas de “En progreso”
+  } else if (mode === 'finalizadas') {
+    buildTableFinalizadas(url); // ⬅️ usa tus columnas de “Finalizadas” (defínela en esa vista)
+  }
+  window.DT_MODE = mode;
+}
+
+$(document).ready(function() {
+  const URL_EN_PROGRESO = '<?php echo base_url('Reclutamiento/getAspirantesRequisiciones'); ?>';
+  const URL_POR_REQ = '<?php echo base_url('Reclutamiento/getAspirantesPorRequisicion'); ?>';
+
+  // Al entrar a "En progreso": fuerza modo y URL correctos
+  changeDataTable(URL_EN_PROGRESO, 'progreso');
+
+  // Filtro por requisición (mismo modo)
+  $(document).off('change.asp', '#opcion_requisicion')
+    .on('change.asp', '#opcion_requisicion', function() {
+      const id = $(this).val();
+      const url = id ? (URL_POR_REQ + '?id=' + id) : URL_EN_PROGRESO;
+      changeDataTable(url, 'progreso');
+    });
+});
+
+window.dtTabla = window.dtTabla ?? null;
+
+function buildTableProgreso(url) {
+  window.dtTabla = $('#tabla').DataTable({
+    pageLength: 25,
+    order: [0, "desc"],
+    stateSave: true,
+    serverSide: false,
+    bDestroy: true,
+    ajax: url,
+    columns: [{
         title: '#',
         data: 'id',
         "width": "3%",
@@ -163,77 +218,105 @@ function changeDataTable(url) {
         bSortable: false,
         "width": "10%",
         mRender: function(data, type, full) {
-          var correo = (full.correo != '') ? full.correo : 'No registrado';
+          const norm = (v, fallback = '--') => {
+            if (v === null || v === undefined) return fallback;
+            if (typeof v === 'string') {
+              const s = v.trim();
+              return (s === '' || s.toLowerCase() === 'null' || s.toLowerCase() === 'undefined') ?
+                fallback :
+                s;
+            }
+            return String(v);
+          };
 
-          return '<b>Teléfono: </b>' + full.telefono + '<br><b>Correo: </b>' + correo + '<br><b>Medio: </b>' +
-            full
-            .medio_contacto;
+          const tel = norm(full?.telefono, '--');
+          const correo = norm(full?.correo, 'No registrado');
+          const medio = norm(full?.medio_contacto, '--');
+
+          return `<b>Teléfono: </b>${tel}<br><b>Correo: </b>${correo}<br><b>Medio: </b>${medio}`;
         }
       },
 
       {
         title: 'Acciones',
-        data: 'id',
+        data: 'idAsp',
         bSortable: false,
         "width": "10%",
-        mRender: function(data, type, full) {
-          var cvLink =
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.id +
-            ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
+        mRender: function (data, type, full) {
 
-          var actualizarDocs =
-            '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' +
-            full.id +
-            ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>';
+          // Botones individuales (se muestran sólo si el permiso lo permite)
+          var cvLink = allow(P.ASP_CARGAR_DOCS)
+            ? '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioCargaCV(' + full.idAsp + ')" data-toggle="tooltip" title="Cargar  documentos"><i class="fas fa-upload"></i> Cargar Documentos</a>'
+            : '';
 
-          var comentarios =
-            '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id +
-            ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>';
+          var eliminarAspirante = allow(P.ASP_ELIMINAR_ASP)
+            ? '<a href="javascript:void(0);" class="dropdown-item" onclick="eliminarAspirante(' + full.idAsp + ')" data-toggle="tooltip" title="Eliminar"><i class="fas fa-upload"></i>Eliminar  Match</a>'
+            : '';
 
-          var historial =
-            '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>';
-          var iniciar_socio =
-            '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Enviar al módulo de Preempleo para candidatos con o sin estudios previos a la contratación."><i class="fas fa-play-circle"></i>Enviar a Preempleo</a>';
-          let ingreso =
-            '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>';
+          var actualizarDocs = allow(P.ASP_ACTUALIZAR_DOCS)
+            ? '<a href="javascript:void(0);" class="dropdown-item" onclick="mostrarFormularioActualizarDocs(' + full.idAsp + ')" data-toggle="tooltip" title="Actualizar Documentos"><i class="fas fa-eye"></i> Actualizar Documentos</a>'
+            : '';
 
+          var comentarios = allow(P.ASP_COMENTARIOS)
+            ? '<a href="javascript:void(0)" class="dropdown-item" onclick="verHistorialBolsaTrabajo(' + full.id + ', \'' + full.aspirante + '\')"><i class="fas fa-user-tie"></i>Comentarios Cliente</a>'
+            : '';
+
+          var historial = allow(P.ASP_VER_HIST)
+            ? '<a href="javascript:void(0)" id="ver_historial" class="dropdown-item" data-toggle="tooltip" title="Ver historial de movimientos"><i class="fas fa-history"></i> Ver historial de movimientos</a>'
+            : '';
+
+          var iniciar_socio = allow(P.ASP_CAMBIAR_STATUS_REQ)
+            ? '<a href="#" id="iniciar_socio" class="dropdown-item" data-toggle="tooltip" title="Enviar al módulo de Preempleo para candidatos con o sin estudios previos a la contratación."><i class="fas fa-play-circle"></i>Enviar a Preempleo</a>'
+            : '';
+
+          // No tienes perm. dedicado para “Registro de ingreso” en este módulo; lo amarro a registrar_mov
+          var ingreso = allow(P.ASP_REGISTRAR_MOV)
+            ? '<a href="#" id="ingreso_empresa" class="dropdown-item" data-toggle="tooltip" title="Registro de datos de ingreso del candidato"><i class="fas fa-user-tie"></i> Registro de ingreso</a>'
+            : '';
+
+          // Acciones “core” que usan los IDs que ya bindeas (#editar_aspirante y #accion)
           var acciones = '';
+          if (allow(P.ASP_EDITAR)) {
+            acciones += '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>';
+          }
+          if (allow(P.ASP_REGISTRAR_MOV)) {
+            acciones += '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
+          }
 
-          acciones =
-            '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-            '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';
-
+          // Lógica original de status, pero respetando permisos
           if (full.status_final == 'FINALIZADO' || full.status_final == 'COMPLETADO') {
             if (full.idCandidato != null && full.idCandidato != '') {
               acciones = '<b>ESE finalizado</b>';
             } else {
-              acciones = iniciar_socio + ingreso +
-                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+              acciones = (allow(P.ASP_CAMBIAR_STATUS_REQ) ? iniciar_socio : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? ingreso : '')
+                      + (allow(P.ASP_EDITAR) ? '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>' : '');
             }
           } else {
             if (full.status_final != 'CANCELADO') {
-              acciones = iniciar_socio + ingreso +
-
-                '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' +
-                '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>';;
+              acciones = (allow(P.ASP_CAMBIAR_STATUS_REQ) ? iniciar_socio : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? ingreso : '')
+                      + (allow(P.ASP_EDITAR) ? '<a href="javascript:void(0)" id="editar_aspirante" class="dropdown-item" data-toggle="tooltip" title="Editar aspirante"><i class="fas fa-user-edit"></i> Editar aspirante</a>' : '')
+                      + (allow(P.ASP_REGISTRAR_MOV) ? '<a href="javascript:void(0)" id="accion" class="dropdown-item" data-toggle="tooltip" title="Registrar paso en el proceso del aspirante"><i class="fas fa-plus-circle"></i> Registrar movimientos</a>' : '');
             }
           }
 
+          // Arma el menú final
+          var menu = acciones + historial + comentarios + cvLink + actualizarDocs + eliminarAspirante;
 
-          return '<div class="btn-group">' +
-            '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>' +
-            '<div class="dropdown-menu">' +
+          // Si no hay nada que mostrar, no pintes el botón Acciones
+          if (!menu || !menu.trim()) return '';
 
-            acciones +
-            historial +
-            comentarios +
-            cvLink +
-            actualizarDocs +
-            '</div>' +
-            '</div>';
+          return '<div class="btn-group">'
+              +   '<button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones</button>'
+              +   '<div class="dropdown-menu">'
+              +      menu
+              +   '</div>'
+              + '</div>';
         }
       },
+
       {
         title: 'Estatus actual',
         data: null, // Usamos `null` para poder controlar manualmente qué se muestra
@@ -298,7 +381,7 @@ function changeDataTable(url) {
 
 
       $("a#editar_aspirante", row).bind('click', () => {
-        $("#idAspirante").val(data.id);
+        $("#idAspirante").val(data.idAsp);
         $("#idBolsa").val(data.id_bolsa_trabajo);
 
         var nombre = data.aspirante.split(' ');
@@ -376,11 +459,39 @@ function changeDataTable(url) {
         });
       });
 
-      $('a#iniciar_socio', row).bind('click', () => {
+      $('a#iniciar_socio', row).off('click').bind('click', () => {
+        // --- BLINDAJE INICIAL: limpiar estado mínimo antes de rellenar ---
+        const $modal = $('#registroCandidatoModal');
 
+        // (a) Corrige ID duplicado curp_registro (warning que te sale en consola)
+        const $dups = $modal.find('#curp_registro');
+        if ($dups.length > 1) {
+          $($dups[1]).attr({
+            id: 'curp_check_registro',
+            name: 'curp_check_registro'
+          });
+        }
 
+        // (b) Reinicia #puesto SIN perder funcionalidad (vacía y deja base)
+        if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+          $('#puesto').select2('destroy'); // evita múltiples instancias
+        }
+        $('#puesto').empty()
+          .append('<option value="0" selected>N/A</option>')
+          .append('<option value="otro">Otro</option>');
+        $('#puesto_otro').val('').hide();
+
+        // (c) Limpia contenedores que vas a volver a llenar
+        $('#previos').empty();
+        $('#detalles_previo').empty();
+        $('#div_docs_extras').empty();
+
+        // (d) (Opcional) resetea validaciones visibles y loader
+        $('#msj_error').addClass('hidden').empty();
+        $('.loader').hide();
+
+        // --- TU LÓGICA TAL CUAL ---
         var nombreCompleto = data.aspirante.trim();
-
 
         // Dividir el nombre completo en partes
         var partesNombre = nombreCompleto.split(" ");
@@ -390,6 +501,7 @@ function changeDataTable(url) {
         var apellidoMaterno = partesNombre.length > 2 ? partesNombre[2] : "";
         var id_cliente = data.id_cliente;
         let id_position = 0;
+
         $("#id_cliente_hidden").val(data.id_cliente);
         $("#clave").val(data.clave);
         $("#cliente").val(data.nombre_cliente);
@@ -401,7 +513,9 @@ function changeDataTable(url) {
         $('#materno_registro').val(apellidoMaterno)
         $('#celular_registro').val(data.telefono)
         $('#correo_registro').val(data.correo)
+
         $('.loader').css("display", "block");
+
         $.ajax({
           async: false,
           url: '<?php echo base_url('Cat_Puestos/getPositionByName'); ?>',
@@ -413,6 +527,7 @@ function changeDataTable(url) {
             id_position = res;
           }
         });
+
         $.ajax({
           async: false,
           url: '<?php echo base_url('Candidato_Seccion/getHistorialProyectosByCliente'); ?>',
@@ -424,6 +539,7 @@ function changeDataTable(url) {
             $('#previos').html(res);
           }
         });
+
         setTimeout(() => {
           $.ajax({
             async: false,
@@ -432,28 +548,72 @@ function changeDataTable(url) {
             success: function(res) {
               if (res != 0) {
                 let data = JSON.parse(res);
+
+                // 🔒 IMPORTANTE: asegurar base limpia ANTES de append (por si otro flujo lo tocó)
+                if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+                  $('#puesto').select2('destroy');
+                }
+                // Conserva N/A y Otro que dejamos al inicio
+                // Agrega "Selecciona" una sola vez
                 $('#puesto').append('<option value="">Selecciona</option>');
+
                 for (let i = 0; i < data.length; i++) {
                   $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] +
                     '</option>');
                 }
+
+                // Quita opciones duplicadas (por si algo previo dejó residuos)
+                const seen = new Set();
+                $('#puesto option').each(function() {
+                  const k = this.value + '|' + (this.textContent || '');
+                  if (seen.has(k)) $(this).remove();
+                  else seen.add(k);
+                });
+
+                // Inicializa select2 una sola vez y dentro del modal
                 $('#puesto').select2({
                   placeholder: 'Selecciona una opción',
                   allowClear: true,
-                  // Puedes agregar más opciones según tus necesidades
+                  width: '100%',
+                  dropdownParent: $('#registroCandidatoModal')
                 });
+
               } else {
                 $('#puesto').append('<option value="">No hay puestos registrados</option>');
               }
             }
           });
         }, 200);
+
         setTimeout(function() {
           $('#puesto').val(id_position).trigger('change');
           $('.loader').fadeOut();
         }, 250);
+        $('#opcion_registro').val('2').trigger('change');
+        // Muestra el modal
         $('#registroCandidatoModal').modal('show');
+
+        // 🔁 LIMPIEZA AL CERRAR (para siguiente apertura igualita)
+        $('#registroCandidatoModal').one('hidden.bs.modal', function() {
+          // deja el select tal cual base y sin select2
+          if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
+            $('#puesto').select2('destroy');
+          }
+          $('#puesto').empty()
+            .append('<option value="0" selected>N/A</option>')
+            .append('<option value="otro">Otro</option>');
+          $('#puesto_otro').val('').hide();
+
+          // limpia contenedores y estados
+          $('#previos, #detalles_previo, #div_docs_extras').empty();
+          $('#pais_registro, #proyecto_registro, .valor_dinamico').prop('disabled', true).val('');
+          $('#msj_error').addClass('hidden').empty();
+          $('.loader').hide();
+        });
       });
+
+
+
       $('a#ingreso_empresa', row).bind('click', () => {
         $("#idAspirante").val(data.id);
         $('#ingresoCandidatoModal .nombreRegistro').text(data.nombre)
@@ -478,34 +638,27 @@ function changeDataTable(url) {
       }
     }
   });
-}
 
-function mostrarFormularioCargaCV(id) {
-  console.log('mostrarFormularioCargaCV id:', id);
-  $('#id_aspirante').val(id);
+}; // <-- cierra función
 
-  /* ───── VALIDACIONES RÁPIDAS ───── */
 
-  // 1. ¿La librería Dropzone está cargada?
-  if (typeof window.Dropzone === 'undefined') {
-    Swal.fire('Ups…', 'La librería Dropzone no se cargó. Recarga la página.', 'error');
-    return; // ⛔ NO abras el modal
-  }
-
-  // 2. (Opcional) ¿Ya hay una cola en curso?
-  //    Evita abrir un segundo modal si el usuario está subiendo algo.
-  if (dz && dz.getQueuedFiles().length > 0) {
-    Swal.fire('Atención', 'Tienes archivos pendientes de subir.', 'warning');
-    return; // ⛔ NO abras el modal
-  }
-
-  /* ───── Todo OK → abre el modal ───── */
-  $('#modalCargaArchivos').modal('show');
-}
 
 if (typeof baseDocs === 'undefined') {
   var baseDocs = <?php echo json_encode(VERASPIRANTESDOCS); ?>;
 }
+
+function abreviarNombreArchivo(nombre, maxLen = 20) {
+  if (!nombre || nombre.length <= maxLen) return nombre;
+  const dot = nombre.lastIndexOf('.');
+  const ext = (dot > -1 ? nombre.slice(dot) : '');
+  const base = (dot > -1 ? nombre.slice(0, dot) : nombre);
+  if (base.length + ext.length <= maxLen) return nombre;
+  const keep = maxLen - ext.length - 3; // por '...'
+  const left = Math.ceil(keep * 0.6);
+  const right = keep - left;
+  return base.slice(0, left) + '...' + base.slice(base.length - right) + ext;
+}
+
 function mostrarFormularioActualizarDocs(id) {
   $('#id_aspirante').val(id);
   const $tbody = $('#tablaDocsModal tbody');
@@ -513,76 +666,94 @@ function mostrarFormularioActualizarDocs(id) {
   $tbody.html('<tr><td colspan="5" class="text-center">Cargando…</td></tr>');
 
   $.ajax({
-    url: `<?php echo base_url('Documentos_Aspirantes/lista/') ?>${id}`,
+    url: '<?php echo site_url('Documentos_Aspirantes/lista/') ?>' + id,
     type: 'GET',
     dataType: 'json',
     success: function(docs) {
-      if (!docs.length) {
+      if (!Array.isArray(docs) || !docs.length) {
         $tbody.html('<tr><td colspan="5" class="text-center text-muted">Sin documentos</td></tr>');
-      } else {
-        let filas = '';
-        docs.forEach(d => {
-          filas += `
-            <tr>
-              <td>${d.nombre_personalizado}</td>
-              <td><a href="${baseDocs}${d.nombre_archivo}" target="_blank">${d.nombre_archivo}</a></td>
-              <td>${d.fecha_subida}</td>
-              <td>
-                <div class="form-check form-switch">
-                  <input class="form-check-input tipo-vista-switch"
-                        type="checkbox"
-                        data-id="${d.id}"
-                        ${d.tipo_vista == 1 ? 'checked' : ''}>
-                </div>
-              </td>
-              <td>
-                <button class="btn btn-sm btn-info"
-                        data-toggle="tooltip" title="Reemplazar archivo"
-                        onclick="abrirModalReemplazo(${d.id}, '${d.nombre_personalizado.replace(/'/g,'&#39;')}')">
-                  <i class="fas fa-sync-alt"></i>
-                </button>
-                <button class="btn btn-sm btn-danger"
-                        data-toggle="tooltip" title="Eliminar archivo"
-                        onclick="eliminarArchivo(${d.id})">
-                  <i class="fas fa-trash-alt"></i>
-                </button>
-              </td>
-            </tr>`;
-        });
-        $tbody.html(filas);
-
-        // Re-inicializa tooltips
-        $('[data-toggle="tooltip"]').tooltip();
-
-        // Activa switch luego de dibujar filas
-        $('.tipo-vista-switch').off('change').on('change', function() {
-          const id = $(this).data('id');
-          const tipo_vista = $(this).is(':checked') ? 1 : 0;
-
-          $.ajax({
-            url: `<?php echo base_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>`,
-            type: 'POST',
-            data: { id, tipo_vista },
-            dataType: 'json',
-            success: resp => {
-              if (resp.ok) {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Actualizado',
-                  text: 'Vista actualizada correctamente',
-                  timer: 1200,
-                  showConfirmButton: false
-                });
-              } else {
-                Swal.fire('Error', resp.message, 'error');
-              }
-            },
-            error: () => {
-              Swal.fire('Error', 'No se pudo actualizar la vista.', 'error');
-            }
-          });
-        });
+        $('#modalActualizarArchivos').modal('show');
+        return;
       }
+
+      let filas = '';
+      docs.forEach(function(d) {
+        const urlVer = '<?php echo site_url('Archivo/ver_aspirante/') ?>' + d.id;
+        const urlDown = '<?php echo site_url('Archivo/descargar_aspirante/') ?>' + d.id;
+        const textoLink = abreviarNombreArchivo(d.nombre_archivo, 20);
+
+        filas += `
+          <tr>
+            <td>${d.nombre_personalizado}</td>
+            <td>
+              <a href="${urlVer}" target="_blank" rel="noopener" title="${d.nombre_archivo}">
+                ${textoLink}
+              </a>
+              <a href="${urlDown}" class="ml-2" title="Descargar" data-toggle="tooltip">
+                <i class="fas fa-download"></i>
+              </a>
+            </td>
+            <td>${d.fecha_subida}</td>
+            <td>
+              <div class="form-check form-switch">
+                <input class="form-check-input tipo-vista-switch"
+                       type="checkbox"
+                       data-id="${d.id}"
+                       ${Number(d.tipo_vista) === 1 ? 'checked' : ''}>
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info"
+                      data-toggle="tooltip" title="Reemplazar archivo"
+                      onclick="abrirModalReemplazo(${d.id}, '${d.nombre_personalizado.replace(/'/g,'&#39;')}')">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <button class="btn btn-sm btn-danger"
+                      data-toggle="tooltip" title="Eliminar archivo"
+                      onclick="eliminarArchivo(${d.id})">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>`;
+      });
+
+      $tbody.html(filas);
+
+      // Tooltips BS4
+      $('[data-toggle="tooltip"]').tooltip();
+
+      // Switch de tipo_vista
+      $('.tipo-vista-switch').off('change').on('change', function() {
+        const id = $(this).data('id');
+        const tipo_vista = $(this).is(':checked') ? 1 : 0;
+
+        $.ajax({
+          url: '<?php echo site_url('Documentos_Aspirantes/actualizar_tipo_vista') ?>',
+          type: 'POST',
+          data: {
+            id: id,
+            tipo_vista: tipo_vista
+          },
+          dataType: 'json',
+          success: function(resp) {
+            if (resp && resp.ok) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Actualizado',
+                text: 'Vista actualizada correctamente',
+                timer: 1200,
+                showConfirmButton: false
+              });
+            } else {
+              Swal.fire('Error', (resp && resp.message) ? resp.message :
+                'No se pudo actualizar la vista.', 'error');
+            }
+          },
+          error: function() {
+            Swal.fire('Error', 'No se pudo actualizar la vista.', 'error');
+          }
+        });
+      });
 
       $('#modalActualizarArchivos').modal('show');
     },
@@ -593,6 +764,58 @@ function mostrarFormularioActualizarDocs(id) {
         text: 'No se pudieron cargar los documentos'
       });
       $('#modalActualizarArchivos').modal('hide');
+    }
+  });
+}
+
+function eliminarAspirante(idAsp) {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: "Vas a eliminar este aspirante",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Segunda advertencia
+      Swal.fire({
+        title: 'Advertencia',
+        text: 'El aspirante desaparecerá de este listado y el cliente o sucursal no podrá verlo más',
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar'
+      }).then((result2) => {
+        if (result2.isConfirmed) {
+          // Llamada AJAX al backend
+          $.ajax({
+            url: '<?php echo base_url("Reclutamiento/eliminarAspirante") ?>',
+            type: 'POST',
+            data: {
+              id: idAsp
+            },
+            success: function(response) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'El aspirante fue eliminado correctamente'
+              });
+
+              if (dtTabla && $.fn.DataTable.isDataTable('#tabla')) {
+                dtTabla.ajax.reload(null, false); // ← recarga SIN perder paginación
+              }
+            },
+            error: function(xhr, status, error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se pudo eliminar el aspirante. Intenta de nuevo.'
+              });
+            }
+          });
+        }
+      });
     }
   });
 }
@@ -650,8 +873,6 @@ function openAddApplicant() {
 
   $("#nuevoAspiranteModal").modal('show');
 }
-
-
 
 
 function addApplicant() {

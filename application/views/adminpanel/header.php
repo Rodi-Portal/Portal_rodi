@@ -10,20 +10,15 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/jpg" href="<?php echo base_url() ?>img/favicon.jpg" sizes="64x64">
-
   <!-- Custom Fonts -->
   <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
-
-
   <?php echo link_tag("css/sb-admin-2.min.css"); ?>
-
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
-
   <!-- Select Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
@@ -31,26 +26,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
   <!-- CSS -->
   <?php echo link_tag("css/custom.css"); ?>
-
   <!-- Sweetalert 2 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
-
   <!-- Animate CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-
-
   <!-- JavaScript -->
   <script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-
   <!--script src="< ?php echo base_url() ?>vendor/bootstrap/js/bootstrap.bundle.min.js"></script -->
   <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   <!-- Dropzone JS (debe ir después de jQuery y Bootstrap JS) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
-
   <!-- Page Level Plugins -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="<?php echo base_url() ?>js/chart.min.js"></script>
@@ -58,20 +46,22 @@
   <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
   <!-- Dropzone JS -->
-
   <!-- FullCalendar (Descomentado si se necesita) -->
   <!--<link href='< ?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
-
   <!-- Uncomment if Pusher is needed -->
   <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
-
   <!-- Inicialización de Selectpicker -->
-
+  <script>
+  $(document).on('focusin', function(e) {
+    if ($(e.target).closest('.swal2-container').length) {
+      e.stopImmediatePropagation();
+    }
+  });
+  </script>
 </head>
 
 <body id="page-top">
   <!-- JavaScript -->
-
   <?php
       $CI                   = &get_instance();
       $idRol                = $CI->session->userdata('idrol');
@@ -82,17 +72,12 @@
       $terminos             = $terminos_condiciones ? $terminos_condiciones : 'TM_TL_V1.pdf';
 
   ?>
-
-
-
   <?php /*$token = $this->session->userdata('jwt_token'); 
-
 echo $token  */?>
   <!-- Page Wrapper -->
   <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
       <!-- Sidebar - Brand -->
       <?php if ($logo == null) {
               $logo = 'logo_nuevo.png';
@@ -124,7 +109,6 @@ echo $token  */?>
             </div>
           </div>
         </a>
-
         <div id="collapseUsuario" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <?php if ($idRol == 1 || $idRol == 6) {?>
@@ -140,7 +124,7 @@ echo $token  */?>
               <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
               Pago/Suscripción
             </a>
-              <a class="collapse-item" href="<?php echo base_url(); ?>legal">
+            <a class="collapse-item" href="<?php echo base_url(); ?>legal">
               <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
               T & C
             </a>
@@ -161,12 +145,9 @@ echo $token  */?>
           <span>Dashboard</span>
         </a>
       </li>
-
       <!-- Divider -->
       <hr class="sidebar-divider">
-
       <!-- Manual de Usuario -->
-
       <li class="nav-item">
         <!-- Ajusta la ruta del archivo según corresponda -->
         <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
@@ -181,9 +162,7 @@ echo $token  */?>
         <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"><i
             class="fas fa-users"></i>
           <span>Reclutamiento</span><!-- Icono de FontAwesome para Recruitment -->
-
         </a>
-
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -192,7 +171,6 @@ echo $token  */?>
           <i class="fas fa-user-clock"></i>
           <span>Preempleo</span>
         </a>
-
       </li>
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -213,7 +191,6 @@ echo $token  */?>
 
       </li>
       <!-- Divider -->
-
       <!-- Reportes -->
       <?php
           $portal = $this->session->userdata('idPortal');
@@ -243,90 +220,108 @@ echo $token  */?>
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
             <?php }?>
+                        <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+
+              <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
+              title="Proceso de reclutamiento"
+              href="<?php echo site_url('Reporte/reporte_exempleados_index') ?>">Exempleados.</a>
+            <?php }?>
           </div>
         </div>
       </li>
-      <?php }
+      <?php }?>
+      <!-- Catalogos -->
+
+      <?php
+          // ¿Se muestra el menú "Registrar"?
+          $menuRegistrar = show_if_can(
+              'admin.__menu.ver',
+              in_array(5, $submenus) || in_array((int) $idRol, [1, 6, 9], true)
+          );
+
+          // Ítems dentro de "Registrar"
+          $itemUsuariosAdmins = show_if_can(
+              'admin.usuarios_internos.ver',
+              in_array((int) $idRol, [1, 6, 9], true)
+          );
+
+          $itemSucursales = show_if_can(
+              'admin.sucursales.ver',
+              in_array((int) $idRol, [1, 6, 9], true)
+          );
+
+          // Si quieres dejar Portales con la misma condición legacy de antes:
+
+          $soloPortal1YRol1 = ((int) $portal === 1 && (int) $idRol === 1);
+
+          if ($soloPortal1YRol1) {
+              // Aquí sí dejamos que el override per-usuario decida (legacy=true)
+              $itemPortales = show_if_can('admin.portales.ver', true);
+          } else {
+              // Nunca mostrar para otros casos (incluye rol 6)
+              $itemPortales = false;
+          }
+
       ?>
 
-
-
-
-
-
-
-
-
-      <!-- Catalogos -->
       <?php
-      if (in_array(5, $submenus) || ($idRol == 1 || $idRol == 6 || $idRol == 9)) {?>
+      if ($menuRegistrar): ?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
           aria-expanded="true" aria-controls="collapseCatalogos">
           <i class="fas fa-fw fa-folder"></i>
           <span>Registrar</span>
         </a>
+
         <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <?php
-            if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">Usuarios
-              Administradores</a>
-            <?php
-            }?>
-            <?php
-if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">Sucursales</a>
-            <?php
-            }?>
-            <?php
 
-    if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
-            <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">Portales</a>
-            <?php
-            }?>
+            <?php if ($itemUsuariosAdmins): ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">
+              Usuarios Administradores
+            </a>
+            <?php endif; ?>
 
-            <!-- ?php
-                        if(in_array(8, $submenus)){ ?>
-                      <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
-                      < ?php
-                        } ? -->
+            <?php if ($itemSucursales): ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">
+              Sucursales
+            </a>
+            <?php endif; ?>
+
+            <?php if ($itemPortales): ?>
+            <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">
+              Portales
+            </a>
+            <?php endif; ?>
+
           </div>
         </div>
       </li>
-      <?php }
-      if ($portal == 1 && ($idRol == 1 || $idRol == 6)) {?>
+      <?php endif;
+
+      if ($portal == 1 && ($idRol == 1)) {?>
       <button id="enviarNotificacionesBtn">Enviar Notificaciones</button>
+      <button id="enviarNotificacionesBtnex">Enviar Notificaciones</button>
+      <button id="enviarNotificacionesBtnrec">Enviar Notificaciones</button>
+
+
       <div id="resultados"></div>
 
       <button id="enviarCvsBtn">Enviar CVS</button>
       <div id="resultados2"></div>
       <?php }?>
-
-      <!-- ?php
-                        if(in_array(8, $submenus)){ ?>
-                      <a class="collapse-item" href="< ?php echo site_url('Cat_Puestos/index') ?>">Puestos</a>
-                      < ?php
-                        } ? -->
-
-
-
       <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
         <i class="fa fa-bars"></i>
       </button>
     </ul>
     <!-- End of Sidebar -->
     <!-- Content Wrapper -->
-    <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
-
       <!-- Main Content -->
       <div id="content">
-
         <!-- Topbar -->
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
           <ul class="navbar-nav d-flex flex-row w-100">
-
             <!-- Contenedor para los botones -->
             <li class="nav-item custom-menu" style="flex: 1;">
               <div class="button-container">
@@ -376,7 +371,6 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
 
               </div>
             </li>
-
             <!-- Nav Item - Alerts -->
             <li class="nav-item dropdown no-arrow mx-1" id="iconoNotificaciones">
               <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown"
@@ -385,7 +379,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                 <?php if (isset($contadorNotificaciones)) {
                     $displayContador = ($contadorNotificaciones > 0) ? 'initial' : 'none'; ?>
                 <span class="badge badge-danger badge-counter" id="contadorNotificaciones"
-                  style="display:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
+                  style="display:<?php echo $displayContador; ?>;"><?php echo $contadorNotificaciones ?></span>
                 <?php
                 }?>
               </a>
@@ -437,10 +431,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             </li -->
           </ul>
         </nav>
-
         <!-- Enlace que abre el modal -->
-
-
         <!-- Modal para subir la imagen -->
         <div class="modal fade" id="updateLogoModal" tabindex="-1" role="dialog" aria-labelledby="updateLogoModalLabel"
           aria-hidden="true">
@@ -517,11 +508,8 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                         </td>
                         <td class="text-nowrap">
                           <!-- Guardar -->
-                  
-
-                          <button type="button" id="btn-save-aviso"
-                            class="btn btn-sm btn-link"
-                            data-toggle="tooltip" title="Guardar"
+                          <button type="button" id="btn-save-aviso" class="btn btn-sm btn-link" data-toggle="tooltip"
+                            title="Guardar"
                             style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
                             <span class="fas fa-save"
                               style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
@@ -531,12 +519,10 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                           </button>
 
                           <!-- Eliminar -->
-                          <button type="button" id="btn-del-aviso"
-                            class="btn btn-sm btn-link"
-                            data-toggle="tooltip" title="Eliminar" disabled
+                          <button type="button" id="btn-del-aviso" class="btn btn-sm btn-link" data-toggle="tooltip"
+                            title="Eliminar" disabled
                             style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
-                            <span class="fas fa-trash-alt"
-                              style="font-size:2rem;color:#dc3545;margin-left: 25px">
+                            <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545;margin-left: 25px">
                             </span>
                           </button>
                         </td>
@@ -572,6 +558,39 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
                           </button>
                         </td>
                       </tr>
+
+                      <!-- ACUERDO DE CONFIDENCIALIDAD (NUEVO) -->
+                      <tr id="row-confidencialidad">
+                        <td><strong>Acuerdo de confidencialidad</strong></td>
+                        <td>
+                          <div id="estado-confidencialidad" class="small"></div>
+                        </td>
+                        <td>
+                          <input type="file" id="file-confidencialidad" accept="application/pdf"
+                            class="form-control-file">
+                        </td>
+                        <td class="text-nowrap">
+                          <!-- Guardar -->
+                          <button type="button" id="btn-save-confidencialidad" class="btn btn-sm btn-link"
+                            data-toggle="tooltip" title="Guardar"
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
+                            <span class="fas fa-save"
+                              style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
+                              onmouseenter="this.style.transform='scale(1.1)';"
+                              onmouseleave="this.style.transform='none';">
+                            </span>
+                          </button>
+
+                          <!-- Eliminar -->
+                          <button type="button" id="btn-del-confidencialidad" class="btn btn-sm btn-link"
+                            data-toggle="tooltip" title="Eliminar" disabled
+                            style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
+                            <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545; margin-left: 25px">
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+
                     </tbody>
                   </table>
                 </div>
@@ -588,6 +607,7 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
             </div>
           </div>
         </div>
+
 
 
 
@@ -671,157 +691,251 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
           aviso: 'AV_TL_V1.pdf',
           terminos: 'TM_TL_V1.pdf'
         };
-        const CSRF_NAME = '<?php echo $this->security->get_csrf_token_name();?>';
-        const CSRF_HASH = '<?php echo $this->security->get_csrf_hash();?>';
-        const VIEW_AVISO_BASE = '<?php echo base_url("Avance/ver_aviso/");?>';
+        const CSRF_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
+        const CSRF_HASH = '<?php echo $this->security->get_csrf_hash(); ?>';
+        const VIEW_AVISO_BASE = '<?php echo base_url("Avance/ver_aviso/"); ?>';
 
         function linkDoc(nombre) {
           const safe = encodeURIComponent(nombre || '');
           return `<a href="${VIEW_AVISO_BASE}${safe}" target="_blank">Ver documento</a>`;
         }
 
-        function pintarEstado(tipo, actual, porDefecto) {
-          const has = !!actual;
-          const html = has ?
-            `Archivo actual: ${linkDoc(actual)}` :
-            `No hay archivo cargado. Se usará por defecto: ${linkDoc(porDefecto)}`;
-          const el = (tipo === 'aviso') ? $('#estado-aviso') : $('#estado-terminos');
-          el.html(html)
-            .removeClass('text-danger')
-            .toggleClass('text-muted', !has);
-          // habilitar/eliminar según haya actual
-          const delBtn = (tipo === 'aviso') ? $('#btn-del-aviso') : $('#btn-del-terminos');
-          delBtn.prop('disabled', !has);
+        function pintarEstado(tipo, tieneActual) {
+          const ref = DOC[tipo];
+          if (!ref) return;
+
+          // Siempre apuntamos al controlador. Él decide: archivo propio o default.
+          const urlVer = '<?php echo base_url("portal/doc"); ?>/' + tipo;
+
+          if (tieneActual) {
+            $(ref.estado).html(
+              `<div>
+         <span class="text-success">Actual:&nbsp;</span>
+         <a href="${urlVer}" target="_blank" rel="noopener">Ver documento</a>
+         <div class="text-muted">Si eliminas, volverá al por defecto.</div>
+       </div>`
+            );
+            $(ref.del).prop('disabled', false).css({
+              cursor: 'pointer',
+              opacity: 1
+            });
+          } else {
+            $(ref.estado).html(
+              `<div>
+         <span class="text-muted">Por defecto:&nbsp;</span>
+         <a href="${urlVer}" target="_blank" rel="noopener">Ver documento por defecto</a>
+       </div>`
+            );
+            $(ref.del).prop('disabled', true).css({
+              cursor: 'not-allowed',
+              opacity: .6
+            });
+          }
         }
 
+
         function cargarDocumentos() {
-          // Trae nombres actuales desde backend
           $.ajax({
-            url: '<?php echo base_url("Avance/documentos_info");?>',
+            url: '<?php echo base_url("Avance/documentos_info"); ?>',
             type: 'POST',
             dataType: 'json',
             data: {
               [CSRF_NAME]: CSRF_HASH
             },
             success: function(r) {
-              const aviso = r.aviso_actual ?? null;
-              const terminos = r.terminos_actual ?? null;
-              const defAviso = r.default_aviso || DEFAULTS.aviso;
-              const defTerm = r.default_terminos || DEFAULTS.terminos;
-
-              pintarEstado('aviso', aviso, defAviso);
-              pintarEstado('terminos', terminos, defTerm);
+              if (r.error) {
+                $('#estado-aviso, #estado-terminos, #estado-confidencialidad')
+                  .html('<span class="text-danger">Error al cargar estado.</span>');
+                $('#btn-del-aviso, #btn-del-terminos, #btn-del-confidencialidad')
+                  .prop('disabled', true);
+                return;
+              }
+              pintarEstado('aviso', !!r.aviso_tiene);
+              pintarEstado('terminos', !!r.terminos_tiene);
+              pintarEstado('confidencialidad', !!r.confidencialidad_tiene);
             },
             error: function() {
-              $('#estado-aviso, #estado-terminos').html(
-                '<span class="text-danger">Error al cargar estado.</span>');
-              $('#btn-del-aviso, #btn-del-terminos').prop('disabled', true);
+              $('#estado-aviso, #estado-terminos, #estado-confidencialidad')
+                .html('<span class="text-danger">Error al cargar estado.</span>');
+              $('#btn-del-aviso, #btn-del-terminos, #btn-del-confidencialidad')
+                .prop('disabled', true);
             }
           });
         }
 
-        // Abrir el modal → cargar estado
+        // Asegúrate de mantener esto:
         $('#updateAvisoModal').on('show.bs.modal', cargarDocumentos);
 
-        // Guardar (subir) — AVISO
-        $('#btn-save-aviso').on('click', function() {
-          const f = $('#file-aviso')[0].files[0];
-          if (!f) return Swal ? Swal.fire('Selecciona un PDF', '', 'warning') : alert('Selecciona un PDF');
-          subirDocumento('aviso', f);
-        });
 
-        // Guardar (subir) — TÉRMINOS
-        $('#btn-save-terminos').on('click', function() {
-          const f = $('#file-terminos')[0].files[0];
-          if (!f) return Swal ? Swal.fire('Selecciona un PDF', '', 'warning') : alert('Selecciona un PDF');
-          subirDocumento('terminos', f);
-        });
+        // Abrir el modal → cargar estado
 
+        // ==== Mapa de referencia por tipo de documento ====
+        const DOC = {
+          aviso: {
+            file: '#file-aviso',
+            estado: '#estado-aviso',
+            del: '#btn-del-aviso'
+          },
+          terminos: {
+            file: '#file-terminos',
+            estado: '#estado-terminos',
+            del: '#btn-del-terminos'
+          },
+          confidencialidad: {
+            file: '#file-confidencialidad',
+            estado: '#estado-confidencialidad',
+            del: '#btn-del-confidencialidad'
+          }
+        };
+
+        // ==== Utils ====
+        function isPDF(file) {
+          if (!file) return false;
+          // algunos navegadores no setean correctamente type, por eso validamos ambos
+          const byMime = file.type && file.type.toLowerCase() === 'application/pdf';
+          const byExt = /\.pdf$/i.test(file.name || '');
+          return byMime || byExt;
+        }
+
+        function toast(icon, title, text) {
+          if (window.Swal) return Swal.fire({
+            icon,
+            title,
+            text
+          });
+          alert(title || text || (icon === 'success' ? 'OK' : 'Error'));
+        }
+
+        // ==== Guardar/Subir (genérico) ====
         function subirDocumento(tipo, file) {
+          const ref = DOC[tipo];
+          if (!ref) return;
+
+          if (!file) {
+            return toast('warning', 'Selecciona un PDF');
+          }
+          if (!isPDF(file)) {
+            return toast('warning', 'Archivo inválido', 'Debe ser un PDF (.pdf)');
+          }
+
           const fd = new FormData();
           fd.append('tipo', tipo);
           fd.append('archivo', file);
           fd.append(CSRF_NAME, CSRF_HASH);
 
           $.ajax({
-            url: '<?php echo base_url("Avance/documentos_guardar");?>',
+            url: '<?php echo base_url("Avance/documentos_guardar"); ?>',
             type: 'POST',
             data: fd,
             processData: false,
             contentType: false,
             dataType: 'json',
             beforeSend: () => {
-              (tipo === 'aviso' ? $('#estado-aviso') : $('#estado-terminos')).html('Subiendo…');
+              $(ref.estado).html('Subiendo…');
             },
             success: function(r) {
-              if (r.error) {
-                Swal ? Swal.fire('Error', r.error, 'error') : alert(r.error);
+              if (r && r.error) {
+                toast('error', 'Error', r.error);
+                $(ref.estado).html('<span class="text-danger">Error al subir</span>');
                 return;
               }
               // limpiar input
-              (tipo === 'aviso' ? $('#file-aviso') : $('#file-terminos')).val('');
-              Swal ? Swal.fire('¡Guardado!', r.mensaje || 'Documento actualizado.', 'success') : alert(
-                'Documento actualizado.');
-              cargarDocumentos();
+              $(ref.file).val('');
+              // habilitar botón eliminar
+              $(ref.del).prop('disabled', false).css({
+                cursor: 'pointer',
+                opacity: 1
+              });
+              toast('success', '¡Guardado!', (r && r.mensaje) || 'Documento actualizado.');
+              // refresca vista de estados si tienes esta función
+              if (typeof cargarDocumentos === 'function') cargarDocumentos();
+              else if (r && r.url) {
+                $(ref.estado).html('<a href="' + r.url + '" target="_blank">Ver documento</a>');
+              } else {
+                $(ref.estado).html('<span class="text-success">Actualizado</span>');
+              }
             },
             error: function() {
-              Swal ? Swal.fire('Error', 'No se pudo subir el documento.', 'error') : alert(
-                'No se pudo subir el documento.');
-              cargarDocumentos();
+              toast('error', 'Error', 'No se pudo subir el documento.');
+              if (typeof cargarDocumentos === 'function') cargarDocumentos();
             }
           });
         }
 
-        // Eliminar — AVISO
-        $('#btn-del-aviso').on('click', function() {
-          eliminarDocumento('aviso');
-        });
-
-        // Eliminar — TÉRMINOS
-        $('#btn-del-terminos').on('click', function() {
-          eliminarDocumento('terminos');
-        });
-
+        // ==== Eliminar (genérico) ====
         function eliminarDocumento(tipo) {
+          const ref = DOC[tipo];
+          if (!ref) return;
+
           const go = () => {
             $.ajax({
-              url: '<?php echo base_url("Avance/documentos_eliminar");?>',
+              url: '<?php echo base_url("Avance/documentos_eliminar"); ?>',
               type: 'POST',
               dataType: 'json',
               data: {
-                tipo: tipo,
+                tipo,
                 [CSRF_NAME]: CSRF_HASH
               },
               success: function(r) {
-                if (r.error) {
-                  Swal ? Swal.fire('Error', r.error, 'error') : alert(r.error);
-                  return;
+                if (r && r.error) {
+                  return toast('error', 'Error', r.error);
                 }
-                Swal ? Swal.fire('Eliminado', r.mensaje || 'Documento eliminado.', 'success') : alert(
-                  'Documento eliminado.');
-                cargarDocumentos();
+                toast('success', 'Eliminado', (r && r.mensaje) || 'Documento eliminado.');
+                // deshabilitar botón eliminar y limpiar estado
+                $(ref.del).prop('disabled', true).css({
+                  cursor: 'not-allowed',
+                  opacity: .6
+                });
+                if (typeof cargarDocumentos === 'function') cargarDocumentos();
+                else $(ref.estado).html('<span class="text-muted">No cargado</span>');
               },
               error: function() {
-                Swal ? Swal.fire('Error', 'No se pudo eliminar.', 'error') : alert('No se pudo eliminar.');
+                toast('error', 'Error', 'No se pudo eliminar.');
               }
             });
           };
 
           if (window.Swal) {
             Swal.fire({
-                icon: 'warning',
-                title: '¿Eliminar documento?',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-              })
-              .then(r => {
-                if (r.isConfirmed) go();
-              });
+              icon: 'warning',
+              title: '¿Eliminar documento?',
+              showCancelButton: true,
+              confirmButtonText: 'Sí, eliminar',
+              cancelButtonText: 'Cancelar'
+            }).then(r => {
+              if (r.isConfirmed) go();
+            });
           } else {
             if (confirm('¿Eliminar documento?')) go();
           }
         }
+
+        // ==== Handlers de GUARDAR ====
+        $('#btn-save-aviso').on('click', function() {
+          const f = $(DOC.aviso.file)[0].files[0];
+          subirDocumento('aviso', f);
+        });
+
+        $('#btn-save-terminos').on('click', function() {
+          const f = $(DOC.terminos.file)[0].files[0];
+          subirDocumento('terminos', f);
+        });
+
+        $('#btn-save-confidencialidad').on('click', function() {
+          const f = $(DOC.confidencialidad.file)[0].files[0];
+          subirDocumento('confidencialidad', f);
+        });
+
+        // ==== Handlers de ELIMINAR ====
+        $('#btn-del-aviso').on('click', function() {
+          eliminarDocumento('aviso');
+        });
+        $('#btn-del-terminos').on('click', function() {
+          eliminarDocumento('terminos');
+        });
+        $('#btn-del-confidencialidad').on('click', function() {
+          eliminarDocumento('confidencialidad');
+        });
         </script>
 
         <script>
@@ -1173,7 +1287,35 @@ if ($idRol == 1 || $idRol == 6 || $idRol == 9) {?>
         // Al hacer clic en el botón
         $('#enviarNotificacionesBtn').on('click', function() {
           $.ajax({
-            url: '<?php echo base_url("Notificacion/enviar_notificaciones_inmediatamente"); ?>', // Ruta a la función
+            url: '<?php echo base_url("Notificacion/enviar_notificaciones_cron_job2"); ?>', // Ruta a la función
+            type: 'GET', // Método GET
+            dataType: 'json', // Esperamos una respuesta en formato JSON
+            success: function(response) {
+              // Mostrar la respuesta en el div
+              $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
+            },
+            error: function(xhr, status, error) {
+              console.log("Error: " + error); // Si ocurre algún error
+            }
+          });
+        });
+                $('#enviarNotificacionesBtnex').on('click', function() {
+          $.ajax({
+            url: '<?php echo base_url("Notificacion/enviar_notificaciones_exempleados_cron_job"); ?>', // Ruta a la función
+            type: 'GET', // Método GET
+            dataType: 'json', // Esperamos una respuesta en formato JSON
+            success: function(response) {
+              // Mostrar la respuesta en el div
+              $('#resultados').html(JSON.stringify(response)); // Puedes formatearlo más si lo deseas
+            },
+            error: function(xhr, status, error) {
+              console.log("Error: " + error); // Si ocurre algún error
+            }
+          });
+        });
+                $('#enviarNotificacionesBtnrec').on('click', function() {
+          $.ajax({
+            url: '<?php echo base_url("Notificacion/enviar_recordatorios_cron_job_run"); ?>', // Ruta a la función
             type: 'GET', // Método GET
             dataType: 'json', // Esperamos una respuesta en formato JSON
             success: function(response) {

@@ -10,140 +10,312 @@ class Reclutamiento_model extends CI_Model
     public function getAllOrders($sort, $id_order, $condition_order, $filter, $filterOrder)
     {
         $id_portal = $this->session->userdata('idPortal');
+
         $this->db
-            ->select("R.id as idReq,  R.creacion as creacionReq, RI.*, RI.telefono as telIntake, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario, CL.nombre")
-            ->from('requisicion as R')
-            ->join('usuarios_portal as U', 'U.id = R.id_usuario', 'left')
-            ->join('requisicion_intake  as RI', 'RI.id = R.id_intake', 'left')
-            ->join('datos_generales as GENUS', 'U.id_datos_generales = GENUS.id', 'left')
-            ->join('cliente as CL', 'R.id_CLiente = CL.id', 'left')
-            ->join('datos_generales as GENCL', 'CL.id_datos_generales = GENCL.id', 'left')
-            ->where('CL.id_portal', $id_portal)
+            ->select("
+            R.id AS idReq,
+            R.creacion AS creacionReq,
+            RI.*,
+            COALESCE(RI.telefono, 'N/A') AS telIntake,
+            COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
+            CASE
+                WHEN CL.id IS NULL THEN 'No Asignado'
+                ELSE TRIM(CONCAT_WS(' ',
+                        COALESCE(GENCL.nombre, 'N/A'),
+                        COALESCE(GENCL.paterno, 'N/A')
+                ))
+            END AS contacto,
+
+            CASE
+                WHEN CL.id IS NULL THEN 'N/A'
+                ELSE COALESCE(GENCL.telefono, 'N/A')
+            END AS telefono_cliente,
+
+            CASE
+                WHEN CL.id IS NULL THEN 'N/A'
+                ELSE COALESCE(GENCL.correo, 'N/A')
+            END AS correo_cliente,
+
+
+            R.puesto,
+            R.numero_vacantes,
+            R.status,
+            R.tipo,
+
+
+            CASE
+                WHEN U.id IS NULL THEN 'N/A'
+                ELSE TRIM(CONCAT_WS(' ',
+                        COALESCE(GENUS.nombre, ''),
+                        COALESCE(GENUS.paterno, '')
+                ))
+            END AS usuario
+        ")
+            ->from('requisicion AS R')
+            ->join('usuarios_portal AS U', 'U.id = R.id_usuario', 'left')
+            ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')
+            ->join('datos_generales AS GENUS', 'U.id_datos_generales = GENUS.id', 'left')
+            ->join('cliente AS CL', 'R.id_cliente = CL.id', 'left')
+            ->join('datos_generales AS GENCL', 'CL.id_datos_generales = GENCL.id', 'left')
+            ->where('R.id_portal', $id_portal)
             ->where_in('R.status', [1, 2])
             ->where($condition_order, $id_order)
             ->where('R.eliminado', 0)
             ->order_by('R.id', $sort);
 
-        // Verifica si hay un filtro y lo aplica si existe
-        if (! empty($filter) && isset($filterOrder)) {
+        // OJO: si $filter puede ser 0, empty() lo tratará como vacío. Ajusta si lo necesitas.
+        if ($filter !== '' && $filter !== null && isset($filterOrder)) {
             $this->db->where($filterOrder, $filter);
         }
 
         $query = $this->db->get();
 
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        return $query->num_rows() > 0 ? $query->result() : false;
     }
 
     public function getOrdersByUser($id_usuario, $sort, $id_order, $condition_order)
     {
         $id_portal = $this->session->userdata('idPortal');
-        $this->db
-            ->select("R.id, R.creacion, CL.nombre, GENCL.telefono, CONCAT(GENCL.nombre,' ',GENCL.paterno) as contacto, R.puesto, R.numero_vacantes, R.status, GENCL.correo, R.tipo, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario,      FAC.razon_social as nombre_comercial")
-            ->from('requisicion as R')
-            ->join('usuarios_portal as U', 'U.id = R.id_usuario')
-            ->join('cliente as CL', 'CL.id = R.id_cliente')
-            ->join('datos_facturacion as FAC', 'FAC.id = CL.id_datos_facturacion')
-            ->join('datos_generales  as GENCL ', 'GENCL.id = CL.id_datos_generales')
-            ->join('requisicion_usuario as RU', 'RU.id_requisicion = R.id')
 
-            ->join('datos_generales  as GENUS ', 'GENUS.id = U.id_datos_generales')
+        $this->db
+            ->select("
+            R.id AS idReq,
+            R.creacion AS creacionReq,
+            RI.*,
+            COALESCE(RI.telefono, 'N/A') AS telIntake,
+
+            COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
+
+            CASE
+                WHEN CL.id IS NULL THEN 'No Asignado'
+                ELSE TRIM(CONCAT_WS(' ',
+                        COALESCE(GENCL.nombre, 'N/A'),
+                        COALESCE(GENCL.paterno, 'N/A')
+                ))
+            END AS contacto,
+
+            CASE
+                WHEN CL.id IS NULL THEN 'N/A'
+                ELSE COALESCE(GENCL.telefono, 'N/A')
+            END AS telefono_cliente,
+
+            CASE
+                WHEN CL.id IS NULL THEN 'N/A'
+                ELSE COALESCE(GENCL.correo, 'N/A')
+            END AS correo_cliente,
+
+            R.puesto,
+            R.numero_vacantes,
+            R.status,
+            R.tipo,
+
+            CASE
+                WHEN U.id IS NULL THEN 'N/A'
+                ELSE TRIM(CONCAT_WS(' ',
+                        COALESCE(GENUS.nombre, ''),
+                        COALESCE(GENUS.paterno, '')
+                ))
+            END AS usuario,
+
+            COALESCE(FAC.razon_social, 'N/A') AS nombre_comercial
+        ")
+            ->from('requisicion AS R')
+            ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')
+            ->join('usuarios_portal AS U', 'U.id = R.id_usuario')
+            ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
+            ->join('datos_facturacion AS FAC', 'FAC.id = CL.id_datos_facturacion', 'left')
+            ->join('datos_generales AS GENCL', 'GENCL.id = CL.id_datos_generales', 'left')
+            ->join('requisicion_usuario AS RU', 'RU.id_requisicion = R.id')
+            ->join('datos_generales AS GENUS', 'GENUS.id = U.id_datos_generales', 'left')
             ->where_in('R.status', [1, 2])
             ->where('RU.id_usuario', $id_usuario)
-            ->where('CL.id_portal', $id_portal)
+            ->where('R.id_portal', $id_portal) // 👈 cambio aquí, porque si CL es NULL no existirá CL.id_portal
             ->where($condition_order, $id_order)
             ->order_by('R.id', $sort)
             ->group_by('R.id');
 
         $query = $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        return $query->num_rows() > 0 ? $query->result() : false;
     }
 
     public function getRequisicionesEnProceso($id_usuario, $condicion)
     {
         $id_portal = $this->session->userdata('idPortal');
+
         $this->db
-            ->select("R.id, CL.nombre, R.puesto, R.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
-            ->from('requisicion as R')
-            ->join('requisicion_usuario as RU', 'RU.id_requisicion = R.id')
-            ->join('usuario as USER', 'USER.id = RU.id_usuario')
-            ->join('datos_generales as GENUS', 'GENUS.id = U.id_datos_generales')
-            ->join('clientes as CL', 'CL.id = R.id_cliente')
-            ->join('datos_generales as GENCL', 'GENCL.id = CL.id_datos_generales')
-            ->where('R.id_portal ', $id_portal)
+            ->select("
+            R.id AS idReq,
+            R.creacion AS creacionReq,
+
+            RI.*,
+            COALESCE(RI.telefono, 'N/A') AS telIntake,
+
+            COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
+            CASE
+                WHEN CL.id IS NULL THEN 'No Asignado'
+                ELSE TRIM(CONCAT_WS(' ',
+                    COALESCE(GENCL.nombre, 'N/A'),
+                    COALESCE(GENCL.paterno, 'N/A')
+                ))
+            END AS contacto,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.telefono, 'N/A') END AS telefono_cliente,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.correo,   'N/A') END AS correo_cliente,
+
+            R.puesto,
+            R.numero_vacantes,
+
+            CASE
+                WHEN U.id IS NULL THEN 'N/A'
+                ELSE TRIM(CONCAT_WS(' ',
+                    COALESCE(GENUS.nombre, ''),
+                    COALESCE(GENUS.paterno, '')
+                ))
+            END AS usuario
+        ")
+            ->from('requisicion AS R')
+            ->join('requisicion_usuario AS RU', 'RU.id_requisicion = R.id')
+            ->join('usuarios_portal AS U', 'U.id = RU.id_usuario')                // <— alias correcto
+            ->join('datos_generales AS GENUS', 'GENUS.id = U.id_datos_generales') // <— ahora sí existe U
+            ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')     // <— INTAKE
+            ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')               // <— cliente null-safe
+            ->join('datos_generales AS GENCL', 'GENCL.id = CL.id_datos_generales', 'left')
+
+            ->where('R.id_portal', $id_portal)
             ->where('R.eliminado', 0)
             ->where('R.status', 2)
-            ->where($condicion, $id_usuario)
+            ->where($condicion, $id_usuario) // Ej: 'RU.id_usuario'
             ->order_by('R.status', 'ASC')
-            ->group_by('RU.id');
+            ->group_by('R.id'); // evita duplicados por RU/intake
 
         $query = $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        return $query->num_rows() > 0 ? $query->result() : false;
     }
+
     public function getOrdersInProcessByUser($id_usuario)
     {
         $id_portal = $this->session->userdata('idPortal');
+
         $this->db
-            ->select("R.id, CL.nombre, R.puesto, R.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
-            ->from('requisicion as R')
-            ->join('requisicion_usuario as RU', 'RU.id_requisicion = R.id')
-            ->join('usuarios_portal as U', 'U.id = RU.id_usuario')
-            ->join('datos_generales as GENUS', 'GENUS.id = U.id_datos_generales')
-            ->join('cliente as CL', 'CL.id = R.id_cliente')
-            ->join('datos_generales as GENCL', 'GENCL.id = CL.id_datos_generales')
+            ->select("
+            R.id AS idReq,
+            R.creacion AS creacionReq,
+
+
+            RI.*,
+            COALESCE(RI.telefono, 'N/A') AS telIntake,
+
+            COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
+            CASE
+                WHEN CL.id IS NULL THEN 'No Asignado'
+                ELSE TRIM(CONCAT_WS(' ',
+                    COALESCE(GENCL.nombre, 'N/A'),
+                    COALESCE(GENCL.paterno, 'N/A')
+                ))
+            END AS contacto,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.telefono, 'N/A') END AS telefono_cliente,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.correo,   'N/A') END AS correo_cliente,
+
+            R.puesto,
+            R.numero_vacantes,
+
+            TRIM(CONCAT_WS(' ', COALESCE(GENUS.nombre,''), COALESCE(GENUS.paterno,''))) AS usuario
+        ")
+            ->from('requisicion AS R')
+            ->join('requisicion_usuario AS RU', 'RU.id_requisicion = R.id')
+            ->join('usuarios_portal AS U', 'U.id = RU.id_usuario')
+            ->join('datos_generales AS GENUS', 'GENUS.id = U.id_datos_generales')
+
+            ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left') // <— INTAKE
+
+            ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
+            ->join('datos_generales AS GENCL', 'GENCL.id = CL.id_datos_generales', 'left')
+
             ->where('R.eliminado', 0)
             ->where('R.status', 2)
-            ->where('R.id_portal ', $id_portal)
+            ->where('R.id_portal', $id_portal)
             ->where('RU.id_usuario', $id_usuario)
-            ->group_by('RU.id')
+
+            ->group_by('R.id')
             ->order_by('R.status', 'ASC');
 
         $query = $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
+        return $query->num_rows() ? $query->result() : false;
+    }
+    public function existsRequisitionInPortal(int $idReq, int $id_portal): bool
+    {
+        if ($idReq <= 0 || $id_portal <= 0) {
             return false;
         }
+
+        return (bool) $this->db->select('id')
+            ->from('requisicion')
+            ->where('id', $idReq)
+            ->where('id_portal', $id_portal)
+            ->limit(1)
+            ->get()->row();
     }
+
     public function getAllOrdersInProcess()
     {
         $id_portal = $this->session->userdata('idPortal');
+
         try {
             $this->db
-                ->select("R.id, CL.nombre, R.puesto, R.numero_vacantes, CONCAT(GENUS.nombre,' ',GENUS.paterno) as usuario")
-                ->from('requisicion as R')
-                ->join('usuarios_portal as U', 'U.id = R.id_usuario')
-                ->join('datos_generales as GENUS', 'GENUS.id = U.id_datos_generales', 'left')
-                ->join('cliente as CL', 'CL.id = R.id_cliente')
+                ->select("
+                        R.id            AS idReq,
+                        R.creacion      AS creacionReq,
+
+                        RI.*,
+                        COALESCE(RI.telefono, 'N/A') AS telIntake,
+
+                        COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
+                        CASE
+                            WHEN CL.id IS NULL THEN 'No Asignado'
+                            ELSE TRIM(CONCAT_WS(' ',
+                                COALESCE(GENCL.nombre, 'N/A'),
+                                COALESCE(GENCL.paterno, 'N/A')
+                            ))
+                        END AS contacto,
+                        CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.telefono, 'N/A') END AS telefono_cliente,
+                        CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.correo,   'N/A') END AS correo_cliente,
+                        CASE WHEN R.puesto IS NULL THEN 'Asistente Virtual' ELSE COALESCE(R.puesto,   'Asistente Virtual') END AS puesto,
+
+                        R.numero_vacantes,
+                        R.status,
+                        R.tipo,
+
+                        CASE
+                            WHEN U.id IS NULL THEN 'N/A'
+                            ELSE TRIM(CONCAT_WS(' ',
+                                COALESCE(GENUS.nombre, ''),
+                                COALESCE(GENUS.paterno, '')
+                            ))
+                        END AS usuario
+                    ")
+                ->from('requisicion AS R')
+                ->join('usuarios_portal AS U', 'U.id = R.id_usuario', 'left')
+                ->join('datos_generales AS GENUS', 'GENUS.id = U.id_datos_generales', 'left')
+
+                ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')
+
+                ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
+                ->join('datos_generales AS GENCL', 'GENCL.id = CL.id_datos_generales', 'left')
+
                 ->where('R.eliminado', 0)
                 ->where('R.status', 2)
-                ->where('R.id_portal ', $id_portal)
-                ->order_by('R.id', 'DESC');
+                ->where('R.id_portal', $id_portal)
+                ->order_by('R.id', 'DESC')
+                ->group_by('R.id'); // evita duplicados si hay joins opcionales
 
             $query = $this->db->get();
 
-            if ($query->num_rows() > 0) {
-                return $query->result();
-            } else {
-                return []; // Devuelve un array vacío en lugar de FALSE
-            }
+            return $query->num_rows() > 0 ? $query->result() : [];
         } catch (Exception $e) {
-            // Manejar el error
             log_message('error', 'Error en getAllOrdersInProcess(): ' . $e->getMessage());
-            return []; // Devuelve un array vacío en caso de error
+            return [];
         }
     }
+
     public function getAllApplicants($id_usuario, $condition)
     {
         $id_portal = $this->session->userdata('idPortal');
@@ -190,7 +362,7 @@ class Reclutamiento_model extends CI_Model
         if (! empty($condition_area) && ! empty($area)) {
             $this->db->where($condition_area, $area);
         }
-        if (! empty($filterApplicant) && ! empty($filter)) {
+        if ($filterApplicant !== '' && ($filter === 0 || $filter)) {
             $this->db->where($filterApplicant, $filter);
         }
         if (! empty($condition_applicant) && ! empty($id_applicant)) {
@@ -231,7 +403,7 @@ class Reclutamiento_model extends CI_Model
         if (! empty($condition_area) && ! empty($area)) {
             $this->db->where($condition_area, $area);
         }
-        if (! empty($filterApplicant) && ! empty($filter)) {
+        if ($filterApplicant !== '' && ($filter === 0 || $filter)) {
             $this->db->where($filterApplicant, $filter);
         }
         if (! empty($condition_applicant) && ! empty($id_applicant)) {
@@ -350,6 +522,41 @@ class Reclutamiento_model extends CI_Model
         // Retornamos resultado como arreglo
         return $query->result_array();
     }
+
+    /*----------------------------------------*/
+    /*    lINKS CANDIDATOS
+    /*----------------------------------------*/
+    // Inserta o actualiza por id_empleado (requiere UNIQUE o INDEX en id_empleado)
+    public function upsertLinkEmpleado(int $id_empleado, string $link, ?string $qr_base64 = null): bool
+    {
+        // Si tu tabla tiene UNIQUE(id_empleado), este ON DUPLICATE es perfecto.
+        $sql = "INSERT INTO links_empleados (id_empleado, link, qr, creacion, edicion)
+                VALUES (?, ?, ?, NOW(), NOW())
+                ON DUPLICATE KEY UPDATE
+                    link = VALUES(link),
+                    qr   = VALUES(qr),
+                    edicion = NOW()";
+
+        // Si NO tienes UNIQUE(id_empleado), agrega uno:
+        // ALTER TABLE links_empleados ADD UNIQUE KEY uq_id_empleado (id_empleado);
+
+        return (bool) $this->db->query($sql, [$id_empleado, $link, $qr_base64]);
+    }
+
+    public function getByEmpleado(int $id_empleado)
+    {
+        return $this->db->where('id_empleado', $id_empleado)
+            ->where('eliminado', 0)
+            ->get('links_empleados')
+            ->row();
+    }
+
+    public function deleteByEmpleado(int $id_empleado): bool
+    {
+        return (bool) $this->db->where('id_empleado', $id_empleado)
+            ->delete('links_empleados');
+    }
+
     /*----------------------------------------*/
     /*    Acciones
     /*----------------------------------------*/
@@ -638,7 +845,7 @@ class Reclutamiento_model extends CI_Model
             ->from('requisicion AS R')
             ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
             ->where('R.id', $idReq)
-            ->where('CL.id_portal', $id_portal) // mismo criterio que usas en SELECTs
+            ->where('R.id_portal', $id_portal) // mismo criterio que usas en SELECTs
             ->get()->row();
 
         if (! $row) {
@@ -797,7 +1004,7 @@ class Reclutamiento_model extends CI_Model
             ->from('requisicion AS R')
             ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
             ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')
-            ->where('CL.id_portal', $idPortal)
+            ->where('R.id_portal', $idPortal)
             ->where('R.eliminado', 0)
             ->where('R.id', $id)
         // si quieres asegurar que sea intake:
@@ -833,39 +1040,80 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*,  TRIM(
-            CONCAT(
+            ->select("
+            A.*,
+            A.id as idAsp,
+
+            TRIM(CONCAT(
                 BT.nombre, ' ',
                 COALESCE(BT.paterno, ''), ' ',
                 COALESCE(BT.materno, '')
-            )
-        ) as aspirante, CONCAT(GENCL.nombre,' ',GENCL.paterno) as usuario, BT.domicilio, BT.medio_contacto, BT.area_interes,  BT.telefono,  R.id as id_req, CL.nombre as nombre_cliente, CL.clave, CL.id as id_cliente, R.puesto , H.id as idHistorial, R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
-            ->from('requisicion_aspirante as A')
-            ->join('requisicion as R', 'R.id = A.id_requisicion')
-            ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
-            ->join('cliente as CL', 'CL.id = R.id_cliente')
-            ->join('datos_generales as GENCL', 'GENCL.id = CL.id_datos_generales')
-            ->join('requisicion_historial as H', 'H.id_requisicion = R.id', 'left')
-            ->join('usuarios_portal as USER', 'USER.id = A.id_usuario')
-        //->join('candidato as C','C.id_aspirante = A.id','left')
-            ->where('R.id_portal', $id_portal)
+            )) AS aspirante,
 
+            CASE
+                WHEN USER.id IS NULL THEN 'N/A'
+                ELSE TRIM(CONCAT_WS(' ',
+                    COALESCE(GENUS.nombre, ''),
+                    COALESCE(GENUS.paterno, '')
+                ))
+            END AS usuario,
+
+            BT.domicilio,
+            BT.medio_contacto,
+            BT.area_interes,
+            BT.telefono,
+
+            R.id AS id_req,
+            CASE
+                WHEN R.puesto IS NULL THEN 'Asistente Virtual'
+                ELSE COALESCE(R.puesto, 'Asistente Virtual')
+            END AS puesto,
+            R.numero_vacantes,
+
+            COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
+            CL.clave,
+            CL.id AS id_cliente,
+            CASE
+                WHEN CL.id IS NULL THEN 'No Asignado'
+                ELSE TRIM(CONCAT_WS(' ',
+                    COALESCE(GENCL.nombre, 'N/A'),
+                    COALESCE(GENCL.paterno, 'N/A')
+                ))
+            END AS contacto,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.telefono, 'N/A') END AS telefono_cliente,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.correo,   'N/A') END AS correo_cliente,
+
+            H.id AS idHistorial,
+
+            BT.status AS status_aspirante,
+            BT.semaforo
+        ")
+            ->from('requisicion_aspirante AS A')
+            ->join('requisicion AS R', 'R.id = A.id_requisicion')
+            ->join('bolsa_trabajo AS BT', 'BT.id = A.id_bolsa_trabajo')
+
+            ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
+            ->join('datos_generales AS GENCL', 'GENCL.id = CL.id_datos_generales', 'left')
+
+            ->join('usuarios_portal AS USER', 'USER.id = A.id_usuario', 'left')
+            ->join('datos_generales AS GENUS', 'GENUS.id = USER.id_datos_generales', 'left')
+
+            ->join('requisicion_historial AS H', 'H.id_requisicion = R.id', 'left')
+
+            ->where('R.id_portal', $id_portal)
             ->where('A.eliminado', 0)
             ->where('R.eliminado', 0)
             ->where('R.status', 2)
-        //->where('C.id_aspirante', NULL)
             ->where($condicion, $id_usuario)
+
             ->group_by('A.id')
             ->order_by('A.id', 'DESC')
             ->order_by('A.id_requisicion', 'DESC');
 
         $query = $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        return $query->num_rows() ? $query->result() : false;
     }
+
     public function getAspirantesRequisicionesTotal($id_usuario, $condicion)
     {
         $id_portal = $this->session->userdata('idPortal');
@@ -889,35 +1137,73 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-            ->select("A.*, TRIM(
-            CONCAT(
+            ->select("
+            A.*,
+            A.id as idAsp,
+            TRIM(CONCAT(
                 BT.nombre, ' ',
                 COALESCE(BT.paterno, ''), ' ',
                 COALESCE(BT.materno, '')
-            )
-        ) as aspirante, CONCAT(DATCL.nombre,' ',DATCL.paterno) as usuario, CL.nombre as nombre_cliente, R.puesto,
-			R.numero_vacantes, BT.status AS status_aspirante, BT.semaforo")
-            ->from('requisicion_aspirante as A')
-            ->join('bolsa_trabajo as BT', 'BT.id = A.id_bolsa_trabajo')
-            ->join('requisicion as R', 'R.id = A.id_requisicion')
-            ->join('cliente as CL', ' CL.id = R.id_cliente')
-            ->join('datos_generales as DATCL', 'DATCL.id = CL.id_datos_generales')
-            ->join('usuarios_portal as USPOR', 'USPOR.id = A.id_usuario')
-            ->join('datos_generales as DATUP', 'DATUP.id = USPOR.id_datos_generales')
+            )) AS aspirante,
+
+            CASE
+                WHEN USPOR.id IS NULL THEN 'N/A'
+                ELSE TRIM(CONCAT_WS(' ',
+                    COALESCE(DATUP.nombre, ''),
+                    COALESCE(DATUP.paterno, '')
+                ))
+            END AS usuario,
+
+            R.id AS id_req,
+            CASE
+                WHEN R.puesto IS NULL THEN 'Asistente Virtual'
+                ELSE COALESCE(R.puesto, 'Asistente Virtual')
+            END AS puesto,
+            R.numero_vacantes,
+
+            RI.*,
+            COALESCE(RI.telefono, 'N/A') AS telIntake,
+
+            COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
+            CL.clave,
+            CL.id AS id_cliente,
+            CASE
+                WHEN CL.id IS NULL THEN 'No Asignado'
+                ELSE TRIM(CONCAT_WS(' ',
+                    COALESCE(GENCL.nombre, 'N/A'),
+                    COALESCE(GENCL.paterno, 'N/A')
+                ))
+            END AS contacto,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.telefono, 'N/A') END AS telefono_cliente,
+            CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.correo,   'N/A') END AS correo_cliente,
+
+            BT.status AS status_aspirante,
+            BT.semaforo
+        ")
+            ->from('requisicion_aspirante AS A')
+            ->join('bolsa_trabajo AS BT', 'BT.id = A.id_bolsa_trabajo')
+            ->join('requisicion AS R', 'R.id = A.id_requisicion')
+
+            ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')
+
+            ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
+            ->join('datos_generales AS GENCL', 'GENCL.id = CL.id_datos_generales', 'left')
+
+            ->join('usuarios_portal AS USPOR', 'USPOR.id = A.id_usuario', 'left')
+            ->join('datos_generales AS DATUP', 'DATUP.id = USPOR.id_datos_generales', 'left')
+
             ->where('R.id_portal', $id_portal)
-            ->where('A.id_requisicion', $id)
+            ->where('A.id_requisicion', (int) $id)
             ->where('R.status', 2)
             ->where($condicion, $id_usuario)
+
             ->group_by('A.id')
             ->order_by('A.id', 'DESC');
 
         $query = $this->db->get();
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        return $query->num_rows() ? $query->result() : false;
     }
+
     public function getAspirantesPorRequisicionTotal($id_usuario, $condicion, $id)
     {
         $id_portal = $this->session->userdata('idPortal');
@@ -1079,6 +1365,19 @@ class Reclutamiento_model extends CI_Model
 
         $consulta = $this->db->get();
         return $consulta->row();
+    }
+    public function getDocumentosBolsa($id)
+    {
+        $id_portal = $this->session->userdata('idPortal');
+
+        $this->db
+            ->select("*")
+            ->from('documentos_bolsa ')
+            ->where('id_bolsa', $id)
+            ->where('eliminado ', 0);
+
+        $consulta = $this->db->get();
+        return $consulta->result();
     }
     public function getEmpleosByIdBolsaTrabajo($id)
     {
@@ -1327,5 +1626,168 @@ class Reclutamiento_model extends CI_Model
     {
         $this->db->where('id_portal', $id_portal);
         $this->db->update('link_portal', $data);
+    }
+
+/**
+ * Si existe un link para el empleado, lo ACTUALIZA con los nuevos campos.
+ * Si no existe, lo INSERTA.
+ * $data debe traer todas las columnas a actualizar (link, qr, jti, token_sha16, exp_unix, is_used, etc.)
+ */
+    public function upsertCurrentLinkEmpleado(int $id_empleado, array $data): bool
+    {
+        $row = $this->getLastLinkEmpleado2($id_empleado);
+
+        if ($row) {
+            // no tocamos 'creacion'; sólo actualizamos campos y 'edicion' la pone MySQL si la tienes ON UPDATE
+            $this->db->where('id', $row->id);
+            $ok = $this->db->update('links_empleados', $data);
+            if (! $ok) {
+                log_message('error', 'update links_empleados falló: ' . $this->db->last_query());
+                return false;
+            }
+            return true;
+        } else {
+            $ok = $this->db->insert('links_empleados', $data);
+            if (! $ok) {
+                log_message('error', 'insert links_empleados falló: ' . $this->db->last_query());
+                return false;
+            }
+            return true;
+        }
+    }
+    public function getLastLinkEmpleado(int $id_empleado)
+    {
+        return $this->db->where('id_empleado', $id_empleado)
+            ->where('eliminado', 0)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('links_empleados')
+            ->row();
+    }
+    public function getLastLinkEmpleado2(int $id_empleado)
+    {
+        return $this->db->where('id_empleado', $id_empleado)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('links_empleados')
+            ->row();
+    }
+
+    public function revokeLinkEmpleado(int $id_empleado): bool
+    {
+        $row = $this->getLastLinkEmpleado($id_empleado);
+        if (! $row) {
+            return false;
+        }
+
+        $this->db->where('id', $row->id)
+            ->update('links_empleados', [
+                'eliminado'  => 1,
+                'revoked_at' => date('Y-m-d H:i:s'),
+                'is_used'    => 0,
+            ]);
+
+        return $this->db->affected_rows() >= 0;
+    }
+
+    public function reemplazarExtrasDesdeJson($id_empleado, $extrasJson, array $whitelist = [])
+    {
+        // 1) Decodificar
+        $extras = is_array($extrasJson) ? $extrasJson : json_decode($extrasJson, true);
+        if (! is_array($extras)) {
+            $extras = [];
+        }
+
+        // 2) (Opcional) Filtrar claves permitidas
+        if (! empty($whitelist)) {
+            $extras = array_intersect_key($extras, array_flip($whitelist));
+        }
+
+        // 3) Construir rows normalizados
+        $now  = date('Y-m-d H:i:s');
+        $rows = [];
+
+        foreach ($extras as $campo => $valor) {
+            // Normalizaciones útiles
+            if (is_string($valor)) {
+                $trim = trim($valor);
+                if ($trim === 'null' || $trim === '') {
+                    $valor = null;
+                } elseif (in_array(mb_strtolower($trim), ['on', 'sí', 'si', 'true', '1'], true)) {
+                    $valor = '1';
+                } elseif (in_array(mb_strtolower($trim), ['off', 'no', 'false', '0'], true)) {
+                    $valor = '0';
+                } else {
+                    $valor = $trim;
+                }
+            } elseif (is_bool($valor)) {
+                $valor = $valor ? '1' : '0';
+            } elseif (is_array($valor) || is_object($valor)) {
+                $valor = json_encode($valor, JSON_UNESCAPED_UNICODE);
+            }
+
+            $rows[] = [
+                'id_empleado' => (int) $id_empleado,
+                'nombre'      => (string) $campo,
+                'valor'       => $valor,
+                'creacion'    => $now,
+                'edicion'     => $now,
+            ];
+        }
+
+        // 4) Guardar en transacción
+        $this->db->trans_start();
+        // Estrategia simple: borro y vuelvo a insertar (atómica por transacción)
+        $this->db->where('id_empleado', $id_empleado)->delete('empleado_campos_extra');
+
+        if (! empty($rows)) {
+            $this->db->insert_batch('empleado_campos_extra', $rows);
+        }
+        $this->db->trans_complete();
+
+        return $this->db->trans_status();
+    }
+
+    /**
+     * Variante: UPSERT por cada campo (si tienes UNIQUE(id_empleado, campo)).
+     * Útil si no quieres borrar todo.
+     */
+    public function upsertExtrasDesdeJson($id_empleado, $extrasJson, array $whitelist = [])
+    {
+        $extras = is_array($extrasJson) ? $extrasJson : json_decode($extrasJson, true);
+        if (! is_array($extras)) {
+            $extras = [];
+        }
+
+        if (! empty($whitelist)) {
+            $extras = array_intersect_key($extras, array_flip($whitelist));
+        }
+
+        $now = date('Y-m-d H:i:s');
+
+        foreach ($extras as $campo => $valor) {
+            if (is_array($valor) || is_object($valor)) {
+                $valor = json_encode($valor, JSON_UNESCAPED_UNICODE);
+            } elseif (is_bool($valor)) {
+                $valor = $valor ? '1' : '0';
+            } elseif (is_string($valor)) {
+                $trim = trim($valor);
+                if ($trim === 'null' || $trim === '') {
+                    $valor = null;
+                } else {
+                    $valor = $trim;
+                }
+
+            }
+
+            // SQL UPSERT (MySQL/MariaDB)
+            $sql = "INSERT INTO empleados_campos_extra (id_empleado, campo, valor, creacion, edicion)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE
+                        valor = VALUES(valor),
+                        edicion = VALUES(edicion)";
+            $this->db->query($sql, [(int) $id_empleado, (string) $campo, $valor, $now, $now]);
+        }
+        return true;
     }
 }

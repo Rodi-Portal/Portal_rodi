@@ -12,7 +12,8 @@
         <div>
 
         </div>
-        <div class="alert alert-info">¡Bienvenido al registro de una nueva sucursal! Estamos aquí para facilitarte el
+        <div class="alert alert-info">¡Bienvenido al registro de una nueva sucursal o Actualizacion de una existente!
+          Estamos aquí para facilitarte el
           proceso. Puedes completar el formulario parcialmente si así lo deseas. Los campos marcados con un
           asterisco (*) son obligatorios: Nombre y Clave
         </div>
@@ -44,8 +45,8 @@
 
               <label for="empleados">Numero Maximo de empleados *</label>
               <input type="number" class="form-control" data-field="Numero Maximo de empleados" data-required="required"
-                id="empleados" name="empleados" placeholder="Numero maximo de empleados
-                onkeyup="this.value=this.value.toUpperCase()" required>
+                id="empleados" name="empleados" placeholder="Numero maximo de empleados" value="999">
+
               <br>
             </div>
           </div>
@@ -60,7 +61,7 @@
             <div class="col-md-6">
               <label for="correo">Correo </label>
               <input type="text" class="form-control" data-field="Correo" id="correo" name="correo"
-                 placeholder="Ingrese el correo electrónico">
+                placeholder="Ingrese el correo electrónico">
               <br>
             </div>
           </div>
@@ -77,13 +78,25 @@
             <div class="col-md-12">
               <label for="password" id="passLabel">Generar contraseña </label>
               <div class="input-group">
-                <input type="password" class="form-control" data-field="Contraseña" name="password" id="password"
-                   readonly>
+                <input type="password" class="form-control" style="height: 50px" data-field="Contraseña" name="password" id="password"
+                  readonly />
+
                 <div class="input-group-append">
-                  <button type="button" class="btn btn-primary" id="generarPass"
-                    onclick="generarPassword()">Generar</button>
+                  <!-- Mostrar / ocultar -->
+                  <button type="button" class="btn btn-outline-secondary" id="togglePass"
+                    aria-label="Mostrar contraseña" aria-controls="password" aria-pressed="false">
+                    <span class="icon-eye">👁️</span>
+                    <span class="txt-show"> Mostrar</span>
+                    <span class="txt-hide d-none"> Ocultar</span>
+                  </button>
+
+                  <!-- Generar (tu botón existente) -->
+                  <button type="button" class="btn btn-primary" id="generarPass" onclick="generarPassword()">
+                    Generar
+                  </button>
                 </div>
               </div>
+
             </div>
           </div>
         </form>
@@ -452,3 +465,26 @@
 <input type="hidden" id="base_url" value="<?php echo base_url('Cat_Cliente/setCliente'); ?>">
 
 <script src="<?php echo base_url() ?>js/apis/registrarClientes.js"></script>
+<script>
+  (function () {
+    const input = document.getElementById('password');
+    const btn   = document.getElementById('togglePass');
+    const txtShow = btn.querySelector('.txt-show');
+    const txtHide = btn.querySelector('.txt-hide');
+
+    // (opcional) al enfocar, selecciona todo para copiar rápido
+    input.addEventListener('focus', () => input.select());
+
+    btn.addEventListener('click', function () {
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+
+      // accesibilidad y texto del botón
+      this.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+      this.setAttribute('aria-label', isHidden ? 'Ocultar contraseña' : 'Mostrar contraseña');
+
+      txtShow.classList.toggle('d-none', isHidden);    // ocultar “Mostrar” si se muestra
+      txtHide.classList.toggle('d-none', !isHidden);   // mostrar “Ocultar” si se muestra
+    });
+  })();
+</script>

@@ -20,6 +20,7 @@
       <div class="modal-body">
         <form id="formAspirante">
           <div class="col-sm-12 ">
+
             <label for="buscador">Selecciona una Requisición :</label>
             <select name="req_asignada" id="req_asignada">
 
@@ -398,6 +399,48 @@
     </div>
   </div>
 </div>
+<!-- Modal: Cambiar Estatus -->
+<div class="modal fade" id="modalStatus" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content shadow-lg">
+
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title mb-0">
+          <i class="fas fa-user-tag me-2"></i> Cambiar estatus
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="statusIdAspirante">
+
+        <div class="form-group">
+          <label for="selectStatus">Estatus del Aspirante</label>
+          <select id="selectStatus" class="form-control">
+            <option value="">-- Selecciona estatus --</option>
+            <option value="1" class="status-1">En espera de asignar a proceso</option>
+            <option value="2" class="status-2">En proceso</option>
+            <option value="3" class="status-3">Reutilizable / Revisar Historial</option>
+            <option value="4" class="status-4">Contratado</option>
+            <option value="5" class="status-5">Aprobado con acuerdo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="guardarStatusAspirante()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 <!-- ESTAMOS AQUI -->
 <div class="modal fade" id="registroCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
@@ -1637,7 +1680,8 @@
       </div>
       <div class="modal-body">
         <?php if ($this->session->userdata('tipo_bolsa') > 0) {?>
-        <form action="<?php echo base_url('Importa_excel/importar'); ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo base_url('Importa_excel/importar'); ?>" method="post" enctype="multipart/form-data"
+          id="form-importar-excel">
           <input type="hidden" name="id_portal">
           <input type="hidden" name="id_cliente"><!-- si aplica -->
           <div class="form-group">
@@ -1651,29 +1695,29 @@
 
           </div>
         </form>
-        </div>
-        <?php } else {?>
-        <form id="formImportarPuestos">
-          <div class="row">
-            <div class="col-12">
-              <label for="archivo_csv" id="label"></label>
-              <input type="file" class="form-control" name="archivo_csv" id="archivo_csv"
-                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-              <br>
-            </div>
+      </div>
+      <?php } else {?>
+      <form id="formImportarPuestos">
+        <div class="row">
+          <div class="col-12">
+            <label for="archivo_csv" id="label"></label>
+            <input type="file" class="form-control" name="archivo_csv" id="archivo_csv"
+              accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            <br>
           </div>
-        </form>
+        </div>
+      </form>
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-
-        <button type="button" class="btn btn-success" id="btnSubir">Enviar</button>
-
-      </div>
-      <?php }?>
     </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
+      <button type="button" class="btn btn-success" id="btnSubir">Enviar</button>
+
+    </div>
+    <?php }?>
   </div>
+</div>
 </div>
 
 <div class="modal fade" id="ingresoCandidatoModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -1788,44 +1832,53 @@
   <div class="modal-dialog" role="document" style="max-width:700px;">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Carga y nombra tus archivos</h5>
+        <h5 class="modal-title" id="modalCargaArchivosLabel">Carga y nombra tus archivos</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
           <span>&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <form action="<?php echo base_url('Documentos_Aspirantes/subir') ?>" class="dropzone" id="tablaDropzone"
-          enctype="multipart/form-data">
-          <input type="hidden" id="id_aspirante" name="id_aspirante" value="">
 
-          <!-- ZONA DROPZONE: Aquí -->
-          <div class="dz-message text-center text-muted"
-            style="padding: 40px 0; border: 2px dashed #0087F7; background: #f4f8fb; border-radius:8px; margin-bottom: 20px;">
-            <i class="fas fa-cloud-upload-alt fa-3x mb-2" style="color:#0087F7"></i>
-            <h5>Arrastra archivos aquí o haz clic para seleccionarlos</h5>
-            <p>Puedes seleccionar varios archivos a la vez (PDF, imágenes, videos, etc.).</p>
+      <form id="formCargaArchivos" enctype="multipart/form-data" onsubmit="return false;">
+        <div class="modal-body">
+          <input type="hidden" id="id_aspirante" name="id_aspirante" value="">
+          <input type="hidden" id="id_bolsa" name="id_bolsa" value="">
+
+          <div class="form-group">
+            <label for="filesInput">Selecciona uno o varios archivos</label>
+            <input id="filesInput" name="files[]" type="file" class="form-control" multiple
+              accept=".pdf,image/*,video/*">
+            <small class="form-text text-muted">Tipos permitidos: PDF, imágenes y videos.</small>
           </div>
 
-          <table class="table table-bordered" id="archivosTable">
-            <thead>
-              <tr>
-                <th>Archivo</th>
-                <th>Nombre personalizado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="dz-previews">
-              <!-- Dropzone coloca las filas aquí -->
-              <!-- <tr><td colspan="3"></td></tr> -->
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm align-middle">
+              <thead class="thead-light">
+                <tr>
+                  <th>Archivo</th>
+                  <th>Tamaño</th>
+                  <th>Nombre personalizado</th>
+                  <th style="width:1%;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="filesTableBody">
+                <tr class="text-muted" id="emptyRow">
+                  <td colspan="4">Sin archivos seleccionados…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-      </div>
-      <button type="button" class="btn btn-primary mt-2" id="btnSubirArchivos">Subir Archivos</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnSubirArchivos">Subir archivos</button>
+        </div>
       </form>
     </div>
   </div>
 </div>
+
+
 
 <div class="modal fade" id="modalRequisiciones" tabindex="-1" role="dialog" aria-labelledby="modalRequisicionesLabel"
   aria-hidden="true">
@@ -1964,6 +2017,39 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalAsignarSucursal" tabindex="-1" role="dialog"
+  aria-labelledby="modalAsignarSucursalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="formAsignarSucursal" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAsignarSucursalLabel">
+          <i class="fas fa-store mr-2"></i>Asignar a sucursal
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="idReq" id="asg_idReq">
+        <div class="form-group">
+          <label for="asg_sucursal">Sucursal</label>
+          <select id="asg_sucursal" name="id_sucursal" class="form-control" style="width:100%">
+            <option value=""></option> <!-- ← NECESARIA para que se vea el placeholder -->
+          </select>
+          <small class="form-text text-muted">Escribe para buscar…</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnGuardarAsignacion">
+          <span class="txt">Guardar</span>
+          <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
 
 
@@ -1976,207 +2062,333 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
 </script>
 
 <script>
-Dropzone.autoDiscover = false;
-if (typeof dz === 'undefined') {
-  var dz = null;
-} // instancia global
+(function() {
+  var $modal = $('#modalAsignarSucursal');
+  var $select = $('#asg_sucursal');
 
-function mostrarFormularioCargaCV(id) {
-  console.log('mostrarFormularioCargaCV id:', id);
-  $('#id_aspirante').val(id);
-  $('#modalCargaArchivos').modal('show');
-}
+  function initSucursalSelect(preselectedId) {
+    const $sel = $('#asg_sucursal');
+    const $modal = $('#modalAsignarSucursal');
 
-$('#modalCargaArchivos').on('shown.bs.modal', function() {
-  console.log('Modal abierto: inicializando Dropzone...');
+    if ($sel.data('select2')) $sel.select2('destroy');
+    $sel.empty().append('<option value=""></option>');
 
-  if (dz) {
-    dz.destroy(); // destruye la instancia anterior para permitir reinicializar
-    dz = null;
-  }
-
-
-  const form = document.getElementById('tablaDropzone');
-  if (!form) {
-    console.error('No se encontró #tablaDropzone');
-    return;
-  }
-
-  dz = new Dropzone("#tablaDropzone", {
-    url: "<?php echo base_url('Documentos_Aspirantes/subir') ?>", // MISMA que el action del form
-    paramName: "file", // CI3 recibirá $_FILES['file']
-    autoProcessQueue: false,
-    uploadMultiple: true,
-    parallelUploads: 10,
-    maxFiles: 10,
-    acceptedFiles: ".pdf,image/*,video/*",
-    previewsContainer: "#dz-previews",
-    clickable: "#tablaDropzone .dz-message",
-    // ¡Empieza EXACTO con <tr>!
-    previewTemplate: `
-    <div style="display: table-row;" data-dz-preview class="dz-preview dz-file-preview align-middle">
-      <div style="display: table-cell; vertical-align: middle;">
-        <span data-dz-name></span>
-        <br>
-        <small class="text-muted" data-dz-size></small>
-      </div>
-      <div style="display: table-cell; vertical-align: middle;">
-        <input type="text" name="nombres_archivos[]" class="form-control" placeholder="Ejemplo: CV, Comprobante, etc." required>
-      </div>
-      <div style="display: table-cell; vertical-align: middle;">
-        <a href="javascript:void(0);" class="btn btn-danger btn-sm" data-dz-remove title="Eliminar">
-          <i class="fas fa-trash-alt"></i>
-        </a>
-      </div>
-    </div>
-  `
-  });
-
-  console.log('Dropzone inicializada:', dz);
-
-  dz.on("addedfile", function(file) {
-    console.log('[DZ] added:', file.name);
-  });
-
-  // Con uploadMultiple:true usa estos:
-  dz.on("sendingmultiple", function(files, xhr, formData) {
-    console.log('[DZ] sendingmultiple:', files.length);
-    const nombres = [];
-    document.querySelectorAll('input[name="nombres_archivos[]"]').forEach(i => nombres.push(i.value));
-    // Envía ambos nombres por compatibilidad con tu controlador actual
-    formData.append('id_bolsa', $('#id_aspirante').val());
-    formData.append('id_aspirante', $('#id_aspirante').val());
-    formData.append('nombres_archivos', JSON.stringify(nombres));
-  });
-
-  dz.on('successmultiple', (files, resp) => {
-    if (typeof resp === 'string') resp = JSON.parse(resp);
-
-    let huboErrores = false;
-    const errores = []; // ← aquí guardaremos los textos
-    const fallidos = [];
-    resp.data.forEach((r, idx) => {
-      const file = files[idx];
-
-      if (r.success) {
-        file.previewElement.classList.add('dz-success');
-      } else {
-        huboErrores = true;
-        errores.push(`${r.file}: ${r.error}`);
-        fallidos.push(file); // nombre + mensaje que devolviste
-        dz.emit('error', file, r.error);
-        dz.emit('complete', file);
+    $sel.select2({
+      theme: 'bootstrap4', // usa el tema BS4
+      width: '100%',
+      placeholder: 'Selecciona una sucursal',
+      allowClear: true,
+      dropdownParent: $modal, // muy importante en modales
+      ajax: {
+        url: '<?php echo site_url('Area/select2'); ?>',
+        dataType: 'json',
+        delay: 250,
+        data: p => ({
+          q: p.term || '',
+          page: p.page || 1
+        }),
+        processResults: d => ({
+          results: d?.results || [],
+          pagination: {
+            more: !!d?.more
+          }
+        }),
+        cache: true
       }
     });
 
-    if (huboErrores) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Carga parcial',
-        html: errores.join('<br>'),
-        customClass: {
-          popup: 'text-left'
+    if (preselectedId) {
+      $.getJSON('<?php echo site_url('Area/get/'); ?>' + preselectedId, function(item) {
+        if (item && item.id) {
+          const opt = new Option(item.text, item.id, true, true);
+          $sel.append(opt).trigger('change');
         }
-      }).then(() => {
-        //  🔻   Quita solo los que fallaron
-        fallidos.forEach(f => dz.removeFile(f));
-
-        //  👉  Si quieres limpiar TODOS (éxito + error), usa:
-        dz.removeAllFiles(true);
-      });
-    } else {
-      $('#modalCargaArchivos').modal('hide');
-      dz.removeAllFiles(true);
-      Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: 'Todos los archivos cargados correctamente.',
-        timer: 2000,
-        showConfirmButton: false
       });
     }
-  });
-
-
-  // 4xx / 5xx o error de red
-  dz.on('errormultiple', (_files, msg) => {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error de servidor',
-      text: (typeof msg === 'string') ? msg : 'Intenta de nuevo o contacta a soporte.'
-    });
-  });
-
-
-  dz.on("errormultiple", function(files, errMsg) {
-    console.warn('[DZ] errormultiple:', errMsg);
-    $('#btnSubirArchivos').prop('disabled', false);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Ocurrió un problema al subir.Revisa  tu conexion de internet o Contacta  a Soporte de TalentSafe'
-    });
-  });
-});
-
-// Botón "Subir Archivos"
-$('#btnSubirArchivos').on('click', function() {
-  if (!dz) {
-    console.error('[DZ] no inicializada');
-    return;
   }
-  // Validar nombres
-  const nombres = document.querySelectorAll('input[name="nombres_archivos[]"]');
-  for (let i = 0; i < nombres.length; i++) {
-    if (nombres[i].value.trim() === '') {
-      nombres[i].focus();
+
+
+
+  // Abrir modal desde el botón “Asignar sucursal”
+  $(document).on('click', '.btn-asignar-sucursal', function() {
+    var idReq = $(this).data('idreq');
+    var pre = $(this).data('sucursal') || '';
+    $('#asg_idReq').val(idReq);
+    initSucursalSelect(pre);
+    $modal.modal('show');
+  });
+
+  // Guardar
+  $('#formAsignarSucursal').on('submit', function(e) {
+    e.preventDefault();
+    var idReq = $('#asg_idReq').val();
+    var idSucursal = $select.val();
+
+    if (!idSucursal) {
       Swal.fire({
         icon: 'warning',
-        title: 'Nombre requerido',
-        text: 'Debes definir un nombre perzonalizado para cada archivo.'
+        title: 'Selecciona una sucursal',
+        text: 'Debes elegir una sucursal.'
       });
       return;
     }
+
+    var $btn = $('#btnGuardarAsignacion');
+    $btn.prop('disabled', true);
+    $btn.find('.txt').text('Guardando…');
+    $btn.find('.spinner-border').removeClass('d-none');
+
+    $.ajax({
+      url: '<?php echo site_url('Requisicion/asignar_sucursal'); ?>', // también sin routes extra
+      method: 'POST',
+      dataType: 'json',
+      data: {
+        idReq: idReq,
+        id_sucursal: idSucursal
+      },
+      success: function(resp) {
+        if (resp && resp.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Asignado',
+            text: 'La requisición fue asignada.',
+            timer: 1200,
+            showConfirmButton: false
+          });
+          $modal.modal('hide');
+
+          // Actualiza data-sucursal en el botón de esa tarjeta
+          $('.btn-asignar-sucursal[data-idreq="' + idReq + '"]').data('sucursal', idSucursal);
+
+          // (Opcional) pinta nombre en la tarjeta si viene
+          if (resp.sucursal) {
+            $('#divUsuario' + idReq).find('.asignacion-sucursal').remove();
+            $('#divUsuario' + idReq).append(
+              '<div class="asignacion-sucursal mt-2"><i class="fas fa-store mr-1"></i>' + resp.sucursal +
+              '</div>'
+            );
+          }
+        } else {
+          Swal.fire('Error', (resp && resp.msg) ? resp.msg : 'No se pudo asignar.', 'error');
+        }
+      },
+      error: function(xhr) {
+        Swal.fire('Error', xhr.statusText || 'Fallo de red', 'error');
+      },
+      complete: function() {
+        $btn.prop('disabled', false);
+        $btn.find('.txt').text('Guardar');
+        $btn.find('.spinner-border').addClass('d-none');
+      }
+    });
+  });
+
+  // Limpieza al cerrar
+  $modal.on('hidden.bs.modal', function() {
+    if ($select.data('select2')) $select.select2('destroy');
+    $select.empty();
+    $('#asg_idReq').val('');
+  });
+})();
+
+
+// ====== SIN DROPZONE: multi-file input “normal” ======
+$(function() {
+  var selectedFiles = [];
+  var $modal = $('#modalCargaArchivos');
+  var $filesInput = $('#filesInput');
+  var $tbody = $('#filesTableBody');
+  var $btnUpload = $('#btnSubirArchivos');
+
+  // Si tu vista es PHP, usa una de estas (elige la que corresponda):
+  // const UPLOAD_URL = "< ?php echo base_url('Documentos_Aspirantes/subir')?>";
+  const UPLOAD_URL = "<?php echo base_url('Documentos_Aspirantes/subir'); ?>";
+
+  // 1) Abrir modal y preparar id_aspirante
+  window.mostrarFormularioCargaCV = function(id) {
+    //console.log('mostrarFormularioCargaCV id:', id);
+    $('#id_aspirante').val(id);
+    $('#id_bolsa').val(id); // si aplicas mismo id, o bórralo si no lo usas
+    $modal.modal('show');
+  };
+
+  // 2) Construye la tabla de archivos seleccionados
+  function bytesToSize(bytes) {
+    if (bytes === 0) return '0 B';
+    var k = 1024,
+      sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    var i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  // Encola archivos en estado ADDED y procesa
-  const added = dz.getFilesWithStatus(Dropzone.ADDED);
-  if (added.length) dz.enqueueFiles(added);
+  function baseNameNoExt(filename) {
+    var i = filename.lastIndexOf('.');
+    return (i > 0) ? filename.substring(0, i) : filename;
+  }
 
-  const queued = dz.getQueuedFiles();
-  console.log('[DZ] queued:', queued.length);
+  function rebuildTable() {
+    $tbody.empty();
+    selectedFiles.forEach(function(file, idx) {
+      var tr = document.createElement('tr');
 
-  if (queued.length) {
-    const $btn = $(this); // referencia al mismo botón
-    $btn.prop('disabled', true);
+      tr.innerHTML = `
+        <td><span class="font-weight-bold">${file.name}</span></td>
+        <td><small class="text-muted">${bytesToSize(file.size)}</small></td>
+        <td>
+          <input type="text" class="form-control"
+                 name="nombres_archivos[]"
+                 value="${baseNameNoExt(file.name)}"
+                 placeholder="Ejemplo: CV, Comprobante, etc."
+                 required>
+        </td>
+        <td class="text-right">
+          <button type="button"
+                  class="btn btn-sm btn-outline-danger btn-remove"
+                  data-index="${idx}">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </td>
+      `;
+      $tbody.append(tr);
+    });
+  }
 
-    // callback que se ejecuta UNA sola vez y luego se desengancha
-    function habilitarDeNuevo() {
-      $btn.prop('disabled', false); // vuelve a habilitar
-      dz.off('queuecomplete', habilitarDeNuevo); // elimina el handler ⇒ “once”
+  // 3) Al seleccionar archivos en el input
+  $filesInput.on('change', function() {
+    selectedFiles = Array.from(this.files || []);
+    rebuildTable();
+  });
+
+  // 4) Eliminar un archivo de la lista (y del FileList usando DataTransfer)
+  $tbody.on('click', '.btn-remove', function() {
+    var idx = parseInt(this.getAttribute('data-index'), 10);
+    if (isNaN(idx)) return;
+
+    selectedFiles.splice(idx, 1);
+
+    // reconstruir FileList con DataTransfer
+    var dt = new DataTransfer();
+    selectedFiles.forEach(function(f) {
+      dt.items.add(f);
+    });
+    $filesInput[0].files = dt.files;
+
+    rebuildTable();
+  });
+
+  // 5) Subir (AJAX + FormData)
+  $btnUpload.on('click', function() {
+    if (!selectedFiles.length) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin archivos',
+        text: 'Selecciona al menos un archivo.'
+      });
+      return;
     }
 
-    dz.on('queuecomplete', habilitarDeNuevo); // registra el handler
-    dz.processQueue(); // dispara la subida
-  } else {
-    Swal.fire({
-      icon: 'info',
-      title: 'Sin archivos',
-      text: 'Carga al menos un archivo.'
+    // Validar nombres personalizados
+    var nombresInputs = document.querySelectorAll('input[name="nombres_archivos[]"]');
+    var nombresOk = true;
+    for (var i = 0; i < nombresInputs.length; i++) {
+      if (!nombresInputs[i].value.trim()) {
+        nombresInputs[i].focus();
+        nombresOk = false;
+        break;
+      }
+    }
+    if (!nombresOk) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nombre requerido',
+        text: 'Define un nombre personalizado para cada archivo.'
+      });
+      return;
+    }
+
+    var fd = new FormData();
+    // Archivos
+    selectedFiles.forEach(function(file) {
+      fd.append('files[]', file);
     });
-    return;
-  }
+    // Nombres personalizados (como arreglo)
+    nombresInputs.forEach(function(input) {
+      fd.append('nombres_archivos[]', input.value.trim());
+    });
 
-});
+    // Extras que ya mandabas
+    fd.append('id_aspirante', $('#id_aspirante').val() || '');
+    fd.append('id_bolsa', $('#id_bolsa').val() || '');
 
-// Limpiar al cerrar el modal
-$('#modalCargaArchivos').on('hidden.bs.modal', function() {
-  if (dz) {
-    dz.removeAllFiles(true);
-    dz = null; // para re-inicializar limpio al volver a abrir
-  }
-  $('#dz-previews').empty();
-});
+    // Deshabilita botón durante el envío
+    $btnUpload.prop('disabled', true).text('Subiendo...');
+
+    $.ajax({
+        url: UPLOAD_URL,
+        method: 'POST',
+        data: fd,
+        processData: false,
+        contentType: false,
+        dataType: 'json'
+      })
+      .done(function(resp) {
+        // Soporta dos variantes comunes de respuesta
+        if (resp && resp.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: resp.msg || 'Archivos cargados.'
+          });
+          $modal.modal('hide');
+        } else if (resp && Array.isArray(resp.data)) {
+          // estilo por-archivo: [{success, file, error}]
+          var errores = resp.data.filter(r => !r.success).map(r => `${r.file}: ${r.error}`);
+          if (errores.length) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Carga parcial',
+              html: errores.join('<br>')
+            });
+          } else {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'Todos los archivos cargados.'
+            });
+            $modal.modal('hide');
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: (resp && resp.msg) ? resp.msg : 'No se pudo completar la carga.'
+          });
+        }
+      })
+      .fail(function(xhr) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de servidor',
+          text: xhr.statusText || 'Intenta de nuevo.'
+        });
+      })
+      .always(function() {
+        $btnUpload.prop('disabled', false).text('Subir archivos');
+        // Limpieza
+        selectedFiles = [];
+        $filesInput.val('');
+        $tbody.empty();
+      });
+  });
+
+  // 6) Limpiar al cerrar el modal
+  $modal.on('hidden.bs.modal', function() {
+    selectedFiles = [];
+    $filesInput.val('');
+    $tbody.empty();
+  });
+})
+
 
 
 $('#btnGuardarCambios').on('click', function() {
@@ -2248,79 +2460,108 @@ document.getElementById('accion_aspirante').addEventListener('change', function(
 var pag = 1;
 
 // Oculta secciones al cargar el script
-$('.div_info_project, .div_info_projectt, .div_project, \
-   .div_info_previo, .div_previo, \
-   .div_info_check, .div_check, \
-   .div_info_test, .div_test, \
-   .div_info_extra, .div_extra, \
-   #detalles_previo').addClass('d-none');
+// --- Lista única de secciones dinámicas ---
+(function($) {
+  // ---- Selectores de todos los bloques dinámicos ----
+  const BLOQUES = [
+    '.div_info_project', '.div_info_projectt', '.div_project',
+    '.div_info_previo', '.div_previo',
+    '.div_info_check', '.div_check',
+    '.div_info_test', '.div_test',
+    '.div_info_extra', '.div_extra',
+    '#detalles_previo'
+  ].join(', ');
 
-// Al cerrar el modal: SOLO resetea dinámicos, NO borres datos del aspirante ni #previos
-$('#registroCandidatoModal').off('hidden.bs.modal').on('hidden.bs.modal', function(e) {
-  // Oculta todo lo dinámico
-  $('.div_info_project, .div_info_projectt, .div_project, \
-     .div_info_previo, .div_previo, \
-     .div_info_check, .div_check, \
-     .div_info_test, .div_test, \
-     .div_info_extra, .div_extra, \
-     #detalles_previo').addClass('d-none');
+  // Limpia estilos inline de display (por si quedaron display:none)
+  $(BLOQUES).each(function() {
+    this.style && (this.style.display = '');
+  });
 
-  // Mensajes
-  $("#registroCandidatoModal #msj_error").hide().empty();
+  // 1) Al mostrar el modal, dispara el change del combo para pintar el estado actual
+  $(document)
+    .off('shown.bs.modal.registro', '#registroCandidatoModal')
+    .on('shown.bs.modal.registro', '#registroCandidatoModal', function() {
+      const $sel = $('#opcion_registro');
+      if (!$sel.length) {
+        console.warn('[registro] No existe #opcion_registro');
+        return;
+      }
+      console.log('[registro] modal shown; valor actual:', $sel.val());
+      $sel.trigger('change');
+    });
 
-  // Limpia SOLO contenedores dinámicos (conserva lista #previos y datos del aspirante)
-  $('#detalles_previo, #div_docs_extras').empty();
+  // 2) Cambio de opción (delegado y namespaced)
+  $(document)
+    .off('change.registro', '#opcion_registro')
+    .on('change.registro', '#opcion_registro', function() {
+      const opcion = String(this.value);
+      console.log('[registro] change opcion_registro =', opcion);
 
-  // Deshabilita y limpia selects DINÁMICOS de "nuevo proyecto" (no usado)
-  $('select.valor_dinamico').prop('disabled', true).empty();
-  $('#pais_registro, #pais_previo').prop('disabled', true).val('');
-  $('#proyecto_registro').prop('disabled', true).val('');
+      // Oculta todo
+      $(BLOQUES).addClass('d-none');
 
-  // “Puesto: otro”
-  $('#puesto_otro').val('').hide();
+      // Nunca mostrar (siempre ocultos)
+      $('.div_info_project, .div_info_projectt, .div_project, .div_info_check, .div_check, .div_info_extra, .div_extra')
+        .addClass('d-none');
 
-  // Exámenes → a 0 (no vaciamos opciones)
-  $('#examen_registro').val('0');
-  $('#examen_medico').val('0');
-  $('#examen_psicometrico').val('0');
+      if (opcion === '0') {
+        // Proyecto anterior + Exámenes
+        $('.div_info_previo, .div_previo, .div_info_test, .div_test, #detalles_previo')
+          .removeClass('d-none')
+          .each(function() {
+            this.style.display = '';
+          });
+        console.log('[registro] mostrando: previo + test');
+      } else if (opcion === '1') {
+        // Solo exámenes
+        $('.div_info_test, .div_test')
+          .removeClass('d-none')
+          .each(function() {
+            this.style.display = '';
+          });
+        console.log('[registro] mostrando: solo test');
+      } else {
+        console.log('[registro] mostrando: nada extra');
+      }
+    });
 
-  // Sin selección por defecto; el usuario elige 0/1 cuando reabra
-  $('#opcion_registro').val('').trigger('change');
+  // 3) Al cerrar el modal: reset SOLO lo dinámico (no borra datos del aspirante)
+  $(document)
+    .off('hidden.bs.modal.registro', '#registroCandidatoModal')
+    .on('hidden.bs.modal.registro', '#registroCandidatoModal', function() {
+      $(BLOQUES).addClass('d-none');
+      $("#registroCandidatoModal #msj_error").hide().empty();
 
-  // IMPORTANTE: NO hacer
-  // $("#registroCandidatoModal input, #registroCandidatoModal select").val('');
-  // para no perder datos del aspirante ni la lista de #previos
-});
+      $('#detalles_previo, #div_docs_extras').empty();
 
-// Handler de la opción: 0 (Previo+Exámenes), 1 (Exámenes), 2 (Nada)
-$('#opcion_registro').off('change').on('change', function() {
-  const opcion = $(this).val();
+      $('select.valor_dinamico').prop('disabled', true).empty();
+      $('#pais_registro, #pais_previo').prop('disabled', true).val('');
+      $('#proyecto_registro').prop('disabled', true).val('');
 
-  // Oculta absolutamente todo lo que es visible/ocultable
-  $('.div_info_project, .div_info_projectt, .div_project, \
-     .div_info_previo, .div_previo, \
-     .div_info_check, .div_check, \
-     .div_info_test, .div_test, \
-     .div_info_extra, .div_extra, \
-     #detalles_previo').addClass('d-none');
+      $('#puesto_otro').val('').hide();
 
-  // Nunca mostrar: nuevo proyecto / checks / extras
-  $('.div_info_project, .div_info_projectt, .div_project, .div_info_check, .div_check, .div_info_extra, .div_extra')
-    .addClass('d-none');
+      $('#examen_registro').val('0');
+      $('#examen_medico').val('0');
+      $('#examen_psicometrico').val('0');
 
-  if (opcion === '0') {
-    // Proyecto anterior + Exámenes
-    $('.div_info_previo, .div_previo').removeClass('d-none');
-    $('.div_info_test, .div_test').removeClass('d-none');
-    // Deja contenedor visible para que tu AJAX lo llene
-    $('#detalles_previo').removeClass('d-none');
+      // Sin selección por defecto; al reabrir, shown.bs.modal ejecuta el change
+      $('#opcion_registro').val('');
+      console.log('[registro] modal hidden; reseteado');
+    });
 
-  } else if (opcion === '1') {
-    // Solo exámenes
-    $('.div_info_test, .div_test').removeClass('d-none');
+  // (Opcional) Select2
+  if ($.fn.select2) {
+    $(document).on('hidden.bs.modal.registro', '#registroCandidatoModal', function() {
+      if ($('#puesto').hasClass('select2-hidden-accessible')) {
+        $('#puesto').select2('destroy');
+      }
+    });
   }
-  // '2' o '' => no mostrar nada extra
-});
+})(jQuery);
+
+
+
+
 
 // (Opcional) Si usas Select2 en #puesto, destrúyelo al cerrar
 if ($.fn.select2 && $('#puesto').hasClass('select2-hidden-accessible')) {
@@ -2781,30 +3022,38 @@ function mostrarInputOtro() {
     inputOtro.value = ""; // Limpiar el input si se cambia a otra opción
   }
 }
+
 function buildFallasCSV(fallas) {
-  const headers = ['fila','nombre','entidad','label','url','http_code','error'];
+  const headers = ['fila', 'nombre', 'entidad', 'label', 'url', 'http_code', 'error'];
   const esc = v => {
     const s = String(v ?? '');
-    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   };
   const lines = [headers.join(',')];
-  (fallas||[]).forEach(f => {
-    lines.push([esc(f.fila),esc(f.nombre),esc(f.entidad),esc(f.label),esc(f.url),esc(f.http_code),esc(f.error||'')].join(','));
+  (fallas || []).forEach(f => {
+    lines.push([esc(f.fila), esc(f.nombre), esc(f.entidad), esc(f.label), esc(f.url), esc(f.http_code), esc(f
+      .error || '')].join(','));
   });
   return lines.join('\r\n');
 }
-function downloadTextFile(filename, text, mime='text/csv;charset=utf-8;') {
-  const blob = new Blob([text], {type: mime});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
+
+function downloadTextFile(filename, text, mime = 'text/csv;charset=utf-8;') {
+  const blob = new Blob([text], {
+    type: mime
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ===== Render del resultado (SweetAlert + botón CSV si hay fallas) =====
-function renderResultado(resp){
-  if(!resp || resp.ok === false){
+function renderResultado(resp) {
+  if (!resp || resp.ok === false) {
     Swal.fire('Error', (resp && resp.msg) ? resp.msg : 'Falló la importación', 'error');
     return;
   }
@@ -2813,15 +3062,15 @@ function renderResultado(resp){
     <b>Empleados insertados:</b> ${resp.empleados_insertados}<br>
     <b>Extras empleados:</b> ${resp.empleado_extras_rows}<br>
   `;
-  if(resp.errores && resp.errores.length){
-    msg += `<hr><b>Errores:</b><ul>` + resp.errores.map(e=>`<li>${e}</li>`).join('') + `</ul>`;
+  if (resp.errores && resp.errores.length) {
+    msg += `<hr><b>Errores:</b><ul>` + resp.errores.map(e => `<li>${e}</li>`).join('') + `</ul>`;
   }
 
   let csvData = null;
-  if(resp.fallas_descargas && resp.fallas_descargas.length){
+  if (resp.fallas_descargas && resp.fallas_descargas.length) {
     msg += `<hr><b>Descargas fallidas:</b><ul>` +
       resp.fallas_descargas.map(f =>
-        `<li>Fila ${f.fila} (${f.nombre}) [${f.entidad}] ${f.label}: 
+        `<li>Fila ${f.fila} (${f.nombre}) [${f.entidad}] ${f.label}:
           <a href="${f.url}" target="_blank">${f.url}</a>
           — HTTP ${f.http_code} ${f.error ? (' - '+f.error) : ''}</li>`
       ).join('') +
@@ -2848,9 +3097,9 @@ function renderResultado(resp){
     width: 800,
     didOpen: () => {
       const btn = document.getElementById('btn-dl-csv');
-      if(btn && csvData){
+      if (btn && csvData) {
         btn.addEventListener('click', () => {
-          const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+          const ts = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
           downloadTextFile(`fallas_descargas_${ts}.csv`, csvData);
         });
       }
@@ -2859,45 +3108,178 @@ function renderResultado(resp){
 }
 
 // ===== Interceptar ese único form y mandar por AJAX =====
-$(function(){
+$(function() {
   // Selecciona exactamente tu form por su action (contiene Importa_excel/importar)
-  $('form[action*="Importa_excel/importar"]').on('submit', function(e){
-    e.preventDefault();
+  // ====================== Configuración ======================
+  const THRESH_MB = 8; // umbral: si el archivo >= 8MB se usa importar_streaming
+  // ===========================================================
 
-    const form = this;
-    const fd   = new FormData(form);
-
-    // (Opcional) Si tienes CSRF activo en CI3, descomenta y ajusta:
-    // fd.append('<?= $this->security->get_csrf_token_name(); ?>', '<?= $this->security->get_csrf_hash(); ?>');
-
-    $.ajax({
-      url: $(form).attr('action'),          // usa la URL del form
-      method: 'POST',
-      data: fd,
-      processData: false,
-      contentType: false,
-      beforeSend: function(){
-        Swal.fire({
-          title:'Importando...',
-          text:'Por favor espera',
-          allowOutsideClick:false,
-          didOpen:()=>Swal.showLoading()
-        });
-      },
-      success: function(resp){
-        // Si el backend devuelve JSON como string, parsea:
-        if (typeof resp === 'string') {
-          try { resp = JSON.parse(resp); } catch(e){ resp = {ok:false, msg:'Respuesta no válida'}; }
+  (function($) {
+    // Fallback muy simple por si no existe renderResultado en tu proyecto
+    if (typeof window.renderResultado !== 'function') {
+      window.renderResultado = function(resp) {
+        if (!resp || typeof resp !== 'object') {
+          Swal.fire('Error', 'Respuesta no válida del servidor', 'error');
+          return;
         }
-        renderResultado(resp);
-      },
-      error: function(){
-        Swal.fire('Error', 'No se pudo contactar al servidor', 'error');
-      }
+        if (resp.ok) {
+          const det = [
+            'Bolsa insertados: ' + (resp.bolsa_insertados ?? 0),
+            'Empleados insertados: ' + (resp.empleados_insertados ?? 0),
+            'Extras empleados: ' + (resp.empleado_extras_rows ?? 0),
+            (resp.errores && resp.errores.length ? ('Errores: ' + resp.errores.length) : ''),
+            (resp.fallas_descargas && resp.fallas_descargas.length ? ('Fallas descargas: ' + resp
+              .fallas_descargas.length) : '')
+          ].filter(Boolean).join('<br>');
+          Swal.fire({
+            icon: 'success',
+            title: 'Importación completa',
+            html: det
+          });
+        } else {
+          Swal.fire('Error', resp.msg || 'Importación fallida', 'error');
+        }
+      };
+    }
+
+    $(function() {
+      // Selecciona exactamente el form por id (más seguro)
+      $('#form-importar-excel').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = this;
+        const $form = $(form);
+        const fd = new FormData(form);
+
+        // Localiza el input file
+        const $fileInput = $form.find('input[type="file"][name="archivo_excel"]');
+        const file = $fileInput.length ? ($fileInput[0].files[0] || null) : null;
+
+        if (!file) {
+          Swal.fire('Falta archivo', 'Selecciona un Excel antes de importar', 'warning');
+          return;
+        }
+
+        // Heurística por tamaño para decidir endpoint
+        const sizeMB = file.size / (1024 * 1024);
+        const useStreaming = sizeMB >= THRESH_MB;
+
+        // Construye la URL final según el modo
+        let actionUrl = $form.attr('action') || '';
+        if (useStreaming && /importar(?:\/)?$/i.test(actionUrl)) {
+          actionUrl = actionUrl.replace(/importar(?:\/)?$/i, 'importar_streaming');
+        } else if (!useStreaming && /importar_streaming(?:\/)?$/i.test(actionUrl)) {
+          actionUrl = actionUrl.replace(/importar_streaming(?:\/)?$/i, 'importar');
+        }
+
+        // Bandera para logging en backend (opcional)
+        fd.append('modo_import', useStreaming ? 'streaming' : 'normal');
+
+        // (Opcional) CSRF de CI3 si lo usas:
+        // fd.append('<?php echo $this->security->get_csrf_token_name(); ?>', '<?php echo $this->security->get_csrf_hash(); ?>');
+
+        $.ajax({
+          url: actionUrl,
+          method: 'POST',
+          data: fd,
+          processData: false,
+          contentType: false,
+          xhr: function() {
+            const xhr = new window.XMLHttpRequest();
+            // barra de progreso de subida
+            xhr.upload.addEventListener('progress', function(evt) {
+              if (evt.lengthComputable) {
+                const pct = Math.round((evt.loaded / evt.total) * 100);
+                Swal.update({
+                  title: useStreaming ? 'Importando (streaming)...' : 'Importando...',
+                  html: `Subiendo archivo: <b>${pct}%</b><br>Tamaño: ${sizeMB.toFixed(2)} MB`
+                });
+              }
+            });
+            return xhr;
+          },
+          beforeSend: function() {
+            Swal.fire({
+              title: useStreaming ? 'Importando (streaming)...' : 'Importando...',
+              text: 'Por favor espera',
+              allowOutsideClick: false,
+              didOpen: () => Swal.showLoading()
+            });
+          },
+          success: function(resp) {
+            // Asegura objeto JSON
+            if (typeof resp === 'string') {
+              try {
+                resp = JSON.parse(resp);
+              } catch (e) {
+                resp = {
+                  ok: false,
+                  msg: 'Respuesta no válida del servidor'
+                };
+              }
+            }
+            renderResultado(resp);
+          },
+          error: function(xhr) {
+            let msg = 'No se pudo contactar al servidor';
+            try {
+              const j = JSON.parse(xhr.responseText);
+              if (j && (j.msg || j.message)) msg = j.msg || j.message;
+            } catch (_) {}
+            Swal.fire('Error', msg, 'error');
+          }
+        });
+      });
     });
-  });
+  })(jQuery);
 });
 </script>
+
+<style>
+#selectStatus option.status-1 {
+  background: #d6d6d6;
+  color: #000;
+}
+
+#selectStatus option.status-2 {
+  background: #87CEFA;
+  color: #000;
+}
+
+#selectStatus option.status-3 {
+  background: #FFD700;
+  color: #000;
+}
+
+#selectStatus option.status-4 {
+  background: #32CD32;
+  color: #fff;
+}
+
+#selectStatus option.status-5 {
+  background: #ff6200ff;
+  color: #000;
+}
+
+/* que el select también se pinte al elegir */
+#selectStatus {
+  transition: background-color .15s, color .15s;
+}
+
+/* app.scss o tu hoja de estilos */
+.btn-status {
+  margin-left: 5px;
+  background-color: #6f42c1;
+  /* morado Bootstrap */
+  border-color: #5a379d;
+  color: #fff;
+}
+
+.btn-status:hover {
+  background-color: #59359c;
+  border-color: #45277a;
+}
+</style>
 <style>
 .actions {
   gap: .5rem;
@@ -2953,5 +3335,45 @@ $(function(){
   background: #6366f1;
   border-color: #6366f1;
   color: #fff;
+}
+
+/* Altura y padding tipo form-control de BS4 */
+/* ----- Select2 dentro del modal de sucursal ----- */
+#modalAsignarSucursal .select2-container {
+  width: 100% !important;
+}
+
+/* Caja del control (como un form-control de BS4) */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection--single,
+#modalAsignarSucursal .select2-container--default .select2-selection--single {
+  height: calc(2.25rem + 2px) !important;
+  min-height: calc(2.25rem + 2px) !important;
+  padding: .375rem .75rem !important;
+  border: 1px solid #ced4da !important;
+  border-radius: .25rem !important;
+  background-color: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  box-shadow: none !important;
+}
+
+/* Texto renderizado */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection__rendered,
+#modalAsignarSucursal .select2-container--default .select2-selection__rendered {
+  line-height: 1.5 !important;
+  padding-left: 0 !important;
+}
+
+/* Placeholder gris como BS4 */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection__placeholder,
+#modalAsignarSucursal .select2-container--default .select2-selection__placeholder {
+  color: #6c757d !important;
+}
+
+/* Flecha del desplegable */
+#modalAsignarSucursal .select2-container--bootstrap4 .select2-selection__arrow,
+#modalAsignarSucursal .select2-container--default .select2-selection__arrow {
+  height: calc(2.25rem + 2px) !important;
+  right: .75rem !important;
 }
 </style>

@@ -104,22 +104,26 @@ function getPortalCliente($id_cliente){
     }
 }
 
-public function correoExiste($correo ,$idDatos = null, ) {
-  
-    $this->db->select('id')
-             ->from('datos_generales')
-             ->where('correo', $correo);
-        
+public function correoExiste($correo, $idDatos = null)
+{
+    $correo = trim(strtolower($correo));
 
-    // Si estás editando un cliente, excluye el cliente actual de la búsqueda
+    $this->db->select('dg.id')
+             ->from('datos_generales dg')
+             ->join('usuarios_clientes u', 'u.id_datos_generales = dg.id')
+             ->join('cliente c', 'c.id = u.id_cliente')
+             ->where('LOWER(dg.correo) =', $correo);
+
     if ($idDatos !== null) {
-        $this->db->where('id !=', $idDatos); // Cambiado de where_not_in a where
+        $this->db->where('dg.id !=', $idDatos);
     }
 
-    $query = $this->db->get();
-    
-    return $query->num_rows();
+    // Solo contar clientes NO eliminados
+    $this->db->where('c.eliminado', 0);
+
+    return (int) $this->db->count_all_results();
 }
+
 
 public function telefonoExiste($telefono ,$idDatos = null, ) {
     $id_portal = $this->session->userdata('idPortal');

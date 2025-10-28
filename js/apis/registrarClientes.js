@@ -2,7 +2,7 @@ var baseUrl = document.getElementById('base_url').value;
 var pag = 1; // Global para control de pasos
 
 function registrarCliente() {
-  $("#password, #generarPass, #passLabel").show();
+  $("#password, #generarPass, #passLabel, #togglePass").show();
   $('#newModal').modal('show'); // <- MUY IMPORTANTE
   resetModal();
 }
