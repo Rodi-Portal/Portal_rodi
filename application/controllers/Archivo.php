@@ -380,6 +380,7 @@ public function ver_psico($filename = '')
     }
 
     // Cabeceras
+    header($_SERVER['SERVER_PROTOCOL'].' 200 OK', true, 200);
     header('Content-Type: ' . $mime);
     header('Content-Length: ' . filesize($path));
     header('Content-Disposition: inline; filename="' . basename($path) . '"');
