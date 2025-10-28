@@ -349,4 +349,58 @@ class Archivo extends CI_Controller
         return $map[$ext] ?? 'application/octet-stream';
     }
 
+    public function ver_psicometrico($filename = '')
+    {
+        // 1️⃣ Verifica sesión (ajusta según tu lógica)
+        if (! $this->session->userdata('id')) {
+            show_404(); // o redirige al login si lo prefieres
+        }
+
+        // 2️⃣ Sanitiza el nombre del archivo
+        $filename = urldecode((string) $filename);
+        $filename = basename($filename); // evita path traversal tipo "../"
+        if ($filename === '') {
+            show_404();
+        }
+
+        // 3️⃣ Validar extensión permitida
+        $ext     = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $allowed = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg'];
+        if (! in_array($ext, $allowed, true)) {
+            show_404();
+        }
+
+        // 4️⃣ Ruta física del directorio _psicometria
+        $base_path_psico = rtrim(FCPATH, '/') . '/_psicometria/';
+        if (! is_dir($base_path_psico)) {
+            @mkdir($base_path_psico, 0750, true);
+        }
+
+        // 5️⃣ Archivo completo
+        $full = $base_path_psico . $filename;
+        if (! is_file($full) || ! is_readable($full)) {
+            show_404();
+        }
+
+        // 6️⃣ Detecta MIME y sirve el archivo
+        $mime        = $this->_detect_mime($full, $ext);
+        $disposition = $this->input->get('dl') ? 'attachment' : 'inline';
+        $safe        = rawurlencode($filename);
+
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($full));
+        header('Content-Disposition: ' . $disposition . '; filename="' . $safe . '"; filename*=UTF-8\'\'' . $safe);
+        header('X-Content-Type-Options: nosniff');
+
+        @set_time_limit(0);
+        $fp = fopen($full, 'rb');
+        while (! feof($fp)) {
+            echo fread($fp, 8192);
+            @ob_flush();
+            flush();
+        }
+        fclose($fp);
+        exit;
+    }
+
 }

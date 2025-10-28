@@ -84,3 +84,7 @@ $route['archivo/descargar_calendario/(:num)']  = 'archivo/descargar_calendario/$
 
 // (Opcional, si también quieres por nombre de archivo)
 $route['archivo/ver_calendario/(:any)']        = 'archivo/ver_calendario/$1';
+
+
+/** RUTA  PARA  VER  PSICOMETRIAS   DESDE  RODI */
+$route['archivo/psicometrico/(:any)'] = 'archivo/ver_psicometrico/$1';

@@ -1318,6 +1318,8 @@ function changeDatatable(url1) {
                   if (full.archivo != null && full.archivo != "") {
 
 
+                    var psico = base_url + 'archivo/psicometrico/';
+
                     salida +=
                       '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a> ' +
                       '<a href="' + psico + full.archivo +
