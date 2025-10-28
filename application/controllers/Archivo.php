@@ -8,7 +8,7 @@ class Archivo extends CI_Controller
     {
         parent::__construct();
         // carpeta física al nivel de application/public (raíz del proyecto)
-        $this->base_path = rtrim(FCPATH, '/') . '/_documentEmpleado/';
+        $this->base_path       = rtrim(FCPATH, '/') . '/_documentEmpleado/';
         $this->base_path_psico = FCPATH . '_psicometria' . DIRECTORY_SEPARATOR;
 
         // crea la carpeta si no existe (opcional)
@@ -350,29 +350,60 @@ class Archivo extends CI_Controller
         return $map[$ext] ?? 'application/octet-stream';
     }
 
-  public function ver_psico($filename = '')
-    {
-        // Normaliza y evita traversal
-        $filename = urldecode($filename);
-        $filename = basename($filename); // sin subcarpetas
+public function ver_psico($filename = '')
+{
+    $filename = urldecode($filename);
+    $filename = basename($filename);
 
-        $path = realpath($this->base_path_psico . $filename);
+    $base = rtrim($this->base_path_psico, '/\\') . DIRECTORY_SEPARATOR;
+    $realBase = realpath($base);
+    $path = $realBase ? realpath($base . $filename) : false;
 
-        // Debe existir y estar dentro de _psicometria
-        if (! $path || strpos($path, realpath($this->base_path_psico)) !== 0 || ! is_file($path)) {
-            show_404();
-        }
-
-        // Sirve el archivo inline
-        $mime = function_exists('mime_content_type') ? mime_content_type($path) : 'application/octet-stream';
-        header('Content-Type: ' . $mime);
-        header('Content-Length: ' . filesize($path));
-        header('Content-Disposition: inline; filename="' . basename($path) . '"');
-        header('X-Content-Type-Options: nosniff');
-
-        readfile($path);
-        exit;
+    if (!$path || strpos($path, $realBase) !== 0 || !is_file($path)) {
+        // Si no existe, ahora sí 404 real
+        $this->output->set_status_header(404);
+        return show_404();
     }
+
+    // Asegúrate de que el status sea 200 (evita el 404 que estás viendo)
+    // Puedes usar la Output class de CI o las funciones nativas:
+    $this->output->set_status_header(200);
+
+    // Evitar problemas con compresión/longitud y cualquier salida previa
+    if (function_exists('ini_set')) @ini_set('zlib.output_compression', 'Off');
+    while (ob_get_level() > 0) { @ob_end_clean(); }
+
+    $mime = 'application/pdf';
+    if (function_exists('mime_content_type')) {
+        $det = @mime_content_type($path);
+        if ($det) $mime = $det;
+    }
+
+    // Cabeceras
+    header('Content-Type: ' . $mime);
+    header('Content-Length: ' . filesize($path));
+    header('Content-Disposition: inline; filename="' . basename($path) . '"');
+    header('X-Content-Type-Options: nosniff');
+    header('Accept-Ranges: bytes');
+    header('Cache-Control: private, max-age=10800, must-revalidate');
+    header('Pragma: public');
+
+    // Stream por chunks
+    $fp = fopen($path, 'rb');
+    if ($fp === false) {
+        $this->output->set_status_header(500);
+        return show_error('No se pudo abrir el archivo.', 500);
+    }
+
+    $chunk = 8192;
+    while (!feof($fp)) {
+        echo fread($fp, $chunk);
+        flush();
+        if (connection_status() != CONNECTION_NORMAL) break;
+    }
+    fclose($fp);
+    exit; // MUY importante
+}
 
 
 }
