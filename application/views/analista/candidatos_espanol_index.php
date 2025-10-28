@@ -1316,6 +1316,7 @@ function changeDatatable(url1) {
                 if (full.psicometrico == 1) {
 
                   if (full.archivo != null && full.archivo != "") {
+                        var base_url = "<?= base_url(); ?>";
 
 
                     var psico = base_url + 'archivo/psicometrico/';
