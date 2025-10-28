@@ -1191,6 +1191,7 @@ class Reclutamiento_model extends CI_Model
 
             ->join('usuarios_portal AS USPOR', 'USPOR.id = A.id_usuario', 'left')
             ->join('datos_generales AS DATUP', 'DATUP.id = USPOR.id_datos_generales', 'left')
+            ->where('A.eliminado', 0)
 
             ->where('R.id_portal', $id_portal)
             ->where('A.id_requisicion', (int) $id)
