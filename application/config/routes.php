@@ -79,12 +79,12 @@ $route['Archivo/ver_aspirante/(:num)']       = 'Archivo/ver_aspirante/$1';
 $route['Archivo/descargar_aspirante/(:num)'] = 'Archivo/descargar_aspirante/$1';
 
 //calendario
-$route['archivo/ver_calendario_id/(:num)']     = 'archivo/ver_calendario_id/$1';
-$route['archivo/descargar_calendario/(:num)']  = 'archivo/descargar_calendario/$1';
+$route['archivo/ver_calendario_id/(:num)']     = 'Archivo/ver_calendario_id/$1';
+$route['archivo/descargar_calendario/(:num)']  = 'Archivo/descargar_calendario/$1';
 
 // (Opcional, si también quieres por nombre de archivo)
-$route['archivo/ver_calendario/(:any)']        = 'archivo/ver_calendario/$1';
+$route['archivo/ver_calendario/(:any)']        = 'Archivo/ver_calendario/$1';
 
 
 /** RUTA  PARA  VER  PSICOMETRIAS   DESDE  RODI */
-$route['archivo/psicometrico/(:any)'] = 'archivo/ver_psicometrico/$1';
+$route['Archivo/ver_psico/(:any)'] = 'Archivo/ver_psico/$1';

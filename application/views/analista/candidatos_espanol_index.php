@@ -1314,19 +1314,16 @@ function changeDatatable(url1) {
 
                 //* Psicometria
                 if (full.psicometrico == 1) {
-
-                  if (full.archivo != null && full.archivo != "") {
-                        var base_url = "<?= base_url(); ?>";
-
-
-                    var psico = base_url + 'archivo/psicometrico/';
-
+                  const HREF = '<?php echo base_url('Archivo/ver_psico/'); ?>' + encodeURIComponent((full
+                      .archivo ||
+                      '')
+                    .toString().trim());
+                  if (full.archivo) {
                     salida +=
-                      '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a> ' +
-                      '<a href="' + psico + full.archivo +
-                      '" target="_blank" data-toggle="tooltip" title="Ver psicometría" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria">' +
-                      '<i class="fas fa-file-powerpoint"></i>' +
-                      '</a>';
+                      '<b>Psicométrico:</b> ' +
+                      '<a href="javascript:void(0)" data-toggle="tooltip" title="Subir psicometría" id="psicometria" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-brain"></i></a> ' +
+                      '<a href="' + HREF +
+                      '" target="_blank" data-toggle="tooltip" title="Ver psicometría" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-file-powerpoint"></i></a>';
                   } else {
                     salida +=
                       '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a>';
