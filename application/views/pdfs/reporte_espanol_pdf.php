@@ -13567,7 +13567,7 @@ if(!empty($conclusion)){
 				echo '<div class="center margen-top">';
 				foreach($docs as $doc){
 					if($doc['id_tipo_documento'] == 19){
-						echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+						echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					}
 				}
 				echo '</div>';
@@ -13658,7 +13658,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Records criminales – OFAC </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'"><br><br>'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'"><br><br>'; ?>
 					</div>
 				<?php
 				}
@@ -13670,7 +13670,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de investigación legal </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'"><br><br>'; ?>
+						<?php echo '<img src="'..FCPATH.'_docs/'.$doc['archivo'].'"><br><br>'; ?>
 					</div>
 				<?php
 				}
@@ -13682,7 +13682,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Aviso de privacidad </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -13695,7 +13695,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de historial laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -13709,10 +13709,10 @@ if(!empty($conclusion)){
 					<div class="center">
 						<?php 
 						if($doc['id_tipo_documento'] == 7){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+							echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 						}
 						if($doc['id_tipo_documento'] == 10){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+							echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 						} ?>
 					</div>
 				<?php
@@ -13725,7 +13725,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -13737,7 +13737,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -13749,7 +13749,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -13761,7 +13761,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de demanda </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -13773,7 +13773,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Buró de crédito </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
