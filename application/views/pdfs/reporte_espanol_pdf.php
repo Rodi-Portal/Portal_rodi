@@ -13670,7 +13670,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de investigación legal </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'..FCPATH.'_docs/'.$doc['archivo'].'"><br><br>'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'"><br><br>'; ?>
 					</div>
 				<?php
 				}
