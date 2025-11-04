@@ -104,7 +104,9 @@
 // estado global mínimo
 window.dtTabla = window.dtTabla || null;
 window.DT_MODE = window.DT_MODE || null; // 'progreso' | 'finalizadas'
-const P = window.PERM || {};
+if (typeof P === 'undefined') {
+  const P = window.PERM || {};
+}
 const allow = f => (typeof f === 'undefined') ? true : !!f; // si no existe, permitir
 
 // borra el state guardado de DataTables para evitar arrastres entre modos
