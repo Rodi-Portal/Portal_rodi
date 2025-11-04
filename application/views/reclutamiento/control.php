@@ -106,7 +106,7 @@ window.dtTabla = window.dtTabla || null;
 window.DT_MODE = window.DT_MODE || null; // 'progreso' | 'finalizadas'
 window.P = window.P || window.PERM || {};
 
-const allow = f => (typeof f === 'undefined') ? true : !!f; // si no existe, permitir
+window.allow = window.allow || (f => (typeof f === 'undefined') ? true : !!f);
 
 // borra el state guardado de DataTables para evitar arrastres entre modos
 function clearDTStateFor(id) {
