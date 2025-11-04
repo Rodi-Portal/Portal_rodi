@@ -686,7 +686,7 @@ if(!empty($conclusion)){
           echo '<div class="center margen-bottom">';
           foreach($docs as $doc){
             if($doc['id_tipo_documento'] == 22){
-              echo '<img class="img-foto-rostro padding bordes-img " src="'.base_url().'_docs/'.$doc['archivo'].'">';
+              echo '<img class="img-foto-rostro padding bordes-img " src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
               $band = 1;
               break;
             }
@@ -892,7 +892,7 @@ if(!empty($conclusion)){
           echo '<div class="center margen-bottom">';
           foreach($docs as $doc){
             if($doc['id_tipo_documento'] == 22){
-              echo '<img class="img-foto-rostro padding bordes-img " src="'.base_url().'_docs/'.$doc['archivo'].'">';
+              echo '<img class="img-foto-rostro padding bordes-img " src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
               $band = 1;
               break;
             }
@@ -1057,7 +1057,7 @@ if(!empty($conclusion)){
           echo '<div class="center margen-bottom">';
           foreach($docs as $doc){
             if($doc['id_tipo_documento'] == 22){
-              echo '<img class="img-foto-rostro padding bordes-img " src="'.base_url().'_docs/'.$doc['archivo'].'">';
+              echo '<img class="img-foto-rostro padding bordes-img " src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
               $band = 1;
               break;
             }
@@ -2147,7 +2147,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2156,7 +2156,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2165,7 +2165,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2174,7 +2174,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2183,7 +2183,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2192,7 +2192,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2201,7 +2201,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>INTERPOL </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2210,7 +2210,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Motor Vehicle Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2219,7 +2219,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2228,7 +2228,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Sex Offender </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -2237,7 +2237,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Studies Certificate </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2246,7 +2246,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Professional Licence </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -2255,7 +2255,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment History (SSN) </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -2264,7 +2264,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment Letter </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -2273,7 +2273,7 @@ if(!empty($conclusion)){
 							echo '<pagebreak>';
 							echo '<div class="center">';
 							echo '<h2>Driver licence </h2>';
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+							echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 							echo '</div>';
 						}
 					}
@@ -3080,7 +3080,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Aviso de privacidad </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3089,7 +3089,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Documento de identificación </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3098,7 +3098,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Antecedentes criminales </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3107,7 +3107,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3116,7 +3116,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3125,7 +3125,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3134,7 +3134,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>INTERPOL </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3143,7 +3143,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Registro vehicular </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3152,7 +3152,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Verificación de búsqueda global </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3161,7 +3161,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Agresión sexual </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -3170,7 +3170,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Certificado de estudios </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3179,7 +3179,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Licencia profesional </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3188,7 +3188,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Historial de empleos </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -3197,7 +3197,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Carta laboral </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -3558,7 +3558,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3567,7 +3567,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3576,7 +3576,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Passport </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3585,7 +3585,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Studies Certificate </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3594,7 +3594,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3603,7 +3603,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3612,7 +3612,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3621,7 +3621,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3630,7 +3630,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -3639,7 +3639,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment History (NSS) </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -4260,7 +4260,7 @@ if(!empty($conclusion)){
           </div>
 					<div class="center">
           <?php 
-          echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           ?>
 					</div>
 		<?php 
@@ -4340,7 +4340,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de estudios </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -4352,7 +4352,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Constancia de no antecedentes</p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -4364,7 +4364,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -4376,7 +4376,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -4388,7 +4388,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -4526,7 +4526,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4535,7 +4535,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4544,7 +4544,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Passport </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4553,7 +4553,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Studies Certificate </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4562,7 +4562,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4571,7 +4571,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4580,7 +4580,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4589,7 +4589,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4598,7 +4598,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -4607,7 +4607,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment History (NSS) </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -5224,7 +5224,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5233,7 +5233,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5242,7 +5242,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Passport </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5251,7 +5251,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Studies Certificate </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5260,7 +5260,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5269,7 +5269,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5278,7 +5278,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5287,7 +5287,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5296,7 +5296,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5305,7 +5305,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment History (NSS) </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -5578,7 +5578,7 @@ if(!empty($conclusion)){
 				foreach($docs as $doc){
 					if($doc['id_tipo_documento'] == 19){
 						echo '<div class="center margen-top">';
-						echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+						echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 						echo '</div>';
 					}
 				}
@@ -5592,7 +5592,7 @@ if(!empty($conclusion)){
           echo '<div class="center sin-flotar margen-top"><h2>Documentación </h2></div>';
 					echo '<div class="center">';
 					//echo '<h2>Aviso de privacidad</h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -5601,7 +5601,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					//echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5609,7 +5609,7 @@ if(!empty($conclusion)){
         if($doc['id_tipo_documento'] == 2){
 					echo '<pagebreak>';
 					echo '<div class="center">';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5617,7 +5617,7 @@ if(!empty($conclusion)){
         if($doc['id_tipo_documento'] == 4){
 					echo '<pagebreak>';
 					echo '<div class="center">';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5625,7 +5625,7 @@ if(!empty($conclusion)){
         if($doc['id_tipo_documento'] == 10){
 					echo '<pagebreak>';
 					echo '<div class="center">';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5633,7 +5633,7 @@ if(!empty($conclusion)){
         if($doc['id_tipo_documento'] == 45){
 					echo '<pagebreak>';
 					echo '<div class="center">';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5642,7 +5642,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					//echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5651,7 +5651,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					//echo '<h2>Semanas laborales cotizadas </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -5660,7 +5660,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					//echo '<h2>Comprobante de demanda </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -5669,7 +5669,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					//echo '<h2>Buró de crédito </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -5829,7 +5829,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5838,7 +5838,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5847,7 +5847,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Passport </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5856,7 +5856,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5865,7 +5865,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5874,7 +5874,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5883,7 +5883,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5892,7 +5892,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -5901,7 +5901,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment History (NSS) </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -6013,7 +6013,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -6022,7 +6022,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -6031,7 +6031,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -6040,7 +6040,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -6049,7 +6049,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -6058,7 +6058,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -6067,7 +6067,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment History (NSS) </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -6477,7 +6477,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -6489,7 +6489,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -6501,7 +6501,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -7235,7 +7235,7 @@ if(!empty($conclusion)){
           </div>
 					<div class="center">
           <?php 
-          echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           ?>
 					</div>
 		<?php 
@@ -7322,7 +7322,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -7334,7 +7334,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -7346,7 +7346,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -7430,7 +7430,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -7439,7 +7439,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -7448,7 +7448,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -7457,7 +7457,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -7466,7 +7466,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -7475,7 +7475,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -7484,7 +7484,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Sex Offender </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -8284,7 +8284,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Privacy Notice </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8293,7 +8293,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>ID </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8302,7 +8302,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Criminal Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8311,7 +8311,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8320,7 +8320,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>OIG </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8329,7 +8329,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>SAM </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8338,7 +8338,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>INTERPOL </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8347,7 +8347,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Motor Vehicle Records </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8356,7 +8356,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Global Search Check </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8365,7 +8365,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Sex Offender </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -8374,7 +8374,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Studies Certificate </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8383,7 +8383,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Professional Licence </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
       }
@@ -8392,7 +8392,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment History (SSN) </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -8401,7 +8401,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Employment Letter </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -8410,7 +8410,7 @@ if(!empty($conclusion)){
 							echo '<pagebreak>';
 							echo '<div class="center">';
 							echo '<h2>Driver licence </h2>';
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+							echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 							echo '</div>';
 						}
 					}
@@ -9076,7 +9076,7 @@ if(!empty($conclusion)){
 				echo '<div class="center margen-top">';
 				foreach($docs as $doc){
 					if($doc['id_tipo_documento'] == 19){
-						echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+						echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					}
 				}
 				echo '</div>';
@@ -9233,7 +9233,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -9246,7 +9246,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -9259,7 +9259,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -9272,7 +9272,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de demanda </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -9285,7 +9285,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Buró de crédito </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -10532,7 +10532,7 @@ if(!empty($conclusion)){
           echo '<pagebreak>';
           echo '<div class="center">';
 					echo '<h2>4. Demanda </h2>';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
         }
       }
@@ -10614,7 +10614,7 @@ if(!empty($conclusion)){
           echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>3. Registro de IMSS </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -10623,7 +10623,7 @@ if(!empty($conclusion)){
           echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>4. Investigación legal </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -10632,7 +10632,7 @@ if(!empty($conclusion)){
           echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>5. OFAC </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -10641,7 +10641,7 @@ if(!empty($conclusion)){
           echo '<pagebreak>';
           echo '<div class="center">';
 					echo '<h2>6. Demanda </h2>';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
         }
       }
@@ -10890,7 +10890,7 @@ if(!empty($conclusion)){
         if($doc['id_tipo_documento'] == 9){
           echo '<div class="center">';
           echo '<h2>4. Registro de IMSS </h2>';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
           if($numeroSemanas > 1){
             echo '<pagebreak>';
@@ -10906,7 +10906,7 @@ if(!empty($conclusion)){
         if($doc['id_tipo_documento'] == 25){
 					echo '<div class="center">';
 					echo '<h2>5. Demandas </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
           if($numeroDemandas > 1){
             echo '<pagebreak>';
@@ -10922,7 +10922,7 @@ if(!empty($conclusion)){
         if($doc['id_tipo_documento'] == 13){
 					echo '<div class="center">';
 					echo '<h2>6. Carta laboral </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
           if($numeroCartas > 1){
             echo '<pagebreak>';
@@ -10965,7 +10965,7 @@ if(!empty($conclusion)){
       echo '<div class=" flotar-izquierda right margen-bottom" style="margin-left: 5px;">';
       foreach($docs as $doc){
         if($doc['id_tipo_documento'] == 22){
-          echo '<img width="110" height="120" class="padding" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img width="110" height="120" class="padding" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           break;
         }
       }
@@ -12247,7 +12247,7 @@ if(!empty($conclusion)){
 				if($doc['id_tipo_documento'] == 9){
 					echo '<div class="center">';
 					echo '<h2>13. Registro de IMSS </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
           echo '<pagebreak>';
 				}
@@ -12256,7 +12256,7 @@ if(!empty($conclusion)){
         echo '<h2 class="center">14. Fotografías </h2>';
         echo '<div class="center margen-top">';
         foreach($docs as $doc){
-          echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
         }
         echo '</div>';
         echo '<pagebreak>';
@@ -12266,7 +12266,7 @@ if(!empty($conclusion)){
       foreach($docs as $doc){
         if($doc['id_tipo_documento'] == 3){
           echo '<div class="center margen-top">';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
           echo '<pagebreak>';
         }
@@ -12274,7 +12274,7 @@ if(!empty($conclusion)){
       foreach($docs as $doc){
         if($doc['id_tipo_documento'] == 7 || $doc['id_tipo_documento'] == 10){
           echo '<div class="center margen-top">';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
           echo '<pagebreak>';
         }
@@ -12282,7 +12282,7 @@ if(!empty($conclusion)){
       foreach($docs as $doc){
         if($doc['id_tipo_documento'] == 13){
           echo '<div class="center margen-top">';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
           echo '<pagebreak>';
         }
@@ -12290,7 +12290,7 @@ if(!empty($conclusion)){
       foreach($docs as $doc){
         if($doc['id_tipo_documento'] == 25){
           echo '<div class="center margen-top">';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
           echo '<pagebreak>';
         }
@@ -12298,7 +12298,7 @@ if(!empty($conclusion)){
       foreach($docs as $doc){
         if($doc['id_tipo_documento'] == 8){
           echo '<div class="center margen-top">';
-          echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+          echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
           echo '</div>';
         }
       }
@@ -14400,7 +14400,7 @@ if(!empty($conclusion)){
 				foreach($docs as $doc){
 					if($doc['id_tipo_documento'] == 19){
 						echo '<div class="center margen-top">';
-						echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+						echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 						echo '</div>';
 					}
 				}
@@ -14414,7 +14414,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Aviso de privacidad</h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -14428,7 +14428,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Semanas laborales cotizadas </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -14441,7 +14441,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Evidencia de correo </h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -14455,7 +14455,7 @@ if(!empty($conclusion)){
           echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Carta de recomendación</h2>';
-					echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'"><br><br><br><br><br>';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'"><br><br><br><br><br>';
 					echo '</div>';
 				}
 			}
@@ -14883,7 +14883,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de historial laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -14895,7 +14895,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -14907,7 +14907,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -14919,7 +14919,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'">'; ?>
+						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
 					</div>
 				<?php
 				}
@@ -15232,7 +15232,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Aviso de privacidad</h2>';
-					echo '<img class="img-aviso" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img class="img-aviso" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -15245,7 +15245,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Semanas laborales cotizadas </h2>';
-					echo '<img class="img-aviso" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img class="img-aviso" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -16104,7 +16104,7 @@ if(!empty($conclusion)){
 				foreach($docs as $doc){
 					if($doc['id_tipo_documento'] == 19){
 						echo '<div class="center margen-top">';
-						echo '<img class="foto" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+						echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 						echo '</div>';
 					}
 				}
@@ -16118,7 +16118,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Aviso de privacidad</h2>';
-					echo '<img class="img-aviso" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img class="img-aviso" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}
@@ -16132,7 +16132,7 @@ if(!empty($conclusion)){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>Semanas laborales cotizadas </h2>';
-					echo '<img class="img-aviso" src="'.base_url().'_docs/'.$doc['archivo'].'">';
+					echo '<img class="img-aviso" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
 					echo '</div>';
 				}
 			}

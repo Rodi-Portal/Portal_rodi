@@ -100,54 +100,54 @@ public function verificarPagoMesActual($id_portal, $autocreate = true, $dias_gra
 {
     date_default_timezone_set('America/Mexico_City');
 
-    // Mes actual y mes anterior guardados como 'YYYY-mm-01'
-    $mesActual   = date('Y-m-01');
-    $mesAnterior = date('Y-m-01', strtotime('first day of previous month'));
-    $diaActual   = (int) date('j'); // 1..31
+        // Mes actual y mes anterior guardados como 'YYYY-mm-01'
+        $mesActual   = date('Y-m-01');
+        $mesAnterior = date('Y-m-01', strtotime('first day of previous month'));
+        $diaActual   = (int) date('j'); // 1..31
 
-    // --- 1) Busca/crea registro del mes actual ---
-    $pagoActual = $this->db->get_where('pagos_mensuales', [
-        'id_portal' => (int)$id_portal,
-        'mes'       => $mesActual
-    ])->row();
+        // --- 1) Busca/crea registro del mes actual ---
+        $pagoActual = $this->db->get_where('pagos_mensuales', [
+            'id_portal' => (int) $id_portal,
+            'mes'       => $mesActual,
+        ])->row();
 
-    if (!$pagoActual && $autocreate) {
-        $this->db->insert('pagos_mensuales', [
-            'id_portal'  => (int)$id_portal,
-            'mes'        => $mesActual,
-            'monto'      => null,
-            'estado'     => 'pendiente',
-            'fecha_pago' => null,
-            'created_at' => date('Y-m-d H:i:s'),
-        ]);
-        $pagoActual = (object)['estado' => 'pendiente', 'fecha_pago' => null];
+        if (! $pagoActual && $autocreate) {
+            $this->db->insert('pagos_mensuales', [
+                'id_portal'  => (int) $id_portal,
+                'mes'        => $mesActual,
+                'monto'      => null,
+                'estado'     => 'pendiente',
+                'fecha_pago' => null,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+            $pagoActual = (object) ['estado' => 'pendiente', 'fecha_pago' => null];
+        }
+
+        // Si el mes actual ya está pagado → acceso total
+        if ($pagoActual && $pagoActual->estado === 'pagado' && ! empty($pagoActual->fecha_pago)) {
+            return 'pagado';
+        }
+
+        // --- 2) Verifica si el mes anterior fue pagado ---
+        $pagoAnterior = $this->db->get_where('pagos_mensuales', [
+            'id_portal' => (int) $id_portal,
+            'mes'       => $mesAnterior,
+            'estado'    => 'pagado',
+        ])->row();
+
+        $anteriorPagado = ($pagoAnterior && ! empty($pagoAnterior->fecha_pago));
+
+        // --- 3) Regla de gracia condicional ---
+        //   - Si el mes anterior está pagado: hay gracia del día 1 al 5.
+        //   - Si el mes anterior NO está pagado: NO hay gracia nunca.
+        if ($anteriorPagado) {
+            return ($diaActual >= 1 && $diaActual <= $dias_gracia)
+                ? 'pendiente_en_plazo'     // puede entrar, muestra modal
+                : 'pendiente_fuera_plazo'; // bloquea
+        } else {
+            return 'pendiente_fuera_plazo'; // bloquea siempre (sin gracia)
+        }
     }
-
-    // Si el mes actual ya está pagado → acceso total
-    if ($pagoActual && $pagoActual->estado === 'pagado' && !empty($pagoActual->fecha_pago)) {
-        return 'pagado';
-    }
-
-    // --- 2) Verifica si el mes anterior fue pagado ---
-    $pagoAnterior = $this->db->get_where('pagos_mensuales', [
-        'id_portal' => (int)$id_portal,
-        'mes'       => $mesAnterior,
-        'estado'    => 'pagado'
-    ])->row();
-
-    $anteriorPagado = ($pagoAnterior && !empty($pagoAnterior->fecha_pago));
-
-    // --- 3) Regla de gracia condicional ---
-    //   - Si el mes anterior está pagado: hay gracia del día 1 al 5.
-    //   - Si el mes anterior NO está pagado: NO hay gracia nunca.
-    if ($anteriorPagado) {
-        return ($diaActual >= 1 && $diaActual <= $dias_gracia)
-            ? 'pendiente_en_plazo'      // puede entrar, muestra modal
-            : 'pendiente_fuera_plazo';  // bloquea
-    } else {
-        return 'pendiente_fuera_plazo'; // bloquea siempre (sin gracia)
-    }
-}
 
 
 }
