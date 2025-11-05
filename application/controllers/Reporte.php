@@ -2276,7 +2276,6 @@ class Reporte extends CI_Controller
 
         // 👇 join sin backticks automáticos
         $this->db->join($subquery, 'm.id_empleado = empleados.id', 'left', false);
-        $this->db->from('empleados');
                 $this->db->where('empleados.status', 2);
                 $this->db->where('empleados.eliminado', 0);
         if ($sucursal) {
