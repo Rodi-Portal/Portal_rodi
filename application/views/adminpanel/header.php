@@ -193,7 +193,7 @@ echo $token  */?>
       <!-- Divider -->
       <!-- Reportes -->
       <?php
-          $portal = $this->session->userdata('idPortal');
+      $portal = $this->session->userdata('idPortal');
       if (in_array(9, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
@@ -220,11 +220,11 @@ echo $token  */?>
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
             <?php }?>
-                        <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+                  <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
 
               <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
-              href="<?php echo site_url('Reporte/reporte_exempleados_index') ?>">Exempleados.</a>
+              href="<?php echo site_url('Reporte/reporte_exempleados') ?>">Exempleados.</a>
             <?php }?>
           </div>
         </div>

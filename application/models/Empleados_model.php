@@ -47,29 +47,33 @@ class Empleados_model extends CI_Model
     }
     public function getPuestos($sucursales)
     {
-
         // Extraer solo los IDs de las sucursales
         $ids = array_map(function ($sucursal) {
             return $sucursal->id;
         }, $sucursales);
 
-        // Solo para depuración (puedes quitar esto después)
+        // Validar que haya IDs
+        if (empty($ids)) {
+            return false;
+        }
 
-        // Realizar la consulta
+        // Consulta
         $this->db
+            ->distinct() // evita duplicados
             ->select('puesto, departamento')
             ->from('empleados')
             ->where_in('id_cliente', $ids)
-            ->order_by('id', 'ASC');
+            ->where('puesto IS NOT NULL')
+            ->where('puesto !=', '')
+            ->where('departamento IS NOT NULL')
+            ->where('departamento !=', '')
+            ->order_by('puesto', 'ASC');
 
         $query = $this->db->get();
 
-        if ($query->num_rows() > 0) {
-            return $query->result();
-        } else {
-            return false;
-        }
+        return ($query->num_rows() > 0) ? $query->result() : false;
     }
+
     public function getPuestosByCliente($id)
     {
 
@@ -79,10 +83,15 @@ class Empleados_model extends CI_Model
 
         // Realizar la consulta
         $this->db
+           ->distinct() // evita duplicados
             ->select('puesto, departamento')
             ->from('empleados')
             ->where('id_cliente', $id)
-            ->order_by('id', 'ASC');
+            ->where('puesto IS NOT NULL')
+            ->where('puesto !=', '')
+            ->where('departamento IS NOT NULL')
+            ->where('departamento !=', '')
+            ->order_by('puesto', 'ASC');
 
         $query = $this->db->get();
 
@@ -114,30 +123,32 @@ class Empleados_model extends CI_Model
     public function findFullPre(int $id): ?array
     {
         $base = $this->db->from('empleados')
-                         ->where('id', $id)
-                         ->limit(1)
-                         ->get()
-                         ->row_array();
+            ->where('id', $id)
+            ->limit(1)
+            ->get()
+            ->row_array();
 
-        if (!$base) return null;
+        if (! $base) {
+            return null;
+        }
 
         $campos_extra = $this->db->from('empleado_campos_extra')
-                                 ->where('id_empleado', $id)
-                                 ->order_by('id', 'desc')
-                                 ->get()
-                                 ->result_array();
+            ->where('id_empleado', $id)
+            ->order_by('id', 'desc')
+            ->get()
+            ->result_array();
 
         $documentos = $this->db->from('documents_empleado')
-                               ->where('employee_id', $id)
-                               ->order_by('id', 'desc')
-                               ->get()
-                               ->result_array();
+            ->where('employee_id', $id)
+            ->order_by('id', 'desc')
+            ->get()
+            ->result_array();
 
         $examenes = $this->db->from('exams_empleados')
-                             ->where('employee_id', $id)
-                             ->order_by('id', 'desc')
-                             ->get()
-                             ->result_array();
+            ->where('employee_id', $id)
+            ->order_by('id', 'desc')
+            ->get()
+            ->result_array();
 
         return [
             'base'         => $base,
@@ -151,7 +162,7 @@ class Empleados_model extends CI_Model
         print_r($query->result());
         echo '</pre>';
         die();
-        
+
     */
 
 }
