@@ -72,6 +72,7 @@ class Login extends CI_Controller
                     "terminos"     => $usuario->terminos,
                     "emp"          => $usuario->emp,
                     "former"       => $usuario->former,
+                    "dos_factores" => $usuario->dosfactores,
 
                 ];
                 if ($usuario->id_rol == 1 || $usuario->id_rol == 6) {
@@ -98,7 +99,7 @@ class Login extends CI_Controller
 
                 $this->session->set_userdata($usuario_data);
 
-                if ($this->session->userdata('idPortal') == 11) {
+                if ($this->session->userdata('dos_factores') == 1) {
                     $id_datos = $usuario->idDatos;
                     if ($usuario->id_rol != 3) {
                         $this->session->set_userdata('tipo_acceso', 'usuario');
@@ -195,7 +196,7 @@ class Login extends CI_Controller
                     $ver = $cliente->verificacion;
                     if ($this->session->userdata('tipo') == 2) {
                         $this->session->set_userdata('tipo_acceso', 'cliente_ingles');
-                        if ($this->session->userdata('idPortal') == 11) {
+                        if ($this->session->userdata('dos_factores') == 1) {
 
                             $this->session_verificada();
                         } elseif ($ver == 0 || $ver == 10) {

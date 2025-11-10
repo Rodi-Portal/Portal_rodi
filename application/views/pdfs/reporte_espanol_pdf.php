@@ -8236,6 +8236,64 @@ if(!empty($conclusion)){
       <pagebreak>
     <?php 
     }
+		//* Referencias vecinales
+
+		if($secciones['cantidad_ref_vecinales'] > 0 && $refVecinal){
+			if($refVecinal){ ?>
+				<div class="div_datos">
+					<p class="center f-18">Neighborhood References</p>
+					<?php $salida4 = '';
+					foreach($refVecinal as $refvec){
+						$salida4 .= '<table class=""><tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">Name</p></td>';
+						$salida4 .= '<td class="center"><p class="f-12">'.$refvec['nombre'].'</p></td>';
+						$salida4 .= '</tr>';
+						$salida4 .= '<tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">Address and Phone Number</p></td>';
+						$salida4 .= '<td class="center"><p class="f-12">'.$refvec['domicilio'].' / '.$refvec['telefono'].'</p></td>';
+						$salida4 .= '</tr>';
+						$salida4 .= '<tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">What is your opinion of the applicant?</p></td>';
+						$salida4 .= '<td class="center"><p class="f-12">'.$refvec['concepto_candidato'].'</p></td>';
+						$salida4 .= '</tr>';
+						$salida4 .= '<tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">What is your opinion of the applicant’s family as neighbors?</p></td>';
+						$salida4 .= '<td class="center"><p class="f-12">'.$refvec['concepto_familia'].'</p></td>';
+						$salida4 .= '</tr>';
+						$salida4 .= '<tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">Do you know the applicant’s marital status? If so, what is it?</p></td>';
+						$salida4 .= '<td class="center"><p class="f-12">'.$refvec['civil_candidato'].'</p></td>';
+						$salida4 .= '</tr>';
+						$salida4 .= '<tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">Does he/she have children?</p></td>';
+						$salida4 .= '<td class="center"><p class="f-12">'.$refvec['hijos_candidato'].'</p></td>';
+						$salida4 .= '</tr>';
+						$salida4 .= '<tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">Do you know where he/she works?</p></td>';
+						$salida4 .= '<td class="center"><p class="f-12">'.$refvec['sabe_trabaja'].'</p></td>';
+						$salida4 .= '</tr>';
+						$salida4 .= '<tr>';
+						$salida4 .= '<td class="encabezado w-40"><p class="f-12">Notes</p></td>';
+						$salida4 .= '<td class="encabezado"><p class="f-12">'.$refvec['notas'].'</p></td>';
+						$salida4 .= '</tr></table><br>';
+					}
+					echo $salida4;
+					?>		  	
+				</div><br>
+				<pagebreak>
+			<?php 
+			}
+			else{
+				$salida4 = '';
+				$salida4 .= '<div class="div_datos">';
+				$salida4 .= '<p class="center f-18">Neighborhood References</p>;';
+				$salida4 .= '<table class=""><tr>';
+				$salida4 .= '<td class="center"><p class="f-12">No neighborhood references available</p></td>';
+				$salida4 .= '</tr></table><br><br>';
+				$salida4 .= '</div><br>';
+				echo $salida4;
+			}
+		}
     //* Global searches
     if($secciones['id_seccion_global_search'] == 86 && $secciones['id_seccion_global_search'] != null){ ?>
 			<p class="center f-18">Global Searches</p>
@@ -8290,6 +8348,15 @@ if(!empty($conclusion)){
       }
 			foreach($docs as $doc){
 				if($doc['id_tipo_documento'] == 3){
+					echo '<pagebreak>';
+					echo '<div class="center">';
+					echo '<h2>ID </h2>';
+					echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
+					echo '</div>';
+				}
+      }
+						foreach($docs as $doc){
+				if($doc['id_tipo_documento'] == 43){
 					echo '<pagebreak>';
 					echo '<div class="center">';
 					echo '<h2>ID </h2>';
