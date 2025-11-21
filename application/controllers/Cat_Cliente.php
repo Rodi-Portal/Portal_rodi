@@ -28,7 +28,7 @@ class Cat_Cliente extends CI_Controller
         $idCliente = $this->input->post('idCliente');
 
         // Define la regla de validación con los parámetros como un arreglo
-        $this->form_validation->set_rules('nombre', 'Nombre del sucursal', 'required');
+        $this->form_validation->set_rules('nombre', 'Nombre del cliente/sucursal', 'required');
 
         // Define las demás reglas de validación
         $this->form_validation->set_rules('clave', 'Clave', 'trim|required|max_length[3]');
@@ -57,7 +57,7 @@ class Cat_Cliente extends CI_Controller
         // Define los mensajes de error personalizados
         $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
         $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} caracteres.');
-        $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del sucursal ya existe en la base de datos.');
+        $this->form_validation->set_message('check_nombre_unique', 'El campo Nombre del Cliente/Sucursal ya existe en la base de datos.');
 
         // Validación de formulario
         $msj = [];
@@ -164,7 +164,7 @@ class Cat_Cliente extends CI_Controller
 
                     $msj = [
                         'codigo' => 1,
-                        'msg'    => 'sucursal actualizada exitosamente',
+                        'msg'    => 'Cliente/Sucursal actualizada exitosamente',
                     ];
                     echo json_encode($msj);
                     return;
@@ -187,14 +187,14 @@ class Cat_Cliente extends CI_Controller
 
                         $msj = [
                             'codigo' => 1,
-                            'msg'    => 'Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
+                            'msg'    => 'Cliente/Sucursal registrado exitosamente,  se  enviaron   las  credenciales a ' . $correo,
                         ];
                         echo json_encode($msj);
                         return;
                     } else {
                         $msj = [
                             'codigo' => 0,
-                            'msg'    => 'Error  al registrar al sucursal',
+                            'msg'    => 'Error  al registrar al cliente/sucursal',
                         ];
                         echo json_encode($msj);
                         return;

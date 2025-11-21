@@ -581,7 +581,7 @@
     <div class="modal-content soft-shadow rounded-lg border-0">
 
       <div class="modal-header modal-header-primary py-2">
-        <h6 class="modal-title mb-0" id="sucursalTitle">Selecciona la sucursal</h6>
+        <h6 class="modal-title mb-0" id="sucursalTitle">Selecciona la sucursal/cliente</h6>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
           <span aria-hidden="true">&times;</span>
         </button>

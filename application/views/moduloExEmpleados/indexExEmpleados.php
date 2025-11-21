@@ -1,6 +1,7 @@
  <!--Vista  Vue   -->
- <link rel="stylesheet" href="<?php echo base_url('public/former/css/cssFormer.css'); ?>">
- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+<link rel="stylesheet"
+      href="<?php echo base_url('public/former/css/cssFormer.css'); ?>?v=<?php echo time(); ?>">
+       <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
  <?php if ($this->session->userdata('idrol') == 4) {?>
  <div class="seccion" id="seccion1">
    <h3 style="text-align: center; font-size: 2em; color: blue;">
@@ -17,7 +18,7 @@
          data-your-client-value="<?php echo $cliente_id; ?>">></div>
 </div>
 <?php } ?>
-<script src="<?php echo base_url('public/former/js/moduloFormer.js'); ?>"></script>
+<script src="<?php echo base_url('public/former/js/moduloFormer.js'); ?>?v=<?php echo time(); ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app')) {

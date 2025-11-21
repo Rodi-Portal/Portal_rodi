@@ -1,16 +1,16 @@
 <div class="container-fluid">
-  <h2>Sucursales</h2>
+  <h2>Sucursales/Clientes</h2>
   <div>
-    <p>En este módulo verás un listado de tus sucursales, areas o departamentos. Al seleccionar uno, podrás consultar los candidatos
+    <p>En este módulo verás un listado de tus sucursales/clientes, areas o departamentos. Al seleccionar uno, podrás consultar los candidatos
       que se encuentran en exámenes y estudios previos a ser contratados, facilitando el seguimiento del proceso de
       selección antes de la contratación.</p>
   </div>
   <table id="processTable" class="display" style="width: 100%;">
     <thead>
       <tr>
-      <th style="text-align: center">Sucursal </th>
+      <th style="text-align: center">Sucursal/Cliente </th>
         <th style="text-align: center">Correo Electrónico</th>
-        <th style="text-align: center">Usuarios con acceso a sucursal</th>
+        <th style="text-align: center">Usuarios con acceso a sucursal/cliente</th>
         <th style="text-align: center">Candidatos en proceso</th>
         <th style="text-align: center">Acciones</th>
       </tr>
@@ -34,7 +34,7 @@
              
              if($idRol == 6 || $idRol == 1){ ?>
             <a href="#" class="eliminar-permiso" data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
-              data-id_cliente="<?php echo $p['id_cliente']; ?>"  title="Eliminar acceso a esta sucursal">
+              data-id_cliente="<?php echo $p['id_cliente']; ?>"  title="Eliminar acceso a esta sucursal/cliente">
               <i class="fa fa-trash" style="color: red; float: right"></i> 
             </a>
             <?php } ?>

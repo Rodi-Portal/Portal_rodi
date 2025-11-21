@@ -4,7 +4,7 @@
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">
-      Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
+    Cliente/Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
 
 
     <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">

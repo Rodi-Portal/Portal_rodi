@@ -7,7 +7,7 @@
   <div class="align-items-center mb-4">
     <div class="row justify-content-between align-items-center">
       <div class="col-sm-12 col-md-8">
-        <h2>Administración de Sucursales</h2>
+        <h2>Administración de Sucursales/Clientes</h2>
       </div>
       <div class="col-sm-12 col-md-4 d-flex flex-wrap flex-md-nowrap justify-content-end align-items-center">
         <?php if (show_if_can('admin.sucursales.generar_link', ($tipo_bolsa == 1) && in_array((int) $idRol, [1, 6, 9], true))): ?>

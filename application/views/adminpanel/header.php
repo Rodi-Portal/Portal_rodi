@@ -83,9 +83,17 @@ echo $token  */?>
               $logo = 'logo_nuevo.png';
       }?>
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
-        <img style="max-width: 220px; max-height: 150px; background: white;"
-          src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>" alt="Logo">
+        <img style="
+      max-width: 220px;
+      max-height: 150px;
+      background: white;
+      padding: 10px 15px;   /* espacio interno alrededor del logo */
+      margin: 10px auto;    /* espacio externo respecto al contenedor */
+      border-radius: 6px;   /* opcional, esquinas redondeadas */
+      display: block;       /* para que el margin auto centre bien */
+    " src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo">
       </a>
+
       <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
       <br><br>
       <!-- Divider -->
@@ -193,7 +201,7 @@ echo $token  */?>
       <!-- Divider -->
       <!-- Reportes -->
       <?php
-      $portal = $this->session->userdata('idPortal');
+          $portal = $this->session->userdata('idPortal');
       if (in_array(9, $submenus)) {?>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
@@ -220,9 +228,9 @@ echo $token  */?>
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
             <?php }?>
-                  <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+            <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
 
-              <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
+            <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
               title="Proceso de reclutamiento"
               href="<?php echo site_url('Reporte/reporte_exempleados') ?>">Exempleados.</a>
             <?php }?>
@@ -1299,7 +1307,7 @@ echo $token  */?>
             }
           });
         });
-                $('#enviarNotificacionesBtnex').on('click', function() {
+        $('#enviarNotificacionesBtnex').on('click', function() {
           $.ajax({
             url: '<?php echo base_url("Notificacion/enviar_notificaciones_exempleados_cron_job"); ?>', // Ruta a la función
             type: 'GET', // Método GET
@@ -1313,7 +1321,7 @@ echo $token  */?>
             }
           });
         });
-                $('#enviarNotificacionesBtnrec').on('click', function() {
+        $('#enviarNotificacionesBtnrec').on('click', function() {
           $.ajax({
             url: '<?php echo base_url("Notificacion/enviar_recordatorios_cron_job_run"); ?>', // Ruta a la función
             type: 'GET', // Método GET
