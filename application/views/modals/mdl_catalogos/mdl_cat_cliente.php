@@ -12,7 +12,7 @@
         <div>
 
         </div>
-        <div class="alert alert-info">¡Bienvenido al registro de una nueva sucursal o Actualizacion de una existente!
+        <div class="alert alert-info">¡Bienvenido al registro de una nueva sucursal/cliente o Actualizacion de una existente!
           Estamos aquí para facilitarte el
           proceso. Puedes completar el formulario parcialmente si así lo deseas. Los campos marcados con un
           asterisco (*) son obligatorios: Nombre y Clave
@@ -35,7 +35,7 @@
           <div class="row">
             <div class="col-md-8">
 
-              <label for="nombre">Nombre de la Sucursal *</label>
+              <label for="nombre">Nombre de la Sucursal/Cliente *</label>
               <input type="text" class="form-control" data-field="Nombre del Cliente" data-required="required"
                 id="nombre" name="nombre" placeholder="Ingrese el nombre del cliente"
                 onkeyup="this.value=this.value.toUpperCase()" required>
@@ -312,7 +312,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Registro de credenciales Sucursal</h5>
+        <h5 class="modal-title">Registro de credenciales Sucursal/Cliente</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

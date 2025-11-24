@@ -1,15 +1,15 @@
 <div class="container-fluid">
   <h2>Módulo de Exmpleados</h2>
   <p>En este módulo podrás consultar los empleados que ya no están activos. Se muestra un listado de tus areas,
-    departamentos o sucursales, al seleccionar uno, podrás ver el listado de exempleados. Desde ahí podrás gestionar sus
+    departamentos o sucursales/clientes, al seleccionar uno, podrás ver el listado de exempleados. Desde ahí podrás gestionar sus
     registros de manera clara, ágil y eficiente.</p>
 
   <table id="processTable" class="display" style="width: 100%;">
     <thead>
       <tr>
-        <th style="text-align: center">Sucursal </th>
+        <th style="text-align: center">Sucursal/Cliente </th>
         <th style="text-align: center">Correo Electrónico</th>
-        <th style="text-align: center">Usuarios con acceso a sucursal</th>
+        <th style="text-align: center">Acceso a sucursal/cliente</th>
         <th style="text-align: center">Empleados</th>
         <th style="text-align: center">Acciones</th>
       </tr>
@@ -32,7 +32,7 @@
 
             if ($idRol == 6 || $idRol == 1) {?>
             <a href="#" class="eliminar-permiso" data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
-              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal">
+              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal/cliente">
               <i class="fa fa-trash" style="color: red; float: right"></i>
             </a>
             <?php }?>
@@ -129,7 +129,7 @@ $(document).on('click', '.eliminar-permiso', function(e) {
   // Mostrar confirmación usando SweetAlert
   Swal.fire({
     title: '¿Estás seguro?',
-    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal.',
+    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal/cliente.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Sí, eliminar',

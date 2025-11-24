@@ -219,6 +219,7 @@ class Login extends CI_Controller
                     "paterno"      => $usuario->paterno,
                     "rol"          => $usuario->rol,
                     "idrol"        => $usuario->id_rol,
+                    "lang"         => $usuario->lang,
                     "tipo"         => 1,
                     "verificacion" => $usuario->verificacion,
                     "id_data"      => $usuario->idDatos,
@@ -230,10 +231,9 @@ class Login extends CI_Controller
                     "logo"         => $usuario->logo,
                     "aviso"        => $usuario->aviso,
                     "terminos"     => $usuario->terminos,
-                    "emp"        => $usuario->emp,
-                    "former"     => $usuario->former,
-
-
+                    "emp"          => $usuario->emp,
+                    "former"       => $usuario->former,
+                    "dos_factores" => $usuario->dosfactores,
 
                 ];
                 if ($usuario->id_rol == 1 || $usuario->id_rol == 6) {
@@ -317,7 +317,7 @@ class Login extends CI_Controller
                         "espectador"   => $cliente->espectador,
                         "logueado"     => true,
                         "tipo_bolsa"   => $cliente->tipo_bolsa,
-                        "link"        => $cliente->link,
+                        "link"         => $cliente->link,
                     ];
 
                     /*    echo '<pre>';
@@ -346,8 +346,10 @@ class Login extends CI_Controller
                     $ver = $cliente->verificacion;
                     if ($this->session->userdata('tipo') == 2) {
                         $this->session->set_userdata('tipo_acceso', 'cliente_ingles');
+                        if ($this->session->userdata('dos_factores') == 1) {
 
-                        if ($ver == 0 || $ver == 10) {
+                            $this->session_verificada();
+                        } elseif ($ver == 0 || $ver == 10) {
 
                             $codigo_autenticacion = $this->generar_codigo_autenticacion();
                             redirect('Login/verifyView');

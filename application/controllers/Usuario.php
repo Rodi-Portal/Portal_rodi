@@ -102,4 +102,62 @@ class Usuario extends CI_Controller{
       echo $res = 0;
     }
   }
+
+  public function cambiar_idioma()
+    {
+        // Opcional: solo aceptar AJAX
+        if ( ! $this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        // Idioma recibido
+        $lang = $this->input->post('lang', true);   // 'es' o 'en'
+        $permitidos = ['es', 'en'];
+
+        if ( ! in_array($lang, $permitidos, true)) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'ok'      => false,
+                    'message' => 'Idioma inválido'
+                ]));
+        }
+
+        // Usuario logueado
+        $idUsuario = $this->session->userdata('id');
+        if ( ! $idUsuario) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'ok'      => false,
+                    'message' => 'Sesión no válida'
+                ]));
+        }
+
+        // Actualizar en BD
+        $actualizado = $this->usuario_model->update($idUsuario, [
+            'lang' => $lang
+        ]);
+
+        if ( ! $actualizado) {
+            return $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode([
+                    'ok'      => false,
+                    'message' => 'No se pudo guardar en BD'
+                ]));
+        }
+
+        // Actualizar sesión
+        $this->session->set_userdata('lang', $lang);
+
+        // Respuesta OK
+        return $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'ok'      => true,
+                'lang'    => $lang,
+                'message' => 'Idioma actualizado'
+            ]));
+    }
 }

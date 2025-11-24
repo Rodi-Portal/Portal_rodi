@@ -4,7 +4,7 @@
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">
-      Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
+    Cliente/Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
 
 
     <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">
@@ -988,7 +988,7 @@ function loadInternos(url1) {
               const showVer = hasId; // siempre que exista ID
               const showEliminar = hasId; // siempre que exista ID
               const showPreEmpleo = (tipoBolsa === 1 && hasId);
-              const showAsignar = hasId; 
+              const showAsignar = (tipoBolsa === 1 && hasId);
 
               // Si nada aplica, no pintes nada
               if (!showVer && !showPreEmpleo && !showAsignar && !showEliminar) return '';
@@ -1314,16 +1314,16 @@ function changeDatatable(url1) {
 
                 //* Psicometria
                 if (full.psicometrico == 1) {
-
-                  if (full.archivo != null && full.archivo != "") {
-
-
+                  const HREF = '<?php echo base_url('Archivo/ver_psico/'); ?>' + encodeURIComponent((full
+                      .archivo ||
+                      '')
+                    .toString().trim());
+                  if (full.archivo) {
                     salida +=
-                      '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a> ' +
-                      '<a href="' + psico + full.archivo +
-                      '" target="_blank" data-toggle="tooltip" title="Ver psicometría" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria">' +
-                      '<i class="fas fa-file-powerpoint"></i>' +
-                      '</a>';
+                      '<b>Psicométrico:</b> ' +
+                      '<a href="javascript:void(0)" data-toggle="tooltip" title="Subir psicometría" id="psicometria" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-brain"></i></a> ' +
+                      '<a href="' + HREF +
+                      '" target="_blank" data-toggle="tooltip" title="Ver psicometría" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-file-powerpoint"></i></a>';
                   } else {
                     salida +=
                       '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a>';

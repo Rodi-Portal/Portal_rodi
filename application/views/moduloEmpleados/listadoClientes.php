@@ -1,13 +1,13 @@
 <div class="container-fluid">
   <h2>Modulo de Empleados</h2>
-  <p>En este módulo podrás consultar un listado de tus areas, departamentos o sucursales. Al seleccionar uno, accederás
+  <p>En este módulo podrás consultar un listado de tus areas, departamentos o sucursales/clientes. Al seleccionar uno, accederás
     al listado de empleados asociados y podrás gestionar sus datos y procesos de manera eficiente.</p>
   <table id="processTable" class="display" style="width: 100%;">
     <thead>
       <tr>
-        <th style="text-align: center">Sucursal </th>
+        <th style="text-align: center">Sucursal/Cliente </th>
         <th style="text-align: center">Correo Electrónico</th>
-        <th style="text-align: center">Usuarios con acceso a sucursal</th>
+        <th style="text-align: center">Accesos a tu sucursal/cliente</th>
         <th style="text-align: center">Empleados</th>
         <th style="text-align: center">Acciones</th>
       </tr>
@@ -30,7 +30,7 @@
              
              if($idRol == 6 || $idRol == 1){ ?>
             <a href="#" class="eliminar-permiso" data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
-              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal">
+              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a sucursal/cliente">
               <i class="fa fa-trash" style="color: red; float: right"></i>
             </a>
             <?php } ?>
@@ -126,7 +126,7 @@ $(document).on('click', '.eliminar-permiso', function(e) {
   // Mostrar confirmación usando SweetAlert
   Swal.fire({
     title: '¿Estás seguro?',
-    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal.',
+    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal/cliente.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Sí, eliminar',
@@ -136,7 +136,7 @@ $(document).on('click', '.eliminar-permiso', function(e) {
     if (result.isConfirmed) {
       // Enviar solicitud de eliminación al servidor
       $.ajax({
-        url: '<?php echo site_url("Cat_usuarioInternos/eliminarPermiso"); ?>',
+        url: '<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>',
         method: 'POST',
         data: {
           id_usuario: id_usuario,

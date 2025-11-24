@@ -1966,6 +1966,29 @@ class Reporte extends CI_Controller
             ->set_output(json_encode($response));
     }
 
+    public function reporte_exempleados()
+    {
+        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+
+        $datos['sucursales'] = $this->empleados_model->getSucursales($data['permisos']);
+        $datos['puestos']    = $this->empleados_model->getPuestos($datos['sucursales']);
+
+        $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        foreach ($data['submodulos'] as $row) {
+            $items[] = $row->id_submodulo;
+        }
+        $data['submenus'] = $items;
+        $config           = $this->funciones_model->getConfiguraciones();
+        $data['version']  = $config->version_sistema;
+        //Modals
+        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+
+        $this->load
+            ->view('adminpanel/header', $data)
+            ->view('adminpanel/scripts', $modales)
+            ->view('reportes/reportes_exempleados', $datos)
+            ->view('adminpanel/footer');
+    }
     public function exportar_excel()
     {
         $portal = $this->session->userdata('idPortal');
@@ -1990,8 +2013,9 @@ class Reporte extends CI_Controller
         empleados.rfc AS RFC,
         empleados.nss AS NSS,
         empleados.curp AS CURP,
-        empleados.fecha_nacimiento AS Fecha_Nacimiento
-    ");
+        empleados.fecha_nacimiento AS Fecha_Nacimiento,
+        empleados.creacion  AS Fecha_Ingreso
+        ");
         $this->db->from('empleados');
         $this->db->where('empleados.status', 1);
         $this->db->where('empleados.eliminado', 0);
@@ -2117,9 +2141,9 @@ class Reporte extends CI_Controller
             // Cursos
             if (in_array('cursos_empleados', $campos)) {
                 $cursos = $this->db
-                    ->select('C.name, C.expiry_date, C.description, C.id_opcion_curso, options.name AS oname')
+                    ->select('C.name, C.expiry_date, C.description, C.id_opcion, options.name AS oname')
                     ->from('cursos_empleados AS C')
-                    ->join('cursos_options AS options', 'options.id = C.id_opcion_curso', 'left')
+                    ->join('cursos_options AS options', 'options.id = C.id_opcion', 'left')
                     ->where('employee_id', $id)
                     ->get()
                     ->result_array();
@@ -2127,7 +2151,7 @@ class Reporte extends CI_Controller
                 $empleado['Cursos'] = '';
                 if (! empty($cursos)) {
                     foreach ($cursos as $curso) {
-                        $nombre = empty($curso['id_opcion_curso']) ? $curso['name'] : $curso['oname'];
+                        $nombre = empty($curso['id_opcion']) ? $curso['name'] : $curso['oname'];
                         $empleado['Cursos'] .= "Nombre: {$nombre}\nDescripción: {$curso['description']}\nExpira: {$curso['expiry_date']}\n\n";
                     }
                 }
@@ -2214,7 +2238,265 @@ class Reporte extends CI_Controller
         $writer->save('php://output');
         exit;
     }
+    public function exportar_excel_ex()
+    {
+        $portal = $this->session->userdata('idPortal');
+        $this->load->database();
 
+        $sucursal     = $this->input->post('sucursal');
+        $campos       = $this->input->post('campos') ?? [];
+        $fecha_inicio = $this->input->post('fecha_inicio');
+        $fecha_fin    = $this->input->post('fecha_fin');
+        $puesto       = $this->input->post('puesto');
+        $departamento = $this->input->post('departamento');
+
+        $this->db->select("
+        empleados.id,
+        empleados.id_empleado,
+        empleados.id_domicilio_empleado,
+        CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
+        empleados.telefono AS Telefono,
+        empleados.correo AS Correo,
+        empleados.departamento AS Area_Departamento,
+        empleados.puesto AS Puesto,
+        empleados.rfc AS RFC,
+        empleados.nss AS NSS,
+        empleados.curp AS CURP,
+        empleados.fecha_nacimiento AS Fecha_Nacimiento,
+        empleados.creacion  AS Fecha_Ingreso,
+        m.creacion AS Fecha_Salida
+        ", false);
+
+        $this->db->from('empleados');
+        // 👇 Subconsulta como string literal, con alias m
+        $subquery = "(SELECT id_empleado, MIN(creacion) AS creacion
+              FROM comentarios_former_empleado
+              WHERE creacion IS NOT NULL
+              GROUP BY id_empleado) m";
+
+        // 👇 join sin backticks automáticos
+        $this->db->join($subquery, 'm.id_empleado = empleados.id', 'left', false);
+                $this->db->where('empleados.status', 2);
+                $this->db->where('empleados.eliminado', 0);
+        if ($sucursal) {
+            $this->db->where('empleados.id_cliente', $sucursal);
+        } else {
+            $this->db->where('empleados.id_portal', $portal);
+        }
+
+        if ($fecha_inicio && $fecha_fin) {
+            $this->db->where('empleados.creacion >=', $fecha_inicio);
+            $this->db->where('empleados.creacion <=', $fecha_fin);
+        }
+
+        if ($puesto) {
+            $this->db->where('empleados.puesto', $puesto);
+        }
+
+        if ($departamento) {
+            $this->db->where('empleados.departamento', $departamento);
+        }
+
+        $query     = $this->db->get();
+        $empleados = $query->result_array();
+
+
+        foreach ($empleados as &$empleado) {
+            $id = $empleado['id'];
+
+            // Campos extra
+            $campos_extra = $this->db
+                ->select('nombre, valor')
+                ->from('empleado_campos_extra')
+                ->where('id_empleado', $id)
+                ->get()
+                ->result_array();
+            foreach ($campos_extra as $campo) {
+                $empleado[$campo['nombre']] = $campo['valor'];
+            }
+            if (in_array('domicilios_empleados', $campos) && ! empty($empleado['id_domicilio_empleado'])) {
+                $domicilio = $this->db
+                    ->select('pais, estado, ciudad, calle, colonia, cp, num_int, num_ext')
+                    ->from('domicilios_empleados')
+                    ->where('id', $empleado['id_domicilio_empleado'])
+                    ->get()
+                    ->row_array();
+
+                $partes = [];
+                foreach (['pais', 'estado', 'ciudad', 'colonia', 'calle', 'num_int', 'num_ext'] as $campo) {
+                    if (! empty($domicilio[$campo])) {
+                        $texto = strtoupper($campo) . ': ' . $domicilio[$campo];
+
+                        // Insertar salto de línea después de ciudad
+                        if ($campo === 'colonia') {
+                            $texto .= "\n"; // o "<br>" si es HTML
+                        }
+
+                        $partes[] = $texto;
+                    }
+                }
+                $empleado['Domicilio'] = implode(', ', $partes);
+            }
+            // Información médica
+            if (in_array('medical_info', $campos)) {
+                $med = $this->db->from('medical_info')->where('id_empleado', $id)->get()->row_array();
+                if ($med) {
+                    foreach ($med as $k => $v) {
+                        if (! in_array($k, ['id', 'creacion', 'edicion', 'id_empleado'])) {
+                            $empleado["Med_" . ucfirst($k)] = $v;
+                        }
+                    }
+                }
+            }
+
+            // Información laboral
+            if (in_array('laborales_empleado', $campos)) {
+                $lab = $this->db->from('laborales_empleado')->where('id_empleado', $id)->get()->row_array();
+                if ($lab) {
+                    foreach ($lab as $k => $v) {
+                        if (! in_array($k, ['id', 'id_empleado'])) {
+                            $empleado["Lab_" . ucfirst($k)] = $v;
+                        }
+                    }
+                }
+            }
+
+            // Documentos
+            if (in_array('documents_empleado', $campos)) {
+                $docs = $this->db
+                    ->select('documents_empleado.name, description, expiry_date, status, document_options.name AS tipo_documento')
+                    ->from('documents_empleado')
+                    ->join('document_options', 'document_options.id = documents_empleado.id_opcion', 'left')
+                    ->where('employee_id', $id)
+                    ->get()
+                    ->result_array();
+
+                $empleado['Documentos'] = '';
+                if (! empty($docs)) {
+                    foreach ($docs as $doc) {
+                        $empleado['Documentos'] .= "Nombre: {$doc['tipo_documento']}\nDescripción: {$doc['description']}\nExpira: {$doc['expiry_date']}\n\n";
+                    }
+                }
+            }
+
+            // Exámenes
+            if (in_array('exams_empleados', $campos)) {
+                $exams = $this->db
+                    ->select('exams_empleados.name, expiry_date, description, options.name AS tipo_examen')
+                    ->from('exams_empleados')
+                    ->join('exams_options AS options', 'options.id = exams_empleados.id_opcion', 'left')
+                    ->where('employee_id', $id)
+                    ->get()
+                    ->result_array();
+
+                $empleado['Examenes'] = '';
+                if (! empty($exams)) {
+                    foreach ($exams as $exam) {
+                        $empleado['Examenes'] .= "Tipo: {$exam['tipo_examen']}\nDescripción: {$exam['description']}\nExpira: {$exam['expiry_date']}\n\n";
+                    }
+                }
+            }
+
+            // Cursos
+            if (in_array('cursos_empleados', $campos)) {
+                $cursos = $this->db
+                    ->select('C.name, C.expiry_date, C.description, C.id_opcion, options.name AS oname')
+                    ->from('cursos_empleados AS C')
+                    ->join('cursos_options AS options', 'options.id = C.id_opcion', 'left')
+                    ->where('employee_id', $id)
+                    ->get()
+                    ->result_array();
+
+                $empleado['Cursos'] = '';
+                if (! empty($cursos)) {
+                    foreach ($cursos as $curso) {
+                        $nombre = empty($curso['id_opcion']) ? $curso['name'] : $curso['oname'];
+                        $empleado['Cursos'] .= "Nombre: {$nombre}\nDescripción: {$curso['description']}\nExpira: {$curso['expiry_date']}\n\n";
+                    }
+                }
+            }
+
+            // Domicilio
+
+            unset($empleado['id_domicilio_empleado']);
+        }
+
+        // Generar Excel una sola vez
+        $finalData = $empleados;
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet       = $spreadsheet->getActiveSheet();
+
+        if (! empty($finalData)) {
+            $headers = array_keys($finalData[0]);
+
+            // Eliminar columnas vacías
+            $columnas_vacias = [];
+            foreach ($headers as $header) {
+                $vacia = true;
+                foreach ($finalData as $empleado) {
+                    if (! empty($empleado[$header])) {
+                        $vacia = false;
+                        break;
+                    }
+                }
+                if ($vacia) {
+                    $columnas_vacias[] = $header;
+                }
+            }
+
+            foreach ($finalData as &$empleado) {
+                foreach ($columnas_vacias as $col) {
+                    unset($empleado[$col]);
+                }
+            }
+
+            $headers        = array_keys($finalData[0]);
+            $column_aliases = [];
+            foreach ($headers as $header) {
+                $column_aliases[$header] = str_replace(' ', '_', ucwords(str_replace('_', ' ', $header)));
+            }
+
+            $sheet->fromArray(array_values($column_aliases), null, 'A1');
+
+            $colCount    = count($headers);
+            $headerStyle = [
+                'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 12],
+                'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '1F4E78']],
+                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER, 'wrapText' => true],
+            ];
+
+            for ($col = 0; $col < $colCount; $col++) {
+                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
+                $sheet->getStyle($colLetter . '1')->applyFromArray($headerStyle);
+                $sheet->getColumnDimension($colLetter)->setAutoSize(true);
+            }
+
+            $rowIndex = 2;
+            foreach ($finalData as $row) {
+                $rowData = [];
+                foreach ($headers as $header) {
+                    $valor     = isset($row[$header]) && trim($row[$header]) !== '' ? $row[$header] : '-';
+                    $rowData[] = $valor;
+                }
+                $sheet->fromArray($rowData, null, 'A' . $rowIndex);
+                for ($col = 0; $col < count($headers); $col++) {
+                    $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
+                    $sheet->getStyle($colLetter . $rowIndex)->getAlignment()->setWrapText(true);
+                }
+                $rowIndex++;
+            }
+        }
+
+        $filename = 'reporte_empleados_' . date('Ymd_His') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
     public function reporteProcesoReclutamiento()
     {
         $this->form_validation->set_rules('fecha_inicio', 'Fecha de inicio', 'required|trim');

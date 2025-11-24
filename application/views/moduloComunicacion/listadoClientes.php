@@ -29,15 +29,15 @@
     tabindex="-1" />
 
   <h2 class="modulo-titulo">Módulo de Comunicacion</h2>
-  <p>En este módulo podrás consultar un listado de tus sucursales, áreas o departamentos, según la estructura definida
-    por tu organización. Al seleccionar una entidad, accederás al módulo de comunicación correspondiente, donde podrás
+  <p>En este módulo podrás consultar un listado de tus sucursales/clientes, áreas o departamentos, según la estructura definida
+    por tu organización. Al selecciónar una entidad, accederás al módulo de comunicación correspondiente, donde podrás
     gestionar y compartir información clave con los colaboradores asociados.</p>
   <div class="d-flex justify-content-end mb-3 gap-2">
     <button class="btn btn-config" data-toggle="modal" data-target="#columnModal">
       <i class="fas fa-cogs mr-1"></i> Mostrar/Ocultar Columnas
     </button>
     <button class="btn btn-success" id="accionMasiva">
-      <i class="fas fa-tasks mr-1"></i>Entrar Sucursales seleccionadas
+      <i class="fas fa-tasks mr-1"></i>Ingresar Selección
     </button>
   </div>
 
@@ -45,7 +45,7 @@
     <thead>
       <tr>
         <th><input type="checkbox" id="selectAll"></th>
-        <th>Sucursal</th>
+        <th>Sucursal/Cliente</th>
         <?php foreach ($columnas_visibles as $col): ?>
         <th><?php echo htmlspecialchars($col, ENT_QUOTES, 'UTF-8'); ?></th>
         <?php endforeach; ?>

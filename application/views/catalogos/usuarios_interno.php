@@ -87,14 +87,14 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
           <div id="listaUsuarios" class="mb-3"></div> <!-- Aquí se mostrarán los usuarios seleccionados -->
           <div class="form-group">
             <label>
-              <input type="checkbox" id="selectAllSucursales"> Seleccionar todas las sucursales
+              <input type="checkbox" id="selectAllSucursales"> Seleccionar todas las sucursales/clientes
             </label>
           </div>
           <!-- Sucursales -->
           <div class="form-group">
-            <label for="sucursal">Sucursales</label>
+            <label for="sucursal">Sucursales/Clientes</label>
             <select id="sucursal" class="form-control">
-              <option value="">Seleccione una sucursal</option>
+              <option value="">Seleccione una sucursal/cliente</option>
             </select>
           </div>
           <div id="listaSucursales" class="mb-3"></div> <!-- Aquí se mostrarán las sucursales seleccionadas -->
