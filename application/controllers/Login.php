@@ -59,6 +59,7 @@ class Login extends CI_Controller
                     "paterno"      => $usuario->paterno,
                     "rol"          => $usuario->rol,
                     "idrol"        => $usuario->id_rol,
+                    "lang"         => $usuario->lang,
                     "tipo"         => 1,
                     "verificacion" => $usuario->verificacion,
                     "id_data"      => $usuario->idDatos,

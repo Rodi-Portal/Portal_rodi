@@ -97,6 +97,7 @@ class Usuario_model extends CI_Model
             D.verificacion,
             D.id as idDatos,
             U.id_rol,
+            U.lang,
             R.nombre as rol,
             U.logueado as loginBD,
             P.nombre as nombrePortal,
@@ -126,7 +127,7 @@ class Usuario_model extends CI_Model
             return false; // Devolver falso si el usuario no se encuentra en la base de datos
         }
     }
-//TODO: pendiente  de revisar  esta  consulta   ya  que
+    //TODO: pendiente  de revisar  esta  consulta   ya  que
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     public function existeUsuarioCliente($correo)
     {
@@ -162,6 +163,7 @@ class Usuario_model extends CI_Model
         $resultado = $consulta->row();
         return $resultado;
     }
+
     public function existeUsuarioSubcliente($correo, $pass)
     {
         $this->db
@@ -178,6 +180,7 @@ class Usuario_model extends CI_Model
         $resultado = $consulta->row();
         return $resultado;
     }
+
     public function getPermisos($filtrar_roles = false, $origen = null)
     {
         $id_portal  = $this->session->userdata('idPortal');
@@ -270,8 +273,8 @@ class Usuario_model extends CI_Model
 
             $clientesAgrupados[$id]['usuarios'][] = [
                 'nombre_completo' => trim("{$row->nombreUsuario} {$row->paterno}"),
-                'rol'             => $row->rol_usuario,
-                'id_usuario'      => $row->id_usuario,
+                'rol'        => $row->rol_usuario,
+                'id_usuario' => $row->id_usuario,
             ];
         }
 
@@ -413,14 +416,15 @@ class Usuario_model extends CI_Model
 
             $clientesAgrupados[$id]['usuarios'][] = [
                 'nombre_completo' => trim("{$row->nombre} {$row->paterno} "),
-                'rol'             => $row->rol_usuario,
-                'id_usuario'      => $row->id_usuario,
+                'rol'        => $row->rol_usuario,
+                'id_usuario' => $row->id_usuario,
             ];
         }
 
         // Retornar como array simple (sin IDs como clave)
         return array_values($clientesAgrupados);
     }
+
     public function getPermisosSubclientes($id)
     {
         $this->db
@@ -729,6 +733,14 @@ class Usuario_model extends CI_Model
         } else {
             return false;
         }
+    }
+  
+
+    public function update($id, $data)
+    {
+        return $this->db
+            ->where('id', $id)
+            ->update('usuarios_portal', $data);
     }
 
 }

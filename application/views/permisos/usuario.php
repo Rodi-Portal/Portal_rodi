@@ -15,7 +15,6 @@
     }
 ?>
 
-
 <div class="p-3">
   <div class="d-flex align-items-center mb-2">
     <h6 class="mr-3 mb-0">Permisos por usuario</h6>
@@ -28,7 +27,7 @@
         <label class="mb-1">Módulo</label>
         <select id="modSelector" class="form-control form-control-sm">
           <?php foreach ($modules as $m): $mval = $m['module']; ?>
-          <?php $label                                   = mb_strtoupper(str_replace('_', ' ', $mval), 'UTF-8'); ?>
+          <?php $label = mb_strtoupper(str_replace('_', ' ', $mval), 'UTF-8'); ?>
           <option value="<?php echo html_escape($mval); ?>" <?php echo $mval === $module ? 'selected' : ''; ?>>
             <?php echo html_escape($label); ?>
           </option>
@@ -59,120 +58,158 @@
     <?php if (empty($secciones)): ?>
     <div class="alert alert-info">No hay permisos para mostrar.</div>
     <?php else: ?>
-    <?php foreach ($secciones as $section => $rows): ?>
-    <div class="card mb-2">
-      <div class="card-header py-2 d-flex justify-content-between align-items-center">
-        <strong><?php echo html_escape(ts_section_label($section)); ?></strong>
-        <div class="btn-group btn-group-sm">
-          <button type="button" class="btn btn-outline-success"
-            onclick="marcarFilaModal('<?php echo addslashes($section); ?>','allow')">Allow</button>
-          <button type="button" class="btn btn-outline-danger"
-            onclick="marcarFilaModal('<?php echo addslashes($section); ?>','deny')">Deny</button>
-          <button type="button" class="btn btn-outline-secondary"
-            onclick="marcarFilaModal('<?php echo addslashes($section); ?>','inherit')">Heredar</button>
+
+    <!-- Contenedor que permite reordenar las secciones por drag & drop -->
+    <div id="permSectionsContainer">
+      <?php foreach ($secciones as $section => $rows): ?>
+      <?php
+            $secId  = 'sec_' . md5($section);
+            $secLbl = ts_section_label($section);
+          ?>
+      <div class="card mb-2 perm-section-card" data-section="<?php echo html_escape($section); ?>">
+
+        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <!-- Handle para arrastrar la sección -->
+            <span class="perm-drag-handle mr-2" title="Arrastrar para reordenar sección">
+              <i class="fas fa-grip-vertical"></i>
+            </span>
+
+            <!-- Botón para colapsar/expandir la sección (inicia colapsado) -->
+            <button class="btn btn-link p-0 section-toggle collapsed" type="button" data-toggle="collapse"
+              data-target="#<?php echo $secId; ?>" aria-expanded="false" aria-controls="<?php echo $secId; ?>">
+              <!-- Indicador visual: chevron que gira -->
+              <i class="fas fa-chevron-right mr-1 section-chevron"></i>
+              <strong><?php echo html_escape($secLbl); ?></strong>
+            </button>
+          </div>
+
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-outline-success"
+              onclick="marcarFilaModal('<?php echo addslashes($section); ?>','allow')">Allow</button>
+            <button type="button" class="btn btn-outline-danger"
+              onclick="marcarFilaModal('<?php echo addslashes($section); ?>','deny')">Deny</button>
+            <button type="button" class="btn btn-outline-secondary"
+              onclick="marcarFilaModal('<?php echo addslashes($section); ?>','inherit')">Heredar</button>
+          </div>
         </div>
-      </div>
 
-      <div class="table-responsive">
-        <table class="table table-sm mb-0 tabla-perms-modal">
-          <thead class="thead-light">
-            <tr>
-              <th style="width:40%">Permiso</th>
-              <th style="width:20%">Acción</th>
-              <th style="width:15%">Sensibilidad</th>
-              <th style="width:25%">Efecto</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($rows as $r):
-                    $key  = $r['key'];
-                    $act  = $r['action'];
-                    $sens = (int) $r['is_sensitive'] === 1;
-                    $eff  = $r['effect']; // 'allow' | 'deny' | null (heredar)
+        <!-- 👇 SIN 'show' para que inicie retraído -->
+        <div id="<?php echo $secId; ?>" class="collapse">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0 tabla-perms-modal">
+              <thead class="thead-light">
+                <tr>
+                  <th style="width:40%">Permiso</th>
+                  <th style="width:20%">Acción</th>
+                  <th style="width:15%">Sensibilidad</th>
+                  <th style="width:25%">Efecto</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($rows as $r):
+                      $key  = $r['key'];
+                      $act  = $r['action'];
+                      $sens = (int) $r['is_sensitive'] === 1;
+                      $eff  = $r['effect']; // 'allow' | 'deny' | null (heredar)
 
-                    // ---------- Presentación “bonita” de la 1ª columna ----------
-                    // Mapa de iconos por acción (ajusta según tus acciones reales)
-                    $icons = [
-                        'ver'                 => 'fa-eye', 'crear'                       => 'fa-plus', 'editar'       => 'fa-edit', 'eliminar' => 'fa-trash-alt',
-                        'cargar'              => 'fa-upload', 'descargar'                => 'fa-download', 'exportar' => 'fa-file-export',
-                        'asignar'             => 'fa-user-check', 'registrar_candidato'  => 'fa-user-plus',
-                        'cambiar_de_sucursal' => 'fa-exchange-alt', 'enviar_a_empleados' => 'fa-share-square',
-                        'subir'               => 'fa-upload', 'bajar'                    => 'fa-download',
-                    ];
-                    $ico = isset($icons[$act]) ? $icons[$act] : 'fa-check-circle';
+                      // Mapa de iconos por acción
+                      $icons = [
+                        'ver'                 => 'fa-eye',
+                        'crear'               => 'fa-plus',
+                        'editar'              => 'fa-edit',
+                        'eliminar'            => 'fa-trash-alt',
+                        'cargar'              => 'fa-upload',
+                        'descargar'           => 'fa-download',
+                        'exportar'            => 'fa-file-export',
+                        'asignar'             => 'fa-user-check',
+                        'registrar_candidato' => 'fa-user-plus',
+                        'cambiar_de_sucursal' => 'fa-exchange-alt',
+                        'enviar_a_empleados'  => 'fa-share-square',
+                        'subir'               => 'fa-upload',
+                        'bajar'               => 'fa-download',
+                      ];
+                      $ico = isset($icons[$act]) ? $icons[$act] : 'fa-check-circle';
 
-                    $human = function ($s) {return ucfirst(str_replace('_', ' ', strtolower((string) $s)));};
-                    $modNice = mb_strtoupper(str_replace('_', ' ', $r['module']), 'UTF-8');
-                    $secNice = ts_section_label($section);
-                    $actNice = $human($act);
-                    $desc    = ! empty($r['description']) ? $r['description'] : $actNice; // requiere p.description en el SELECT del modelo
-                                                                                         // ----------------------------------------------------------------
-                ?>
-            <tr data-section="<?php echo html_escape($section); ?>" data-key="<?php echo html_escape($key); ?>">
-              <td>
-                <div class="perm-cell">
-                  <div class="perm-icon<?php echo $sens ? ' perm-icon-warn' : ''; ?>">
-                    <i
-                      class="fas		                                	                                	                                		                                	                                		                                	                                	                                	                                 	                                      <?php echo $ico; ?>"></i>
-                  </div>
-                  <div>
-                    <div class="perm-title text-truncate-1" title="<?php echo html_escape($desc); ?>">
-                      <?php echo html_escape($desc); ?>
+                      $human = function ($s) { return ucfirst(str_replace('_', ' ', strtolower((string) $s))); };
+                      $modNice = mb_strtoupper(str_replace('_', ' ', $r['module']), 'UTF-8');
+                      $secNice = ts_section_label($section);
+                      $actNice = $human($act);
+                      $desc    = ! empty($r['description']) ? $r['description'] : $actNice;
+                      $keyEnc  = rtrim(strtr(base64_encode($key), '+/', '-_'), '=');
+                    ?>
+                <tr data-section="<?php echo html_escape($section); ?>" data-key="<?php echo html_escape($key); ?>">
+                  <td>
+                    <div class="perm-cell">
+                      <div class="perm-icon<?php echo $sens ? ' perm-icon-warn' : ''; ?>">
+                        <i class="fas <?php echo $ico; ?>"></i>
+                      </div>
+                      <div>
+                        <div class="perm-title text-truncate-1" title="<?php echo html_escape($desc); ?>">
+                          <?php echo html_escape($desc); ?>
+                        </div>
+                        <div class="perm-meta mt-1">
+                          <span class="badge badge-soft"><?php echo html_escape($modNice); ?></span>
+                          <span class="mx-1">›</span>
+                          <span class="badge badge-soft"><?php echo html_escape($secNice); ?></span>
+                          <a href="javascript:void(0)" class="ml-2 perm-key copy-key"
+                            data-key="<?php echo html_escape($key); ?>" data-toggle="tooltip" title="Copiar clave">
+                            <i class="far fa-copy"></i>
+                            <span class="d-none d-sm-inline"><?php echo html_escape($key); ?></span>
+                          </a>
+                        </div>
+                      </div>
                     </div>
-                    <div class="perm-meta mt-1">
-                      <span class="badge badge-soft"><?php echo html_escape($modNice); ?></span>
-                      <span class="mx-1">›</span>
-                      <span class="badge badge-soft"><?php echo html_escape($secNice); ?></span>
-                      <a href="javascript:void(0)" class="ml-2 perm-key copy-key"
-                        data-key="<?php echo html_escape($key); ?>" data-toggle="tooltip" title="Copiar clave">
-                        <i class="far fa-copy"></i> <span
-                          class="d-none d-sm-inline"><?php echo html_escape($key); ?></span>
-                      </a>
+                  </td>
+
+                  <td>
+                    <span class="badge badge-primary">
+                      <?php echo html_escape($act); ?>
+                    </span>
+                  </td>
+
+                  <td>
+                    <?php if ($sens): ?>
+                    <span class="badge badge-warning">Sensible</span>
+                    <?php else: ?>
+                    <span class="text-muted small">–</span>
+                    <?php endif; ?>
+                  </td>
+
+                  <td>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-allow-<?php echo md5($key) ?>"
+                        class="custom-control-input" value="allow" <?php echo $eff === 'allow' ? 'checked' : ''; ?>>
+                      <label class="custom-control-label" for="m-allow-<?php echo md5($key) ?>">Allow</label>
                     </div>
-                  </div>
-                </div>
-              </td>
 
-              <td><span class="badge badge-primary"><?php echo html_escape($act); ?></span></td>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-deny-<?php echo md5($key) ?>"
+                        class="custom-control-input" value="deny" <?php echo $eff === 'deny' ? 'checked' : ''; ?>>
+                      <label class="custom-control-label" for="m-deny-<?php echo md5($key) ?>">Deny</label>
+                    </div>
 
-              <td>
-                <?php if ($sens): ?>
-                <span class="badge badge-warning">Sensible</span>
-                <?php else: ?>
-                <span class="text-muted small">–</span>
-                <?php endif; ?>
-              </td>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-inh-<?php echo md5($key) ?>"
+                        class="custom-control-input" value="inherit" <?php echo is_null($eff) ? 'checked' : ''; ?>>
+                      <label class="custom-control-label" for="m-inh-<?php echo md5($key) ?>">Heredar</label>
+                    </div>
+                  </td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-              <td>
-                <?php $keyEnc = rtrim(strtr(base64_encode($key), '+/', '-_'), '='); ?>
-
-                <div class="custom-control custom-radio custom-control-inline">
-                  <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-allow-<?php echo md5($key) ?>"
-                    class="custom-control-input" value="allow" <?php echo $eff === 'allow' ? 'checked' : ''; ?>>
-                  <label class="custom-control-label" for="m-allow-<?php echo md5($key) ?>">Allow</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                  <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-deny-<?php echo md5($key) ?>"
-                    class="custom-control-input" value="deny" <?php echo $eff === 'deny' ? 'checked' : ''; ?>>
-                  <label class="custom-control-label" for="m-deny-<?php echo md5($key) ?>">Deny</label>
-                </div>
-                <div class="custom-control custom-radio custom-control-inline">
-                  <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-inh-<?php echo md5($key) ?>"
-                    class="custom-control-input" value="inherit" <?php echo is_null($eff) ? 'checked' : ''; ?>>
-                  <label class="custom-control-label" for="m-inh-<?php echo md5($key) ?>">Heredar</label>
-                </div>
-
-              </td>
-            </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
       </div>
-    </div>
-    <?php endforeach; ?>
+      <?php endforeach; ?>
+    </div> <!-- /#permSectionsContainer -->
+
     <?php endif; ?>
 
-    <div class="d-flex justify-content-end">
+    <!-- Barra de guardado sticky al fondo del modal-body -->
+    <div class="perm-save-bar d-flex justify-content-end mt-3">
       <button type="button" id="btnGuardarPermisos" class="btn btn-primary">
         Guardar cambios
       </button>
@@ -183,10 +220,14 @@
   </form>
 </div>
 
+<!-- SortableJS para reordenar secciones -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
 <script>
 function formatModLabel(slug) {
   return (slug || '').replace(/_/g, ' ').toUpperCase();
 }
+
 // Delegado: copiar clave
 $(document).off('click', '.copy-key').on('click', '.copy-key', function() {
   var key = $(this).data('key') || '';
@@ -228,9 +269,9 @@ function marcarFilaModal(section, effect) {
   document.querySelectorAll('#modalPermisos tr[data-section="' + section + '"]').forEach(tr => {
     const radios = tr.querySelectorAll('input[type="radio"]');
     radios.forEach(r => {
-      const isAllow = effect === 'allow' && r.id.indexOf('m-allow-') === 0;
-      const isDeny = effect === 'deny' && r.id.indexOf('m-deny-') === 0;
-      const isInherit = effect === 'inherit' && r.id.indexOf('m-inh-') === 0;
+      const isAllow = (effect === 'allow' && r.id.indexOf('m-allow-') === 0);
+      const isDeny = (effect === 'deny' && r.id.indexOf('m-deny-') === 0);
+      const isInherit = (effect === 'inherit' && r.id.indexOf('m-inh-') === 0);
       if (isAllow || isDeny || isInherit) r.checked = true;
     });
   });
@@ -266,9 +307,35 @@ function marcarFilaModal(section, effect) {
   }
 })();
 
+// Inicializar SortableJS para reordenar secciones
+(function() {
+  var container = document.getElementById('permSectionsContainer');
+  if (container && window.Sortable) {
+    Sortable.create(container, {
+      handle: '.perm-drag-handle',
+      animation: 150
+    });
+  }
+})();
+
+// Guardar permisos
 $(document).off('click', '#btnGuardarPermisos').on('click', '#btnGuardarPermisos', function() {
   const $btn = $(this);
   const $form = $('#permFormModal');
+
+  // 1️⃣ Antes de guardar, detectar qué secciones están abiertas (tienen .collapse.show)
+  const openSections = [];
+  $('#permSectionsContainer .perm-section-card').each(function() {
+    const $card = $(this);
+    const $collapse = $card.find('.collapse'); // div con la tabla
+    if ($collapse.hasClass('show')) {
+      const sectionSlug = $card.data('section'); // ej. expediente.generales
+      if (sectionSlug) {
+        openSections.push(sectionSlug);
+      }
+    }
+  });
+
   $btn.prop('disabled', true).text('Guardando...');
 
   $.ajax({
@@ -287,18 +354,33 @@ $(document).off('click', '#btnGuardarPermisos').on('click', '#btnGuardarPermisos
       }
       Swal.fire('Listo', res.msg || 'Permisos guardados correctamente.', 'success');
 
-      // Recarga el mismo parcial para reflejar cambios
+      // 2️⃣ Recarga el mismo parcial para reflejar cambios
       const userId = <?php echo (int) $user_id ?>;
       const mod = '<?php echo rawurlencode($module ?: "") ?>';
-      const url = (window.BASE_URL || '<?php echo base_url(); ?>') + 'permisos/usuario/' + userId +
-        '?module=' + mod + '&partial=1';
+      const url = (window.BASE_URL || '<?php echo base_url(); ?>') +
+        'permisos/usuario/' + userId + '?module=' + mod + '&partial=1';
+
       $('#modalPermisos .modal-body').load(url, function() {
-        // re-inicializa tooltips, etc., si usas
+        // 3️⃣ Re-inicializa tooltips
         if ($.fn.tooltip) {
           $('#modalPermisos [data-toggle="tooltip"]').tooltip({
             container: '#modalPermisos'
           });
         }
+
+        // 4️⃣ Restaurar secciones abiertas
+        openSections.forEach(function(sectionSlug) {
+          const $card = $('#permSectionsContainer .perm-section-card[data-section="' + sectionSlug +
+            '"]');
+          if ($card.length) {
+            const $collapse = $card.find('.collapse');
+            const $btnToggle = $card.find('.section-toggle');
+
+            // Abrir el collapse y actualizar el botón (chevron)
+            $collapse.collapse('show');
+            $btnToggle.removeClass('collapsed'); // para que el chevron se muestre "abierto"
+          }
+        });
       });
     },
     error: function() {
@@ -333,7 +415,7 @@ $(document).off('click', '#btnGuardarPermisos').on('click', '#btnGuardarPermisos
   background: #fff8e1;
 }
 
-/* fondo ámbar si es sensible */
+/* título del permiso */
 .perm-title {
   font-weight: 600;
   line-height: 1.1;
@@ -366,5 +448,47 @@ $(document).off('click', '#btnGuardarPermisos').on('click', '#btnGuardarPermisos
   .text-truncate-1 {
     max-width: 220px;
   }
+}
+
+/* Handle para arrastrar secciones */
+.perm-drag-handle {
+  cursor: grab;
+  color: #999;
+}
+
+.perm-drag-handle:hover {
+  color: #666;
+}
+
+/* Chevron indicador de abrir/cerrar sección */
+.section-toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+.section-chevron {
+  transition: transform 0.2s ease;
+}
+
+/* Bootstrap pone .collapsed cuando está cerrado */
+.section-toggle.collapsed .section-chevron {
+  transform: rotate(0deg);
+  /* ▶ */
+}
+
+.section-toggle:not(.collapsed) .section-chevron {
+  transform: rotate(90deg);
+  /* ▼ */
+}
+
+/* Barra de guardado pegada al fondo del modal-body */
+.perm-save-bar {
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-top: 1px solid #e9ecef;
+  z-index: 5;
 }
 </style>

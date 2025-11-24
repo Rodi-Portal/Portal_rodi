@@ -45,7 +45,7 @@
     <thead>
       <tr>
         <th><input type="checkbox" id="selectAll"></th>
-        <th>Sucursal</th>
+        <th>Sucursal/Cliente</th>
         <?php foreach ($columnas_visibles as $col): ?>
         <th><?php echo htmlspecialchars($col, ENT_QUOTES, 'UTF-8'); ?></th>
         <?php endforeach; ?>

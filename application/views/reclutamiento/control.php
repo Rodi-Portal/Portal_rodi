@@ -196,7 +196,7 @@ function buildTableProgreso(url) {
         }
       },
       {
-        title: 'Sucursal',
+        title: 'Sucursal/Cliente',
         data: 'nombre_cliente',
         bSortable: false,
         "width": "15%",
