@@ -12,6 +12,12 @@
 
   // Bandera actual
   $flagSrc = ($lang === 'en') ? $flag_us : $flag_mx;
+
+    // Idioma CI (nombre de carpeta)
+  $idioma_ci = ($lang === 'en') ? 'english' : 'spanish';
+
+  // 👇 importante: 'header' = header_lang.php
+  $CI->lang->load('header', $idioma_ci);
   ?>
   <!DOCTYPE html>
   <html lang="<?php echo $lang; ?>">
