@@ -28,16 +28,16 @@
   <input type="text" id="focus-catcher" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;"
     tabindex="-1" />
 
-  <h2 class="modulo-titulo">Módulo de Comunicacion</h2>
-  <p>En este módulo podrás consultar un listado de tus sucursales/clientes, áreas o departamentos, según la estructura definida
-    por tu organización. Al selecciónar una entidad, accederás al módulo de comunicación correspondiente, donde podrás
-    gestionar y compartir información clave con los colaboradores asociados.</p>
+  <h2 class="modulo-titulo"><?php echo lang('mod_com_title'); ?></h2>
+  <p><?php echo lang('mod_com_intro'); ?></p>
+
   <div class="d-flex justify-content-end mb-3 gap-2">
     <button class="btn btn-config" data-toggle="modal" data-target="#columnModal">
-      <i class="fas fa-cogs mr-1"></i> Mostrar/Ocultar Columnas
+      <i class="fas fa-cogs mr-1"></i> <?php echo lang('mod_com_btn_columns'); ?>
     </button>
+
     <button class="btn btn-success" id="accionMasiva">
-      <i class="fas fa-tasks mr-1"></i>Ingresar Selección
+      <i class="fas fa-tasks mr-1"></i> <?php echo lang('mod_com_btn_mass_action'); ?>
     </button>
   </div>
 
@@ -45,94 +45,142 @@
     <thead>
       <tr>
         <th><input type="checkbox" id="selectAll"></th>
-        <th>Sucursal/Cliente</th>
+        <th><?php echo lang('mod_table_branch'); ?></th>
         <?php foreach ($columnas_visibles as $col): ?>
-        <th><?php echo htmlspecialchars($col, ENT_QUOTES, 'UTF-8'); ?></th>
+        <?php
+      // Intentar traducir: mod_com_col_TELEFONO, mod_com_col_ESTADO, etc.
+      $key   = 'mod_com_col_' . strtoupper($col);
+      $label = lang($key);
+
+      // Si no existe traducción, usar el nombre tal cual
+      if ($label === $key) {
+          $label = htmlspecialchars($col, ENT_QUOTES, 'UTF-8');
+      }
+  ?>
+        <th><?php echo $label; ?></th>
         <?php endforeach; ?>
-        <th>Usuarios con acceso</th>
-        <th>Empleados</th>
-        <th>Acciones</th>
+
+        <th><?php echo lang('mod_table_users_access'); ?></th>
+        <th><?php echo lang('mod_emp_th_employees'); ?></th>
+        <th><?php echo lang('mod_table_actions'); ?></th>
       </tr>
+
       <tr>
         <th></th>
+
+        <!-- Filtro sucursal -->
         <th>
-          <input type="text" class="form-control form-control-sm" placeholder="Buscar Sucursal" autocomplete="off"
+          <input type="text" class="form-control form-control-sm"
+            placeholder="<?php echo lang('mod_com_filter_branch'); ?>" autocomplete="off"
             name="search_sucursal_<?php echo uniqid(); ?>" readonly onfocus="this.removeAttribute('readonly');">
         </th>
+
+        <!-- Filtros dinámicos por columna -->
         <?php foreach ($columnas_visibles as $col): ?>
         <th>
           <input type="text" class="form-control form-control-sm"
-            placeholder="Buscar                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <?php echo htmlspecialchars($col); ?>"
+            placeholder="<?php echo lang('mod_com_filter_any_prefix') . ' ' . htmlspecialchars($col, ENT_QUOTES, 'UTF-8'); ?>"
             autocomplete="off" name="search_<?php echo uniqid(); ?>" readonly
             onfocus="this.removeAttribute('readonly');">
         </th>
         <?php endforeach; ?>
+
+        <!-- Filtro usuarios -->
         <th>
-          <input type="text" class="form-control form-control-sm" placeholder="Buscar Usuarios" autocomplete="off"
+          <input type="text" class="form-control form-control-sm"
+            placeholder="<?php echo lang('mod_com_filter_users'); ?>" autocomplete="off"
             name="search_usuarios_<?php echo uniqid(); ?>" readonly onfocus="this.removeAttribute('readonly');">
         </th>
+
+        <!-- Filtro empleados -->
         <th>
-          <input type="text" class="form-control form-control-sm" placeholder="Buscar Empleados" autocomplete="off"
+          <input type="text" class="form-control form-control-sm"
+            placeholder="<?php echo lang('mod_com_filter_employees'); ?>" autocomplete="off"
             name="search_empleados_<?php echo uniqid(); ?>" readonly onfocus="this.removeAttribute('readonly');">
         </th>
+
         <th></th>
       </tr>
-
-
     </thead>
 
     <tbody>
       <?php if (! empty($permisos)): ?>
       <?php foreach ($permisos as $p): ?>
       <tr>
-        <td><input type="checkbox" class="row-select" data-id="<?php echo $p['id_cliente'] ?>"></td>
-        <td><?php echo htmlspecialchars($p['nombreCliente']) ?></td>
+        <td>
+          <input type="checkbox" class="row-select" data-id="<?php echo $p['id_cliente']; ?>">
+        </td>
+
+        <td><?php echo htmlspecialchars($p['nombreCliente']); ?></td>
 
         <?php foreach ($columnas_disponibles as $col): ?>
-        <?php if (! in_array($col, $columnas_fijas) && ! in_array($col, $columnas_ocultas)): ?>
+        <?php if (! in_array($col, $columnas_fijas, true) && ! in_array($col, $columnas_ocultas, true)): ?>
         <td>
           <?php
-              if (isset($p[$col])) {
-                  if (is_array($p[$col])) {
-                      echo htmlspecialchars(json_encode($p[$col]));
-                  } else {
-                      echo htmlspecialchars($p[$col]);
-                  }
-              } else {
-                  echo 'N/A';
-              }
-          ?>
+                      if (isset($p[$col])) {
+                          if (is_array($p[$col])) {
+                              echo htmlspecialchars(json_encode($p[$col]));
+                          } else {
+                              echo htmlspecialchars($p[$col]);
+                          }
+                      } else {
+                          echo lang('mod_table_na');
+                      }
+                  ?>
         </td>
         <?php endif; ?>
         <?php endforeach; ?>
 
+        <!-- Usuarios con acceso -->
         <td>
-          <ul style="padding-left: 16px;">
+          <ul class="usuarios-acceso-list">
             <?php foreach ($p['usuarios'] as $usuario): ?>
-            <li>
-              <?php echo htmlspecialchars($usuario['nombre_completo']) ?>
-              (<?php echo htmlspecialchars($usuario['rol']) ?>)
-              (<?php echo htmlspecialchars($usuario['id_usuario']) ?>)
-              <?php if (in_array($this->session->userdata('idrol'), [1, 6])): ?>
-              <a href="#" class="eliminar-permiso ms-2" data-id_usuario="<?php echo $usuario['id_usuario'] ?>"
-                data-id_cliente="<?php echo $p['id_cliente'] ?>" title="Eliminar acceso a esta sucursal">
-                <i class="fa fa-trash-alt" style="color: red;"></i>
-              </a>
+            <li class="usuario-acceso-item">
+              <div class="usuario-info">
+                <span class="usuario-nombre">
+                  <?php echo htmlspecialchars($usuario['nombre_completo'], ENT_QUOTES, 'UTF-8'); ?>
+                </span>
+                <span class="usuario-detalle">
+                  <?php echo htmlspecialchars($usuario['rol'], ENT_QUOTES, 'UTF-8'); ?>
+                  · ID:<?php echo htmlspecialchars($usuario['id_usuario'], ENT_QUOTES, 'UTF-8'); ?>
+                </span>
+              </div>
+
+              <?php
+                          $idRol = $this->session->userdata('idrol');
+                          if ($idRol == 6 || $idRol == 1):
+                      ?>
+              <button type="button" class="btn-usuario-remove eliminar-permiso"
+                data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
+                data-id_cliente="<?php echo $p['id_cliente']; ?>"
+                title="<?php echo $this->lang->line('mod_perm_delete_tooltip'); ?>">
+                <i class="fa fa-trash"></i>
+              </button>
               <?php endif; ?>
             </li>
             <?php endforeach; ?>
           </ul>
         </td>
 
+        <!-- Resumen empleados -->
         <td>
           <ul class="pl-3 mb-0">
-            <li><strong>Máximo:</strong> <?php echo htmlspecialchars($p['max']) ?></li>
-            <li><strong>Empleados:</strong> <?php echo htmlspecialchars($p['empleados_activos']) ?></li>
-            <li><strong>Exempleados:</strong> <?php echo htmlspecialchars($p['empleados_inactivos']) ?></li>
+            <li><strong><?php echo lang('mod_ex_max_number'); ?></strong><?php echo htmlspecialchars($p['max']); ?></li>
+            <li>
+              <strong><?php echo lang('mod_emp_lbl_active'); ?>:</strong><?php echo htmlspecialchars($p['empleados_activos']); ?>
+            </li>
+            <li>
+              <strong><?php echo lang('mod_emp_lbl_inactive'); ?>:</strong><?php echo htmlspecialchars($p['empleados_inactivos']); ?>
+            </li>
           </ul>
         </td>
+
+        <!-- Acciones -->
         <td>
-          <a href="<?php echo site_url('comunicacion/' . $p['id_cliente']) ?>" class="btn-ver-empleados">Entrar</a>
+          <a href="<?php echo site_url('comunicacion/' . $p['id_cliente']); ?>" class="btn-ver-empleados">
+            <!-- si quieres, crea mod_com_btn_enter en el lang -->
+            <?php echo lang('mod_com_btn_enter') ?? 'Entrar'; ?>
+          </a>
         </td>
       </tr>
       <?php endforeach; ?>
@@ -140,7 +188,7 @@
       <tr>
         <td
           colspan="<?php echo 3 + count($columnas_disponibles) - count($columnas_fijas) - count($columnas_ocultas); ?>">
-          No hay datos disponibles.
+          <?php echo lang('mod_com_no_data'); ?>
         </td>
       </tr>
       <?php endif; ?>
@@ -148,55 +196,56 @@
   </table>
 </div>
 
-
-
 <!-- Modal para seleccionar columnas -->
 <div class="modal fade" id="columnModal" tabindex="-1" role="dialog" aria-labelledby="columnModalLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable" role="document">
     <div class="modal-content">
-      <form id="columnSettingsForm" data-table="<?php echo $TABLE_KEY ?>">
+      <form id="columnSettingsForm" data-table="<?php echo $TABLE_KEY; ?>">
         <input type="hidden" id="csrfToken" name="<?php echo $this->security->get_csrf_token_name(); ?>"
           value="<?php echo $this->security->get_csrf_hash(); ?>">
 
         <div class="modal-header">
-          <h5 class="modal-title" id="columnModalLabel">Seleccionar columnas</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span>&times;</span></button>
+          <h5 class="modal-title" id="columnModalLabel"><?php echo lang('mod_com_btn_columns'); ?></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span>&times;</span>
+          </button>
         </div>
 
         <div class="modal-body">
           <?php if (! empty($columnas_dinamicas)): ?>
           <?php foreach ($columnas_dinamicas as $name): ?>
           <div class="form-check">
-            <input class="form-check-input column-toggle" type="checkbox" value="<?php echo htmlspecialchars($name) ?>"
-              id="col_<?php echo htmlspecialchars($name) ?>"
-              <?php echo in_array($name, $columnas_usuario, true) ? 'checked' : '' ?>>
-            <label class="form-check-label" for="col_<?php echo htmlspecialchars($name) ?>">
-              <?php echo htmlspecialchars($name) ?>
+            <input class="form-check-input column-toggle" type="checkbox" value="<?php echo htmlspecialchars($name); ?>"
+              id="col_<?php echo htmlspecialchars($name); ?>"
+              <?php echo in_array($name, $columnas_usuario, true) ? 'checked' : ''; ?>>
+            <label class="form-check-label" for="col_<?php echo htmlspecialchars($name); ?>">
+              <?php echo htmlspecialchars($name); ?>
             </label>
           </div>
           <?php endforeach; ?>
           <?php else: ?>
-          <p>No hay columnas disponibles.</p>
+          <p><?php echo lang('mod_com_no_data'); ?></p>
           <?php endif; ?>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-          <button type="button" class="btn btn-primary" id="applyColumnSettings" data-dismiss="modal">Aplicar</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <?php echo lang('mod_com_mass_cancel_btn'); ?>
+          </button>
+          <button type="button" class="btn btn-primary" id="applyColumnSettings" data-dismiss="modal">
+            <?php echo lang('mod_com_btn_apply') ?? 'Aplicar'; ?>
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-
-
-
 <script>
 // Listas generadas por PHP
-const DINAMICAS = <?php echo $DINAMICAS_JS ?>; // p.ej. ["telefono","estado","pais","ciudad"]
-const SELECCIONADAS = <?php echo $SEL_JS ?>; // p.ej. ["telefono","estado"]
+const DINAMICAS = <?php echo $DINAMICAS_JS; ?>; // p.ej. ["telefono","estado","pais","ciudad"]
+const SELECCIONADAS = <?php echo $SEL_JS; ?>; // p.ej. ["telefono","estado"]
 const BASE1 = 2; // 0=checkbox, 1=Sucursal; dinámicas empiezan en la 2
 
 $(document).ready(function() {
@@ -206,7 +255,7 @@ $(document).ready(function() {
     $('#processTable').DataTable({
       scrollX: true,
       responsive: true,
-      orderCellsTop: true, // <-- importante con 2 filas en THEAD
+      orderCellsTop: true, // importante con 2 filas en THEAD
       order: [],
     });
 
@@ -214,7 +263,7 @@ $(document).ready(function() {
   const selected = new Set(SELECCIONADAS);
   DINAMICAS.forEach((name, i) => {
     const colIdx = BASE1 + i; // índice físico en la tabla
-    const visible = selected.has(name); // únicamente seleccionadas
+    const visible = selected.has(name);
     table.column(colIdx).visible(visible);
   });
 
@@ -223,7 +272,6 @@ $(document).ready(function() {
     this.checked = selected.has(this.value);
   });
 
-  // Filtros por columna (segunda fila de thead)
   // ===== Filtros por columna (compatible con scrollX/responsive y readonly) =====
   const api = table;
   const $container = $(api.table().container());
@@ -245,28 +293,19 @@ $(document).ready(function() {
 
     // filtrar por columna (mapeo por nodo <th> real)
     $head.on('input.colfilter change.colfilter', 'tr:eq(1) th input', function() {
-      // índice del <th> en la segunda fila
       const i = $(this).closest('th').index();
-
-      // toma el <th> de la PRIMERA fila en la misma posición
       const topTh = $head.find('tr:first th').eq(i)[0];
-
-      // pide el índice real de DataTables usando el <th> de la fila superior
       const colIdx = api.column(topTh).index();
-
       const val = this.value;
+
       if (api.column(colIdx).search() !== val) {
-        // regex=false, smart=true para evitar que caracteres raros se interpreten como regex
         api.column(colIdx).search(val, false, true).draw();
       }
     });
-
   }
 
   wireColumnFilters();
-  // re-enlaza si cambia el layout/visibilidad/responsive
   table.on('draw.dt column-visibility.dt responsive-resize.dt', wireColumnFilters);
-
 
   // Checkbox seleccionar todos
   $('#selectAll').on('click', function() {
@@ -282,26 +321,27 @@ $(document).ready(function() {
     if (seleccionados.length === 0) {
       Swal.fire({
         icon: 'warning',
-        title: 'Sin selección',
-        text: 'Selecciona al menos una sucursal',
+        title: '<?php echo lang('mod_com_mass_no_selection_title'); ?>',
+        text: '<?php echo lang('mod_com_mass_no_selection_text'); ?>',
         confirmButtonText: 'OK'
       });
       return;
     }
 
     Swal.fire({
-      title: '¿Acción sobre sucursales seleccionadas?',
-      text: 'Dispondrás de la información y funciones de todas las sucursales que seleccionaste.',
+      title: '<?php echo lang('mod_com_mass_confirm_title'); ?>',
+      text: '<?php echo lang('mod_com_mass_confirm_text'); ?>',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Sí',
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: '<?php echo lang('mod_com_mass_confirm_btn'); ?>',
+      cancelButtonText: '<?php echo lang('mod_com_mass_cancel_btn'); ?>'
     }).then(result => {
       if (result.isConfirmed) {
         const form = $('<form>', {
           method: 'POST',
-          action: '<?php echo base_url("empleados/showComunicacion") ?>'
+          action: '<?php echo base_url("empleados/showComunicacion"); ?>'
         });
+
         seleccionados.forEach(id => {
           form.append($('<input>', {
             type: 'hidden',
@@ -309,6 +349,7 @@ $(document).ready(function() {
             value: id
           }));
         });
+
         $('body').append(form);
         form.submit();
       }
@@ -334,6 +375,7 @@ $(document).ready(function() {
       const name = this.value;
       const vis = this.checked;
       const i = DINAMICAS.indexOf(name);
+
       if (i >= 0) {
         const colIdx = BASE1 + i;
         table.column(colIdx).visible(vis);
@@ -341,7 +383,6 @@ $(document).ready(function() {
       if (vis) visibleNames.push(name);
     });
 
-    // 👇 añade estas dos líneas
     table.columns().adjust().draw(false);
     wireColumnFilters();
 
@@ -375,7 +416,7 @@ $(document).ready(function() {
       },
       success(res) {
         Swal.close();
-        if (res?.ok) {
+        if (res && res.ok) {
           if (res.csrf) $csrf.val(res.csrf);
           Toast.fire({
             icon: 'success',
@@ -385,7 +426,7 @@ $(document).ready(function() {
           Swal.fire({
             icon: 'warning',
             title: 'No se pudo guardar',
-            text: res?.error || 'Inténtalo de nuevo.'
+            text: (res && res.error) || 'Inténtalo de nuevo.'
           });
         }
       },
@@ -407,12 +448,12 @@ $(document).ready(function() {
     const id_cliente = $(this).data('id_cliente');
 
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'El usuario perderá el acceso a esta sucursal.',
+      title: '<?php echo lang('mod_perm_delete_title'); ?>',
+      text: '<?php echo lang('mod_perm_delete_text'); ?>',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
+      confirmButtonText: '<?php echo lang('mod_perm_delete_confirm'); ?>',
+      cancelButtonText: '<?php echo lang('mod_perm_delete_cancel'); ?>',
     }).then((result) => {
       if (result.isConfirmed) {
         $.post('<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>', {
@@ -421,10 +462,28 @@ $(document).ready(function() {
           })
           .done(response => {
             const data = JSON.parse(response);
-            Swal.fire(data.status === 'success' ? 'Eliminado' : 'Error', data.message, data.status);
-            if (data.status === 'success') location.reload();
+            const isOk = (data.status === 'success');
+
+            Swal.fire(
+              isOk ? '<?php echo lang('mod_perm_deleted_title'); ?>' :
+              '<?php echo lang('mod_perm_error_title'); ?>',
+              data.message || (isOk ?
+                '<?php echo lang('mod_perm_deleted_text'); ?>' :
+                '<?php echo lang('mod_perm_error_delete'); ?>'),
+              isOk ? 'success' : 'error'
+            );
+
+            if (isOk) {
+              location.reload();
+            }
           })
-          .fail(() => Swal.fire('Error', 'No se pudo eliminar el permiso.', 'error'));
+          .fail(() => {
+            Swal.fire(
+              '<?php echo lang('mod_perm_error_title'); ?>',
+              '<?php echo lang('mod_perm_error_delete'); ?>',
+              'error'
+            );
+          });
       }
     });
   });
@@ -433,6 +492,7 @@ $(document).ready(function() {
   $('#focus-catcher').focus();
 });
 </script>
+
 
 
 <style>
@@ -642,5 +702,59 @@ div.dataTables_scrollHead thead tr:first-child th {
 /* Mejora la separación visual */
 .form-check {
   margin-bottom: 10px;
+}
+
+.usuarios-acceso-list {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+/* Tarjetita por usuario */
+.usuario-acceso-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  background: #fbdff2ff;
+  /* verde muy clarito */
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(214, 127, 227, 0.35);
+}
+
+.usuario-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.usuario-nombre {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.usuario-detalle {
+  font-size: 0.78rem;
+  color: #666;
+}
+
+/* Botón de eliminar a la derecha */
+.btn-usuario-remove {
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-usuario-remove i {
+  font-size: 1rem;
+}
+
+.btn-usuario-remove:hover i {
+  transform: scale(1.1);
 }
 </style>

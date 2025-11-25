@@ -7,17 +7,17 @@
       $terminos_condiciones = $CI->session->userdata('terminos');
       $archivo              = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
       $terminos             = $terminos_condiciones ? $terminos_condiciones : 'TM_TL_V1.pdf';
- $flag_mx = base_url('img/iconos/flag_mx.svg');
-  $flag_us = base_url('img/iconos/flag_us.svg');
+      $flag_mx              = base_url('img/iconos/flag_mx.svg');
+      $flag_us              = base_url('img/iconos/flag_us.svg');
 
-  // Bandera actual
-  $flagSrc = ($lang === 'en') ? $flag_us : $flag_mx;
+      // Bandera actual
+      $flagSrc = ($lang === 'en') ? $flag_us : $flag_mx;
 
-    // Idioma CI (nombre de carpeta)
-  $idioma_ci = ($lang === 'en') ? 'english' : 'spanish';
+      // Idioma CI (nombre de carpeta)
+      $idioma_ci = ($lang === 'en') ? 'english' : 'espanol';
 
-  // 👇 importante: 'header' = header_lang.php
-  $CI->lang->load('header', $idioma_ci);
+      // 👇 importante: 'header' = header_lang.php
+      $CI->lang->load('header', $idioma_ci);
   ?>
   <!DOCTYPE html>
   <html lang="<?php echo $lang; ?>">
@@ -99,7 +99,7 @@ echo $token  */?>
           <img style="
       max-width: 220px;
       max-height: 150px;
-     
+
       padding: 10px 15px;   /* espacio interno alrededor del logo */
       margin: 10px auto;    /* espacio externo respecto al contenedor */
       border-radius: 6px;   /* opcional, esquinas redondeadas */
@@ -135,24 +135,24 @@ echo $token  */?>
               <?php if ($idRol == 1 || $idRol == 6) {?>
               <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
                 <i class="fas fa-image fa-sm fa-fw mr-2 text-gray-400"></i>
-                Actualizar Logo
+                <?php echo $this->lang->line('sidebar_update_logo'); ?>
               </a>
               <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateAvisoModal">
                 <i class="fas fa-user-shield fa-sm fa-fw mr-2 text-gray-400"></i>
-                Aviso de Privacidad
+                <?php echo $this->lang->line('sidebar_privacy_notice'); ?>
               </a>
               <a class="collapse-item" href="<?php echo base_url(); ?>Area/pasarela">
                 <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
-                Pago/Suscripción
+                <?php echo $this->lang->line('sidebar_billing_subscription'); ?>
               </a>
               <a class="collapse-item" href="<?php echo base_url(); ?>legal">
                 <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
-                T & C
+                <?php echo $this->lang->line('sidebar_terms_conditions'); ?>
               </a>
               <?php }?>
               <a class="collapse-item" href="<?php echo base_url(); ?>Login/logout">
                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                Cerrar sesión
+                <?php echo $this->lang->line('sidebar_logout'); ?>
               </a>
             </div>
           </div>
@@ -163,26 +163,25 @@ echo $token  */?>
         <li class="nav-item active">
           <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span>
+            <span><?php echo $this->lang->line('sidebar_dashboard'); ?></span>
           </a>
         </li>
         <!-- Divider -->
         <hr class="sidebar-divider">
         <!-- Manual de Usuario -->
         <li class="nav-item">
-          <!-- Ajusta la ruta del archivo según corresponda -->
           <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
             <i class="fas fa-book"></i>
-            <span>User guide</span>
+            <span><?php echo $this->lang->line('sidebar_user_guide'); ?></span>
           </a>
         </li>
         <!-- Divider -->
         <hr class="sidebar-divider">
         <!-- Divider with Text -->
         <li class="nav-item">
-          <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"><i
-              class="fas fa-users"></i>
-            <span>Reclutamiento</span><!-- Icono de FontAwesome para Recruitment -->
+          <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>">
+            <i class="fas fa-users"></i>
+            <span><?php echo $this->lang->line('sidebar_recruitment'); ?></span>
           </a>
         </li>
         <!-- Divider -->
@@ -190,7 +189,7 @@ echo $token  */?>
         <li class="nav-item">
           <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>" class="nav-link ">
             <i class="fas fa-user-clock"></i>
-            <span>Preempleo</span>
+            <span><?php echo $this->lang->line('sidebar_pre_employment'); ?></span>
           </a>
         </li>
         <!-- Divider -->
@@ -198,7 +197,7 @@ echo $token  */?>
         <li class="nav-item">
           <a id="former-employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="nav-link ">
             <i class="fas fa-user-times"></i>
-            <span>Empleados</span>
+            <span><?php echo $this->lang->line('sidebar_employees'); ?></span>
           </a>
 
         </li>
@@ -207,7 +206,7 @@ echo $token  */?>
         <li class="nav-item">
           <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
             <i class="fas fa-user-times"></i>
-            <span>Exempleados</span>
+            <span><?php echo $this->lang->line('sidebar_former_employees'); ?></span>
           </a>
 
         </li>
@@ -220,33 +219,35 @@ echo $token  */?>
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
             aria-expanded="true" aria-controls="collapseReportes">
             <i class="fas fa-fw fa-medkit"></i>
-            <span>Reportes</span>
+            <span><?php echo $this->lang->line('sidebar_reports'); ?></span>
           </a>
           <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
               <?php
               if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
-              <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right" title="Listado de Clientes"
-                href="<?php echo site_url('Reporte/listado_clientes_index') ?>">Reportes de sucursales/cliente</a>
+              <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/listado_clientes_index') ?>">
+                <?php echo $this->lang->line('sidebar_reports_branches'); ?>
+              </a>
               <?php
                   }
                   if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
-              <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
-                title="Proceso de reclutamiento"
-                href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">Procesos de Reclutamiento.</a>
+              <a class="collapse-item contraer" ...
+                href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">
+                <?php echo $this->lang->line('sidebar_reports_recruitment_process'); ?>
+              </a>
               <?php
               }?>
               <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
-              <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
-                title="Proceso de reclutamiento"
-                href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">Empleados.</a>
+              <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">
+                <?php echo $this->lang->line('sidebar_reports_employees'); ?>
+              </a>
               <?php }?>
               <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
 
-              <a class="collapse-item contraer" data-toggle="tooltip" data-placement="right"
-                title="Proceso de reclutamiento"
-                href="<?php echo site_url('Reporte/reporte_exempleados') ?>">Exempleados.</a>
+              <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_exempleados') ?>">
+                <?php echo $this->lang->line('sidebar_reports_former_employees'); ?>
+              </a>
               <?php }?>
             </div>
           </div>
@@ -289,7 +290,7 @@ echo $token  */?>
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
             aria-expanded="true" aria-controls="collapseCatalogos">
             <i class="fas fa-fw fa-folder"></i>
-            <span>Registrar</span>
+            <span><?php echo $this->lang->line('sidebar_register'); ?></span>
           </a>
 
           <div id="collapseCatalogos" class="collapse" aria-labelledby="headingUtilities"
@@ -298,19 +299,19 @@ echo $token  */?>
 
               <?php if ($itemUsuariosAdmins): ?>
               <a class="collapse-item" href="<?php echo site_url('Cat_UsuarioInternos/index') ?>">
-                Usuarios Administradores
+                <?php echo $this->lang->line('sidebar_admin_users'); ?>
               </a>
               <?php endif; ?>
 
               <?php if ($itemSucursales): ?>
               <a class="collapse-item" href="<?php echo site_url('Cat_Cliente/index') ?>">
-                Sucursales/Clientes
+                <?php echo $this->lang->line('sidebar_branches_clients'); ?>
               </a>
               <?php endif; ?>
 
               <?php if ($itemPortales): ?>
               <a class="collapse-item" href="<?php echo site_url('Cat_Portales/index') ?>">
-                Portales
+                <?php echo $this->lang->line('sidebar_portals'); ?>
               </a>
               <?php endif; ?>
 
@@ -344,45 +345,53 @@ echo $token  */?>
                 <div class="button-container">
                   <a id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>"
                     class="btn custom-btn recruitment-btn">
-                    <div class="module-label">Módulo</div>
+                    <div class="module-label">
+                      <?php echo $this->lang->line('topbar_module_label'); ?>
+                    </div>
                     <div class="btn-content">
-                      <i class="fas fa-users"></i> <!-- Icono de FontAwesome para Recruitment -->
-                      Reclutamiento
+                      <i class="fas fa-users"></i>
+                      <?php echo $this->lang->line('topbar_recruitment'); ?>
                     </div>
                   </a>
                   <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>"
                     class="btn custom-btn pre-employment-btn">
-                    <div class="module-label">Módulo</div>
+                    <div class="module-label">
+                      <?php echo $this->lang->line('topbar_module_label'); ?>
+                    </div>
                     <div class="btn-content">
-                      <i class="fas fa-user-clock"></i> <!-- Icono de FontAwesome para Pre-employment -->
-                      Preempleo
+                      <i class="fas fa-user-clock"></i>
+                      <?php echo $this->lang->line('topbar_pre_employment'); ?>
                     </div>
                   </a>
                   <a id="employment-btn employment-btn" href="<?php echo site_url('Empleados/index') ?>"
                     class="btn custom-btn employment-btn">
-                    <div class="module-label">Módulo</div>
+                    <div class="module-label">
+                      <?php echo $this->lang->line('topbar_module_label'); ?>
+                    </div>
                     <div class="btn-content">
-                      <i class="fas fa-briefcase"></i> <!-- Icono de FontAwesome para Employee -->
-                      Empleados
+                      <i class="fas fa-briefcase"></i>
+                      <?php echo $this->lang->line('topbar_employees'); ?>
                     </div>
                   </a>
 
                   <a id="former-employment-btn " href="<?php echo site_url('Empleados/exEmpleados') ?>"
                     class="btn custom-btn former-employment-btn">
-                    <div class="module-label">Módulo</div>
+                    <div class="module-label">
+                      <?php echo $this->lang->line('topbar_module_label'); ?>
+                    </div>
                     <div class="btn-content">
-                      <!-- Contenedor para el ícono y texto -->
-                      <i class="fas fa-user-times"></i> <!-- Icono de FontAwesome para Former employee -->
-                      Exempleados
+                      <i class="fas fa-user-times"></i>
+                      <?php echo $this->lang->line('topbar_former_employees'); ?>
                     </div>
                   </a>
                   <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion') ?>"
                     class="btn custom-btn former-actividades-btn">
-                    <div class="module-label">Módulo</div>
+                    <div class="module-label">
+                      <?php echo $this->lang->line('topbar_module_label'); ?>
+                    </div>
                     <div class="btn-content">
-                      <!-- Contenedor para el ícono y texto -->
-                      <i class="fas fa-calendar-alt"></i> <!-- Icono de FontAwesome para Former employee -->
-                      Comunicación
+                      <i class="fas fa-calendar-alt"></i>
+                      <?php echo $this->lang->line('topbar_communication'); ?>
                     </div>
                   </a>
 
@@ -402,7 +411,9 @@ echo $token  */?>
                 </a>
                 <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                   aria-labelledby="alertsDropdown">
-                  <h6 class="dropdown-header">Notificaciones</h6>
+                  <h6 class="dropdown-header">
+                    <?php echo $this->lang->line('topbar_notifications'); ?>
+                  </h6>
                   <div id="contenedorNotificaciones" style="height: 40rem; overflow-y: auto; color: red"></div>
                 </div>
               </li>
@@ -411,9 +422,13 @@ echo $token  */?>
                   title="Proveedores destacados"
                   style="line-height: 1.2; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0;">
 
-                  <div style="font-size: 9px; font-weight: bold; color: #000;">Proveedores</div>
+                  <div style="font-size: 9px; font-weight: bold; color: #000;">
+                    <?php echo $this->lang->line('topbar_suppliers'); ?>
+                  </div>
                   <i class="fas fa-key fa-fw icono-dorado" style="font-size: 20px;"></i>
-                  <div style="font-size: 9px; font-weight: bold; color: #000;">Destacados</div>
+                  <div style="font-size: 9px; font-weight: bold; color: #000;">
+                    <?php echo $this->lang->line('topbar_featured_suppliers'); ?>
+                  </div>
                 </a>
               </li>
               <!-- Selector de idioma solo con bandera -->
@@ -437,7 +452,7 @@ echo $token  */?>
                   </button>
                 </div>
               </li>
-             
+
             </ul>
           </nav>
           <!-- Modal para subir la imagen -->

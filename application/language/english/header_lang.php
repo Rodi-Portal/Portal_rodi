@@ -38,5 +38,5 @@ $lang['topbar_former_employees']   = 'Former employees';
 $lang['topbar_communication']      = 'Communication';
 
 $lang['topbar_notifications']      = 'Notifications';
-$lang['topbar_suppliers']          = 'Suppliers';
-$lang['topbar_featured_suppliers'] = 'Featured suppliers';
+$lang['topbar_suppliers']          = 'Freatured';
+$lang['topbar_featured_suppliers'] = 'Suppliers';
