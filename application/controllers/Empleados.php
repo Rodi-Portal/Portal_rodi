@@ -15,6 +15,10 @@ class Empleados extends CI_Controller
         $this->load->helper('language');
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
+        $lang      = $this->session->userdata('lang') ?: 'es';
+        $idioma_ci = ($lang === 'en') ? 'english' : 'espanol';
+
+        $this->lang->load('modulos', $idioma_ci);
 
     }
 // esta  funcion  es  para  cargar el modulo de empleados
@@ -23,7 +27,8 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']  = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $data['permisos']  = $this->usuario_model->getPermisos(true);
+
+        $data['permisos'] = $this->usuario_model->getPermisos(true);
 
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
@@ -117,8 +122,10 @@ class Empleados extends CI_Controller
     public function preEmpleados()
     {
         // Obtiene los submenús y otros datos necesarios
-        $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
-        $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
+        $data['submenus']  = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+   
+
         $data['permisos']   = $this->usuario_model->getPermisos(false, 'pre');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
@@ -165,8 +172,9 @@ class Empleados extends CI_Controller
     public function exEmpleados()
     {
         // Obtiene los submenús y otros datos necesarios
-        $data['submenus']   = $this->rol_model->getMenu($this->session->userdata('idrol'));
-        $modales['modals']  = $this->load->view('modals/mdl_usuario', '', true);
+        $data['submenus']  = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+       
         $data['permisos']   = $this->usuario_model->getPermisos(true, 'former');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 

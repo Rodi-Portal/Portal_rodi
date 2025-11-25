@@ -1,17 +1,26 @@
 <div class="container-fluid">
-  <h2>Módulo de Exmpleados</h2>
-  <p>En este módulo podrás consultar los empleados que ya no están activos. Se muestra un listado de tus areas,
-    departamentos o sucursales/clientes, al seleccionar uno, podrás ver el listado de exempleados. Desde ahí podrás gestionar sus
-    registros de manera clara, ágil y eficiente.</p>
+  <h2><?php echo $this->lang->line('mod_exempleados_title'); ?></h2>
+
+  <p><?php echo $this->lang->line('mod_intro_exempleados'); ?></p>
 
   <table id="processTable" class="display" style="width: 100%;">
     <thead>
       <tr>
-        <th style="text-align: center">Sucursal/Cliente </th>
-        <th style="text-align: center">Correo Electrónico</th>
-        <th style="text-align: center">Acceso a sucursal/cliente</th>
-        <th style="text-align: center">Empleados</th>
-        <th style="text-align: center">Acciones</th>
+        <th style="text-align: center">
+          <?php echo $this->lang->line('mod_table_branch'); ?>
+        </th>
+        <th style="text-align: center">
+          <?php echo $this->lang->line('mod_table_email'); ?>
+        </th>
+        <th style="text-align: center">
+          <?php echo $this->lang->line('mod_table_access_branch'); ?>
+        </th>
+        <th style="text-align: center">
+          <?php echo $this->lang->line('mod_table_employees'); ?>
+        </th>
+        <th style="text-align: center">
+          <?php echo $this->lang->line('mod_table_actions'); ?>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -20,41 +29,71 @@
       <?php if (isset($p['nombreCliente']) && isset($p['url'])): ?>
       <tr>
         <td><?php echo htmlspecialchars($p['nombreCliente'], ENT_QUOTES, 'UTF-8'); ?></td>
-        <td><?php echo isset($p['correo']) ? htmlspecialchars($p['correo'], ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
-        <td><?php foreach ($p['usuarios'] as $usuario): ?>
+
+        <td>
+          <?php echo isset($p['correo'])
+                        ? htmlspecialchars($p['correo'], ENT_QUOTES, 'UTF-8')
+                    : $this->lang->line('mod_table_na'); ?>
+        </td>
+
+        <td>
+          <ul class="usuarios-acceso-list">
+            <?php foreach ($p['usuarios'] as $usuario): ?>
+            <li class="usuario-acceso-item">
+              <div class="usuario-info">
+                <span class="usuario-nombre">
+                  <?php echo htmlspecialchars($usuario['nombre_completo'], ENT_QUOTES, 'UTF-8'); ?>
+                </span>
+                <span class="usuario-detalle">
+                  <?php echo htmlspecialchars($usuario['rol'], ENT_QUOTES, 'UTF-8'); ?>
+                  · ID:<?php echo htmlspecialchars($usuario['id_usuario'], ENT_QUOTES, 'UTF-8'); ?>
+                </span>
+              </div>
+
+              <?php
+            $idRol = $this->session->userdata('idrol');
+            if ($idRol == 6 || $idRol == 1):
+        ?>
+              <button type="button" class="btn-usuario-remove eliminar-permiso"
+                data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
+                data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal/cliente">
+                <i class="fa fa-trash"></i>
+              </button>
+              <?php endif; ?>
+            </li>
+            <?php endforeach; ?>
+          </ul>
+        </td>
+
+
+        <td>
           <li>
-            <?php echo htmlspecialchars($usuario['nombre_completo'], ENT_QUOTES, 'UTF-8'); ?>
-            (<?php echo htmlspecialchars($usuario['rol'], ENT_QUOTES, 'UTF-8'); ?>)
-            (<?php echo htmlspecialchars($usuario['id_usuario'], ENT_QUOTES, 'UTF-8'); ?>)
-            <!-- Icono de papelera para eliminar el permiso -->
-            <?php
-                $idRol = $this->session->userdata('idrol');
-
-            if ($idRol == 6 || $idRol == 1) {?>
-            <a href="#" class="eliminar-permiso" data-id_usuario="<?php echo $usuario['id_usuario']; ?>"
-              data-id_cliente="<?php echo $p['id_cliente']; ?>" title="Eliminar acceso a esta sucursal/cliente">
-              <i class="fa fa-trash" style="color: red; float: right"></i>
-            </a>
-            <?php }?>
+            <?php echo $this->lang->line('mod_ex_max_number'); ?>
+            <?php echo htmlspecialchars($p['max'], ENT_QUOTES, 'UTF-8'); ?>
           </li>
-          <?php endforeach; ?>
+          <li>
+            <?php echo $this->lang->line('mod_ex_employees_active'); ?>
+            <?php echo htmlspecialchars($p['empleados_activos'], ENT_QUOTES, 'UTF-8'); ?>
+          </li>
+          <li>
+            <?php echo $this->lang->line('mod_ex_employees_inactive'); ?>
+            <?php echo htmlspecialchars($p['empleados_inactivos'], ENT_QUOTES, 'UTF-8'); ?>
+          </li>
         </td>
 
         <td>
-          <li>Numero maximo: <?php echo $p['max']; ?></li>
-          <li>Empleados :<?php echo $p['empleados_activos']; ?></li>
-          <li> Exempleados : <?php echo $p['empleados_inactivos']; ?></li>
-        </td>
-        <td>
-          <a href="<?php echo site_url('procesoFormer/' . $p['id_cliente']); ?>" class="btn-ver-empleados">Ver Ex
-            empleados</a>
+          <a href="<?php echo site_url('procesoFormer/' . $p['id_cliente']); ?>" class="btn-ver-empleados">
+            <?php echo $this->lang->line('mod_btn_view_exemployees'); ?>
+          </a>
         </td>
       </tr>
       <?php endif; ?>
       <?php endforeach; ?>
       <?php else: ?>
       <tr>
-        <td colspan="6">No clients registered yet.</td>
+        <td colspan="5">
+          <?php echo $this->lang->line('mod_table_no_branches'); ?>
+        </td>
       </tr>
       <?php endif; ?>
     </tbody>
@@ -108,36 +147,101 @@
   background: linear-gradient(45deg, #2fa6cf, #007ca8);
   /* Efecto hover más intenso */
 }
+
+.usuarios-acceso-list {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+/* Tarjetita por usuario */
+.usuario-acceso-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  background: #cae7f2ff;
+  /* verde muy clarito */
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(134, 215, 243, 0.57);
+}
+
+.usuario-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.usuario-nombre {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.usuario-detalle {
+  font-size: 0.78rem;
+  color: #666;
+}
+
+/* Botón de eliminar a la derecha */
+.btn-usuario-remove {
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-usuario-remove i {
+  font-size: 1rem;
+}
+
+.btn-usuario-remove:hover i {
+  transform: scale(1.1);
+}
 </style>
 
 <script>
-$(document).ready(function () {
+$(document).ready(function() {
   $('#processTable').DataTable({
-    order: [],                    // 👈 respeta el orden del DOM (tu foreach)
+    order: [], // respeta el orden del foreach
   });
 
-  $('#sidebarToggle').on('click', function () {
+  $('#sidebarToggle').on('click', function() {
     $('#sidebar').toggleClass('hidden');
   });
 });
+
+// === Textos de SweetAlert traídos desde CI_LANG ===
+const PERM_TXT = {
+  confirmTitle: '<?php echo $this->lang->line('mod_perm_delete_title'); ?>',
+  confirmText: '<?php echo $this->lang->line('mod_perm_delete_text'); ?>',
+  confirmOk: '<?php echo $this->lang->line('mod_perm_delete_confirm'); ?>',
+  confirmCancel: '<?php echo $this->lang->line('mod_perm_delete_cancel'); ?>',
+  deletedTitle: '<?php echo $this->lang->line('mod_perm_deleted_title'); ?>',
+  deletedText: '<?php echo $this->lang->line('mod_perm_deleted_text'); ?>',
+  errorTitle: '<?php echo $this->lang->line('mod_perm_error_title'); ?>',
+  errorDelete: '<?php echo $this->lang->line('mod_perm_error_delete'); ?>'
+};
+
 $(document).on('click', '.eliminar-permiso', function(e) {
   e.preventDefault();
 
   var id_usuario = $(this).data('id_usuario');
   var id_cliente = $(this).data('id_cliente');
 
-  // Mostrar confirmación usando SweetAlert
   Swal.fire({
-    title: '¿Estás seguro?',
-    text: 'Al eliminar este permiso, el usuario perderá visibilidad a esta sucursal/cliente.',
+    title: PERM_TXT.confirmTitle,
+    text: PERM_TXT.confirmText,
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
+    confirmButtonText: PERM_TXT.confirmOk,
+    cancelButtonText: PERM_TXT.confirmCancel,
     reverseButtons: true
   }).then((result) => {
     if (result.isConfirmed) {
-      // Enviar solicitud de eliminación al servidor
       $.ajax({
         url: '<?php echo site_url("Cat_UsuarioInternos/eliminarPermiso"); ?>',
         method: 'POST',
@@ -149,23 +253,23 @@ $(document).on('click', '.eliminar-permiso', function(e) {
           var data = JSON.parse(response);
           if (data.status === 'success') {
             Swal.fire(
-              'Eliminado',
-              'El permiso ha sido eliminado exitosamente.',
+              PERM_TXT.deletedTitle,
+              PERM_TXT.deletedText,
               'success'
             );
-            location.reload(); // Recargar la página para actualizar los datos
+            location.reload();
           } else {
             Swal.fire(
-              'Error',
-              data.message,
+              PERM_TXT.errorTitle,
+              data.message || PERM_TXT.errorDelete,
               'error'
             );
           }
         },
         error: function() {
           Swal.fire(
-            'Error',
-            'Ocurrió un error al intentar eliminar el permiso.',
+            PERM_TXT.errorTitle,
+            PERM_TXT.errorDelete,
             'error'
           );
         }
