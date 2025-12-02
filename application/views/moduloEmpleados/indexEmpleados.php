@@ -29,6 +29,8 @@ if (ENVIRONMENT === 'development') {
   <div id="app"
        data-your-value="<?php echo $this->session->userdata('idPortal'); ?>"
        data-your-user-value="<?php echo $this->session->userdata('id'); ?>"
+      data-your-rol-value="<?php echo $this->session->userdata('idrol'); ?>"
+
        data-your-client-value="<?php echo $cliente_id; ?>"
        data-lang="<?php echo htmlspecialchars($lang, ENT_QUOTES, 'UTF-8'); ?>">
   </div>
