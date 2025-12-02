@@ -1,5 +1,18 @@
 <!-- Vista Vue -->
-<link rel="stylesheet" href="<?= base_url('public/comunicacion/comunicacion_vue3.css'); ?>">
+ <?php
+$CI = &get_instance();
+
+// Idioma actual (como en el header)
+$lang = $CI->session->userdata('lang') ?: 'es';
+
+// En desarrollo: forzar no caché
+if (ENVIRONMENT === 'development') {
+    $assets_version = time();
+} else {
+    $assets_version = $CI->config->item('assets_version') ?: '1';
+}
+?>
+<link rel="stylesheet" href="<?= base_url('public/comunicacion/comunicacion_vue3.css'); ?>?v=<?php echo $assets_version; ?>">
 <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 
 <?php
@@ -69,7 +82,7 @@ foreach ($SLUGS as $slug) {
   </div>
 <?php } ?>
 
-<script src="<?= base_url('public/comunicacion/comunicacion-vue3.js'); ?>"></script>
+<script src="<?= base_url('public/comunicacion/comunicacion-vue3.js'); ?>?v=<?php echo $assets_version; ?>"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app')) {
