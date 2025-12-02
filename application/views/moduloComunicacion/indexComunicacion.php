@@ -1,4 +1,16 @@
-<!-- Vista Vue -->
+<?php
+$CI = &get_instance();
+
+// Idioma actual (como en el header)
+$lang = $CI->session->userdata('lang') ?: 'es';
+
+// En desarrollo: forzar no caché
+if (ENVIRONMENT === 'development') {
+    $assets_version = time();
+} else {
+    $assets_version = $CI->config->item('assets_version') ?: '1';
+}
+?><!-- Vista Vue -->
 <link rel="stylesheet" href="<?= base_url('public/comunicacion/comunicacion_vue3.css'); ?>">
 <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 
@@ -43,7 +55,7 @@ foreach ($SLUGS as $slug) {
 <script>
   // Slugs permitidos para el usuario actual (leerá comunicacion-vue3.js)
   window.APP_PERMS = <?= json_encode($ALLOWED) ?>;
-  console.log("🚀 ~ APP_PERMS:", window.APP_PERMS);
+ // console.log("🚀 ~ APP_PERMS:", window.APP_PERMS);
 
   // Helper de permisos compartido (Vue 2/3)
   window.$perms = {
@@ -69,7 +81,7 @@ foreach ($SLUGS as $slug) {
   </div>
 <?php } ?>
 
-<script src="<?= base_url('public/comunicacion/comunicacion-vue3.js'); ?>"></script>
+<script src="<?= base_url('public/comunicacion/comunicacion-vue3.js'); ?>?v=<?php echo $assets_version; ?>"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app')) {

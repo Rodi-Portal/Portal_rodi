@@ -14,7 +14,7 @@ if (ENVIRONMENT === 'development') {
 
 <!-- Vista Vue -->
 <link rel="stylesheet"
-      href="<?php echo base_url('public/former/css/cssFormer.css'); ?>?v=<?php echo $assets_version; ?>">
+      href="<?php echo base_url('public/vue/css/cssEmpleados.css'); ?>?v=<?php echo $assets_version; ?>">
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
 
@@ -35,7 +35,7 @@ if (ENVIRONMENT === 'development') {
 </div>
 <?php endif; ?>
 
-<script src="<?php echo base_url('public/former/js/moduloFormer.js'); ?>?v=<?php echo $assets_version; ?>"></script>
+<script src="<?php echo base_url('public/vue/js/moduloEmpleados.js'); ?>?v=<?php echo $assets_version; ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('app')) {

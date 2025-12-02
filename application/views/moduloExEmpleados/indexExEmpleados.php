@@ -1,6 +1,20 @@
- <!--Vista  Vue   -->
+
+<?php
+$CI = &get_instance();
+
+// Idioma actual (como en el header)
+$lang = $CI->session->userdata('lang') ?: 'es';
+
+// En desarrollo: forzar no caché
+if (ENVIRONMENT === 'development') {
+    $assets_version = time();
+} else {
+    $assets_version = $CI->config->item('assets_version') ?: '1';
+}
+?>
+<!--Vista  Vue   -->
 <link rel="stylesheet"
-      href="<?php echo base_url('public/former/css/cssFormer.css'); ?>?v=<?php echo time(); ?>">
+      href="<?php echo base_url('public/former/css/cssFormer.css'); ?>?v=<?php echo $assets_version; ?>">
        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
  <?php if ($this->session->userdata('idrol') == 4) {?>
  <div class="seccion" id="seccion1">
@@ -18,7 +32,7 @@
          data-your-client-value="<?php echo $cliente_id; ?>">></div>
 </div>
 <?php } ?>
-<script src="<?php echo base_url('public/former/js/moduloFormer.js'); ?>?v=<?php echo time(); ?>"></script>
+<script src="<?php echo base_url('public/former/js/moduloFormer.js'); ?>?v=<?php echo $assets_version; ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('app')) {
