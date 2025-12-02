@@ -29,7 +29,10 @@ if (ENVIRONMENT === 'development') {
     <div id="app" 
          data-your-value="<?php echo $this->session->userdata('idPortal'); ?>" 
          data-your-user-value="<?php echo $this->session->userdata('id'); ?>"
+        data-your-rol-value="<?php echo $this->session->userdata('idrol'); ?>"  
+
          data-your-client-value="<?php echo $cliente_id; ?>">></div>
+         
 </div>
 <?php } ?>
 <script src="<?php echo base_url('public/former/js/moduloFormer.js'); ?>?v=<?php echo $assets_version; ?>"></script>
