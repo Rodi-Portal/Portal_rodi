@@ -27,33 +27,39 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
 <div class="align-items-center mb-4">
   <div class="row">
     <div class="col-sm-12 col-md-6 d-flex justify-content-start align-items-center">
-      <h2>Administradores del Sistema</h2>
+      <h2><?php echo $this->lang->line('admin_users_title') ?></h2>
     </div>
+
     <?php $idRol = $this->session->userdata('idrol'); ?>
     <?php if ($idRol == 1 || $idRol == 6): ?>
     <div class="col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
+
       <a href="#" class="btn btn-primary btn-icon-split" onclick="BotonRegistroUsuarioInterno()">
         <span class="icon text-white-50">
           <i class="fas fa-user-tie"></i>
         </span>
-        <span class="text">Crear Usuario</span>
+        <span class="text"><?php echo $this->lang->line('admin_users_btn_create') ?></span>
       </a>
+
       <p> </p>
+
       <a href="#" class="btn btn-primary btn-icon-split" onclick="AsignarSucursalUsuarioInterno()">
         <span class="icon text-white-50">
           <i class="fas fa-user-tie"></i>
         </span>
-        <span class="text">Asignar Usuario</span>
+        <span class="text"><?php echo $this->lang->line('admin_users_btn_assign') ?></span>
       </a>
+
     </div>
     <?php endif; ?>
 
   </div>
+
   <div>
-    <P> En este módulo podrás gestionar a tus usuarios internos. Tendrás la capacidad de crear <br>nuevos usuarios,
-      actualizar su información y reenviar credenciales cuando sea necesario.</P>
+    <p><?php echo $this->lang->line('admin_users_description') ?></p>
   </div>
 </div>
+
 
 <div class="card shadow mb-4">
   <div class="card-header py-3">
@@ -71,7 +77,7 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Asignar Sucursal a Usuarios</h5>
+        <h5 class="modal-title"><?php echo $this->lang->line('admin_users_modal_assign_title') ?></h5>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
@@ -79,28 +85,29 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
 
           <!-- Usuarios -->
           <div class="form-group">
-            <label for="usuario">Usuarios</label>
+            <label for="usuario"><?php echo $this->lang->line('admin_users_modal_users') ?></label>
             <select id="usuario" class="form-control">
-              <option value="">Seleccione un usuario</option>
             </select>
           </div>
           <div id="listaUsuarios" class="mb-3"></div> <!-- Aquí se mostrarán los usuarios seleccionados -->
           <div class="form-group">
             <label>
-              <input type="checkbox" id="selectAllSucursales"> Seleccionar todas las sucursales/clientes
+              <input type="checkbox" id="selectAllSucursales">
+              <?php echo $this->lang->line('admin_users_modal_select_all') ?>
             </label>
           </div>
           <!-- Sucursales -->
           <div class="form-group">
-            <label for="sucursal">Sucursales/Clientes</label>
+            <label for="sucursal"><?php echo $this->lang->line('admin_users_modal_branches') ?></label>
             <select id="sucursal" class="form-control">
-              <option value="">Seleccione una sucursal/cliente</option>
             </select>
           </div>
           <div id="listaSucursales" class="mb-3"></div> <!-- Aquí se mostrarán las sucursales seleccionadas -->
 
           <div class="text-center">
-            <button type="button" class="btn btn-primary" id="btnGuardarSucursal">Guardar</button>
+            <button type="button" class="btn btn-primary" id="btnGuardarSucursal">
+              <?php echo $this->lang->line('admin_users_modal_save') ?>
+            </button>
           </div>
         </form>
       </div>
@@ -119,8 +126,13 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
       </div>
       <div class="modal-body" id="mensaje"></div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="btnConfirmar">Confirm</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo $this->lang->line('admin_users_modal_btn_cancel') ?>
+        </button>
+
+        <button type="button" class="btn btn-danger" id="btnConfirmar">
+          <?php echo $this->lang->line('admin_users_modal_btn_confirm') ?>
+        </button>
       </div>
     </div>
   </div>
@@ -130,8 +142,9 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="titulo_mensaje_contraseña">Send credentials</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">
+          <?php echo $this->lang->line('admin_users_send_credentials_title') ?>
+        </h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span>&times;</span>
         </button>
       </div>
@@ -139,11 +152,11 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
         <div class="row justify-content-center">
           <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
           <div class="col-md-9">
-            <label>Generate password *</label>
+            <label><?php echo $this->lang->line('admin_users_generate_password') ?></label>
             <div class="input-group">
               <input type="text" class="form-control" name="password" id="password" maxlength="20">
               <div class="input-group-append">
-                <button type="button" class="btn btn-primary" onclick="generarPassword()">Generar</button>
+                <button type="button" class="btn btn-primary" onclick="generarPassword()">Generate</button>
               </div>
             </div>
           </div>
@@ -154,7 +167,9 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="btnEnviarPass">Resend password</button>
+        <button type="button" class="btn btn-danger" id="btnEnviarPass">
+          <?php echo $this->lang->line('admin_users_btn_resend') ?>
+        </button>
       </div>
     </div>
   </div>
@@ -166,7 +181,7 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
   <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header py-2">
-        <h5 class="modal-title">Permisos</h5>
+        <h5 class="modal-title"><?php echo $this->lang->line('admin_users_permissions_title') ?></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -208,12 +223,12 @@ $(document).ready(function() {
     "ajax": url,
     "columns": [{
 
-        title: 'id',
+        title: "<?php echo $this->lang->line('admin_users_col_id'); ?>",
         data: 'id',
         visible: false
       },
       {
-        title: 'ID',
+        title: "<?php echo $this->lang->line('admin_users_col_id'); ?>",
         data: 'id_usuario',
         bSortable: false,
         "width": "4%",
@@ -222,7 +237,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Nombre',
+        title: "<?php echo $this->lang->line('admin_users_col_name'); ?>",
         data: 'referente',
         bSortable: false,
         "width": "15%",
@@ -231,7 +246,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Matriz',
+        title: "<?php echo $this->lang->line('admin_users_col_branch'); ?>",
         data: 'nombre_portal',
         bSortable: false,
         "width": "15%",
@@ -240,7 +255,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Correo',
+        title: "<?php echo $this->lang->line('admin_users_col_email'); ?>",
         data: 'correo',
         bSortable: false,
         "width": "15%",
@@ -249,7 +264,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Rol Usuario',
+        title: "<?php echo $this->lang->line('admin_users_col_role'); ?>",
         data: 'nombre_rol',
         bSortable: false,
         "width": "3%",
@@ -258,7 +273,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Fecha de creacion',
+        title: "<?php echo $this->lang->line('admin_users_col_created'); ?>",
         data: 'creacion',
         bSortable: false,
         "width": "7%",
@@ -275,7 +290,7 @@ $(document).ready(function() {
       },
 
       {
-        title: 'Última Actualización',
+        title: "<?php echo $this->lang->line('admin_users_col_updated'); ?>",
         data: 'edicion',
         bSortable: false,
         "width": "8%",
@@ -293,7 +308,7 @@ $(document).ready(function() {
 
 
       {
-        title: 'Acciones',
+        title: "<?php echo $this->lang->line('admin_users_col_actions'); ?>",
         data: 'id_usuario',
         bSortable: false,
         visible: SHOW_ACTIONS,
@@ -334,7 +349,7 @@ $(document).ready(function() {
           // Mostrar el botón “Permisos” si el VISOR tiene el permiso global, incluso en su propia fila.
           // El bloqueo para no “auto-suicidarse” vive en el backend (ver punto 2).
           const permisos = P.USR_CONFIG ?
-            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_morado abrir-permisos" title="Permisos del usuario" data-id="' +
+            '<a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_morado abrir-permisos" title="<?php echo $this->lang->line('admin_users_col_actions'); ?>" data-id="' +
             data + '" data-module=""><i class="fas fa-user-shield" style="font-size:16px;"></i></a> ' :
             '';
 
@@ -373,57 +388,73 @@ $(document).ready(function() {
     rowCallback: function(row, data) {
 
 
-      $("a#editar", row).bind('click', () => {
-        $("#idUsuarioInterno").val(data.id_usuario);
-        $("#idDatosGenerales").val(data.id_datos_generales);
-        $("#titulo_nuevo_modal").text("Editar Usuario");
-        $("#nombreUsuarioInterno").val(data.nombre);
-        $("#paternoUsuarioInterno").val(data.paterno);
+    $("a#editar", row).bind('click', () => {
 
-        if (<?php echo $this->session->userdata('idrol'); ?> != 6) {
-          $("#id_rolUsuarioInterno").val(data.id_rol);
-          $("#id_rolUsuarioInterno").prop('disabled', true);
+    $("#idUsuarioInterno").val(data.id_usuario);
+    $("#idDatosGenerales").val(data.id_datos_generales);
 
-        } else {
-          $("#id_rolUsuarioInterno").val(data.id_rol);
+    // ✔ Título traducido
+    $("#titulo_nuevo_modal").text("<?php echo $this->lang->line('admin_users_edit_title'); ?>");
 
-        }
-        $("#correoUsuarioInterno").val(data.correo);
-        $("#telefonoUsuarioInterno").val(data.telefono);
-        // Se oculta el botón de Generar contraseña en modo de edición
-        $('#ocultar-en-editar').hide();
-        $("#divGenerarPassword").hide();
-        $("#labelOcultar").hide();
+    $("#nombreUsuarioInterno").val(data.nombre);
+    $("#paternoUsuarioInterno").val(data.paterno);
+
+    const rolSesion = <?php echo $this->session->userdata('idrol'); ?>;
+
+    // Si NO es rol 6 NI 1 → deshabilitar el select
+    if (rolSesion != 6 && rolSesion != 1) {
+        $("#id_rolUsuarioInterno").val(data.id_rol).prop('disabled', true);
+    } else {
+        $("#id_rolUsuarioInterno").val(data.id_rol).prop('disabled', false);
+    }
+
+    // Mantener sincronizado el hidden
+    $("#id_rolUsuarioInterno_hidden").val(data.id_rol);
+
+    $("#id_rolUsuarioInterno").on("change", function () {
+        $("#id_rolUsuarioInterno_hidden").val($(this).val());
+    });
+
+    $("#correoUsuarioInterno").val(data.correo);
+    $("#telefonoUsuarioInterno").val(data.telefono);
+
+    // Ocultar elementos solo usados en registro
+    $('#ocultar-en-editar').hide();
+    $("#divGenerarPassword").hide();
+    $("#labelOcultar").hide();
+
+    // ✔ Botón traducido
+    $("#btnGuardar").text("<?php echo $this->lang->line('admin_users_btn_save_changes'); ?>");
+
+    $("#btnGuardar").off("click").on("click", function () {
+        editarUsuarios();
+    });
+
+    $("#nuevoAccesoUsuariosInternos").modal("show");
+});
 
 
-        $("#btnGuardar").text("Guardar Cambios");
-        $("#btnGuardar").off("click").on("click", function() {
-          editarUsuarios();
-        });
-
-        $("#nuevoAccesoUsuariosInternos").modal("show");
-
-      });
 
     },
 
     /****************************************************************/
+    // Traducciones del DataTable
     "language": {
-      "lengthMenu": "Mostrar _MENU_ registros",
-      "zeroRecords": "No se encontraron registros",
-      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-      "infoEmpty": "No hay registros disponibles",
-      "infoFiltered": "(Filtrado de _MAX_ registros en total)",
-      "sSearch": "Buscar:",
+      "lengthMenu": "<?php echo($lang == 'es') ? 'Mostrar _MENU_ registros' : 'Show _MENU_ records'; ?>",
+      "zeroRecords": "<?php echo($lang == 'es') ? 'No se encontraron registros' : 'No records found'; ?>",
+      "info": "<?php echo($lang == 'es') ? 'Mostrando _START_ a _END_ de _TOTAL_' : 'Showing _START_ to _END_ of _TOTAL_'; ?>",
+      "infoEmpty": "<?php echo($lang == 'es') ? 'No hay registros disponibles' : 'No records available'; ?>",
+      "infoFiltered": "<?php echo($lang == 'es') ? '(filtrado de _MAX_ registros)' : '(filtered from _MAX_ total records)'; ?>",
+      "sSearch": "<?php echo($lang == 'es') ? 'Buscar:' : 'Search:'; ?>",
       "oPaginate": {
-        "sLast": "Última página",
-        "sFirst": "Primera",
-        "sNext": "Siguiente",
-        "sPrevious": "Anterior"
+        "sLast": "<?php echo($lang == 'es') ? 'Última página' : 'Last page'; ?>",
+        "sFirst": "<?php echo($lang == 'es') ? 'Primera' : 'First'; ?>",
+        "sNext": "<?php echo($lang == 'es') ? 'Siguiente' : 'Next'; ?>",
+        "sPrevious": "<?php echo($lang == 'es') ? 'Anterior' : 'Previous'; ?>"
       }
     }
-
   });
+
   $(document).on('click', '.cambiar-estado', function() {
     var status = $(this).data('status');
     var id = $(this).data('id');
@@ -450,39 +481,43 @@ $(document).ready(function() {
 
 /****************************FUNCION***EDITAR*****************************************/
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
-  if (accion == "eliminarUsuario") {
-    $('#titulo_mensaje').text('Eliminar usuario');
-    $('#mensaje').html('¿Desea eliminar al usuario <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "botonesAccionesUsuario('eliminar'," + valor2 + ")");
-    $('#btnConfirmar').attr("data-dismiss", "modal");
-    $('#mensajeModal').modal('show');
 
+  if (accion == "eliminarUsuario") {
+    $('#titulo_mensaje').html('<?php echo $this->lang->line("admin_users_js_delete_title") ?>');
+    $('#mensaje').html(
+      '<?php echo str_replace("{user}", "' + valor1 + '", $this->lang->line("admin_users_js_delete_msg")) ?>');
+    $('#btnConfirmar').attr("onclick", "botonesAccionesUsuario('eliminar'," + valor2 + ")");
+    $('#mensajeModal').modal('show');
   } else if (accion == "Desactivar usuario") {
-    $('#titulo_mensaje').text('Desactivar usuario');
-    $('#mensaje').html('¿Desea desactivar al usuario <b>' + valor1 + '</b>?');
+    $('#titulo_mensaje').html('<?php echo $this->lang->line("admin_users_js_disable_title") ?>');
+    $('#mensaje').html(
+      '<?php echo str_replace("{user}", "' + valor1 + '", $this->lang->line("admin_users_js_disable_msg")) ?>');
     $('#btnConfirmar').attr("onclick", "botonesAccionesUsuario('desactivar'," + valor2 + ")");
-    $('#btnConfirmar').attr("data-dismiss", "modal");
     $('#mensajeModal').modal('show');
   } else if (accion == "Activar usuario") {
-    $('#titulo_mensaje').text('Activar usuario');
-    $('#mensaje').html('¿Desea Activar al usuario <b>' + valor1 + '</b>?');
+    $('#titulo_mensaje').html('<?php echo $this->lang->line("admin_users_js_enable_title") ?>');
+    $('#mensaje').html(
+      '<?php echo str_replace("{user}", "' + valor1 + '", $this->lang->line("admin_users_js_enable_msg")) ?>');
     $('#btnConfirmar').attr("onclick", "botonesAccionesUsuario('activar'," + valor2 + ")");
-    $('#btnConfirmar').attr("data-dismiss", "modal");
     $('#mensajeModal').modal('show');
   }
 }
 
-function enviarCredenciales(valor1, valor2) {
 
-  $('#titulo_mensaje_contraseña').text('Reenviar Contraseña');
-  $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña : <b>' + valor1 + '</b>?');
+function enviarCredenciales(email, userId) {
+
+  $('#titulo_mensaje_contraseña').html('<?php echo $this->lang->line("admin_users_js_resend_title") ?>');
+  $('#mensaje_contraseña').html(
+    '<?php echo str_replace("{email}", "' + email + '", $this->lang->line("admin_users_js_resend_msg")) ?>');
+
   $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
-  $('#btnEnviarPass').attr("data-dismiss", "modal");
-  $('#idUsuarioInternoEditPass').val(valor2); // Asignar valor a idUsuarioInterno
-  $('#idCorreo').val(valor1);
-  $('#password').val(''); // Asignar valor a idCorreo
+  $('#idUsuarioInternoEditPass').val(userId);
+  $('#idCorreo').val(email);
+  $('#password').val('');
+
   $('#enviarCredenciales').modal('show');
 }
+
 
 
 
@@ -500,40 +535,49 @@ function BotonRegistroUsuarioInterno() {
       $('.loader').fadeOut();
 
       if (res.supera_limite) {
+
         Swal.fire({
-          title: 'Límite de usuarios alcanzado',
-          html: 'Los usuarios disponibles para tu suscripción ya están completos.<br>¿Deseas agregar uno más por un costo mensual adicional de <b>$50 USD</b>?',
+          title: "<?php echo $this->lang->line('admin_users_limit_reached_title'); ?>",
+          html: "<?php echo $this->lang->line('admin_users_limit_reached_msg'); ?>",
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Sí, aceptar costo extra',
-          cancelButtonText: 'Cancelar'
+          confirmButtonText: "<?php echo $this->lang->line('admin_users_btn_accept_extra'); ?>",
+          cancelButtonText: "<?php echo $this->lang->line('admin_users_btn_cancel'); ?>"
         }).then((result) => {
+
           if (result.isConfirmed) {
-            // Segunda confirmación
+
             Swal.fire({
-              title: 'Confirmación final',
-              html: 'Estás a punto de generar un cobro adicional que se reflejará en tu próxima factura.<br><b>¿Deseas continuar?</b>',
+              title: "<?php echo $this->lang->line('admin_users_final_confirm_title'); ?>",
+              html: "<?php echo $this->lang->line('admin_users_final_confirm_msg'); ?>",
               icon: 'question',
               showCancelButton: true,
-              confirmButtonText: 'Sí, continuar',
-              cancelButtonText: 'Volver'
+              confirmButtonText: "<?php echo $this->lang->line('admin_users_btn_continue'); ?>",
+              cancelButtonText: "<?php echo $this->lang->line('admin_users_btn_cancel'); ?>"
             }).then((secondResult) => {
               if (secondResult.isConfirmed) {
                 mostrarModalRegistroUsuario();
               }
             });
+
           }
         });
+
       } else {
         mostrarModalRegistroUsuario();
       }
     },
     error: function() {
       $('.loader').fadeOut();
-      Swal.fire('Error', 'No se pudo verificar el límite de usuarios.', 'error');
+      Swal.fire(
+        'Error',
+        "<?php echo $this->lang->line('admin_users_error_check_limit'); ?>",
+        'error'
+      );
     }
   });
 }
+
 
 
 function mostrarModalRegistroUsuario() {
@@ -612,7 +656,8 @@ function AsignarSucursalUsuarioInterno() {
       console.log("usuarios del servidor:", res); // Imprime la respuesta completa en consola
 
       $('.loader').fadeOut();
-      $("#usuario").html('<option value="">Seleccione un usuario</option>');
+      $('#usuario').append(
+        '<option value=""><?php echo $this->lang->line("admin_users_modal_select_user") ?></option>');
       $.each(res.data, function(index, usuario) {
         $("#usuario").append('<option value="' + usuario.id_usuario + '">' + usuario.referente + '</option>');
       });
@@ -625,7 +670,9 @@ function AsignarSucursalUsuarioInterno() {
         success: function(res) {
           console.log("Sucursales del servidor:", res); // Imprime la respuesta completa en consola
 
-          $("#sucursal").html('<option value="">Seleccione una sucursal</option>');
+          $('#sucursal').append(
+            '<option value=""><?php echo $this->lang->line("admin_users_modal_select_branch") ?></option>'
+          );
           $.each(res.data, function(index, sucursal) {
             $("#sucursal").append('<option value="' + sucursal.id + '">' + sucursal.nombre +
               '</option>');
@@ -729,17 +776,28 @@ function eliminarSucursal(index) {
 
 // Guardar asignaciones
 $("#btnGuardarSucursal").on("click", function() {
+
+  const t_warning_title = "<?php echo $this->lang->line('admin_users_assign_warning_title'); ?>";
+  const t_warning_text = "<?php echo $this->lang->line('admin_users_assign_warning_text'); ?>";
+  const t_success_title = "<?php echo $this->lang->line('admin_users_assign_success_title'); ?>";
+  const t_success_text = "<?php echo $this->lang->line('admin_users_assign_success_text'); ?>";
+  const t_error_title = "<?php echo $this->lang->line('admin_users_assign_error_title'); ?>";
+  const t_error_text = "<?php echo $this->lang->line('admin_users_assign_error_text'); ?>";
+  const t_confirm_btn = "<?php echo $this->lang->line('admin_users_assign_confirm'); ?>";
+
   if (usuariosSeleccionados.length === 0 || sucursalesSeleccionadas.length === 0) {
     Swal.fire({
       icon: 'warning',
-      title: 'Atención',
-      text: 'Seleccione al menos un usuario y una sucursal.',
-      confirmButtonText: 'Aceptar'
+      title: t_warning_title,
+      text: t_warning_text,
+      confirmButtonText: t_confirm_btn
     });
     return;
   }
+
   let idsUsuarios = usuariosSeleccionados.map(u => u.id);
   let idsSucursales = sucursalesSeleccionadas.map(s => s.id);
+
   $.ajax({
     url: '<?php echo base_url("Cat_UsuarioInternos/asignarSucursal"); ?>',
     type: 'POST',
@@ -750,9 +808,9 @@ $("#btnGuardarSucursal").on("click", function() {
     success: function(response) {
       Swal.fire({
         icon: 'success',
-        title: 'Éxito',
-        text: 'Asignación guardada con éxito.',
-        confirmButtonText: 'Aceptar'
+        title: t_success_title,
+        text: t_success_text,
+        confirmButtonText: t_confirm_btn
       }).then(() => {
         $('#nuevoAsignarSucursalUsuariosInternos').modal('hide');
         usuariosSeleccionados = [];
@@ -764,13 +822,14 @@ $("#btnGuardarSucursal").on("click", function() {
     error: function() {
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al guardar la asignación.',
-        confirmButtonText: 'Aceptar'
+        title: t_error_title,
+        text: t_error_text,
+        confirmButtonText: t_confirm_btn
       });
     }
   });
 });
+
 
 
 
@@ -779,7 +838,7 @@ $("#btnGuardarSucursal").on("click", function() {
 
 function editarUsuarios() {
   let datos = $('#formAccesoUsuariosinternos').serializeArray();
-
+  console.log(datos);
   $.ajax({
     url: '<?php echo base_url('Cat_UsuarioInternos/editarUsuarioControlador'); ?>',
     type: 'POST',
@@ -801,9 +860,9 @@ function editarUsuarios() {
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: 'Usuario editado correctamente',
+          title: '<?php echo $this->lang->line("admin_users_sw_edit_success"); ?>',
           showConfirmButton: false,
-          timer: 2500
+          timer: 5000
         });
 
         $('#formAccesoUsuariosinternos')[0]
@@ -844,7 +903,8 @@ function botonesAccionesUsuario(accion, idUsuario) {
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: data.msg,
+          title: '<?php echo $this->lang->line("admin_users_action_success"); ?>',
+          text: data.msg,
           showConfirmButton: false,
           timer: 2400
         });
@@ -852,7 +912,7 @@ function botonesAccionesUsuario(accion, idUsuario) {
         Swal.fire({
           position: 'center',
           icon: 'error',
-          title: 'Error al realizar la acción',
+          title: '<?php echo $this->lang->line("admin_users_action_error"); ?>',
           text: data.msg,
           showConfirmButton: false,
           timer: 2500
@@ -869,6 +929,7 @@ function actualizarContraseña() {
   var pass = $('#password').val();
   var correo = $('#idCorreo').val();
   var id_datos = $('#idUsuarioInternoEditPass').val();
+
   $.ajax({
     url: '<?php echo base_url('Cat_UsuarioInternos/actualizarPass'); ?>',
     type: 'post',
@@ -884,13 +945,15 @@ function actualizarContraseña() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
+
       var data = JSON.parse(res);
+
       if (data.codigo === 1) {
         recargarTable();
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: data.msg,
+          title: "<?php echo $this->lang->line('admin_users_sw_pass_success'); ?>",
           showConfirmButton: false,
           timer: 3000
         });
@@ -898,8 +961,8 @@ function actualizarContraseña() {
         Swal.fire({
           position: 'center',
           icon: 'error',
-          title: 'Error al realizar la acción',
-          text: data.msg,
+          title: "<?php echo $this->lang->line('admin_users_sw_pass_error_title'); ?>",
+          text: data.msg || "<?php echo $this->lang->line('admin_users_sw_pass_error_text'); ?>",
           showConfirmButton: false,
           timer: 2500
         });
@@ -911,6 +974,7 @@ function actualizarContraseña() {
   });
 }
 
+
 function recargarTable() {
   $("#tabla").DataTable().ajax.reload();
 }
@@ -920,7 +984,8 @@ var baseUrl = window.BASE_URL || '<?php echo base_url(); ?>';
 // Click en el botón del DataTable
 $(document).on('click', '.abrir-permisos', function() {
   const userId = $(this).data('id');
-  const module = $(this).data('module') || ''; // puede ir vacío
+  const module = $(this).data('module') || '';
+
   $.ajax({
     url: baseUrl + 'permisos/precheck',
     type: 'post',
@@ -928,40 +993,61 @@ $(document).on('click', '.abrir-permisos', function() {
     data: {
       user_id: userId,
       module: module
-    }, // si va vacío, server elige
+    },
     beforeSend: function() {
       $('.loader').show();
     },
     success: function(res) {
       $('.loader').fadeOut();
+
       if (!res || res.ok !== true) {
-        Swal.fire('Atención', (res && res.msg) ? res.msg : 'No fue posible abrir el modal.', 'warning');
+        Swal.fire(
+          '<?php echo $this->lang->line("admin_users_permissions_error_title"); ?>',
+          (res && res.msg) ? res.msg :
+          '<?php echo $this->lang->line("admin_users_permissions_error_msg"); ?>',
+          'warning'
+        );
         return;
       }
+
       if (res.fallback && res.fallback_from) {
-        // aviso suave (opcional)
         Swal.fire({
           icon: 'info',
-          title: 'Módulo ajustado',
-          html: 'Se abrirá: <b>' + res.module + '</b>',
+          title: '<?php echo $this->lang->line("admin_users_permissions_adjusted_title"); ?>',
+          html: '<?php echo $this->lang->line("admin_users_permissions_adjusted_msg"); ?> <b>' + res
+            .module + '</b>',
           timer: 1800,
           showConfirmButton: false
         });
       }
-      $('#modalPermisos .modal-title').text('Permisos del usuario #' + userId + ' · ' + (res.module ||
-        module));
-      $('#modalPermisos').modal('show');
-      $('#modalPermisos .modal-body').html(
-        '<div class="text-center p-5"><div class="spinner-border"></div><div class="mt-2 text-muted">Cargando…</div></div>'
+
+      // Título del modal traducido
+      $('#modalPermisos .modal-title').text(
+        '<?php echo $this->lang->line("admin_users_permissions_modal_title"); ?>' +
+        userId +
+        '<?php echo $this->lang->line("admin_users_permissions_modal_sub"); ?>' +
+        (res.module || module)
       );
+
+      $('#modalPermisos').modal('show');
+
+      $('#modalPermisos .modal-body').html(
+        '<div class="text-center p-5"><div class="spinner-border"></div><div class="mt-2 text-muted"><?php echo $this->lang->line("admin_users_permissions_loading"); ?></div></div>'
+      );
+
       $('#modalPermisos .modal-body').load(res.modal_url);
     },
     error: function() {
       $('.loader').fadeOut();
-      Swal.fire('Error', 'No se pudo validar la apertura del modal.', 'error');
+      Swal.fire(
+        'Error',
+        '<?php echo $this->lang->line("admin_users_permissions_error_generic"); ?>',
+        'error'
+      );
     }
   });
 });
+
 
 
 /**********************************************************************************************/
