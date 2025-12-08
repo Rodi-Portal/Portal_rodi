@@ -83,6 +83,19 @@ class Permisos extends CI_Controller
     // /permisos/usuario/123?module=empleados
     public function usuario($user_id = null)
     {
+
+        $lang = $this->session->userdata('lang') ?? 'es';
+
+        // Mapear a carpetas reales
+        $map = [
+            'es' => 'espanol',
+            'en' => 'english',
+        ];
+
+        $ciLang = $map[$lang] ?? 'espanol';
+
+        // Cargar el archivo de idioma
+        $this->lang->load('admin_permisos', $ciLang);
         $user_id = (int) $user_id;
         if ($user_id <= 0) {show_error('Falta user_id', 400);}
 

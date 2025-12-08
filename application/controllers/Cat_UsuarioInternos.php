@@ -18,6 +18,19 @@ class Cat_UsuarioInternos extends CI_Controller
 
     public function index()
     {
+        // Obtener idioma de la sesión (ej: 'es' o 'en')
+        $lang = $this->session->userdata('lang') ?? 'es';
+
+        // Mapear a carpetas reales
+        $map = [
+            'es' => 'espanol',
+            'en' => 'english',
+        ];
+
+        $ciLang = $map[$lang] ?? 'espanol';
+
+        // Cargar el archivo de idioma
+        $this->lang->load('admin_users', $ciLang);
 
         $aviso_actual = $this->session->userdata('aviso');
 
@@ -32,7 +45,6 @@ class Cat_UsuarioInternos extends CI_Controller
         $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
-        //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
 
         $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
@@ -45,6 +57,9 @@ class Cat_UsuarioInternos extends CI_Controller
             }
             $data['contadorNotificaciones'] = $contador;
         }
+
+        // Pasar idioma a la vista
+        $datos['lang'] = $lang;
 
         $this->load
             ->view('adminpanel/header', $data)
@@ -89,7 +104,7 @@ class Cat_UsuarioInternos extends CI_Controller
         $id_rol   = $this->input->post('id_rolUsuarioInterno');
         $correo   = $this->input->post('correoUsuarioInterno');
         $telefono = $this->input->post('telefonoUsuarioInterno');
-        
+
         // $uncode_password = $this->input->post('password');
         // $base = 'k*jJlrsH:cY]O^Z^/J2)Pz{)qz:+yCa]^+V0S98Zf$sV[c@hKKG07Q{utg%OlODS';
         // $password = md5($base.$uncode_password);
@@ -130,8 +145,8 @@ class Cat_UsuarioInternos extends CI_Controller
             // echo "aqui el resultado : ".$result;
             if ($result) {
                 $idUsuarioSession = $this->session->userdata('id');
-                if($idUsuarioSession == $idUsuario ){
-                $this->session->set_userdata('idrol', $id_rol);
+                if ($idUsuarioSession == $idUsuario) {
+                    $this->session->set_userdata('idrol', $id_rol);
                 }
 
                 $msj = [
@@ -430,15 +445,17 @@ class Cat_UsuarioInternos extends CI_Controller
         }
     }
 
-    public function verificarLimiteUsuarios() {
+    public function verificarLimiteUsuarios()
+    {
         $id_portal = $this->session->userdata('idPortal');
-    
+
         $resultado = $this->cat_usuario_model->verificarLimiteUsuariosPortal($id_portal);
-    
+
         echo json_encode($resultado);
     }
 
-    public function eliminarPermiso() {
+    public function eliminarPermiso()
+    {
         // Obtener los parámetros de la solicitud POST
         $id_usuario = $this->input->post('id_usuario');
         $id_cliente = $this->input->post('id_cliente');
@@ -450,7 +467,7 @@ class Cat_UsuarioInternos extends CI_Controller
         }
 
         // Llamar al modelo para eliminar el permiso
-        $resultado =  $this->cat_usuario_model->eliminarPermiso($id_usuario, $id_cliente);
+        $resultado = $this->cat_usuario_model->eliminarPermiso($id_usuario, $id_cliente);
 
         // Responder con éxito o error
         if ($resultado) {

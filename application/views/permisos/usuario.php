@@ -1,221 +1,259 @@
 <?php
-    if (! function_exists('ts_section_label')) {
-        function ts_section_label(string $slug): string
-        {
-            $slug = trim($slug);
-            // quita prefijos "__"
-            $slug = preg_replace('/^__+/', '', $slug);
-            // separa niveles: "expediente.generales" -> "expediente · generales"
-            $slug = str_replace('.', ' · ', $slug);
-            // underscores a espacios: "bgv_examenes" -> "bgv examenes"
-            $slug = str_replace('_', ' ', $slug);
-            // MAYÚSCULAS
-            return mb_strtoupper($slug, 'UTF-8');
-        }
+if (! function_exists('ts_section_label')) {
+    function ts_section_label(string $slug): string
+    {
+        $slug = trim($slug);
+        $slug = preg_replace('/^__+/', '', $slug);
+        $slug = str_replace('.', ' · ', $slug);
+        $slug = str_replace('_', ' ', $slug);
+        return mb_strtoupper($slug, 'UTF-8');
     }
+}
+
+
 ?>
 
 <div class="p-3">
   <div class="d-flex align-items-center mb-2">
-    <h6 class="mr-3 mb-0">Permisos por usuario</h6>
-    <span class="text-muted">Usuario ID: <?php echo (int) $user_id; ?></span>
+    <h6 class="mr-3 mb-0">
+      <?php echo $this->lang->line('perm_title'); ?>
+    </h6>
+
+    <span class="text-muted">
+      <?php echo $this->lang->line('perm_user_id'); ?>: <?php echo (int)$user_id; ?>
+    </span>
   </div>
 
   <form id="permFormModal" method="post" action="#">
+
     <div class="form-row mb-2">
       <div class="col-auto">
-        <label class="mb-1">Módulo</label>
+        <label class="mb-1">
+          <?php echo $this->lang->line('perm_module'); ?>
+        </label>
+
         <select id="modSelector" class="form-control form-control-sm">
-          <?php foreach ($modules as $m): $mval = $m['module']; ?>
-          <?php $label = mb_strtoupper(str_replace('_', ' ', $mval), 'UTF-8'); ?>
-          <option value="<?php echo html_escape($mval); ?>" <?php echo $mval === $module ? 'selected' : ''; ?>>
-            <?php echo html_escape($label); ?>
-          </option>
+          <?php foreach ($modules as $m): ?>
+            <?php $mval = $m['module']; ?>
+
+            <?php
+              $modKey = 'perm_module_' . str_replace(['.','-'], '_', $mval);
+              $label = $this->lang->line($modKey) ?: mb_strtoupper(str_replace('_',' ', $mval), 'UTF-8');
+            ?>
+
+            <option value="<?php echo html_escape($mval); ?>"
+              <?php echo $mval === $module ? 'selected' : ''; ?>>
+              <?php echo html_escape($label); ?>
+            </option>
           <?php endforeach; ?>
         </select>
       </div>
+
       <div class="col">
-        <label class="mb-1">Buscar</label>
+        <label class="mb-1">
+          <?php echo $this->lang->line('perm_search'); ?>
+        </label>
+
         <input type="text" id="filtroModal" class="form-control form-control-sm"
-          placeholder="Filtra por sección, acción o clave...">
+          placeholder="<?php echo $this->lang->line('perm_search_placeholder'); ?>">
       </div>
     </div>
 
     <?php if (! empty($module)): ?>
-    <?php if ((int) ($stats['total'] ?? 0) > 0): ?>
-    <div class="alert alert-success py-2">
-      <strong>Configuración previa:</strong>
-      <span class="ml-2 badge badge-success">ALLOW: <?php echo (int) $stats['allow']; ?></span>
-      <span class="ml-2 badge badge-danger">DENY: <?php echo (int) $stats['deny']; ?></span>
-    </div>
-    <?php else: ?>
-    <div class="alert alert-info py-2">
-      Sin configuración previa (todo en <em>Heredar</em>, deny por defecto).
-    </div>
+      <?php if ((int)($stats['total'] ?? 0) > 0): ?>
+        <div class="alert alert-success py-2">
+          <strong><?php echo $this->lang->line('perm_prev_config'); ?>:</strong>
+          <span class="ml-2 badge badge-success">ALLOW: <?php echo (int)$stats['allow']; ?></span>
+          <span class="ml-2 badge badge-danger">DENY: <?php echo (int)$stats['deny']; ?></span>
+        </div>
+      <?php else: ?>
+        <div class="alert alert-info py-2">
+          <?php echo $this->lang->line('perm_no_prev'); ?>
+        </div>
+      <?php endif; ?>
     <?php endif; ?>
-    <?php endif; ?>
+
 
     <?php if (empty($secciones)): ?>
-    <div class="alert alert-info">No hay permisos para mostrar.</div>
+      <div class="alert alert-info">
+        <?php echo $this->lang->line('perm_no_permissions'); ?>
+      </div>
     <?php else: ?>
 
-    <!-- Contenedor que permite reordenar las secciones por drag & drop -->
-    <div id="permSectionsContainer">
-      <?php foreach ($secciones as $section => $rows): ?>
-      <?php
+      <div id="permSectionsContainer">
+
+        <?php foreach ($secciones as $section => $rows): ?>
+
+          <?php
+            $secKey = 'perm_section_' . str_replace(['.','-'], '_', $section);
+            $secLbl = $this->lang->line($secKey) ?: ts_section_label($section);
             $secId  = 'sec_' . md5($section);
-            $secLbl = ts_section_label($section);
           ?>
-      <div class="card mb-2 perm-section-card" data-section="<?php echo html_escape($section); ?>">
 
-        <div class="card-header py-2 d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <!-- Handle para arrastrar la sección -->
-            <span class="perm-drag-handle mr-2" title="Arrastrar para reordenar sección">
-              <i class="fas fa-grip-vertical"></i>
-            </span>
+          <div class="card mb-2 perm-section-card" data-section="<?php echo html_escape($section); ?>">
 
-            <!-- Botón para colapsar/expandir la sección (inicia colapsado) -->
-            <button class="btn btn-link p-0 section-toggle collapsed" type="button" data-toggle="collapse"
-              data-target="#<?php echo $secId; ?>" aria-expanded="false" aria-controls="<?php echo $secId; ?>">
-              <!-- Indicador visual: chevron que gira -->
-              <i class="fas fa-chevron-right mr-1 section-chevron"></i>
-              <strong><?php echo html_escape($secLbl); ?></strong>
-            </button>
+            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <span class="perm-drag-handle mr-2" title="<?php echo $this->lang->line('perm_drag_help'); ?>">
+                  <i class="fas fa-grip-vertical"></i>
+                </span>
+
+                <button class="btn btn-link p-0 section-toggle collapsed"
+                  type="button" data-toggle="collapse" data-target="#<?php echo $secId; ?>">
+                  <i class="fas fa-chevron-right mr-1 section-chevron"></i>
+                  <strong><?php echo html_escape($secLbl); ?></strong>
+                </button>
+              </div>
+
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-success"
+                  onclick="marcarFilaModal('<?php echo addslashes($section); ?>','allow')">
+                  <?php echo $this->lang->line('perm_allow'); ?>
+                </button>
+
+                <button type="button" class="btn btn-outline-danger"
+                  onclick="marcarFilaModal('<?php echo addslashes($section); ?>','deny')">
+                  <?php echo $this->lang->line('perm_deny'); ?>
+                </button>
+
+                <button type="button" class="btn btn-outline-secondary"
+                  onclick="marcarFilaModal('<?php echo addslashes($section); ?>','inherit')">
+                  <?php echo $this->lang->line('perm_inherit'); ?>
+                </button>
+              </div>
+            </div>
+
+            <div id="<?php echo $secId; ?>" class="collapse">
+              <div class="table-responsive">
+                <table class="table table-sm mb-0 tabla-perms-modal">
+                  <thead class="thead-light">
+                    <tr>
+                      <th style="width:40%"><?php echo $this->lang->line('perm_permission'); ?></th>
+                      <th style="width:20%"><?php echo $this->lang->line('perm_action'); ?></th>
+                      <th style="width:15%"><?php echo $this->lang->line('perm_sensitivity'); ?></th>
+                      <th style="width:25%"><?php echo $this->lang->line('perm_effect'); ?></th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <?php foreach ($rows as $r): ?>
+
+                      <?php
+                        $key  = $r['key'];
+                        $sens = (int)$r['is_sensitive'] === 1;
+                        $act  = $r['action'];
+                        $eff  = $r['effect'];
+
+                        $keyEnc = rtrim(strtr(base64_encode($key), '+/', '-_'), '=');
+
+                        $desc = $this->lang->line('perm_'.$key);
+                        if (!$desc) $desc = $r['description'];
+                      ?>
+
+                      <tr data-section="<?php echo html_escape($section); ?>">
+
+                        <td>
+                          <div class="perm-cell">
+                            <div class="perm-icon<?php echo $sens ? ' perm-icon-warn' : ''; ?>">
+                              <i class="fas fa-check-circle"></i>
+                            </div>
+
+                            <div>
+                              <div class="perm-title text-truncate-1"
+                                title="<?php echo html_escape($desc); ?>">
+                                <?php echo html_escape($desc); ?>
+                              </div>
+
+                              <div class="perm-meta mt-1">
+                                <span class="badge badge-soft"><?php echo html_escape($r['module']); ?></span>
+                                <span class="mx-1">›</span>
+                                <span class="badge badge-soft"><?php echo html_escape($secLbl); ?></span>
+
+                                <a href="#" class="ml-2 perm-key copy-key"
+                                  data-key="<?php echo html_escape($key); ?>"
+                                  data-toggle="tooltip"
+                                  title="<?php echo $this->lang->line('perm_copy_key'); ?>">
+                                  <i class="far fa-copy"></i>
+                                  <span class="d-none d-sm-inline"><?php echo html_escape($key); ?></span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>
+                          <span class="badge badge-primary"><?php echo html_escape($act); ?></span>
+                        </td>
+
+                        <td>
+                          <?php if ($sens): ?>
+                            <span class="badge badge-warning">
+                              <?php echo $this->lang->line('perm_sensitive'); ?>
+                            </span>
+                          <?php else: ?>
+                            <span class="text-muted small">–</span>
+                          <?php endif; ?>
+                        </td>
+
+                        <td>
+                          <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" name="eff_enc[<?php echo $keyEnc; ?>]"
+                              value="allow" class="custom-control-input"
+                              id="allow-<?php echo md5($key); ?>"
+                              <?php echo $eff === 'allow' ? 'checked' : ''; ?>>
+                            <label class="custom-control-label"
+                              for="allow-<?php echo md5($key); ?>">
+                              <?php echo $this->lang->line('perm_allow'); ?>
+                            </label>
+                          </div>
+
+                          <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" name="eff_enc[<?php echo $keyEnc; ?>]"
+                              value="deny" class="custom-control-input"
+                              id="deny-<?php echo md5($key); ?>"
+                              <?php echo $eff === 'deny' ? 'checked' : ''; ?>>
+                            <label class="custom-control-label"
+                              for="deny-<?php echo md5($key); ?>">
+                              <?php echo $this->lang->line('perm_deny'); ?>
+                            </label>
+                          </div>
+
+                          <div class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" name="eff_enc[<?php echo $keyEnc; ?>]"
+                              value="inherit" class="custom-control-input"
+                              id="inh-<?php echo md5($key); ?>"
+                              <?php echo is_null($eff) ? 'checked' : ''; ?>>
+                            <label class="custom-control-label"
+                              for="inh-<?php echo md5($key); ?>">
+                              <?php echo $this->lang->line('perm_inherit'); ?>
+                            </label>
+                          </div>
+                        </td>
+
+                      </tr>
+
+                    <?php endforeach; ?>
+                  </tbody>
+
+                </table>
+              </div>
+            </div>
+
           </div>
 
-          <div class="btn-group btn-group-sm">
-            <button type="button" class="btn btn-outline-success"
-              onclick="marcarFilaModal('<?php echo addslashes($section); ?>','allow')">Allow</button>
-            <button type="button" class="btn btn-outline-danger"
-              onclick="marcarFilaModal('<?php echo addslashes($section); ?>','deny')">Deny</button>
-            <button type="button" class="btn btn-outline-secondary"
-              onclick="marcarFilaModal('<?php echo addslashes($section); ?>','inherit')">Heredar</button>
-          </div>
-        </div>
-
-        <!-- 👇 SIN 'show' para que inicie retraído -->
-        <div id="<?php echo $secId; ?>" class="collapse">
-          <div class="table-responsive">
-            <table class="table table-sm mb-0 tabla-perms-modal">
-              <thead class="thead-light">
-                <tr>
-                  <th style="width:40%">Permiso</th>
-                  <th style="width:20%">Acción</th>
-                  <th style="width:15%">Sensibilidad</th>
-                  <th style="width:25%">Efecto</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($rows as $r):
-                      $key  = $r['key'];
-                      $act  = $r['action'];
-                      $sens = (int) $r['is_sensitive'] === 1;
-                      $eff  = $r['effect']; // 'allow' | 'deny' | null (heredar)
-
-                      // Mapa de iconos por acción
-                      $icons = [
-                        'ver'                 => 'fa-eye',
-                        'crear'               => 'fa-plus',
-                        'editar'              => 'fa-edit',
-                        'eliminar'            => 'fa-trash-alt',
-                        'cargar'              => 'fa-upload',
-                        'descargar'           => 'fa-download',
-                        'exportar'            => 'fa-file-export',
-                        'asignar'             => 'fa-user-check',
-                        'registrar_candidato' => 'fa-user-plus',
-                        'cambiar_de_sucursal' => 'fa-exchange-alt',
-                        'enviar_a_empleados'  => 'fa-share-square',
-                        'subir'               => 'fa-upload',
-                        'bajar'               => 'fa-download',
-                      ];
-                      $ico = isset($icons[$act]) ? $icons[$act] : 'fa-check-circle';
-
-                      $human = function ($s) { return ucfirst(str_replace('_', ' ', strtolower((string) $s))); };
-                      $modNice = mb_strtoupper(str_replace('_', ' ', $r['module']), 'UTF-8');
-                      $secNice = ts_section_label($section);
-                      $actNice = $human($act);
-                      $desc    = ! empty($r['description']) ? $r['description'] : $actNice;
-                      $keyEnc  = rtrim(strtr(base64_encode($key), '+/', '-_'), '=');
-                    ?>
-                <tr data-section="<?php echo html_escape($section); ?>" data-key="<?php echo html_escape($key); ?>">
-                  <td>
-                    <div class="perm-cell">
-                      <div class="perm-icon<?php echo $sens ? ' perm-icon-warn' : ''; ?>">
-                        <i class="fas <?php echo $ico; ?>"></i>
-                      </div>
-                      <div>
-                        <div class="perm-title text-truncate-1" title="<?php echo html_escape($desc); ?>">
-                          <?php echo html_escape($desc); ?>
-                        </div>
-                        <div class="perm-meta mt-1">
-                          <span class="badge badge-soft"><?php echo html_escape($modNice); ?></span>
-                          <span class="mx-1">›</span>
-                          <span class="badge badge-soft"><?php echo html_escape($secNice); ?></span>
-                          <a href="javascript:void(0)" class="ml-2 perm-key copy-key"
-                            data-key="<?php echo html_escape($key); ?>" data-toggle="tooltip" title="Copiar clave">
-                            <i class="far fa-copy"></i>
-                            <span class="d-none d-sm-inline"><?php echo html_escape($key); ?></span>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td>
-                    <span class="badge badge-primary">
-                      <?php echo html_escape($act); ?>
-                    </span>
-                  </td>
-
-                  <td>
-                    <?php if ($sens): ?>
-                    <span class="badge badge-warning">Sensible</span>
-                    <?php else: ?>
-                    <span class="text-muted small">–</span>
-                    <?php endif; ?>
-                  </td>
-
-                  <td>
-                    <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-allow-<?php echo md5($key) ?>"
-                        class="custom-control-input" value="allow" <?php echo $eff === 'allow' ? 'checked' : ''; ?>>
-                      <label class="custom-control-label" for="m-allow-<?php echo md5($key) ?>">Allow</label>
-                    </div>
-
-                    <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-deny-<?php echo md5($key) ?>"
-                        class="custom-control-input" value="deny" <?php echo $eff === 'deny' ? 'checked' : ''; ?>>
-                      <label class="custom-control-label" for="m-deny-<?php echo md5($key) ?>">Deny</label>
-                    </div>
-
-                    <div class="custom-control custom-radio custom-control-inline">
-                      <input type="radio" name="eff_enc[<?php echo $keyEnc ?>]" id="m-inh-<?php echo md5($key) ?>"
-                        class="custom-control-input" value="inherit" <?php echo is_null($eff) ? 'checked' : ''; ?>>
-                      <label class="custom-control-label" for="m-inh-<?php echo md5($key) ?>">Heredar</label>
-                    </div>
-                  </td>
-                </tr>
-                <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <?php endforeach; ?>
 
       </div>
-      <?php endforeach; ?>
-    </div> <!-- /#permSectionsContainer -->
 
     <?php endif; ?>
 
-    <!-- Barra de guardado sticky al fondo del modal-body -->
     <div class="perm-save-bar d-flex justify-content-end mt-3">
       <button type="button" id="btnGuardarPermisos" class="btn btn-primary">
-        Guardar cambios
+        <?php echo $this->lang->line('perm_save_changes'); ?>
       </button>
     </div>
 
-    <input type="hidden" name="user_id" value="<?php echo (int) $user_id; ?>">
+    <input type="hidden" name="user_id" value="<?php echo (int)$user_id; ?>">
     <input type="hidden" name="module" value="<?php echo html_escape($module); ?>">
   </form>
 </div>
