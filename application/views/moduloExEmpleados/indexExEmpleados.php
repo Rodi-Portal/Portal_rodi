@@ -5,12 +5,12 @@ $CI = &get_instance();
 $lang = $CI->session->userdata('lang') ?: 'es';
 
 // En desarrollo: forzar no caché
-if (ENVIRONMENT != 'development') {
+if (ENVIRONMENT === 'development') {
     $assets_version = time();
 } else {
     $assets_version = $CI->config->item('assets_version') ?: '1';
 }
-echo $assets_version;
+
 ?>
 <!--Vista  Vue   -->
 <link rel="stylesheet"
