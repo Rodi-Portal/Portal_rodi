@@ -1,3 +1,11 @@
+<?php
+function img64($file) {
+    if (!file_exists($file)) return '';
+    $type = mime_content_type($file);
+    $data = base64_encode(file_get_contents($file));
+    return "data:$type;base64,$data";
+}
+?>
 </html><!DOCTYPE html>
 <html>
 <head>
@@ -13634,13 +13642,14 @@ if(!empty($conclusion)){
 				echo '<div class="center margen-top">';
 				foreach($docs as $doc){
 					if($doc['id_tipo_documento'] == 19){
-						echo '<img class="foto" src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
+						$path = FCPATH.'_docs/'.$doc['archivo'];
+						echo '<img class="foto" src="'.img64($path).'">';
 					}
 				}
 				echo '</div>';
 			}
 			?>
-		<?php 
+			<?php 
 			foreach($docs as $doc){
 				if($doc['id_tipo_documento'] == 34 || $doc['id_tipo_documento'] == 39){ ?>
 					<pagebreak>
@@ -13650,10 +13659,12 @@ if(!empty($conclusion)){
 					<div class="center margen-top">
 						<?php 
 						if($doc['id_tipo_documento'] == 34){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'" width="300" height="600">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+							echo '<img class="foto" src="'.img64($path).'" width="300" height="600">';
 						}
 						if($doc['id_tipo_documento'] == 39){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'" width="700" height="400">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+							echo '<img class="foto" src="'.img64($path).'" width="700" height="400">';
 						} ?>
 					</div>
 			<?php
@@ -13670,10 +13681,12 @@ if(!empty($conclusion)){
 					<div class="center">
 						<?php 
 						if($doc['id_tipo_documento'] == 35){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'" width="300" height="600">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+							echo '<img class="foto" src="'.img64($path).'" width="300" height="600">';
 						}
 						if($doc['id_tipo_documento'] == 40){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'" width="700" height="400">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+							echo '<img class="foto" src="'.img64($path).'" width="700" height="400">';
 						} ?>
 					</div>
 				<?php
@@ -13688,10 +13701,12 @@ if(!empty($conclusion)){
 					<div class="center">
 						<?php 
 						if($doc['id_tipo_documento'] == 33){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'" width="300" height="600">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+							echo '<img class="foto" src="'.img64($path).'" width="300" height="600">';
 						}
 						if($doc['id_tipo_documento'] == 38){ 
-							echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'" width="700" height="400">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+							echo '<img class="foto" src="'.img64($path).'" width="700" height="400">';
 						} ?>
 					</div>
 				<?php
@@ -13713,7 +13728,8 @@ if(!empty($conclusion)){
 						} ?>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.base_url().'_docs/'.$doc['archivo'].'" width="800" height="500"><br><br>'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						echo '<img class="foto" src="'.img64($path).'" width="800" height="500"><br><br>'; ?>
 					</div>
 				<?php
 				}
@@ -13725,7 +13741,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Records criminales – OFAC </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'"><br><br>'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'"><br><br>'; ?>
 					</div>
 				<?php
 				}
@@ -13737,7 +13754,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de investigación legal </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'"><br><br>'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'"><br><br>'; ?>
 					</div>
 				<?php
 				}
@@ -13749,7 +13767,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Aviso de privacidad </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
 				}
@@ -13762,7 +13781,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de historial laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
 				}
@@ -13776,10 +13796,12 @@ if(!empty($conclusion)){
 					<div class="center">
 						<?php 
 						if($doc['id_tipo_documento'] == 7){ 
-							echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">';
 						}
 						if($doc['id_tipo_documento'] == 10){ 
-							echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">';
+							$path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">';
 						} ?>
 					</div>
 				<?php
@@ -13792,7 +13814,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
 				}
@@ -13804,7 +13827,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
 				}
@@ -13816,7 +13840,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
 				}
@@ -13828,7 +13853,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Comprobante de demanda </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
 				}
@@ -13840,7 +13866,8 @@ if(!empty($conclusion)){
 						<p class="f-20">Buró de crédito </p>
 					</div>
 					<div class="center">
-						<?php echo '<img src="'.FCPATH.'_docs/'.$doc['archivo'].'">'; ?>
+						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
 				}
