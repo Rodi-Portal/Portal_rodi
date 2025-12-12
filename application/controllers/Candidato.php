@@ -1776,7 +1776,13 @@ class Candidato extends Custom_Controller
             $salida .= '<tbody>';
             foreach ($response_data as $doc) {
                 $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
-                $salida .= '<th><a href="' . base_url('_docs/' . htmlspecialchars($doc['archivo'])) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['archivo']) . '</a></th>';
+                $salida .= '<th>
+                                <a href="' . base_url('archivo/ver_doc_docs/' . rawurlencode($doc['archivo'])) . '" 
+                                target="_blank" 
+                                style="word-break: break-word;">
+                                ' . htmlspecialchars($doc['archivo']) . '
+                                </a>
+                            </th>';
                 $salida .= '<th>' . htmlspecialchars($doc['tipo']) . '</th>';
                 $salida .= '</tr>';
             }
@@ -1813,6 +1819,7 @@ class Candidato extends Custom_Controller
 
         // Configurar la URL del endpoint según el origen
         $api_base_url = API_URL;
+
         if ($origen == 1) {
             $url  = $api_base_url . "documents/" . $id;
             $path = '_documentEmpleado/';
@@ -1984,7 +1991,13 @@ class Candidato extends Custom_Controller
             $salida .= '<tbody>';
             foreach ($data['docs_candidato'] as $doc) {
                 $salida .= '<tr id="fila' . $doc->id . '">';
-                $salida .= '<th><a href="' . base_url() . '_docs/' . $doc->archivo . '" target="_blank" style="word-break: break-word;">' . $doc->archivo . '</a></th>';
+                $salida .= '<th>
+                                <a href="' . base_url('archivo/ver_doc_docs/' . rawurlencode($doc['archivo'])) . '" 
+                                target="_blank" 
+                                style="word-break: break-word;">
+                                ' . htmlspecialchars($doc['archivo']) . '
+                                </a>
+                            </th>';
                 $salida .= '<th>' . $doc->tipo . '</th>';
                 $salida .= '<th><a href="javascript:void(0);"  data-toggle="tooltip" title="Eliminar documento" class="fa-tooltip icono_datatable" onclick="eliminarArchivo(' . $doc->id . ',\'' . $doc->archivo . '\',' . $id_candidato . ')"><i class="fas fa-trash"></i></a></th>';
 
