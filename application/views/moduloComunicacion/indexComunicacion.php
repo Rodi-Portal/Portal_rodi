@@ -13,7 +13,7 @@ if (ENVIRONMENT === 'development') {
 }
 ?>
 <link rel="stylesheet" href="<?= base_url('public/comunicacion/comunicacion_vue3.css'); ?>?v=<?php echo $assets_version; ?>">
-<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+<!-- script src="https://cdn.jsdelivr.net/npm/vue@3"></script -->
 
 <?php
 // ===== 1) Slugs del módulo que vas a usar en el front =====
