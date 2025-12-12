@@ -78,6 +78,7 @@ foreach ($SLUGS as $slug) {
          data-your-value="<?= $this->session->userdata('idPortal'); ?>"
          data-your-user-value="<?= $this->session->userdata('id'); ?>"
          data-your-client-value='<?= json_encode($cliente_id); ?>'
+         data-lang="<?php echo htmlspecialchars($lang, ENT_QUOTES, 'UTF-8'); ?>"
          data-your-rol-value="<?= $this->session->userdata('idrol'); ?>"></div>
   </div>
 <?php } ?>
