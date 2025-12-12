@@ -67,6 +67,60 @@ class Archivo extends CI_Controller
         exit;
     }
 
+    public function ver_doc_docs($filename = '')
+    {
+        // 1) Requiere sesión
+        if (! $this->session->userdata('id')) {
+            show_404();
+        }
+
+        // 2) Normalizar nombre
+        $filename = urldecode((string) $filename);
+        $filename = basename($filename);
+
+        if ($filename === '') {
+            show_404();
+        }
+
+        // 3) Validar extensión permitida
+        $ext     = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $allowed = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg', 'gif', 'txt', 'csv'];
+        if (! in_array($ext, $allowed, true)) {
+            show_404();
+        }
+
+        // 4) Ruta física en _docs/
+        $path_docs = rtrim(FCPATH, '/') . '/_docs/';
+        $full      = $path_docs . $filename;
+
+        if (! is_file($full) || ! is_readable($full)) {
+            show_404();
+        }
+
+        // 5) Detectar MIME
+        $mime = $this->_detect_mime($full, $ext);
+
+        $disposition = $this->input->get('dl') ? 'attachment' : 'inline';
+        $safe        = rawurlencode($filename);
+
+        // 6) Headers
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($full));
+        header('Content-Disposition: ' . $disposition . '; filename="' . $safe . '"; filename*=UTF-8\'\'' . $safe);
+        header('X-Content-Type-Options: nosniff');
+
+        // 7) Enviar archivo
+        @set_time_limit(0);
+        $fp = fopen($full, 'rb');
+        while (! feof($fp)) {
+            echo fread($fp, 8192);
+            @ob_flush();
+            flush();
+        }
+        fclose($fp);
+        exit;
+    }
+
     public function ver_exam($filename = '')
     {
         if (! $this->session->userdata('id')) {show_404();}
@@ -350,61 +404,69 @@ class Archivo extends CI_Controller
         return $map[$ext] ?? 'application/octet-stream';
     }
 
-public function ver_psico($filename = '')
-{
-    $filename = urldecode($filename);
-    $filename = basename($filename);
+    public function ver_psico($filename = '')
+    {
+        $filename = urldecode($filename);
+        $filename = basename($filename);
 
-    $base = rtrim($this->base_path_psico, '/\\') . DIRECTORY_SEPARATOR;
-    $realBase = realpath($base);
-    $path = $realBase ? realpath($base . $filename) : false;
+        $base     = rtrim($this->base_path_psico, '/\\') . DIRECTORY_SEPARATOR;
+        $realBase = realpath($base);
+        $path     = $realBase ? realpath($base . $filename) : false;
 
-    if (!$path || strpos($path, $realBase) !== 0 || !is_file($path)) {
-        // Si no existe, ahora sí 404 real
-        $this->output->set_status_header(404);
-        return show_404();
+        if (! $path || strpos($path, $realBase) !== 0 || ! is_file($path)) {
+            // Si no existe, ahora sí 404 real
+            $this->output->set_status_header(404);
+            return show_404();
+        }
+
+        // Asegúrate de que el status sea 200 (evita el 404 que estás viendo)
+        // Puedes usar la Output class de CI o las funciones nativas:
+        $this->output->set_status_header(200);
+
+        // Evitar problemas con compresión/longitud y cualquier salida previa
+        if (function_exists('ini_set')) {
+            @ini_set('zlib.output_compression', 'Off');
+        }
+
+        while (ob_get_level() > 0) {@ob_end_clean();}
+
+        $mime = 'application/pdf';
+        if (function_exists('mime_content_type')) {
+            $det = @mime_content_type($path);
+            if ($det) {
+                $mime = $det;
+            }
+
+        }
+
+        // Cabeceras
+        header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK', true, 200);
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($path));
+        header('Content-Disposition: inline; filename="' . basename($path) . '"');
+        header('X-Content-Type-Options: nosniff');
+        header('Accept-Ranges: bytes');
+        header('Cache-Control: private, max-age=10800, must-revalidate');
+        header('Pragma: public');
+
+        // Stream por chunks
+        $fp = fopen($path, 'rb');
+        if ($fp === false) {
+            $this->output->set_status_header(500);
+            return show_error('No se pudo abrir el archivo.', 500);
+        }
+
+        $chunk = 8192;
+        while (! feof($fp)) {
+            echo fread($fp, $chunk);
+            flush();
+            if (connection_status() != CONNECTION_NORMAL) {
+                break;
+            }
+
+        }
+        fclose($fp);
+        exit; // MUY importante
     }
-
-    // Asegúrate de que el status sea 200 (evita el 404 que estás viendo)
-    // Puedes usar la Output class de CI o las funciones nativas:
-    $this->output->set_status_header(200);
-
-    // Evitar problemas con compresión/longitud y cualquier salida previa
-    if (function_exists('ini_set')) @ini_set('zlib.output_compression', 'Off');
-    while (ob_get_level() > 0) { @ob_end_clean(); }
-
-    $mime = 'application/pdf';
-    if (function_exists('mime_content_type')) {
-        $det = @mime_content_type($path);
-        if ($det) $mime = $det;
-    }
-
-    // Cabeceras
-    header($_SERVER['SERVER_PROTOCOL'].' 200 OK', true, 200);
-    header('Content-Type: ' . $mime);
-    header('Content-Length: ' . filesize($path));
-    header('Content-Disposition: inline; filename="' . basename($path) . '"');
-    header('X-Content-Type-Options: nosniff');
-    header('Accept-Ranges: bytes');
-    header('Cache-Control: private, max-age=10800, must-revalidate');
-    header('Pragma: public');
-
-    // Stream por chunks
-    $fp = fopen($path, 'rb');
-    if ($fp === false) {
-        $this->output->set_status_header(500);
-        return show_error('No se pudo abrir el archivo.', 500);
-    }
-
-    $chunk = 8192;
-    while (!feof($fp)) {
-        echo fread($fp, $chunk);
-        flush();
-        if (connection_status() != CONNECTION_NORMAL) break;
-    }
-    fclose($fp);
-    exit; // MUY importante
-}
-
 
 }

@@ -165,8 +165,7 @@ class Notificacion extends CI_Controller
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
                     ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
                 ]);
-                
-              
+
                 if (! empty($telefonos)) {
                     $submodulos = implode(", ", array_map(static fn($li) => strip_tags($li), $modulos));
                     $this->enviar_whatsapp($telefonos, $registro->nombrePortal, $registro->nombre, $submodulos, 'notificacion_empleados');
@@ -271,7 +270,6 @@ class Notificacion extends CI_Controller
                     ! empty($registro->telefono1) ? ($registro->ladaSeleccionada . $registro->telefono1) : null,
                     ! empty($registro->telefono2) ? ($registro->ladaSeleccionada2 . $registro->telefono2) : null,
                 ]);
-                
 
                 if (! empty($telefonos)) {
                     try {
@@ -445,45 +443,67 @@ class Notificacion extends CI_Controller
         $ahora = new DateTime('now', $tz);
         $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
 
-        // Acepta variantes: "09:00 AM", "9am", "9 am", “3:00 PM”, “3pm”, etc.
-        $horariosValidos = ['09:00 AM', '3:00 PM', '7:00 PM', '9am', '3pm', '7pm', '9 am', '3 pm', '7 pm'];
-        $graciaMinutos   = 9999;
-        $slotActual      = null;
+        // Horarios oficiales del sistema (estandarizados)
+        $horariosBase = [
+            '09:00 AM',
+            '03:00 PM',
+            '07:00 PM',
+        ];
 
-        foreach ($horariosValidos as $h) {
-                                                          // Normaliza y trata de parsear en 12h
-            $h1   = strtoupper(str_replace(' ', '', $h)); // "9am" -> "9AM", "09:00AM"
-            $slot = DateTime::createFromFormat('gA', $h1, $tz);
-            if (! $slot) {
-                $slot = DateTime::createFromFormat('g:iA', $h1, $tz);
-            }
+        $ventana    = 30; // minutos de tolerancia (puedes poner 30)
+        $slotActual = null;
+
+        foreach ($horariosBase as $h) {
+
+            // Normalizar: quitar espacios y poner mayúsculas
+            $norm = strtoupper(str_replace(' ', '', $h));
+
+            // Parseo flexible: g:iA, H:iA, gA
+            $slot = DateTime::createFromFormat('g:iA', $norm, $tz)
+                ?: DateTime::createFromFormat('H:iA', $norm, $tz)
+                ?: DateTime::createFromFormat('gA', $norm, $tz);
+
             if (! $slot) {
                 continue;
             }
 
-            $diff = abs($ahora->getTimestamp() - $slot->getTimestamp()) / 60;
-            if ($diff <= $graciaMinutos) {$slotActual = $h;
-                break;}
+            // Le ponemos la fecha actual
+            $slot->setDate(
+                (int) $ahora->format('Y'),
+                (int) $ahora->format('m'),
+                (int) $ahora->format('d')
+            );
+
+            // Diferencia en minutos entre ahora y el slot
+            $dif = abs($ahora->getTimestamp() - $slot->getTimestamp()) / 60;
+
+            if ($dif <= $ventana) {
+                $slotActual = $h; // ← LO QUE SE ENVÍA AL MODELO
+                break;
+            }
         }
 
+        // Si no estamos dentro de la ventana del horario, cancelar
         if ($slotActual === null) {
-            // Fuera de la ventana de gracia: no hace nada.
             return;
         }
 
+        // Carga modelo
         $this->load->model('Notificacion_model');
 
-        // Trae recordatorios cuyo vencimiento esté en rango (<= hoy + anticipación)
-        // y cuyo horario coincida con el slot actual.
-
-        $registros = $this->Notificacion_model->get_recordatorios_para_slot_window($slotActual, $hoy, false);
+        // Obtiene recordatorios filtrando por slot + anticipación
+        $registros = $this->Notificacion_model
+            ->get_recordatorios_para_slot_window($slotActual, $hoy, false);
 
         if (empty($registros)) {
             return;
         }
 
         foreach ($registros as $r) {
-            // ====== CORREO ======
+
+            // ====================================
+            //            ENVÍO POR CORREO
+            // ====================================
             if ((int) $r->correo_cfg === 1) {
                 $correos = array_values(array_unique(array_filter([
                     $r->correo1_cfg ?: null,
@@ -494,66 +514,63 @@ class Notificacion extends CI_Controller
 
                 if (! empty($correos)) {
                     try {
-                        // Mensaje simple: asunto y una línea con fecha de vencimiento
                         $this->enviar_correo(
                             $correos,
                             "Recordatorio {$r->nombre}",
                             ["<li>{$r->nombre} - vence {$r->proxima_fecha}</li>"],
                             $r->nombre ?? 'Recordatorio'
                         );
-                    } catch (Exception $e) { /* log_message('error', $e->getMessage()); */}
+                    } catch (Exception $e) {}
                 }
             }
 
-            // ====== WHATSAPP (plantilla de recordatorios) ======
+            // ====================================
+            //       ENVÍO POR WHATSAPP (WABA)
+            // ====================================
             if ((int) $r->whatsapp_cfg === 1) {
-                
+
                 $tels = array_values(array_unique(array_filter([
-                    (! empty($r->telefono1_cfg) && ! empty($r->lada1_cfg)) ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
-                    (! empty($r->telefono2_cfg) && ! empty($r->lada2_cfg)) ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
+                    (! empty($r->telefono1_cfg) && ! empty($r->lada1_cfg))
+                        ? ($r->lada1_cfg . $r->telefono1_cfg) : null,
+                    (! empty($r->telefono2_cfg) && ! empty($r->lada2_cfg))
+                        ? ($r->lada2_cfg . $r->telefono2_cfg) : null,
                 ], static function ($v) {
                     if ($v === null) {
                         return false;
                     }
 
-                    $digits = preg_replace('/\D+/', '', (string) $v);
-                    return strlen($digits) >= 10;
+                    return strlen(preg_replace('/\D+/', '', $v)) >= 10;
                 })));
-                
+
                 if (! empty($tels)) {
                     try {
-                        // Ajusta textos a lo que pide tu PLANTILLA:
-                        // Recordatorio {{portal}}
-                        // • Sucursal: {{cliente}}
-                        // • Asunto: {{recordatorio}}
-                        // • Detalle: {{mensaje}}
-                        // • Fecha de vencimiento: {{fecha}}
-
                         $portal     = $r->portal ?? 'TalentSafe';
                         $cliente    = $r->cliente ?? 'Sucursal';
-                        $asunto     = $r->nombre;                       // nombre del recordatorio
-                        $detalle    = $r->descripcion ?? 'Sin detalle'; // texto libre opcional
+                        $asunto     = $r->nombre;
+                        $detalle    = $r->descripcion ?? 'Sin detalle';
                         $venceFecha = (new DateTime($r->proxima_fecha, $tz))->format('d/m/Y');
 
                         $this->enviar_whatsapp_recordatorio(
                             $tels,
-                            $portal,                     // {{portal}}
-                            $cliente,                    // {{cliente}}
-                            $asunto,                     // {{recordatorio}}
-                            $detalle,                    // {{mensaje}}
-                            $venceFecha,                 // {{fecha}}
-                            'notificacion_recordatorios' // nombre de plantilla en WABA
+                            $portal,
+                            $cliente,
+                            $asunto,
+                            $detalle,
+                            $venceFecha,
+                            'notificacion_recordatorios'
                         );
-                    } catch (Exception $e) { /* log_message('error', $e->getMessage()); */}
+                    } catch (Exception $e) {}
                 }
             }
 
-            // ====== RE-PROGRAMACIÓN DE FECHA ======
-            // Si HOY == proxima_fecha, se avanza la proxima_fecha según configuración
+            // ====================================
+            //          REPROGRAMAR FECHA
+            // ====================================
             if ($hoy === $r->proxima_fecha) {
                 $nueva = $this->calcularProximaFecha($r, $tz);
                 if ($nueva !== null) {
-                    $this->Notificacion_model->actualizar_proxima_fecha($r->id, $nueva);
+                    $this->Notificacion_model
+                        ->actualizar_proxima_fecha($r->id, $nueva);
                 }
             }
         }

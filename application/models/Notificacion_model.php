@@ -207,7 +207,7 @@ class Notificacion_model extends CI_Model
     }
     public function get_recordatorios_para_slot_window($slot, $hoyYmd, $debug = false)
     {
-                                                                        // Normaliza el slot comparador: "9am" -> "9AM", "09:00 AM" -> "09:00AM"
+        // Normaliza el slot comparador: "9am" -> "9AM", "09:00 AM" -> "09:00AM"
         $needle = strtoupper(trim(str_replace([' ', '.'], '', $slot))); // sin espacios ni puntos
 
         $this->db->select("
@@ -224,7 +224,7 @@ class Notificacion_model extends CI_Model
         nr.telefono2 AS telefono2_cfg,
         p.nombre as portal,
         c.nombre as cliente
-    ", false);
+        ", false);
 
         $this->db->from('recordatorio AS r');
         $this->db->join(
