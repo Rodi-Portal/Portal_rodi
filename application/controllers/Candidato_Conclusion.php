@@ -527,6 +527,10 @@ class Candidato_Conclusion extends CI_Controller
         if (! $id_candidato) {
             show_error('idCandidatoPDF requerido', 400);
         }
+        echo $id_candidato;
+        echo APIRODI;
+        echo KEY;
+        die();
 
         $url = rtrim(APIRODI, '/') . '/Pdf/reporte';
 
