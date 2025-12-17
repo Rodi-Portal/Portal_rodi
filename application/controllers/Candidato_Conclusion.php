@@ -720,6 +720,7 @@ class Candidato_Conclusion extends CI_Controller
         $clave = ($usuario->clave != null)? $usuario->clave:$claveAleatoria;
         $mpdf->SetProtection(array(), $clave, 'r0d1@');*/
         $mpdf->autoPageBreak = false;
+        $html = preg_replace('/rgba\([^)]+\)/', '#000000', $html);
         $mpdf->WriteHTML($html);
         $mpdf->Output('' . $nombreArchivo . '.pdf', 'D');
 
