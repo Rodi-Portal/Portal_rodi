@@ -522,6 +522,7 @@ class Candidato_Conclusion extends CI_Controller
     public function createPDF()
     {
         //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
+        ini_set('pcre.backtrack_limit', '5000000');
         $mpdf = new \Mpdf\Mpdf();
         date_default_timezone_set('America/Mexico_City');
         //$id_candidato = $this->input->post('idPDF');
