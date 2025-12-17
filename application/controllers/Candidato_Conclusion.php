@@ -537,6 +537,7 @@ class Candidato_Conclusion extends CI_Controller
         $headers = [
             'Content-Type: application/x-www-form-urlencoded',
             'X-API-KEY: ' . KEY,
+            'Accept: application/pdf',
         ];
 
         $ch = curl_init($url);
@@ -545,26 +546,49 @@ class Candidato_Conclusion extends CI_Controller
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $postData,
             CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_TIMEOUT        => 120,
+            CURLOPT_TIMEOUT        => 300,
+            CURLOPT_CONNECTTIMEOUT => 30,
+            CURLOPT_FOLLOWLOCATION => true,
+
+            // 🔥 CLAVE: si RODI manda gzip, cURL lo descomprime
+            CURLOPT_ENCODING       => '',
             CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
-        $pdf = curl_exec($ch);
+        $body = curl_exec($ch);
 
-        if ($pdf === false) {
-            $err = curl_error($ch);
-            curl_close($ch);
-            show_error('Error CURL: ' . $err, 500);
-        }
-
+        $curlErrNo   = curl_errno($ch);
+        $curlErr     = curl_error($ch);
+        $httpCode    = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
 
-        // 🔥 FORZAR PDF (porque MPDF ya viene crudo)
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="reporte_' . $id_candidato . '.pdf"');
-        header('Content-Length: ' . strlen($pdf));
+        if ($curlErrNo) {
+            show_error('Error CURL: ' . $curlErr, 500);
+        }
 
-        echo $pdf;
+        // ✅ Validación dura: debe ser PDF real
+        if ($httpCode !== 200 || substr($body, 0, 5) !== '%PDF-') {
+            // Log útil (no lo mandes al navegador como PDF)
+            log_message('error', 'RODI PDF inválido. http=' . $httpCode .
+                ' ctype=' . $contentType .
+                ' first=' . bin2hex(substr($body ?? '', 0, 12)) .
+                ' sample=' . substr(preg_replace('/\s+/', ' ', (string) $body), 0, 200)
+            );
+
+            show_error('RODI no devolvió un PDF válido (HTTP ' . $httpCode . ').', 502);
+        }
+
+        // 🔥 Limpia buffers para no corromper el PDF
+        while (ob_get_level()) {ob_end_clean();}
+        @ini_set('zlib.output_compression', 'Off');
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="reporte_' . (int) $id_candidato . '.pdf"');
+        // (Opcional) no pongas Content-Length si hay proxies/compresión, pero puede quedarse:
+        header('Content-Length: ' . strlen($body));
+
+        echo $body;
         exit;
     }
 
