@@ -518,91 +518,7 @@ class Candidato_Conclusion extends CI_Controller
         ];
         echo json_encode($msj);
     }
-    public function createPDF_old()
-    {
-        $id_candidato =
-        $this->input->post('idCandidatoPDF', true)
-            ?: $this->input->get('idCandidatoPDF', true);
 
-        if (! $id_candidato) {
-            header('Content-Type: text/plain; charset=utf-8');
-            echo "Falta idCandidatoPDF\n";
-            exit;
-        }
-
-        $id_candidato = (int) $id_candidato;
-
-        // ⚠️ Ajusta esta ruta a la REAL en RODI
-        $url = rtrim(APIRODI, '/') . '/api/Pdf/reporte';
-
-        $postData = http_build_query(['id_candidato' => $id_candidato]);
-
-        $headers = [
-            'Content-Type: application/x-www-form-urlencoded',
-            'X-API-KEY: ' . KEY,
-            'Accept: application/pdf',
-        ];
-
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => $postData,
-            CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_TIMEOUT        => 120,
-            CURLOPT_CONNECTTIMEOUT => 15,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_ENCODING       => '',   // descomprime gzip si aplica
-            CURLOPT_HEADER         => true, // capturar headers
-            CURLOPT_SSL_VERIFYPEER => false,
-        ]);
-
-        $raw = curl_exec($ch);
-
-        if ($raw === false) {
-            $err = curl_error($ch);
-            curl_close($ch);
-
-            header('Content-Type: text/plain; charset=utf-8');
-            echo "CURL ERROR:\n$err\n";
-            exit;
-        }
-
-        $httpCode    = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $contentType = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-        $effective   = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-        $primaryIp   = (string) curl_getinfo($ch, CURLINFO_PRIMARY_IP);
-        $headerSize  = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        curl_close($ch);
-
-        $respHeaders = substr($raw, 0, $headerSize);
-        $respBody    = substr($raw, $headerSize);
-
-        // ✅ Si NO es PDF, imprimimos debug (sin show_error)
-        if ($httpCode !== 200 || substr($respBody, 0, 5) !== '%PDF-') {
-            header('Content-Type: text/plain; charset=utf-8');
-            echo "RODI DEBUG\n";
-            echo "URL: $url\n";
-            echo "Effective: $effective\n";
-            echo "IP: $primaryIp\n";
-            echo "HTTP: $httpCode\n";
-            echo "Content-Type: $contentType\n\n";
-            echo "--- RODI HEADERS (first 500) ---\n";
-            echo substr($respHeaders, 0, 500) . "\n\n";
-            echo "--- RODI BODY (first 800) ---\n";
-            echo substr($respBody, 0, 800) . "\n";
-            exit;
-        }
-
-        // ✅ Si SÍ es PDF, descargamos limpio (sin imprimir nada extra)
-        while (ob_get_level()) {ob_end_clean();}
-        @ini_set('zlib.output_compression', 'Off');
-
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="reporte_' . $id_candidato . '.pdf"');
-        echo $respBody;
-        exit;
-    }
 
     public function createPDF()
     {
@@ -767,35 +683,35 @@ class Candidato_Conclusion extends CI_Controller
             //TODO: Organizar encabezados y pies de pagina de acuerdo al cliente mediante BD
             if ($data['info']['id_cliente'] == 39) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="' . base_url() . 'img/logo_talink.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
             }
             if ($data['info']['id_cliente'] == 7) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="' . base_url() . 'img/logo_gentex.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
             }
             if ($data['info']['id_cliente'] == 16) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
             }
             if ($data['info']['id_cliente'] == 159) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:100px;" src="' . base_url() . 'img/logo_pisa.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">PISA FARMACÉUTICA</p></div><div style="position: absolute; right: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Av. España No. 1840 Colonia Moderna C.P. 44190 Guadalajara, Jalisco. Tel. 33 3678 Fax: 33 3810 Lada sin costo: 800 627</p></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">PISA FARMACÉUTICA</p></div><div style="position: absolute; right: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Av. España No. 1840 Colonia Moderna C.P. 44190 Guadalajara, Jalisco. Tel. 33 3678 Fax: 33 3810 Lada sin costo: 800 627</p></div>');
             }
             if ($data['info']['id_cliente'] == 172) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Request Date: ' . $f_alta . '<br>Release Date: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
             }
             if ($data['info']['id_cliente'] == 190) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="' . base_url() . 'img/logo_gesthion.jpg"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
             }
             if ($data['info']['id_cliente'] == 209) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="' . base_url() . 'img/logo_velazquez.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
             }
             if ($data['info']['id_cliente'] != 7 && $data['info']['id_cliente'] != 16 && $data['info']['id_cliente'] != 39 && $data['info']['id_cliente'] != 159 && $data['info']['id_cliente'] != 172 && $data['info']['id_cliente'] != 190 && $data['info']['id_cliente'] != 209) {
                 $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
+                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
             }
         }
         //*Cifrar pdf
