@@ -531,7 +531,7 @@ class Candidato_Conclusion extends CI_Controller
         $id_candidato = (int) $id_candidato;
 
         // 🔐 URL protegida (no expuesta)
-        $url = rtrim(APIRODI, '/') . '/api/pdf/reporte';
+        $url = rtrim(APIRODI, '/') . '/api/Pdf/reporte';
 
         // 📦 Datos POST
         $postData = http_build_query([
