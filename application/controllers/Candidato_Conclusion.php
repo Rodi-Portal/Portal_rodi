@@ -695,7 +695,7 @@ class Candidato_Conclusion extends CI_Controller
 
         //* Vista PDF del reporte
         $html = $this->load->view('pdfs/reporte_espanol_pdf', $data, true);
-        $html = limpiar_html_para_pdf($html);
+        $html = $this->limpiar_html_para_pdf($html);
 
         /* echo $html;
         exit;*/
