@@ -519,11 +519,11 @@ class Candidato_Conclusion extends CI_Controller
         echo json_encode($msj);
     }
 
-
     public function createPDF()
     {
         //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
-        error_reporting(E_ALL & ~E_WARNING);
+        ini_set('pcre.backtrack_limit', '50000000');
+        ini_set('pcre.recursion_limit', '50000000');
 
         $mpdf = new \Mpdf\Mpdf();
         date_default_timezone_set('America/Mexico_City');
@@ -722,7 +722,7 @@ class Candidato_Conclusion extends CI_Controller
         $clave = ($usuario->clave != null)? $usuario->clave:$claveAleatoria;
         $mpdf->SetProtection(array(), $clave, 'r0d1@');*/
         $mpdf->autoPageBreak = false;
-        $html = preg_replace('/rgba\([^)]+\)/', '#000000', $html);
+        $html                = preg_replace('/\s+/', ' ', $html);
         $mpdf->WriteHTML($html);
         $mpdf->Output('' . $nombreArchivo . '.pdf', 'D');
 
