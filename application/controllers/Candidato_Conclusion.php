@@ -527,21 +527,21 @@ class Candidato_Conclusion extends CI_Controller
         if (! $id_candidato) {
             show_error('idCandidatoPDF requerido', 400);
         }
-        echo $id_candidato;
-        echo APIRODI;
-        echo KEY;
-        die();
 
-        $url = rtrim(APIRODI, '/') . '/Pdf/reporte';
+        $id_candidato = (int) $id_candidato;
 
+        // 🔐 URL protegida (no expuesta)
+        $url = rtrim(APIRODI, '/') . '/api/pdf/reporte';
+
+        // 📦 Datos POST
         $postData = http_build_query([
-            'id_candidato' => (int) $id_candidato,
+            'id_candidato' => $id_candidato,
         ]);
 
+        // 🔑 Headers seguros
         $headers = [
             'Content-Type: application/x-www-form-urlencoded',
             'X-API-KEY: ' . KEY,
-            'Accept: application/pdf',
         ];
 
         $ch = curl_init($url);
@@ -550,49 +550,33 @@ class Candidato_Conclusion extends CI_Controller
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $postData,
             CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_TIMEOUT        => 300,
-            CURLOPT_CONNECTTIMEOUT => 30,
-            CURLOPT_FOLLOWLOCATION => true,
-
-            // 🔥 CLAVE: si RODI manda gzip, cURL lo descomprime
-            CURLOPT_ENCODING       => '',
-            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT        => 120,
+            CURLOPT_CONNECTTIMEOUT => 15,
+            CURLOPT_SSL_VERIFYPEER => false, // true en producción con SSL válido
         ]);
 
-        $body = curl_exec($ch);
+        $pdf = curl_exec($ch);
 
-        $curlErrNo   = curl_errno($ch);
-        $curlErr     = curl_error($ch);
-        $httpCode    = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $contentType = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        if ($pdf === false) {
+            $err = curl_error($ch);
+            curl_close($ch);
+            show_error('Error CURL: ' . $err, 500);
+        }
+
+        $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
 
-        if ($curlErrNo) {
-            show_error('Error CURL: ' . $curlErr, 500);
+        if ($httpCode !== 200 || stripos($contentType, 'application/pdf') === false) {
+            show_error('Respuesta inválida desde RODI', 500);
         }
 
-        // ✅ Validación dura: debe ser PDF real
-        if ($httpCode !== 200 || substr($body, 0, 5) !== '%PDF-') {
-            // Log útil (no lo mandes al navegador como PDF)
-            log_message('error', 'RODI PDF inválido. http=' . $httpCode .
-                ' ctype=' . $contentType .
-                ' first=' . bin2hex(substr($body ?? '', 0, 12)) .
-                ' sample=' . substr(preg_replace('/\s+/', ' ', (string) $body), 0, 200)
-            );
-
-            show_error('RODI no devolvió un PDF válido (HTTP ' . $httpCode . ').', 502);
-        }
-
-        // 🔥 Limpia buffers para no corromper el PDF
-        while (ob_get_level()) {ob_end_clean();}
-        @ini_set('zlib.output_compression', 'Off');
-
+        // 🔽 Descargar PDF
         header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="reporte_' . (int) $id_candidato . '.pdf"');
-        // (Opcional) no pongas Content-Length si hay proxies/compresión, pero puede quedarse:
-        header('Content-Length: ' . strlen($body));
+        header('Content-Disposition: attachment; filename="reporte_' . $id_candidato . '.pdf"');
+        header('Content-Length: ' . strlen($pdf));
 
-        echo $body;
+        echo $pdf;
         exit;
     }
 
