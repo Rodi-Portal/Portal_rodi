@@ -520,10 +520,15 @@ class Candidato_Conclusion extends CI_Controller
     }
     public function createPDF()
     {
-        $id_candidato = (int) $this->input->get('id_candidato');
-        if ($id_candidato <= 0) {
-            show_error('id_candidato requerido', 400);
+        $id_candidato =
+        $this->input->post('idCandidatoPDF', true)
+            ?: $this->input->get('idCandidatoPDF', true);
+
+        if (! $id_candidato) {
+            show_error('idCandidatoPDF requerido', 400);
         }
+
+        $id_candidato = (int) $id_candidato;
 
         // 🔐 URL protegida (no expuesta)
         $url = rtrim(APIRODI, '/') . '/api/pdf/reporte';
