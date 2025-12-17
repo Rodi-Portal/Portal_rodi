@@ -518,7 +518,7 @@ class Candidato_Conclusion extends CI_Controller
         ];
         echo json_encode($msj);
     }
-    public function createPDF()
+    public function createPDF_old()
     {
         $id_candidato =
         $this->input->post('idCandidatoPDF', true)
@@ -604,7 +604,7 @@ class Candidato_Conclusion extends CI_Controller
         exit;
     }
 
-    public function createPDF_old()
+    public function createPDF()
     {
         //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
         $mpdf = new \Mpdf\Mpdf();
