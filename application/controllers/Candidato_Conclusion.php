@@ -528,17 +528,12 @@ class Candidato_Conclusion extends CI_Controller
             show_error('idCandidatoPDF requerido', 400);
         }
 
-        $id_candidato = (int) $id_candidato;
+        $url = rtrim(APIRODI, '/') . '/Pdf/reporte';
 
-        // 🔐 URL protegida (no expuesta)
-        $url = rtrim(APIRODI, '/') . '/api/pdf/reporte';
-
-        // 📦 Datos POST
         $postData = http_build_query([
-            'id_candidato' => $id_candidato,
+            'id_candidato' => (int) $id_candidato,
         ]);
 
-        // 🔑 Headers seguros
         $headers = [
             'Content-Type: application/x-www-form-urlencoded',
             'X-API-KEY: ' . KEY,
@@ -551,8 +546,7 @@ class Candidato_Conclusion extends CI_Controller
             CURLOPT_POSTFIELDS     => $postData,
             CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_TIMEOUT        => 120,
-            CURLOPT_CONNECTTIMEOUT => 15,
-            CURLOPT_SSL_VERIFYPEER => false, // true en producción con SSL válido
+            CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
         $pdf = curl_exec($ch);
@@ -563,15 +557,9 @@ class Candidato_Conclusion extends CI_Controller
             show_error('Error CURL: ' . $err, 500);
         }
 
-        $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
 
-        if ($httpCode !== 200 || stripos($contentType, 'application/pdf') === false) {
-            show_error('Respuesta inválida desde RODI', 500);
-        }
-
-        // 🔽 Descargar PDF
+        // 🔥 FORZAR PDF (porque MPDF ya viene crudo)
         header('Content-Type: application/pdf');
         header('Content-Disposition: attachment; filename="reporte_' . $id_candidato . '.pdf"');
         header('Content-Length: ' . strlen($pdf));
