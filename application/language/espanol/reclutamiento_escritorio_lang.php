@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-$lang['rec_desk_tab'] = 'Mi escritorio';
+$lang['rec_desk_tab'] = 'Mi escritorio'; 
 $lang['rec_prog_tab'] = 'En progreso';
 $lang['rec_done_tab'] = 'Finalizadas';
 $lang['rec_board_tab'] = 'Bolsa de trabajo';

@@ -13,7 +13,7 @@ $lang['suc_modal_send_credentials_title'] = 'Registrar';
 $lang['suc_lbl_generate_password']        = 'Generar Contraseña*';
 $lang['suc_btn_generate']                = 'Generar';
 $lang['suc_btn_cancel']                  = 'Cancelar';
-$lang['suc_btn_resend_password']          = 'Reenviar contraseña';
+$lang['suc_btn_resend_password']          = 'Reenviar contraseña'; 
 
 /* DataTable columnas */
 $lang['suc_col_id']            = 'ID';

@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-$lang['rec_prog_title'] = 'Requisiciones en progreso';
+$lang['rec_prog_title'] = 'Requisiciones en progreso'; 
 
 $lang['rec_prog_btn_register_applicant'] = 'Registrar aspirante a requisición';
 $lang['rec_prog_btn_change_req_status']  = 'Cambiar estatus de requisición';

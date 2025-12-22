@@ -11,7 +11,7 @@ $lang['mod_intro_empleados'] = 'En este módulo verás un listado de tus sucursa
 $lang['mod_intro_exempleados'] = 'En este módulo verás un listado de tus sucursales/clientes, áreas o departamentos. Al seleccionar uno, podrás consultar a los exempleados asociados, lo que facilita la consulta histórica y el seguimiento posterior a la baja.';
 
 // Encabezados de tabla
-$lang['mod_table_branch']           = 'Sucursal/Cliente';
+$lang['mod_table_branch']           = 'Sucursal/Cliente'; 
 $lang['mod_table_email']            = 'Correo electrónico';
 $lang['mod_table_users_access']     = 'Usuarios con acceso a sucursal/cliente';
 $lang['mod_table_candidates']       = 'Candidatos en proceso';

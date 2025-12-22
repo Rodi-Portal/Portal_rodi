@@ -14,4 +14,4 @@ $lang['nss'] = 'Número de Seguro Social (NSS)';
 $lang['submit'] = 'Guardar';
 $lang['cancel'] = 'Cancelar';
 $lang['choose_action'] = 'Elige lo que quieres hacer';
-$lang['select'] = 'Seleccionar';
+$lang['select'] = 'Seleccionar'; 
