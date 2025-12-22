@@ -563,10 +563,9 @@ class Reclutamiento_model extends CI_Model
     public function cambiarStatusrequisicion($id, $status)
     {
         if (! $id || empty($status)) {
-            // Verificar si se proporcionan los datos necesarios
-            return "Error: Datos insuficientes para la actualización.";
+            return t('rec_status_err_insufficient_data', 'Error: Datos insuficientes para la actualización.');
         }
-        //    echo "aqui status : ".$status['status'];
+
         try {
             $this->db
                 ->set('id_usuario', $status['id_usuario'])
@@ -575,17 +574,17 @@ class Reclutamiento_model extends CI_Model
                 ->update('requisicion');
 
             if ($this->db->affected_rows() == 0) {
-                // Verificar si la actualización fue exitosa
-                return "Error: No se pudo actualizar la requisición.";
+                return t('rec_status_err_not_updated', 'Error: No se pudo actualizar la requisición.');
             }
-            if ($status['status'] == 1) {
-                return "La requisición se detuvo correctamente.";
-            } else {
-                return "La requisición se inicio correctamente.";
+
+            if ((int) $status['status'] === 1) {
+                return t('rec_status_ok_stopped', 'La requisición se detuvo correctamente.');
             }
+
+            return t('rec_status_ok_started', 'La requisición se inició correctamente.');
+
         } catch (Exception $e) {
-            // Manejar excepciones
-            return "Error al actualizar la requisición: " . $e->getMessage();
+            return t('rec_status_err_updating', 'Error al actualizar la requisición: ') . $e->getMessage();
         }
     }
 
@@ -1140,6 +1139,7 @@ class Reclutamiento_model extends CI_Model
             ->select("
             A.*,
             A.id as idAsp,
+
             TRIM(CONCAT(
                 BT.nombre, ' ',
                 COALESCE(BT.paterno, ''), ' ',
@@ -1147,12 +1147,17 @@ class Reclutamiento_model extends CI_Model
             )) AS aspirante,
 
             CASE
-                WHEN USPOR.id IS NULL THEN 'N/A'
+                WHEN USER.id IS NULL THEN 'N/A'
                 ELSE TRIM(CONCAT_WS(' ',
-                    COALESCE(DATUP.nombre, ''),
-                    COALESCE(DATUP.paterno, '')
+                    COALESCE(GENUS.nombre, ''),
+                    COALESCE(GENUS.paterno, '')
                 ))
             END AS usuario,
+
+            BT.domicilio,
+            BT.medio_contacto,
+            BT.area_interes,
+            BT.telefono,
 
             R.id AS id_req,
             CASE
@@ -1160,9 +1165,6 @@ class Reclutamiento_model extends CI_Model
                 ELSE COALESCE(R.puesto, 'Asistente Virtual')
             END AS puesto,
             R.numero_vacantes,
-
-            RI.*,
-            COALESCE(RI.telefono, 'N/A') AS telIntake,
 
             COALESCE(CL.nombre, 'No Asignado') AS nombre_cliente,
             CL.clave,
@@ -1177,20 +1179,23 @@ class Reclutamiento_model extends CI_Model
             CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.telefono, 'N/A') END AS telefono_cliente,
             CASE WHEN CL.id IS NULL THEN 'N/A' ELSE COALESCE(GENCL.correo,   'N/A') END AS correo_cliente,
 
+            H.id AS idHistorial,
+
             BT.status AS status_aspirante,
             BT.semaforo
         ")
             ->from('requisicion_aspirante AS A')
-            ->join('bolsa_trabajo AS BT', 'BT.id = A.id_bolsa_trabajo')
             ->join('requisicion AS R', 'R.id = A.id_requisicion')
-
-            ->join('requisicion_intake AS RI', 'RI.id = R.id_intake', 'left')
+            ->join('bolsa_trabajo AS BT', 'BT.id = A.id_bolsa_trabajo')
 
             ->join('cliente AS CL', 'CL.id = R.id_cliente', 'left')
             ->join('datos_generales AS GENCL', 'GENCL.id = CL.id_datos_generales', 'left')
 
-            ->join('usuarios_portal AS USPOR', 'USPOR.id = A.id_usuario', 'left')
-            ->join('datos_generales AS DATUP', 'DATUP.id = USPOR.id_datos_generales', 'left')
+            ->join('usuarios_portal AS USER', 'USER.id = A.id_usuario', 'left')
+            ->join('datos_generales AS GENUS', 'GENUS.id = USER.id_datos_generales', 'left')
+
+            ->join('requisicion_historial AS H', 'H.id_requisicion = R.id', 'left')
+            ->where('A.eliminado', 0)
 
             ->where('R.id_portal', $id_portal)
             ->where('A.id_requisicion', (int) $id)

@@ -11,96 +11,117 @@
 <div class="modal fade" id="nuevoAspiranteModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h4 class="modal-title">Datos del aspirante</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title"><?php echo t('rec_prog_app_modal_title', 'Datos del aspirante'); ?></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <form id="formAspirante">
-          <div class="col-sm-12 ">
+          <div class="col-sm-12">
 
-            <label for="buscador">Selecciona una Requisición :</label>
+            <label for="buscador"><?php echo t('rec_prog_app_f_req_select', 'Selecciona una Requisición :'); ?></label>
             <select name="req_asignada" id="req_asignada">
 
               <?php
-                  if ($reqs) {
-                  foreach ($reqs as $req) {?>
-
-              <option value="<?php echo $req->idReq; ?>">
-                <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-              </option>
+                if ($reqs) {
+                  foreach ($reqs as $req) { ?>
+                    <option value="<?php echo $req->idReq; ?>">
+                      <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - ' . t('rec_prog_app_req_openings', 'Vacantes:') . ' ' . $req->numero_vacantes; ?>
+                    </option>
               <?php }
-              } else {?>
-              <option value="">Sin requisiones registradas</option>
-              <?php }?>
+                } else { ?>
+                  <option value=""><?php echo t('rec_prog_app_no_reqs', 'Sin requisiones registradas'); ?></option>
+              <?php } ?>
             </select>
+
           </div>
+
           <br>
+
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
-              <label>Nombre(s) *</label>
+              <label><?php echo t('rec_prog_app_f_first_names', 'Nombre(s) *'); ?></label>
               <input type="text" class="form-control obligado" name="nombre" id="nombre"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
+
             <div class="col-sm-12 col-md-4">
-              <label>Primer apellido *</label>
+              <label><?php echo t('rec_prog_app_f_lastname_1', 'Primer apellido *'); ?></label>
               <input type="text" class="form-control obligado" name="paterno" id="paterno"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
+
             <div class="col-sm-12 col-md-4">
-              <label>Segundo apellido</label>
+              <label><?php echo t('rec_prog_app_f_lastname_2', 'Segundo apellido'); ?></label>
               <input type="text" class="form-control" name="materno" id="materno"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-12">
-              <label>Localización o domicilio *</label>
+              <label><?php echo t('rec_prog_app_f_address', 'Localización o domicilio *'); ?></label>
               <textarea class="form-control" name="domicilio" id="domicilio" rows="2"></textarea>
             </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
-              <label>Área de interés *</label>
+              <label><?php echo t('rec_prog_app_f_interest_area', 'Área de interés *'); ?></label>
               <input type="text" id="area_interes" name="area_interes" class="form-control">
             </div>
+
             <div class="col-sm-12 col-md-4">
-              <label>Medio de contacto *</label>
+              <label><?php echo t('rec_prog_app_f_contact_method', 'Medio de contacto *'); ?></label>
               <select name="medio" id="medio" class="form-control obligado w-100">
-                <option value="">Selecciona</option>
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+
                 <?php if ($medios != null): ?>
-                <?php foreach ($medios as $m): ?>
-                <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
-                <?php endforeach; ?>
+                  <?php foreach ($medios as $m): ?>
+                    <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
+                  <?php endforeach; ?>
                 <?php endif; ?>
-                <option value="0">N/A</option>
+
+                <option value="0"><?php echo t('rec_common_na', 'N/A'); ?></option>
               </select>
             </div>
+
             <div class="col-sm-12 col-md-4">
-              <label>Teléfono *</label>
+              <label><?php echo t('rec_prog_app_f_phone', 'Teléfono *'); ?></label>
               <input type="text" id="telefono1" name="telefono1" class="form-control">
             </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
-              <label>Correo*</label>
+              <label><?php echo t('rec_prog_app_f_email', 'Correo*'); ?></label>
               <input type="mail" id="correo1" name="correo1" class="form-control">
+
               <input type="hidden" id="idAspirante" name="idAspirante">
               <input type="hidden" id="idBolsa" name="idBolsa">
-
             </div>
           </div>
+
         </form>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" onclick="addApplicant()">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+        <button type="button" class="btn btn-success" onclick="addApplicant()">
+          <?php echo t('rec_common_save', 'Guardar'); ?>
+        </button>
       </div>
+
     </div>
   </div>
 </div>
+
 
 
 
@@ -108,110 +129,130 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title-modal-key-title-blanco">Registro de acción al aspirante: <span
-            class="nombreAspirante"></span></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title-modal-key-title-blanco">
+          <?php echo t('rec_prog_action_modal_title', 'Registro de acción al aspirante:'); ?>
+          <span class="nombreAspirante"></span>
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <div class="alert alert-success text-start" role="alert" style="text-align: left;">
-          ✅ <strong>NOTA:</strong> En esta sección podrás registrar las acciones que se van tomando en el proceso de
-          reclutamiento en base a este Aspirante.
+          ✅ <strong><?php echo t('rec_common_note_label', 'NOTA:'); ?></strong>
+          <?php echo t('rec_prog_action_note_success', 'En esta sección podrás registrar las acciones que se van tomando en el proceso de reclutamiento en base a este Aspirante.'); ?>
         </div>
+
         <form id="formAccion">
           <div class="row">
             <div class="col-12">
-              <label>Acción a aplicar *</label>
+              <label><?php echo t('rec_prog_action_field_action', 'Acción a aplicar *'); ?></label>
               <select name="accion_aspirante" id="accion_aspirante" class="form-control obligado">
-                <option value="">Selecciona</option>
-                <option value="otro">Otro</option>
-                <?php if ($acciones != null) {
-                    foreach ($acciones as $a) {?>
-                <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
-                <?php }
-                }?>
-                <!-- Opción para escribir otra acción -->
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+                <option value="otro"><?php echo t('rec_common_other', 'Otro'); ?></option>
+                <?php if ($acciones != null) { foreach ($acciones as $a) { ?>
+                  <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
+                <?php } } ?>
               </select>
               <br>
 
               <!-- Input oculto para la acción personalizada -->
-              <input type="text" name="otra_accion" id="otra_accion" class="form-control mt-2"
-                placeholder="Escribe la acción" style="display: none;">
+              <input type="text"
+                     name="otra_accion"
+                     id="otra_accion"
+                     class="form-control mt-2"
+                     placeholder="<?php echo t('rec_prog_action_placeholder_other_action', 'Escribe la acción'); ?>"
+                     style="display: none;">
             </div>
           </div>
+
           <div class="row">
             <div class="col-12">
-              <label>Comentario / Descripción / Fecha y lugar *</label>
+              <label><?php echo t('rec_prog_action_field_comment', 'Comentario / Descripción / Fecha y lugar *'); ?></label>
               <textarea class="form-control" id="accion_comentario" name="accion_comentario" rows="4"></textarea>
               <br>
             </div>
           </div>
+
           <div class="alert alert-warning text-start" role="alert" style="text-align: left;">
-            ⚠️ <strong>NOTA:</strong> Si la acción a registrar influye en el estatus o color del aspirante en bolsa de
-            trabajo, o en el proceso, no olvides modificar los siguientes campos:
+            ⚠️ <strong><?php echo t('rec_common_note_label', 'NOTA:'); ?></strong>
+            <?php echo t('rec_prog_action_note_warning_intro', 'Si la acción a registrar influye en el estatus o color del aspirante en bolsa de trabajo, o en el proceso, no olvides modificar los siguientes campos:'); ?>
             <ul>
               <ul>
-                <li><strong>Estatus del Aspirante</strong>: Este cambia el color y estatus del aspirante en bolsa de
-                  trabajo.
+                <li>
+                  <strong><?php echo t('rec_prog_action_note_candidate_status_title', 'Estatus del Aspirante'); ?></strong>:
+                  <?php echo t('rec_prog_action_note_candidate_status_desc', 'Este cambia el color y estatus del aspirante en bolsa de trabajo.'); ?>
                 </li>
-                <li><strong>Estatus del Proceso</strong>: Este cambia el estatus actual del proceso de reclutamiento.
+                <li>
+                  <strong><?php echo t('rec_prog_action_note_process_status_title', 'Estatus del Proceso'); ?></strong>:
+                  <?php echo t('rec_prog_action_note_process_status_desc', 'Este cambia el estatus actual del proceso de reclutamiento.'); ?>
                 </li>
               </ul>
           </div>
 
           <div class="row">
-            <!-- Primer Select -->
-
-
-            <!-- Segundo Select -->
             <div class="col-md-6">
-              <label for="estatus_aspirante" data-toggle="tooltip" data-placement="top"
-                title="El cambio realizado impactará directamente en la Bolsa de Trabajo, actualizando tanto el color como el estatus del aspirante">
-                Estatus del aspirante
+              <label for="estatus_aspirante"
+                     data-toggle="tooltip"
+                     data-placement="top"
+                     title="<?php echo t('rec_prog_action_tip_candidate_status', 'El cambio realizado impactará directamente en la Bolsa de Trabajo, actualizando tanto el color como el estatus del aspirante'); ?>">
+                <?php echo t('rec_prog_action_label_candidate_status', 'Estatus del aspirante'); ?>
                 <i class="fas fa-info-circle text-primary"></i>
               </label>
               <select class="form-control" id="estatus_aspirante" name="estatus_aspirante">
-                <option value="">Selecciona</option>
-                <option value="1" data-color="#6c757d">⚪ En espera</option>
-                <option value="3" data-color="#ffc107">🟡 Precaucion</option>
-                <option value="2" data-color="#17a2b8">🔵 En proceso de reclutamiento</option>
-                <option value="4" data-color="#28a745">🟢 Listo para iniciar el proceso de preempleo</option>
-                <option value="0" data-color="#dc3545">🔴 Bloquear aspirante</option>
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+                <option value="1" data-color="#6c757d">⚪ <?php echo t('rec_prog_action_opt_waiting', 'En espera'); ?></option>
+                <option value="3" data-color="#ffc107">🟡 <?php echo t('rec_prog_action_opt_caution', 'Precaucion'); ?></option>
+                <option value="2" data-color="#17a2b8">🔵 <?php echo t('rec_prog_action_opt_in_process', 'En proceso de reclutamiento'); ?></option>
+                <option value="4" data-color="#28a745">🟢 <?php echo t('rec_prog_action_opt_ready_pre_employment', 'Listo para iniciar el proceso de preempleo'); ?></option>
+                <option value="0" data-color="#dc3545">🔴 <?php echo t('rec_prog_action_opt_block', 'Bloquear aspirante'); ?></option>
               </select>
             </div>
-            <!-- Tercer Select -->
+
             <div class="col-md-6">
-              <label for="select3" data-toggle="tooltip" data-placement="top"
-                title="Esta opción se registra en este módulo 'En proceso' y se refleja en la columna 'Estatus Actual'">
-                Estatus proceso
+              <label for="estatus_proceso"
+                     data-toggle="tooltip"
+                     data-placement="top"
+                     title="<?php echo t('rec_prog_action_tip_process_status', "Esta opción se registra en este módulo 'En proceso' y se refleja en la columna 'Estatus Actual'"); ?>">
+                <?php echo t('rec_prog_action_label_process_status', 'Estatus proceso'); ?>
                 <i class="fas fa-info-circle text-primary"></i>
               </label>
               <select class="form-control" id="estatus_proceso" name="estatus_proceso">
-                <option value="">Selecciona</option>
-                <option value="1">Completado</option>
-                <option value="3">Cancelado</option>
-                <option value="2">Eliminar Estatus Final</option>
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+                <option value="1"><?php echo t('rec_prog_action_opt_completed', 'Completado'); ?></option>
+                <option value="3"><?php echo t('rec_prog_action_opt_canceled', 'Cancelado'); ?></option>
+                <option value="2"><?php echo t('rec_prog_action_opt_remove_final_status', 'Eliminar Estatus Final'); ?></option>
               </select>
             </div>
           </div>
         </form>
+
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" onclick="guardarAccion()">Registrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+        <button type="button" class="btn btn-success" onclick="guardarAccion()">
+          <?php echo t('rec_prog_action_btn_register', 'Registrar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
 
+
 <div class="modal fade" id="historialModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Historial de movimientos del aspirante: <br><span class="nombreAspirante"></span></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title">
+          <?php echo t('rec_prog_history_modal_title', 'Historial de movimientos del aspirante:'); ?>
+          <br><span class="nombreAspirante"></span>
+        </h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -219,72 +260,80 @@
         <div id="div_historial_aspirante"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_close', 'Cerrar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 
 <div class="modal fade" id="estatusRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Estatus de requisición</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title"><?php echo t('rec_prog_req_status_modal_title', 'Estatus de requisición'); ?></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
-      <div class="modal-body">
 
+      <div class="modal-body">
         <form id="formEstatusReq">
           <div class="row">
             <div class="col-12">
-              <label>Requisición *</label>
+              <label><?php echo t('rec_prog_req_status_field_req', 'Requisición *'); ?></label>
               <select name="req_estatus" id="req_estatus">
-                <option value="">Selecciona</option>
-                <?php
-
-                    if ($reqs) {
-                    foreach ($reqs as $req) {?>
-                <option value="<?php echo $req->idReq; ?>">
-                  <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-                </option>
-                <?php }
-                }?>
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+                <?php if ($reqs) { foreach ($reqs as $req) { ?>
+                  <option value="<?php echo $req->idReq; ?>">
+                    <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                  </option>
+                <?php } } ?>
               </select>
               <br>
             </div>
           </div>
+
           <div class="row">
             <div class="col-sm-12 col-md-4 offset-4">
-              <label>Estatus a asignar *</label>
+              <label><?php echo t('rec_prog_req_status_field_assign', 'Estatus a asignar *'); ?></label>
               <select name="asignar_estatus" id="asignar_estatus" class="form-control obligado">
-                <option value="">Selecciona</option>
-                <option value="3">Terminar</option>
-                <option value="0">Cancelar</option>
-                <option value="1">Eliminar</option>
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+                <option value="3"><?php echo t('rec_prog_req_status_opt_finish', 'Terminar'); ?></option>
+                <option value="0"><?php echo t('rec_prog_req_status_opt_cancel', 'Cancelar'); ?></option>
+                <option value="1"><?php echo t('rec_prog_req_status_opt_delete', 'Eliminar'); ?></option>
               </select>
               <br>
             </div>
           </div>
+
           <div class="row">
             <div class="col-12">
-              <label>Comentarios *</label>
+              <label><?php echo t('rec_prog_req_status_field_comments', 'Comentarios *'); ?></label>
               <textarea class="form-control" name="comentario_estatus" id="comentario_estatus" rows="4"></textarea>
               <br>
             </div>
           </div>
         </form>
+
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" onclick="guardarEstatusRequisicion()">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+        <button type="button" class="btn btn-success" onclick="guardarEstatusRequisicion()">
+          <?php echo t('rec_common_save', 'Guardar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 
 <div class="modal fade" id="reactivarRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -447,7 +496,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <meta charset="UTF-8">
-        <h4 class="modal-title">Registro de candidatos</h4>
+        <h4 class="modal-title"><?php echo t('rec_prog_candidate_modal_title', 'Registro de candidatos'); ?></h4>
 
         <!-- div id="language-switch">
           <label for="language-select">Language:</label>
@@ -456,73 +505,73 @@
             <option value="spanish">Español</option>
           </select>
         </div -->
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
 
       </div>
 
       <div class="modal-body">
-        <div class="alert alert-info text-center">Datos generales</div>
+        <div class="alert alert-info text-center"><?php echo t('rec_prog_candidate_section_general', 'Datos generales'); ?></div>
+
         <form id="nuevoRegistroForm">
           <div class="row">
             <div class="col-4">
-              <label>Nombre (s) *</label>
+              <label><?php echo t('rec_prog_candidate_f_first_name', 'Nombre (s) *'); ?></label>
               <input type="text" class="form-control obligado" name="nombre_registro" id="nombre_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
-              <label>Paterno*</label>
+              <label><?php echo t('rec_prog_candidate_f_lastname_1', 'Paterno*'); ?></label>
               <input type="text" class="form-control obligado" name="paterno_registro" id="paterno_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
             <div class="col-4">
-              <label>Materno</label>
+              <label><?php echo t('rec_prog_candidate_f_lastname_2', 'Materno'); ?></label>
               <input type="text" class="form-control" name="materno_registro" id="materno_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
               <br>
             </div>
           </div>
+
           <div class="row">
             <div class="col-4">
-              <label>Subcliente</label>
+              <label><?php echo t('rec_prog_candidate_f_subclient', 'Subcliente'); ?></label>
               <select name="subcliente" id="subcliente" class="form-control obligado">
-                <option value="0">N/A</option>
+                <option value="0"><?php echo t('rec_common_na', 'N/A'); ?></option>
               </select>
               <br>
             </div>
 
-
-
             <div class="col-4">
-              <label>Posición*</label>
+              <label><?php echo t('rec_prog_candidate_f_position', 'Posición*'); ?></label>
               <select name="puesto" id="puesto" class="form-control" onchange="mostrarInputOtro()">
-                <option value="0" selected>N/A</option>
-                <option value="otro">Otro</option>
+                <option value="0" selected><?php echo t('rec_common_na', 'N/A'); ?></option>
+                <option value="otro"><?php echo t('rec_common_other', 'Otro'); ?></option>
               </select>
 
               <br>
 
               <!-- Input oculto que se muestra cuando seleccionan "Otro" -->
               <input type="text" name="puesto_otro" id="puesto_otro" class="form-control"
-                placeholder="Especificar posición" style="display: none;">
+                placeholder="<?php echo t('rec_prog_candidate_ph_specify_position', 'Especificar posición'); ?>"
+                style="display: none;">
             </div>
 
-
-
             <div class="col-4">
-              <label>Teléfono *</label>
+              <label><?php echo t('rec_prog_candidate_f_phone', 'Teléfono *'); ?></label>
               <input type="text" class="form-control obligado" name="celular_registro" id="celular_registro"
                 maxlength="16">
               <input type="hidden" class="form-control obligado" name="id_cliente_portal" id="id_cliente_portal">
               <br>
             </div>
           </div>
+
           <div class="row">
             <div class="col-4">
-              <label>País de residencia *</label>
+              <label><?php echo t('rec_prog_candidate_f_country_residence', 'País de residencia *'); ?></label>
               <select class="form-control" id="pais" name="pais">
                 <?php
                     if ($paises != null) {
@@ -537,340 +586,356 @@
               <br>
             </div>
             <div class="col-4">
-              <label>Correo* </label>
+              <label><?php echo t('rec_prog_candidate_f_email', 'Correo*'); ?> </label>
               <input type="text" class="form-control obligado" name="correo_registro" id="correo_registro">
               <br>
             </div>
             <div class="col-4">
-              <label>CURP</label>
+              <label><?php echo t('rec_prog_candidate_f_curp', 'CURP'); ?></label>
               <input type="text" class="form-control obligado" name="curp_registro" id="curp_registro"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()"
                 maxlength="18">
               <br>
             </div>
           </div>
+
           <div class="row">
             <div class="col-4">
-              <label>Número de Seguro Social (SSN)</label>
+              <label><?php echo t('rec_prog_candidate_f_ssn', 'Número de Seguro Social (SSN)'); ?></label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
-              <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden"
-                maxlength="11">
+              <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden" maxlength="11">
               <input type="hidden" class="form-control obligado" name="clave" id="clave" maxlength="11">
               <input type="hidden" class="form-control obligado" name="cliente" id="cliente" maxlength="11">
-              <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq"
-                maxlength="11">
+              <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq" maxlength="11">
             </div>
           </div>
+
           <br><br>
-          <!-- /TODO: regresar  cuando se permita crear proyectos -->
-          <!--div class="alert alert-warning text-center">Choose a previous project or create another one. <br>Notes: <br>
-            <ul class="text-left">
-              <li>If you select a previous project, this will have a higher priority for your new register.</li>
-              <li>The complementary tests are optional.</li>
-            </ul>
-          </div -->
+
           <div class="alert alert-info text-center">
-            Seleccione una de las siguientes opciones:
+            <?php echo t('rec_prog_candidate_choose_option', 'Seleccione una de las siguientes opciones:'); ?>
           </div>
+
           <div class="row">
             <div class="col-12">
               <select name="opcion_registro" id="opcion_registro" class="form-control registro_obligado">
-                <option value="2" selected>Registrar mi propio proceso - Gratis</option>
-                <option value="0">Seleccionar un proyecto anterior o crear uno nuevo / Enviado a RODI</option>
-                <option value="1">Registrar al candidato solo con Prueba de Drogas y/o Examen Médico / Enviado a RODI
-                </option>
+                <option value="2" selected><?php echo t('rec_prog_candidate_opt_self_process_free', 'Registrar mi propio proceso - Gratis'); ?></option>
+                <option value="0"><?php echo t('rec_prog_candidate_opt_prev_or_new_project', 'Seleccionar un proyecto anterior o crear uno nuevo / Enviado a RODI'); ?></option>
+                <option value="1"><?php echo t('rec_prog_candidate_opt_drug_med_only', 'Registrar al candidato solo con Prueba de Drogas y/o Examen Médico / Enviado a RODI'); ?></option>
               </select>
 
               <br>
             </div>
           </div>
-          <div class="alert alert-info text-center div_info_previo">Seleccionar un Proyecto Anterior</div>
+
+          <div class="alert alert-info text-center div_info_previo">
+            <?php echo t('rec_prog_candidate_prev_project_title', 'Seleccionar un Proyecto Anterior'); ?>
+          </div>
 
           <div class="row div_previo">
             <div class="alert alert-warning text-center">
-              Al enviar a RODI se genera un costo. Si no estás seguro de los costos, ponte en contacto con <a
-                href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>.
+              <?php echo t('rec_prog_candidate_rodi_cost_notice_1', 'Al enviar a RODI se genera un costo. Si no estás seguro de los costos, ponte en contacto con'); ?>
+              <a href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>.
             </div>
+
             <div class="col-md-12">
-              <label>Previous projects</label>
+              <label><?php echo t('rec_prog_candidate_prev_projects_label', 'Previous projects'); ?></label>
               <select class="form-control" name="previos" id="previos"></select><br>
-
             </div>
-            <!-- /TODO: verificar    si se usa  este campo -->
-            <!-- div class="col-md-3">
-              <label>Country</label>
-              <select class="form-control" name="pais_previo" id="pais_previo" disabled></select><br>
-            </div -->
           </div>
-          <div id="detalles_previo"></div>
-          <div class="nuevo_proyecto">
 
+          <div id="detalles_previo"></div>
+
+          <div class="nuevo_proyecto">
             <div class="row div_project">
-              <div class="alert alert-info text-center div_info_projectt">Select a New Project</div>
+              <div class="alert alert-info text-center div_info_projectt">
+                <?php echo t('rec_prog_candidate_new_project_title', 'Select a New Project'); ?>
+              </div>
+
               <div class="col-md-4">
-                <label>Location *</label>
+                <label><?php echo t('rec_prog_candidate_new_project_location', 'Location *'); ?></label>
                 <select name="region" id="region" class="form-control registro_obligado">
-                  <option value="">Select</option>
-                  <option value="Mxico">Mexico</option>
-                  <option value="International">International</option>
+                  <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
+                  <option value="Mxico"><?php echo t('rec_prog_candidate_region_mexico', 'Mexico'); ?></option>
+                  <option value="International"><?php echo t('rec_prog_candidate_region_international', 'International'); ?></option>
                 </select>
                 <br>
               </div>
+
               <div class="col-md-4">
-                <label>Country</label>
+                <label><?php echo t('rec_prog_candidate_new_project_country', 'Country'); ?></label>
                 <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
-                  <option value="">Select</option>
+                  <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
                   <?php foreach ($paises_estudio as $pe) {?>
-                  <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
+                    <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
                   <?php }?>
                 </select>
                 <br>
               </div>
+
               <div class="col-md-4">
-                <label>Project name *</label>
+                <label><?php echo t('rec_prog_candidate_new_project_name', 'Project name *'); ?></label>
                 <input type="text" class="form-control" name="proyecto_registro" id="proyecto_registro" disabled>
                 <br>
               </div>
             </div>
+
             <div class="alert alert-info text-center div_info_check">
-              Required Information for the New Project<br>Note:<br>
+              <?php echo t('rec_prog_candidate_required_info_new_project', 'Required Information for the New Project'); ?><br>
+              <?php echo t('rec_common_note_label', 'Note:'); ?><br>
               <ul class="text-left">
-                <li>The required documents will add automatically depending of the selected options . The extra
-                  documents
-                  are optional, select them before the complementary tests.</li>
+                <li><?php echo t('rec_prog_candidate_required_info_note_1', 'The required documents will add automatically depending of the selected options . The extra documents are optional, select them before the complementary tests.'); ?></li>
               </ul>
             </div>
+
             <div class="row div_check">
               <div class="col-md-6">
-                <label>Employment history *</label>
-                <select name="empleos_registro" id="empleos_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <label><?php echo t('rec_prog_candidate_employment_history', 'Employment history *'); ?></label>
+                <select name="empleos_registro" id="empleos_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
-                <label>Time required</label>
-                <select name="empleos_tiempo_registro" id="empleos_tiempo_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Criminal check *</label>
-                <select name="criminal_registro" id="criminal_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>Time required</label>
-                <select name="criminal_tiempo_registro" id="criminal_tiempo_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Address history *</label>
-                <select name="domicilios_registro" id="domicilios_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>Time required</label>
-                <select name="domicilios_tiempo_registro" id="domicilios_tiempo_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Education check *</label>
-                <select name="estudios_registro" id="estudios_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>Global data searches *</label>
-                <select name="global_registro" id="global_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Credit check *</label>
-                <select name="credito_registro" id="credito_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>Time required</label>
-                <select name="credito_tiempo_registro" id="credito_tiempo_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Professional References (quantity)</label>
-                <input type="number" class="form-control valor_dinamico" id="ref_profesionales_registro"
-                  name="ref_profesionales_registro" value="0" disabled>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>Personal References (quantity)</label>
-                <input type="number" class="form-control valor_dinamico" id="ref_personales_registro"
-                  name="ref_personales_registro" value="0" disabled>
-                <br>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Identity check *</label>
-                <select name="identidad_registro" id="identidad_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>Migratory form (FM, FM2 or FM3) check *</label>
-                <select name="migracion_registro" id="migracion_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Prohibited parties list check *</label>
-                <select name="prohibited_registro" id="prohibited_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>Academic References (quantity)</label>
-                <input type="number" class="form-control valor_dinamico" id="ref_academicas_registro"
-                  name="ref_academicas_registro" value="0" disabled>
-                <br>
-              </div>
-            </div>
-            <div class="row div_check">
-              <div class="col-md-6">
-                <label>Motor Vehicle Records (only in some Mexico cities) *</label>
-                <select name="mvr_registro" id="mvr_registro" class="form-control valor_dinamico registro_obligado"
-                  disabled></select>
-                <br>
-              </div>
-              <div class="col-md-6">
-                <label>CURP check *</label>
-                <select name="curp_check_registro" id="curp_check_registro"
-                  class="form-control valor_dinamico registro_obligado" disabled></select>
+                <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
+                <select name="empleos_tiempo_registro" id="empleos_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
 
-            <div class="alert alert-danger text-center div_info_extra">Extra documents</div>
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_criminal_check', 'Criminal check *'); ?></label>
+                <select name="criminal_registro" id="criminal_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
+                <select name="criminal_tiempo_registro" id="criminal_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+            </div>
+
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_address_history', 'Address history *'); ?></label>
+                <select name="domicilios_registro" id="domicilios_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
+                <select name="domicilios_tiempo_registro" id="domicilios_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+            </div>
+
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_education_check', 'Education check *'); ?></label>
+                <select name="estudios_registro" id="estudios_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_global_searches', 'Global data searches *'); ?></label>
+                <select name="global_registro" id="global_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+            </div>
+
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_credit_check', 'Credit check *'); ?></label>
+                <select name="credito_registro" id="credito_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
+                <select name="credito_tiempo_registro" id="credito_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+            </div>
+
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_prof_refs_qty', 'Professional References (quantity)'); ?></label>
+                <input type="number" class="form-control valor_dinamico" id="ref_profesionales_registro" name="ref_profesionales_registro" value="0" disabled>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_personal_refs_qty', 'Personal References (quantity)'); ?></label>
+                <input type="number" class="form-control valor_dinamico" id="ref_personales_registro" name="ref_personales_registro" value="0" disabled>
+                <br>
+              </div>
+            </div>
+
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_identity_check', 'Identity check *'); ?></label>
+                <select name="identidad_registro" id="identidad_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_migratory_form_check', 'Migratory form (FM, FM2 or FM3) check *'); ?></label>
+                <select name="migracion_registro" id="migracion_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+              </div>
+            </div>
+
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_prohibited_parties_check', 'Prohibited parties list check *'); ?></label>
+                <select name="prohibited_registro" id="prohibited_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_academic_refs_qty', 'Academic References (quantity)'); ?></label>
+                <input type="number" class="form-control valor_dinamico" id="ref_academicas_registro" name="ref_academicas_registro" value="0" disabled>
+                <br>
+              </div>
+            </div>
+
+            <div class="row div_check">
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_mvr_check', 'Motor Vehicle Records (only in some Mexico cities) *'); ?></label>
+                <select name="mvr_registro" id="mvr_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+              <div class="col-md-6">
+                <label><?php echo t('rec_prog_candidate_curp_check', 'CURP check *'); ?></label>
+                <select name="curp_check_registro" id="curp_check_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <br>
+              </div>
+            </div>
+
+            <div class="alert alert-danger text-center div_info_extra">
+              <?php echo t('rec_prog_candidate_extra_docs_title', 'Extra documents'); ?>
+            </div>
+
             <div class="row div_extra">
               <div class="col-12">
-                <label>Select the extra documents *</label>
+                <label><?php echo t('rec_prog_candidate_extra_docs_label', 'Select the extra documents *'); ?></label>
                 <select name="extra_registro" id="extra_registro" class="form-control registro_obligado">
-                  <option value="">Select</option>
-                  <option value="15">Military document</option>
-                  <option value="14">Passport</option>
-                  <option value="10">Professional licence</option>
-                  <option value="48">Academic / Professional Credential</option>
-                  <option value="16">Resume</option>
-                  <option value="42">Sex offender registry</option>
-                  <option value="6">Social Security Number</option>
+                  <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
+                  <option value="15"><?php echo t('rec_prog_candidate_extra_military', 'Military document'); ?></option>
+                  <option value="14"><?php echo t('rec_prog_candidate_extra_passport', 'Passport'); ?></option>
+                  <option value="10"><?php echo t('rec_prog_candidate_extra_license', 'Professional licence'); ?></option>
+                  <option value="48"><?php echo t('rec_prog_candidate_extra_credential', 'Academic / Professional Credential'); ?></option>
+                  <option value="16"><?php echo t('rec_prog_candidate_extra_resume', 'Resume'); ?></option>
+                  <option value="42"><?php echo t('rec_prog_candidate_extra_sex_offender', 'Sex offender registry'); ?></option>
+                  <option value="6"><?php echo t('rec_prog_candidate_extra_ssn', 'Social Security Number'); ?></option>
                 </select>
                 <br>
               </div>
             </div>
+
             <div class="row">
-              <div id="div_docs_extras" class="col-12 d-flex flex-column mb-3">
-              </div>
+              <div id="div_docs_extras" class="col-12 d-flex flex-column mb-3"></div>
             </div>
           </div>
-          <div class="alert alert-danger text-center div_info_test">Complementary Tests</div>
+
+          <div class="alert alert-danger text-center div_info_test">
+            <?php echo t('rec_prog_candidate_tests_title', 'Complementary Tests'); ?>
+          </div>
 
           <div class="row div_test">
             <div class="alert alert-warning text-center">
-              Al enviar a RODI se genera un costo. Si no estás seguro de los costos, ponte en contacto con <a
-                href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>.
+              <?php echo t('rec_prog_candidate_rodi_cost_notice_1', 'Al enviar a RODI se genera un costo. Si no estás seguro de los costos, ponte en contacto con'); ?>
+              <a href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a>.
             </div>
+
             <div class="col-md-4">
-              <label>Drug test *</label>
+              <label><?php echo t('rec_prog_candidate_test_drug', 'Drug test *'); ?></label>
               <select name="examen_registro" id="examen_registro" class="form-control registro_obligado">
-                <option value="">Select</option>
-                <option value="0" selected>N/A</option>
-                <?php
-                foreach ($paquetes_antidoping as $paq) {?>
-                <option value="<?php echo $paq->id; ?>"><?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
-                </option>
-                <?php
-                }?>
+                <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
+                <option value="0" selected><?php echo t('rec_common_na', 'N/A'); ?></option>
+                <?php foreach ($paquetes_antidoping as $paq) { ?>
+                  <option value="<?php echo $paq->id; ?>">
+                    <?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
+                  </option>
+                <?php } ?>
               </select>
               <br>
             </div>
+
             <div class="col-md-4">
-              <label>Medical test *</label>
+              <label><?php echo t('rec_prog_candidate_test_medical', 'Medical test *'); ?></label>
               <select name="examen_medico" id="examen_medico" class="form-control registro_obligado">
-                <option value="0">N/A</option>
-                <option value="1">Apply</option>
+                <option value="0"><?php echo t('rec_common_na', 'N/A'); ?></option>
+                <option value="1"><?php echo t('rec_common_apply', 'Apply'); ?></option>
               </select>
               <br>
             </div>
+
             <div class="col-md-4">
-              <label>Psicométric *</label>
+              <label><?php echo t('rec_prog_candidate_test_psychometric', 'Psicométric *'); ?></label>
               <select name="examen_psicometrico" id="examen_psicometrico" class="form-control registro_obligado">
-                <option value="0">N/A</option>
-                <option value="1">Apply</option>
+                <option value="0"><?php echo t('rec_common_na', 'N/A'); ?></option>
+                <option value="1"><?php echo t('rec_common_apply', 'Apply'); ?></option>
               </select>
               <br>
             </div>
           </div>
         </form>
+
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
-      <!-- ESTA;OS AQUI -->
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" onclick="registrarCandidato()">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+        <button type="button" class="btn btn-success" onclick="registrarCandidato()">
+          <?php echo t('rec_common_save', 'Guardar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 
 <div class="modal fade" id="historialComentariosModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Historial de comentarios con respecto a: <br><span class="nombreRegistro"></span></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title">
+          <?php echo t('rec_prog_comments_modal_title', 'Historial de comentarios con respecto a:'); ?>
+          <br><span class="nombreRegistro"></span>
+        </h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <div id="div_historial_comentario" class="escrolable"></div>
         <hr>
+
         <div class="row">
           <div class="col-12">
-            <label for="comentario_bolsa">Registra un nuevo comentario o estatus *</label>
+            <label for="comentario_bolsa">
+              <?php echo t('rec_prog_comments_f_new_comment', 'Registra un nuevo comentario o estatus *'); ?>
+            </label>
             <textarea class="form-control" name="comentario_bolsa" id="comentario_bolsa" rows="3"></textarea>
           </div>
         </div>
+
         <div class="row mt-2">
           <div class="col-12">
-            <button type="button" class="btn btn-primary text-lg btn-block" id="btnComentario">Guardar
-              comentario</button>
+            <button type="button" class="btn btn-primary text-lg btn-block" id="btnComentario">
+              <?php echo t('rec_prog_comments_btn_save', 'Guardar comentario'); ?>
+            </button>
           </div>
         </div>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_close', 'Cerrar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 <!-- Modal -->
 <!-- Modal -->
 <div class="modal fade" id="modalGenerarLink" tabindex="-1" role="dialog" aria-labelledby="modalGenerarLabel"
@@ -936,9 +1001,7 @@
           </button>
         </div>
         <div class="alert alert-info">
-          Este formulario permite registrar una requisición de manera completa o parcial. Cada paso está dividido en dos
-          secciones, siendo la sección superior la que solicita los datos elementales para crear una requisición de
-          manera rápida.
+          <?php echo t('rec_new_req_info_alert', 'Este formulario permite registrar una requisición...') ?>
         </div>
         <div class="row justify-content-center align-items-center text-center mb-3">
           <div class="col-1">
@@ -957,14 +1020,15 @@
         <form id="formPaso1">
           <div class="row mb-3">
             <div class="col-sm-12 col-md-6">
-              <label for="id_cliente">Cliente *</label>
+              <label for="id_cliente"><?php echo t('rec_new_req_f_client', 'Cliente') ?> *</label>
               <select name="id_cliente" id="id_cliente" class="form-control acceso_obligado">
               </select>
               <br>
             </div>
             <div class="col-6">
 
-              <label for="nombre_comercial_req">Nombre comercial *</label>
+              <label for="nombre_comercial_req"><?php echo t('rec_new_req_f_trade_name', 'Nombre comercial') ?>
+                *</label>
               <input type="text" class="form-control" data-required="required" data-field="Nombre comercial"
                 name="nombre_comercial_req" id="nombre_comercial_req"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
@@ -973,623 +1037,715 @@
           </div>
           <div class="row mb-3">
             <div class="col-6">
-              <label for="nombre_req">Razón social </label>
+              <label for="nombre_req"><?php echo t('rec_new_req_f_legal_name', 'Razón social') ?> *</label>
               <input type="text" class="form-control" data-required="required" data-field="Razón social"
                 name="nombre_req" id="nombre_req"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
             <div class="col-6">
-              <label for="correo_req">Correo </label>
+              <label for="correo_req"><?php echo t('rec_new_req_f_email', 'Correo') ?></label>
               <input type="text" class="form-control" data-field="Correo" name="correo_req" id="correo_req">
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-3">
-              <label for="cp_req">Código postal </label>
+              <label for="cp_req"><?php echo t('rec_new_req_f_zip', 'Código postal') ?></label>
               <input type="number" class="form-control" data-field="Código postal" name="cp_req" id="cp_req"
                 maxlength="5">
             </div>
             <div class="col-3">
-              <label for="telefono_req">Teléfono</label>
+              <label for="telefono_req"><?php echo t('rec_new_req_f_phone', 'Teléfono') ?></label>
               <input type="text" class="form-control" data-field="Teléfono" name="telefono_req" id="telefono_req"
                 maxlength="16">
             </div>
             <div class="col-3">
-              <label for="contacto_req">Contacto</label>
+              <label for="contacto_req"><?php echo t('rec_new_req_f_contact', 'Contacto') ?></label>
               <input type="text" class="form-control" data-field="Contacto" name="contacto_req" id="contacto_req">
             </div>
             <div class="col-3">
-              <label for="rfc_req">RFC </label>
+              <label for="rfc_req"><?php echo t('rec_new_req_f_rfc', 'RFC') ?></label>
               <input type="text" class="form-control" data-field="RFC" name="rfc_req" id="rfc_req" maxlength="13"
                 onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()">
             </div>
           </div>
           <hr>
-          <p style="text-align: center; color: #808080;""> Datos Para llenar Requisicion Completa ↓</p>
-        <hr>
-        <div class=" row">
-          <div class="col-md-3">
-            <label for="pais_req">País *</label>
-            <input type="text" class="form-control" id="pais_req" name="pais_req">
-          </div>
-          <div class="col-md-3">
-            <label for="estado_req">Estado *</label>
-            <input type="text" class="form-control" id="estado_req" name="estado_req">
-          </div>
-          <div class="col-md-3">
-            <label for="ciudad_req">Ciudad *</label>
-            <input type="text" class="form-control" id="ciudad_req" name="ciudad_req">
-          </div>
-          <div class="col-md-3">
-            <label for="colonia_req">Colonia *</label>
-            <input type="text" class="form-control" id="colonia_req" name="colonia_req">
-          </div>
-      </div>
-      <div class="row mt-3">
-
-        <div class="col-md-8">
-          <label for="calle_req">Calle *</label>
-          <input type="text" class="form-control" id="calle_req" name="calle_req">
-        </div>
-        <div class="col-md-2">
-          <label for="interior_req">Interior</label>
-          <input type="text" class="form-control" id="interior_req" name="interior_req">
-        </div>
-        <div class="col-md-2">
-          <label for="num_exterior">Exterior</label>
-          <input type="text" class="form-control" id="exterior_req" name="exterior_req">
-        </div>
-
-      </div>
-      <br>
-      <div class="row mb-3">
-
-        <div class="col-3">
-          <label for="regimen_req">Régimen Fiscal *</label>
-          <div class="input-group mb-3">
-
-            <input type="text" class="form-control" id="regimen_req" name="regimen_req">
-          </div>
-          <div id="errorregimen" class="text-danger"></div>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-3">
-          <label for="forma_pago">Forma de pago *</label>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="far fa-credit-card"></i></span>
+          <p style="text-align:center;color:#808080;">
+            <?php echo t('rec_new_req_full_block_hint', 'Datos para llenar Requisición Completa ↓') ?>
+          </p>
+          <hr>
+          <div class=" row">
+            <div class="col-md-3">
+              <label for="pais_req"><?php echo t('rec_new_req_f_country', 'País') ?> *</label>
+              <input type="text" class="form-control" id="pais_req" name="pais_req">
             </div>
-            <select class="custom-select" id="forma_pago_req" name="forma_pago_req">
-              <option value="" selected>Selecciona</option>
-              <option value="Pago en una sola exhibición">Pago en una sola exhibición</option>
-              <option value="Pago en parcialidades o diferidos">Pago en parcialidades o diferidos</option>
-            </select>
-            <div id="forma_pago" class="text-danger"></div>
-          </div>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-3">
-          <label for="metodo_pago">Método de pago *</label>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="far fa-credit-card"></i></span>
+            <div class="col-md-3">
+              <label for="estado_req"><?php echo t('rec_new_req_f_state', 'Estado') ?> *</label>
+              <input type="text" class="form-control" id="estado_req" name="estado_req">
             </div>
-            <select class="custom-select" id="metodo_pago_req" name="metodo_pago_req">
-              <option value="" selected>Selecciona</option>
-              <option value="Efectivo">Efectivo</option>
-              <option value="Cheque de nómina">Cheque de nómina</option>
-              <option value="Transferencia electrónica">Transferencia electrónica</option>
-              <option value="Tarjeta de crédito">Tarjeta de crédito</option>
-              <option value="Tarjeta de débito">Tarjeta de débito</option>
-              <option value="Por definir">Por definir</option>
-            </select>
+            <div class="col-md-3">
+              <label for="ciudad_req"><?php echo t('rec_new_req_f_city', 'Ciudad') ?> *</label>
+              <input type="text" class="form-control" id="ciudad_req" name="ciudad_req">
+            </div>
+            <div class="col-md-3">
+              <label for="colonia_req"><?php echo t('rec_new_req_f_neighborhood', 'Colonia') ?> *</label>
+              <input type="text" class="form-control" id="colonia_req" name="colonia_req">
+            </div>
           </div>
-        </div>
-        <div class="col-3">
-          <label for="puesto_req">Uso de CFDI</label>
-          <input type="text" class="form-control" data-field="Uso de CFDI" name="uso_cfdi_req" id="uso_cfdi_req"
-            value="Gastos Generales">
-        </div>
-      </div>
+          <div class="row mt-3">
 
-      </form>
-      <form id="formPaso2" class="hidden">
-        <div class="row mb-3">
-          <div class="col-6">
-            <label for="puesto_req">Nombre de la posición *</label>
-            <input type="text" class="form-control" data-field="Nombre de la posición" name="puesto_req"
-              id="puesto_req">
-          </div>
-          <div class="col-6">
-            <label for="numero_vacantes_req">Número de vacantes *</label>
-            <input type="number" class="form-control" data-field="Número de vacantes" name="numero_vacantes_req"
-              id="numero_vacantes_req">
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-12">
-            <label for="residencia_req">Lugar de residencia </label>
-            <textarea class="form-control" data-field="Lugar de residencia" name="residencia_req" id="residencia_req"
-              rows="2"></textarea>
-          </div>
-        </div>
-        <hr>
-        <p style="text-align: center; color: #808080;""> Datos Para llenar Requisicion Completa ↓</p>
-        <hr>
-        <div class=" row">
-        <div class="col-sm-12 col-md-4 col-lg-4">
-          <label for="escolaridad">Formación académica requerida *</label>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+            <div class="col-md-8">
+              <label for="calle_req"><?php echo t('rec_new_req_f_street', 'Calle') ?> *</label>
+              <input type="text" class="form-control" id="calle_req" name="calle_req">
             </div>
-            <select class="custom-select" id="escolaridad_req" name="escolaridad_req"
-              data-siguiente-campo="estatus_escolaridad">
-              <option value="" selected>Selecciona</option>
-              <option value="Primaria">Primaria</option>
-              <option value="Secundaria">Secundaria</option>
-              <option value="Bachiller">Bachiller</option>
-              <option value="Licenciatura">Licenciatura</option>
-              <option value="Maestría">Maestría</option>
-            </select>
-          </div>
-          <div id="errorescolaridad" class="text-danger"></div>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-4">
-          <label for="estatus_escolaridad">Estatus académico *</label>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+            <div class="col-md-2">
+              <label for="interior_req"><?php echo t('rec_new_req_f_interior', 'Interior') ?></label>
+              <input type="text" class="form-control" id="interior_req" name="interior_req">
             </div>
-            <select class="custom-select" id="estatus_escolaridad_req" name="estatus_escolaridad_req"
-              data-siguiente-campo="carrera">
-              <option value="" selected>Selecciona</option>
-              <option value="Técnico">Técnico</option>
-              <option value="Pasante">Pasante</option>
-              <option value="Estudiante">Estudiante</option>
-              <option value="Titulado">Titulado</option>
-              <option value="Trunco">Trunco</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
-          <div id="errorestatus_escolaridadd" class="text-danger"></div>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-4">
-          <label for="otro_estatus_req">Otro estatus académico</label>
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+            <div class="col-md-2">
+              <label for="exterior_req"><?php echo t('rec_new_req_f_exterior', 'Exterior') ?></label>
+              <input type="text" class="form-control" id="exterior_req" name="exterior_req">
             </div>
-            <input type="text" class="form-control" id="otro_estatus_req" name="otro_estatus_req">
+
           </div>
-        </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-6">
-        <label for="carrera">Carrera requerida para el puesto *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
-          </div>
-          <input type="text" class="form-control" id="carrera_req" name="carrera_req" data-siguiente-campo="genero">
-        </div>
-        <div id="errorcarrera" class="text-danger"></div>
-      </div>
-      <div class="col-sm-12 col-md-6 col-lg-6">
-        <label for="otros_estudios">Otros estudios</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
-          </div>
-          <input type="text" class="form-control" id="otros_estudios_req" name="otros_estudios_req">
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="idioma1">Idioma nativo</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-language"></i></span>
-          </div>
-          <input type="text" class="form-control" id="idioma1_req" name="idioma1_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="por_idioma1">Porcentaje del idioma nativo</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-percentage"></i></span>
-          </div>
-          <input type="number" class="form-control" id="por_idioma1_req" name="por_idioma1_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="idioma2">Segundo idioma</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-language"></i></span>
-          </div>
-          <input type="text" class="form-control" id="idioma2_req" name="idioma2_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="por_idioma2">Porcentaje del segundo idioma</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-percentage"></i></span>
-          </div>
-          <input type="number" class="form-control" id="por_idioma2_req" name="por_idioma2_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="idioma3">Tercer idioma </label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-language"></i></span>
-          </div>
-          <input type="text" class="form-control" id="idioma3_req" name="idioma3_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="por_idioma3">Porcentaje del tercer idioma</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-percentage"></i></span>
-          </div>
-          <input type="number" class="form-control" id="por_idioma3_req" name="por_idioma3_req">
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="habilidad1">Habilidad informática requerida</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-laptop"></i></span>
-          </div>
-          <input type="text" class="form-control" id="habilidad1_req" name="habilidad1_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="por_habilidad1">Porcentaje de la habilidad</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-percentage"></i></span>
-          </div>
-          <input type="number" class="form-control" id="por_habilidad1_req" name="por_habilidad1_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="habilidad2">Otra habilidad informática</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-laptop"></i></span>
-          </div>
-          <input type="text" class="form-control" id="habilidad2_req" name="habilidad2_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="por_habilidad2">Porcentaje de la habilidad</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-percentage"></i></span>
-          </div>
-          <input type="number" class="form-control" id="por_habilidad2_req" name="por_habilidad2_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="habilidad3">Otra habilidad informática </label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-laptop"></i></span>
-          </div>
-          <input type="text" class="form-control" id="habilidad3_req" name="habilidad3_req">
-        </div>
-      </div>
-      <div class="col-sm-12 col-md-2 col-lg-2">
-        <label for="por_habilidad3">Porcentaje de la habilidad</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-percentage"></i></span>
-          </div>
-          <input type="number" class="form-control" id="por_habilidad3_req" name="por_habilidad3_req">
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="genero">Sexo *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
-          </div>
-          <select class="custom-select" id="genero_req" name="genero_req" data-siguiente-campo="civil">
-            <option value="NULL" selected>Selecciona</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Indistinto">Indistinto</option>
-          </select>
-        </div>
-        <div id="errorgenero" class="text-danger"></div>
-      </div>
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="civil">Estado civil *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
-          </div>
-          <select class="custom-select" id="civil_req" name="civil_req" data-siguiente-campo="edad_minima">
-            <option value="NULL" selected>Selecciona</option>
-            <option value="Soltero(a)">Soltero(a)</option>
-            <option value="Casado(a)">Casado(a)</option>
-            <option value="Indistinto">Indistinto</option>
-          </select>
-        </div>
-        <div id="errorcivil" class="text-danger"></div>
-      </div>
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="edad_minima">Edad mínima *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-minus"></i></span>
-          </div>
-          <input type="number" id="edad_minima_req" name="edad_minima_req" class="form-control"
-            data-siguiente-campo="edad_maxima">
-        </div>
-        <div id="erroredad_minima" class="text-danger"></div>
-      </div>
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="edad_maxima">Edad máxima *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-plus"></i></span>
-          </div>
-          <input type="number" id="edad_maxima_req" name="edad_maxima_req" class="form-control"
-            data-siguiente-campo="licencia">
-        </div>
-        <div id="erroredad_maxima" class="text-danger"></div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="licencia">Licencia de conducir *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-          </div>
-          <select class="custom-select" id="licencia_req" name="licencia_req" data-siguiente-campo="tipo_licencia">
-            <option value="" selected>Selecciona</option>
-            <option value="Indispensable">Indispensable</option>
-            <option value="Deseable">Deseable</option>
-            <option value="No necesaria">No necesaria</option>
-          </select>
-        </div>
-        <div id="errorlicencia" class="text-danger"></div>
-      </div>
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="tipo_licencia_req">Tipo de licencia de conducir*</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-          </div>
-          <input type="text" class="form-control" id="tipo_licencia_req" name="tipo_licencia_req"
-            data-siguiente-campo="discapacidad">
-        </div>
-        <div id="errortipo_licencia" class="text-danger"></div>
-      </div>
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="discapacidad">Discapacidad aceptable *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-wheelchair"></i></span>
-          </div>
-          <select class="custom-select" id="discapacidad" name="discapacidad_req"
-            data-siguiente-campo="discapacidad_req">
-            <option value="NULL" selected>Selecciona</option>
-            <option value="Motora">Motora</option>
-            <option value="Auditiva">Auditiva</option>
-            <option value="Visual">Visual</option>
-            <option value="Motora y auditiva">Motora y auditiva</option>
-            <option value="Motora y visual">Motora y visual</option>
-            <option value="Sin discapacidad">Sin discapacidad</option>
-          </select>
-        </div>
-        <div id="errordiscapacidad" class="text-danger"></div>
-      </div>
-      <div class="col-sm-12 col-md-3 col-lg-3">
-        <label for="causa">Causa que origina la vacante *</label>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="far fa-question-circle"></i></span>
-          </div>
-          <select class="custom-select" id="causa_req" name="causa_req" data-siguiente-campo="residencia">
-            <option value="NULL" selected>Selecciona</option>
-            <option value="Empresa nueva">Empresa nueva</option>
-            <option value="Empleo temporal">Empleo temporal</option>
-            <option value="Puesto de nueva creación">Puesto de nueva creación</option>
-            <option value="Reposición de personal">Reposición de personal</option>
-          </select>
-        </div>
-        <div id="errorcausa" class="text-danger"></div>
-      </div>
-    </div>
-    </form>
-    <form id="formPaso3" class="hidden">
-      <div class="row mb-3">
-        <div class="col-12">
-          <label for="zona_req">Domicilio de trabajo *</label>
-          <textarea class="form-control" data-required="required" data-field="Zona de trabajo" name="zona_req"
-            id="zona_req" rows="2"></textarea>
-        </div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-3">
-          <label for="tipo_sueldo_req">Tipo de sueldo *</label>
-          <select class="form-control" data-required="required" data-field="Tipo de sueldo" id="tipo_sueldo_req"
-            name="tipo_sueldo_req">
-            <option value="NULL" selected>Selecciona</option>
-            <option value="Neto">Neto (Libre)</option>
-            <option value="Nominal">Nominal(Salario bruto)</option>
-          </select>
-        </div>
-        <div class="col-3">
-          <label for="sueldo_minimo_req">Sueldo mínimo </label>
-          <input type="number" class="form-control" data-field="Sueldo mínimo" id="sueldo_minimo_req"
-            name="sueldo_minimo_req">
-        </div>
-        <div class="col-3">
-          <label for="sueldo_maximo_req">Sueldo máximo </label>
-          <input type="number" class="form-control" data-field="Sueldo máximo" id="sueldo_maximo_req"
-            name="sueldo_maximo_req">
-        </div>
-        <div class="col-3">
-          <label for="tipo_pago_req">Tipo de pago *</label>
-          <select class="form-control" data-required="required" data-field="Tipo de pago" id="tipo_pago_req"
-            name="tipo_pago_req">
-            <option value="NULL" selected>Selecciona</option>
-            <option value="Mensual">Mensual</option>
-            <option value="Quincenal">Quincenal</option>
-            <option value="Semanal">Semanal</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-3">
-          <label for="ley_req">¿Tendrá prestaciones de ley? *</label>
-          <select class="form-control" data-required="required" data-field="¿Tendrá prestaciones de ley?"
-            id="tipo_prestaciones_req" name="tipo_prestaciones_req">
-            <option value="" selected>Selecciona</option>
-            <option value="SI">SI</option>
-            <option value="NO">NO</option>
-          </select>
-        </div>
-        <div class="col-9">
-          <label for="experiencia_req">Se requiere experiencia en</label>
-          <textarea class="form-control" data-field="Se requiere experiencia en" name="experiencia_req"
-            id="experiencia_req" rows="2"></textarea>
-        </div>
-      </div>
-      <div class="row mb-3">
-        <div class="col-12">
-          <label for="observaciones_req">Observaciones</label>
-          <textarea class="form-control" data-field="Observaciones" name="observaciones_req" id="observaciones_req"
-            rows="2"></textarea>
-        </div>
-      </div>
-      <hr>
-      <p style="text-align: center; color: #808080;""> Datos Para llenar Requisicion Completa ↓</p>
-        <hr>
+          <br>
+          <div class="row mb-3">
+
+            <div class="col-3">
+              <label for="regimen_req"><?php echo t('rec_new_req_f_tax_regime', 'Régimen Fiscal') ?> *</label>
+              <div class="input-group mb-3">
+
+                <input type="text" class="form-control" id="regimen_req" name="regimen_req">
+              </div>
+              <div id="errorregimen" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-3">
+              <label for="forma_pago_req"><?php echo t('rec_new_req_f_payment_form', 'Forma de pago') ?> *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="far fa-credit-card"></i></span>
+                </div>
+                <select class="custom-select" id="forma_pago_req" name="forma_pago_req">
+                  <option value="" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                  <option value="Pago en una sola exhibición">
+                    <?php echo t('rec_new_req_payform_single', 'Pago en una sola exhibición') ?>
+                  </option>
+                  <option value="Pago en parcialidades o diferidos">
+                    <?php echo t('rec_new_req_payform_installments', 'Pago en parcialidades o diferidos') ?>
+                  </option>
 
 
-        <div class=" card-body">
-      <div class="row">
-        <div class="col-sm-12 col-md-4 col-lg-4">
-          <label class="container_checkbox">Comunicación
-            <input type="checkbox" name="competencias[]" id="Comunicación" value="Comunicación">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Análisis
-            <input type="checkbox" name="competencias[]" id="Análisis" value="Análisis">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Liderazgo
-            <input type="checkbox" name="competencias[]" id="Liderazgo" value="Liderazgo">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Negociación
-            <input type="checkbox" name="competencias[]" id="Negociación" value="Negociación">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Apego a normas
-            <input type="checkbox" name="competencias[]" id="Apego" value="Apego">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Planeación
-            <input type="checkbox" name="competencias[]" id="Planeación" value="Planeación">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Organización
-            <input type="checkbox" name="competencias[]" id="Organización" value="Organización">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-4">
-          <label class="container_checkbox">Orientado a resultados
-            <input type="checkbox" name="competencias[]" id="Orientado_resultados" value="Orientado_resultados">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Manejo de conflictos
-            <input type="checkbox" name="competencias[]" id="Manejo-conflictos" value="Manejo-conflictos">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Trabajo en equipo
-            <input type="checkbox" name="competencias[]" id="Trabajo_equipo" value="Trabajo-equipo">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Toma de decisiones
-            <input type="checkbox" name="competencias[]" id="Toma-decisiones" value="Toma_decisiones">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Trabajo bajo presión
-            <input type="checkbox" name="competencias[]" id="Trabajo-presion" value="Trabajo-presion">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Don de mando
-            <input type="checkbox" name="competencias[]" id="Don_mando" value="Don-mando">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Versátil
-            <input type="checkbox" name="competencias[]" id="Versátil" value="Versátil">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-        <div class="col-sm-12 col-md-4 col-lg-4">
-          <label class="container_checkbox">Sociable
-            <input type="checkbox" name="competencias[]" id="Sociable" value="Sociable">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Intuitivo
-            <input type="checkbox" name="competencias[]" id="Intuitivo" value="Intuitivo">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Autodidacta
-            <input type="checkbox" name="competencias[]" id="Autodidacta" value="Autodidacta">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Creativo
-            <input type="checkbox" name="competencias[]" id="Creativo" value="Creativo">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Proactivo
-            <input type="checkbox" name="competencias[]" id="Proactivo" value="Proactivo">
-            <span class="checkmark"></span>
-          </label>
-          <label class="container_checkbox">Adaptable
-            <input type="checkbox" name="competencias[]" id="Adaptable" value="Adaptable">
-            <span class="checkmark"></span>
-          </label>
-        </div>
-      </div>
+                </select>
+                <div id="forma_pago" class="text-danger"></div>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-3">
+              <label for="metodo_pago_req"><?php echo t('rec_new_req_f_payment_method', 'Método de pago') ?> *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="far fa-credit-card"></i></span>
+                </div>
+                <select class="custom-select" id="metodo_pago_req" name="metodo_pago_req">
+                  <option value="" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                  <option value="Efectivo"><?php echo t('rec_new_req_paymethod_cash', 'Efectivo') ?></option>
+                  <option value="Cheque de nómina">
+                    <?php echo t('rec_new_req_paymethod_payroll_check', 'Cheque de nómina') ?></option>
+                  <option value="Transferencia electrónica">
+                    <?php echo t('rec_new_req_paymethod_transfer', 'Transferencia electrónica') ?></option>
+                  <option value="Tarjeta de crédito">
+                    <?php echo t('rec_new_req_paymethod_credit_card', 'Tarjeta de crédito') ?></option>
+                  <option value="Tarjeta de débito">
+                    <?php echo t('rec_new_req_paymethod_debit_card', 'Tarjeta de débito') ?></option>
+                  <option value="Por definir"><?php echo t('rec_new_req_paymethod_tbd', 'Por definir') ?></option>
 
+                </select>
+              </div>
+            </div>
+            <div class="col-3">
+              <label for="uso_cfdi_req"><?php echo t('rec_new_req_f_cfdi_use', 'Uso de CFDI') ?></label>
+              <input type="text" class="form-control" data-field="Uso de CFDI" name="uso_cfdi_req" id="uso_cfdi_req"
+                value="Gastos Generales">
+            </div>
+          </div>
+
+        </form>
+        <form id="formPaso2" class="hidden">
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="puesto_req"><?php echo t('rec_new_req_f_position_name', 'Nombre de la posición') ?> *</label>
+              <input type="text" class="form-control" data-field="Nombre de la posición" name="puesto_req"
+                id="puesto_req">
+            </div>
+            <div class="col-6">
+              <label for="numero_vacantes_req"><?php echo t('rec_new_req_f_vacancies', 'Número de vacantes') ?>
+                *</label>
+              <input type="number" class="form-control" data-field="Número de vacantes" name="numero_vacantes_req"
+                id="numero_vacantes_req">
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="residencia_req"><?php echo t('rec_desk_det_residence', 'Lugar de residencia') ?></label>
+              <textarea class="form-control" data-field="Lugar de residencia" name="residencia_req" id="residencia_req"
+                rows="2"></textarea>
+            </div>
+          </div>
+          <hr>
+          <p style="text-align:center;color:#808080;">
+            <?php echo t('rec_new_req_full_block_hint', 'Datos para llenar Requisición Completa ↓') ?>
+          </p>
+          <hr>
+          <div class=" row">
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label
+                for="escolaridad_req"><?php echo t('rec_desk_det_required_education', 'Formación académica requerida') ?>
+                *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+                </div>
+                <select class="custom-select" id="escolaridad_req" name="escolaridad_req"
+                  data-siguiente-campo="estatus_escolaridad">
+                  <option value="" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                  <option value="Primaria"><?php echo t('rec_desk_vac_edu_primary', 'Primaria') ?></option>
+                  <option value="Secundaria"><?php echo t('rec_desk_vac_edu_secondary', 'Secundaria') ?></option>
+                  <option value="Bachiller"><?php echo t('rec_desk_vac_edu_highschool', 'Bachiller') ?></option>
+                  <option value="Licenciatura"><?php echo t('rec_desk_vac_edu_bachelor', 'Licenciatura') ?></option>
+                  <option value="Maestría"><?php echo t('rec_desk_vac_edu_master', 'Maestría') ?></option>
+
+                </select>
+              </div>
+              <div id="errorescolaridad" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label for="estatus_escolaridad_req"><?php echo t('rec_new_req_f_academic_status', 'Estatus académico') ?>
+                *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+                </div>
+                <select class="custom-select" id="estatus_escolaridad_req" name="estatus_escolaridad_req"
+                  data-siguiente-campo="carrera">
+                  <label
+                    for="estatus_escolaridad_req"><?php echo t('rec_new_req_f_academic_status', 'Estatus académico') ?>
+                    *</label>
+                  <option value="Técnico"><?php echo t('rec_desk_vac_status_technical', 'Técnico') ?></option>
+                  <option value="Pasante"><?php echo t('rec_desk_vac_status_intern', 'Pasante') ?></option>
+                  <option value="Estudiante"><?php echo t('rec_desk_vac_status_student', 'Estudiante') ?></option>
+                  <option value="Titulado"><?php echo t('rec_desk_vac_status_graduated', 'Titulado') ?></option>
+                  <option value="Trunco"><?php echo t('rec_desk_vac_status_incomplete', 'Trunco') ?></option>
+                  <option value="Otro"><?php echo t('rec_desk_vac_status_other', 'Otro') ?></option>
+
+                </select>
+              </div>
+              <div id="errorestatus_escolaridadd" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4">
+              <label
+                for="otro_estatus_req"><?php echo t('rec_new_req_f_other_academic_status', 'Otro estatus académico') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
+                </div>
+                <input type="text" class="form-control" id="otro_estatus_req" name="otro_estatus_req">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-6 col-lg-6">
+              <label
+                for="carrera_req"><?php echo t('rec_new_req_f_required_degree', 'Carrera requerida para el puesto') ?>
+                *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                </div>
+                <input type="text" class="form-control" id="carrera_req" name="carrera_req"
+                  data-siguiente-campo="genero">
+              </div>
+              <div id="errorcarrera" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6">
+              <label for="otros_estudios_req"><?php echo t('rec_new_req_f_other_studies', 'Otros estudios') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                </div>
+                <input type="text" class="form-control" id="otros_estudios_req" name="otros_estudios_req">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label for="idioma1_req"><?php echo t('rec_new_req_f_native_language', 'Idioma nativo') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-language"></i></span>
+                </div>
+                <input type="text" class="form-control" id="idioma1_req" name="idioma1_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="por_idioma1_req"><?php echo t('rec_new_req_f_native_language_pct', 'Porcentaje del idioma nativo') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                </div>
+                <input type="number" class="form-control" id="por_idioma1_req" name="por_idioma1_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label for="idioma2_req"><?php echo t('rec_new_req_f_second_language', 'Segundo idioma') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-language"></i></span>
+                </div>
+                <input type="text" class="form-control" id="idioma2_req" name="idioma2_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="por_idioma2_req"><?php echo t('rec_new_req_f_second_language_pct', 'Porcentaje del segundo idioma') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                </div>
+                <input type="number" class="form-control" id="por_idioma2_req" name="por_idioma2_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label for="idioma3_req"><?php echo t('rec_new_req_f_third_language', 'Tercer idioma') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-language"></i></span>
+                </div>
+                <input type="text" class="form-control" id="idioma3_req" name="idioma3_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="por_idioma3_req"><?php echo t('rec_new_req_f_third_language_pct', 'Porcentaje del tercer idioma') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                </div>
+                <input type="number" class="form-control" id="por_idioma3_req" name="por_idioma3_req">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="habilidad1_req"><?php echo t('rec_new_req_f_it_skill_1', 'Habilidad informática requerida') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+                </div>
+                <input type="text" class="form-control" id="habilidad1_req" name="habilidad1_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="por_habilidad1_req"><?php echo t('rec_new_req_f_it_skill_pct_1', 'Porcentaje de la habilidad') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                </div>
+                <input type="number" class="form-control" id="por_habilidad1_req" name="por_habilidad1_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="habilidad2_req"><?php echo t('rec_new_req_f_it_skill_2', 'Otra habilidad informática') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+                </div>
+                <input type="text" class="form-control" id="habilidad2_req" name="habilidad2_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="por_habilidad2_req"><?php echo t('rec_new_req_f_it_skill_pct_2', 'Porcentaje de la habilidad') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                </div>
+                <input type="number" class="form-control" id="por_habilidad2_req" name="por_habilidad2_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="habilidad3_req"><?php echo t('rec_new_req_f_it_skill_3', 'Otra habilidad informática') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-laptop"></i></span>
+                </div>
+                <input type="text" class="form-control" id="habilidad3_req" name="habilidad3_req">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-2 col-lg-2">
+              <label
+                for="por_habilidad3_req"><?php echo t('rec_new_req_f_it_skill_pct_3', 'Porcentaje de la habilidad') ?></label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-percentage"></i></span>
+                </div>
+                <input type="number" class="form-control" id="por_habilidad3_req" name="por_habilidad3_req">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label for="genero_req"><?php echo t('rec_new_req_f_gender', 'Sexo') ?> *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                </div>
+                <select class="custom-select" id="genero_req" name="genero_req" data-siguiente-campo="civil">
+                  <option value="NULL" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                  <option value="Femenino"><?php echo t('rec_common_female', 'Femenino') ?></option>
+                  <option value="Masculino"><?php echo t('rec_common_male', 'Masculino') ?></option>
+                  <option value="Indistinto"><?php echo t('rec_common_any', 'Indistinto') ?></option>
+
+                </select>
+              </div>
+              <div id="errorgenero" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label for="civil_req"><?php echo t('rec_new_req_f_marital_status', 'Estado civil') ?> *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
+                </div>
+                <select class="custom-select" id="civil_req" name="civil_req" data-siguiente-campo="edad_minima">
+                  <option value="NULL" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                  <option value="Soltero(a)"><?php echo t('rec_new_req_opt_marital_single', 'Soltero(a)') ?></option>
+                  <option value="Casado(a)"><?php echo t('rec_new_req_opt_marital_married', 'Casado(a)') ?></option>
+                  <option value="Indistinto"><?php echo t('rec_common_any', 'Indistinto') ?></option>
+
+                </select>
+              </div>
+              <div id="errorcivil" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label for="edad_minima_req"><?php echo t('rec_new_req_f_min_age', 'Edad mínima') ?> *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-minus"></i></span>
+                </div>
+                <input type="number" id="edad_minima_req" name="edad_minima_req" class="form-control"
+                  data-siguiente-campo="edad_maxima">
+              </div>
+              <div id="erroredad_minima" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label for="edad_maxima_req"><?php echo t('rec_new_req_f_max_age', 'Edad máxima') ?> *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-plus"></i></span>
+                </div>
+                <input type="number" id="edad_maxima_req" name="edad_maxima_req" class="form-control"
+                  data-siguiente-campo="licencia">
+              </div>
+              <div id="erroredad_maxima" class="text-danger"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label for="licencia_req"><?php echo t('rec_new_req_f_driver_license', 'Licencia de conducir') ?>
+                *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                </div>
+                <select class="custom-select" id="licencia_req" name="licencia_req"
+                  data-siguiente-campo="tipo_licencia">
+                  <option value="" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                  <option value="Indispensable"><?php echo t('rec_new_req_opt_license_required', 'Indispensable') ?>
+                  </option>
+                  <option value="Deseable"><?php echo t('rec_new_req_opt_license_desirable', 'Deseable') ?></option>
+                  <option value="No necesaria"><?php echo t('rec_new_req_opt_license_not_needed', 'No necesaria') ?>
+                  </option>
+
+                </select>
+              </div>
+              <div id="errorlicencia" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label
+                for="tipo_licencia_req"><?php echo t('rec_desk_vac_driver_license_type', 'Tipo de licencia de conducir') ?>
+                *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                </div>
+                <input type="text" class="form-control" id="tipo_licencia_req" name="tipo_licencia_req"
+                  data-siguiente-campo="discapacidad">
+              </div>
+              <div id="errortipo_licencia" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label for="discapacidad"><?php echo t('rec_new_req_f_disability', 'Discapacidad aceptable') ?> *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-wheelchair"></i></span>
+                </div>
+                <select class="custom-select" id="discapacidad" name="discapacidad_req"
+                  data-siguiente-campo="discapacidad_req">
+                  <option value="NULL" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                  <option value="Motora"><?php echo t('rec_new_req_opt_disability_motor', 'Motora') ?></option>
+                  <option value="Auditiva"><?php echo t('rec_new_req_opt_disability_hearing', 'Auditiva') ?></option>
+                  <option value="Visual"><?php echo t('rec_new_req_opt_disability_visual', 'Visual') ?></option>
+                  <option value="Motora y auditiva">
+                    <?php echo t('rec_new_req_opt_disability_motor_hearing', 'Motora y auditiva') ?></option>
+                  <option value="Motora y visual">
+                    <?php echo t('rec_new_req_opt_disability_motor_visual', 'Motora y visual') ?></option>
+                  <option value="Sin discapacidad">
+                    <?php echo t('rec_new_req_opt_disability_none', 'Sin discapacidad') ?>
+                  </option>
+
+                </select>
+              </div>
+              <div id="errordiscapacidad" class="text-danger"></div>
+            </div>
+            <div class="col-sm-12 col-md-3 col-lg-3">
+              <label for="causa_req"><?php echo t('rec_new_req_f_vacancy_cause', 'Causa que origina la vacante') ?>
+                *</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="far fa-question-circle"></i></span>
+                </div>
+                <select class="custom-select" id="causa_req" name="causa_req" data-siguiente-campo="residencia">
+                  <label for="causa_req"><?php echo t('rec_new_req_f_vacancy_cause', 'Causa que origina la vacante') ?>
+                    *</label>
+                  <option value="Empresa nueva"><?php echo t('rec_new_req_opt_cause_new_company', 'Empresa nueva') ?>
+                  </option>
+                  <option value="Empleo temporal"><?php echo t('rec_new_req_opt_cause_temporary', 'Empleo temporal') ?>
+                  </option>
+                  <option value="Puesto de nueva creación">
+                    <?php echo t('rec_new_req_opt_cause_new_position', 'Puesto de nueva creación') ?></option>
+                  <option value="Reposición de personal">
+                    <?php echo t('rec_new_req_opt_cause_replacement', 'Reposición de personal') ?></option>
+
+                </select>
+              </div>
+              <div id="errorcausa" class="text-danger"></div>
+            </div>
+          </div>
+        </form>
+        <form id="formPaso3" class="hidden">
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="zona_req"><?php echo t('rec_new_req_f_work_address', 'Domicilio de trabajo') ?> *</label>
+              <textarea class="form-control" data-required="required" data-field="Zona de trabajo" name="zona_req"
+                id="zona_req" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-3">
+              <label for="tipo_sueldo_req"><?php echo t('rec_new_req_f_salary_type', 'Tipo de sueldo') ?> *</label>
+              <select class="form-control" data-required="required" data-field="Tipo de sueldo" id="tipo_sueldo_req"
+                name="tipo_sueldo_req">
+                <option value="NULL" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                <option value="Neto"><?php echo t('rec_new_req_opt_salary_net', 'Neto (Libre)') ?></option>
+                <option value="Nominal"><?php echo t('rec_new_req_opt_salary_nominal', 'Nominal (Salario bruto)') ?>
+                </option>
+              </select>
+            </div>
+
+            <div class="col-3">
+              <label for="sueldo_minimo_req"><?php echo t('rec_new_req_f_salary_min', 'Sueldo mínimo') ?> *</label>
+              <input type="number" class="form-control" data-field="Sueldo mínimo" id="sueldo_minimo_req"
+                name="sueldo_minimo_req">
+            </div>
+
+            <div class="col-3">
+              <label for="sueldo_maximo_req"><?php echo t('rec_new_req_f_salary_max', 'Sueldo máximo') ?> *</label>
+              <input type="number" class="form-control" data-field="Sueldo máximo" id="sueldo_maximo_req"
+                name="sueldo_maximo_req">
+            </div>
+
+            <div class="col-3">
+              <label for="tipo_pago_req"><?php echo t('rec_new_req_f_payment_type', 'Tipo de pago') ?> *</label>
+              <select class="form-control" data-required="required" data-field="Tipo de pago" id="tipo_pago_req"
+                name="tipo_pago_req">
+                <option value="NULL" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                <option value="Mensual"><?php echo t('rec_new_req_opt_pay_monthly', 'Mensual') ?></option>
+                <option value="Quincenal"><?php echo t('rec_new_req_opt_pay_biweekly', 'Quincenal') ?></option>
+                <option value="Semanal"><?php echo t('rec_new_req_opt_pay_weekly', 'Semanal') ?></option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-3">
+              <label
+                for="tipo_prestaciones_req"><?php echo t('rec_new_req_f_legal_benefits', '¿Tendrá prestaciones de ley?') ?>
+                *</label>
+              <select class="form-control" data-required="required" data-field="¿Tendrá prestaciones de ley?"
+                id="tipo_prestaciones_req" name="tipo_prestaciones_req">
+                <option value="" selected><?php echo t('rec_common_select', 'Selecciona') ?></option>
+                <option value="SI"><?php echo t('rec_common_yes', 'Sí') ?></option>
+                <option value="NO"><?php echo t('rec_common_no', 'No') ?></option>
+              </select>
+            </div>
+
+            <div class="col-9">
+              <label
+                for="experiencia_req"><?php echo t('rec_new_req_f_experience_required', 'Se requiere experiencia en') ?></label>
+              <textarea class="form-control" data-field="Se requiere experiencia en" name="experiencia_req"
+                id="experiencia_req" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="observaciones_req"><?php echo t('rec_new_req_f_notes', 'Observaciones') ?></label>
+              <textarea class="form-control" data-field="Observaciones" name="observaciones_req" id="observaciones_req"
+                rows="2"></textarea>
+            </div>
+          </div>
+
+          <hr>
+          <p style="text-align: center; color: #808080;">
+            <?php echo t('rec_new_req_full_block_hint', 'Datos para llenar Requisición Completa ↓') ?>
+          </p>
+          <hr>
+
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-12 col-md-4 col-lg-4">
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_communication', 'Comunicación') ?>
+                  <input type="checkbox" name="competencias[]" id="Comunicación" value="Comunicación">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_analysis', 'Análisis') ?>
+                  <input type="checkbox" name="competencias[]" id="Análisis" value="Análisis">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_leadership', 'Liderazgo') ?>
+                  <input type="checkbox" name="competencias[]" id="Liderazgo" value="Liderazgo">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_negotiation', 'Negociación') ?>
+                  <input type="checkbox" name="competencias[]" id="Negociación" value="Negociación">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_compliance', 'Apego a normas') ?>
+                  <input type="checkbox" name="competencias[]" id="Apego" value="Apego">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_planning', 'Planeación') ?>
+                  <input type="checkbox" name="competencias[]" id="Planeación" value="Planeación">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_organization', 'Organización') ?>
+                  <input type="checkbox" name="competencias[]" id="Organización" value="Organización">
+                  <span class="checkmark"></span>
+                </label>
+              </div>
+
+              <div class="col-sm-12 col-md-4 col-lg-4">
+                <label
+                  class="container_checkbox"><?php echo t('rec_new_req_comp_results_oriented', 'Orientado a resultados') ?>
+                  <input type="checkbox" name="competencias[]" id="Orientado_resultados" value="Orientado_resultados">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label
+                  class="container_checkbox"><?php echo t('rec_new_req_comp_conflict_management', 'Manejo de conflictos') ?>
+                  <input type="checkbox" name="competencias[]" id="Manejo-conflictos" value="Manejo-conflictos">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_teamwork', 'Trabajo en equipo') ?>
+                  <input type="checkbox" name="competencias[]" id="Trabajo_equipo" value="Trabajo-equipo">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label
+                  class="container_checkbox"><?php echo t('rec_new_req_comp_decision_making', 'Toma de decisiones') ?>
+                  <input type="checkbox" name="competencias[]" id="Toma-decisiones" value="Toma_decisiones">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label
+                  class="container_checkbox"><?php echo t('rec_new_req_comp_work_under_pressure', 'Trabajo bajo presión') ?>
+                  <input type="checkbox" name="competencias[]" id="Trabajo-presion" value="Trabajo-presion">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_command', 'Don de mando') ?>
+                  <input type="checkbox" name="competencias[]" id="Don_mando" value="Don-mando">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_versatile', 'Versátil') ?>
+                  <input type="checkbox" name="competencias[]" id="Versátil" value="Versátil">
+                  <span class="checkmark"></span>
+                </label>
+              </div>
+
+              <div class="col-sm-12 col-md-4 col-lg-4">
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_social', 'Sociable') ?>
+                  <input type="checkbox" name="competencias[]" id="Sociable" value="Sociable">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_intuitive', 'Intuitivo') ?>
+                  <input type="checkbox" name="competencias[]" id="Intuitivo" value="Intuitivo">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_self_taught', 'Autodidacta') ?>
+                  <input type="checkbox" name="competencias[]" id="Autodidacta" value="Autodidacta">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_creative', 'Creativo') ?>
+                  <input type="checkbox" name="competencias[]" id="Creativo" value="Creativo">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_proactive', 'Proactivo') ?>
+                  <input type="checkbox" name="competencias[]" id="Proactivo" value="Proactivo">
+                  <span class="checkmark"></span>
+                </label>
+
+                <label class="container_checkbox"><?php echo t('rec_new_req_comp_adaptable', 'Adaptable') ?>
+                  <input type="checkbox" name="competencias[]" id="Adaptable" value="Adaptable">
+                  <span class="checkmark"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer custom_modal_footer">
+        <button type="button" class="btn btn-primary btn-icon-split" id="btnRegresar">
+          <span class="icon text-white-50">
+            <i class="fas fa-arrow-left"></i>
+          </span>
+          <span class="text"><?php echo t('rec_common_back', 'Regresar') ?></span>
+        </button>
+        <button type="button" class="btn btn-success btn-icon-split" id="btnContinuar">
+          <span class="text"></span>
+          <span class="icon text-white-50">
+            <i class="fas fa-arrow-right"></i>
+          </span>
+        </button>
+      </div>
+    </div>
   </div>
-
-  </form>
-</div>
-<div class="modal-footer custom_modal_footer">
-  <button type="button" class="btn btn-primary btn-icon-split" id="btnRegresar">
-    <span class="icon text-white-50">
-      <i class="fas fa-arrow-left"></i>
-    </span>
-    <span class="text">Regresar</span>
-  </button>
-  <button type="button" class="btn btn-success btn-icon-split" id="btnContinuar">
-    <span class="text"></span>
-    <span class="icon text-white-50">
-      <i class="fas fa-arrow-right"></i>
-    </span>
-  </button>
-</div>
-</div>
-</div>
 </div>
 
 
@@ -1599,55 +1755,76 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title" id="titulo_asignarUsuarioModal"></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <form id="formAsignacion">
           <div class="row mb-3">
             <div class="col-md-12">
-              <label for="asignar_usuario"></label>
+              <label for="asignar_usuario">
+                <?php echo t('rec_assign_user_label', 'Usuario'); ?>
+              </label>
+
               <select id="asignar_usuario" name="asignar_usuario" class="form-control">
-                <option value="">Select</option>
-                <?php
-                    if (! empty($usuarios_asignacion)) {
-                    foreach ($usuarios_asignacion as $row) {?>
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+
+                <?php if (! empty($usuarios_asignacion)) {?>
+                <?php foreach ($usuarios_asignacion as $row) {?>
                 <option value="<?php echo $row->id ?>"><?php echo $row->usuario ?></option>
-                <?php }
-                } else {?>
-                <option value="">No hay usuarios correspondientes</option>
+                <?php }?>
+                <?php } else {?>
+                <option value=""><?php echo t('rec_assign_no_users', 'No hay usuarios correspondientes'); ?></option>
                 <?php }?>
               </select>
             </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-md-12">
-              <label for="asignar_registro"></label>
-              <select name="asignar_registro" id="asignar_registro">
-                <option value="">Select</option>
-                <?php
-                    if (! empty($registros_asignacion)) {
-                    foreach ($registros_asignacion as $fila) {?>
+              <label for="asignar_registro">
+                <?php echo t('rec_assign_record_label', 'Registro'); ?>
+              </label>
+
+              <select name="asignar_registro" id="asignar_registro" class="form-control">
+                <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+
+                <?php if (! empty($registros_asignacion)) {?>
+                <?php foreach ($registros_asignacion as $fila) {?>
                 <option value="<?php echo $fila->id ?>">
-                  <?php echo '#' . $fila->id . '  ' . $fila->nombreCompleto . (! empty($fila->puesto) ? ' Puesto: ' . $fila->puesto : ''); ?>
+                  <?php
+                      echo '#' . $fila->id . '  ' . $fila->nombreCompleto .
+                              (! empty($fila->puesto)
+                                  ? ' ' . t('rec_assign_position_prefix', 'Puesto: ') . $fila->puesto
+                                  : ''
+                          );
+                      ?>
                 </option>
-                <?php }
-                } else {?>
-                <option value="">No hay registros para asignar</option>
+                <?php }?>
+                <?php } else {?>
+                <option value=""><?php echo t('rec_assign_no_records', 'No hay registros para asignar'); ?></option>
                 <?php }?>
               </select>
             </div>
           </div>
         </form>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" id="btnAsignar">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+        <button type="button" class="btn btn-success" id="btnAsignar">
+          <?php echo t('rec_common_save', 'Guardar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 <div class="modal fade" id="resultadosModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl" role="document">
@@ -1724,51 +1901,66 @@
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Información de ingreso al empleo del candidato: <br><span class="nombreRegistro"></span>
+        <h4 class="modal-title">
+          <?php echo t('rec_prog_adm_modal_title', 'Información de ingreso al empleo del candidato:'); ?>
+          <br><span class="nombreRegistro"></span>
         </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_prog_btn_close_aria', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
-        <div class="alert alert-info text-center">Registros del estatus de la garantía</div>
+        <div class="alert alert-info text-center">
+          <?php echo t('rec_prog_adm_warranty_history_title', 'Registros del estatus de la garantía'); ?>
+        </div>
+
         <div id="divHistorialGarantia" class="escrolable"></div>
 
         <form id="formIngreso">
           <div class="row mb-3">
             <div class="col-4">
-              <label>Sueldo acordado *</label>
+              <label><?php echo t('rec_prog_adm_salary_agreed', 'Sueldo acordado'); ?> *</label>
               <input type="text" class="form-control" id="sueldo_acordado" name="sueldo_acordado">
             </div>
+
             <div class="col-4">
-              <label>Fecha de ingreso a la empresa *</label>
+              <label><?php echo t('rec_prog_adm_company_start_date', 'Fecha de ingreso a la empresa'); ?> *</label>
               <input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso">
             </div>
+
             <div class="col-4">
-              <label>Pago</label>
+              <label><?php echo t('rec_prog_adm_payment', 'Pago'); ?></label>
               <input type="text" class="form-control" id="pago" name="pago">
             </div>
           </div>
+
           <div class="row mb-3">
             <div class="col-12">
-              <label for="garantia">Estatus de la garantia</label>
+              <label for="garantia"><?php echo t('rec_prog_adm_warranty_status', 'Estatus de la garantia'); ?></label>
               <textarea class="form-control" name="garantia" id="garantia" rows="3"></textarea>
             </div>
           </div>
+
           <div class="row mt-2">
             <div class="col-12">
-              <button type="button" class="btn btn-primary text-lg btn-block" onclick="updateAdmission()">Guardar
-                información</button>
+              <button type="button" class="btn btn-primary text-lg btn-block" onclick="updateAdmission()">
+                <?php echo t('rec_prog_adm_btn_save_info', 'Guardar información'); ?>
+              </button>
             </div>
           </div>
       </div>
       </form>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_prog_btn_close', 'Cerrar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 <div class="modal fade" id="avancesModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
@@ -1821,9 +2013,15 @@
         <div id="campos_mensaje"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" id="btnConfirmar">Confirmar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+
+        <button type="button" class="btn btn-success" id="btnConfirmar">
+          <?php echo t('rec_common_confirm', 'Confirmar'); ?>
+        </button>
       </div>
+
     </div>
   </div>
 </div>
@@ -1832,8 +2030,10 @@
   <div class="modal-dialog" role="document" style="max-width:700px;">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalCargaArchivosLabel">Carga y nombra tus archivos</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <h5 class="modal-title" id="modalCargaArchivosLabel">
+          <?php echo t('rec_prog_upload_modal_title', 'Carga y nombra tus archivos'); ?>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -1844,25 +2044,28 @@
           <input type="hidden" id="id_bolsa" name="id_bolsa" value="">
 
           <div class="form-group">
-            <label for="filesInput">Selecciona uno o varios archivos</label>
-            <input id="filesInput" name="files[]" type="file" class="form-control" multiple
-              accept=".pdf,image/*,video/*">
-            <small class="form-text text-muted">Tipos permitidos: PDF, imágenes y videos.</small>
+            <label for="filesInput">
+              <?php echo t('rec_prog_upload_select_files', 'Selecciona uno o varios archivos'); ?>
+            </label>
+            <input id="filesInput" name="files[]" type="file" class="form-control" multiple accept=".pdf,image/*,video/*">
+            <small class="form-text text-muted">
+              <?php echo t('rec_prog_upload_allowed_types', 'Tipos permitidos: PDF, imágenes y videos.'); ?>
+            </small>
           </div>
 
           <div class="table-responsive">
             <table class="table table-bordered table-sm align-middle">
               <thead class="thead-light">
                 <tr>
-                  <th>Archivo</th>
-                  <th>Tamaño</th>
-                  <th>Nombre personalizado</th>
-                  <th style="width:1%;">Acciones</th>
+                  <th><?php echo t('rec_prog_upload_th_file', 'Archivo'); ?></th>
+                  <th><?php echo t('rec_prog_upload_th_size', 'Tamaño'); ?></th>
+                  <th><?php echo t('rec_prog_upload_th_custom_name', 'Nombre personalizado'); ?></th>
+                  <th style="width:1%;"><?php echo t('rec_prog_upload_th_actions', 'Acciones'); ?></th>
                 </tr>
               </thead>
               <tbody id="filesTableBody">
                 <tr class="text-muted" id="emptyRow">
-                  <td colspan="4">Sin archivos seleccionados…</td>
+                  <td colspan="4"><?php echo t('rec_prog_upload_empty', 'Sin archivos seleccionados…'); ?></td>
                 </tr>
               </tbody>
             </table>
@@ -1870,13 +2073,18 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btnSubirArchivos">Subir archivos</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+          </button>
+          <button type="button" class="btn btn-primary" id="btnSubirArchivos">
+            <?php echo t('rec_prog_upload_btn_upload', 'Subir archivos'); ?>
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
 
 
 
@@ -1910,8 +2118,10 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Documentos del aspirante</h5>
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+        <h5 class="modal-title"><?php echo t('rec_prog_docs_modal_title', 'Documentos del aspirante'); ?></h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span><?php echo t('rec_common_close_x', '&times;'); ?></span>
+        </button>
       </div>
 
       <div class="modal-body">
@@ -1921,11 +2131,11 @@
         <table class="table table-bordered" id="tablaDocsModal">
           <thead>
             <tr>
-              <th>Nombre personalizado</th>
-              <th>Archivo</th>
-              <th>Fecha</th>
-              <th>Visible para Sucursal</th>
-              <th>Acciones</th>
+              <th><?php echo t('rec_prog_docs_th_custom_name', 'Nombre personalizado'); ?></th>
+              <th><?php echo t('rec_prog_docs_th_file', 'Archivo'); ?></th>
+              <th><?php echo t('rec_prog_docs_th_date', 'Fecha'); ?></th>
+              <th><?php echo t('rec_prog_docs_th_visible_branch', 'Visible para Sucursal'); ?></th>
+              <th><?php echo t('rec_prog_docs_th_actions', 'Acciones'); ?></th>
             </tr>
           </thead>
           <tbody>
@@ -1937,32 +2147,43 @@
   </div>
 </div>
 
+
 <div class="modal fade" id="modalReemplazo" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Reemplazar documento</h5>
+        <h5 class="modal-title"><?php echo t('rec_prog_replace_modal_title', 'Reemplazar documento'); ?></h5>
       </div>
+
       <div class="modal-body">
         <form id="frmReemplazo" action="<?php echo base_url('Documentos_Aspirantes/actualizar') ?>"
           enctype="multipart/form-data">
+
           <input type="hidden" name="id_doc" id="id_doc">
+
           <div class="form-group">
-            <label>Nombre personalizado</label>
+            <label><?php echo t('rec_prog_replace_f_custom_name', 'Nombre personalizado'); ?></label>
             <input type="text" class="form-control" name="nuevo_nombre" id="nuevo_nombre">
           </div>
+
           <div class="form-group">
-            <label>Nuevo archivo</label>
+            <label><?php echo t('rec_prog_replace_f_new_file', 'Nuevo archivo'); ?></label>
             <input type="file" class="form-control-file" name="file" required>
           </div>
+
         </form>
       </div>
+
       <div class="modal-footer">
-        <button class="btn btn-primary" id="btnGuardarCambios">Guardar cambios</button>
+        <button class="btn btn-primary" id="btnGuardarCambios">
+          <?php echo t('rec_prog_replace_btn_save', 'Guardar cambios'); ?>
+        </button>
       </div>
+
     </div>
   </div>
 </div>
+
 <!-- Modal Link clientes general-->
 <div class="modal fade" id="qrModal" tabindex="-1" role="dialog" aria-labelledby="qrModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -2023,26 +2244,36 @@
     <form id="formAsignarSucursal" class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalAsignarSucursalLabel">
-          <i class="fas fa-store mr-2"></i>Asignar a sucursal
+          <i class="fas fa-store mr-2"></i><?php echo t('rec_desk_assign_branch_title', 'Asignar a sucursal'); ?>
         </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <input type="hidden" name="idReq" id="asg_idReq">
+
         <div class="form-group">
-          <label for="asg_sucursal">Sucursal</label>
+          <label for="asg_sucursal"><?php echo t('rec_desk_assign_branch_label', 'Sucursal'); ?></label>
+
           <select id="asg_sucursal" name="id_sucursal" class="form-control" style="width:100%">
-            <option value=""></option> <!-- ← NECESARIA para que se vea el placeholder -->
+            <option value=""></option> <!-- necesaria para placeholder -->
           </select>
-          <small class="form-text text-muted">Escribe para buscar…</small>
+
+          <small
+            class="form-text text-muted"><?php echo t('rec_desk_assign_branch_help', 'Escribe para buscar…'); ?></small>
         </div>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+
         <button type="submit" class="btn btn-primary" id="btnGuardarAsignacion">
-          <span class="txt">Guardar</span>
+          <span class="txt"><?php echo t('rec_common_save', 'Guardar'); ?></span>
           <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
         </button>
       </div>
@@ -2056,12 +2287,16 @@
 
 
 
+
 <script>
 var urltraerClientes = '<?php echo base_url('Cat_Cliente/getClientesActivos'); ?>';
 var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId'); ?>';
 </script>
 
 <script>
+const TT = (key, fallback, repl) =>
+  (typeof window.t === 'function') ? window.t(key, fallback, repl) : (fallback || key);
+
 (function() {
   var $modal = $('#modalAsignarSucursal');
   var $select = $('#asg_sucursal');
@@ -2121,25 +2356,37 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
   // Guardar
   $('#formAsignarSucursal').on('submit', function(e) {
     e.preventDefault();
+
     var idReq = $('#asg_idReq').val();
     var idSucursal = $select.val();
+
+    // ✅ Traducciones
+    const TXT_SELECT_BRANCH_TITLE = t('rec_desk_assign_branch_warn_title', 'Selecciona una sucursal');
+    const TXT_SELECT_BRANCH_TEXT = t('rec_desk_assign_branch_warn_text', 'Debes elegir una sucursal.');
+    const TXT_SAVING = t('rec_common_saving', 'Guardando…');
+    const TXT_ASSIGNED_TITLE = t('rec_desk_assign_branch_success_title', 'Asignado');
+    const TXT_ASSIGNED_TEXT = t('rec_desk_assign_branch_success_text', 'La requisición fue asignada.');
+    const TXT_ERROR_TITLE = t('rec_common_error', 'Error');
+    const TXT_ASSIGN_FAILED = t('rec_desk_assign_branch_failed', 'No se pudo asignar.');
+    const TXT_NETWORK_FAILED = t('rec_common_network_failed', 'Fallo de red');
+    const TXT_SAVE = t('rec_common_save', 'Guardar');
 
     if (!idSucursal) {
       Swal.fire({
         icon: 'warning',
-        title: 'Selecciona una sucursal',
-        text: 'Debes elegir una sucursal.'
+        title: TXT_SELECT_BRANCH_TITLE,
+        text: TXT_SELECT_BRANCH_TEXT
       });
       return;
     }
 
     var $btn = $('#btnGuardarAsignacion');
     $btn.prop('disabled', true);
-    $btn.find('.txt').text('Guardando…');
+    $btn.find('.txt').text(TXT_SAVING);
     $btn.find('.spinner-border').removeClass('d-none');
 
     $.ajax({
-      url: '<?php echo site_url('Requisicion/asignar_sucursal'); ?>', // también sin routes extra
+      url: '<?php echo site_url('Requisicion/asignar_sucursal'); ?>',
       method: 'POST',
       dataType: 'json',
       data: {
@@ -2150,11 +2397,12 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
         if (resp && resp.ok) {
           Swal.fire({
             icon: 'success',
-            title: 'Asignado',
-            text: 'La requisición fue asignada.',
+            title: TXT_ASSIGNED_TITLE,
+            text: TXT_ASSIGNED_TEXT,
             timer: 1200,
             showConfirmButton: false
           });
+
           $modal.modal('hide');
 
           // Actualiza data-sucursal en el botón de esa tarjeta
@@ -2169,19 +2417,28 @@ var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId')
             );
           }
         } else {
-          Swal.fire('Error', (resp && resp.msg) ? resp.msg : 'No se pudo asignar.', 'error');
+          Swal.fire(
+            TXT_ERROR_TITLE,
+            (resp && resp.msg) ? resp.msg : TXT_ASSIGN_FAILED,
+            'error'
+          );
         }
       },
       error: function(xhr) {
-        Swal.fire('Error', xhr.statusText || 'Fallo de red', 'error');
+        Swal.fire(
+          TXT_ERROR_TITLE,
+          xhr.statusText || TXT_NETWORK_FAILED,
+          'error'
+        );
       },
       complete: function() {
         $btn.prop('disabled', false);
-        $btn.find('.txt').text('Guardar');
+        $btn.find('.txt').text(TXT_SAVE);
         $btn.find('.spinner-border').addClass('d-none');
       }
     });
   });
+
 
   // Limpieza al cerrar
   $modal.on('hidden.bs.modal', function() {
@@ -2200,13 +2457,10 @@ $(function() {
   var $tbody = $('#filesTableBody');
   var $btnUpload = $('#btnSubirArchivos');
 
-  // Si tu vista es PHP, usa una de estas (elige la que corresponda):
-  // const UPLOAD_URL = "< ?php echo base_url('Documentos_Aspirantes/subir')?>";
   const UPLOAD_URL = "<?php echo base_url('Documentos_Aspirantes/subir'); ?>";
 
   // 1) Abrir modal y preparar id_aspirante
   window.mostrarFormularioCargaCV = function(id) {
-    //console.log('mostrarFormularioCargaCV id:', id);
     $('#id_aspirante').val(id);
     $('#id_bolsa').val(id); // si aplicas mismo id, o bórralo si no lo usas
     $modal.modal('show');
@@ -2238,13 +2492,14 @@ $(function() {
           <input type="text" class="form-control"
                  name="nombres_archivos[]"
                  value="${baseNameNoExt(file.name)}"
-                 placeholder="Ejemplo: CV, Comprobante, etc."
+                 placeholder="${TT('rec_prog_upload_placeholder_custom_name', 'Ejemplo: CV, Comprobante, etc.')}"
                  required>
         </td>
         <td class="text-right">
           <button type="button"
                   class="btn btn-sm btn-outline-danger btn-remove"
-                  data-index="${idx}">
+                  data-index="${idx}"
+                  aria-label="${TT('rec_prog_upload_remove_file_aria', 'Quitar archivo')}">
             <i class="fas fa-trash-alt"></i>
           </button>
         </td>
@@ -2281,8 +2536,8 @@ $(function() {
     if (!selectedFiles.length) {
       Swal.fire({
         icon: 'info',
-        title: 'Sin archivos',
-        text: 'Selecciona al menos un archivo.'
+        title: TT('rec_prog_upload_swal_no_files_title', 'Sin archivos'),
+        text: TT('rec_prog_upload_swal_no_files_text', 'Selecciona al menos un archivo.')
       });
       return;
     }
@@ -2300,8 +2555,8 @@ $(function() {
     if (!nombresOk) {
       Swal.fire({
         icon: 'warning',
-        title: 'Nombre requerido',
-        text: 'Define un nombre personalizado para cada archivo.'
+        title: TT('rec_prog_upload_swal_name_required_title', 'Nombre requerido'),
+        text: TT('rec_prog_upload_swal_name_required_text', 'Define un nombre personalizado para cada archivo.')
       });
       return;
     }
@@ -2316,12 +2571,12 @@ $(function() {
       fd.append('nombres_archivos[]', input.value.trim());
     });
 
-    // Extras que ya mandabas
+    // Extras
     fd.append('id_aspirante', $('#id_aspirante').val() || '');
     fd.append('id_bolsa', $('#id_bolsa').val() || '');
 
     // Deshabilita botón durante el envío
-    $btnUpload.prop('disabled', true).text('Subiendo...');
+    $btnUpload.prop('disabled', true).text(TT('rec_prog_upload_btn_uploading', 'Subiendo...'));
 
     $.ajax({
         url: UPLOAD_URL,
@@ -2332,48 +2587,46 @@ $(function() {
         dataType: 'json'
       })
       .done(function(resp) {
-        // Soporta dos variantes comunes de respuesta
         if (resp && resp.ok) {
           Swal.fire({
             icon: 'success',
-            title: '¡Éxito!',
-            text: resp.msg || 'Archivos cargados.'
+            title: TT('rec_prog_upload_swal_success_title', '¡Éxito!'),
+            text: resp.msg || TT('rec_prog_upload_swal_success_text_default', 'Archivos cargados.')
           });
           $modal.modal('hide');
         } else if (resp && Array.isArray(resp.data)) {
-          // estilo por-archivo: [{success, file, error}]
           var errores = resp.data.filter(r => !r.success).map(r => `${r.file}: ${r.error}`);
           if (errores.length) {
             Swal.fire({
               icon: 'warning',
-              title: 'Carga parcial',
+              title: TT('rec_prog_upload_swal_partial_title', 'Carga parcial'),
               html: errores.join('<br>')
             });
           } else {
             Swal.fire({
               icon: 'success',
-              title: '¡Éxito!',
-              text: 'Todos los archivos cargados.'
+              title: TT('rec_prog_upload_swal_success_title', '¡Éxito!'),
+              text: TT('rec_prog_upload_swal_success_all', 'Todos los archivos cargados.')
             });
             $modal.modal('hide');
           }
         } else {
           Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: (resp && resp.msg) ? resp.msg : 'No se pudo completar la carga.'
+            title: TT('rec_prog_upload_swal_error_title', 'Error'),
+            text: (resp && resp.msg) ? resp.msg : TT('rec_prog_upload_swal_error_text_default', 'No se pudo completar la carga.')
           });
         }
       })
       .fail(function(xhr) {
         Swal.fire({
           icon: 'error',
-          title: 'Error de servidor',
-          text: xhr.statusText || 'Intenta de nuevo.'
+          title: TT('rec_prog_upload_swal_server_error_title', 'Error de servidor'),
+          text: xhr.statusText || TT('rec_prog_upload_swal_server_error_text_default', 'Intenta de nuevo.')
         });
       })
       .always(function() {
-        $btnUpload.prop('disabled', false).text('Subir archivos');
+        $btnUpload.prop('disabled', false).text(TT('rec_prog_upload_btn_upload', 'Subir archivos'));
         // Limpieza
         selectedFiles = [];
         $filesInput.val('');
@@ -2387,7 +2640,7 @@ $(function() {
     $filesInput.val('');
     $tbody.empty();
   });
-})
+});
 
 
 
@@ -2410,7 +2663,7 @@ $('#btnGuardarCambios').on('click', function() {
       if (resp.ok) {
         Swal.fire({
           icon: 'success',
-          title: 'Documento actualizado',
+          title: TT('rec_prog_doc_ok_updated', 'Documento actualizado'),
           timer: 1500,
           showConfirmButton: false
         });
@@ -2577,9 +2830,25 @@ $('#puesto').off('change').on('change', function() {
 
 // Deja este bloque tal cual (no se toca)
 $('#nuevaRequisicionModal').on('shown.bs.modal', function(e) {
+  // Copia el texto del <label> hacia data-field (y así queda traducido)
+  $('#nuevaRequisicionModal input[data-field], #nuevaRequisicionModal select[data-field], #nuevaRequisicionModal textarea[data-field]')
+    .each(function() {
+      var id = this.id;
+      if (!id) return;
+
+      var lbl = $('#nuevaRequisicionModal label[for="' + id + '"]').first();
+      if (lbl.length) {
+        var txt = (lbl.text() || '').trim();
+        if (txt) this.setAttribute('data-field', txt);
+      }
+    });
   cargarClientesActivos(urltraerClientes);
-  $("#nuevaRequisicionModal #titulo_paso").text('Datos  ');
-  $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
+  $("#nuevaRequisicionModal #titulo_paso").text(
+    TT('rec_newreq_step_title_data', 'Datos')
+  );
+  $("#nuevaRequisicionModal #btnContinuar span.text").text(
+    TT('rec_common_continue', 'Continuar')
+  );
   $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2, #nuevaRequisicionModal #paso3").prop(
     'disabled', true);
 });
@@ -2596,8 +2865,10 @@ $('#nuevaRequisicionModal #btnContinuar').on('click', function() {
           .value.length == 0 || /^\s*$/.test(formulario[i].value)) {
           Swal.fire({
             icon: 'error',
-            title: 'Hubo un problema',
-            html: 'El campo <b>' + formulario[i].getAttribute("data-field") + '</b> no es válido',
+            title: <?php echo json_encode(t('rec_common_problem_title', 'Hubo un problema')); ?>,
+            html: <?php echo json_encode(t('rec_common_invalid_field_html', 'El campo <b>{field}</b> no es válido')); ?>
+              .replace('{field}', formulario[i].getAttribute("data-field")),
+
             width: '50em',
             confirmButtonText: 'Cerrar'
           })
@@ -2613,7 +2884,9 @@ $('#nuevaRequisicionModal #btnContinuar').on('click', function() {
         document.getElementById('formPaso1').className = "hidden";
         document.getElementById('formPaso2').className = "animate__animated animate__fadeInUp";
       }, 500)
-      $("#nuevaRequisicionModal #titulo_paso").text('Información de la Vacante');
+      $("#nuevaRequisicionModal #titulo_paso").text(
+        TT('rec_newreq_step_title_vacancy', 'Información de la Vacante')
+      );
       $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2").prop('disabled', false);
       document.getElementById('barra1').classList.remove('barra_espaciadora_off');
       document.getElementById('barra1').className += ' barra_espaciadora_on';
@@ -2624,11 +2897,15 @@ $('#nuevaRequisicionModal #btnContinuar').on('click', function() {
         document.getElementById('formPaso2').className = "hidden";
         document.getElementById('formPaso3').className = "animate__animated animate__fadeInUp";
       }, 500)
-      $("#nuevaRequisicionModal #titulo_paso").text('Información sobre el Cargo');
+      $("#nuevaRequisicionModal #titulo_paso").text(
+        TT('rec_newreq_step_title_job', 'Información sobre el Cargo')
+      );
       $("#nuevaRequisicionModal #paso3").prop('disabled', false);
       document.getElementById('barra2').classList.remove('barra_espaciadora_off');
       document.getElementById('barra2').className += ' barra_espaciadora_on';
-      $("#nuevaRequisicionModal #btnContinuar span.text").text('Finalizar');
+      $("#nuevaRequisicionModal #btnContinuar span.text").text(
+        TT('rec_common_finish', 'Finalizar')
+      );
     }
     if (pag == 3) {
       let datos = $('#formPaso1').serialize();
@@ -2652,23 +2929,24 @@ $('#nuevaRequisicionModal #btnContinuar').on('click', function() {
             Swal.fire({
               position: 'center',
               icon: 'success',
-              title: data.msg,
+              title: TT('rec_common_saved', 'Guardado correctamente'),
               showConfirmButton: false,
               timer: 3000
-            })
-            if (currentPage == 'requisicion') {
+            });
+
+            if (currentPage === 'requisicion') {
               setTimeout(function() {
-                location.reload()
-              }, 3000)
+                location.reload();
+              }, 3000);
             }
           } else {
             Swal.fire({
               icon: 'error',
-              title: 'Hubo un problema',
-              html: data.msg,
+              title: TT('rec_common_problem_title', 'Hubo un problema'),
+              html: TT('rec_common_try_again', 'Intenta de nuevo.'),
               width: '50em',
-              confirmButtonText: 'Cerrar'
-            })
+              confirmButtonText: TT('rec_common_close', 'Cerrar')
+            });
           }
         }
       });
@@ -2688,7 +2966,9 @@ $('#nuevaRequisicionModal #btnRegresar').on('click', function() {
     $("#nuevaRequisicionModal #btnRegresar, #nuevaRequisicionModal #paso2").prop('disabled', true);
     document.getElementById('barra1').classList.remove('barra_espaciadora_on');
     document.getElementById('barra1').className += ' barra_espaciadora_off';
-    $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
+    $("#nuevaRequisicionModal #btnContinuar span.text").text(
+      TT('rec_common_continue', 'Continuar')
+    );
     pag--;
   }
   if (pag == 3) {
@@ -2701,7 +2981,9 @@ $('#nuevaRequisicionModal #btnRegresar').on('click', function() {
     $("#nuevaRequisicionModal #paso3").prop('disabled', true);
     document.getElementById('barra2').classList.remove('barra_espaciadora_on');
     document.getElementById('barra2').className += ' barra_espaciadora_off';
-    $("#nuevaRequisicionModal #btnContinuar span.text").text('Continuar');
+    $("#nuevaRequisicionModal #btnContinuar span.text").text(
+      TT('rec_common_continue', 'Continuar')
+    );
     pag--;
   }
 });
