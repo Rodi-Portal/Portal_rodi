@@ -2,105 +2,148 @@
 <div class="container-fluid">
   <?php
       // justo arriba del <script> donde configuras DataTables
-  $idRol = $this->session->userdata('idrol'); ?>
+      $idRol = $this->session->userdata('idrol');
+  ?>
+
   <!-- Page Heading -->
   <div class="align-items-center mb-4">
     <div class="row justify-content-between align-items-center">
       <div class="col-sm-12 col-md-8">
-        <h2>Administración de Sucursales/Clientes</h2>
+        <h2><?php echo $this->lang->line('suc_title'); ?></h2>
       </div>
+
       <div class="col-sm-12 col-md-4 d-flex flex-wrap flex-md-nowrap justify-content-end align-items-center">
         <?php if (show_if_can('admin.sucursales.generar_link', ($tipo_bolsa == 1) && in_array((int) $idRol, [1, 6, 9], true))): ?>
         <a href="#" class="btn btn-outline-primary btn-lg btn-elevated mr-2 mb-2" onclick="generarLinkstodos(event)">
-          <i class="fas fa-link mr-2"></i><span>Crear/Actualizar Links</span>
+          <span><?php echo $this->lang->line('suc_btn_links_all'); ?></span>
         </a>
         <?php endif; ?>
 
         <?php if (show_if_can('admin.sucursales.crear', in_array((int) $idRol, [1, 6, 9], true))): ?>
         <a href="#" class="btn btn-outline-primary btn-lg btn-elevated mb-2" data-toggle="modal" data-target="#newModal"
           onclick="registrarCliente()">
-          <i class="fas fa-building mr-2"></i><span>Crear Sucursal</span>
+          <span><?php echo $this->lang->line('suc_btn_create_branch'); ?></span>
         </a>
         <?php endif; ?>
-
       </div>
     </div>
 
     <div>
-      <p>Este módulo permite la gestión completa de usuarios externos y sucursales, con funciones para <br>registrar,
-        actualizar, eliminar y mantener la información de manera organizada y eficiente.</p>
+      <p><?php echo $this->lang->line('suc_description'); ?></p>
     </div>
   </div>
 
   <div class="card shadow mb-4">
     <div class="card-header py-3">
+      <!-- Si quieres ponerle título aquí, crea una key y la imprimes -->
       <h6 class="m-0 font-weight-bold text-primary"></h6>
     </div>
+
     <div class="card-body">
       <div class="table-responsive">
-        <table id="tabla" class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-        </table>
+        <table id="tabla" class="table table-bordered" width="100%" cellspacing="0"></table>
       </div>
     </div>
   </div>
 
   <?php echo $modals; ?>
-  <div class="loader" style="display: none;"></div>
+
+  <div class="loader" style="display:none;"></div>
   <input type="hidden" id="idCliente">
   <input type="hidden" id="idUsuarioCliente">
-
-
 </div>
-
-
 
 <div class="modal fade" id="enviarCredenciales" tabindex="-1" role="dialog" aria-labelledby="mensajeModalLabel"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h5 class="modal-title" id="titulo_mensaje_contraseña">Registrar</h5>
+        <h5 class="modal-title" id="titulo_mensaje_contraseña">
+          <?php echo $this->lang->line('suc_modal_send_credentials_title'); ?>
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <div class="row justify-content-center">
-          <div class="modal-body" id="mensaje_contraseña"></div> <!-- Centrar el contenido -->
+          <div class="modal-body" id="mensaje_contraseña"></div>
+
           <div class="col-md-9">
-            <label>Generar Contraseña*</label>
+            <label><?php echo $this->lang->line('suc_lbl_generate_password'); ?></label>
+
             <div class="input-group">
               <input type="text" class="form-control" name="password_cliente" id="password_cliente" maxlength="20">
               <div class="input-group-append">
-                <button type="button" class="btn btn-primary" onclick="generarPassword1()">Generar</button>
+                <button type="button" class="btn btn-primary" onclick="generarPassword1()">
+                  <?php echo $this->lang->line('suc_btn_generate'); ?>
+                </button>
               </div>
             </div>
           </div>
         </div>
+
         <input type="hidden" class="form-control" name="idDatosGeneralesEditPass" id="idDatosGeneralesEditPass">
         <input type="hidden" class="form-control" name="idCorreo" id="idCorreo">
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" id="btnEnviarPass">Reenviar contraseña</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo $this->lang->line('suc_btn_cancel'); ?>
+        </button>
+
+        <button type="button" class="btn btn-danger" id="btnEnviarPass">
+          <?php echo $this->lang->line('suc_btn_resend_password'); ?>
+        </button>
       </div>
+
     </div>
   </div>
 </div>
 <?php
     // justo arriba del <script> donde configuras DataTables
     echo perms_js_flags([
-        'suc_ver'          => ['admin.sucursales.ver', in_array((int) $idRol, [1, 6, 9], true)],
-        'suc_crear'        => ['admin.sucursales.crear', in_array((int) $idRol, [1, 6, 9], true)],
-        'suc_editar'       => ['admin.sucursales.editar', in_array((int) $idRol, [1, 6, 9], true)],
-        'suc_eliminar'     => ['admin.sucursales.eliminar', in_array((int) $idRol, [1, 6, 9], true)],
-        'suc_estado'       => ['admin.sucursales.cambiar_estado', in_array((int) $idRol, [1, 6, 9], true)],
-        'suc_generar_link' => ['admin.sucursales.generar_link', ($tipo_bolsa == 1) && in_array((int) $idRol, [1, 6, 9], true)],
-        'suc_ver_accesos'  => ['admin.sucursales.ver_accesos', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_ver'             => ['admin.sucursales.ver', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_crear'           => ['admin.sucursales.crear', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_editar'          => ['admin.sucursales.editar', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_eliminar'        => ['admin.sucursales.eliminar', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_estado'          => ['admin.sucursales.cambiar_estado', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_generar_link'    => ['admin.sucursales.generar_link', ($tipo_bolsa == 1) && in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_ver_accesos'     => ['admin.sucursales.ver_accesos', in_array((int) $idRol, [1, 6, 9], true)],
+        'suc_generar_usuario' => ['admin.sucursales.generar_usuario', in_array((int) $idRol, [1, 6, 9], true)],
+
     ]);
 ?>
 <!-- /.content-wrapper -->
+<script>
+// Todo lo que ya cargó CI3 con $this->lang->load(...)
+window.LANG = <?php echo json_encode(
+                                                $this->lang->language,
+                                            JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+                                        ); ?>;
+
+// Traducción simple
+window.t = function(key, fallback) {
+  if (window.LANG && window.LANG[key] !== undefined && window.LANG[key] !== '') return window.LANG[key];
+  return (fallback !== undefined) ? fallback : key;
+};
+
+// Para meter texto en atributos HTML (title="", data-*)
+window.escAttr = function(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+};
+
+window.tAttr = function(key, fallback) {
+  return window.escAttr(window.t(key, fallback));
+};
+</script>
+
 <script>
 var url = '<?php echo base_url('Cat_Cliente/getClientes'); ?>';
 
@@ -108,6 +151,46 @@ var tipos_bloqueo_php =
   '<?php foreach ($tipos_bloqueo as $row) {echo '<option value="' . $row->tipo . '">' . $row->descripcion . '</option>';}?>';
 var tipos_desbloqueo_php =
   '<?php foreach ($tipos_desbloqueo as $row) {echo '<option value="' . $row->tipo . '">' . $row->descripcion . '</option>';}?>';
+window.TS_I18N = window.TS_I18N || {};
+Object.assign(window.TS_I18N, {
+  // Swal
+  suc_saved_ok: "<?php echo $this->lang->line('suc_saved_ok'); ?>",
+
+  // Columnas / datatable
+  suc_col_id: "<?php echo $this->lang->line('suc_col_id'); ?>",
+  suc_col_name: "<?php echo $this->lang->line('suc_col_name'); ?>",
+  suc_col_key: "<?php echo $this->lang->line('suc_col_key'); ?>",
+  suc_col_created_at: "<?php echo $this->lang->line('suc_col_created_at'); ?>",
+  suc_col_access: "<?php echo $this->lang->line('suc_col_access'); ?>",
+  suc_col_actions: "<?php echo $this->lang->line('suc_col_actions'); ?>",
+
+  // Accesos texto
+  suc_access_none: "<?php echo $this->lang->line('suc_access_none'); ?>",
+  suc_access_has: "<?php echo $this->lang->line('suc_access_has'); ?>",
+
+  // Tooltips
+  suc_tt_edit: "<?php echo $this->lang->line('suc_tt_edit'); ?>",
+  suc_tt_activate: "<?php echo $this->lang->line('suc_tt_activate'); ?>",
+  suc_tt_deactivate: "<?php echo $this->lang->line('suc_tt_deactivate'); ?>",
+  suc_tt_delete_client: "<?php echo $this->lang->line('suc_tt_delete_client'); ?>",
+  suc_tt_view_access: "<?php echo $this->lang->line('suc_tt_view_access'); ?>",
+  suc_tt_block_client: "<?php echo $this->lang->line('suc_tt_block_client'); ?>",
+  suc_tt_unblock_client: "<?php echo $this->lang->line('suc_tt_unblock_client'); ?>",
+  suc_tt_generate_link: "<?php echo $this->lang->line('suc_tt_generate_link'); ?>",
+  suc_tt_generar_usuario: "<?php echo $this->lang->line('suc_tt_generar_usuario'); ?>",
+
+  // DataTables language UI
+  dt_lengthMenu: "<?php echo $this->lang->line('dt_lengthMenu'); ?>",
+  dt_zeroRecords: "<?php echo $this->lang->line('dt_zeroRecords'); ?>",
+  dt_info: "<?php echo $this->lang->line('dt_info'); ?>",
+  dt_infoEmpty: "<?php echo $this->lang->line('dt_infoEmpty'); ?>",
+  dt_infoFiltered: "<?php echo $this->lang->line('dt_infoFiltered'); ?>",
+  dt_search: "<?php echo $this->lang->line('dt_search'); ?>",
+  dt_last: "<?php echo $this->lang->line('dt_last'); ?>",
+  dt_first: "<?php echo $this->lang->line('dt_first'); ?>",
+  dt_next: "<?php echo $this->lang->line('dt_next'); ?>",
+  dt_previous: "<?php echo $this->lang->line('dt_previous'); ?>"
+});
 $(document).ready(function() {
   $("#cerrarModal").on("click", function() {
 
@@ -128,7 +211,7 @@ $(document).ready(function() {
     Swal.fire({
       position: 'center',
       icon: 'success',
-      title: 'Se ha guardado correctamente',
+      title: (window.TS_I18N?.suc_saved_ok || 'Se ha guardado correctamente'),
       showConfirmButton: false,
       timer: 2500
     })
@@ -158,20 +241,16 @@ $(document).ready(function() {
       "dataType": "json",
       "error": function(xhr, status, error) {
         console.error("Error en la solicitud AJAX:", status, error);
-        // Puedes agregar código adicional para manejar errores aquí
-        // Por ejemplo, puedes mostrar un mensaje de error al usuario o realizar alguna acción específica.
-
-        // Si estás utilizando DataTables 1.10.13 o superior, puedes intentar cargar la tabla vacía en caso de error:
-        // $('#tabla').DataTable().clear().draw();
       }
     },
+
     "columns": [{
-        title: 'id',
+        title: window.t('suc_col_id', 'ID'),
         data: 'id',
         visible: false
       },
       {
-        title: 'Nombre',
+        title: window.t('suc_col_name', 'Nombre'),
         data: 'nombre',
         bSortable: false,
         "width": "15%",
@@ -181,7 +260,7 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Clave',
+        title: window.t('suc_col_key', 'Clave'),
         data: 'clave',
         bSortable: false,
         "width": "3%",
@@ -190,148 +269,182 @@ $(document).ready(function() {
         }
       },
       {
-        title: 'Fecha de Cracion',
+        title: window.t('suc_col_created_at', 'Fecha de creación'),
         data: 'creacion',
         bSortable: false,
         "width": "7%",
         mRender: function(data, type, full) {
           var f = data.split(' ');
           var h = f[1];
-          var aux = h.split(':');
-          var hora = aux[0] + ':' + aux[1];
-          var aux = f[0].split('-');
-          var fecha = aux[2] + "/" + aux[1] + "/" + aux[0];
-          var tiempo = fecha + ' ' + hora;
-          return tiempo;
+          var auxH = h.split(':');
+          var hora = auxH[0] + ':' + auxH[1];
+
+          var auxF = f[0].split('-');
+          var fecha = auxF[2] + "/" + auxF[1] + "/" + auxF[0];
+
+          return fecha + ' ' + hora;
         }
       },
       {
-        title: 'Accesos',
+        title: window.t('suc_col_access', 'Accesos'),
         data: 'numero_usuarios_clientes',
         bSortable: false,
         "width": "15%",
         mRender: function(data, type, full) {
           if (data == 0) {
-            return 'No access records found';
-          } else {
-            return 'Cuenta con ' + data + ' acceso(s) ';
+            return window.t('suc_access_none', 'No se encontraron accesos');
           }
+          return window.t('suc_access_has', 'Cuenta con {count} acceso(s)').replace('{count}', data);
         }
       },
       {
-        title: 'Acciones',
+        title: window.t('suc_col_actions', 'Acciones'),
         data: null,
         orderable: false,
         width: "15%",
         render: function(data, type, full) {
-          const can = k => !!(window.PERM && window.PERM[k]);
-          const html = [];
-          const nombre = (full.nombre || '').replace(/"/g, '&quot;');
+
+          function can(k) {
+            return !!(window.PERM && window.PERM[k]);
+          }
+
+          var nombre = window.escAttr((full && full.nombre) ? full.nombre : '');
+          var id = full.idCliente;
+
+          var html = '';
 
           // Editar
           if (can('suc_editar')) {
-            html.push(
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Editar" ' +
-              'class="act-editar fa-tooltip icono_datatable icono_azul_oscuro" ' +
-              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
-              '<i class="fas fa-edit"></i></a>'
-            );
+            html += '' +
+              '<a href="javascript:void(0)" data-toggle="tooltip"' +
+              ' title="' + window.tAttr('suc_tt_edit', 'Editar') + '"' +
+              ' class="act-editar fa-tooltip icono_datatable icono_azul_oscuro"' +
+              ' data-id="' + id + '" data-nombre="' + nombre + '">' +
+              ' <i class="fas fa-edit"></i>' +
+              '</a> ';
           }
 
-          // Activar / Desactivar (cambiar_estado)
+          // Activar / Desactivar
           if (can('suc_estado')) {
-            html.push(
-              (Number(full.status) === 0) ?
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Activar" ' +
-              'class="act-activar fa-tooltip icono_datatable icono_rojo" ' +
-              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
-              '<i class="fas fa-ban"></i></a>' :
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Desactivar" ' +
-              'class="act-desactivar fa-tooltip icono_datatable icono_verde" ' +
-              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
-              '<i class="far fa-check-circle"></i></a>'
-            );
+            if (Number(full.status) === 0) {
+              html += '' +
+                '<a href="javascript:void(0)" data-toggle="tooltip"' +
+                ' title="' + window.tAttr('suc_tt_activate', 'Activar') + '"' +
+                ' class="act-activar fa-tooltip icono_datatable icono_rojo"' +
+                ' data-id="' + id + '" data-nombre="' + nombre + '">' +
+                ' <i class="fas fa-ban"></i>' +
+                '</a> ';
+            } else {
+              html += '' +
+                '<a href="javascript:void(0)" data-toggle="tooltip"' +
+                ' title="' + window.tAttr('suc_tt_deactivate', 'Desactivar') + '"' +
+                ' class="act-desactivar fa-tooltip icono_datatable icono_verde"' +
+                ' data-id="' + id + '" data-nombre="' + nombre + '">' +
+                ' <i class="far fa-check-circle"></i>' +
+                '</a> ';
+            }
           }
 
           // Eliminar
           if (can('suc_eliminar')) {
-            html.push(
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Eliminar cliente" ' +
-              'class="act-eliminar fa-tooltip icono_datatable icono_gris" ' +
-              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
-              '<i class="fas fa-trash"></i></a>'
-            );
+            html += '' +
+              '<a href="javascript:void(0)" data-toggle="tooltip"' +
+              ' title="' + window.tAttr('suc_tt_delete_client', 'Eliminar cliente') + '"' +
+              ' class="act-eliminar fa-tooltip icono_datatable icono_gris"' +
+              ' data-id="' + id + '" data-nombre="' + nombre + '">' +
+              ' <i class="fas fa-trash"></i>' +
+              '</a> ';
           }
 
-          // Ver accesos (modal)
+          // Ver accesos
           if (can('suc_ver_accesos')) {
-            html.push(
-              '<a href="javascript:void(0)" data-toggle="tooltip" title="Ver accesos" ' +
-              'class="act-acceso fa-tooltip icono_datatable icono_azul_claro" ' +
-              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
-              '<i class="fas fa-sign-in-alt"></i></a>'
-            );
+            html += '' +
+              '<a href="javascript:void(0)" data-toggle="tooltip"' +
+              ' title="' + window.tAttr('suc_tt_view_access', 'Ver accesos') + '"' +
+              ' class="act-acceso fa-tooltip icono_datatable icono_azul_claro"' +
+              ' data-id="' + id + '" data-nombre="' + nombre + '">' +
+              ' <i class="fas fa-sign-in-alt"></i>' +
+              '</a> ';
           }
 
           // Bloquear / Desbloquear
           if (can('suc_estado')) {
-            html.push(
-              (String(full.bloqueado) === 'NO') ?
-              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Bloquear cliente" ' +
-              'class="act-bloquear fa-tooltip icono_datatable icono_verde" ' +
-              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
-              '<i class="fas fa-user-check"></i></a> ' :
-              ' <a href="javascript:void(0)" data-toggle="tooltip" title="Desbloquear cliente" ' +
-              'class="act-desbloquear fa-tooltip icono_datatable icono_rojo" ' +
-              'data-id="' + full.idCliente + '" data-nombre="' + nombre + '">' +
-              '<i class="fas fa-user-lock"></i></a> '
-            );
+            if (String(full.bloqueado) === 'NO') {
+              html += '' +
+                '<a href="javascript:void(0)" data-toggle="tooltip"' +
+                ' title="' + window.tAttr('suc_tt_block_client', 'Bloquear cliente') + '"' +
+                ' class="act-bloquear fa-tooltip icono_datatable icono_verde"' +
+                ' data-id="' + id + '" data-nombre="' + nombre + '">' +
+                ' <i class="fas fa-user-check"></i>' +
+                '</a> ';
+            } else {
+              html += '' +
+                '<a href="javascript:void(0)" data-toggle="tooltip"' +
+                ' title="' + window.tAttr('suc_tt_unblock_client', 'Desbloquear cliente') + '"' +
+                ' class="act-desbloquear fa-tooltip icono_datatable icono_rojo"' +
+                ' data-id="' + id + '" data-nombre="' + nombre + '">' +
+                ' <i class="fas fa-user-lock"></i>' +
+                '</a> ';
+            }
           }
 
-          // Crear/Actualizar Links (solo si tipo_bolsa == 1)
+          // Generar link
           if (can('suc_generar_link') && Number(full.tipo_bolsa) === 1) {
-            html.push(
-              '<a href="javascript:void(0)" ' +
-              'class="link-requisicion fa-tooltip icono_datatable icono_azul_claro" ' +
-              'data-id-cliente="' + full.idCliente + '" data-nombre="' + nombre + '" ' +
-              'data-toggle="tooltip" title="Generar link">' +
-              '<i class="fas fa-external-link-alt"></i></a>'
-            );
+            html += '' +
+              '<a href="javascript:void(0)" data-toggle="tooltip"' +
+              ' title="' + window.tAttr('suc_tt_generate_link', 'Generar link') + '"' +
+              ' class="link-requisicion fa-tooltip icono_datatable icono_azul_claro"' +
+              ' data-id-cliente="' + id + '" data-nombre="' + nombre + '">' +
+              ' <i class="fas fa-external-link-alt"></i>' +
+              '</a> ';
           }
 
-          return html.join(' ');
+          // Generar usuario (siempre lo estabas pintando)
+          html += '' +
+            '<a href="javascript:void(0)" data-toggle="tooltip"' +
+            ' title="' + window.tAttr('suc_tt_generar_usuario', 'Generar usuario') + '"' +
+            ' class="btn-generar-usuario fa-tooltip icono_datatable icono_verde"' +
+            ' data-id-cliente="' + id + '" data-nombre="' + nombre + '">' +
+            ' <i class="fas fa-user-plus"></i>' +
+            '</a>';
+
+          return html;
         }
       }
-
-
     ],
+
     "columnDefs": [{
-      "targets": [2, 3, 4], // Índices de las columnas a ocultar en pantallas pequeñas
-      "className": 'hide-on-small' // Clase personalizada para ocultar
+      "targets": [2, 3, 4],
+      "className": 'hide-on-small'
     }],
+
     "responsive": {
       details: {
         type: 'column',
         target: 'tr'
       }
     },
+
     "scrollX": true,
+
     fnDrawCallback: function(oSettings) {
       $('a[data-toggle="tooltip"]').tooltip({
         trigger: "hover"
       });
     },
+
     rowCallback: function(row, data) {
-      // antes: $("a#editar", row).bind('click', () => { ... });
-      $("a.act-editar", row).off('click').on('click', () => {
-        resetModal(); // asumes que ya existe
+
+      // EDITAR
+      $("a.act-editar", row).off('click').on('click', function() {
+        resetModal();
 
         $("#idCliente").val(data.idCliente);
         $("#idFacturacion").val(data.dFac);
         $("#idDomicilios").val(data.dDom);
         $("#idGenerales").val(data.dGen);
 
-        $("#titulo_nuevo_modal").text("Editar cliente");
+        $("#titulo_nuevo_modal").text(window.t('suc_modal_title_edit_client', 'Editar cliente'));
 
         // Generales
         $("#nombre").val(data.nombre);
@@ -366,59 +479,62 @@ $(document).ready(function() {
         $("#passLabel").hide();
         $("#togglePass").hide();
 
-        // Mostrar el modal
         $("#newModal").modal("show");
       });
 
-      // (opcional) al cerrar el modal, limpiar por si algo quedó
+      // Al cerrar modal: limpiar
       $("#newModal").off('hidden.bs.modal').on('hidden.bs.modal', function() {
-        // si ya tienes resetModal(), úsalo:
         if (typeof resetModal === 'function') {
           resetModal();
           return;
         }
-        // mínimo: limpia campos esenciales
-        $(this).find('form')[0]?.reset?.();
+
+        var frm = $(this).find('form')[0];
+        if (frm && frm.reset) frm.reset();
+
         $(this).find('input, select, textarea').val('');
+
         $("#password").show().prev("label").show();
         $("#generarPass, #passLabel, #togglePass").show();
-        $("#titulo_nuevo_modal").text("Nuevo cliente");
+
+        $("#titulo_nuevo_modal").text(window.t('suc_modal_title_new_client', 'Nuevo cliente'));
       });
 
-      $("a.act-activar", row).off('click').on('click', () => {
+      // ESTADO / BLOQUEO / ELIMINAR (tu lógica igual)
+      $("a.act-activar", row).off('click').on('click', function() {
         mostrarMensajeConfirmacion('activar cliente', data.nombre, data.idCliente);
       });
-      $("a.act-desactivar", row).off('click').on('click', () => {
+      $("a.act-desactivar", row).off('click').on('click', function() {
         mostrarMensajeConfirmacion('desactivar cliente', data.nombre, data.idCliente);
       });
-      $("a.act-bloquear", row).off('click').on('click', () => {
+      $("a.act-bloquear", row).off('click').on('click', function() {
         mostrarMensajeConfirmacion('bloquear cliente', data.nombre, data.idCliente);
       });
-      $("a.act-desbloquear", row).off('click').on('click', () => {
+      $("a.act-desbloquear", row).off('click').on('click', function() {
         mostrarMensajeConfirmacion('desbloquear cliente', data.nombre, data.idCliente);
       });
-      $("a.act-eliminar", row).off('click').on('click', () => {
+      $("a.act-eliminar", row).off('click').on('click', function() {
         mostrarMensajeConfirmacion('eliminar cliente', data.nombre, data.idCliente);
       });
 
+      // LINK REQUISICIÓN
       $(row).find('a.link-requisicion').off('click').on('click', function() {
-        const idCliente = $(this).data('id-cliente');
-        const nombre = $(this).data('nombre') || '';
+        var idCliente = $(this).data('id-cliente');
+        var nombre = $(this).data('nombre') || '';
 
         $(".nombreCliente").text(nombre);
         $('#idClienteForLink').val(idCliente);
 
-        // fuente de verdad para siguientes acciones:
         $('#modalLinkRequisicion').data('idCliente', idCliente);
         $('#btnGenerarLinkReq').data('idCliente', idCliente);
 
-        cargarLinks(idCliente); // <<< pide los links
+        cargarLinks(idCliente);
         $('#modalLinkRequisicion').modal('show');
       });
 
       function cargarLinks(idCliente) {
 
-        $('#linksContainer').html('<em>Cargando…</em>');
+        $('#linksContainer').html('<em>' + window.t('suc_loading', 'Cargando…') + '</em>');
 
         $.ajax({
           url: '<?php echo base_url("Cat_Cliente/getLinks"); ?>',
@@ -431,62 +547,80 @@ $(document).ready(function() {
           beforeSend: mostrarLoader,
           success: function(res) {
             ocultarLoader();
-            let html = '';
 
+            var html = '';
             if (Array.isArray(res) && res.length) {
-              res.forEach(l => {
-                const url = l.link || '#';
-                html += `
-            <div class="p-2 mb-2 border rounded link-item">
-              <div class="d-flex align-items-center gap-2">
-                <strong class="mr-2">Link:</strong>
-                <a href="${url}" target="_blank"
-                   class="link-url text-truncate mr-2"
-                   style="display:inline-block; max-width: calc(100% - 180px);">
-                  ${url}
-                </a>
-                <button type="button" class="btn btn-sm btn-outline-primary btn-copy-link"
-                        data-url="${url}">
-                  Copiar
-                </button>
-              </div>
-              <div class="mt-2 text-center">
-                <strong class="d-block mb-1">QR:</strong>
-                ${l.qr ? `<img src="${l.qr}" alt="QR" class="img-fluid mx-auto d-block" style="max-width:150px;">`
-                       : '<em class="d-block">QR no disponible</em>'}
-              </div>
-              ${l.fecha_expira ? `<small class="text-muted">Expira: ${l.fecha_expira}</small>` : ''}
-            </div>`;
-              });
+              for (var i = 0; i < res.length; i++) {
+                var l = res[i];
+                var urlLink = l.link || '#';
+
+                var expiresHtml = '';
+                if (l.fecha_expira) {
+                  expiresHtml = '<small class="text-muted">' +
+                    window.t('suc_links_expires', 'Expira: {date}').replace('{date}', l.fecha_expira) +
+                    '</small>';
+                }
+
+                var qrHtml = '';
+                if (l.qr) {
+                  qrHtml = '<img src="' + l.qr +
+                    '" alt="QR" class="img-fluid mx-auto d-block" style="max-width:150px;">';
+                } else {
+                  qrHtml = '<em class="d-block">' + window.t('suc_links_qr_not_available',
+                    'QR no disponible') + '</em>';
+                }
+
+                html += '' +
+                  '<div class="p-2 mb-2 border rounded link-item">' +
+                  '  <div class="d-flex align-items-center gap-2">' +
+                  '    <strong class="mr-2">' + window.t('suc_links_label_link', 'Link:') +
+                  '</strong>' +
+                  '    <a href="' + urlLink + '" target="_blank" class="link-url text-truncate mr-2"' +
+                  '       style="display:inline-block; max-width: calc(100% - 180px);">' +
+                  urlLink +
+                  '    </a>' +
+                  '    <button type="button" class="btn btn-sm btn-outline-primary btn-copy-link" data-url="' +
+                  urlLink + '">' +
+                  window.t('suc_btn_copy', 'Copiar') +
+                  '    </button>' +
+                  '  </div>' +
+                  '  <div class="mt-2 text-center">' +
+                  '    <strong class="d-block mb-1">' + window.t('suc_links_label_qr', 'QR:') +
+                  '</strong>' +
+                  qrHtml +
+                  '  </div>' +
+                  expiresHtml +
+                  '</div>';
+              }
             } else {
-              html = '<div class="text-muted"><em>No hay links generados</em></div>';
+              html = '<div class="text-muted"><em>' + window.t('suc_links_none',
+                'No hay links generados') + '</em></div>';
             }
 
             $('#linksContainer').html(html);
           },
           error: function() {
             ocultarLoader();
-            $('#linksContainer').html('<div class="text-danger">Error al cargar links</div>');
+            $('#linksContainer').html('<div class="text-danger">' + window.t('suc_links_error_load',
+              'Error al cargar links') + '</div>');
           }
         });
       }
 
+      // copiar link
       $('#linksContainer').off('click', '.btn-copy-link').on('click', '.btn-copy-link', function() {
-        const $btn = $(this);
-        const url = $btn.data('url');
+        var $btn = $(this);
+        var urlLink = $btn.data('url');
 
-        // Clipboard API con fallback
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(url).then(() => {
-            $btn.text('¡Copiado!').prop('disabled', true);
-            setTimeout(() => $btn.text('Copiar').prop('disabled', false), 1200);
-          }).catch(() => fallbackCopy(url, $btn));
-        } else {
-          fallbackCopy(url, $btn);
+        function setCopiedState() {
+          $btn.text(window.t('suc_btn_copied', '¡Copiado!')).prop('disabled', true);
+          setTimeout(function() {
+            $btn.text(window.t('suc_btn_copy', 'Copiar')).prop('disabled', false);
+          }, 1200);
         }
 
-        function fallbackCopy(text, $button) {
-          const ta = document.createElement('textarea');
+        function fallbackCopy(text) {
+          var ta = document.createElement('textarea');
           ta.value = text;
           ta.style.position = 'fixed';
           ta.style.opacity = '0';
@@ -496,19 +630,35 @@ $(document).ready(function() {
             document.execCommand('copy');
           } catch (e) {}
           document.body.removeChild(ta);
-          $button.text('¡Copiado!').prop('disabled', true);
-          setTimeout(() => $button.text('Copiar').prop('disabled', false), 1200);
+          setCopiedState();
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(urlLink)
+            .then(function() {
+              setCopiedState();
+            })
+            .catch(function() {
+              fallbackCopy(urlLink);
+            });
+        } else {
+          fallbackCopy(urlLink);
         }
       });
+
+      // generar link req
       $(document).off('click', '#btnGenerarLinkReq').on('click', '#btnGenerarLinkReq', function() {
-        const idCliente =
+
+        var idCliente =
           $(this).data('idCliente') ||
           $('#modalLinkRequisicion').data('idCliente') ||
           $('#idClienteForLink').val();
 
-        if (!idCliente) return alert('Falta id_cliente');
+        if (!idCliente) {
+          return alert(window.t('suc_missing_id_cliente', 'Falta id_cliente'));
+        }
 
-        const generar = () => {
+        function generar() {
           $.ajax({
             url: '<?php echo base_url("Cat_Cliente/generarLinkRequisicion"); ?>',
             type: 'POST',
@@ -520,45 +670,53 @@ $(document).ready(function() {
             beforeSend: mostrarLoader,
             success: function(res) {
               ocultarLoader();
-              if (res.error) {
-                return (window.Swal ? Swal.fire('Error', res.error, 'error') : alert(res.error));
+
+              if (res && res.error) {
+                if (window.Swal) return Swal.fire(window.t('suc_sw_error_title', 'Error'), res
+                  .error, 'error');
+                return alert(res.error);
               }
-              // 👉 sin “clickear” el <a>: solo recarga la lista del mismo cliente
+
               cargarLinks(idCliente);
 
-              window.Swal ? Swal.fire('¡Listo!', res.mensaje || 'Link generado.', 'success') :
-                alert('Link generado.');
+              var msgOk = (res && res.mensaje) ? res.mensaje : window.t('suc_sw_link_generated',
+                'Link generado.');
+              if (window.Swal) return Swal.fire(window.t('suc_sw_success_title', '¡Listo!'), msgOk,
+                'success');
+
             },
             error: function() {
               ocultarLoader();
-              window.Swal ? Swal.fire('Error', 'No se pudo generar el link.', 'error') :
-                alert('No se pudo generar el link.');
+              var msgErr = window.t('suc_sw_link_generate_failed', 'No se pudo generar el link.');
+              if (window.Swal) return Swal.fire(window.t('suc_sw_error_title', 'Error'), msgErr,
+                'error');
+              alert(msgErr);
             }
           });
-        };
+        }
 
         if (window.Swal) {
           Swal.fire({
             icon: 'warning',
-            title: '¿Generar/actualizar link?',
-            text: 'El link y el QR anteriores quedarán obsoletos.',
+            title: window.t('suc_sw_link_confirm_title', '¿Generar/actualizar link?'),
+            text: window.t('suc_sw_link_confirm_text',
+              'El link y el QR anteriores quedarán obsoletos.'),
             showCancelButton: true,
-            confirmButtonText: 'Sí, continuar',
-            cancelButtonText: 'Cancelar'
-          }).then(r => {
-            if (r.isConfirmed) generar();
+            confirmButtonText: window.t('suc_sw_confirm_yes', 'Sí, continuar'),
+            cancelButtonText: window.t('suc_sw_confirm_cancel', 'Cancelar')
+          }).then(function(r) {
+            if (r && r.isConfirmed) generar();
           });
         } else {
           generar();
         }
       });
-      // handler del botón "Ver accesos" por fila (con clase)
-      $("a.act-acceso", row).off('click').on('click', () => {
-        // pinta el nombre en el título
+
+      // VER ACCESOS
+      $("a.act-acceso", row).off('click').on('click', function() {
+
         $(".nombreCliente").text(data.nombre);
-        // limpia el contenedor por si quedó algo de la vez anterior
         $("#div_accesos").empty();
-        // loader
         mostrarLoader();
 
         $.ajax({
@@ -568,131 +726,108 @@ $(document).ready(function() {
             id_cliente: data.idCliente
           },
           success: function(res) {
-            // quita loader
             ocultarLoader();
-            // OJO: res suele ser string; compara contra "0"
+
             if (res && res !== "0") {
-              const datos = JSON.parse(res);
-              const salida = generarTabla(datos);
+              var datos = JSON.parse(res);
+              var salida = generarTabla(datos);
               $("#div_accesos").html(salida);
             } else {
               mostrarMensajeNoRegistros();
-              $("#div_accesos").html('<div class="text-center py-3">Sin accesos.</div>');
+              $("#div_accesos").html('<div class="text-center py-3">' + window.t(
+                'suc_access_modal_none', 'Sin accesos.') + '</div>');
             }
           },
           error: function() {
             ocultarLoader();
-            $("#div_accesos").html(
-              '<div class="text-danger text-center py-3">Error al cargar accesos.</div>');
+            $("#div_accesos").html('<div class="text-danger text-center py-3">' + window.t(
+              'suc_access_modal_error_load', 'Error al cargar accesos.') + '</div>');
           }
         });
 
-        // muestra el modal
         $("#accesosClienteModal").modal('show');
       });
 
-      // Al cerrar el modal: limpiar (mínimo indispensable)
       $("#accesosClienteModal").off('hidden.bs.modal').on('hidden.bs.modal', function() {
         $(".nombreCliente").text('');
         $("#div_accesos").empty();
       });
-
-
-
-      /*
-        
-
-            
-            $("a#acceso", row).bind('click', () => {
-              $(".nombreCliente").text(data.nombre);
-              mostrarLoader();
-
-              $.ajax({
-                url: '< ?php echo base_url('Cat_Cliente/getClientesAccesos'); ?>',
-                type: 'post',
-                data: {
-                  'id_cliente': data.idCliente
-                },
-                beforeSend: function() {
-                  mostrarLoader();
-                },
-                success: function(res) {
-                  ocultarLoader();
-                  console.log(res);
-                  if (res !== 0) {
-                    let datos = JSON.parse(res);
-                    let salida = generarTabla(datos);
-                    $("#div_accesos").html(salida);
-                  } else {
-                    mostrarMensajeNoRegistros();
-                  }
-                }
-              });
-
-              mostrarModal();
-            });
-
-            function mostrarModal() {
-              $("#accesosClienteModal").modal('show');
-            }
-              */
 
       function mostrarLoader() {
         $('.loader').css("display", "block");
       }
 
       function ocultarLoader() {
-        setTimeout(() => {
+        setTimeout(function() {
           $('.loader').fadeOut();
         }, 200);
       }
 
-
-
       function generarTabla(datos) {
-        let salida = `<table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Correo</th>
-                            <th scope="col">Alta</th>
-                            <th scope="col">Usuario</th>
-                            <th scope="col">Categoría</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+        var salida = '' +
+          '<table class="table table-striped">' +
+          '  <thead>' +
+          '    <tr>' +
+          '      <th scope="col">' + window.t('suc_access_tbl_name', 'Nombre') + '</th>' +
+          '      <th scope="col">' + window.t('suc_access_tbl_email', 'Correo') + '</th>' +
+          '      <th scope="col">' + window.t('suc_access_tbl_created', 'Alta') + '</th>' +
+          '      <th scope="col">' + window.t('suc_access_tbl_user', 'Usuario') + '</th>' +
+          '      <th scope="col">' + window.t('suc_access_tbl_category', 'Categoría') + '</th>' +
+          '      <th scope="col">' + window.t('suc_access_tbl_actions', 'Acciones') + '</th>' +
+          '    </tr>' +
+          '  </thead>' +
+          '  <tbody>';
 
-        datos.forEach(dato => {
-          let usuarioCliente = dato['usuario_cliente'] === null ? 'Pendiente de registrar' : dato[
-            'usuario_cliente'];
-          let privacidad = dato['privacidad'] > 0 ? `Nivel ${dato['privacidad']}` : 'Sin privacidad';
-          let fecha = fechaCompletaAFront(dato['alta']);
+        for (var i = 0; i < datos.length; i++) {
+          var dato = datos[i];
 
-          salida += `<tr id="${dato['idUsuarioCliente']}">
-                        <th>${usuarioCliente}</th>
-                        <th>${dato['correo_usuario']}</th>
-                        <th>${fecha}</th>
-                        <th>${dato['usuario']}</th>
-                        <th>${privacidad}</th>
-                        <th>
-                            <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_gris" onclick="mostrarMensajeConfirmacion('eliminar usuario cliente', '${usuarioCliente}', ${dato['idUsuarioCliente']})"><i class="fas fa-trash"></i></a>
-                            <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_amarillo" onclick="enviarCredenciales( '${dato['correo_usuario']}', ${dato['id_datos_generales']})"><i class="fas fa-sync-alt style="font-size: 16px;"></i></a>
-                        </th>
-                    </tr>`;
-        });
+          var usuarioCliente = (dato['usuario_cliente'] === null) ?
+            window.t('suc_access_pending_register', 'Pendiente de registrar') :
+            dato['usuario_cliente'];
 
-        salida += `</tbody>
-                </table>`;
+          var privacidad = '';
+          if (dato['privacidad'] > 0) {
+            privacidad = window.t('suc_access_privacy_level', 'Nivel {level}').replace('{level}', dato[
+              'privacidad']);
+          } else {
+            privacidad = window.t('suc_access_privacy_none', 'Sin privacidad');
+          }
 
+          var fecha = fechaCompletaAFront(dato['alta']);
+
+          salida += '' +
+            '<tr id="' + dato['idUsuarioCliente'] + '">' +
+            '  <th>' + usuarioCliente + '</th>' +
+            '  <th>' + dato['correo_usuario'] + '</th>' +
+            '  <th>' + fecha + '</th>' +
+            '  <th>' + dato['usuario'] + '</th>' +
+            '  <th>' + privacidad + '</th>' +
+            '  <th>' +
+            '    <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_gris"' +
+            '       onclick="mostrarMensajeConfirmacion(\'eliminar usuario cliente\', \'' + String(
+              usuarioCliente).replace(/'/g, "\\'") + '\', ' + dato['idUsuarioCliente'] + ')">' +
+            '      <i class="fas fa-trash"></i>' +
+            '    </a>' +
+            '    <a href="javascript:void(0)" class="fa-tooltip icono_datatable icono_accion_amarillo"' +
+            '       onclick="enviarCredenciales(\'' + String(dato['correo_usuario']).replace(/'/g, "\\'") +
+            '\', ' + dato['id_datos_generales'] + ')">' +
+            '      <i class="fas fa-sync-alt" style="font-size: 16px;"></i>' +
+            '    </a>' +
+            '  </th>' +
+            '</tr>';
+        }
+
+        salida += '</tbody></table>';
         return salida;
       }
 
       function mostrarMensajeNoRegistros() {
-        $('#div_accesos').html(
-          '<p style="text-align:center; font-size: 20px;">No hay registro de accesos</p>');
+        $('#div_accesos').html('<p style="text-align:center; font-size: 20px;">' + window.t(
+          'suc_access_no_records', 'No hay registro de accesos') + '</p>');
       }
-      $("a#desactivar_acceso", row).bind('click', () => {
+
+      // estos dos los dejé igual, solo cambié a .off/.on y el texto final traducible
+      $("a#desactivar_acceso", row).off('click').on('click', function() {
         $.ajax({
           url: '<?php echo base_url('Cliente/controlAccesoCliente'); ?>',
           type: 'post',
@@ -704,13 +839,12 @@ $(document).ready(function() {
             $('.loader').css("display", "block");
           },
           success: function(res) {
-            //console.log(res);
             setTimeout(function() {
               $('.loader').fadeOut();
             }, 200);
             $("#mensajeModal").modal('hide');
             recargarTable();
-            $("#texto_msj").text('Se ha actualizado exitosamente');
+            $("#texto_msj").text(window.t('suc_updated_ok', 'Se ha actualizado exitosamente'));
             $("#mensaje").css('display', 'block');
             setTimeout(function() {
               $('#mensaje').fadeOut();
@@ -718,7 +852,8 @@ $(document).ready(function() {
           }
         });
       });
-      $("a#activar_acceso", row).bind('click', () => {
+
+      $("a#activar_acceso", row).off('click').on('click', function() {
         $.ajax({
           url: '<?php echo base_url('Cliente/controlAccesoCliente'); ?>',
           type: 'post',
@@ -730,13 +865,12 @@ $(document).ready(function() {
             $('.loader').css("display", "block");
           },
           success: function(res) {
-            //console.log(res);
             setTimeout(function() {
               $('.loader').fadeOut();
             }, 200);
             $("#mensajeModal").modal('hide');
             recargarTable();
-            $("#texto_msj").text('Se ha actualizado exitosamente');
+            $("#texto_msj").text(window.t('suc_updated_ok', 'Se ha actualizado exitosamente'));
             $("#mensaje").css('display', 'block');
             setTimeout(function() {
               $('#mensaje').fadeOut();
@@ -744,389 +878,484 @@ $(document).ready(function() {
           }
         });
       });
-    },
+
+    }, // rowCallback
+
     "language": {
-      "lengthMenu": "Mostrar _MENU_ registros",
-      "zeroRecords": "No se encontraron registros",
-      "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-      "infoEmpty": "No hay registros disponibles",
-      "infoFiltered": "(Filtrado de _MAX_ registros en total)",
-      "sSearch": "Buscar:",
+      "lengthMenu": window.t('dt_lengthMenu', "Mostrar _MENU_ registros"),
+      "zeroRecords": window.t('dt_zeroRecords', "No se encontraron registros"),
+      "info": window.t('dt_info', "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros"),
+      "infoEmpty": window.t('dt_infoEmpty', "No hay registros disponibles"),
+      "infoFiltered": window.t('dt_infoFiltered', "(Filtrado de _MAX_ registros en total)"),
+      "sSearch": window.t('dt_search', "Buscar:"),
       "oPaginate": {
-        "sLast": "Última página",
-        "sFirst": "Primera",
-        "sNext": "Siguiente",
-        "sPrevious": "Anterior"
+        "sLast": window.t('dt_last', "Última página"),
+        "sFirst": window.t('dt_first', "Primera"),
+        "sNext": window.t('dt_next', "Siguiente"),
+        "sPrevious": window.t('dt_previous', "Anterior")
       }
     }
 
   });
+
   // Ajuste adicional si es necesario
   $(window).on('resize', function() {
     tabla.columns.adjust().draw();
   });
 
 });
+$(document).on('click', '.btn-generar-usuario', function() {
+  var idCliente = $(this).data('id-cliente');
+  var nombreCliente = $(this).data('nombre') || '';
 
-function generarLinkstodos(e) {
-  if (e) e.preventDefault();
+  $('#gucIdCliente').val(idCliente);
+  $('#gucNombreCliente').text(nombreCliente);
 
-  const $btn = $('#btnGenerarLinks');
-  const url = '<?php echo base_url('Cat_Cliente/generarLinksTodos'); ?>';
+  // limpia campos
+  $('#gucNombre').val('');
+  $('#gucPaterno').val('');
+  $('#gucCorreo').val('');
+  $('#gucTelefono').val('');
+
+  $('#btnGucGuardar').prop('disabled', false);
+  $('#modalGenerarUsuarioCliente').modal('show');
+});
+var URL_GENERAR_USUARIO = "<?php echo site_url('Cat_Cliente/generar_usuario_cliente'); ?>";
+
+// Enviar formulario
+// ------------------------------
+// 1) Submit: Generar Usuario Cliente
+// ------------------------------
+
+$('#formGenerarUsuarioCliente').off('submit').on('submit', function(e) {
+  e.preventDefault();
+
+  var $btn = $('#btnGucGuardar');
+  $btn.prop('disabled', true);
 
   $.ajax({
-    url: url,
+    url: URL_GENERAR_USUARIO,
     method: 'POST',
     dataType: 'json',
+    data: $(this).serialize(),
+    success: function(res) {
+      if (res && res.ok) {
+        $('#modalGenerarUsuarioCliente').modal('hide');
+
+        var msgOk = (res && res.msg) ? res.msg : window.t('suc_user_generated', 'Usuario generado.');
+
+        if (window.Swal) {
+          Swal.fire(window.t('suc_sw_success_title', '¡Listo!'), msgOk, 'success');
+        } else {
+          alert(msgOk);
+        }
+
+        // opcional: recargar datatable
+        // $('#tabla').DataTable().ajax.reload(null, false);
+
+      } else {
+        var msgWarn = (res && res.msg) ? res.msg : window.t('suc_user_generate_failed',
+          'No se pudo generar.');
+
+        if (window.Swal) {
+          Swal.fire(window.t('suc_sw_warning_title', 'Atención'), msgWarn, 'warning');
+        } else {
+          alert(msgWarn);
+        }
+      }
+    },
+    error: function() {
+      var msgErr = window.t('suc_sw_comm_error', 'Error de comunicación con el servidor.');
+      if (window.Swal) Swal.fire(window.t('suc_sw_error_title', 'Error'), msgErr, 'error');
+      else alert(msgErr);
+    },
+    complete: function() {
+      $btn.prop('disabled', false);
+    }
+  });
+});
+
+
+// ------------------------------
+// 2) Generar Links Todos
+//    (nota: el botón real debe existir: #btnGenerarLinks)
+// ------------------------------
+function generarLinkstodos(e) {
+  if (e && e.preventDefault) e.preventDefault();
+
+  var $btn = $('#btnGenerarLinks');
+  var ajaxUrl = '<?php echo base_url('Cat_Cliente/generarLinksTodos'); ?>';
+
+  $.ajax({
+    url: ajaxUrl,
+    method: 'POST',
+    dataType: 'json',
+
     beforeSend: function() {
       $btn.prop('disabled', true).addClass('disabled');
 
-      // Modal de "procesando..."
-      Swal.fire({
-        title: 'Generando links...',
-        text: 'Esto puede tardar unos segundos.',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-      });
+      if (window.Swal) {
+        Swal.fire({
+          title: window.t('suc_links_generating_title', 'Generando links...'),
+          text: window.t('suc_links_generating_text', 'Esto puede tardar unos segundos.'),
+          allowOutsideClick: false,
+          didOpen: function() {
+            Swal.showLoading();
+          }
+        });
+      }
     },
+
     success: function(res) {
-      // Cerrar el loading, por si sigue abierto
-      Swal.close();
+      if (window.Swal) Swal.close();
 
       // Seguridad por si llega algo distinto
-      const ok = Number(res?.ok ?? 0);
-      const fail = Number(res?.fail ?? 0);
-      const msg = res?.message || (fail ? 'Proceso terminado con errores.' : 'Proceso completado correctamente.');
-      const items = Array.isArray(res?.items) ? res.items : [];
+      var ok = 0;
+      var fail = 0;
+      var msg = '';
+      var items = [];
 
-      // Armar tabla de detalle (scrollable)
-      const rows = items.map(it => `
-        <tr>
-          <td style="white-space:nowrap;">${it.id_cliente ?? '-'}</td>
-          <td>${it.success ? '✅' : '❌'}</td>
-          <td style="max-width:480px; overflow:hidden; text-overflow:ellipsis;">
-            ${it.success ? (it.link ? `<a href="${it.link}" target="_blank" rel="noopener">Ver link</a>` : '-')
-                         : (it.error || 'Error desconocido')}
-          </td>
-        </tr>
-      `).join('');
+      if (res) {
+        ok = parseInt(res.ok, 10);
+        if (isNaN(ok)) ok = 0;
 
-      const html = `
-        <div style="text-align:left">
-          <p style="margin:.25rem 0;">✅ Correctos: <b>${ok}</b></p>
-          <p style="margin:.25rem 0;">❌ Errores: <b>${fail}</b></p>
-          <div style="max-height:300px; overflow:auto; border:1px solid #eee; border-radius:6px;">
-            <table style="width:100%; font-size:13px;">
-              <thead>
-                <tr style="background:#f7f7f7;">
-                  <th style="text-align:left; padding:.5rem;">ID Cliente</th>
-                  <th style="text-align:left; padding:.5rem;">Estado</th>
-                  <th style="text-align:left; padding:.5rem;">Detalle / Link</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${rows || '<tr><td colspan="3" style="padding:.5rem;">Sin elementos.</td></tr>'}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      `;
+        fail = parseInt(res.fail, 10);
+        if (isNaN(fail)) fail = 0;
 
-      Swal.fire({
+        msg = res.message || '';
+        items = (res.items && Array.isArray(res.items)) ? res.items : [];
+      }
+
+      if (!msg) {
+        msg = fail ?
+          window.t('suc_links_done_with_errors', 'Proceso terminado con errores.') :
+          window.t('suc_links_done_ok', 'Proceso completado correctamente.');
+      }
+
+      // Armar filas (sin template literals)
+      var rows = '';
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i] || {};
+        var idCliente = (it.id_cliente !== undefined && it.id_cliente !== null) ? it.id_cliente : '-';
+        var success = !!it.success;
+
+        var estado = success ? '✅' : '❌';
+
+        var detalle = '';
+        if (success) {
+          if (it.link) {
+            detalle = '<a href="' + it.link + '" target="_blank" rel="noopener">' +
+              window.t('suc_links_view_link', 'Ver link') +
+              '</a>';
+          } else {
+            detalle = '-';
+          }
+        } else {
+          detalle = it.error ? window.escAttr(it.error) : window.t('suc_links_unknown_error',
+            'Error desconocido');
+        }
+
+        rows += '' +
+          '<tr>' +
+          '  <td style="white-space:nowrap;">' + idCliente + '</td>' +
+          '  <td>' + estado + '</td>' +
+          '  <td style="max-width:480px; overflow:hidden; text-overflow:ellipsis;">' + detalle + '</td>' +
+          '</tr>';
+      }
+
+      if (!rows) {
+        rows = '<tr><td colspan="3" style="padding:.5rem;">' + window.t('suc_links_no_items', 'Sin elementos.') +
+          '</td></tr>';
+      }
+
+      var html = '' +
+        '<div style="text-align:left">' +
+        '  <p style="margin:.25rem 0;">✅ ' + window.t('suc_links_ok', 'Correctos') + ': <b>' + ok + '</b></p>' +
+        '  <p style="margin:.25rem 0;">❌ ' + window.t('suc_links_fail', 'Errores') + ': <b>' + fail + '</b></p>' +
+        '  <p style="margin:.25rem 0;">' + window.escAttr(msg) + '</p>' +
+        '  <div style="max-height:300px; overflow:auto; border:1px solid #eee; border-radius:6px;">' +
+        '    <table style="width:100%; font-size:13px;">' +
+        '      <thead>' +
+        '        <tr style="background:#f7f7f7;">' +
+        '          <th style="text-align:left; padding:.5rem;">' + window.t('suc_links_tbl_id', 'ID ') +
+        '</th>' +
+        '          <th style="text-align:left; padding:.5rem;">' + window.t('suc_links_tbl_status', 'Status') +
+        '</th>' +
+        '          <th style="text-align:left; padding:.5rem;">' + window.t('suc_links_tbl_detail',
+          'Detalle / Link') + '</th>' +
+        '        </tr>' +
+        '      </thead>' +
+        '      <tbody>' + rows + '</tbody>' +
+        '    </table>' +
+        '  </div>' +
+        '</div>';
+
+      if (window.Swal) {
+        Swal.fire({
           icon: fail ? 'warning' : 'success',
-          title: fail ? 'Proceso con advertencias' : 'Proceso completado',
-          html,
-          confirmButtonText: 'Aceptar'
-        })
-        .then(() => {
-          // Si quieres refrescar algo al final, descomenta:
-          // location.reload();
+          title: fail ? window.t('suc_links_done_warn_title', 'Proceso con advertencias') : window.t(
+            'suc_api_process_done_ok', 'Proceso completado'),
+          html: html,
+          confirmButtonText: window.t('suc_btn_accept', 'Aceptar')
         });
-
+      } else {
+        alert(msg);
+      }
     },
+
     error: function(xhr) {
-      Swal.close();
-      console.error('Error AJAX:', xhr.responseText || xhr.statusText);
+      if (window.Swal) Swal.close();
+      console.error('Error AJAX:', (xhr && (xhr.responseText || xhr.statusText)) ? (xhr.responseText || xhr
+        .statusText) : '');
 
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ocurrió un problema al procesar la solicitud.',
-        confirmButtonText: 'Aceptar'
-      });
+      var msgErr = window.t('suc_links_request_error', 'Ocurrió un problema al procesar la solicitud.');
+
+      if (window.Swal) {
+        Swal.fire({
+          icon: 'error',
+          title: window.t('suc_sw_error_title', 'Error'),
+          text: msgErr,
+          confirmButtonText: window.t('suc_btn_accept', 'Aceptar')
+        });
+      } else {
+        alert(msgErr);
+      }
     },
+
     complete: function() {
       $btn.prop('disabled', false).removeClass('disabled');
     }
   });
 }
 
-function cargarDatosDomicilioGeneral(datos) {
-  var auth_token = "MUJkuDQTBwg6L_OLJghlvf5LDwdas3Tnm5EaF3Kny_7GIUXTah_7nbuE-K15HdxxTxo";
-
-  // Obtener token de acceso
-  $.ajax({
-    url: 'https://www.universal-tutorial.com/api/getaccesstoken',
-    method: 'GET',
-    headers: {
-      "Accept": "application/json",
-      "api-token": auth_token,
-      "user-email": "rodi.control@gmail.com"
-    },
-    success: function(data) {
-      if (data.auth_token) {
-        var auth_token = data.auth_token;
-
-        // Cargar países
-        $.ajax({
-          url: 'https://www.universal-tutorial.com/api/countries/',
-          method: 'GET',
-          headers: {
-            "Authorization": "Bearer " + auth_token,
-            "Accept": "application/json"
-          },
-          success: function(data) {
-            var countries = data;
-            var comboCountries = "<option value='" + datos.pais + "'>" + datos.pais + "</option>";
-            countries.forEach(element => {
-              comboCountries += '<option value="' + element['country_name'] + '">' + element[
-                'country_name'] + '</option>';
-            });
-
-            $("#item-details-countryValue").html(comboCountries);
-            if (datos.pais !== '') {
-              $("#item-details-countryValue").val(datos.pais);
-            }
-
-            // Obtener estados
-            $.ajax({
-              url: 'https://www.universal-tutorial.com/api/states/' + datos.pais,
-              method: 'GET',
-              headers: {
-                "Authorization": "Bearer " + auth_token,
-                "Accept": "application/json"
-              },
-              success: function(data) {
-                var states = data;
-                var comboStates = "<option value='" + datos.estado + "'>" + datos.estado +
-                  "</option>";
-                states.forEach(element => {
-                  comboStates += '<option value="' + element['state_name'] + '">' + element[
-                    'state_name'] + '</option>';
-                });
-
-                $("#item-details-stateValue").html(comboStates);
-                $("#item-details-stateValue").val(datos.estado);
-
-                // Obtener ciudades
-                $.ajax({
-                  url: 'https://www.universal-tutorial.com/api/cities/' + datos.estado,
-                  method: 'GET',
-                  headers: {
-                    "Authorization": "Bearer " + auth_token,
-                    "Accept": "application/json"
-                  },
-                  success: function(data) {
-                    var cities = data;
-                    var comboCities = "<option value='" + datos.ciudad + "'>" + datos.ciudad +
-                      "</option>";
-                    cities.forEach(element => {
-                      comboCities += '<option value="' + element['city_name'] + '">' +
-                        element['city_name'] + '</option>';
-                    });
-
-                    $("#item-details-cityValue").html(comboCities);
-                  },
-                  error: function(e) {
-                    console.log("Error al obtener ciudades: " + e);
-                  }
-                });
-
-                // Evento onchange para el país
-                $("#item-details-countryValue").on("change", function() {
-                  var country = this.value;
-
-                  // Obtener estados al cambiar el país
-                  $.ajax({
-                    url: 'https://www.universal-tutorial.com/api/states/' + country,
-                    method: 'GET',
-                    headers: {
-                      "Authorization": "Bearer " + auth_token,
-                      "Accept": "application/json"
-                    },
-                    success: function(data) {
-                      var states = data;
-                      var comboStates = "<option value=''>Estados de: " + country +
-                        "</option>";
-                      states.forEach(element => {
-                        comboStates += '<option value="' + element['state_name'] +
-                          '">' + element['state_name'] + '</option>';
-                      });
-
-                      $("#item-details-stateValue").html(comboStates);
-                      $("#item-details-stateValue").val(
-                        ""); // Limpiar el valor del estado al cambiar el país
-
-                      // Obtener ciudades al cambiar el estado
-                      $("#item-details-stateValue").on("change", function() {
-                        var state = this.value;
-
-                        $.ajax({
-                          url: 'https://www.universal-tutorial.com/api/cities/' +
-                            state,
-                          method: 'GET',
-                          headers: {
-                            "Authorization": "Bearer " + auth_token,
-                            "Accept": "application/json"
-                          },
-                          success: function(data) {
-                            var cities = data;
-                            var comboCities = "<option value=''>Ciudades de: " +
-                              state + "</option>";
-                            cities.forEach(element => {
-                              comboCities += '<option value="' + element[
-                                  'city_name'] + '">' + element['city_name'] +
-                                '</option>';
-                            });
-
-                            $("#item-details-cityValue").html(comboCities);
-                            $("#item-details-cityValue").val(
-                              ""
-                            ); // Limpiar el valor de la ciudad al cambiar el estado
-                          },
-                          error: function(e) {
-                            console.log("Error al obtener ciudades: " + e);
-                          }
-                        });
-                      });
-                    },
-                    error: function(e) {
-                      console.log("Error al obtener estados: " + e);
-                    }
-                  });
-                });
-              },
-              error: function(e) {
-                console.log("Error al obtener estados: " + e);
-              }
-            });
-          },
-          error: function(e) {
-            console.log("Error al obtener países: " + e);
-          }
-        });
-      }
-    },
-    error: function(e) {
-      console.log("Error al obtener el token de acceso: " + e);
-    }
-  });
-}
-
+// -----------------------------------------
+// 1) Confirmaciones (activar/desactivar/eliminar/bloquear/desbloquear)
+// -----------------------------------------
 function mostrarMensajeConfirmacion(accion, valor1, valor2) {
-  if (accion == "activar cliente") {
-    $('#titulo_mensaje1').text('Activar cliente');
-    $('#mensaje').html('¿Desea activar al cliente <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "accionCliente('activar'," + valor2 + ")");
-    $('#mensajeModal').modal('show');
-  }
-  if (accion == "desactivar cliente") {
-    $('#titulo_mensaje1').text('Desactivar cliente');
-    $('#mensaje').html('¿Desea desactivar al cliente <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "accionCliente('desactivar'," + valor2 + ")");
-    $('#mensajeModal').modal('show');
-  }
-  if (accion == "eliminar cliente") {
-    $('#titulo_mensaje1').text('Eliminar cliente');
-    $('#mensaje').html('¿Desea eliminar al cliente <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "accionCliente('eliminar'," + valor2 + ")");
-    $('#mensajeModal').modal('show');
-  }
-  if (accion == "eliminar usuario cliente") {
-    $('#titulo_mensaje1').text('Eliminar usuario');
-    $('#mensaje').html('¿Desea eliminar al usuario <b>' + valor1 + '</b>?');
-    $('#btnConfirmar').attr("onclick", "controlAcceso('eliminar'," + valor2 + ")");
-    $("#accesosClienteModal").modal('hide')
-    $('#mensajeModal').modal('show');
-  }
-  if (accion == "bloquear cliente") {
-    $('#titulo_mensaje1').text('Bloquear cliente');
-    $('#mensaje').html('¿Desea bloquear al cliente <b>' + valor1 + '</b>?');
-    $('#mensaje').append(
-      '<div class="row mt-3"><div class="col-12"><label>Motivo de bloqueo *</label><select class="form-control" id="opcion_motivo" name="opcion_motivo"><option value="">Selecciona</option>' +
-      tipos_bloqueo_php +
-      '</select></div></div><div class="row mt-3"><div class="col-12"><label>Mensaje para presentar en panel del cliente *</label><textarea class="form-control" rows="5" id="mensaje_comentario" name="mensaje_comentario">¡Lo sentimos! Su acceso ha sido interrumpido por falta de pago. Favor de comunicarse al teléfono 33 3454 2877.</textarea></div></div>'
-    );
-    $('#mensaje').append(
-      '<div class="row mt-3"><div class="col-12"><label class="container_checkbox">Bloquear también subclientes/proveedores<input type="checkbox" id="bloquear_subclientes" name="bloquear_subclientes"><span class="checkmark"></span></label></div></div>'
-    );
-    $('#btnConfirmar').attr("onclick", "accionCliente('bloquear'," + valor2 + ")");
-    $('#mensajeModal').modal('show');
-  }
-  if (accion == "desbloquear cliente") {
-    $('#titulo_mensaje5').text('Desbloquear cliente');
-    $('#mensaje').html('¿Desea desbloquear al cliente <b>' + valor1 + '</b>?');
-    $('#mensaje').append(
-      '<div class="row mt-3"><div class="col-12"><label>Razón de desbloqueo *</label><select class="form-control" id="opcion_motivo" name="opcion_motivo"><option value="">Selecciona</option>' +
-      tipos_desbloqueo_php + '</select></div></div>');
-    $('#btnConfirmar').attr("onclick", "accionCliente('desbloquear'," + valor2 + ")");
+
+  function setModal(tituloKey, tituloFallback, msgKey, msgFallback, btnOnclick) {
+    // OJO: en tu HTML usas #titulo_mensaje1 y en desbloquear usabas #titulo_mensaje5
+    // Para no romper, usamos #titulo_mensaje1 siempre (si existe).
+    var $titulo = $('#titulo_mensaje1');
+    if (!$titulo.length) $titulo = $('#titulo_mensaje5'); // fallback si tu modal usa otro id
+
+    $titulo.text(window.t(tituloKey, tituloFallback));
+
+    // mensaje base
+    var nombre = String(valor1 || '');
+    var htmlMsg = window.t(msgKey, msgFallback).replace('{name}', '<b>' + window.escAttr(nombre) + '</b>');
+    $('#mensaje').html(htmlMsg);
+
+    $('#btnConfirmar').attr('onclick', btnOnclick);
     $('#mensajeModal').modal('show');
   }
 
+  if (accion == "activar cliente") {
+    setModal(
+      'suc_confirm_activate_title', 'Activar cliente',
+      'suc_confirm_activate_text', '¿Desea activar al cliente {name}?',
+      "accionCliente('activar'," + valor2 + ")"
+    );
+    return;
+  }
+
+  if (accion == "desactivar cliente") {
+    setModal(
+      'suc_confirm_deactivate_title', 'Desactivar cliente',
+      'suc_confirm_deactivate_text', '¿Desea desactivar al cliente {name}?',
+      "accionCliente('desactivar'," + valor2 + ")"
+    );
+    return;
+  }
+
+  if (accion == "eliminar cliente") {
+    setModal(
+      'suc_confirm_delete_title', 'Eliminar cliente',
+      'suc_confirm_delete_text', '¿Desea eliminar al cliente {name}?',
+      "accionCliente('eliminar'," + valor2 + ")"
+    );
+    return;
+  }
+
+  if (accion == "eliminar usuario cliente") {
+    // cierra el modal de accesos si está abierto
+    $("#accesosClienteModal").modal('hide');
+
+    setModal(
+      'suc_confirm_delete_user_title', 'Eliminar usuario',
+      'suc_confirm_delete_user_text', '¿Desea eliminar al usuario {name}?',
+      "controlAcceso('eliminar'," + valor2 + ")"
+    );
+    return;
+  }
+
+  if (accion == "bloquear cliente") {
+    // título + pregunta
+    setModal(
+      'suc_confirm_block_title', 'Bloquear cliente',
+      'suc_confirm_block_text', '¿Desea bloquear al cliente {name}?',
+      "accionCliente('bloquear'," + valor2 + ")"
+    );
+
+    // campos extra (motivo, mensaje, checkbox)
+    $('#mensaje').append(
+      '<div class="row mt-3">' +
+      '<div class="col-12">' +
+      '<label>' + window.t('suc_block_reason_lbl', 'Motivo de bloqueo *') + '</label>' +
+      '<select class="form-control" id="opcion_motivo" name="opcion_motivo">' +
+      '<option value="">' + window.t('suc_select_placeholder', 'Selecciona') + '</option>' +
+      tipos_bloqueo_php +
+      '</select>' +
+      '</div>' +
+      '</div>' +
+      '<div class="row mt-3">' +
+      '<div class="col-12">' +
+      '<label>' + window.t('suc_block_message_lbl', 'Mensaje para presentar en panel del cliente *') + '</label>' +
+      '<textarea class="form-control" rows="5" id="mensaje_comentario" name="mensaje_comentario">' +
+      window.t('suc_block_message_default',
+        '¡Lo sentimos! Su acceso ha sido interrumpido por falta de pago. Favor de comunicarse al teléfono 33 3454 2877.'
+      ) +
+      '</textarea>' +
+      '</div>' +
+      '</div>'
+    );
+
+    $('#mensaje').append(
+      '<div class="row mt-3">' +
+      '<div class="col-12">' +
+      '<label class="container_checkbox">' +
+      window.t('suc_block_subclients_lbl', 'Bloquear también subclientes/proveedores') +
+      '<input type="checkbox" id="bloquear_subclientes" name="bloquear_subclientes">' +
+      '<span class="checkmark"></span>' +
+      '</label>' +
+      '</div>' +
+      '</div>'
+    );
+
+    return;
+  }
+
+  if (accion == "desbloquear cliente") {
+    setModal(
+      'suc_confirm_unblock_title', 'Desbloquear cliente',
+      'suc_confirm_unblock_text', '¿Desea desbloquear al cliente {name}?',
+      "accionCliente('desbloquear'," + valor2 + ")"
+    );
+
+    $('#mensaje').append(
+      '<div class="row mt-3">' +
+      '<div class="col-12">' +
+      '<label>' + window.t('suc_unblock_reason_lbl', 'Razón de desbloqueo *') + '</label>' +
+      '<select class="form-control" id="opcion_motivo" name="opcion_motivo">' +
+      '<option value="">' + window.t('suc_select_placeholder', 'Selecciona') + '</option>' +
+      tipos_desbloqueo_php +
+      '</select>' +
+      '</div>' +
+      '</div>'
+    );
+
+    return;
+  }
 }
 
 
+// -----------------------------------------
+// 2) Enviar credenciales (modal)
+// -----------------------------------------
 function enviarCredenciales(valor1, valor2) {
-  $('#titulo_mensaje_contraseña').text('Reenviar Contraseña' + valor2);
-  $('#mensaje_contraseña').html('¿Deseas actualizar la contraseña  al usuario <b>' + valor1 + '</b>?');
+  // valor1 = correo, valor2 = id_datos_generales
+  $('#titulo_mensaje_contraseña').text(window.t('suc_modal_resend_password_title', 'Reenviar contraseña'));
+
+  var htmlMsg = window.t(
+    'suc_modal_resend_password_text',
+    '¿Deseas actualizar la contraseña al usuario <b>{email}</b>?'
+  ).replace('{email}', window.escAttr(valor1 || ''));
+
+  $('#mensaje_contraseña').html(htmlMsg);
+
   $('#password_cliente').val('');
-  $('#btnEnviarPass').attr("onclick", "actualizarContraseña()");
-  $('#btnEnviarPass').attr("data-dismiss", "modal");
-  $('#idDatosGeneralesEditPass').val(valor2); // Asignar valor a idUsuarioInterno
+  $('#btnEnviarPass').attr('onclick', 'actualizarContraseña()');
+  $('#btnEnviarPass').attr('data-dismiss', 'modal');
+
+  $('#idDatosGeneralesEditPass').val(valor2);
   $('#idCorreo').val(valor1);
-  // Asignar valor a idCorreo
+
   $('#enviarCredenciales').modal('show');
 }
 
-function accionCliente(accion, id, correo = null) {
-  //console.log("id del cliente:  " + id + "  accion d a realizar:  " + accion)
-  let opcion_motivo = $('#mensajeModal #opcion_motivo').val()
-  let opcion_descripcion = $("#mensajeModal #opcion_motivo option:selected").text();
-  let mensaje_comentario = $('#mensajeModal #mensaje_comentario').val()
-  let bloquear_subclientes = $("#mensajeModal #bloquear_subclientes").is(":checked") ? 'SI' : 'NO';
+
+// -----------------------------------------
+// 3) Acción cliente (AJAX status)
+// -----------------------------------------
+function accionCliente(accion, id, correo) {
+  // correo no se usa aquí, pero lo dejamos por compatibilidad (sin default param para no romper)
+
+  var opcion_motivo = $('#mensajeModal #opcion_motivo').val();
+  var opcion_descripcion = $('#mensajeModal #opcion_motivo option:selected').text();
+  var mensaje_comentario = $('#mensajeModal #mensaje_comentario').val();
+
+  var bloquear_subclientes = ($('#mensajeModal #bloquear_subclientes').is(':checked')) ? 'SI' : 'NO';
+
   $.ajax({
     url: '<?php echo base_url('Cat_Cliente/status'); ?>',
     type: 'POST',
     data: {
-      'idCliente': id,
-      'accion': accion,
-      'opcion_motivo': opcion_motivo,
-      'mensaje_comentario': mensaje_comentario,
-      'opcion_descripcion': opcion_descripcion,
-      'bloquear_subclientes': bloquear_subclientes
+      idCliente: id,
+      accion: accion,
+      opcion_motivo: opcion_motivo,
+      mensaje_comentario: mensaje_comentario,
+      opcion_descripcion: opcion_descripcion,
+      bloquear_subclientes: bloquear_subclientes
     },
     beforeSend: function() {
-      $('.loader').css("display", "block");
+      $('.loader').css('display', 'block');
     },
     success: function(res) {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
-      var data = JSON.parse(res);
-      if (data.codigo === 1) {
-        $("#mensajeModal").modal('hide')
-        recargarTable()
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: data.msg,
-          showConfirmButton: false,
-          timer: 2500
-        })
+
+      // tu backend a veces regresa string JSON
+      let data = res;
+      if (typeof res === 'string') {
+        try {
+          data = JSON.parse(res);
+        } catch (e) {
+          data = null;
+        }
       }
+
+      if (data && Number(data.codigo) === 1) {
+        $('#mensajeModal').modal('hide');
+        if (typeof recargarTable === 'function') recargarTable();
+
+        if (window.Swal) {
+          Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: data.msg || window.t('suc_updated_ok', 'Updated successfully'),
+            showConfirmButton: false,
+            timer: 2500
+          });
+        } else {
+          alert(data.msg || window.t('suc_updated_ok', 'Updated successfully'));
+        }
+      } else if (data && data.msg) {
+        if (window.Swal) Swal.fire(window.t('suc_sw_error_title', 'Error'), data.msg, 'error');
+        else alert(data.msg);
+      }
+    },
+    error: function() {
+      setTimeout(function() {
+        $('.loader').fadeOut();
+      }, 200);
+      var msgErr = window.t('suc_sw_comm_error', 'Error de comunicación con el servidor.');
+      if (window.Swal) Swal.fire(window.t('suc_sw_error_title', 'Error'), msgErr, 'error');
+      else alert(msgErr);
     }
   });
 }
+
 
 function registrarAccesoCliente() {
   $.ajax({
@@ -1139,21 +1368,35 @@ function registrarAccesoCliente() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
+
       if (res != 0) {
         $('#id_cliente').empty();
-        var dato = JSON.parse(res);
-        $('#id_cliente').append('<option value="">Selecciona</option>');
-        for (let i = 0; i < dato.length; i++) {
-          $('#id_cliente').append('<option value="' + dato[i]['id'] + '">' + dato[i]['nombre'] + '</option>');
+
+        let data = res;
+        if (typeof res === 'string') {
+          try {
+            data = JSON.parse(res);
+          } catch (e) {
+            data = null;
+          }
         }
+        // 👇 Traducción simple
+        $('#id_cliente').append('<option value="">' + window.t('suc_select_placeholder', 'Selecciona') +
+          '</option>');
+
+        for (let i = 0; i < dato.length; i++) {
+          $('#id_cliente').append(
+            '<option value="' + dato[i]['id'] + '">' + dato[i]['nombre'] + '</option>'
+          );
+        }
+
         $('#nuevoAccesoClienteModal').modal('show');
       }
     }
   });
 }
-/*Funcion para  crear  acesos  para  los usuarios de los clientes, esta  captura
-los datos  del formulario mdl_cat_cliente los transforma en JSon y los envia Medisnte  El protocolo POST
-  al archivo Cat_usuario a la funcion addUsuario */
+
+/* Crear accesos a usuarios cliente */
 function crearAccesoClientes() {
   let tipoUsuarioSwitch = document.getElementById("tipoUsuarioSwitch");
   let tipoUsuarioValue = tipoUsuarioSwitch.checked ? 1 : 0;
@@ -1175,6 +1418,7 @@ function crearAccesoClientes() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
+
       console.log(res);
 
       try {
@@ -1183,16 +1427,22 @@ function crearAccesoClientes() {
         if (data.codigo === 1) {
           $("#nuevoAccesoClienteModal").modal('hide');
           recargarTable();
+
           Swal.fire({
             position: 'center',
             icon: 'success',
-            title: 'Usuario guardado correctamente',
+            title: window.t('suc_user_saved_ok', 'Usuario guardado correctamente'),
             showConfirmButton: false,
             timer: 2500
           });
-          $('#formAccesoCliente¿')[0].reset();
+
+          // OJO: aquí tenías un typo: formAccesoCliente¿
+          $('#formAccesoCliente')[0].reset();
+
         } else {
-          $("#nuevoAccesoClienteModal #msj_error").css('display', 'block').html(data.msg);
+          $("#nuevoAccesoClienteModal #msj_error")
+            .css('display', 'block')
+            .html(data.msg || window.t('suc_error_action', 'Error al realizar la acción'));
         }
       } catch (error) {
         console.error("Error al analizar la respuesta JSON:", error);
@@ -1210,8 +1460,9 @@ function actualizarContraseña() {
   var pass = $('#password_cliente').val();
   var correo = $('#idCorreo').val();
   var id_datos = $('#idDatosGeneralesEditPass').val();
+
   $.ajax({
-    url: '<?php echo base_url('Cat_UsuarioInternos/actualizarPass'); ?>',
+    url: '<?php echo base_url('Cat_Cliente/actualizarPass'); ?>',
     type: 'post',
     data: {
       'id': id_datos,
@@ -1225,22 +1476,33 @@ function actualizarContraseña() {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
-      var data = JSON.parse(res);
+
+      let data = res;
+      if (typeof res === 'string') {
+        try {
+          data = JSON.parse(res);
+        } catch (e) {
+          data = null;
+        }
+      }
+
       if (data.codigo === 1) {
         recargarTable();
+
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: data.msg,
+          title: data.msg || window.t('suc_updated_ok', 'Actualizado correctamente'),
           showConfirmButton: false,
           timer: 3000
         });
+
       } else {
         Swal.fire({
           position: 'center',
           icon: 'error',
-          title: 'Error al realizar la acción',
-          text: data.msg,
+          title: window.t('suc_sw_error_title', 'Error'),
+          text: data.msg || window.t('suc_error_action', 'Error al realizar la acción'),
           showConfirmButton: false,
           timer: 2500
         });
@@ -1248,9 +1510,13 @@ function actualizarContraseña() {
     },
     error: function(err) {
       console.error('Error en la petición AJAX:', err.responseText);
+
+      // opcional, si quieres mostrar algo al usuario:
+      // Swal.fire(window.t('suc_sw_error_title','Error'), window.t('suc_sw_comm_error','Error de comunicación con el servidor.'), 'error');
     }
   });
 }
+
 
 function controlAcceso(accion, idUsuarioCliente) {
   $("tr#" + idUsuarioCliente).hide();
@@ -1268,7 +1534,14 @@ function controlAcceso(accion, idUsuarioCliente) {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
-      var data = JSON.parse(res);
+      let data = res;
+      if (typeof res === 'string') {
+        try {
+          data = JSON.parse(res);
+        } catch (e) {
+          data = null;
+        }
+      }
       if (data.codigo === 1) {
         recargarTable()
         $("#mensajeModal").modal('hide')

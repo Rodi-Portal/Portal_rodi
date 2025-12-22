@@ -6,10 +6,35 @@ class Documentos_Aspirantes extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        // Carga helpers, librerías y modelo si lo usas
-        $this->load->helper(['url', 'file']);
+
+        // Helpers base (incluye i18n)
+        $this->load->helper(['url', 'file', 'language', 'i18n']);
+
+        // Sesión
         $this->load->library('session');
-        // $this->load->model('Documento_model'); // Si después usas modelo
+
+        // 🔒 Seguridad (igual que en tus otros controladores)
+        if (! $this->session->userdata('id')) {
+            redirect('Login/index');
+            return;
+        }
+
+        // Idioma actual
+        $raw = strtolower((string) ($this->session->userdata('lang') ?: 'es'));
+        $map = [
+            'es'      => 'espanol',
+            'en'      => 'english',
+            'spanish' => 'espanol',
+            'english' => 'english',
+        ];
+        $lang = $map[$raw] ?? 'espanol';
+
+        // ✅ Carga de archivos de idioma que se usan en esta pantalla/flow
+        // (mínimo el de progreso, porque de ahí estamos sacando keys rec_prog_*)
+        $this->lang->load('reclutamiento_progreso', $lang);
+
+        // Si también reutilizas keys comunes de escritorio, opcional:
+       
     }
 
     public function lista($id_bolsa = 0)
@@ -80,37 +105,43 @@ class Documentos_Aspirantes extends CI_Controller
         $id_doc      = $this->input->post('id_doc');
         $nuevoNombre = $this->input->post('nuevo_nombre', true) ?? '';
         $id_usuario  = $this->session->userdata('id');
-        $doc         = $this->db->get_where('documentos_aspirante', ['id' => $id_doc, 'eliminado' => 0])->row();
+
+        $doc = $this->db->get_where('documentos_aspirante', ['id' => $id_doc, 'eliminado' => 0])->row();
         if (! $doc) {
-            return $this->output_json(false, 'Documento no encontrado');
+            return $this->output_json(false, t('rec_prog_doc_err_not_found_simple', 'Documento no encontrado'));
         }
 
         $nuevoArchivo = null;
 
-        // 1. Si hay archivo, lo sube
+        // 1) Si hay archivo, lo sube
         if (! empty($_FILES['file']['name'])) {
+
             $config = [
                 'upload_path'   => LINKASPIRANTESDOCS,
                 'allowed_types' => 'pdf|jpg|jpeg|png|gif|bmp|mp4|mov|avi|wmv|mkv|webm',
                 'max_size'      => 25600,
                 'encrypt_name'  => true,
             ];
+
             $this->load->library('upload', $config);
 
             if (! $this->upload->do_upload('file')) {
-                return $this->output_json(false, strip_tags($this->upload->display_errors()));
+                // OJO: display_errors trae HTML; lo limpiamos
+                $err      = trim(strip_tags($this->upload->display_errors()));
+                $fallback = t('rec_prog_doc_err_upload_fail', 'No se pudo subir el archivo.');
+                return $this->output_json(false, $err !== '' ? $err : $fallback);
             }
 
             $nuevoArchivo = $this->upload->data();
 
-            // Borrar el archivo anterior
+            // Borrar el archivo anterior (si existe)
             $old = LINKASPIRANTESDOCS . $doc->nombre_archivo;
             if (is_file($old)) {
-                unlink($old);
+                @unlink($old);
             }
         }
 
-        // 2. Prepara datos para update
+        // 2) Prepara datos para update
         $dataUpdate = [
             'nombre_personalizado' => $nuevoNombre ?: $doc->nombre_personalizado,
             'fecha_actualizacion'  => date('Y-m-d H:i:s'),
@@ -122,11 +153,12 @@ class Documentos_Aspirantes extends CI_Controller
             $dataUpdate['tipo']           = strtolower(pathinfo($nuevoArchivo['file_name'], PATHINFO_EXTENSION));
         }
 
-        // 3. Ejecuta el update
+        // 3) Ejecuta el update
         $this->db->where('id', $id_doc)->update('documentos_aspirante', $dataUpdate);
 
-        return $this->output_json(true, 'Documento actualizado', $nuevoArchivo ?: []);
+        return $this->output_json(true, t('rec_prog_doc_ok_updated', 'Documento actualizado'), $nuevoArchivo ?: []);
     }
+
     public function actualizar_tipo_vista()
     {
         $id         = $this->input->post('id');
@@ -148,13 +180,13 @@ class Documentos_Aspirantes extends CI_Controller
         $id_usuario = $this->session->userdata('id');
 
         if (! $id) {
-            return $this->output_json(false, 'ID no proporcionado');
+            return $this->output_json(false, t('rec_prog_doc_err_no_id', 'ID no proporcionado'));
         }
 
         $doc = $this->db->get_where('documentos_aspirante', ['id' => $id, 'eliminado' => 0])->row();
 
         if (! $doc) {
-            return $this->output_json(false, 'Documento no encontrado o ya fue eliminado');
+            return $this->output_json(false, t('rec_prog_doc_err_not_found', 'Documento no encontrado o ya fue eliminado'));
         }
 
         // Soft delete: solo marcar como eliminado
@@ -165,7 +197,7 @@ class Documentos_Aspirantes extends CI_Controller
                 'id_usuario'          => $id_usuario,
             ]);
 
-        return $this->output_json(true, 'Documento eliminado correctamente');
+        return $this->output_json(true, t('rec_prog_doc_ok_deleted', 'Documento eliminado correctamente'));
     }
 
 /**

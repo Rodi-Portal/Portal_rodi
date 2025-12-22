@@ -5,19 +5,34 @@
       <ul class="navbar-nav reclutamiento-navbar-nav">
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button empleados-header-button-active"
-            href="<?php echo site_url('Reclutamiento/requisicion'); ?>"><i class="fas fa-desktop"></i>Mi escritorio</a>
+             href="<?php echo site_url('Reclutamiento/requisicion'); ?>">
+            <i class="fas fa-desktop"></i>
+            <?php echo t('rec_desk_tab', 'Mi escritorio'); ?>
+          </a>
         </li>
+
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/control'); ?>"><i class="fas fa-spinner"></i>En progreso</a>
+             href="<?php echo site_url('Reclutamiento/control'); ?>">
+            <i class="fas fa-spinner"></i>
+            <?php echo t('rec_prog_tab', 'En progreso'); ?>
+          </a>
         </li>
+
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/finalizados'); ?>"><i class="fas fa-check-circle"></i>Finalizadas</a>
+             href="<?php echo site_url('Reclutamiento/finalizados'); ?>">
+            <i class="fas fa-check-circle"></i>
+            <?php echo t('rec_done_tab', 'Finalizadas'); ?>
+          </a>
         </li>
+
         <li class="nav-item reclutamiento empleados-header-button-container">
           <a class="custom-link empleados-header-button"
-            href="<?php echo site_url('Reclutamiento/bolsa'); ?>"><i class="fas fa-users"></i>Bolsa de trabajo </a>
+             href="<?php echo site_url('Reclutamiento/bolsa'); ?>">
+            <i class="fas fa-users"></i>
+            <?php echo t('rec_board_tab', 'Bolsa de trabajo'); ?>
+          </a>
         </li>
       </ul>
     </div>
@@ -25,12 +40,11 @@
 
   <div id="content">
     <div id="module-content">
-      <p>Por favor selecciona un módulo del menú.</p>
+      <p><?php echo t('rec_desk_select_module', 'Por favor selecciona un módulo del menú.'); ?></p>
     </div>
   </div>
 </div>
-
-
+<?php i18n_js(['rec_']); ?>
 
 <!-- Bootstrap JS y Popper.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>

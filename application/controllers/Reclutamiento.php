@@ -11,17 +11,39 @@ class Reclutamiento extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+
+        // Helpers base
+        $this->load->helper(['url', 'language', 'i18n']);
+
+        // 🔒 Seguridad
         if (! $this->session->userdata('id')) {
             redirect('Login/index');
-            $this->load->helper('language');
-
+            return; // importante para cortar aquí
         }
-        $this->load->helper('language');
-        $this->lang->load('registro_candidatos', 'english');
+
+        // Idioma actual
+        $raw = strtolower((string) ($this->session->userdata('lang') ?: 'es'));
+        $map = [
+            'es'      => 'espanol',
+            'en'      => 'english',
+            'spanish' => 'espanol',
+            'english' => 'english',
+        ];
+        $lang = $map[$raw] ?? 'espanol';
+        // ✅ Reclutamiento (4 submódulos)
+        $this->lang->load('reclutamiento_escritorio', $lang);
+        $this->lang->load('reclutamiento_progreso', $lang);
+        $this->lang->load('reclutamiento_finalizadas', $lang);
+        $this->lang->load('reclutamiento_bolsa', $lang);
+
+        // (Opcional) si este módulo también lo usa reclutamiento
+        $this->lang->load('registro_candidatos', $lang);
+
+        // Sesión/estatus
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
-
     }
+
     public function index()
     {
         // Llama a la vista y pasa los datos necesarios
@@ -595,21 +617,21 @@ class Reclutamiento extends CI_Controller
     public function addApplicant()
     {
         // 1) Validación base (ajusta 'medio' según si es obligatorio u opcional)
-        $this->form_validation->set_rules('requisicion', 'Asignar requisición', 'required|integer');
-        $this->form_validation->set_rules('nombre', 'Nombre(s)', 'required|trim');
-        $this->form_validation->set_rules('paterno', 'Primer apellido', 'required|trim');
-        $this->form_validation->set_rules('materno', 'Segundo apellido', 'trim');
-        $this->form_validation->set_rules('domicilio', 'Localización o domicilio', 'required|trim');
-        $this->form_validation->set_rules('area_interes', 'Área de interés', 'required|trim');
+        $this->form_validation->set_rules('requisicion', t('rec_prog_app_rule_requisition', 'Asignar requisición'), 'required|integer');
+        $this->form_validation->set_rules('nombre', t('rec_prog_app_rule_name', 'Nombre(s)'), 'required|trim');
+        $this->form_validation->set_rules('paterno', t('rec_prog_app_rule_lastname1', 'Primer apellido'), 'required|trim');
+        $this->form_validation->set_rules('materno', t('rec_prog_app_rule_lastname2', 'Segundo apellido'), 'trim');
+        $this->form_validation->set_rules('domicilio', t('rec_prog_app_rule_address', 'Localización o domicilio'), 'required|trim');
+        $this->form_validation->set_rules('area_interes', t('rec_prog_app_rule_interest', 'Área de interés'), 'required|trim');
         // Si 'medio' viene como "null" desde el front, considera hacerlo opcional o valida con callback
-        $this->form_validation->set_rules('medio', 'Medio de contacto', 'trim');
-        $this->form_validation->set_rules('telefono', 'Teléfono', 'trim|max_length[16]');
-        $this->form_validation->set_rules('correo', 'Correo', 'trim|valid_email');
+        $this->form_validation->set_rules('medio', t('rec_prog_app_rule_contact_method', 'Medio de contacto'), 'trim');
+        $this->form_validation->set_rules('telefono', t('rec_prog_app_rule_phone', 'Teléfono'), 'trim|max_length[16]');
+        $this->form_validation->set_rules('correo', t('rec_prog_app_rule_email', 'Correo'), 'trim|valid_email');
 
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
-        $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
-        $this->form_validation->set_message('integer', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_message('required', t('rec_val_required', 'El campo {field} es obligatorio'));
+        $this->form_validation->set_message('max_length', t('rec_val_max_length', 'El campo {field} debe tener máximo {param} carácteres'));
+        $this->form_validation->set_message('valid_email', t('rec_val_valid_email', 'El campo {field} debe ser un correo válido'));
+        $this->form_validation->set_message('integer', t('rec_val_integer', 'El campo {field} debe ser numérico'));
 
         if ($this->form_validation->run() === false) {
             echo json_encode(['codigo' => 0, 'msg' => validation_errors()]);
@@ -644,7 +666,10 @@ class Reclutamiento extends CI_Controller
         if (! $existsReq) {
             echo json_encode([
                 'codigo' => 0,
-                'msg'    => "La requisición {$req} no existe o no pertenece a este portal",
+                'msg'    => t(
+                    'rec_prog_app_req_not_found',
+                    "La requisición {$req} no existe o no pertenece a este portal"
+                ),
             ]);
             return;
         }
@@ -654,6 +679,7 @@ class Reclutamiento extends CI_Controller
 
         // 4) Alta/edición
         if ($id_aspirante <= 0) {
+
             // ---- Alta en bolsa (nuevo o edición de bolsa existente) ----
             if ($id_bolsa_trabajo <= 0) {
                 $jobPool = [
@@ -694,7 +720,7 @@ class Reclutamiento extends CI_Controller
             if ($this->reclutamiento_model->existeRegistro($id_bolsa_trabajo, $req)) {
                 echo json_encode([
                     'codigo' => 0,
-                    'msg'    => 'Ya está registrado el aspirante para esta requisición',
+                    'msg'    => t('rec_prog_app_already_registered', 'Ya está registrado el aspirante para esta requisición'),
                 ]);
                 return;
             }
@@ -708,29 +734,22 @@ class Reclutamiento extends CI_Controller
                 'id_requisicion'   => $req, // <- FK: ya validamos que existe
                 'correo'           => $correo,
                 'cv'               => $nombre_archivo,
-                'status'           => 'Registrado',
+                'status'           => t('rec_prog_status_registered', 'Registrado'),
             ];
 
             $res = $this->reclutamiento_model->addApplicant($datos); // ideal: que devuelva ['ok','id','db_error','sql']
 
-            // Si tu addApplicant() devuelve solo el ID:
-            // $id_req_aspirante = $res;
-            // $ok = (bool)$id_req_aspirante;
-
-            // Suponiendo una versión mejorada que devuelve arreglo:
             if (is_array($res)) {
                 if (! empty($res['db_error'])) {
-                    // Log detallado para DEV
                     log_message('error', 'addApplicant error: ' . print_r($res['db_error'], true) . ' SQL: ' . $res['sql']);
-                    echo json_encode(['codigo' => 0, 'msg' => 'No se pudo registrar el aspirante (error BD).']);
+                    echo json_encode(['codigo' => 0, 'msg' => t('rec_prog_app_db_error', 'No se pudo registrar el aspirante (error BD).')]);
                     return;
                 }
                 $id_req_aspirante = $res['id'] ?? 0;
             } else {
-                // fallback si retorna id o false
                 $id_req_aspirante = (int) $res;
                 if ($id_req_aspirante <= 0) {
-                    echo json_encode(['codigo' => 0, 'msg' => 'No se pudo registrar el aspirante.']);
+                    echo json_encode(['codigo' => 0, 'msg' => t('rec_prog_app_save_fail', 'No se pudo registrar el aspirante.')]);
                     return;
                 }
             }
@@ -747,11 +766,12 @@ class Reclutamiento extends CI_Controller
 
             echo json_encode([
                 'codigo' => 1,
-                'msg'    => 'El aspirante fue guardado correctamente.',
+                'msg'    => t('rec_prog_app_saved_ok', 'El aspirante fue guardado correctamente.'),
             ]);
             return;
 
         } else {
+
             // ---- Actualización de aspirante existente ----
             $datos_rh = [
                 'id_requisicion' => $req,
@@ -769,11 +789,13 @@ class Reclutamiento extends CI_Controller
                 'domicilio'      => $domicilio,
             ];
 
-            // Asegura que la requisición exista también en actualización
             if (! $existsReq) {
                 echo json_encode([
                     'codigo' => 0,
-                    'msg'    => "La requisición {$req} no existe o no pertenece a este portal",
+                    'msg'    => t(
+                        'rec_prog_app_req_not_found',
+                        "La requisición {$req} no existe o no pertenece a este portal"
+                    ),
                 ]);
                 return;
             }
@@ -787,8 +809,9 @@ class Reclutamiento extends CI_Controller
 
             echo json_encode([
                 'codigo' => $ok ? 1 : 0,
-                'msg'    => $ok ? 'El aspirante fue actualizado correctamente :)'
-                    : 'El aspirante no pudo ser actualizado :(',
+                'msg'    => $ok
+                    ? t('rec_prog_app_updated_ok', 'El aspirante fue actualizado correctamente :)')
+                    : t('rec_prog_app_updated_fail', 'El aspirante no pudo ser actualizado :('),
             ]);
             return;
         }
@@ -1289,68 +1312,92 @@ class Reclutamiento extends CI_Controller
         $mpdf->Output('Solicitud_' . $id . '.pdf', 'D');
     }
 
-    public function cambiarStatusBolsaTrabajo()
-    {
-        date_default_timezone_set('America/Mexico_City');
-        $date       = date('Y-m-d H:i:s');
-        $id_usuario = $this->session->userdata('id');
-        $idRol      = $this->session->userdata('idrol');
-        $id_bolsa   = $this->input->post('id_bolsa');
-        $comentario = $this->input->post('comentario');
-        $accion     = $this->input->post('accion');
-        $aspirante  = $this->reclutamiento_model->getAspiranteByBolsaTrabajo($id_bolsa);
-        $msj        = []; // Inicializa $msj como un array vacío
+public function cambiarStatusBolsaTrabajo()
+{
+    date_default_timezone_set('America/Mexico_City');
+    $date       = date('Y-m-d H:i:s');
+    $id_usuario = $this->session->userdata('id');
+    $idRol      = $this->session->userdata('idrol');
+    $id_bolsa   = $this->input->post('id_bolsa');
+    $comentario = $this->input->post('comentario');
+    $accion     = $this->input->post('accion');
+    $aspirante  = $this->reclutamiento_model->getAspiranteByBolsaTrabajo($id_bolsa);
+    $msj        = []; // Inicializa $msj como un array vacío
 
-        if ($comentario != '') {
-            if ($aspirante != null) {
-                $aspirante_data = [
-                    'edicion'      => $date,
-                    'status'       => 'Bloqueado del proceso de reclutamiento',
-                    'status_final' => 'BLOQUEADO',
-                ];
-                if ($idRol != 6) {
-                    $datos['id_usuario'] = $id_usuario;
-                }
-                $this->reclutamiento_model->editarAspirante($aspirante_data, $aspirante->id);
-                $historial = [
-                    'creacion'         => $date,
-                    'id_usuario'       => $id_usuario,
-                    'id_requisicion'   => $aspirante->id_requisicion,
-                    'id_bolsa_trabajo' => $id_bolsa,
-                    'id_aspirante'     => $aspirante->id,
-                    'accion'           => 'Usuario bloquea a la persona del proceso de reclutamiento',
-                    'descripcion'      => $comentario,
-                ];
-                $this->reclutamiento_model->guardarAccionRequisicion($historial);
+    if ($comentario != '') {
+        if ($aspirante != null) {
+            $aspirante_data = [
+                'edicion'      => $date,
+                'status'       => t('rec_prog_bolsa_status_blocked_text', 'Bloqueado del proceso de reclutamiento'),
+                'status_final' => 'BLOQUEADO',
+            ];
+            if ($idRol != 6) {
+                $datos['id_usuario'] = $id_usuario; // (se deja tal cual estaba en tu código)
             }
+            $this->reclutamiento_model->editarAspirante($aspirante_data, $aspirante->id);
 
-            // Cambiar estado de la bolsa de trabajo
-            $bolsa = [
-                'status' => ($accion == 'bloquear') ? 0 : 1,
+            $historial = [
+                'creacion'         => $date,
+                'id_usuario'       => $id_usuario,
+                'id_requisicion'   => $aspirante->id_requisicion,
+                'id_bolsa_trabajo' => $id_bolsa,
+                'id_aspirante'     => $aspirante->id,
+                'accion'           => t(
+                    'rec_prog_bolsa_hist_action_user_blocks',
+                    'Usuario bloquea a la persona del proceso de reclutamiento'
+                ),
+                'descripcion'      => $comentario,
             ];
-            $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
-
-            $msj = [
-                'codigo' => 1,
-                'msg'    => ($accion == 'bloquear') ? 'Se ha bloqueado correctamente' : 'Se ha desbloqueado correctamente',
-            ];
-        } else {
-            $msj = [
-                'codigo' => 0,
-                'msg'    => 'Debes llenar el motivo de bloqueo e intentarlo de nuevo',
-            ];
+            $this->reclutamiento_model->guardarAccionRequisicion($historial);
         }
 
-        echo json_encode($msj);
+        // Cambiar estado de la bolsa de trabajo
+        $bolsa = [
+            'status' => ($accion == 'bloquear') ? 0 : 1,
+        ];
+        $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
+
+        $msj = [
+            'codigo' => 1,
+            'msg'    => ($accion == 'bloquear')
+                ? t('rec_prog_bolsa_block_ok', 'Se ha bloqueado correctamente')
+                : t('rec_prog_bolsa_unblock_ok', 'Se ha desbloqueado correctamente'),
+        ];
+    } else {
+        $msj = [
+            'codigo' => 0,
+            'msg'    => t(
+                'rec_prog_bolsa_block_reason_required',
+                'Debes llenar el motivo de bloqueo e intentarlo de nuevo'
+            ),
+        ];
     }
+
+    echo json_encode($msj);
+}
+
 
     public function guardarHistorialBolsaTrabajo()
     {
         // Configuración de las reglas de validación
-        $this->form_validation->set_rules('comentario', 'Comentario / Estatus', 'required|trim');
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_rules(
+            'comentario',
+            t('rec_prog_hist_field_comment_status', 'Comentario / Estatus'),
+            'required|trim'
+        );
+
+        $this->form_validation->set_message(
+            'required',
+            t('rec_prog_val_required_msg', 'El campo {field} es obligatorio')
+        );
+        $this->form_validation->set_message(
+            'max_length',
+            t('rec_prog_val_max_length_msg', 'El campo {field} debe tener máximo {param} carácteres')
+        );
+        $this->form_validation->set_message(
+            'numeric',
+            t('rec_prog_val_numeric_msg', 'El campo {field} debe ser numérico')
+        );
 
         // Inicializa el mensaje de respuesta
         $msj = [];
@@ -1364,11 +1411,13 @@ class Reclutamiento extends CI_Controller
         } else {
             // Configuración de fecha y obtención de datos
             date_default_timezone_set('America/Mexico_City');
-            $date         = date('Y-m-d H:i:s');
-            $comentario   = $this->input->post('comentario');
-            $id_usuario   = $this->session->userdata('id');
-            $id_bolsa     = $this->input->post('id_bolsa');
-            $tipo         = $this->session->userdata('tipo');
+            $date       = date('Y-m-d H:i:s');
+            $comentario = $this->input->post('comentario');
+            $id_usuario = $this->session->userdata('id');
+            $id_bolsa   = $this->input->post('id_bolsa');
+            $tipo       = $this->session->userdata('tipo');
+
+            // (se deja igual para no cambiar BD/lógica)
             $nombre       = ($tipo == 1) ? 'Reclutador' : 'Cliente';
             $notificacion = 0; // Cambia esto a 0 si quieres desactivar las notificaciones
 
@@ -1397,15 +1446,20 @@ class Reclutamiento extends CI_Controller
                                 'nombre_aspirante' => $result2->nombre_completo,
                                 'vacante'          => $result2->vacante,
                                 'telefono'         => $result2->phone,
-                                'ruta'             => 'send-message-comentario-reclu', // Ajusta según sea necesario
+                                'ruta'             => 'send-message-comentario-reclu',
                             ];
 
-                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'mensaje_reclutador', $datos_plantilla);
+                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante(
+                                '52' . $result2->phone,
+                                'mensaje_reclutador',
+                                $datos_plantilla
+                            );
 
                             if ($api_response['codigo'] == 1) {
                                 $msj = [
                                     'codigo' => 1,
-                                    'msg'    => 'El registro se realizó correctamente. ' . $api_response['msg'],
+                                    'msg'    => t('rec_prog_hist_save_ok_prefix', 'El registro se realizó correctamente. ')
+                                    . $api_response['msg'],
                                 ];
                             } else {
                                 $msj = [
@@ -1417,12 +1471,16 @@ class Reclutamiento extends CI_Controller
                             // Datos para notificación no válidos
                             $msj = [
                                 'codigo' => 1,
-                                'msg'    => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
+                                'msg'    => t(
+                                    'rec_prog_hist_notify_not_sent_no_data',
+                                    'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.'
+                                ),
                             ];
                         }
 
                     } else {
                         $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspiranteCliente($id_bolsa);
+
                         if ($result2 && ! empty($result2->phone)) {
                             $datos_plantilla = [
                                 'nombre_reclu'     => $result2->nombre_reclutador,
@@ -1430,19 +1488,20 @@ class Reclutamiento extends CI_Controller
                                 'nombre_aspirante' => $result2->nombre_completo,
                                 'vacante'          => $result2->vacante,
                                 'telefono'         => $result2->phone,
-                                'ruta'             => 'send-message-comentario-cliente', // Ajusta según sea necesario
+                                'ruta'             => 'send-message-comentario-cliente',
                             ];
-                            /* echo '<pre>';
 
-                            print_r($datos_plantilla);
-                            echo '</pre>';
-                            die();*/
-                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'mensaje_cliente', $datos_plantilla);
+                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante(
+                                '52' . $result2->phone,
+                                'mensaje_cliente',
+                                $datos_plantilla
+                            );
 
                             if ($api_response['codigo'] == 1) {
                                 $msj = [
                                     'codigo' => 1,
-                                    'msg'    => 'El registro se realizó correctamente. ' . $api_response['msg'],
+                                    'msg'    => t('rec_prog_hist_save_ok_prefix', 'El registro se realizó correctamente. ')
+                                    . $api_response['msg'],
                                 ];
                             } else {
                                 $msj = [
@@ -1454,7 +1513,10 @@ class Reclutamiento extends CI_Controller
                             // Datos para notificación no válidos
                             $msj = [
                                 'codigo' => 1,
-                                'msg'    => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
+                                'msg'    => t(
+                                    'rec_prog_hist_notify_not_sent_no_data',
+                                    'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.'
+                                ),
                             ];
                         }
                     }
@@ -1463,14 +1525,20 @@ class Reclutamiento extends CI_Controller
                     // Notificación desactivada
                     $msj = [
                         'codigo' => 1,
-                        'msg'    => 'El registro se realizó correctamente. La notificación no fue enviada.',
+                        'msg'    => t(
+                            'rec_prog_hist_notify_not_sent_disabled',
+                            'El registro se realizó correctamente. La notificación no fue enviada.'
+                        ),
                     ];
                 }
             } else {
                 // Fallo en el guardado
                 $msj = [
                     'codigo' => 0,
-                    'msg'    => 'No se pudo registrar el comentario, intente más tarde.',
+                    'msg'    => t(
+                        'rec_prog_hist_save_fail',
+                        'No se pudo registrar el comentario, intente más tarde.'
+                    ),
                 ];
             }
         }
@@ -1481,68 +1549,122 @@ class Reclutamiento extends CI_Controller
 
     public function addRequisicion()
     {
-        $this->form_validation->set_rules('id_cliente', 'Sucursal', 'required|trim');
-        $this->form_validation->set_rules('nombre_comercial_req', 'Nombre comercial', 'required|trim');
-        $this->form_validation->set_rules('nombre_req', 'Razón social', 'required|trim');
-        $this->form_validation->set_rules('correo_req', 'Correo', 'required|trim|valid_email');
-        $this->form_validation->set_rules('cp_req', 'Código postal', 'required|trim|max_length[5]');
-        $this->form_validation->set_rules('telefono_req', 'Teléfono', 'required|trim|max_length[16]');
-        $this->form_validation->set_rules('contacto_req', 'Contacto', 'trim|required');
-        $this->form_validation->set_rules('rfc_req', 'RFC', 'trim|max_length[13]');
-        $this->form_validation->set_rules('pais_req', 'País', 'trim');
-        $this->form_validation->set_rules('estado_req', 'Estado', 'trim');
-        $this->form_validation->set_rules('ciudad_req', 'Ciudad', 'trim');
-        $this->form_validation->set_rules('colonia_req', 'Colonia', 'trim');
-        $this->form_validation->set_rules('calle_req', 'Calle', 'trim');
-        $this->form_validation->set_rules('interior_req', 'Número Interior', 'trim');
-        $this->form_validation->set_rules('exterior_req', 'Número Exterior', 'trim');
-        $this->form_validation->set_rules('regimen_req', 'Régimen Fiscal', 'trim');
-        $this->form_validation->set_rules('forma_pago_req', 'Forma de pago', 'trim');
-        $this->form_validation->set_rules('metodo_pago_req', 'Método de pago', 'trim');
-        $this->form_validation->set_rules('uso_cfdi_req', 'Uso de CFDI', 'trim');
+        // 1) Idioma real que quieres usar (ya mapeado: 'english' o 'espanol')
+        $idiom = $this->config->item('language') ?: 'espanol';
 
-        $this->form_validation->set_rules('puesto_req', 'Nombre de la posición', 'required|trim');
-        $this->form_validation->set_rules('numero_vacantes_req', 'Número de vacantes', 'required|numeric|max_length[2]');
-        $this->form_validation->set_rules('residencia_req', 'Lugar de residencia', 'trim');
-        $this->form_validation->set_rules('escolaridad_req', 'Formación académica requerida', 'trim');
-        $this->form_validation->set_rules('estatus_escolaridad_req', 'Estatus académico', 'trim');
-        $this->form_validation->set_rules('otro_estatus_req', 'Otro estatus académico', 'trim');
-        $this->form_validation->set_rules('carrera_req', 'Carrera requerida para el puesto', 'trim');
-        $this->form_validation->set_rules('otros_estudios_req', 'Otro estatus académico', 'trim');
-        $this->form_validation->set_rules('idioma1_req', 'Idiomas que habla  ', 'trim');
-        $this->form_validation->set_rules('por_idioma1_req', 'Porcentaje idioma uno', 'trim');
-        $this->form_validation->set_rules('idioma2_req', 'Idiomas que habla  dos ', 'trim');
-        $this->form_validation->set_rules('por_idioma2_req', 'Porcentaje idioma dos', 'trim');
-        $this->form_validation->set_rules('idioma3_req', 'Idiomas que habla  tres ', 'trim');
-        $this->form_validation->set_rules('por_idioma3_req', 'Porcentaje idioma tres', 'trim');
-        $this->form_validation->set_rules('habilidad1_req', 'Habilidades informáticas requeridas', 'trim');
-        $this->form_validation->set_rules('por_habilidad1_req', 'Porcentaje habilidad  requerida uno', 'trim');
-        $this->form_validation->set_rules('habilidad2_req', 'Habilidad  requeridas dos', 'trim');
-        $this->form_validation->set_rules('por_habilidad2_req', 'Porcentaje habilidad  requeridas dos', 'trim');
-        $this->form_validation->set_rules('habilidad3_req', 'Habilidad  requeridas tres', 'trim');
-        $this->form_validation->set_rules('por_habilidad3_req', 'Porcentaje habilidad  requeridas tres', 'trim');
-        $this->form_validation->set_rules('genero_req', 'Sexo', 'trim');
-        $this->form_validation->set_rules('civil_req', 'Estado civil', 'trim');
-        $this->form_validation->set_rules('edad_minima_req', 'Edad mínima', 'max_length[2]');
-        $this->form_validation->set_rules('edad_maxima_req', 'Edad máxima', 'max_length[2]');
-        $this->form_validation->set_rules('licencia_req', 'Licencia de conducir', 'trim');
-        $this->form_validation->set_rules('licenctipo_licencia_reqia_req', 'Tipo de licencia', 'trim');
-        $this->form_validation->set_rules('discapacidad_req', 'Discapacidad aceptable', 'trim');
-        $this->form_validation->set_rules('causa_req', 'Causa que origina la vacante', 'trim');
+        // 2) Limpia SOLO las llaves del módulo (rec_) para evitar que se queden en español
+        if (isset($this->lang->language) && is_array($this->lang->language)) {
+            foreach (array_keys($this->lang->language) as $k) {
+                if (strpos($k, 'rec_') === 0) {
+                    unset($this->lang->language[$k]);
+                }
+            }
+        }
 
-        $this->form_validation->set_rules('zona_req', 'Zona de trabajo', 'required|trim');
-        $this->form_validation->set_rules('tipo_sueldo_req', 'Sueldo', 'required|trim');
-        $this->form_validation->set_rules('sueldo_minimo_req', 'Sueldo mínimo', 'numeric|max_length[8]');
-        $this->form_validation->set_rules('sueldo_maximo_req', 'Sueldo máximo', 'required|numeric|max_length[8]');
-        $this->form_validation->set_rules('tipo_pago_req', 'Tipo de pago ', 'required');
-        $this->form_validation->set_rules('tipo_prestaciones_req', '¿Tendrá prestaciones de ley?', 'required');
-        $this->form_validation->set_rules('experiencia_req', 'Se requiere experiencia en', 'required|trim');
-        $this->form_validation->set_rules('observaciones_req', 'Observaciones adicionales', 'trim');
+        // 3) Permite recarga real del/los langfiles (CI3 no recarga si ya está en is_loaded)
+        $toRemove = [
+            'reclutamiento_escritorio_lang.php',
+            'reclutamiento_progreso_lang.php',
+            'reclutamiento_finalizadas_lang.php',
+            'reclutamiento_bolsa_lang.php',
+            'registro_candidatos_lang.php',
+        ];
 
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
-        $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        if (isset($this->lang->is_loaded) && is_array($this->lang->is_loaded)) {
+            $this->lang->is_loaded = array_values(array_diff($this->lang->is_loaded, $toRemove));
+        }
+
+        // 4) Recarga en el idioma correcto
+        $this->lang->load('reclutamiento_escritorio', $idiom);
+        $this->lang->load('reclutamiento_progreso', $idiom);
+        $this->lang->load('reclutamiento_finalizadas', $idiom);
+        $this->lang->load('reclutamiento_bolsa', $idiom);
+        $this->lang->load('registro_candidatos', $idiom);
+
+        // (Re)carga en el idioma correcto
+        $this->lang->load('reclutamiento_escritorio', $idiom);
+        $this->lang->load('reclutamiento_progreso', $idiom);
+        $this->lang->load('reclutamiento_finalizadas', $idiom);
+        $this->lang->load('reclutamiento_bolsa', $idiom);
+        $this->lang->load('registro_candidatos', $idiom);
+
+        $this->form_validation->set_rules('id_cliente', t('rec_req_field_branch', 'Sucursal'), 'required|trim');
+        $this->form_validation->set_rules('nombre_comercial_req', t('rec_req_field_trade_name', 'Nombre comercial'), 'required|trim');
+        $this->form_validation->set_rules('nombre_req', t('rec_req_field_business_name', 'Razón sociall'), 'required|trim');
+        $this->form_validation->set_rules('correo_req', t('rec_req_field_email', 'Correo'), 'required|trim|valid_email');
+        $this->form_validation->set_rules('cp_req', t('rec_req_field_postal_code', 'Código postal'), 'required|trim|max_length[5]');
+        $this->form_validation->set_rules('telefono_req', t('rec_req_field_phone', 'Teléfono'), 'required|trim|max_length[16]');
+        $this->form_validation->set_rules('contacto_req', t('rec_req_field_contact', 'Contacto'), 'trim|required');
+        $this->form_validation->set_rules('rfc_req', t('rec_req_field_rfc', 'RFC'), 'trim|max_length[13]');
+        $this->form_validation->set_rules('pais_req', t('rec_req_field_country', 'País'), 'trim');
+        $this->form_validation->set_rules('estado_req', t('rec_req_field_state', 'Estado'), 'trim');
+        $this->form_validation->set_rules('ciudad_req', t('rec_req_field_city', 'Ciudad'), 'trim');
+        $this->form_validation->set_rules('colonia_req', t('rec_req_field_neighborhood', 'Colonia'), 'trim');
+        $this->form_validation->set_rules('calle_req', t('rec_req_field_street', 'Calle'), 'trim');
+        $this->form_validation->set_rules('interior_req', t('rec_req_field_int_number', 'Número Interior'), 'trim');
+        $this->form_validation->set_rules('exterior_req', t('rec_req_field_ext_number', 'Número Exterior'), 'trim');
+        $this->form_validation->set_rules('regimen_req', t('rec_req_field_tax_regime', 'Régimen Fiscal'), 'trim');
+        $this->form_validation->set_rules('forma_pago_req', t('rec_req_field_payment_form', 'Forma de pago'), 'trim');
+        $this->form_validation->set_rules('metodo_pago_req', t('rec_req_field_payment_method', 'Método de pago'), 'trim');
+        $this->form_validation->set_rules('uso_cfdi_req', t('rec_req_field_cfdi_use', 'Uso de CFDI'), 'trim');
+
+        $this->form_validation->set_rules('puesto_req', t('rec_req_field_position_name', 'Nombre de la posición'), 'required|trim');
+        $this->form_validation->set_rules('numero_vacantes_req', t('rec_req_field_openings', 'Número de vacantes'), 'required|numeric|max_length[2]');
+        $this->form_validation->set_rules('residencia_req', t('rec_req_field_residence', 'Lugar de residencia'), 'trim');
+        $this->form_validation->set_rules('escolaridad_req', t('rec_req_field_education_required', 'Formación académica requerida'), 'trim');
+        $this->form_validation->set_rules('estatus_escolaridad_req', t('rec_req_field_academic_status', 'Estatus académico'), 'trim');
+        $this->form_validation->set_rules('otro_estatus_req', t('rec_req_field_other_academic_status', 'Otro estatus académico'), 'trim');
+        $this->form_validation->set_rules('carrera_req', t('rec_req_field_degree_required', 'Carrera requerida para el puesto'), 'trim');
+        $this->form_validation->set_rules('otros_estudios_req', t('rec_req_field_other_studies', 'Otros estudios'), 'trim');
+
+        $this->form_validation->set_rules('idioma1_req', t('rec_req_field_language_1', 'Idioma 1'), 'trim');
+        $this->form_validation->set_rules('por_idioma1_req', t('rec_req_field_language_1_percent', 'Porcentaje idioma 1'), 'trim');
+        $this->form_validation->set_rules('idioma2_req', t('rec_req_field_language_2', 'Idioma 2'), 'trim');
+        $this->form_validation->set_rules('por_idioma2_req', t('rec_req_field_language_2_percent', 'Porcentaje idioma 2'), 'trim');
+        $this->form_validation->set_rules('idioma3_req', t('rec_req_field_language_3', 'Idioma 3'), 'trim');
+        $this->form_validation->set_rules('por_idioma3_req', t('rec_req_field_language_3_percent', 'Porcentaje idioma 3'), 'trim');
+
+        $this->form_validation->set_rules('habilidad1_req', t('rec_req_field_it_skill_1', 'Habilidad informática 1'), 'trim');
+        $this->form_validation->set_rules('por_habilidad1_req', t('rec_req_field_it_skill_1_percent', 'Porcentaje habilidad 1'), 'trim');
+        $this->form_validation->set_rules('habilidad2_req', t('rec_req_field_it_skill_2', 'Habilidad informática 2'), 'trim');
+        $this->form_validation->set_rules('por_habilidad2_req', t('rec_req_field_it_skill_2_percent', 'Porcentaje habilidad 2'), 'trim');
+        $this->form_validation->set_rules('habilidad3_req', t('rec_req_field_it_skill_3', 'Habilidad informática 3'), 'trim');
+        $this->form_validation->set_rules('por_habilidad3_req', t('rec_req_field_it_skill_3_percent', 'Porcentaje habilidad 3'), 'trim');
+
+        $this->form_validation->set_rules('genero_req', t('rec_req_field_gender', 'Sexo'), 'trim');
+        $this->form_validation->set_rules('civil_req', t('rec_req_field_marital_status', 'Estado civil'), 'trim');
+        $this->form_validation->set_rules('edad_minima_req', t('rec_req_field_min_age', 'Edad mínima'), 'max_length[2]');
+        $this->form_validation->set_rules('edad_maxima_req', t('rec_req_field_max_age', 'Edad máxima'), 'max_length[2]');
+        $this->form_validation->set_rules('licencia_req', t('rec_req_field_driver_license', 'Licencia de conducir'), 'trim');
+        $this->form_validation->set_rules('licenctipo_licencia_reqia_req', t('rec_req_field_license_type', 'Tipo de licencia'), 'trim');
+        $this->form_validation->set_rules('discapacidad_req', t('rec_req_field_disability', 'Discapacidad aceptable'), 'trim');
+        $this->form_validation->set_rules('causa_req', t('rec_req_field_vacancy_cause', 'Causa que origina la vacante'), 'trim');
+
+        $this->form_validation->set_rules('zona_req', t('rec_req_field_work_zone', 'Zona de trabajo'), 'required|trim');
+        $this->form_validation->set_rules('tipo_sueldo_req', t('rec_req_field_salary_type', 'Sueldo'), 'required|trim');
+        $this->form_validation->set_rules('sueldo_minimo_req', t('rec_req_field_min_salary', 'Sueldo mínimo'), 'numeric|max_length[8]');
+        $this->form_validation->set_rules('sueldo_maximo_req', t('rec_req_field_max_salary', 'Sueldo máximo'), 'required|numeric|max_length[8]');
+        $this->form_validation->set_rules('tipo_pago_req', t('rec_req_field_pay_frequency', 'Tipo de pago'), 'required');
+        $this->form_validation->set_rules('tipo_prestaciones_req', t('rec_req_field_legal_benefits', '¿Tendrá prestaciones de ley?'), 'required');
+        $this->form_validation->set_rules('experiencia_req', t('rec_req_field_experience', 'Se requiere experiencia en'), 'required|trim');
+        $this->form_validation->set_rules('observaciones_req', t('rec_req_field_observations', 'Observaciones adicionales'), 'trim');
+
+        $this->form_validation->set_message(
+            'required',
+            t('rec_val_required', 'El campo {field} es obligatorio')
+        );
+        $this->form_validation->set_message(
+            'max_length',
+            t('rec_val_max_length', 'El campo {field} debe tener máximo {param} carácteres')
+        );
+        $this->form_validation->set_message(
+            'valid_email',
+            t('rec_val_valid_email', 'El campo {field} debe ser un correo válido')
+        );
+        $this->form_validation->set_message(
+            'numeric',
+            t('rec_val_numeric', 'El campo {field} debe ser numérico')
+        );
 
         $msj = [];
 
@@ -1672,109 +1794,17 @@ class Reclutamiento extends CI_Controller
                 'observaciones'          => $this->input->post('observaciones_req') ?? null,
             ];
 
-            /* var_dump($cliente);
-            var_dump($generales);
-            var_dump($facturacion);
-            var_dump($domicilios);
-            var_dump($req);
-            die('pausa');
-             */
             $result = $this->reclutamiento_model->addRequisicion($id_cliente, $cliente, $domicilios, $generales, $facturacion, $req);
 
             if (! empty($result)) {
-                /*
-                if ($notificacion > 0) {
-                    // Obtener datos para notificación
-                    if ($tipo == 1) {
-                        $result2 = $this->notificaciones_whatsapp_model->obtenerDatosRegistroRequicisionCliente($result);
-                        echo '<pre>';
-                        print_r($result2);
-                        echo '</pre>';
-                        die();
-                        if ($result2 && !empty($result2->phone)) {
-                            $datos_plantilla = array(
-                                'nombre_cliente' => $result2->nombre_cliente,
-                                'nombre_aspirante' => $result2->nombre_completo,
-                                'vacante' => $result2->vacante,
-                                'telefono' => $result2->phone,
-                                'ruta' => 'send-message-comentario-reclu', // Ajusta según sea necesario
-                            );
 
-                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'nueva_requisicion', $datos_plantilla);
-
-                            if ($api_response['codigo'] == 1) {
-                                $msj = array(
-                                    'codigo' => 1,
-                                    'msg' => 'El registro se realizó correctamente. ' . $api_response['msg'],
-                                );
-                            } else {
-                                $msj = array(
-                                    'codigo' => 0,
-                                    'msg' => $api_response['msg'],
-                                );
-                            }
-                        } else {
-                            // Datos para notificación no válidos
-                            $msj = array(
-                                'codigo' => 1,
-                                'msg' => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
-                            );
-                        }
-
-                    } else {
-                        $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspiranteCliente($id_bolsa);
-                        if ($result2 && !empty($result2->phone)) {
-                            $datos_plantilla = array(
-                                'nombre_reclu' => $result2->nombre_reclutador,
-                                'nombre_cliente' => $result2->nombre_cliente,
-                                'nombre_aspirante' => $result2->nombre_completo,
-                                'vacante' => $result2->vacante,
-                                'telefono' => $result2->phone,
-                                'ruta' => 'send-message-comentario-cliente', // Ajusta según sea necesario
-                            );
-                            // echo '<pre>';
-
-                            //print_r($datos_plantilla);
-                            //echo '</pre>';
-                           // die();
-                            $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'mensaje_cliente', $datos_plantilla);
-
-                            if ($api_response['codigo'] == 1) {
-                                $msj = array(
-                                    'codigo' => 1,
-                                    'msg' => 'El registro se realizó correctamente. ' . $api_response['msg'],
-                                );
-                            } else {
-                                $msj = array(
-                                    'codigo' => 0,
-                                    'msg' => $api_response['msg'],
-                                );
-                            }
-                        } else {
-                            // Datos para notificación no válidos
-                            $msj = array(
-                                'codigo' => 1,
-                                'msg' => 'El registro se realizó correctamente. La notificación no fue enviada porque no se encontraron datos válidos para notificar.',
-                            );
-                        }
-                    }
-
-                } else {
-                    // Notificación desactivada
-                    $msj = array(
-                        'codigo' => 1,
-                        'msg' => 'El registro se realizó correctamente. La notificación no fué enviada.',
-                    );
-                }
-                */
                 $msj = [
                     'codigo' => 1,
-                    'msg'    => 'Requisición express registrada correctamente',
-                ];
+                    'msg'    => t('rec_req_add_ok', 'Requisición express registrada correctamente')];
             } else {
                 $msj = [
                     'codigo' => 0,
-                    'msg'    => 'Error al registrar la requisición',
+                    'msg'    => t('rec_req_add_err', 'Error al registrar la requisición'),
                 ];
             }
         }
@@ -1784,49 +1814,85 @@ class Reclutamiento extends CI_Controller
     //* Funcion base
     public function assignToUser()
     {
-        $this->form_validation->set_rules('asignar_usuario[]', $this->input->post('label_usuario'), 'required|numeric|trim');
-        $this->form_validation->set_rules('asignar_registro', $this->input->post('label_registro'), 'required|numeric|trim');
+        // Si tu helper NO está en autoload, descomenta:
+        // $this->load->helper('i18n'); // <- donde vive t()
 
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_rules(
+            'asignar_usuario[]',
+            $this->input->post('label_usuario'),
+            'required|numeric|trim'
+        );
+        $this->form_validation->set_rules(
+            'asignar_registro',
+            $this->input->post('label_registro'),
+            'required|numeric|trim'
+        );
+
+        // set_message traducible
+        $this->form_validation->set_message('required', t('rec_val_required', 'El campo {field} es obligatorio'));
+        $this->form_validation->set_message('max_length', t('rec_val_max_length', 'El campo {field} debe tener máximo {param} carácteres'));
+        $this->form_validation->set_message('numeric', t('rec_val_numeric', 'El campo {field} debe ser numérico'));
 
         $msj = [];
+
         if ($this->form_validation->run() == false) {
             $msj = [
                 'codigo' => 0,
                 'msg'    => validation_errors(),
             ];
         } else {
+
             if ($this->input->post('view') == 'bolsa_trabajo') {
                 $data = [
                     'edicion'    => date('Y-m-d H:i:s'),
                     'id_usuario' => $this->input->post('asignar_usuario'),
                 ];
                 $this->reclutamiento_model->editBolsaTrabajo($data, $this->input->post('asignar_registro'));
+
                 $msj = [
                     'codigo' => 1,
-                    'msg'    => 'La asignación se realizó correctamente',
+                    'msg'    => t('rec_assign_ok', 'La asignación se realizó correctamente'),
                 ];
             }
+
             if ($this->input->post('view') == 'requisicion') {
-                $totalUsers = count($this->input->post('asignar_usuario'));
+                $usuarios   = $this->input->post('asignar_usuario');
+                $totalUsers = is_array($usuarios) ? count($usuarios) : 0;
+
                 for ($i = 0; $i < $totalUsers; $i++) {
                     $data = [
                         'creacion'       => date('Y-m-d H:i:s'),
                         'id_requisicion' => $this->input->post('asignar_registro'),
-                        'id_usuario'     => $this->input->post('asignar_usuario')[$i],
+                        'id_usuario'     => $usuarios[$i],
                     ];
                     $this->reclutamiento_model->addUsersToOrder($data);
                 }
+
                 $msj = [
                     'codigo' => 1,
-                    'msg'    => 'La asignación se realizó correctamente',
+                    'msg'    => t('rec_assign_ok', 'La asignación se realizó correctamente'),
+                ];
+            }
+
+            // Si view vino raro, no dejes msj vacío
+            if (empty($msj)) {
+                $msj = [
+                    'codigo' => 0,
+                    'msg'    => t('rec_assign_err_invalid_view', 'Acción no válida'),
                 ];
             }
         }
-        echo json_encode($msj);
+
+        // ✅ IMPORTANTÍSIMO: asegura salida JSON limpia
+        $this->output->set_content_type('application/json', 'utf-8');
+
+        // Si hay warnings/espacios antes, esto ayuda (opcional)
+        if (ob_get_length()) {@ob_clean();}
+
+        echo json_encode($msj, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit; // <- evita que CI agregue output extra
     }
+
     public function updateOrder()
     {
         $section = $this->input->post('section');
@@ -2062,48 +2128,37 @@ class Reclutamiento extends CI_Controller
         echo json_encode($msj);
     }
 
-    // application/controllers/Reclutamiento.php
+// application/controllers/Reclutamiento.php
     public function updateIntake()
     {
-        // Solo AJAX (opcional)
-        // if ( ! $this->input->is_ajax_request()) { show_404(); }
-        $data = [];
-        $this->output->set_content_type('application/json');
-
         $idReq = (int) $this->input->post('idReq');
+
         if (! $idReq) {
-            return $this->output->set_output(json_encode([
-                'success' => false,
-                'msg'     => 'Falta idReq',
-            ]));
+            return jsonOut([
+                'success'   => false,
+                'codigo'    => 0,
+                'msg_key'   => 'rec_intake_err_missing_idreq',
+                // opcional csrf para refrescar
+                'csrf_name' => $this->security->get_csrf_token_name(),
+                'csrf_hash' => $this->security->get_csrf_hash(),
+            ]);
         }
 
-        // Toma TODO el POST (XSS filtering true) y quita el token
         $post = $this->input->post(null, true);
         unset($post[$this->security->get_csrf_token_name()]);
 
-        // —— WHITELIST de campos que SÍ actualizamos en requisicion_intake ——
         $allowed = [
-            // Identificación / contacto
             'nombre_cliente', 'razon_social', 'email', 'telefono', 'sitio_web', 'metodo_comunicacion', 'actividad', 'nit',
-            // Empresa / ubicación
             'pais_empresa', 'pais_otro',
-            // Reclutamiento / posición
             'plan', 'fecha_solicitud', 'fecha_inicio', 'horario', 'sexo_preferencia', 'rango_edad',
-            // Requisitos / funciones
             'funciones', 'requisitos', 'recursos',
-            // VOIP / CRM
             'requiere_voip', 'voip_propiedad', 'voip_pais_ciudad', 'usa_crm', 'crm_nombre',
-            // Extras / legales
             'miembro_bni', 'referido', 'observaciones',
-            // Si decides exponerlos en el form, añade: 'extras','archivo_path','acepta_terminos'
         ];
-
-        // Normalizaciones simples
+        $data = [];
         $norm = function ($k, $v) {
             $v = is_string($v) ? trim($v) : $v;
 
-            // fechas -> YYYY-MM-DD
             if (in_array($k, ['fecha_solicitud', 'fecha_inicio'], true)) {
                 if ($v === '') {
                     return null;
@@ -2121,49 +2176,46 @@ class Reclutamiento extends CI_Controller
                 return $ts ? date('Y-m-d', $ts) : null;
             }
 
-            // si/no
             if (in_array($k, ['requiere_voip', 'usa_crm', 'miembro_bni'], true)) {
-                $v = mb_strtolower((string) $v);
-                if ($v === 'si' || $v === 'sí') {
+                $vv = mb_strtolower((string) $v);
+                if ($vv === 'si' || $vv === 'sí') {
                     return 'si';
                 }
 
-                if ($v === 'no') {
+                if ($vv === 'no') {
                     return 'no';
                 }
 
-                return ''; // vacío si viene algo raro
+                return '';
             }
 
-            // email básico
             if ($k === 'email' && $v !== '' && ! filter_var($v, FILTER_VALIDATE_EMAIL)) {
                 return '';
             }
 
-            // Permitir vacío para actividad y nit
             if (in_array($k, ['actividad', 'nit'], true)) {
-                return $v; // aunque sea ''
+                return $v;
             }
 
-            return $v === '' ? null : $v; // para otros campos vacíos opcional
+            return $v === '' ? null : $v;
         };
-
         foreach ($allowed as $k) {
             if (array_key_exists($k, $post)) {
                 $data[$k] = $norm($k, $post[$k]);
             }
         }
 
-        // Marca de edición
         $data['edicion'] = date('Y-m-d H:i:s');
 
-        // Llama al modelo
         $ok = $this->reclutamiento_model->updateIntakeByReq($idReq, $data);
 
-        return $this->output->set_output(json_encode([
-            'success' => (bool) $ok,
-            'msg'     => $ok ? 'OK' : 'No se pudo actualizar el intake',
-        ]));
+        return jsonOut([
+            'success'   => (bool) $ok,
+            'codigo'    => $ok ? 1 : 0,
+            'msg_key'   => $ok ? 'rec_intake_ok_saved' : 'rec_intake_err_not_updated',
+            'csrf_name' => $this->security->get_csrf_token_name(),
+            'csrf_hash' => $this->security->get_csrf_hash(),
+        ]);
     }
 
     public function uploadCSV()
@@ -2171,180 +2223,189 @@ class Reclutamiento extends CI_Controller
         $id_portal = $this->session->userdata('idPortal');
         $idUsuario = $this->session->userdata('id');
 
-        if (isset($_FILES["archivo"]["name"])) {
-            $extensionArchivo = pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION);
-            if ($extensionArchivo == 'csv') {
-                $date       = date('Y-m-d H:i:s');
-                $id_usuario = $this->session->userdata('id');
+        if (! isset($_FILES["archivo"]["name"])) {
+            $msj = ['codigo' => 0, 'msg' => t('rec_csv_err_invalid_file', 'Seleccione un archivo .csv válido')];
+            echo json_encode($msj);exit;
+        }
 
-                $rows     = [];
-                $file     = $_FILES["archivo"];
-                $tmp      = $file["tmp_name"];
-                $filename = $file["name"];
-                $size     = $file["size"];
+        $extensionArchivo = strtolower(pathinfo($_FILES['archivo']['name'], PATHINFO_EXTENSION));
+        if ($extensionArchivo !== 'csv') {
+            $msj = ['codigo' => 0, 'msg' => t('rec_csv_err_invalid_file', 'Seleccione un archivo .csv válido')];
+            echo json_encode($msj);exit;
+        }
 
-                if ($size < 0) {
-                    $msj = [
-                        'codigo' => 0,
-                        'msg'    => 'Seleccione un archivo .csv válido',
-                    ];
-                } else {
-                    $handle = fopen($tmp, "r");
-                    while (($data = fgetcsv($handle)) !== false) {
-                        $rows[] = $data;
-                    }
-                    // se eliminan las cabeceras
-                    for ($i = 0; $i <= 0; $i++) {
-                        unset($rows[$i]);
-                    }
-                    $total = count($rows);
+        $file = $_FILES["archivo"];
+        $tmp  = $file["tmp_name"] ?? '';
+        $size = (int) ($file["size"] ?? 0);
 
-                    if ($total <= 0) {
-                        $msj = [
-                            'codigo' => 0,
-                            'msg'    => 'El archivo esta vacío',
-                        ];
-                    } else {
-                        $errorMessages   = '';
-                        $successMessages = 'Registros agregados de la(s) fila(s):<br> ';
-                        $i               = 0;
-                        $rowsAdded       = 0;
-                        foreach ($rows as $r) {
-                            // Las columnas abarcan los indices del 1-9
+        if ($size <= 0 || ! $tmp) {
+            $msj = ['codigo' => 0, 'msg' => t('rec_csv_err_invalid_file', 'Seleccione un archivo .csv válido')];
+            echo json_encode($msj);exit;
+        }
 
-                            $userCorrect = $this->session->userdata('id');
-                            if ($userCorrect != null) {
-                                if (preg_match("/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/i", $r[1])) { // Evalua fecha con formato dd/mm/aaaa
-                                    if (preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[2]) &&
-                                        preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[3]) &&
-                                        preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[4])) { // Evalua nombres propios aceptando minusculas al principio
-                                        $nombre    = strtoupper($r[2]);
-                                        $paterno   = strtoupper($r[3]);
-                                        $materno   = strtoupper($r[4]);
-                                        $existName = $this->reclutamiento_model->getBolsaTrabajoByName($nombre, $paterno, $materno, $id_portal);
-                                        if ($existName == null) {
-                                            $existPhone = $this->reclutamiento_model->getBolsaTrabajoByPhone($r[5], $id_portal);
-                                            if (preg_match("/^[\d]{2}[-]?[\d]{4}[-]?[\d]{4}$/", trim($r[5])) && $existPhone == null) { //Numero de telefono con formato 00-0000-0000 o 0000000000
-                                                if (strlen($r[6]) > 0 && strlen($r[6]) <= 128) {                                           //Area de interes con limite
-                                                    if (strlen($r[7]) > 0 && strlen($r[7]) <= 30) {                                            //Localizacion del aspirante
-                                                        $existContact = $this->funciones_model->getMediosContactoByName($r[8]);
+        $rows   = [];
+        $handle = fopen($tmp, "r");
+        if (! $handle) {
+            $msj = ['codigo' => 0, 'msg' => t('rec_csv_err_invalid_file', 'Seleccione un archivo .csv válido')];
+            echo json_encode($msj);exit;
+        }
 
-                                                        if (isset($existContact)) {
-                                                            $this->funciones_model->insertarMedioContacto($r[8]);
-                                                            $existContact = $this->funciones_model->getMediosContactoByName($r[8]);
-                                                        }
-                                                        if ($r[8] != '' && $existContact !== null) { //Medio por el cual se contacto el aspirante
-                                                            $fecha = validar_fecha_espanol($r[1]);
-                                                            if ($fecha) {
-                                                                $fecha = fecha_espanol_bd($r[1]);
-                                                            } else {
-                                                                $fecha = date('Y-m-d H:i:s');
-                                                            }
+        while (($data = fgetcsv($handle)) !== false) {
+            $rows[] = $data;
+        }
+        fclose($handle);
 
-                                                            $data = [
-                                                                'creacion'       => $fecha,
-                                                                'edicion'        => $fecha,
-                                                                'id_portal'      => $id_portal,
-                                                                'id_usuario'     => $idUsuario,
-                                                                'nombre'         => strtoupper($r[2]),
-                                                                'paterno'        => strtoupper($r[3]),
-                                                                'materno'        => strtoupper($r[4]),
-                                                                'domicilio'      => strtoupper($r[7]),
-                                                                'telefono'       => trim($r[5]),
-                                                                'medio_contacto' => $existContact->nombre,
-                                                                'area_interes'   => $r[6],
-                                                            ];
-                                                            $this->reclutamiento_model->addBolsaTrabajo($data);
-                                                            $successMessages .= ($i + 2) . ',';
-                                                            $i++;
-                                                            $rowsAdded++;
-                                                        } else {
-                                                            $errorMessages .= 'Medio de contacto vacío o no existe en el catalogo en la fila ' . ($i + 2) . '<br>' . $$r[8] . "aqui el medio ";
-                                                            $i++;
-                                                            continue;
-                                                        }
-                                                    } else {
-                                                        $errorMessages .= 'Localización vacía o demasiado extensa (limitado a 30 caracteres) en la fila ' . ($i + 2) . '<br>';
-                                                        $i++;
-                                                        continue;
-                                                    }
-                                                } else {
-                                                    $errorMessages .= 'Área de interes vacía o demasiado extensa (limitado a 30 caracteres) en la fila ' . ($i + 2) . '<br>';
-                                                    $i++;
-                                                    continue;
-                                                }
-                                            } else {
-                                                $errorMessages .= 'Número de teléfono ya existe o no es válido en la fila ' . ($i + 2) . '<br>';
-                                                $i++;
-                                                continue;
-                                            }
-                                        } else {
-                                            $errorMessages .= 'El nombre ya existe en la fila ' . ($i + 2) . '<br>';
-                                            $i++;
-                                            continue;
-                                        }
-                                    } else {
-                                        $errorMessages .= 'Nombre y/o apellidos no válidos en la fila ' . ($i + 2) . '<br>';
-                                        $i++;
-                                        continue;
-                                    }
-                                } else {
-                                    $errorMessages .= 'Formato de fecha no válido en la fila ' . ($i + 2) . '<br>';
-                                    $i++;
-                                    continue;
-                                }
-                            } else {
-                                $errorMessages .= 'El ID de usuario no es válido en la fila ' . ($i + 2) . '<br>';
-                                $i++;
-                                continue;
-                            }
+        unset($rows[0]);
+        $rows = array_values($rows);
 
-                        }
-                        if ($errorMessages == '') {
-                            $msj = [
-                                'codigo' => 1,
-                                'msg'    => 'Los registros del archivo fueron cargados al sistema correctamente<br>' . substr($successMessages, 0, -1),
-                            ];
-                        }
-                        if ($errorMessages != '' && $rowsAdded == 0) {
-                            $response = 'No se agregaron registros del archivo ';
-                            $msj      = [
-                                'codigo' => 0,
-                                'msg'    => 'Finalizó la carga pero se encontraron algunos errores en los siguientes registros:<br>' . $errorMessages . '<br>' . $response,
-                            ];
-                        }
-                        if ($errorMessages != '' && $rowsAdded > 0) {
-                            $response = substr($successMessages, 0, -1);
-                            $msj      = [
-                                'codigo' => 2,
-                                'msg'    => 'Finalizó la carga pero se encontraron algunos errores en los siguientes registros:<br>' . $errorMessages . '<br>' . $response,
-                            ];
-                        }
-                    }
-                }
-            } else {
-                $msj = [
-                    'codigo' => 0,
-                    'msg'    => 'Seleccione un archivo .csv válido',
-                ];
+        if (count($rows) <= 0) {
+            $msj = ['codigo' => 0, 'msg' => t('rec_csv_err_empty_file', 'El archivo está vacío')];
+            echo json_encode($msj);exit;
+        }
+
+        $errorMessages   = '';
+        $successMessages = t('rec_csv_rows_added_prefix', 'Registros agregados de la(s) fila(s):<br> ');
+        $i               = 0;
+        $rowsAdded       = 0;
+
+        foreach ($rows as $r) {
+            $rowNum = $i + 2;
+
+            $userCorrect = $this->session->userdata('id');
+            if ($userCorrect == null) {
+                $errorMessages .= t('rec_csv_err_user_id_invalid', 'El ID de usuario no es válido en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
             }
-        } else {
+
+            if (! isset($r[1], $r[2], $r[3], $r[4], $r[5], $r[6], $r[7], $r[8])) {
+                $errorMessages .= t('rec_csv_err_invalid_row', 'Fila incompleta o inválida en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            if (! preg_match("/^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/i", $r[1])) {
+                $errorMessages .= t('rec_csv_err_date_format', 'Formato de fecha no válido en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            if (
+                ! preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[2]) ||
+                ! preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[3]) ||
+                ! preg_match("/^([\wñáéíóúÁÉÍÓÚ]{1}[\wñáéíóúÁÉÍÓÚ\s]+)$/", $r[4])
+            ) {
+                $errorMessages .= t('rec_csv_err_name_invalid', 'Nombre y/o apellidos no válidos en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            $nombre  = strtoupper($r[2]);
+            $paterno = strtoupper($r[3]);
+            $materno = strtoupper($r[4]);
+
+            $existName = $this->reclutamiento_model->getBolsaTrabajoByName($nombre, $paterno, $materno, $id_portal);
+            if ($existName != null) {
+                $errorMessages .= t('rec_csv_err_name_exists', 'El nombre ya existe en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            $existPhone = $this->reclutamiento_model->getBolsaTrabajoByPhone($r[5], $id_portal);
+            if (! preg_match("/^[\d]{2}[-]?[\d]{4}[-]?[\d]{4}$/", trim($r[5])) || $existPhone != null) {
+                $errorMessages .= t('rec_csv_err_phone_invalid_or_exists', 'Número de teléfono ya existe o no es válido en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            if (! (strlen($r[6]) > 0 && strlen($r[6]) <= 128)) {
+                $errorMessages .= t('rec_csv_err_interest_invalid', 'Área de interés vacía o demasiado extensa en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            if (! (strlen($r[7]) > 0 && strlen($r[7]) <= 30)) {
+                $errorMessages .= t('rec_csv_err_location_invalid', 'Localización vacía o demasiado extensa en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            $existContact = $this->funciones_model->getMediosContactoByName($r[8]);
+            if (isset($existContact)) {
+                $this->funciones_model->insertarMedioContacto($r[8]);
+                $existContact = $this->funciones_model->getMediosContactoByName($r[8]);
+            }
+
+            if ($r[8] === '' || $existContact === null) {
+                $errorMessages .= t('rec_csv_err_contact_empty', 'Medio de contacto vacío o no existe en el catálogo en la fila {row}', ['{row}' => $rowNum]) . '<br>';
+                $i++;
+                continue;
+            }
+
+            $fecha = validar_fecha_espanol($r[1]) ? fecha_espanol_bd($r[1]) : date('Y-m-d H:i:s');
+
+            $data = [
+                'creacion'       => $fecha,
+                'edicion'        => $fecha,
+                'id_portal'      => $id_portal,
+                'id_usuario'     => $idUsuario,
+                'nombre'         => $nombre,
+                'paterno'        => $paterno,
+                'materno'        => $materno,
+                'domicilio'      => strtoupper($r[7]),
+                'telefono'       => trim($r[5]),
+                'medio_contacto' => $existContact->nombre,
+                'area_interes'   => $r[6],
+            ];
+
+            $this->reclutamiento_model->addBolsaTrabajo($data);
+
+            $successMessages .= ($rowNum) . ',';
+            $rowsAdded++;
+            $i++;
+        }
+
+        if ($errorMessages === '') {
+            $msj = [
+                'codigo' => 1,
+                'msg'    => t('rec_csv_ok_loaded', 'Los registros del archivo fueron cargados al sistema correctamente')
+                . '<br>' . rtrim($successMessages, ','),
+            ];
+            echo json_encode($msj);exit;
+        }
+
+        if ($rowsAdded == 0) {
             $msj = [
                 'codigo' => 0,
-                'msg'    => 'Seleccione un archivo .csv válido',
+                'msg'    => t('rec_csv_done_with_errors', 'Finalizó la carga pero se encontraron algunos errores:')
+                . '<br>' . $errorMessages . '<br>' . t('rec_csv_none_added', 'No se agregaron registros del archivo'),
             ];
+            echo json_encode($msj);exit;
         }
-        echo json_encode($msj);
+
+        $msj = [
+            'codigo' => 2,
+            'msg'    => t('rec_csv_done_with_errors', 'Finalizó la carga pero se encontraron algunos errores:')
+            . '<br>' . $errorMessages . '<br>' . rtrim($successMessages, ','),
+        ];
+        echo json_encode($msj);exit;
     }
+
     public function deleteUserOrder()
     {
-        $this->reclutamiento_model->deleteUserOrder($this->input->post('id'));
+        $id = $this->input->post('id', true);
+
+        $this->reclutamiento_model->deleteUserOrder($id);
+
         $msj = [
             'codigo' => 1,
-            'msg'    => 'Se ha eliminado el usuario de la requsición correctamente',
+            'msg'    => t('rec_order_del_user_ok', 'Se ha eliminado el usuario de la requisición correctamente'),
         ];
+
         echo json_encode($msj);
+        exit;
     }
+
     public function deleteOrder()
     {
         $id_usuario = $this->session->userdata('id');
@@ -2363,14 +2424,24 @@ class Reclutamiento extends CI_Controller
     }
     public function updateApplicant()
     {
-        // $section determina qué tipo de actualización
         $section  = $this->input->post('section');
         $id_bolsa = $this->input->post('id_bolsa');
         $idRol    = $this->session->userdata('idrol');
 
+        // (opcional) valida base mínima
+        if (! $section || ! $id_bolsa) {
+            $msj = [
+                'codigo' => 0,
+                'msg'    => t('rec_applicant_err_missing_section_or_id', 'Faltan datos para actualizar.'),
+            ];
+            echo json_encode($msj);exit;
+        }
+
         if ($section == 'personal') {
+
             $post         = $this->input->post();
             $vienenExtras = false;
+
             foreach ($post as $k => $v) {
                 if (strpos($k, 'extra_') === 0) {
                     $vienenExtras = true;
@@ -2379,27 +2450,40 @@ class Reclutamiento extends CI_Controller
             }
 
             if ($vienenExtras) {
-                // --- Validación manual ---
+                // ===== Validación manual (EXTRAS) =====
                 $requeridos = ['nombre', 'fecha_nacimiento', 'telefono'];
                 $faltantes  = [];
+
+                // Mapa de labels traducibles para extras
+                $labelsExtras = [
+                    'nombre'           => t('rec_applicant_extra_name', 'Nombre'),
+                    'fecha_nacimiento' => t('rec_applicant_extra_birthdate', 'Fecha de nacimiento'),
+                    'telefono'         => t('rec_applicant_extra_phone', 'Teléfono'),
+                ];
+
                 foreach ($requeridos as $campo) {
                     if (empty($post['extra_' . $campo])) {
-                        $faltantes[] = ucfirst(str_replace('_', ' ', $campo));
+                        $faltantes[] = $labelsExtras[$campo] ?? ucfirst(str_replace('_', ' ', $campo));
                     }
                 }
+
                 if (! empty($post['extra_correo']) && ! filter_var($post['extra_correo'], FILTER_VALIDATE_EMAIL)) {
-                    $faltantes[] = "Correo válido";
+                    $faltantes[] = t('rec_applicant_extra_valid_email', 'Correo válido');
                 }
+
                 if (count($faltantes)) {
                     $msj = [
                         'codigo' => 0,
-                        'msg'    => 'Faltan campos obligatorios: ' . implode(', ', $faltantes),
+                        'msg'    => t(
+                            'rec_applicant_err_missing_required',
+                            'Faltan campos obligatorios: {fields}',
+                            ['{fields}' => implode(', ', $faltantes)]
+                        ),
                     ];
-                    echo json_encode($msj);
-                    return;
+                    echo json_encode($msj);exit;
                 }
 
-                // --- Construir $bolsa con datos desde extras ---
+                // ===== Construir extras =====
                 $extras = [];
                 foreach ($post as $key => $value) {
                     if (strpos($key, 'extra_') === 0) {
@@ -2408,19 +2492,15 @@ class Reclutamiento extends CI_Controller
                     }
                 }
 
-                // Nombre y apellidos
                 $nombre_completo = isset($extras['nombre']) ? trim($extras['nombre']) : '';
                 $nombre_split    = explode(' ', $nombre_completo, 2);
                 $nombre          = isset($nombre_split[0]) ? $nombre_split[0] : '';
                 $paterno         = isset($nombre_split[1]) ? $nombre_split[1] : '';
                 $materno         = isset($extras['materno']) ? $extras['materno'] : null;
 
-                // Otros campos
                 $fecha_nacimiento = isset($extras['fecha_nacimiento']) ? $extras['fecha_nacimiento'] : null;
                 $telefono         = isset($extras['telefono']) ? $extras['telefono'] : null;
-                $correo           = isset($extras['correo']) ? $extras['correo'] : null;
 
-                // Domicilio
                 $partes_domicilio = [];
                 if (! empty($extras['domicilio'])) {
                     $partes_domicilio[] = $extras['domicilio'];
@@ -2436,7 +2516,6 @@ class Reclutamiento extends CI_Controller
 
                 $domicilio = implode(', ', $partes_domicilio);
 
-                // Construye el array para update
                 $bolsa = [
                     'edicion'          => date('Y-m-d H:i:s'),
                     'nombre'           => $nombre,
@@ -2447,37 +2526,39 @@ class Reclutamiento extends CI_Controller
                     'domicilio'        => $domicilio,
                     'extras'           => json_encode($extras, JSON_UNESCAPED_UNICODE),
                 ];
+
                 if ($idRol != 6) {
                     $bolsa['id_usuario'] = $this->session->userdata('id');
                 }
-                $sectionSuccessMessage = 'Informacion actualizada correctamente';
+
+                $sectionSuccessMessage = t('rec_applicant_ok_info_updated', 'Información actualizada correctamente');
+
             } else {
-                // --- Validación y update de campos normales ---
-                $this->form_validation->set_rules('nombre_update', 'Nombre(s)', 'required|trim');
-                $this->form_validation->set_rules('paterno_update', 'Primer apellido', 'required|trim');
-                $this->form_validation->set_rules('materno_update', 'Segundo apellido', 'trim');
-                $this->form_validation->set_rules('domicilio_update', 'Domicilio', 'required|trim');
-                $this->form_validation->set_rules('fecha_nacimiento_update', 'Fecha de nacimiento', 'required|trim');
-                $this->form_validation->set_rules('telefono_update', 'Teléfono', 'required|trim|max_length[16]');
-                $this->form_validation->set_rules('nacionalidad_update', 'Nacionalidad', 'required|trim');
-                $this->form_validation->set_rules('civil_update', 'Estado civil', 'required|trim');
-                $this->form_validation->set_rules('dependientes_update', 'Personas que dependan del aspirante', 'required|trim');
-                $this->form_validation->set_rules('escolaridad_update', 'Grado máximo de estudios', 'required|trim');
-                $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-                $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
-                $this->form_validation->set_message('valid_email', 'El campo {field} debe ser un correo válido');
-                $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+                // ===== Validación normal =====
+                $this->form_validation->set_rules('nombre_update', t('rec_applicant_f_first_names', 'Nombre(s)'), 'required|trim');
+                $this->form_validation->set_rules('paterno_update', t('rec_applicant_f_last_name1', 'Primer apellido'), 'required|trim');
+                $this->form_validation->set_rules('materno_update', t('rec_applicant_f_last_name2', 'Segundo apellido'), 'trim');
+                $this->form_validation->set_rules('domicilio_update', t('rec_applicant_f_address', 'Domicilio'), 'required|trim');
+                $this->form_validation->set_rules('fecha_nacimiento_update', t('rec_applicant_f_birthdate', 'Fecha de nacimiento'), 'required|trim');
+                $this->form_validation->set_rules('telefono_update', t('rec_applicant_f_phone', 'Teléfono'), 'required|trim|max_length[16]');
+                $this->form_validation->set_rules('nacionalidad_update', t('rec_applicant_f_nationality', 'Nacionalidad'), 'required|trim');
+                $this->form_validation->set_rules('civil_update', t('rec_applicant_f_marital_status', 'Estado civil'), 'required|trim');
+                $this->form_validation->set_rules('dependientes_update', t('rec_applicant_f_dependents', 'Personas que dependan del aspirante'), 'required|trim');
+                $this->form_validation->set_rules('escolaridad_update', t('rec_applicant_f_education', 'Grado máximo de estudios'), 'required|trim');
+
+                $this->form_validation->set_message('required', t('rec_val_required', 'El campo {field} es obligatorio'));
+                $this->form_validation->set_message('max_length', t('rec_val_max_length', 'El campo {field} debe tener máximo {param} carácteres'));
+                $this->form_validation->set_message('valid_email', t('rec_val_valid_email', 'El campo {field} debe ser un correo válido'));
+                $this->form_validation->set_message('numeric', t('rec_val_numeric', 'El campo {field} debe ser numérico'));
 
                 if ($this->form_validation->run() == false) {
                     $msj = [
                         'codigo' => 0,
                         'msg'    => validation_errors(),
                     ];
-                    echo json_encode($msj);
-                    return;
+                    echo json_encode($msj);exit;
                 }
 
-                // --- Aquí armamos $bolsa SOLO con los campos normales ---
                 $bolsa = [
                     'edicion'          => date('Y-m-d H:i:s'),
                     'nombre'           => $this->input->post('nombre_update'),
@@ -2491,19 +2572,17 @@ class Reclutamiento extends CI_Controller
                     'dependientes'     => $this->input->post('dependientes_update'),
                     'grado_estudios'   => $this->input->post('escolaridad_update'),
                 ];
+
                 if ($idRol != 6) {
                     $bolsa['id_usuario'] = $this->session->userdata('id');
                 }
-                // --- CONSERVAR LOS DATOS DE EXTRAS ---
 
-                $sectionSuccessMessage = 'Datos personales actualizados correctamente';
+                $sectionSuccessMessage = t('rec_applicant_ok_personal_updated', 'Datos personales actualizados correctamente');
             }
 
-            // ACTUALIZA
             $this->reclutamiento_model->updateApplicantByIdBolsaTrabajo($bolsa, $id_bolsa);
         }
 
-        // Las demás secciones (salud, conocimiento, intereses) igual que ya lo tienes...
         if ($section == 'salud') {
             $bolsa = [
                 'salud'      => $this->input->post('salud_update'),
@@ -2511,18 +2590,20 @@ class Reclutamiento extends CI_Controller
                 'deporte'    => $this->input->post('deporte_update'),
                 'metas'      => $this->input->post('metas_update'),
             ];
-            $sectionSuccessMessage = 'Información de la salud y vida social actualizadas correctamente';
+            $sectionSuccessMessage = t('rec_applicant_ok_health_updated', 'Información de la salud y vida social actualizadas correctamente');
             $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
         }
+
         if ($section == 'conocimiento') {
             $bolsa = [
                 'idiomas'  => $this->input->post('idiomas_update'),
                 'maquinas' => $this->input->post('maquinas_update'),
                 'software' => $this->input->post('software_update'),
             ];
-            $sectionSuccessMessage = 'Información de conocimiento y habilidades actualizada correctamente';
+            $sectionSuccessMessage = t('rec_applicant_ok_skills_updated', 'Información de conocimiento y habilidades actualizada correctamente');
             $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
         }
+
         if ($section == 'intereses') {
             $bolsa = [
                 'medio_contacto' => $this->input->post('medio_contacto_update'),
@@ -2532,15 +2613,24 @@ class Reclutamiento extends CI_Controller
                 'viajar'         => $this->input->post('viajar_update'),
                 'trabajar'       => $this->input->post('trabajar_update'),
             ];
-            $sectionSuccessMessage = 'Información de los intereses actualizada correctamente';
+            $sectionSuccessMessage = t('rec_applicant_ok_interests_updated', 'Información de los intereses actualizada correctamente');
             $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
+        }
+
+        // Si llega aquí sin setear mensaje (section desconocida)
+        if (! isset($sectionSuccessMessage)) {
+            $msj = [
+                'codigo' => 0,
+                'msg'    => t('rec_applicant_err_invalid_section', 'Sección inválida.'),
+            ];
+            echo json_encode($msj);exit;
         }
 
         $msj = [
             'codigo' => 1,
             'msg'    => $sectionSuccessMessage,
         ];
-        echo json_encode($msj);
+        echo json_encode($msj);exit;
     }
 
     public function renombrarDocumentoBolsa()

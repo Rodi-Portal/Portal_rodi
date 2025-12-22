@@ -563,10 +563,9 @@ class Reclutamiento_model extends CI_Model
     public function cambiarStatusrequisicion($id, $status)
     {
         if (! $id || empty($status)) {
-            // Verificar si se proporcionan los datos necesarios
-            return "Error: Datos insuficientes para la actualización.";
+            return t('rec_status_err_insufficient_data', 'Error: Datos insuficientes para la actualización.');
         }
-        //    echo "aqui status : ".$status['status'];
+
         try {
             $this->db
                 ->set('id_usuario', $status['id_usuario'])
@@ -575,17 +574,17 @@ class Reclutamiento_model extends CI_Model
                 ->update('requisicion');
 
             if ($this->db->affected_rows() == 0) {
-                // Verificar si la actualización fue exitosa
-                return "Error: No se pudo actualizar la requisición.";
+                return t('rec_status_err_not_updated', 'Error: No se pudo actualizar la requisición.');
             }
-            if ($status['status'] == 1) {
-                return "La requisición se detuvo correctamente.";
-            } else {
-                return "La requisición se inicio correctamente.";
+
+            if ((int) $status['status'] === 1) {
+                return t('rec_status_ok_stopped', 'La requisición se detuvo correctamente.');
             }
+
+            return t('rec_status_ok_started', 'La requisición se inició correctamente.');
+
         } catch (Exception $e) {
-            // Manejar excepciones
-            return "Error al actualizar la requisición: " . $e->getMessage();
+            return t('rec_status_err_updating', 'Error al actualizar la requisición: ') . $e->getMessage();
         }
     }
 
@@ -1137,7 +1136,7 @@ class Reclutamiento_model extends CI_Model
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
-                    ->select("
+            ->select("
             A.*,
             A.id as idAsp,
 

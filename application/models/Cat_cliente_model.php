@@ -538,8 +538,8 @@ class Cat_cliente_model extends CI_Model
             ->select('L.*')
             ->from('links_clientes as L')
             ->where('L.id_portal', $id_portal)
-            ->where('L.id_cliente IS NULL', NULL, FALSE) // ✅ condición correcta
-         
+            ->where('L.id_cliente IS NULL', null, false) // ✅ condición correcta
+
             ->get();
 
         return $query->result(); // 👈 Esto devuelve un array de objetos
@@ -583,6 +583,37 @@ class Cat_cliente_model extends CI_Model
             $data['edicion']  = date('Y-m-d H:i:s');
             return $this->db->insert('links_clientes', $data);
         }
+    }
+    public function findRelacion($idCliente, $idDatos)
+    {
+        return $this->db->get_where('usuarios_clientes', [
+            'id_cliente'         => $idCliente,
+            'id_datos_generales' => $idDatos,
+        ])->row();
+    }
+    public function getByCorreo($correo)
+    {
+        return $this->db->get_where('datos_generales', ['correo' => $correo])->row();
+    }
+
+    public function crear($data)
+    {
+        $this->db->insert('datos_generales', $data);
+        return (int) $this->db->insert_id();
+    }
+    public function insertar($data)
+    {
+        $this->db->insert('usuarios_clientes', $data);
+        return (int) $this->db->insert_id();
+    }
+
+    public function reactivar($id)
+    {
+        $this->db->where('id', $id)->update('usuarios_clientes', [
+            'eliminado' => 0,
+            'status'    => 1,
+            'edicion'   => date('Y-m-d H:i:s'),
+        ]);
     }
 
 }

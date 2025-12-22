@@ -346,7 +346,7 @@
           } else {
             Swal.fire({
               icon: 'error',
-              title: 'Errorqqq',
+              title: 'Error',
               text: response.msg,
               confirmButtonText: 'OK'
             });
@@ -355,7 +355,7 @@
         error: function() {
           Swal.fire({
             icon: 'error',
-            title: 'Errorewrt',
+            title: 'Error',
             text: 'Hubo un error al guardar los datos.',
             confirmButtonText: 'OK'
           });
