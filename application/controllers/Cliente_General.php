@@ -13,7 +13,7 @@ class Cliente_General extends Custom_Controller
 
         // 🔒 Seguridad
         if (! $this->session->userdata('id')) {
-            redirect('Login/index');
+            redirect('Login/index'); 
             return;
         }
 
