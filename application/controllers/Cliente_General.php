@@ -4,15 +4,41 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Cliente_General extends Custom_Controller
 {
 
-    public function __construct()
+     public function __construct()
     {
         parent::__construct();
+
+        // ✅ Helpers (aquí vive t())
+        $this->load->helper(['url', 'language', 'i18n']);
+
+        // 🔒 Seguridad
         if (! $this->session->userdata('id')) {
             redirect('Login/index');
+            return;
         }
+
+        // ✅ Idioma actual (mismo patrón que ya usas)
+        $raw = strtolower((string) ($this->session->userdata('lang') ?: 'es'));
+        $map = [
+            'es'      => 'espanol',
+            'en'      => 'english',
+            'spanish' => 'espanol',
+            'english' => 'english',
+        ];
+        $lang = $map[$raw] ?? 'espanol';
+
+        // ✅ Carga los lang que usa mdl_reclutamiento (ajusta si usas otros)
+        $this->lang->load('reclutamiento_escritorio', $lang);
+        $this->lang->load('reclutamiento_progreso', $lang);
+        $this->lang->load('reclutamiento_finalizadas', $lang);
+        $this->lang->load('reclutamiento_bolsa', $lang);
+        $this->lang->load('registro_candidatos', $lang);
+
+        // Sesión/estatus
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
     }
+    
 
     public function index()
     {
