@@ -2292,10 +2292,21 @@
 var urltraerClientes = '<?php echo base_url('Cat_Cliente/getClientesActivos'); ?>';
 var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId'); ?>';
 </script>
+<script>
+  // Define TT solo si no existe (idempotente)
+  window.TT = window.TT || function(key, fallback, repl) {
+    if (typeof window.t === 'function') return window.t(key, fallback, repl);
+    return (fallback || key);
+  };
+
+  // Alias opcional T (también solo si no existe)
+  window.T = window.T || function(k, fb, repl) {
+    return window.TT(k, fb, repl);
+  };
+</script>
 
 <script>
-const TT = (key, fallback, repl) =>
-  (typeof window.t === 'function') ? window.t(key, fallback, repl) : (fallback || key);
+
 
 (function() {
   var $modal = $('#modalAsignarSucursal');
