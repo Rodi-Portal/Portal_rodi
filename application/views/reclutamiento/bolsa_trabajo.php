@@ -2530,9 +2530,9 @@
             if (response.link) {
               setLinkGenerado(response.link);
               $('#qrGenerado').html(
-                `<img src="${response.qr}" alt="${T('rec_bol_qr_alt','QR')}" style="max-width: 150px;">`
+                `<img id="imgQrGenerado" src="${response.qr}" alt="${T('rec_bol_qr_alt','QR')}" style="max-width: 150px;">`
               );
-
+              setQrButtons(response.qr || '');
               Swal.fire({
                 icon: 'success',
                 title: T('rec_bol_genlink_success_title', '¡Éxito!'),
