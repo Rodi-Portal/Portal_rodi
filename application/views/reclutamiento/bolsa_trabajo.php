@@ -186,7 +186,7 @@
         <?php $selectedUser = (int) ($this->input->get('user') ?? 0); ?>
 
         <select name="user" id="asignar"
-          class="form-control                                                             <?php echo $isDisabled ?>">
+          class="form-control                                                                                                                       <?php echo $isDisabled ?>">
           <option value="0" <?php echo($selectedUser === 0 ? 'selected' : ''); ?>>
             <?php echo t('rec_common_all', 'Todos'); ?>
           </option>
@@ -455,7 +455,7 @@
       <div class="col-sm-12 col-md-6 col-lg-4 mb-5<?php echo $moveApplicant ?>">
         <div class="card text-center ">
           <div
-            class="card-header                                                                                                                                                                                                                                                            <?php echo $color_estatus ?>"
+            class="card-header                                                                                                                                                                                                                                                                                                                        <?php echo $color_estatus ?>"
             id="req_header<?php echo $r->id; ?>">
             <b><?php echo '#' . $r->id . ' ' . $nombreCompleto; ?></b>
           </div>
@@ -2391,7 +2391,7 @@
   }
 
 
-  $('#modalGenerarLink').on('show.bs.modal', function() {
+  $('#modalGenerarLink').off('show.bs.modal').on('show.bs.modal', function() {
     const T = window.t || function(key, fallback, repl) {
       let s = (fallback || key);
       if (repl && typeof repl === 'object') {
@@ -2401,11 +2401,14 @@
       return s;
     };
 
-    // ✅ Antes: $('#linkGenerado').html(...)
-    // ✅ Ahora: preview + full
-    setLinkGenerado(''); // limpia
+    // ✅ variable segura (evita "url is not defined")
+    let url = '';
+
+    // Limpia UI
+    setLinkGenerado('');
     $('#linkGeneradoPreview').val(T('rec_bol_link_loading', 'Cargando...'));
-    $('#qrGenerado').html("");
+    $('#qrGenerado').html('');
+    setQrButtons('');
 
     $.ajax({
       url: '<?php echo base_url("Reclutamiento/verificar_archivos_existentes"); ?>',
@@ -2413,15 +2416,11 @@
       dataType: 'json',
       success: function(response) {
 
-        // Aviso privacidad (si lo usas en el modal, aquí podrías setear un href)
-        const avisoHref = response.aviso ?
-          "<?php echo base_url('Avance/ver/'); ?>" + encodeURIComponent(response.aviso) :
-          "<?php echo base_url('Avance/ver/AvisoPrivacidadTalentSafeControl-V1.0.pdf'); ?>";
-
         // Link generado
-        if (response && response.link) {
-          // ✅ Este era el error: estabas usando "url" (no existe)
-          setLinkGenerado(response.link);
+        url = (response && response.link) ? response.link : '';
+
+        if (url) {
+          setLinkGenerado(url);
         } else {
           setLinkGenerado('');
           $('#linkGeneradoPreview').val(T('rec_bol_link_not_generated', 'Aún no se ha generado un link.'));
@@ -2437,17 +2436,16 @@
           $('#qrGenerado').html('');
           setQrButtons('');
         }
-
       },
       error: function() {
         setLinkGenerado('');
         $('#linkGeneradoPreview').val(T('rec_bol_link_fetch_error', 'Error al obtener datos del portal.'));
         $('#qrGenerado').html('');
         setQrButtons('');
-
       }
     });
   });
+
 
   function setQrButtons(qrSrc) {
     // qrSrc puede ser: URL (https://...) o data:image/png;base64,...
@@ -2530,7 +2528,7 @@
           dataType: 'json',
           success: function(response) {
             if (response.link) {
-              setLinkGenerado(url);
+              setLinkGenerado(response.link);
               $('#qrGenerado').html(
                 `<img src="${response.qr}" alt="${T('rec_bol_qr_alt','QR')}" style="max-width: 150px;">`
               );
