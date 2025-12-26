@@ -438,7 +438,7 @@ class Reclutamiento extends CI_Controller
 
         // Área
         $getArea = $_GET['area'] ?? '';
-        if ($getArea !== '' && $getArea !== 'none') {
+        if ($getArea !== '' && $getArea !== 'none' && $getArea !== 'all') {
             $area_interest  = $getArea;
             $condition_area = 'B.area_interes';
         } else {
@@ -524,16 +524,14 @@ class Reclutamiento extends CI_Controller
         /* =========================
      * Config paginación
      * ========================= */
-            $pagination['base_url'] = base_url('reclutamiento/bolsa');
-            $pagination['total_rows'] = $total_rows;
-            $pagination['per_page'] = $per_page;
+        $pagination['base_url']   = base_url('reclutamiento/bolsa');
+        $pagination['total_rows'] = $total_rows;
+        $pagination['per_page']   = $per_page;
 
-            $pagination['page_query_string'] = true;
-            $pagination['query_string_segment'] = 'page';
-            $pagination['reuse_query_string'] = true;
-            $pagination['use_page_numbers'] = false;
-
-        
+        $pagination['page_query_string']    = true;
+        $pagination['query_string_segment'] = 'page';
+        $pagination['reuse_query_string']   = true;
+        $pagination['use_page_numbers']     = false;
 
         $pagination['full_tag_open']  = '<nav><ul class="pagination justify-content-center">';
         $pagination['full_tag_close'] = '</ul></nav>';
@@ -542,7 +540,7 @@ class Reclutamiento extends CI_Controller
         $pagination['num_tag_close']  = '</li>';
         $pagination['cur_tag_open']   = '<li class="page-item active"><span class="page-link">';
         $pagination['cur_tag_close']  = '</span></li>';
-        if (!isset($_GET['page'])) {
+        if (! isset($_GET['page'])) {
             $_GET['page'] = '0';
         }
         $this->pagination->initialize($pagination);
