@@ -18,6 +18,8 @@
 
       // 👇 importante: 'header' = header_lang.php
       $CI->lang->load('header', $idioma_ci);
+      $CI->lang->load('portal_generales', $idioma_ci);
+
   ?>
   <!DOCTYPE html>
   <html lang="<?php echo $lang; ?>">
@@ -461,8 +463,9 @@ echo $token  */?>
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="updateLogoModalLabel">Subir Nuevo Logo</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <h5 class="modal-title">
+                    <?= $this->lang->line('portal_logo_modal_title'); ?>
+                  </h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -470,12 +473,14 @@ echo $token  */?>
                 <div class="modal-body">
                   <form id="logoForm">
                     <div class="form-group">
-                      <label for="fileLogo">Selecciona una imagen</label>
-                      <input type="file" class="form-control-file" id="fileLogo" name="fileLogo" accept="image/*">
+                      <label for="fileLogo">
+                        <?= $this->lang->line('portal_logo_select_image'); ?>
+                      </label> <input type="file" class="form-control-file" id="fileLogo" name="fileLogo"
+                        accept="image/*">
                     </div>
                   </form>
                   <div id="preview" style="display: none;">
-                    <h6>Vista previa:</h6>
+                    <h6><?= $this->lang->line('portal_logo_preview'); ?>:</h6>
                     <img id="imagePreview" src="" alt="Vista previa de la imagen"
                       style="max-width: 100%; height: auto;">
                   </div>
@@ -483,16 +488,21 @@ echo $token  */?>
                   <!-- Si la variable de sesión 'logo' no es null, mostramos el botón de eliminar -->
                   <?php if ($this->session->userdata('logo') != null) {?>
                   <div id="currentLogoContainer">
-                    <h6>Logo Actual:</h6>
+                    <h6><?= $this->lang->line('portal_logo_current'); ?>:</h6>
                     <img id="currentLogo" src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>"" alt=" Logo
                       actual" style="max-width: 100%; height: auto;">
-                    <button type="button" id="deleteLogo" class="btn btn-danger mt-2">Eliminar Logo</button>
+                    <button class="btn btn-danger">
+                      <?= $this->lang->line('portal_logo_delete'); ?>
+                    </button>
                   </div>
                   <?php }?>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                  <button type="button" id="saveLogo" class="btn btn-primary">Guardar Logo</button>
+                  <button class="btn btn-secondary" data-dismiss="modal">
+                    <?= $this->lang->line('portal_logo_close'); ?>
+                  </button> <button class="btn btn-primary">
+                    <?= $this->lang->line('portal_logo_save'); ?>
+                  </button>
                 </div>
               </div>
             </div>
