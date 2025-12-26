@@ -413,3 +413,25 @@ $lang['rec_prog_warranty_th_desc_status'] = 'Descripción / Estatus';
 $lang['rec_prog_warranty_no_records'] = 'Sin registros';
 $lang['rec_common_role_client']    = 'Cliente';
 $lang['rec_common_role_recruiter'] = 'Reclutador';
+$lang['rec_mov_delete_ok']   = 'El registro ha sido eliminado correctamente.';
+$lang['rec_mov_delete_fail'] = 'No se pudo eliminar el registro.';
+$lang['rec_action_saved_ok']   = 'Acción registrada correctamente.';
+$lang['rec_action_saved_fail'] = 'Hubo un problema, no se registró la acción.';
+
+$lang['rec_req_rule_requisition'] = 'Requisición';
+$lang['rec_req_rule_status']      = 'Estatus a asignar';
+$lang['rec_req_rule_comments']    = 'Comentarios';
+
+$lang['fv_required']    = 'El campo {field} es obligatorio';
+$lang['fv_max_length']  = 'El campo {field} debe tener máximo {param} carácteres';
+$lang['fv_numeric']     = 'El campo {field} debe ser numérico';
+
+$lang['rec_req_cancel_ok']        = 'La requisición fue cancelada correctamente';
+$lang['rec_req_delete_ok']        = 'La requisición fue eliminada correctamente';
+$lang['rec_req_finish_ok']        = 'La requisición fue terminada correctamente';
+$lang['rec_req_cannot_close']     = 'No se puede cerrar la requisición porque falta información:';
+
+$lang['rec_req_missing_salary']     = 'no tiene registrado el sueldo acordado.';
+$lang['rec_req_missing_entry_date'] = 'no tiene registrada la fecha de ingreso.';
+$lang['rec_req_candidate_prefix']   = 'El candidato <b>{name}</b> ';
+$lang['rec_req_missing_vacancies']  = 'Faltan {n} vacantes por cubrir con candidatos completos.';

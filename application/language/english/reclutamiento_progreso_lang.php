@@ -415,6 +415,29 @@ $lang['rec_prog_warranty_no_records'] = 'No records';
 $lang['rec_common_role_client']    = 'Client';
 $lang['rec_common_role_recruiter'] = 'Recruiter';
 
+$lang['rec_mov_delete_ok']   = 'The record has been deleted successfully.';
+$lang['rec_mov_delete_fail'] = 'The record could not be deleted.';
+$lang['rec_action_saved_ok']   = 'Action recorded successfully.';
+$lang['rec_action_saved_fail'] = 'There was a problem; the action was not recorded.';
+
+$lang['rec_req_rule_requisition'] = 'Requisition';
+$lang['rec_req_rule_status']      = 'Status to assign';
+$lang['rec_req_rule_comments']    = 'Comments';
+
+$lang['fv_required']    = 'The {field} field is required';
+$lang['fv_max_length']  = 'The {field} field must be at most {param} characters';
+$lang['fv_numeric']     = 'The {field} field must be numeric';
+
+$lang['rec_req_cancel_ok']        = 'The requisition was cancelled successfully';
+$lang['rec_req_delete_ok']        = 'The requisition was deleted successfully';
+$lang['rec_req_finish_ok']        = 'The requisition was closed successfully';
+$lang['rec_req_cannot_close']     = 'The requisition cannot be closed because information is missing:';
+
+$lang['rec_req_missing_salary']     = 'does not have the agreed salary recorded.';
+$lang['rec_req_missing_entry_date'] = 'does not have the start date recorded.';
+$lang['rec_req_candidate_prefix']   = 'Candidate <b>{name}</b> ';
+$lang['rec_req_missing_vacancies']  = '{n} vacancies are still missing to be covered with complete candidates.';
+
 
 
 
