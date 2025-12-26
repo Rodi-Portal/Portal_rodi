@@ -14,7 +14,8 @@
 
       <div class="modal-header">
         <h4 class="modal-title"><?php echo t('rec_prog_app_modal_title', 'Datos del aspirante'); ?></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -29,12 +30,12 @@
               <?php
                 if ($reqs) {
                   foreach ($reqs as $req) { ?>
-                    <option value="<?php echo $req->idReq; ?>">
-                      <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - ' . t('rec_prog_app_req_openings', 'Vacantes:') . ' ' . $req->numero_vacantes; ?>
-                    </option>
+              <option value="<?php echo $req->idReq; ?>">
+                <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - ' . t('rec_prog_app_req_openings', 'Vacantes:') . ' ' . $req->numero_vacantes; ?>
+              </option>
               <?php }
                 } else { ?>
-                  <option value=""><?php echo t('rec_prog_app_no_reqs', 'Sin requisiones registradas'); ?></option>
+              <option value=""><?php echo t('rec_prog_app_no_reqs', 'Sin requisiones registradas'); ?></option>
               <?php } ?>
             </select>
 
@@ -81,9 +82,9 @@
                 <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
 
                 <?php if ($medios != null): ?>
-                  <?php foreach ($medios as $m): ?>
-                    <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
-                  <?php endforeach; ?>
+                <?php foreach ($medios as $m): ?>
+                <option value="<?php echo $m->nombre; ?>"><?php echo $m->nombre; ?></option>
+                <?php endforeach; ?>
                 <?php endif; ?>
 
                 <option value="0"><?php echo t('rec_common_na', 'N/A'); ?></option>
@@ -133,7 +134,8 @@
           <?php echo t('rec_prog_action_modal_title', 'Registro de acción al aspirante:'); ?>
           <span class="nombreAspirante"></span>
         </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -152,18 +154,15 @@
                 <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
                 <option value="otro"><?php echo t('rec_common_other', 'Otro'); ?></option>
                 <?php if ($acciones != null) { foreach ($acciones as $a) { ?>
-                  <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
+                <option value="<?php echo $a->id . ':' . $a->descripcion; ?>"><?php echo $a->descripcion; ?></option>
                 <?php } } ?>
               </select>
               <br>
 
               <!-- Input oculto para la acción personalizada -->
-              <input type="text"
-                     name="otra_accion"
-                     id="otra_accion"
-                     class="form-control mt-2"
-                     placeholder="<?php echo t('rec_prog_action_placeholder_other_action', 'Escribe la acción'); ?>"
-                     style="display: none;">
+              <input type="text" name="otra_accion" id="otra_accion" class="form-control mt-2"
+                placeholder="<?php echo t('rec_prog_action_placeholder_other_action', 'Escribe la acción'); ?>"
+                style="display: none;">
             </div>
           </div>
 
@@ -193,28 +192,30 @@
 
           <div class="row">
             <div class="col-md-6">
-              <label for="estatus_aspirante"
-                     data-toggle="tooltip"
-                     data-placement="top"
-                     title="<?php echo t('rec_prog_action_tip_candidate_status', 'El cambio realizado impactará directamente en la Bolsa de Trabajo, actualizando tanto el color como el estatus del aspirante'); ?>">
+              <label for="estatus_aspirante" data-toggle="tooltip" data-placement="top"
+                title="<?php echo t('rec_prog_action_tip_candidate_status', 'El cambio realizado impactará directamente en la Bolsa de Trabajo, actualizando tanto el color como el estatus del aspirante'); ?>">
                 <?php echo t('rec_prog_action_label_candidate_status', 'Estatus del aspirante'); ?>
                 <i class="fas fa-info-circle text-primary"></i>
               </label>
               <select class="form-control" id="estatus_aspirante" name="estatus_aspirante">
                 <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
-                <option value="1" data-color="#6c757d">⚪ <?php echo t('rec_prog_action_opt_waiting', 'En espera'); ?></option>
-                <option value="3" data-color="#ffc107">🟡 <?php echo t('rec_prog_action_opt_caution', 'Precaucion'); ?></option>
-                <option value="2" data-color="#17a2b8">🔵 <?php echo t('rec_prog_action_opt_in_process', 'En proceso de reclutamiento'); ?></option>
-                <option value="4" data-color="#28a745">🟢 <?php echo t('rec_prog_action_opt_ready_pre_employment', 'Listo para iniciar el proceso de preempleo'); ?></option>
-                <option value="0" data-color="#dc3545">🔴 <?php echo t('rec_prog_action_opt_block', 'Bloquear aspirante'); ?></option>
+                <option value="1" data-color="#6c757d">⚪ <?php echo t('rec_prog_action_opt_waiting', 'En espera'); ?>
+                </option>
+                <option value="3" data-color="#ffc107">🟡 <?php echo t('rec_prog_action_opt_caution', 'Precaucion'); ?>
+                </option>
+                <option value="2" data-color="#17a2b8">🔵
+                  <?php echo t('rec_prog_action_opt_in_process', 'En proceso de reclutamiento'); ?></option>
+                <option value="4" data-color="#28a745">🟢
+                  <?php echo t('rec_prog_action_opt_ready_pre_employment', 'Listo para iniciar el proceso de preempleo'); ?>
+                </option>
+                <option value="0" data-color="#dc3545">🔴
+                  <?php echo t('rec_prog_action_opt_block', 'Bloquear aspirante'); ?></option>
               </select>
             </div>
 
             <div class="col-md-6">
-              <label for="estatus_proceso"
-                     data-toggle="tooltip"
-                     data-placement="top"
-                     title="<?php echo t('rec_prog_action_tip_process_status', "Esta opción se registra en este módulo 'En proceso' y se refleja en la columna 'Estatus Actual'"); ?>">
+              <label for="estatus_proceso" data-toggle="tooltip" data-placement="top"
+                title="<?php echo t('rec_prog_action_tip_process_status', "Esta opción se registra en este módulo 'En proceso' y se refleja en la columna 'Estatus Actual'"); ?>">
                 <?php echo t('rec_prog_action_label_process_status', 'Estatus proceso'); ?>
                 <i class="fas fa-info-circle text-primary"></i>
               </label>
@@ -222,7 +223,8 @@
                 <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
                 <option value="1"><?php echo t('rec_prog_action_opt_completed', 'Completado'); ?></option>
                 <option value="3"><?php echo t('rec_prog_action_opt_canceled', 'Cancelado'); ?></option>
-                <option value="2"><?php echo t('rec_prog_action_opt_remove_final_status', 'Eliminar Estatus Final'); ?></option>
+                <option value="2"><?php echo t('rec_prog_action_opt_remove_final_status', 'Eliminar Estatus Final'); ?>
+                </option>
               </select>
             </div>
           </div>
@@ -252,7 +254,8 @@
           <?php echo t('rec_prog_history_modal_title', 'Historial de movimientos del aspirante:'); ?>
           <br><span class="nombreAspirante"></span>
         </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -275,7 +278,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title"><?php echo t('rec_prog_req_status_modal_title', 'Estatus de requisición'); ?></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -288,9 +292,9 @@
               <select name="req_estatus" id="req_estatus">
                 <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
                 <?php if ($reqs) { foreach ($reqs as $req) { ?>
-                  <option value="<?php echo $req->idReq; ?>">
-                    <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
-                  </option>
+                <option value="<?php echo $req->idReq; ?>">
+                  <?php echo '# ' . $req->idReq . ' ' . $req->nombre_cliente . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                </option>
                 <?php } } ?>
               </select>
               <br>
@@ -340,22 +344,27 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Reactivar requisición</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title">
+          <?php echo t('rec_fin_modal_reactivate_title', 'Reactivar requisición'); ?>
+        </h4>
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <div class="row">
           <div class="col-12">
-            <label>Requisición *</label>
+            <label><?php echo t('rec_fin_modal_reactivate_req_label', 'Requisición *'); ?></label>
             <select name="reactivar_req" id="reactivar_req" class="form-control obligado">
-              <option value="">Selecciona</option>
+              <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
+
               <?php
                   if ($reqs) {
                   foreach ($reqs as $req) {?>
               <option value="<?php echo $req->id; ?>">
-                <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - Vacantes: ' . $req->numero_vacantes; ?>
+                <?php echo '# ' . $req->id . ' ' . $req->nombre . ' - ' . $req->puesto . ' - ' . t('rec_common_vacancies', 'Vacantes:') . ' ' . $req->numero_vacantes; ?>
               </option>
               <?php }
               }?>
@@ -363,15 +372,22 @@
             <br>
           </div>
         </div>
+
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" onclick="reactivarsRequisicion()">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_common_cancel', 'Cancelar'); ?>
+        </button>
+        <button type="button" class="btn btn-success" onclick="reactivarsRequisicion()">
+          <?php echo t('rec_common_save', 'Guardar'); ?>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 
 
 <div class="modal fade" id="empleosModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -398,8 +414,12 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Documentos de <span id="docNombreAspirante"></span></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <h5 class="modal-title">
+          <?= t('rec_bol_docs_title', 'Documentos de') ?>
+          <span id="docNombreAspirante"></span>
+        </h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?= t('rec_bol_btn_close', 'Cerrar') ?>">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -409,45 +429,53 @@
         <table class="table table-bordered" id="tablaDocumentos">
           <thead>
             <tr>
-              <th>Archivo</th>
-              <th>Acciones</th>
+              <th><?= t('rec_bol_docs_th_file', 'Archivo') ?></th>
+              <th><?= t('rec_bol_docs_th_actions', 'Acciones') ?></th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
 
         <hr>
+
         <!-- Subir nuevos documentos -->
         <form id="formSubirDocs" enctype="multipart/form-data">
           <input type="hidden" name="id_aspirante" id="docIdAspirante">
 
           <div class="form-group">
-            <label>Subir nuevos documentos</label>
+            <label><?= t('rec_bol_docs_upload_label', 'Subir nuevos documentos') ?></label>
             <input type="file" name="archivos[]" id="inputArchivos" multiple class="form-control">
-            <small class="form-text text-muted">Selecciona varios; podrás editar el nombre antes de subir.</small>
+            <small class="form-text text-muted">
+              <?= t('rec_bol_docs_upload_hint', 'Selecciona varios; podrás editar el nombre antes de subir.') ?>
+            </small>
           </div>
+
           <!-- Vista previa + nombres personalizados -->
           <div id="previewArchivos" class="mb-3" style="display:none;">
             <table class="table table-sm table-striped">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Archivo</th>
-                  <th>Nombre personalizado</th>
-                  <th>Peso</th>
+                  <th><?= t('rec_bol_docs_prev_th_num', '#') ?></th>
+                  <th><?= t('rec_bol_docs_prev_th_file', 'Archivo') ?></th>
+                  <th><?= t('rec_bol_docs_prev_th_custom', 'Nombre personalizado') ?></th>
+                  <th><?= t('rec_bol_docs_prev_th_size', 'Peso') ?></th>
                 </tr>
               </thead>
               <tbody></tbody>
             </table>
           </div>
+
           <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary">Subir</button>
+            <button type="submit" class="btn btn-primary">
+              <?= t('rec_bol_docs_btn_upload', 'Subir') ?>
+            </button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+
 <!-- Modal: Cambiar Estatus -->
 <div class="modal fade" id="modalStatus" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-md">
@@ -455,9 +483,10 @@
 
       <div class="modal-header bg-primary text-white py-2">
         <h5 class="modal-title mb-0">
-          <i class="fas fa-user-tag me-2"></i> Cambiar estatus
+          <i class="fas fa-user-tag me-2"></i> <?= t('rec_bol_status_modal_title', 'Cambiar estatus') ?>
         </h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close text-white" data-dismiss="modal"
+          aria-label="<?= t('rec_bol_btn_close', 'Cerrar') ?>">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -466,28 +495,33 @@
         <input type="hidden" id="statusIdAspirante">
 
         <div class="form-group">
-          <label for="selectStatus">Estatus del Aspirante</label>
+          <label for="selectStatus"><?= t('rec_bol_status_label', 'Estatus del Aspirante') ?></label>
           <select id="selectStatus" class="form-control">
-            <option value="">-- Selecciona estatus --</option>
-            <option value="1" class="status-1">En espera de asignar a proceso</option>
-            <option value="2" class="status-2">En proceso</option>
-            <option value="3" class="status-3">Reutilizable / Revisar Historial</option>
-            <option value="4" class="status-4">Contratado</option>
-            <option value="5" class="status-5">Aprobado con acuerdo</option>
+            <option value=""><?= t('rec_bol_status_placeholder', '-- Selecciona estatus --') ?></option>
+
+            <option value="1" class="status-1"><?= t('rec_bol_status_1', 'En espera de asignar a proceso') ?></option>
+            <option value="2" class="status-2"><?= t('rec_bol_status_2', 'En proceso') ?></option>
+            <option value="3" class="status-3"><?= t('rec_bol_status_3', 'Reutilizable / Revisar Historial') ?></option>
+            <option value="4" class="status-4"><?= t('rec_bol_status_4', 'Contratado') ?></option>
+            <option value="5" class="status-5"><?= t('rec_bol_status_5', 'Aprobado con acuerdo') ?></option>
           </select>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+          <?= t('rec_bol_btn_cancel', 'Cancelar') ?>
+        </button>
+
         <button type="button" class="btn btn-primary btn-sm" onclick="guardarStatusAspirante()">
-          <i class="fas fa-save"></i> Guardar
+          <i class="fas fa-save"></i> <?= t('rec_bol_btn_save', 'Guardar') ?>
         </button>
       </div>
 
     </div>
   </div>
 </div>
+
 
 
 <!-- ESTAMOS AQUI -->
@@ -505,14 +539,16 @@
             <option value="spanish">Español</option>
           </select>
         </div -->
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
 
       </div>
 
       <div class="modal-body">
-        <div class="alert alert-info text-center"><?php echo t('rec_prog_candidate_section_general', 'Datos generales'); ?></div>
+        <div class="alert alert-info text-center">
+          <?php echo t('rec_prog_candidate_section_general', 'Datos generales'); ?></div>
 
         <form id="nuevoRegistroForm">
           <div class="row">
@@ -603,10 +639,12 @@
             <div class="col-4">
               <label><?php echo t('rec_prog_candidate_f_ssn', 'Número de Seguro Social (SSN)'); ?></label>
               <input type="text" class="form-control obligado" name="nss_registro" id="nss_registro" maxlength="11">
-              <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="id_cliente_hidden" id="id_cliente_hidden"
+                maxlength="11">
               <input type="hidden" class="form-control obligado" name="clave" id="clave" maxlength="11">
               <input type="hidden" class="form-control obligado" name="cliente" id="cliente" maxlength="11">
-              <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq" maxlength="11">
+              <input type="hidden" class="form-control obligado" name="idAspiranteReq" id="idAspiranteReq"
+                maxlength="11">
             </div>
           </div>
 
@@ -619,9 +657,15 @@
           <div class="row">
             <div class="col-12">
               <select name="opcion_registro" id="opcion_registro" class="form-control registro_obligado">
-                <option value="2" selected><?php echo t('rec_prog_candidate_opt_self_process_free', 'Registrar mi propio proceso - Gratis'); ?></option>
-                <option value="0"><?php echo t('rec_prog_candidate_opt_prev_or_new_project', 'Seleccionar un proyecto anterior o crear uno nuevo / Enviado a RODI'); ?></option>
-                <option value="1"><?php echo t('rec_prog_candidate_opt_drug_med_only', 'Registrar al candidato solo con Prueba de Drogas y/o Examen Médico / Enviado a RODI'); ?></option>
+                <option value="2" selected>
+                  <?php echo t('rec_prog_candidate_opt_self_process_free', 'Registrar mi propio proceso - Gratis'); ?>
+                </option>
+                <option value="0">
+                  <?php echo t('rec_prog_candidate_opt_prev_or_new_project', 'Seleccionar un proyecto anterior o crear uno nuevo / Enviado a RODI'); ?>
+                </option>
+                <option value="1">
+                  <?php echo t('rec_prog_candidate_opt_drug_med_only', 'Registrar al candidato solo con Prueba de Drogas y/o Examen Médico / Enviado a RODI'); ?>
+                </option>
               </select>
 
               <br>
@@ -657,7 +701,8 @@
                 <select name="region" id="region" class="form-control registro_obligado">
                   <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
                   <option value="Mxico"><?php echo t('rec_prog_candidate_region_mexico', 'Mexico'); ?></option>
-                  <option value="International"><?php echo t('rec_prog_candidate_region_international', 'International'); ?></option>
+                  <option value="International">
+                    <?php echo t('rec_prog_candidate_region_international', 'International'); ?></option>
                 </select>
                 <br>
               </div>
@@ -667,7 +712,7 @@
                 <select name="pais_registro" id="pais_registro" class="form-control registro_obligado" disabled>
                   <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
                   <?php foreach ($paises_estudio as $pe) {?>
-                    <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
+                  <option value="<?php echo $pe->nombre_espanol; ?>"><?php echo $pe->nombre_ingles; ?></option>
                   <?php }?>
                 </select>
                 <br>
@@ -684,19 +729,23 @@
               <?php echo t('rec_prog_candidate_required_info_new_project', 'Required Information for the New Project'); ?><br>
               <?php echo t('rec_common_note_label', 'Note:'); ?><br>
               <ul class="text-left">
-                <li><?php echo t('rec_prog_candidate_required_info_note_1', 'The required documents will add automatically depending of the selected options . The extra documents are optional, select them before the complementary tests.'); ?></li>
+                <li>
+                  <?php echo t('rec_prog_candidate_required_info_note_1', 'The required documents will add automatically depending of the selected options . The extra documents are optional, select them before the complementary tests.'); ?>
+                </li>
               </ul>
             </div>
 
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_employment_history', 'Employment history *'); ?></label>
-                <select name="empleos_registro" id="empleos_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="empleos_registro" id="empleos_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
-                <select name="empleos_tiempo_registro" id="empleos_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="empleos_tiempo_registro" id="empleos_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -704,12 +753,14 @@
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_criminal_check', 'Criminal check *'); ?></label>
-                <select name="criminal_registro" id="criminal_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="criminal_registro" id="criminal_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
-                <select name="criminal_tiempo_registro" id="criminal_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="criminal_tiempo_registro" id="criminal_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -717,12 +768,14 @@
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_address_history', 'Address history *'); ?></label>
-                <select name="domicilios_registro" id="domicilios_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="domicilios_registro" id="domicilios_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
-                <select name="domicilios_tiempo_registro" id="domicilios_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="domicilios_tiempo_registro" id="domicilios_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -730,12 +783,14 @@
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_education_check', 'Education check *'); ?></label>
-                <select name="estudios_registro" id="estudios_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="estudios_registro" id="estudios_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_global_searches', 'Global data searches *'); ?></label>
-                <select name="global_registro" id="global_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="global_registro" id="global_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -743,12 +798,14 @@
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_credit_check', 'Credit check *'); ?></label>
-                <select name="credito_registro" id="credito_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="credito_registro" id="credito_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_time_required', 'Time required'); ?></label>
-                <select name="credito_tiempo_registro" id="credito_tiempo_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="credito_tiempo_registro" id="credito_tiempo_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -756,12 +813,14 @@
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_prof_refs_qty', 'Professional References (quantity)'); ?></label>
-                <input type="number" class="form-control valor_dinamico" id="ref_profesionales_registro" name="ref_profesionales_registro" value="0" disabled>
+                <input type="number" class="form-control valor_dinamico" id="ref_profesionales_registro"
+                  name="ref_profesionales_registro" value="0" disabled>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_personal_refs_qty', 'Personal References (quantity)'); ?></label>
-                <input type="number" class="form-control valor_dinamico" id="ref_personales_registro" name="ref_personales_registro" value="0" disabled>
+                <input type="number" class="form-control valor_dinamico" id="ref_personales_registro"
+                  name="ref_personales_registro" value="0" disabled>
                 <br>
               </div>
             </div>
@@ -769,24 +828,28 @@
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_identity_check', 'Identity check *'); ?></label>
-                <select name="identidad_registro" id="identidad_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="identidad_registro" id="identidad_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_migratory_form_check', 'Migratory form (FM, FM2 or FM3) check *'); ?></label>
-                <select name="migracion_registro" id="migracion_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="migracion_registro" id="migracion_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
               </div>
             </div>
 
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_prohibited_parties_check', 'Prohibited parties list check *'); ?></label>
-                <select name="prohibited_registro" id="prohibited_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="prohibited_registro" id="prohibited_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_academic_refs_qty', 'Academic References (quantity)'); ?></label>
-                <input type="number" class="form-control valor_dinamico" id="ref_academicas_registro" name="ref_academicas_registro" value="0" disabled>
+                <input type="number" class="form-control valor_dinamico" id="ref_academicas_registro"
+                  name="ref_academicas_registro" value="0" disabled>
                 <br>
               </div>
             </div>
@@ -794,12 +857,14 @@
             <div class="row div_check">
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_mvr_check', 'Motor Vehicle Records (only in some Mexico cities) *'); ?></label>
-                <select name="mvr_registro" id="mvr_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="mvr_registro" id="mvr_registro" class="form-control valor_dinamico registro_obligado"
+                  disabled></select>
                 <br>
               </div>
               <div class="col-md-6">
                 <label><?php echo t('rec_prog_candidate_curp_check', 'CURP check *'); ?></label>
-                <select name="curp_check_registro" id="curp_check_registro" class="form-control valor_dinamico registro_obligado" disabled></select>
+                <select name="curp_check_registro" id="curp_check_registro"
+                  class="form-control valor_dinamico registro_obligado" disabled></select>
                 <br>
               </div>
             </div>
@@ -815,10 +880,14 @@
                   <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
                   <option value="15"><?php echo t('rec_prog_candidate_extra_military', 'Military document'); ?></option>
                   <option value="14"><?php echo t('rec_prog_candidate_extra_passport', 'Passport'); ?></option>
-                  <option value="10"><?php echo t('rec_prog_candidate_extra_license', 'Professional licence'); ?></option>
-                  <option value="48"><?php echo t('rec_prog_candidate_extra_credential', 'Academic / Professional Credential'); ?></option>
+                  <option value="10"><?php echo t('rec_prog_candidate_extra_license', 'Professional licence'); ?>
+                  </option>
+                  <option value="48">
+                    <?php echo t('rec_prog_candidate_extra_credential', 'Academic / Professional Credential'); ?>
+                  </option>
                   <option value="16"><?php echo t('rec_prog_candidate_extra_resume', 'Resume'); ?></option>
-                  <option value="42"><?php echo t('rec_prog_candidate_extra_sex_offender', 'Sex offender registry'); ?></option>
+                  <option value="42"><?php echo t('rec_prog_candidate_extra_sex_offender', 'Sex offender registry'); ?>
+                  </option>
                   <option value="6"><?php echo t('rec_prog_candidate_extra_ssn', 'Social Security Number'); ?></option>
                 </select>
                 <br>
@@ -846,9 +915,9 @@
                 <option value=""><?php echo t('rec_common_select', 'Select'); ?></option>
                 <option value="0" selected><?php echo t('rec_common_na', 'N/A'); ?></option>
                 <?php foreach ($paquetes_antidoping as $paq) { ?>
-                  <option value="<?php echo $paq->id; ?>">
-                    <?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
-                  </option>
+                <option value="<?php echo $paq->id; ?>">
+                  <?php echo $paq->nombre . ' (' . $paq->conjunto . ')'; ?>
+                </option>
                 <?php } ?>
               </select>
               <br>
@@ -900,7 +969,8 @@
           <br><span class="nombreRegistro"></span>
         </h4>
 
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -936,7 +1006,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+
 <!-- Modal -->
 <div class="modal fade" id="modalGenerarLink" tabindex="-1" role="dialog" aria-labelledby="modalGenerarLabel"
   aria-hidden="true">
@@ -944,8 +1014,11 @@
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="modalGenerarLabel">Generar o Actualizar Link del Portal</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <h5 class="modal-title" id="modalGenerarLabel">
+          <?php echo t('rec_bol_link_modal_title', 'Generar o Actualizar Link del Portal'); ?>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_bol_close', 'Cerrar'); ?>">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -953,41 +1026,74 @@
       <div class="modal-body">
         <!-- Logo actual -->
         <div class="mb-3 text-center">
-          <label><strong>Logo Actual:</strong></label><br>
+          <label><strong><?php echo t('rec_bol_link_logo_current', 'Logo Actual:'); ?></strong></label><br>
           <img id="logoActual" src="<?php echo base_url('_logosPortal/' . $this->session->userdata('logo')) ?>"
-            alt="Logo" style="max-height: 80px;"
+            alt="<?php echo t('rec_bol_link_logo_alt', 'Logo'); ?>" style="max-height: 80px;"
             onerror="this.onerror=null; this.src='<?php echo base_url('_logosPortal/portal_icon.png') ?>';">
         </div>
 
         <!-- Aviso actual -->
         <div class="mb-3 text-center">
-          <label><strong>Aviso de Privacidad:</strong></label><br>
+          <label><strong><?php echo t('rec_bol_link_privacy_notice', 'Aviso de Privacidad:'); ?></strong></label><br>
 
           <a id="linkAviso" href="<?php echo base_url('Avance/ver_aviso/' . $archivo); ?>" target="_blank">
-            Ver documento</a>
+            <?php echo t('rec_bol_link_view_doc', 'Ver documento'); ?>
+          </a>
         </div>
 
         <!-- Link generado -->
         <div class="mb-3">
-          <label><strong>Link Generado:</strong></label>
-          <div id="linkGenerado" class="text-break">Cargando...</div>
+          <label><strong><?php echo t('rec_bol_link_generated', 'Link Generado:'); ?></strong></label>
+
+          <div class="input-group">
+            <!-- aquí solo se mostrará el preview -->
+            <input type="text" id="linkGeneradoPreview" class="form-control"
+              value="<?php echo t('rec_bol_loading', 'Cargando...'); ?>" readonly>
+
+            <div class="input-group-append">
+              <button type="button" class="btn btn-outline-secondary" id="btnCopiarLink">
+                <?php echo t('rec_common_copy', 'Copiar'); ?>
+              </button>
+            </div>
+          </div>
+
+          <!-- guardamos el link completo aquí -->
+          <input type="hidden" id="linkGeneradoFull" value="">
         </div>
+
 
         <!-- QR generado -->
         <div class="mb-3 text-center">
-          <label><strong>Código QR:</strong></label>
-          <div id="qrGenerado"></div>
+          <label><strong><?php echo t('rec_bol_link_qr', 'Código QR:'); ?></strong></label>
+
+          <div id="qrGenerado" class="mb-2"></div>
+
+          <div class="d-flex justify-content-center gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="btnCopyQr" disabled>
+              <?php echo t('rec_bol_qr_btn_copy', 'Copiar QR'); ?>
+            </button>
+
+            <a class="btn btn-outline-secondary btn-sm disabled" id="btnDownloadQr" href="#" download="qr.png">
+              <?php echo t('rec_bol_qr_btn_download', 'Descargar QR'); ?>
+            </a>
+          </div>
         </div>
+
       </div>
 
       <div class="modal-footer">
-        <button type="button" id="btnGenerarLink" class="btn btn-primary">Generar / Actualizar Link</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" id="btnGenerarLink" class="btn btn-primary">
+          <?php echo t('rec_bol_link_btn_generate', 'Generar / Actualizar Link'); ?>
+        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('rec_bol_close', 'Cerrar'); ?>
+        </button>
       </div>
 
     </div>
   </div>
 </div>
+
 
 
 <div class="modal fade" id="nuevaRequisicionModal" role="dialog" data-backdrop="static" data-keyboard="false">
@@ -1905,7 +2011,8 @@
           <?php echo t('rec_prog_adm_modal_title', 'Información de ingreso al empleo del candidato:'); ?>
           <br><span class="nombreRegistro"></span>
         </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_prog_btn_close_aria', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_prog_btn_close_aria', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -2033,7 +2140,8 @@
         <h5 class="modal-title" id="modalCargaArchivosLabel">
           <?php echo t('rec_prog_upload_modal_title', 'Carga y nombra tus archivos'); ?>
         </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="<?php echo t('rec_common_close', 'Cerrar'); ?>">
           <span>&times;</span>
         </button>
       </div>
@@ -2047,7 +2155,8 @@
             <label for="filesInput">
               <?php echo t('rec_prog_upload_select_files', 'Selecciona uno o varios archivos'); ?>
             </label>
-            <input id="filesInput" name="files[]" type="file" class="form-control" multiple accept=".pdf,image/*,video/*">
+            <input id="filesInput" name="files[]" type="file" class="form-control" multiple
+              accept=".pdf,image/*,video/*">
             <small class="form-text text-muted">
               <?php echo t('rec_prog_upload_allowed_types', 'Tipos permitidos: PDF, imágenes y videos.'); ?>
             </small>
@@ -2293,21 +2402,64 @@ var urltraerClientes = '<?php echo base_url('Cat_Cliente/getClientesActivos'); ?
 var urlCargarDatosCliente = '<?php echo base_url('Cat_Cliente/getClientesPorId'); ?>';
 </script>
 <script>
-  // Define TT solo si no existe (idempotente)
-  window.TT = window.TT || function(key, fallback, repl) {
-    if (typeof window.t === 'function') return window.t(key, fallback, repl);
-    return (fallback || key);
-  };
+// Define TT solo si no existe (idempotente)
+window.TT = window.TT || function(key, fallback, repl) {
+  if (typeof window.t === 'function') return window.t(key, fallback, repl);
+  return (fallback || key);
+};
 
-  // Alias opcional T (también solo si no existe)
-  window.T = window.T || function(k, fb, repl) {
-    return window.TT(k, fb, repl);
-  };
+// Alias opcional T (también solo si no existe)
+window.T = window.T || function(k, fb, repl) {
+  return window.TT(k, fb, repl);
+};
+</script>
+<script>
+function setLinkGenerado(fullUrl) {
+  const full = (fullUrl || '').trim();
+
+  $('#linkGeneradoFull').val(full);
+
+  if (!full) {
+    $('#linkGeneradoPreview').val('<?php echo t('rec_bol_loading', 'Cargando...'); ?>');
+    return;
+  }
+
+  // preview: inicio + ... + final
+  const max = 70; // ajusta a gusto
+  let preview = full;
+
+  if (full.length > max) {
+    const start = full.slice(0, 40);
+    const end = full.slice(-20);
+    preview = start + ' … ' + end;
+  }
+
+  $('#linkGeneradoPreview').val(preview);
+}
+
+// Botón copiar
+$(document).on('click', '#btnCopiarLink', async function() {
+  const full = $('#linkGeneradoFull').val() || '';
+
+  if (!full) return;
+
+  try {
+    await navigator.clipboard.writeText(full);
+    // opcional: feedback rápido
+    $(this).text('<?php echo t('rec_common_copied', 'Copiado'); ?>');
+    setTimeout(() => $(this).text('<?php echo t('rec_common_copy', 'Copiar'); ?>'), 1200);
+  } catch (e) {
+    // fallback viejo
+    const $tmp = $('<textarea>');
+    $('body').append($tmp);
+    $tmp.val(full).select();
+    document.execCommand('copy');
+    $tmp.remove();
+  }
+});
 </script>
 
 <script>
-
-
 (function() {
   var $modal = $('#modalAsignarSucursal');
   var $select = $('#asg_sucursal');
@@ -2567,7 +2719,8 @@ $(function() {
       Swal.fire({
         icon: 'warning',
         title: TT('rec_prog_upload_swal_name_required_title', 'Nombre requerido'),
-        text: TT('rec_prog_upload_swal_name_required_text', 'Define un nombre personalizado para cada archivo.')
+        text: TT('rec_prog_upload_swal_name_required_text',
+          'Define un nombre personalizado para cada archivo.')
       });
       return;
     }
@@ -2625,7 +2778,8 @@ $(function() {
           Swal.fire({
             icon: 'error',
             title: TT('rec_prog_upload_swal_error_title', 'Error'),
-            text: (resp && resp.msg) ? resp.msg : TT('rec_prog_upload_swal_error_text_default', 'No se pudo completar la carga.')
+            text: (resp && resp.msg) ? resp.msg : TT('rec_prog_upload_swal_error_text_default',
+              'No se pudo completar la carga.')
           });
         }
       })
@@ -2633,7 +2787,8 @@ $(function() {
         Swal.fire({
           icon: 'error',
           title: TT('rec_prog_upload_swal_server_error_title', 'Error de servidor'),
-          text: xhr.statusText || TT('rec_prog_upload_swal_server_error_text_default', 'Intenta de nuevo.')
+          text: xhr.statusText || TT('rec_prog_upload_swal_server_error_text_default',
+            'Intenta de nuevo.')
         });
       })
       .always(function() {

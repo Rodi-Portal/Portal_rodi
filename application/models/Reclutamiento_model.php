@@ -342,8 +342,18 @@ class Reclutamiento_model extends CI_Model
             return false;
         }
     }
-    public function getBolsaTrabajo($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $id_usuario, $condition_user, $area, $condition_area)
-    {
+    public function getBolsaTrabajo(
+        $sort,
+        $id_applicant,
+        $condition_applicant,
+        $filter,
+        $filterApplicant,
+        $id_usuario,
+        $condition_user,
+        $area,
+        $condition_area,
+        $limit,
+        $offset) {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
             ->select("B.*, TRIM(
@@ -373,6 +383,7 @@ class Reclutamiento_model extends CI_Model
         }
 
         $this->db->order_by('B.id', $sort);
+        $this->db->limit($limit, $offset);
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -382,8 +393,17 @@ class Reclutamiento_model extends CI_Model
         }
     }
 
-    public function getApplicantsByUser($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $id_usuario, $area, $condition_area)
-    {
+    public function getApplicantsByUser(
+        $sort,
+        $id_applicant,
+        $condition_applicant,
+        $filter,
+        $filterApplicant,
+        $id_usuario,
+        $area,
+        $condition_area,
+        $limit,
+        $offset) {
         $id_portal = $this->session->userdata('idPortal');
 
         $this->db
@@ -395,8 +415,8 @@ class Reclutamiento_model extends CI_Model
             )
         ) as  nombreCompleto, CONCAT(GENUP.nombre,' ',GENUP.paterno) as usuario")
             ->from('bolsa_trabajo as B')
-            ->join('usuarios_portal as U', 'U.id = B.id_usuario')
-            ->join('datos_generales as GENUP', 'GENUP.id = U.id_usuario')
+            ->join('usuarios_portal as U', 'U.id = B.id_usuario', 'left')
+            ->join('datos_generales as GENUP', 'GENUP.id = U.id_datos_generales', 'left')
             ->where('B.id_portal', $id_portal);
 
         // Aplica los filtros solo si llegan
@@ -414,6 +434,7 @@ class Reclutamiento_model extends CI_Model
         }
 
         $this->db->order_by('B.id', $sort);
+        $this->db->limit($limit, $offset);
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -421,6 +442,69 @@ class Reclutamiento_model extends CI_Model
         } else {
             return false;
         }
+    }
+    public function countBolsaTrabajo(
+        $id_applicant,
+        $condition_applicant,
+        $filter,
+        $filterApplicant,
+        $id_usuario,
+        $condition_user,
+        $area,
+        $condition_area) {
+        $id_portal = $this->session->userdata('idPortal');
+
+        $this->db
+            ->from('bolsa_trabajo as B')
+            ->where('B.id_portal', $id_portal);
+
+        if (! empty($condition_area) && ! empty($area)) {
+            $this->db->where($condition_area, $area);
+        }
+
+        if ($filterApplicant !== '' && ($filter === 0 || $filter)) {
+            $this->db->where($filterApplicant, $filter);
+        }
+
+        if (! empty($condition_applicant) && ! empty($id_applicant)) {
+            $this->db->where($condition_applicant, $id_applicant);
+        }
+
+        if (! empty($condition_user) && ! empty($id_usuario)) {
+            $this->db->where($condition_user, $id_usuario);
+        }
+
+        return $this->db->count_all_results();
+    }
+
+    public function countApplicantsByUser(
+        $id_applicant,
+        $condition_applicant,
+        $filter,
+        $filterApplicant,
+        $id_usuario,
+        $area,
+        $condition_area) {
+        $id_portal = $this->session->userdata('idPortal');
+
+        $this->db
+            ->from('bolsa_trabajo as B')
+            ->where('B.id_portal', $id_portal)
+            ->where('B.id_usuario', $id_usuario);
+
+        if (! empty($condition_area) && ! empty($area)) {
+            $this->db->where($condition_area, $area);
+        }
+
+        if ($filterApplicant !== '' && ($filter === 0 || $filter)) {
+            $this->db->where($filterApplicant, $filter);
+        }
+
+        if (! empty($condition_applicant) && ! empty($id_applicant)) {
+            $this->db->where($condition_applicant, $id_applicant);
+        }
+
+        return $this->db->count_all_results();
     }
 
     public function getRequisicionesActivas()

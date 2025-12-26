@@ -547,15 +547,15 @@ class Cat_portales_model extends CI_Model
             ->join("link_portal L", "L.id_portal = P.id")
             ->where('L.status', 1)
             ->where('P.status', 1)
-            ->where('P.id', $id_portal); // Filtra por el ID del portal
+            ->where('P.id', $id_portal);
 
         $query = $this->db->get();
 
-        return $query->row(); // 👈 Esto es lo que te faltaba
+        return $query->row(); 
     }
     public function getDocs($id_portal)
     {
-        return $this->db->select('aviso, terminos')
+        return $this->db->select('aviso, terminos','confidencialidad')
             ->from('portal')
             ->where('id', (int) $id_portal)
             ->get()->row();

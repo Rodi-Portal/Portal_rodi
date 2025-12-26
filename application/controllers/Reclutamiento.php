@@ -370,64 +370,57 @@ class Reclutamiento extends CI_Controller
 
     public function bolsa()
     {
+        $this->load->library('pagination');
+
+        /* =========================
+     * Datos base
+     * ========================= */
         $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+
+        $items = [];
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
-        $config           = $this->funciones_model->getConfiguraciones();
-        $data['version']  = $config->version_sistema;
-        //Filtros de busqueda y ordenamiento
+
+        $configSistema   = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $configSistema->version_sistema;
+
+        /* =========================
+     * Ordenamiento
+     * ========================= */
         if (isset($_GET['sort']) && $_GET['sort'] != 'none') {
             $getSort = $_GET['sort'];
-            switch ($getSort) {
-                case 'ascending':
-                    $sort = 'ASC';
-                    break;
-                case 'descending':
-                    $sort = 'DESC';
-                    break;
-                default:
-                    $sort = 'DESC';
-                    break;
-            }
+            $sort    = ($getSort === 'ascending') ? 'ASC' : 'DESC';
         } else {
             $sort    = 'DESC';
             $getSort = '';
         }
+
+        /* =========================
+     * Filtro status
+     * ========================= */
         if (isset($_GET['filter']) && $_GET['filter'] != 'none') {
             $getFilter = $_GET['filter'];
+            $map       = [
+                'En espera'              => 1,
+                'En Proceso / Aprobado'  => 2,
+                'Reutilizable'           => 3,
+                'Preempleo / Contratado' => 4,
+                'Aprobado con Acuerdo'   => 5,
+                'Bloqueado'              => 0,
+            ];
 
-            // "Todos" => no filtra por status
             if ($getFilter === 'Todos') {
                 $filter          = null;
                 $filterApplicant = '';
-            }
-
-            if ($getFilter === 'En espera') {
-                $filter          = 1;
+            } elseif (isset($map[$getFilter])) {
+                $filter          = $map[$getFilter];
                 $filterApplicant = 'B.status';
-            }
-            if ($getFilter === 'En Proceso / Aprobado') {
-                $filter          = 2;
-                $filterApplicant = 'B.status';
-            }
-            if ($getFilter === 'Reutilizable') {
-                $filter          = 3;
-                $filterApplicant = 'B.status';
-            }
-            if ($getFilter === 'Preempleo / Contratado') {
-                $filter          = 4;
-                $filterApplicant = 'B.status';
-            }
-            if ($getFilter === 'Aprobado con Acuerdo') {
-                $filter          = 5;
-                $filterApplicant = 'B.status';
-            }
-            if ($getFilter === 'Bloqueado') { // <- status 0
-                $filter          = 0;
-                $filterApplicant = 'B.status';
+            } else {
+                $filter          = null;
+                $filterApplicant = '';
             }
         } else {
             $getFilter       = '';
@@ -435,60 +428,129 @@ class Reclutamiento extends CI_Controller
             $filterApplicant = '';
         }
 
-        if (isset($_GET['user'])) {
-            $user    = $_GET['user'];
-            $getUser = $_GET['user'];
-            if ($user != '') {
-                $idUser         = ($user > 0) ? $user : 0;
-                $condition_user = ($user > 0) ? 'B.id_usuario' : 'B.id_usuario >=';
-            } else {
-                $idUser         = 0;
-                $condition_user = 'B.id >';
-            }
-        } else {
-            $idUser         = 0;
-            $condition_user = 'B.id >';
-            $getUser        = '';
-        }
-        if (isset($_GET['area']) && $_GET['area'] != 'none') {
-            $area    = $_GET['area'];
-            $getArea = $_GET['area'];
-            if ($area !== '') {
-                $area_interest  = $area;
-                $condition_area = 'B.area_interes';
-            } else {
-                $area_interest  = '';
-                $condition_area = 'B.area_interes !=';
-            }
+        /* =========================
+     * Filtros adicionales
+     * ========================= */
+        // Usuario
+        $getUser        = $_GET['user'] ?? '';
+        $idUser         = ($getUser !== '' && $getUser > 0) ? $getUser : 0;
+        $condition_user = ($idUser > 0) ? 'B.id_usuario' : 'B.id >';
+
+        // Área
+        $getArea = $_GET['area'] ?? '';
+        if ($getArea !== '' && $getArea !== 'none') {
+            $area_interest  = $getArea;
+            $condition_area = 'B.area_interes';
         } else {
             $area_interest  = '';
             $condition_area = 'B.area_interes !=';
-            $getArea        = '';
-        }
-        if (isset($_GET['applicant'])) {
-            $applicant = $_GET['applicant'];
-            if ($applicant != '') {
-                $id_applicant        = ($applicant > 0) ? $applicant : 0;
-                $condition_applicant = ($applicant > 0) ? 'B.id' : 'B.id >';
-            } else {
-                $id_applicant        = 0;
-                $condition_applicant = 'B.id >';
-            }
-        } else {
-            $id_applicant        = 0;
-            $condition_applicant = 'B.id >';
         }
 
-        //Dependiendo el rol del usuario se veran todas o sus propias requisiciones
+        // Aspirante
+        $id_applicant        = $_GET['applicant'] ?? 0;
+        $id_applicant        = ($id_applicant > 0) ? $id_applicant : 0;
+        $condition_applicant = ($id_applicant > 0) ? 'B.id' : 'B.id >';
+
+        /* =========================
+     * PAGINACIÓN
+     * ========================= */
+        $per_page = 15;
+        $page     = (int) $this->input->get('page');
+        $page     = ($page >= 0) ? $page : 0;
+
+        /* =========================
+     * Datos principales
+     * ========================= */
         if ($this->session->userdata('idrol') == 4) {
-            $id_usuario        = $this->session->userdata('id');
-            $info['registros'] = $this->reclutamiento_model->getApplicantsByUser($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $id_usuario, $area_interest, $condition_area);
-            $condition         = 'B.id_usuario';
+
+            $id_usuario = $this->session->userdata('id');
+
+            $info['registros'] = $this->reclutamiento_model->getApplicantsByUser(
+                $sort,
+                $id_applicant,
+                $condition_applicant,
+                $filter,
+                $filterApplicant,
+                $id_usuario,
+                $area_interest,
+                $condition_area,
+                $per_page,
+                $page
+            );
+
+            $total_rows = $this->reclutamiento_model->countApplicantsByUser(
+                $id_applicant,
+                $condition_applicant,
+                $filter,
+                $filterApplicant,
+                $id_usuario,
+                $area_interest,
+                $condition_area
+            );
+
+            $condition = 'B.id_usuario';
+
         } else {
-            $info['registros'] = $this->reclutamiento_model->getBolsaTrabajo($sort, $id_applicant, $condition_applicant, $filter, $filterApplicant, $idUser, $condition_user, $area_interest, $condition_area);
-            $id_usuario        = 0;
-            $condition         = 'B.id_usuario >=';
+
+            $info['registros'] = $this->reclutamiento_model->getBolsaTrabajo(
+                $sort,
+                $id_applicant,
+                $condition_applicant,
+                $filter,
+                $filterApplicant,
+                $idUser,
+                $condition_user,
+                $area_interest,
+                $condition_area,
+                $per_page,
+                $page
+            );
+
+            $total_rows = $this->reclutamiento_model->countBolsaTrabajo(
+                $id_applicant,
+                $condition_applicant,
+                $filter,
+                $filterApplicant,
+                $idUser,
+                $condition_user,
+                $area_interest,
+                $condition_area
+            );
+
+            $id_usuario = 0;
+            $condition  = 'B.id_usuario >=';
         }
+
+        /* =========================
+     * Config paginación
+     * ========================= */
+            $pagination['base_url'] = base_url('reclutamiento/bolsa');
+            $pagination['total_rows'] = $total_rows;
+            $pagination['per_page'] = $per_page;
+
+            $pagination['page_query_string'] = true;
+            $pagination['query_string_segment'] = 'page';
+            $pagination['reuse_query_string'] = true;
+            $pagination['use_page_numbers'] = false;
+
+        
+
+        $pagination['full_tag_open']  = '<nav><ul class="pagination justify-content-center">';
+        $pagination['full_tag_close'] = '</ul></nav>';
+        $pagination['attributes']     = ['class' => 'page-link'];
+        $pagination['num_tag_open']   = '<li class="page-item">';
+        $pagination['num_tag_close']  = '</li>';
+        $pagination['cur_tag_open']   = '<li class="page-item active"><span class="page-link">';
+        $pagination['cur_tag_close']  = '</span></li>';
+        if (!isset($_GET['page'])) {
+            $_GET['page'] = '0';
+        }
+        $this->pagination->initialize($pagination);
+        $info['pagination'] = $this->pagination->create_links();
+
+        /* =========================
+     * Datos auxiliares
+     * ========================= */
         $info['sortApplicant'] = $getSort;
         $info['filter']        = $getFilter;
         $info['assign']        = $getUser;
@@ -500,40 +562,25 @@ class Reclutamiento extends CI_Controller
         $info['puestos']             = $this->funciones_model->getPuestos();
         $info['paises']              = $this->funciones_model->getPaises();
         $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
-        $info['reqs']                = null;
-        $info['acciones']            = null;
-        //Obtiene los usuarios con id rol 4 y 11 que pertencen a reclutadores y coordinadores de reclutadores
+
         $info['usuarios_asignacion']  = $this->usuario_model->getTipoUsuarios([4, 11]);
         $info['registros_asignacion'] = $this->reclutamiento_model->getAllApplicants($id_usuario, $condition);
         $info['areas_interes']        = $this->reclutamiento_model->getAllJobPoolByArea();
-        //Modals
+
+        //* =========================
+        // * Vistas
+        //* ========================= */
+
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $vista['modals']   = $this->load->view('modals/mdl_reclutamiento', $info, true);
-        /*
-        echo'<pre>'; 
-        print_r($info['registros']);
-        echo'</pre>';
-        die(); */
-        $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (! empty($notificaciones)) {
-            $contador = 0;
-            foreach ($notificaciones as $row) {
-                if ($row->visto == 0) {
-                    $contador++;
-                }
-            }
-            $data['contadorNotificaciones'] = $contador;
-        }
 
-        $headerView      = $this->load->view('adminpanel/header', $data, true);
-        $scriptsView     = $this->load->view('adminpanel/scripts', $modales, true);
-        $requisicionView = $this->load->view('reclutamiento/bolsa_trabajo', $vista, true);
-        $footerView      = $this->load->view('adminpanel/footer', [], true);
+        $vista           = $info;
+        $vista['modals'] = $this->load->view('modals/mdl_reclutamiento', $info, true);
 
-        echo $scriptsView;
-        echo $requisicionView; // Si decides que esta vista sí debe mostrarse
-        echo $footerView;
+        // 👉 SOLO la vista del módulo
+        $this->load->view('reclutamiento/bolsa_trabajo', $vista);
+
     }
+
     public function getLinkEmpleado()
     {
         $id_empleado = (int) $this->input->get('id_empleado');
@@ -606,11 +653,17 @@ class Reclutamiento extends CI_Controller
     {
         $id      = $this->input->post('id');
         $usuario = $this->session->userdata('id');
+
         $this->reclutamiento_model->reactivarRequisicion($id, $usuario);
+
         $msj = [
             'codigo' => 1,
-            'msg'    => 'Se  a creado  una copia  de esta  Requisición para  que se  inicie el proceso ',
+            'msg'    => t(
+                'rec_fin_reactivate_ok',
+                'Se ha creado una copia de esta Requisición para que se inicie el proceso'
+            ),
         ];
+
         echo json_encode($msj);
     }
 
@@ -933,50 +986,15 @@ class Reclutamiento extends CI_Controller
             if ($result) {
                 $msj = [
                     'codigo' => 1,
-                    'msg'    => 'Accion registrada  correctamente ',
+                    'msg'    => t('rec_action_saved_ok', 'Accion registrada  correctamente '),
                 ];
-                /*  funcion  para  integrar  whats APP 
-            if ($result && $notificacion > 0) {
-                $result2 = $this->notificaciones_whatsapp_model->obtenerDatosPorRequisicionAspirante($id_aspirante);
-
-                // Verifica que el resultado no sea NULL y que sea un objeto
-                if ($result2) {
-                    $datos_plantilla = array(
-                        'nombre_cliente' => $result2->nombre_cliente, // Asigna el nombre del cliente
-                        'nombre_aspirante' => $result2->nombre_completo, // Asigna el nombre completo del aspirante
-                        'vacante' => $result2->vacante, // Asigna la vacante
-                        'telefono' => $result2->phone,
-                        'ruta' => 'send-message-movimiento', // Asigna el teléfono
-                    );
-
-                    $api_response = $this->notificaciones_whatsapp_model->alertaMovimientoApirante('52' . $result2->phone, 'movimiento_apirante', $datos_plantilla); // Reemplaza con los valores correctos
-
-                    if ($api_response['codigo'] == 1) {
-                        $msj = array(
-                            'codigo' => 1,
-                            'msg' => 'El registro se realizó correctamente. se notofico al cliente via whatsapp',
-                        );
-                    } else {
-                        $msj = array(
-                            'codigo' => 0,
-                            'msg' => $api_response['msg'],
-                        );
-                    }
-                }
-                // Llamar a la API si las operaciones fueron exitosas
-
-            } else {
-                $msj = array(
-                    'codigo' => 0,
-                    'msg' => 'Error al realizar las operaciones en la base de datos',
-                );
-            } */
             } else {
                 $msj = [
                     'codigo' => 0,
-                    'msg'    => 'Hubo un problema  se  registro la accion  ',
+                    'msg'    => t('rec_action_saved_fail', 'Hubo un problema  se  registro la accion  '),
                 ];
             }
+
         }
 
         echo json_encode($msj);
@@ -984,13 +1002,34 @@ class Reclutamiento extends CI_Controller
 
     public function guardarEstatusRequisicion()
     {
-        $this->form_validation->set_rules('id_requisicion', 'Requisición', 'required|trim');
-        $this->form_validation->set_rules('estatus', 'Estatus a asignar', 'required|trim');
-        $this->form_validation->set_rules('comentario', 'Comentarios', 'required|trim');
+        $this->form_validation->set_rules(
+            'id_requisicion',
+            t('rec_req_rule_requisition', 'Requisición'),
+            'required|trim'
+        );
+        $this->form_validation->set_rules(
+            'estatus',
+            t('rec_req_rule_status', 'Estatus a asignar'),
+            'required|trim'
+        );
+        $this->form_validation->set_rules(
+            'comentario',
+            t('rec_req_rule_comments', 'Comentarios'),
+            'required|trim'
+        );
 
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('max_length', 'El campo {field} debe tener máximo {param} carácteres');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_message(
+            'required',
+            t('fv_required', 'El campo {field} es obligatorio')
+        );
+        $this->form_validation->set_message(
+            'max_length',
+            t('fv_max_length', 'El campo {field} debe tener máximo {param} carácteres')
+        );
+        $this->form_validation->set_message(
+            'numeric',
+            t('fv_numeric', 'El campo {field} debe ser numérico')
+        );
 
         $msj = [];
         if ($this->form_validation->run() == false) {
@@ -1007,7 +1046,7 @@ class Reclutamiento extends CI_Controller
             $id_requisicion = $this->input->post('id_requisicion');
             $idRol          = $this->session->userdata('idrol');
 
-            //Cancela Requisicion
+            // Cancela Requisicion
             if ($estatus_final == 0) {
                 $status   = 'status';
                 $acciones = 1;
@@ -1023,6 +1062,7 @@ class Reclutamiento extends CI_Controller
                         $this->reclutamiento_model->editBolsaTrabajo($bolsa, $row->id_bolsa_trabajo);
                     }
                 }
+
                 $datos = [
                     'edicion'          => $date,
                     'id_usuario'       => $id_usuario,
@@ -1031,12 +1071,14 @@ class Reclutamiento extends CI_Controller
                 ];
 
                 $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
+
                 $msj = [
                     'codigo' => 1,
-                    'msg'    => 'La requisición fue cancelada correctamente',
+                    'msg'    => t('rec_req_cancel_ok', 'La requisición fue cancelada correctamente'),
                 ];
             }
-            //Se elimina la requisicion
+
+            // Se elimina la requisicion
             if ($estatus_final == 1) {
                 $status             = 'eliminado';
                 $acciones           = 1;
@@ -1052,31 +1094,34 @@ class Reclutamiento extends CI_Controller
                         $this->reclutamiento_model->editBolsaTrabajo($bolsa, $row->id_bolsa_trabajo);
                     }
                 }
+
                 $datos = [
                     'edicion'          => $date,
-
                     $status            => $estatus_final,
                     'comentario_final' => $comentario,
                 ];
 
                 if ($idRol != 6) {
-                    $datos['id_usuario'] = $id_usuario;
+                    $datos['id_usuario'] = $this->session->userdata('id');
                 }
+
                 $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
+
                 $msj = [
                     'codigo' => 1,
-                    'msg'    => 'La requisición fue eliminada correctamente',
+                    'msg'    => t('rec_req_delete_ok', 'La requisición fue eliminada correctamente'),
                 ];
             }
-            //Termina o finaliza Requisicion
+
+            // Termina o finaliza Requisicion
             if ($estatus_final == 3) {
-                $status         = 'status';
-                $acciones       = ['FINALIZADO', 'COMPLETADO', 'ESE FINALIZADO'];
-                $faltantes      = [];
+                $status    = 'status';
+                $acciones  = ['FINALIZADO', 'COMPLETADO', 'ESE FINALIZADO'];
+                $faltantes = [];
+
                 $num_aspirantes = $this->reclutamiento_model->getVacantesCubiertasTotal($id_requisicion, $acciones);
                 $requisicion    = $this->reclutamiento_model->getRequisionById($id_requisicion);
 
-                // Candidatos completos
                 $candidatos_completos = [];
                 $faltantes_candidatos = [];
 
@@ -1092,7 +1137,6 @@ class Reclutamiento extends CI_Controller
                         if (empty($row->sueldo)) {
                             $completo = false;
                         }
-
                         if (empty($row->fecha_ingreso)) {
                             $completo = false;
                         }
@@ -1102,54 +1146,56 @@ class Reclutamiento extends CI_Controller
                         } else {
                             $msg = [];
                             if (empty($row->sueldo)) {
-                                $msg[] = "no tiene registrado el sueldo acordado.";
+                                $msg[] = t('rec_req_missing_salary', 'no tiene registrado el sueldo acordado.');
                             }
-
                             if (empty($row->fecha_ingreso)) {
-                                $msg[] = "no tiene registrada la fecha de ingreso.";
+                                $msg[] = t('rec_req_missing_entry_date', 'no tiene registrada la fecha de ingreso.');
                             }
 
-                            $faltantes_candidatos[] = "El candidato <b>$nombre</b> " . implode(' ', $msg);
+                            $faltantes_candidatos[] =
+                            t('rec_req_candidate_prefix', 'El candidato <b>{name}</b> ', ['name' => $nombre])
+                            . implode(' ', $msg);
                         }
                     }
                 }
 
-                // ¿Hay suficientes completos?
                 if (count($candidatos_completos) >= $requisicion->numero_vacantes) {
-                    // Puedes cerrar la requisición
                     $datos = [
                         'edicion'          => $date,
                         $status            => $estatus_final,
                         'comentario_final' => $comentario,
                     ];
                     if ($idRol != 6) {
-                        $datos['id_usuario'] = $id_usuario;
+                        $datos['id_usuario'] = $this->session->userdata('id');
                     }
+
                     $this->reclutamiento_model->editarRequisicion($datos, $id_requisicion);
+
                     $msj = [
                         'codigo' => 1,
-                        'msg'    => 'La requisición fue terminada correctamente',
+                        'msg'    => t('rec_req_finish_ok', 'La requisición fue terminada correctamente'),
                     ];
                 } else {
-                    // Faltan candidatos completos
                     $faltan      = $requisicion->numero_vacantes - count($candidatos_completos);
                     $faltantes   = [];
-                    $faltantes[] = "Faltan $faltan vacantes por cubrir con candidatos completos.";
-                    // Solo muestra los faltantes de los que no están completos
+                    $faltantes[] = t('rec_req_missing_vacancies', 'Faltan {n} vacantes por cubrir con candidatos completos.', ['n' => $faltan]);
+
                     $faltantes = array_merge($faltantes, $faltantes_candidatos);
 
                     $msj = [
                         'codigo'    => 0,
-                        'msg'       => 'No se puede cerrar la requisición porque falta información:',
+                        'msg'       => t('rec_req_cannot_close', 'No se puede cerrar la requisición porque falta información:'),
                         'faltantes' => $faltantes,
                     ];
                 }
             }
 
-            // ... (tus otros bloques if para cancelar/eliminar/editar, igual que antes) ...
+            // ... (tus otros bloques if, igual) ...
         }
+
         echo json_encode($msj);
     }
+
     // funcion para  eliminar Acciones submodulo en proceso mediante  el id  de la accion
     public function eliminarRegistro()
     {
@@ -1157,24 +1203,25 @@ class Reclutamiento extends CI_Controller
 
         if ($id) {
 
-            $eliminado = $this->reclutamiento_model->eliminarMovimiento($id); // Función del modelo que elimina
+            $eliminado = $this->reclutamiento_model->eliminarMovimiento($id);
 
             if ($eliminado) {
                 echo json_encode([
                     'status'  => true,
-                    'mensaje' => 'El registro ha sido eliminado correctamente.',
+                    'mensaje' => t('rec_mov_delete_ok', 'El registro ha sido eliminado correctamente.'),
                     'id'      => $id,
                 ]);
             } else {
                 echo json_encode([
                     'status'  => false,
-                    'mensaje' => 'No se pudo eliminar el registro.',
+                    'mensaje' => t('rec_mov_delete_fail', 'No se pudo eliminar el registro.'),
                 ]);
             }
+
         } else {
             echo json_encode([
                 'status'  => false,
-                'mensaje' => 'No se pudo eliminar el registro.',
+                'mensaje' => t('rec_mov_delete_fail', 'No se pudo eliminar el registro.'),
             ]);
         }
     }
@@ -1312,70 +1359,69 @@ class Reclutamiento extends CI_Controller
         $mpdf->Output('Solicitud_' . $id . '.pdf', 'D');
     }
 
-public function cambiarStatusBolsaTrabajo()
-{
-    date_default_timezone_set('America/Mexico_City');
-    $date       = date('Y-m-d H:i:s');
-    $id_usuario = $this->session->userdata('id');
-    $idRol      = $this->session->userdata('idrol');
-    $id_bolsa   = $this->input->post('id_bolsa');
-    $comentario = $this->input->post('comentario');
-    $accion     = $this->input->post('accion');
-    $aspirante  = $this->reclutamiento_model->getAspiranteByBolsaTrabajo($id_bolsa);
-    $msj        = []; // Inicializa $msj como un array vacío
+    public function cambiarStatusBolsaTrabajo()
+    {
+        date_default_timezone_set('America/Mexico_City');
+        $date       = date('Y-m-d H:i:s');
+        $id_usuario = $this->session->userdata('id');
+        $idRol      = $this->session->userdata('idrol');
+        $id_bolsa   = $this->input->post('id_bolsa');
+        $comentario = $this->input->post('comentario');
+        $accion     = $this->input->post('accion');
+        $aspirante  = $this->reclutamiento_model->getAspiranteByBolsaTrabajo($id_bolsa);
+        $msj        = []; // Inicializa $msj como un array vacío
 
-    if ($comentario != '') {
-        if ($aspirante != null) {
-            $aspirante_data = [
-                'edicion'      => $date,
-                'status'       => t('rec_prog_bolsa_status_blocked_text', 'Bloqueado del proceso de reclutamiento'),
-                'status_final' => 'BLOQUEADO',
-            ];
-            if ($idRol != 6) {
-                $datos['id_usuario'] = $id_usuario; // (se deja tal cual estaba en tu código)
+        if ($comentario != '') {
+            if ($aspirante != null) {
+                $aspirante_data = [
+                    'edicion'      => $date,
+                    'status'       => t('rec_prog_bolsa_status_blocked_text', 'Bloqueado del proceso de reclutamiento'),
+                    'status_final' => 'BLOQUEADO',
+                ];
+                if ($idRol != 6) {
+                    $datos['id_usuario'] = $id_usuario; // (se deja tal cual estaba en tu código)
+                }
+                $this->reclutamiento_model->editarAspirante($aspirante_data, $aspirante->id);
+
+                $historial = [
+                    'creacion'         => $date,
+                    'id_usuario'       => $id_usuario,
+                    'id_requisicion'   => $aspirante->id_requisicion,
+                    'id_bolsa_trabajo' => $id_bolsa,
+                    'id_aspirante'     => $aspirante->id,
+                    'accion'           => t(
+                        'rec_prog_bolsa_hist_action_user_blocks',
+                        'Usuario bloquea a la persona del proceso de reclutamiento'
+                    ),
+                    'descripcion'      => $comentario,
+                ];
+                $this->reclutamiento_model->guardarAccionRequisicion($historial);
             }
-            $this->reclutamiento_model->editarAspirante($aspirante_data, $aspirante->id);
 
-            $historial = [
-                'creacion'         => $date,
-                'id_usuario'       => $id_usuario,
-                'id_requisicion'   => $aspirante->id_requisicion,
-                'id_bolsa_trabajo' => $id_bolsa,
-                'id_aspirante'     => $aspirante->id,
-                'accion'           => t(
-                    'rec_prog_bolsa_hist_action_user_blocks',
-                    'Usuario bloquea a la persona del proceso de reclutamiento'
-                ),
-                'descripcion'      => $comentario,
+            // Cambiar estado de la bolsa de trabajo
+            $bolsa = [
+                'status' => ($accion == 'bloquear') ? 0 : 1,
             ];
-            $this->reclutamiento_model->guardarAccionRequisicion($historial);
+            $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
+
+            $msj = [
+                'codigo' => 1,
+                'msg'    => ($accion == 'bloquear')
+                    ? t('rec_prog_bolsa_block_ok', 'Se ha bloqueado correctamente')
+                    : t('rec_prog_bolsa_unblock_ok', 'Se ha desbloqueado correctamente'),
+            ];
+        } else {
+            $msj = [
+                'codigo' => 0,
+                'msg'    => t(
+                    'rec_prog_bolsa_block_reason_required',
+                    'Debes llenar el motivo de bloqueo e intentarlo de nuevo'
+                ),
+            ];
         }
 
-        // Cambiar estado de la bolsa de trabajo
-        $bolsa = [
-            'status' => ($accion == 'bloquear') ? 0 : 1,
-        ];
-        $this->reclutamiento_model->editBolsaTrabajo($bolsa, $id_bolsa);
-
-        $msj = [
-            'codigo' => 1,
-            'msg'    => ($accion == 'bloquear')
-                ? t('rec_prog_bolsa_block_ok', 'Se ha bloqueado correctamente')
-                : t('rec_prog_bolsa_unblock_ok', 'Se ha desbloqueado correctamente'),
-        ];
-    } else {
-        $msj = [
-            'codigo' => 0,
-            'msg'    => t(
-                'rec_prog_bolsa_block_reason_required',
-                'Debes llenar el motivo de bloqueo e intentarlo de nuevo'
-            ),
-        ];
+        echo json_encode($msj);
     }
-
-    echo json_encode($msj);
-}
-
 
     public function guardarHistorialBolsaTrabajo()
     {
@@ -3157,6 +3203,9 @@ public function cambiarStatusBolsaTrabajo()
         $id_portal = $this->session->userdata('idPortal');
 
         $registro = $this->cat_portales_model->getLogoAviso($id_portal);
+
+        // 🔎 DEBUG TEMPORAL
+
         if (! $registro) {
             echo json_encode([]);
             return;
@@ -3169,6 +3218,7 @@ public function cambiarStatusBolsaTrabajo()
             'qr'    => $registro->qr ?? null,
         ]);
     }
+
     public function generar_o_mostrar_link()
     {
         $id_portal    = $this->session->userdata('idPortal');
@@ -3197,11 +3247,28 @@ public function cambiarStatusBolsaTrabajo()
         }
 
         if (! empty($errores)) {
-            echo json_encode(['error' => 'Datos de sesión faltantes: ' . implode(', ', $errores)]);
-            return;
+            // Labels traducibles (para no mostrar nombres técnicos)
+            $labels = [
+                'logo'         => t('rec_bol_link_field_logo', 'Logo'),
+                'id_portal'    => t('rec_bol_link_field_portal', 'Portal'),
+                'NombrePortal' => t('rec_bol_link_field_portal_name', 'Nombre del portal'),
+                'usuario_id'   => t('rec_bol_link_field_user', 'Usuario'),
+            ];
+
+            $campos = array_map(function ($k) use ($labels) {
+                return $labels[$k] ?? $k;
+            }, $errores);
+
+            jsonOut([
+                'error' => t(
+                    'rec_bol_link_err_missing_session',
+                    'Faltan datos de sesión: {fields}',
+                    ['{fields}' => implode(', ', $campos)]
+                ),
+            ], 400);
         }
 
-        // Crear el payload para el JWT
+        // Crear payload JWT
         $payload = [
             "idUsuario"    => $usuario_id,
             "logo"         => $logo,
@@ -3211,41 +3278,53 @@ public function cambiarStatusBolsaTrabajo()
         ];
 
         $private_key = $this->config->item('jwt_private_key');
-        $jwt         = JWT::encode($payload, $private_key, 'RS256');
-
-        if ($tipo_bolsa === 1) {
-            $link = LINKASPIRANTESNUEVO . '?token=' . $jwt;
-        } else {
-            $link = LINKASPIRANTES . '?token=' . $jwt;
+        if (empty($private_key)) {
+            jsonOut([
+                'error' => t('rec_bol_link_err_missing_jwt_key', 'No se encontró la llave privada para generar el token.'),
+            ], 500);
         }
+
+        try {
+            $jwt = JWT::encode($payload, $private_key, 'RS256');
+        } catch (Exception $e) {
+            jsonOut([
+                'error' => t('rec_bol_link_err_jwt_generate', 'No se pudo generar el token del portal.'),
+            ], 500);
+        }
+
+        $link = ($tipo_bolsa === 1)
+            ? (LINKASPIRANTESNUEVO . '?token=' . $jwt)
+            : (LINKASPIRANTES . '?token=' . $jwt);
 
         // Generar QR en base64
         $qr_base64 = $this->generar_qr_base64($link);
+
         date_default_timezone_set('America/Mexico_City');
+        $now = date('Y-m-d H:i:s');
 
         // Datos a guardar o actualizar
         $data = [
             'id_portal' => $id_portal,
             'link'      => $link,
             'qr'        => $qr_base64,
-            'creacion'  => date('Y-m-d H:i:s'),
-            'edicion'   => date('Y-m-d H:i:s'),
+            'creacion'  => $now,
+            'edicion'   => $now,
+            'status'    => 1,
         ];
 
         // Verificar si ya existe el registro
         $registro = $this->reclutamiento_model->obtener_por_portal($id_portal);
+
         if ($registro) {
-            // Actualizar si ya existe
             $this->reclutamiento_model->actualizar($id_portal, $data);
-            $mensaje = 'Link actualizado correctamente.';
+            $mensaje = t('rec_bol_link_ok_updated', 'Link actualizado correctamente.');
         } else {
-            // Guardar si no existe
             $this->reclutamiento_model->guardarLink($data);
-            $mensaje = 'Link generado correctamente.';
+            $mensaje = t('rec_bol_link_ok_created', 'Link generado correctamente.');
         }
 
-        // Devolver link, QR y mensaje
-        echo json_encode([
+        // Devolver link, QR y mensaje (contrato actual para tu JS)
+        jsonOut([
             'link'    => $link,
             'qr'      => $qr_base64,
             'mensaje' => $mensaje,

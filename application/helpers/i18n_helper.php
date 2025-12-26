@@ -11,8 +11,21 @@ if (! function_exists('t')) {
             $line = ($fallback !== '') ? $fallback : $key;
         }
 
+        // ✅ REEMPLAZA SOLO TOKENS {clave} (evita reemplazar letras sueltas como "n")
         if (is_array($repl) && !empty($repl)) {
-            $line = strtr($line, $repl);
+            $map = [];
+            foreach ($repl as $k => $v) {
+                $k = (string)$k;
+
+                // si ya viene como {n}, respeta; si viene "n", lo convierte a "{n}"
+                if (strlen($k) >= 2 && $k[0] === '{' && substr($k, -1) === '}') {
+                    $map[$k] = (string)$v;
+                } else {
+                    $map['{' . $k . '}'] = (string)$v;
+                }
+            }
+
+            $line = strtr($line, $map);
         }
 
         return $line;
@@ -67,16 +80,21 @@ Object.assign(window._i18n, {$json});
 
 window.t = window.t || function(key, fallback, repl){
   var s = (window._i18n && window._i18n[key] !== undefined) ? window._i18n[key] : (fallback || key);
+
+  // ✅ Reemplaza SOLO {clave} (evita que 'n' rompa palabras)
   if (repl && typeof repl === 'object'){
     for (var k in repl){
       if (Object.prototype.hasOwnProperty.call(repl, k)){
-        s = s.split(k).join(repl[k]);
+        var token = (k && k[0] === '{' && k[k.length-1] === '}') ? k : '{' + k + '}';
+        s = s.split(token).join(String(repl[k]));
       }
     }
   }
   return s;
 };
+
+// ✅ Alias para tu error: _t is not defined
+window._t = window._t || window.t;
 </script>";
     }
 }
-

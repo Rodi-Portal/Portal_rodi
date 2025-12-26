@@ -466,3 +466,23 @@ $(document).ready(function() {
 
 })
 	</script>
+  <script>
+$(document).on('click', '.pagination a', function (e) {
+    e.preventDefault();
+
+    const url = $(this).attr('href');
+
+    $('#module-content').load(url);
+});
+</script>
+<script>
+$(document).on('submit', '#frmFiltros', function (e) {
+    e.preventDefault();
+
+    const form = $(this);
+    const url  = form.attr('action');
+    const data = form.serialize();
+
+    $('#module-content').load(url, data);
+});
+</script>
