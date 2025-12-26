@@ -16,9 +16,7 @@ $lang['rec_bol_sort_oldest'] = 'Oldest to newest';
 $lang['rec_bol_sort_newest'] = 'Newest to oldest';
 
 $lang['rec_bol_filter_status_label'] = 'Filter by:';
-$lang['rec_bol_status_waiting'] = 'Waiting';
 $lang['rec_bol_status_in_process_approved'] = 'In process / Approved';
-$lang['rec_bol_status_reusable'] = 'Reusable';
 $lang['rec_bol_status_preemployment_hired'] = 'Pre-employment / Hired';
 $lang['rec_bol_status_approved_with_agreement'] = 'Approved with Agreement';
 $lang['rec_bol_status_blocked'] = 'Blocked';

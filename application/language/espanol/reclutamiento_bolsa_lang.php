@@ -16,9 +16,7 @@ $lang['rec_bol_sort_oldest'] = 'De más antiguo a más reciente';
 $lang['rec_bol_sort_newest'] = 'De más reciente a más antiguo';
 
 $lang['rec_bol_filter_status_label'] = 'Filtrar por:';
-$lang['rec_bol_status_waiting'] = 'En espera';
 $lang['rec_bol_status_in_process_approved'] = 'En Proceso / Aprobado';
-$lang['rec_bol_status_reusable'] = 'Reutilizable';
 $lang['rec_bol_status_preemployment_hired'] = 'Preempleo / Contratado';
 $lang['rec_bol_status_approved_with_agreement'] = 'Aprobado con Acuerdo';
 $lang['rec_bol_status_blocked'] = 'Bloqueado';
@@ -34,7 +32,6 @@ $lang['rec_bol_search_find'] = 'Encontrar';
 $lang['rec_bol_no_applicants'] = 'No hay aspirantes registrados';
 
 $lang['rec_common_select'] = 'Seleccionar';
-$lang['rec_common_all'] = 'Todos';
 $lang['rec_common_all_fem'] = 'Todas';
 $lang['rec_common_back_to_list'] = 'Regresar al listado';
 

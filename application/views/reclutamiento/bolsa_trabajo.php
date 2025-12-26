@@ -211,9 +211,10 @@
         <?php $selectedArea = (string) ($this->input->get('area') ?? ''); ?>
 
         <select name="area" id="area_interes_search" class="form-control">
-          <option value="" <?php echo($selectedArea === '' ? 'selected' : ''); ?>>
+          <option value="all" <?php echo(($selectedArea === '' || $selectedArea === 'all') ? 'selected' : ''); ?>>
             <?php echo t('rec_common_all', 'Todos'); ?>
           </option>
+
 
           <?php if ($areas_interes) {foreach ($areas_interes as $row) {?>
           <option value="<?php echo $row->area_interes; ?>"
@@ -1004,11 +1005,6 @@
       allowClear: false,
       width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
     });
-    $('#filtrar').select2({
-      placeholder: "Select",
-      allowClear: false,
-      width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
-    });
     $('#asignar').select2({
       placeholder: "Select",
       allowClear: false,
@@ -1024,7 +1020,7 @@
       allowClear: false,
       width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
     });
-
+      initColoredFilter($(document));
     let url_applicants = '<?php echo base_url('Reclutamiento/bolsa'); ?>';
     let oldURL = url_applicants;
 
@@ -3131,7 +3127,7 @@
       $n.css({
         backgroundColor: s.bg,
         color: s.fg
-      }).text(state.id.toUpperCase());
+      }).text((state.text || state.id).toUpperCase());
       return $n;
     }
 
@@ -3148,27 +3144,23 @@
     // Pinta filas completas con clase al abrir (versión robusta con MAYÚSCULAS)
     $filtrar.off('select2:open.__paintrows__').on('select2:open.__paintrows__', function() {
       setTimeout(function() {
-        // construye un diccionario auxiliar con claves en MAYÚSCULAS
         const map = window.TS.FILTER_STATUS_STYLES;
-        const upcaseMap = {};
-        Object.keys(map).forEach(function(k) {
-          upcaseMap[k.toUpperCase()] = map[k]; // referencia al mismo objeto
-        });
 
         $('.select2-results__option[role="option"]').each(function() {
           const $li = $(this);
-          const textUp = $li.text().trim().toUpperCase(); // el li ya viene en mayúsculas
-          const s = upcaseMap[textUp]; // buscamos por mayúsculas
-          // limpia nuestras clases previas y aplica la nueva si existe
+          const data = $li.data('data'); // <-- aquí viene {id,text,...}
+
           $li.removeClass(
             'status-row status-all status-espera status-proceso status-reutilizar status-preempleo status-acuerdo status-bloqueado'
           );
-          if (s && s.cls) {
-            $li.addClass('status-row ' + s.cls);
+
+          if (data && data.id && map[data.id] && map[data.id].cls) {
+            $li.addClass('status-row ' + map[data.id].cls);
           }
         });
       }, 0);
     });
+
 
   }
 
