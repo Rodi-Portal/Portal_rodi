@@ -1,27 +1,27 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php defined('BASEPATH') or exit('No direct script access allowed');
 
 if (! function_exists('t')) {
     function t($key, $fallback = '', $repl = [])
     {
-        $CI =& get_instance();
+        $CI = &get_instance();
 
         $line = $CI->lang->line($key);
 
-        if ($line === FALSE || $line === '') {
-            $line = ($fallback !== '') ? $fallback : $key;
+        if ($line === false || $line === '' || $line === null) {
+            $line = ($fallback !== '') ? $fallback : (string) $key;
         }
 
         // ✅ REEMPLAZA SOLO TOKENS {clave} (evita reemplazar letras sueltas como "n")
-        if (is_array($repl) && !empty($repl)) {
-            $map = [];
+        if (is_array($repl) && ! empty($repl)) {
+            $line = (string) $line; // 🛡️ PHP 8.1 safe
+            $map  = [];
             foreach ($repl as $k => $v) {
-                $k = (string)$k;
+                $k = (string) $k;
 
-                // si ya viene como {n}, respeta; si viene "n", lo convierte a "{n}"
                 if (strlen($k) >= 2 && $k[0] === '{' && substr($k, -1) === '}') {
-                    $map[$k] = (string)$v;
+                    $map[$k] = (string) $v;
                 } else {
-                    $map['{' . $k . '}'] = (string)$v;
+                    $map['{' . $k . '}'] = (string) $v;
                 }
             }
 
@@ -35,7 +35,7 @@ if (! function_exists('t')) {
 if (! function_exists('jsonOut')) {
     function jsonOut($data, $status = 200)
     {
-        $CI =& get_instance();
+        $CI = &get_instance();
         $CI->output
             ->set_status_header($status)
             ->set_content_type('application/json', 'utf-8')
@@ -52,7 +52,7 @@ if (! function_exists('i18n_js')) {
      */
     function i18n_js(array $prefixes = ['rec_'])
     {
-        $CI =& get_instance();
+        $CI = &get_instance();
 
         $dict = isset($CI->lang->language) && is_array($CI->lang->language)
             ? $CI->lang->language
