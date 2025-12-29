@@ -122,6 +122,7 @@ This will re-enable your access.
 You may also contact us at (52) 3334 54 2877 via call or WhatsApp from Mon–Fri, 8 am to 6 pm for any questions.';
 
 $lang['portal_pay_no_data'] = 'No payment data available for this client.';
+$lang['portal_logout'] = 'Log out';
 
 
 /* ======================================================

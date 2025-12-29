@@ -75,7 +75,7 @@ z
   " onmouseover="this.style.backgroundColor='#c9302c'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
   onmouseout="this.style.backgroundColor='#d9534f'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';">
   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400" style="margin-right:6px;"></i>
-  Cerrar sesión
+ <?= t('portal_logout'); ?>
 </a>
 <a class="sidebar-brand d-flex align-items-center justify-content-center">
   <img style="max-width: 220px; max-height: 150px;" src="<?php echo base_url(); ?>_logosPortal/logo_nuevo.png"
@@ -83,13 +83,11 @@ z
 </a>
 <div class="alert alert-danger text-center" role="alert" style="margin:10px; font-weight:600;">
   <i class="fas fa-exclamation-triangle"></i>
-  Tu suscripción a <strong>TalentSafe</strong> ha expirado. Por favor realiza tu pago cuanto antes generando un link de
-  pago.
-  <br>Después de pagarlo, regresa aquí y confírmalo en el botón correspondiente. De esta manera tus accesos quedarán
-  habilitados nuevamente.
-  <br>También puedes comunicarte al <strong>(52) 3334 54 2877</strong> vía llamada o WhatsApp de <strong>L‑V de 8 am a
-    6 pm</strong> para cualquier duda o aclaración.
+  <strong><?= t('portal_pay_expired_alert_title'); ?></strong>
+  <br>
+  <?= nl2br(t('portal_pay_expired_alert_text')); ?>
 </div>
+
 <?php endif; ?>
 
 <!-- ========================================================= -->
@@ -140,8 +138,6 @@ z
     </a>
   </li>
 </ul>
-
-
 <!-- ========================================================= -->
 <!-- 🔹 Contenedor de contenido para las pestañas -->
 <!-- ========================================================= -->
