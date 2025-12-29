@@ -75,7 +75,7 @@ z
   " onmouseover="this.style.backgroundColor='#c9302c'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
   onmouseout="this.style.backgroundColor='#d9534f'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';">
   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400" style="margin-right:6px;"></i>
-  Cerrar sesión
+ <?= t('portal_logout'); ?>
 </a>
 <a class="sidebar-brand d-flex align-items-center justify-content-center">
   <img style="max-width: 220px; max-height: 150px;" src="<?php echo base_url(); ?>_logosPortal/logo_nuevo.png"

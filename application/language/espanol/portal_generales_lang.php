@@ -10,6 +10,7 @@ $lang['portal_logo_current']           = 'Logo actual';
 $lang['portal_logo_delete']            = 'Eliminar logo';
 $lang['portal_logo_close']             = 'Cerrar';
 $lang['portal_logo_save']              = 'Guardar logo';
+$lang['portal_logout'] = 'Cerrar sesión';
 
 /* SweetAlert */
 $lang['portal_logo_swal_confirm_title'] = '¿Estás seguro?';
