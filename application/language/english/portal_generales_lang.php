@@ -328,17 +328,45 @@ $lang['pasarela.subscription.table.price'] = 'Price';
  * PLANS – TalentSafe
  * ========================= */
 
+$lang['plan.1.title'] = 'TalentSafe Light';
+
+$lang['plan.1.description'] =
+'Monthly (1 user).<br>
+Extra user $ 50 USD.<br>
+Basic access to the TalentSafe platform.';
+
+$lang['plan.1.total'] = 'Total: $ 80 USD';
+
 /* Plan 2 – TalentSafe Standard */
 
 $lang['plan.2.title'] = 'TalentSafe Standard';
 
 $lang['plan.2.description'] =
-'Monthly ({users} users).<br>
-Extra user $ {extra} USD.<br>
+'Monthly (5 users).<br>
+Extra user $ 50 USD.<br>
 CHOOSE 2 MODULES:<br>
-(RECRUITMENT + PRE-EMPLOYMENT or EMPLOYEE + EX-EMPLOYEE + COMMUNICATION)';
+(RECRUITMENT + PRE-EMPLOYMENT OR EMPLOYEE + EX-EMPLOYEE + COMMUNICATION)';
 
-$lang['plan.2.total'] = 'Total: $ {total} USD';
+$lang['plan.2.total'] = 'Total: $ 130 USD';
 
+
+
+$lang['plan.3.title'] = 'TalentSafe Plus';
+
+$lang['plan.3.description'] =
+'Monthly (5 users).<br>
+Extra user $ 50 USD.<br>
+Extended access to multiple TalentSafe modules.';
+
+$lang['plan.3.total'] = 'Total: $ 250 USD';
+
+$lang['plan.4.title'] = 'TalentSafe Platinum';
+
+$lang['plan.4.description'] =
+'Monthly (20 users).<br>
+Extra user $ 50 USD.<br>
+Full access to all TalentSafe modules.';
+
+$lang['plan.4.total'] = 'Total: $ 1000 USD';
 
 
