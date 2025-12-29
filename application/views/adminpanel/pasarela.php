@@ -83,40 +83,61 @@ z
 </a>
 <div class="alert alert-danger text-center" role="alert" style="margin:10px; font-weight:600;">
   <i class="fas fa-exclamation-triangle"></i>
-  Tu suscripción a <strong>TalentSafe</strong> ha expirado. Por favor realiza tu pago cuanto antes generando un link de
-  pago.
-  <br>Después de pagarlo, regresa aquí y confírmalo en el botón correspondiente. De esta manera tus accesos quedarán
-  habilitados nuevamente.
-  <br>También puedes comunicarte al <strong>(52) 3334 54 2877</strong> vía llamada o WhatsApp de <strong>L‑V de 8 am a
-    6 pm</strong> para cualquier duda o aclaración.
+  <strong><?= t('portal_pay_expired_alert_title'); ?></strong>
+  <br>
+  <?= nl2br(t('portal_pay_expired_alert_text')); ?>
 </div>
+
 <?php endif; ?>
 
 <!-- ========================================================= -->
 <!-- 🔹 Encabezado principal -->
 <!-- ========================================================= -->
 <div class="text-center pasarela-header">
-  <h1 class="pasarela-title">Detalles de tu Suscripción</h1>
-  <!-- Incluye Bootstrap desde tu base_url -->
+  <h1 class="pasarela-title">
+    <?= $this->lang->line('portal_pay_title'); ?>
+  </h1>
 </div>
 <!-- ========================================================= -->
 <!-- 🔹 Pestañas de navegación -->
 <!-- ========================================================= -->
 <ul class="nav nav-tabs" id="tabs" role="tablist">
   <li class="nav-item" role="presentation">
-    <a class="nav-link active" id="linkPago-tab" data-bs-toggle="tab" href="#linkPago" role="tab"
-      aria-controls="linkPago" aria-selected="true">Pagar</a>
+    <a class="nav-link active"
+       id="linkPago-tab"
+       data-bs-toggle="tab"
+       href="#linkPago"
+       role="tab"
+       aria-controls="linkPago"
+       aria-selected="true">
+      <?= $this->lang->line('portal_pay_tab_pay'); ?>
+    </a>
   </li>
+
   <li class="nav-item" role="presentation">
-    <a class="nav-link" id="suscripcion-tab" data-bs-toggle="tab" href="#suscripcion" role="tab"
-      aria-controls="suscripcion" aria-selected="false">Suscripción</a>
+    <a class="nav-link"
+       id="suscripcion-tab"
+       data-bs-toggle="tab"
+       href="#suscripcion"
+       role="tab"
+       aria-controls="suscripcion"
+       aria-selected="false">
+      <?= $this->lang->line('portal_pay_tab_subscription'); ?>
+    </a>
   </li>
+
   <li class="nav-item" role="presentation">
-    <a class="nav-link" id="historial-tab" data-bs-toggle="tab" href="#historial" role="tab" aria-controls="historial"
-      aria-selected="false">Historial de Pagos</a>
+    <a class="nav-link"
+       id="historial-tab"
+       data-bs-toggle="tab"
+       href="#historial"
+       role="tab"
+       aria-controls="historial"
+       aria-selected="false">
+      <?= $this->lang->line('portal_pay_tab_history'); ?>
+    </a>
   </li>
 </ul>
-
 <!-- ========================================================= -->
 <!-- 🔹 Contenedor de contenido para las pestañas -->
 <!-- ========================================================= -->
