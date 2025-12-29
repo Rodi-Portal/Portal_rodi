@@ -228,34 +228,30 @@ class Area_model extends CI_Model
             return [];
         }
 
+        // Fecha inicial: mes de creación del portal
         $fechaInicio = new DateTime($portal->creacion);
         $fechaInicio->modify('first day of this month');
 
-        // Último mes que se podrá mostrar (mes actual + N)
+        // Último mes permitido (mes actual + N meses)
         $fechaMax = new DateTime('first day of this month');
         $fechaMax->modify("+{$mesesAdelantados} months");
 
+        // Meses ya pagados
         $mesesPagados = $this->getMesesPagados($id_portal);
-
-        $meses_es = [
-            1 => 'Enero', 2       => 'Febrero', 3  => 'Marzo', 4      => 'Abril',
-            5 => 'Mayo', 6        => 'Junio', 7    => 'Julio', 8      => 'Agosto',
-            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre',
-        ];
 
         $mesesDisponibles = [];
 
         while ($fechaInicio <= $fechaMax) {
+
             $mesFormateado = $fechaInicio->format('Y-m-01');
 
             if (! in_array($mesFormateado, $mesesPagados)) {
-                $mes_num    = (int) $fechaInicio->format('m');
-                $anio       = $fechaInicio->format('Y');
-                $nombre_mes = $meses_es[$mes_num] . " " . $anio;
 
                 $mesesDisponibles[] = [
-                    'fecha'      => $mesFormateado,
-                    'nombre_mes' => $nombre_mes,
+                    'fecha'     => $mesFormateado,                        // 2026-01-01
+                    'month'     => (int) $fechaInicio->format('n'),       // 1–12
+                    'month_key' => strtolower($fechaInicio->format('F')), // january
+                    'year'      => (int) $fechaInicio->format('Y'),       // 2026
                 ];
             }
 

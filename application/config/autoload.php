@@ -39,7 +39,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |  $autoload['packages'] = array(APPPATH.'third_party', '/usr/local/shared');
 |
  */
-$autoload['packages'] = array();
+$autoload['packages'] = [];
 
 /*
 | -------------------------------------------------------------------
@@ -61,10 +61,10 @@ $autoload['packages'] = array();
 //$autoload['libraries'] = array('session', 'database', 'form_validation', 'email');
 if (function_exists('is_cli') && is_cli()) {
     // CLI: no cargamos 'session' ni 'form_validation'
-    $autoload['libraries'] = array('database', 'email');
+    $autoload['libraries'] = ['database', 'email'];
 } else {
     // WEB normal
-    $autoload['libraries'] = array('session', 'database', 'form_validation', 'email');
+    $autoload['libraries'] = ['session', 'database', 'form_validation', 'email'];
 }
 /*
 | -------------------------------------------------------------------
@@ -85,7 +85,7 @@ if (function_exists('is_cli') && is_cli()) {
 |    $autoload['drivers'] = array('cache' => 'cch');
 |
  */
-$autoload['drivers'] = array();
+$autoload['drivers'] = [];
 
 /*
 | -------------------------------------------------------------------
@@ -95,7 +95,16 @@ $autoload['drivers'] = array();
 |
 |    $autoload['helper'] = array('url', 'file');
  */
-$autoload['helper'] = array('url', 'html', 'directory', 'form', 'funciones_helper', 'file', 'path');
+$autoload['helper'] = [
+    'url',
+    'html',
+    'directory',
+    'form',
+    'funciones_helper',
+    'file',
+    'path',
+    'i18n', // 👈 AQUI
+];
 $autoload['helper'][] = 'authz';
 $autoload['helper'][] = 'view_perms';
 
@@ -111,7 +120,7 @@ $autoload['helper'][] = 'view_perms';
 | config files.  Otherwise, leave it blank.
 |
  */
-$autoload['config'] = array();
+$autoload['config'] = [];
 
 /*
 | -------------------------------------------------------------------
@@ -125,7 +134,7 @@ $autoload['config'] = array();
 | "codeigniter_lang.php" would be referenced as array('codeigniter');
 |
  */
-$autoload['language'] = array();
+$autoload['language'] = [];
 
 /*
 | -------------------------------------------------------------------
@@ -140,7 +149,7 @@ $autoload['language'] = array();
 |
 |    $autoload['model'] = array('first_model' => 'first');
  */
-$autoload['model'] = array(
+$autoload['model'] = [
     'notificaciones_whatsapp_model',
     'api_traer_documentos_model',
     'generales_model',
@@ -209,4 +218,4 @@ $autoload['model'] = array(
     'proveedores_model',
     'comunicacion_model',
 
-);
+];

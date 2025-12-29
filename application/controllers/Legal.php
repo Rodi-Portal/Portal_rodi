@@ -10,7 +10,18 @@ class Legal extends CI_Controller
     {
         parent::__construct();
         $this->load->helper(['url', 'html']);
-        $this->pdf_base = FCPATH . '_docs/legal/'; // Asegúrate de crear esta carpeta y subir tus PDFs
+        $this->pdf_base = FCPATH . '_docs/legal/';
+        $lang           = $this->session->userdata('lang') ?: 'es';
+        $idioma_ci      = ($lang === 'en') ? 'english' : 'espanol';
+
+        // Cargar idiomas necesarios
+        $this->lang->load('header', $idioma_ci);
+        $this->lang->load('portal_generales', $idioma_ci); // sidebar
+        $this->lang->load('legal', $idioma_ci);            // 👈 ESTE ES EL CLAVE
+
+        // Carpeta de PDFs
+        $this->pdf_base = FCPATH . '_legal/';
+        // Asegúrate de crear esta carpeta y subir tus PDFs
     }
 
     public function index()
@@ -28,7 +39,7 @@ class Legal extends CI_Controller
         $data['confidencialidad_url'] = site_url('legal/download/confidencialidad');
         $headerView                   = $this->load->view('adminpanel/header', $data, true);
         echo $headerView;
-         $view =  $this->load->view('legal', $data, true);
+        $view = $this->load->view('legal', $data, true);
         echo $view;
 
     }
@@ -36,6 +47,8 @@ class Legal extends CI_Controller
     // legal/download/terminos  ó  legal/download/confidencialidad
     public function download($tipo = '')
     {
+
+         //die('ENTRO A DOWNLOAD: ' . $tipo);
         $map = [
             'terminos'         => 'terminos_y_condiciones.pdf',
             'confidencialidad' => 'aviso_de_confidencialidad.pdf',
@@ -45,18 +58,34 @@ class Legal extends CI_Controller
             show_404();
         }
 
-        $file = $this->pdf_base . $map[$tipo];
-        $real = @realpath($file);
+        $file = realpath($this->pdf_base . $map[$tipo]);
 
-        if (! $real || strpos($real, realpath($this->pdf_base)) !== 0 || ! is_file($real)) {
+        // Seguridad y existencia real
+        if (
+            ! $file ||
+            ! is_file($file) ||
+            strpos($file, realpath($this->pdf_base)) !== 0
+        ) {
             show_404();
         }
 
-        // Enviar como descarga
-        $this->output
-            ->set_header('Content-Type: application/pdf')
-            ->set_header('Content-Length: ' . filesize($real))
-            ->set_header('Content-Disposition: attachment; filename="' . basename($real) . '"')
-            ->set_output(file_get_contents($real));
+        // 🔴 LIMPIAR CUALQUIER OUTPUT PREVIO
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        // 🔽 HEADERS MANUALES (PHP PURO)
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+        header('Content-Length: ' . filesize($file));
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Expires: 0');
+
+        // 🔽 ENVIAR ARCHIVO
+        readfile($file);
+        exit; // 👈 OBLIGATORIO
     }
+
 }

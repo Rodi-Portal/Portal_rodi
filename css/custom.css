@@ -1597,3 +1597,104 @@ color: white;
   height: auto;
   display: inline-block;
 }
+/* ===============================
+   SIDEBAR TOGGLE FINAL - TALENTSAFE
+================================ */
+
+/* ===== BASE ===== */
+#accordionSidebar {
+  transition: width .25s ease;
+}
+
+/* ===== LOGO ===== */
+.sidebar-logo {
+  max-width: 180px;
+  max-height: 90px;
+  margin: 10px auto;
+  display: block;
+}
+
+/* ===== COLLAPSED ===== */
+body.sidebar-toggled #accordionSidebar {
+  width: 6.5rem !important;
+}
+
+/* Logo en colapsado */
+body.sidebar-toggled .sidebar-logo {
+  max-width: 40px;
+  max-height: 40px;
+}
+
+/* ===== OCULTAR TEXTO ===== */
+body.sidebar-toggled #accordionSidebar .nav-link span,
+body.sidebar-toggled #accordionSidebar .sidebar-brand-text,
+body.sidebar-toggled #accordionSidebar .collapse-inner {
+  display: none !important;
+}
+
+/* ===== ICONOS ===== */
+body.sidebar-toggled #accordionSidebar .nav-link {
+  justify-content: center;
+  text-align: center;
+  padding: .75rem 0;
+}
+
+body.sidebar-toggled #accordionSidebar .nav-link i {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+/* ===== PERFIL ===== */
+body.sidebar-toggled #accordionSidebar .img-profile {
+  width: 36px !important;
+  height: 36px !important;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Ocultar nombre solo en colapsado */
+body.sidebar-toggled #accordionSidebar .sidebar-user-name {
+  display: none;
+}
+
+/* ===== DIVIDERS ===== */
+body.sidebar-toggled #accordionSidebar .sidebar-divider {
+  width: 50%;
+  margin: .6rem auto;
+  opacity: .3;
+}
+
+/* ===== CONTENT ===== */
+body.sidebar-toggled #content-wrapper {
+  margin-left: 6.5rem !important;
+}
+
+/* ===============================
+   PERFIL CENTRADO EN SIDEBAR COLLAPSED
+================================ */
+
+/* Fuerza layout vertical del link del perfil */
+body.sidebar-toggled #accordionSidebar .sidebar-main-item > .nav-link {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0 !important;
+}
+
+/* Contenedor interno del perfil */
+body.sidebar-toggled #accordionSidebar .sidebar-main-item .d-flex {
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* Imagen de perfil perfectamente centrada */
+body.sidebar-toggled #accordionSidebar .img-profile {
+  margin: 0 auto !important;
+  display: block;
+}
+
+/* Ocultar flechita > del collapse */
+body.sidebar-toggled #accordionSidebar .nav-link::after {
+  display: none !important;
+}

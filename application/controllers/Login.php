@@ -380,29 +380,8 @@ class Login extends CI_Controller
 
         switch ($tipo_acceso) {
             case 'usuario':
-                $rol       = $this->session->userdata('idrol');
-                $id_portal = $this->session->userdata('idPortal');
-
-                $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
-
-                $this->session->set_userdata('notPago', $resultadoPago);
-
-                if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
-
-                    // ✅ Puede continuar normalmente
-                    if ($rol == 1 || $rol == 6 || $rol == 9 || $rol == 10) {
-
-                        redirect('Cat_UsuarioInternos/index');
-                        break;
-                    } else {
-                        redirect('Dashboard/index');
-                        break;
-                    }
-                } else {
-                    // ❌ Cualquier otro caso: sin registro o pendiente fuera de plazo
-                    redirect('Area/pasarela');
-                    break;
-                }
+                $this->resolverAccesoUsuario();
+                break;
 
             case 'visitador':
                 redirect('Dashboard/visitador_panel');
@@ -456,28 +435,8 @@ class Login extends CI_Controller
 
                 switch ($tipo_acceso) {
                     case 'usuario':
-                        $rol       = $this->session->userdata('idrol');
-                        $id_portal = $this->session->userdata('idPortal');
-
-                        $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
-
-                        $this->session->set_userdata('notPago', $resultadoPago);
-                        if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
-
-                            // ✅ Puede continuar normalmente
-                            if ($rol == 1 || $rol == 6 || $rol == 9 || $rol == 10) {
-
-                                redirect('Cat_UsuarioInternos/index');
-                                break;
-                            } else {
-                                redirect('Dashboard/index');
-                                break;
-                            }
-                        } else {
-                            // ❌ Cualquier otro caso: sin registro o pendiente fuera de plazo
-                            redirect('Area/pasarela');
-                            break;
-                        }
+                        $this->resolverAccesoUsuario();
+                        break;
 
                     case 'visitador':
                         redirect('Dashboard/visitador_panel');
@@ -649,6 +608,33 @@ class Login extends CI_Controller
 
         redirect('Login/index'); // Ajusta la URL de redirección según tu estructura de carpetas
 
+    }
+    /**
+     * Regla central de acceso para usuarios con pago
+     */
+    private function resolverAccesoUsuario()
+    {
+        $rol       = (int) $this->session->userdata('idrol');
+        $id_portal = (int) $this->session->userdata('idPortal');
+
+        $resultadoPago = $this->avance_model->verificarPagoMesActual($id_portal);
+
+        // Guardar SIEMPRE el estado
+        $this->session->set_userdata('notPago', $resultadoPago);
+
+        // Acceso permitido
+        if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
+
+            if (in_array($rol, [1, 6, 9, 10], true)) {
+                redirect('Cat_UsuarioInternos/index');
+            } else {
+                redirect('Dashboard/index');
+            }
+
+        }
+
+        // Acceso bloqueado → pasarela
+        redirect('Area/pasarela');
     }
 
 }
