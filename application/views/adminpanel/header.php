@@ -214,7 +214,7 @@
         <li class="nav-item sidebar-main-item">
           <a id="communication-btn" href="<?php echo site_url('Empleados/comunicacion') ?>" class="nav-link">
             <i class="fas fa-calendar-alt"></i>
-            <span><?php echo $this->lang->line('sidebar_communication'); ?></span>
+            <span><?php echo $this->lang->line('topbar_communication'); ?></span>
           </a>
         </li>
         <hr class="sidebar-divider">
