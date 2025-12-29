@@ -96,26 +96,51 @@ z
 <!-- 🔹 Encabezado principal -->
 <!-- ========================================================= -->
 <div class="text-center pasarela-header">
-  <h1 class="pasarela-title">Detalles de tu Suscripción</h1>
-  <!-- Incluye Bootstrap desde tu base_url -->
+  <h1 class="pasarela-title">
+    <?= $this->lang->line('portal_pay_title'); ?>
+  </h1>
 </div>
 <!-- ========================================================= -->
 <!-- 🔹 Pestañas de navegación -->
 <!-- ========================================================= -->
 <ul class="nav nav-tabs" id="tabs" role="tablist">
   <li class="nav-item" role="presentation">
-    <a class="nav-link active" id="linkPago-tab" data-bs-toggle="tab" href="#linkPago" role="tab"
-      aria-controls="linkPago" aria-selected="true">Pagar</a>
+    <a class="nav-link active"
+       id="linkPago-tab"
+       data-bs-toggle="tab"
+       href="#linkPago"
+       role="tab"
+       aria-controls="linkPago"
+       aria-selected="true">
+      <?= $this->lang->line('portal_pay_tab_pay'); ?>
+    </a>
   </li>
+
   <li class="nav-item" role="presentation">
-    <a class="nav-link" id="suscripcion-tab" data-bs-toggle="tab" href="#suscripcion" role="tab"
-      aria-controls="suscripcion" aria-selected="false">Suscripción</a>
+    <a class="nav-link"
+       id="suscripcion-tab"
+       data-bs-toggle="tab"
+       href="#suscripcion"
+       role="tab"
+       aria-controls="suscripcion"
+       aria-selected="false">
+      <?= $this->lang->line('portal_pay_tab_subscription'); ?>
+    </a>
   </li>
+
   <li class="nav-item" role="presentation">
-    <a class="nav-link" id="historial-tab" data-bs-toggle="tab" href="#historial" role="tab" aria-controls="historial"
-      aria-selected="false">Historial de Pagos</a>
+    <a class="nav-link"
+       id="historial-tab"
+       data-bs-toggle="tab"
+       href="#historial"
+       role="tab"
+       aria-controls="historial"
+       aria-selected="false">
+      <?= $this->lang->line('portal_pay_tab_history'); ?>
+    </a>
   </li>
 </ul>
+
 
 <!-- ========================================================= -->
 <!-- 🔹 Contenedor de contenido para las pestañas -->
