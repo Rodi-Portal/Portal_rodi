@@ -291,6 +291,29 @@ $lang['months.october']   = 'Octubre';
 $lang['months.november']  = 'Noviembre';
 $lang['months.december']  = 'Diciembre';
 
+
+/* ======================================================
+ * PASARELA – SUBSCRIPTION
+ * ====================================================== */
+
+/* Labels / Fields */
+$lang['pasarela.subscription.client_name']     = 'Client Name';
+$lang['pasarela.subscription.plan']            = 'Subscription';
+$lang['pasarela.subscription.description']     = 'Package Description';
+$lang['pasarela.subscription.users_included']  = 'Included Users';
+$lang['pasarela.subscription.extra_users']     = 'Extra Users';
+$lang['pasarela.subscription.users_suffix']    = 'user(s)';
+$lang['pasarela.subscription.due_date']         = 'Due Date';
+$lang['pasarela.subscription.status']           = 'Status';
+$lang['pasarela.subscription.total_price']      = 'Total Price';
+
+/* Section titles */
+$lang['pasarela.subscription.extra_users_title'] = 'Extra Users';
+
+/* Table headers */
+$lang['pasarela.subscription.table.name']       = 'Name';
+$lang['pasarela.subscription.table.email']      = 'Email / Description';
+$lang['pasarela.subscription.table.price']      = 'Price';
 /* =========================
  * PLANES – TalentSafe
  * ========================= */

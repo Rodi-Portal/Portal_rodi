@@ -129,7 +129,7 @@ z
     <div class="card pasarela-card">
       <div class="card-header pasarela-card-header">
         <h3 class="text-center titulo-blanco">
-          <?php echo t('pasarela.subscription.title'); ?>
+          <?php echo t('pasarela.subscription.plan'); ?>
         </h3>
       </div>
 
@@ -158,7 +158,11 @@ z
           <p>
             <strong><?php echo t('pasarela.subscription.description'); ?>:</strong>
             <span class="pasarela-data">
-              <?php echo t($plan_key . '.description', null, $plan_vars); ?>
+              <?php echo t(
+                  $plan_key . '.description',
+                  $datos_pago->descripcion ?? '',
+                  $plan_vars
+              ); ?>
             </span>
           </p>
 
@@ -214,7 +218,12 @@ z
               <td><?php echo htmlspecialchars($datos_pago->nombre_paquete ?? ''); ?></td>
               <td>
                 <span class="descripcion-paquete">
-                  <?php echo t($plan_key . '.description', null, $plan_vars); ?>
+                  <?php echo t(
+                    $plan_key . '.description',
+                    $datos_pago->descripcion ?? '',
+                    $plan_vars
+                ); ?>
+
                 </span>
               </td>
 
