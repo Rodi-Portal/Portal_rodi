@@ -13,6 +13,13 @@ class Avance extends CI_Controller
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
         $this->load->library('encryption');
+            // ✅ MAPEO DE IDIOMA
+    $lang = $this->session->userdata('lang') ?? 'es';
+
+    $idioma = ($lang === 'en') ? 'english' : 'espanol';
+
+    $this->lang->load('portal_generales', $idioma);
+
     }
 
     public function editar()
@@ -321,121 +328,158 @@ class Avance extends CI_Controller
         // Devolver los datos en formato JSON
         echo json_encode($proveedores);
     }
-    public function documentos_info()
-    {
-        $this->output->set_content_type('application/json');
+public function documentos_info()
+{
+    $id_portal = (int) $this->session->userdata('idPortal');
 
-        $id_portal = (int) $this->session->userdata('idPortal');
-        if (empty($id_portal)) {echo json_encode(['error' => 'Sesión sin idPortal']);return;}
-
-        $row = $this->cat_portales_model->getDocs($id_portal); // columnas: aviso, terminos, confidencialidad
-
-        echo json_encode([
-            'aviso_tiene'            => ! empty($row->aviso),
-            'terminos_tiene'         => ! empty($row->terminos),
-            'confidencialidad_tiene' => ! empty($row->confidencialidad),
-        ]);
+    if (empty($id_portal)) {
+        jsonOut([
+            'error' => t('portal_docs_err_no_session')
+        ], 401);
     }
 
-    public function documentos_guardar()
-    {
-        $this->output->set_content_type('application/json');
+    $row = $this->cat_portales_model->getDocs($id_portal);
 
-        $id_portal = (int) $this->session->userdata('idPortal');
-        $tipo      = $this->input->post('tipo'); // 'aviso' | 'terminos' | 'confidencialidad'
+    jsonOut([
+        'aviso_tiene'            => ! empty($row->aviso),
+        'terminos_tiene'         => ! empty($row->terminos),
+        'confidencialidad_tiene' => ! empty($row->confidencialidad),
+    ]);
+}
 
-        if (empty($id_portal)) {
-            echo json_encode(['error' => 'Sesión sin idPortal']);return;
-        }
-        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
-            echo json_encode(['error' => 'Tipo inválido']);return;
-        }
-        if (empty($_FILES['archivo']['name'])) {
-            echo json_encode(['error' => 'Selecciona un PDF']);return;
-        }
 
-        // Directorio destino (EXISTENTE y con permisos de escritura)
-        $upload_path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
-        if (! is_dir($upload_path)) {
-            @mkdir($upload_path, 0775, true);
-        }
 
-        // Nombre final por tipo (prefijo con id_portal)
-        switch ($tipo) {
-            case 'aviso':
-                $nombre_final = $id_portal . '_avisoPrivacidad.pdf';
-                break;
-            case 'terminos':
-                $nombre_final = $id_portal . '_terminosCondiciones.pdf';
-                break;
-            case 'confidencialidad':
-                $nombre_final = $id_portal . '_acuerdoConfidencialidad.pdf';
-                break;
-        }
+public function documentos_guardar()
+{
+    $id_portal = (int) $this->session->userdata('idPortal');
+    $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
 
-        // Config de subida
-        $config = [
-            'upload_path'   => $upload_path,
-            'allowed_types' => 'pdf',
-            'max_size'      => 5120, // 5MB
-            'file_name'     => $nombre_final,
-            'overwrite'     => true,
-        ];
-
-        $this->load->library('upload', $config);
-
-        if (! $this->upload->do_upload('archivo')) {
-            $error = strip_tags($this->upload->display_errors('', ''));
-            echo json_encode(['error' => 'Error al subir: ' . $error]);
-            return;
-        }
-
-        // Persistimos en DB (campo = nombre del tipo)
-        $this->cat_portales_model->updateDocs($id_portal, [
-            $tipo     => $nombre_final, // 'aviso' | 'terminos' | 'confidencialidad'
-            'edicion' => date('Y-m-d H:i:s'),
-        ]);
-
-        // URL para previsualizar/descargar (si ya tienes ver_aviso/ver_terminos, añade ver_confidencialidad o usa un ver_doc genérico)
-        $ver_endpoint = [
-            'aviso'            => 'ver_aviso/',
-            'terminos'         => 'ver_terminos/',
-            'confidencialidad' => 'ver_confidencialidad/',
-        ][$tipo];
-
-        echo json_encode([
-            'status'  => 'success',
-            'mensaje' => ucfirst($tipo) . ' actualizado.',
-            'archivo' => $nombre_final,
-            'ver_url' => base_url('Avance/' . $ver_endpoint . rawurlencode($nombre_final)),
-        ]);
+    if (empty($id_portal)) {
+        jsonOut([
+            'error' => t('portal_docs_err_no_session')
+        ], 401);
     }
 
-    public function documentos_eliminar()
-    {
-        $this->output->set_content_type('application/json');
-
-        $id_portal = (int) $this->session->userdata('idPortal');
-        $tipo      = $this->input->post('tipo');
-
-        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
-            echo json_encode(['error' => 'Tipo inválido']);return;
-        }
-
-        $row     = $this->cat_portales_model->getDocs($id_portal);
-        $current = $row ? ($row->{$tipo} ?? null) : null;
-        if (! $current) {echo json_encode(['error' => 'No hay archivo para eliminar']);return;}
-
-        // Borramos del mismo lugar donde guardamos
-        $path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR . $current;
-        if (is_file($path)) {
-            @unlink($path);
-        }
-
-        // Limpiamos columna
-        $this->cat_portales_model->updateDocs($id_portal, [$tipo => null]);
-
-        echo json_encode(['status' => 'success', 'mensaje' => ucfirst($tipo) . ' eliminado.']);
+    if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
+        jsonOut([
+            'error' => t('portal_docs_err_invalid_type')
+        ], 422);
     }
+
+    if (empty($_FILES['archivo']['name'])) {
+        jsonOut([
+            'error' => t('portal_docs_err_select_pdf')
+        ], 422);
+    }
+
+    // Directorio de subida
+    $upload_path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
+    if (! is_dir($upload_path)) {
+        @mkdir($upload_path, 0775, true);
+    }
+
+    // Nombre final según tipo
+    switch ($tipo) {
+        case 'aviso':
+            $nombre_final = $id_portal . '_avisoPrivacidad.pdf';
+            break;
+        case 'terminos':
+            $nombre_final = $id_portal . '_terminosCondiciones.pdf';
+            break;
+        case 'confidencialidad':
+            $nombre_final = $id_portal . '_acuerdoConfidencialidad.pdf';
+            break;
+    }
+
+    // Configuración de upload
+    $config = [
+        'upload_path'   => $upload_path,
+        'allowed_types' => 'pdf',
+        'max_size'      => 5120, // 5MB
+        'file_name'     => $nombre_final,
+        'overwrite'     => true,
+    ];
+
+    $this->load->library('upload', $config);
+
+    if (! $this->upload->do_upload('archivo')) {
+        $error = strip_tags($this->upload->display_errors('', ''));
+        jsonOut([
+            'error' => t('portal_docs_err_upload', '', ['error' => $error])
+        ], 422);
+    }
+
+    // Guardar en BD
+    $this->cat_portales_model->updateDocs($id_portal, [
+        $tipo     => $nombre_final,
+        'edicion' => date('Y-m-d H:i:s'),
+    ]);
+
+    // Endpoint de visualización
+    $ver_endpoint = [
+        'aviso'            => 'ver_aviso/',
+        'terminos'         => 'ver_terminos/',
+        'confidencialidad' => 'ver_confidencialidad/',
+    ][$tipo];
+
+    // 👉 CLAVE: traducir el NOMBRE del documento, no el identificador
+    $tipo_label = t('portal_docs_tipo_' . $tipo);
+
+    jsonOut([
+        'status'  => 'success',
+        'mensaje' => t('portal_docs_saved_backend', '', [
+            'tipo' => $tipo_label
+        ]),
+        'archivo' => $nombre_final,
+        'url'     => base_url('Avance/' . $ver_endpoint . rawurlencode($nombre_final)),
+    ]);
+}
+
+
+
+public function documentos_eliminar()
+{
+    $id_portal = (int) $this->session->userdata('idPortal');
+    $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
+
+    if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
+        jsonOut([
+            'error' => t('portal_docs_err_invalid_type')
+        ], 422);
+    }
+
+    $row     = $this->cat_portales_model->getDocs($id_portal);
+    $current = $row ? ($row->{$tipo} ?? null) : null;
+
+    if (! $current) {
+        jsonOut([
+            'error' => t('portal_docs_err_no_file_delete')
+        ], 404);
+    }
+
+    // Eliminar archivo físico
+    $path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR . $current;
+    if (is_file($path)) {
+        @unlink($path);
+    }
+
+    // Limpiar columna en BD
+    $this->cat_portales_model->updateDocs($id_portal, [
+        $tipo => null
+    ]);
+
+    // 👉 CLAVE: traducir el nombre del documento
+    $tipo_label = t('portal_docs_tipo_' . $tipo);
+
+    jsonOut([
+        'status'  => 'success',
+        'mensaje' => t('portal_docs_deleted_backend', '', [
+            'tipo' => $tipo_label
+        ]),
+    ]);
+}
+
+
+
 
 }

@@ -1,68 +1,66 @@
 <?php if (! empty($cargar_recursos)): ?>
 
-    <!-- ✅ Estilos primero -->
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<!-- ✅ Estilos primero -->
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
-    <!-- FontAwesome -->
-    <link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+<!-- FontAwesome -->
+<link href="<?php echo base_url(); ?>vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
 
-    <!-- SB Admin 2 -->
-    <?php echo link_tag("css/sb-admin-2.min.css"); ?>
+<!-- SB Admin 2 -->
+<?php echo link_tag("css/sb-admin-2.min.css"); ?>
+z
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
 
-    <!-- DataTables -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
+<!-- Bootstrap Select y Select2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
 
-    <!-- Bootstrap Select y Select2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+<!-- Estilos personalizados -->
+<?php echo link_tag("css/custom.css"); ?>
 
-    <!-- Estilos personalizados -->
-    <?php echo link_tag("css/custom.css"); ?>
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
 
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.12.7/dist/sweetalert2.min.css">
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<!-- ✅ Scripts después -->
+<!-- jQuery -->
+<script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
 
-    <!-- ✅ Scripts después -->
-    <!-- jQuery -->
-    <script src="<?php echo base_url() ?>vendor/jquery/jquery.min.js"></script>
+<!-- Bootstrap Bundle (incluye Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap Bundle (incluye Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery Easing -->
+<script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
 
-    <!-- jQuery Easing -->
-    <script src="<?php echo base_url() ?>vendor/jquery-easing/jquery.easing.min.js"></script>
+<!-- Select2 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
-    <!-- Select2 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<!-- Bootstrap Select -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 
-    <!-- Bootstrap Select -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
 
-    <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- (Opcional) Chart.js si lo usas -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- <script src="<?php echo base_url() ?>js/chart.min.js"></script> -->
+<!-- (Opcional) Chart.js si lo usas -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- <script src="<?php echo base_url() ?>js/chart.min.js"></script> -->
 
 
 <!-- otros recursos -->
 
-<a
-  href="<?php echo base_url(); ?>Login/logout"
-  style="
+<a href="<?php echo base_url(); ?>Login/logout" style="
     display:inline-block;
     background-color:#d9534f;
     color:#fff;
@@ -74,23 +72,24 @@
     font-size:15px;
     box-shadow:0 4px 8px rgba(0,0,0,0.1);
     transition:all 0.3s ease;
-  "
-  onmouseover="this.style.backgroundColor='#c9302c'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
-  onmouseout="this.style.backgroundColor='#d9534f'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';"
->
+  " onmouseover="this.style.backgroundColor='#c9302c'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)';"
+  onmouseout="this.style.backgroundColor='#d9534f'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.1)';">
   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400" style="margin-right:6px;"></i>
   Cerrar sesión
 </a>
- <a class="sidebar-brand d-flex align-items-center justify-content-center">
-        <img style="max-width: 220px; max-height: 150px;"
-          src="<?php echo base_url(); ?>_logosPortal/logo_nuevo.png" alt="Logo">
-      </a>
- <div class="alert alert-danger text-center" role="alert" style="margin:10px; font-weight:600;">
-    <i class="fas fa-exclamation-triangle"></i>
-    Tu suscripción a <strong>TalentSafe</strong> ha expirado. Por favor realiza tu pago cuanto antes generando un link de pago.
-    <br>Después de pagarlo, regresa aquí y confírmalo en el botón correspondiente. De esta manera tus accesos quedarán habilitados nuevamente.
-    <br>También puedes comunicarte al <strong>(52) 3334 54 2877</strong> vía llamada o WhatsApp de <strong>L‑V de 8 am a 6 pm</strong> para cualquier duda o aclaración.
-  </div>
+<a class="sidebar-brand d-flex align-items-center justify-content-center">
+  <img style="max-width: 220px; max-height: 150px;" src="<?php echo base_url(); ?>_logosPortal/logo_nuevo.png"
+    alt="Logo">
+</a>
+<div class="alert alert-danger text-center" role="alert" style="margin:10px; font-weight:600;">
+  <i class="fas fa-exclamation-triangle"></i>
+  Tu suscripción a <strong>TalentSafe</strong> ha expirado. Por favor realiza tu pago cuanto antes generando un link de
+  pago.
+  <br>Después de pagarlo, regresa aquí y confírmalo en el botón correspondiente. De esta manera tus accesos quedarán
+  habilitados nuevamente.
+  <br>También puedes comunicarte al <strong>(52) 3334 54 2877</strong> vía llamada o WhatsApp de <strong>L‑V de 8 am a
+    6 pm</strong> para cualquier duda o aclaración.
+</div>
 <?php endif; ?>
 
 <!-- ========================================================= -->
@@ -129,88 +128,134 @@
   <div class="tab-pane fade" id="suscripcion" role="tabpanel" aria-labelledby="suscripcion-tab">
     <div class="card pasarela-card">
       <div class="card-header pasarela-card-header">
-        <h3 class="text-center titulo-blanco">Detalle de tu Suscripción</h3>
+        <h3 class="text-center titulo-blanco">
+          <?php echo t('pasarela.subscription.title'); ?>
+        </h3>
       </div>
+
       <div class="card-body pasarela-card-body">
 
-        <!-- Validación: si existen datos de pago -->
         <?php if (isset($datos_pago) && ! empty($datos_pago)): ?>
         <div class="pasarela-row">
-          <p><strong>Nombre del Cliente:</strong> <span
-              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->nombre) ?></span></p>
-          <p><strong>Suscripción:</strong> <span
-              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->nombre_paquete) ?></span><span
-              class="badge bg-success">
+
+          <p>
+            <strong><?php echo t('pasarela.subscription.client_name'); ?>:</strong>
+            <span class="pasarela-data">
+              <?php echo htmlspecialchars($datos_pago->nombre); ?>
+            </span>
+          </p>
+
+          <p>
+            <strong><?php echo t('pasarela.subscription.plan'); ?>:</strong>
+            <span class="pasarela-data">
+              <?php echo htmlspecialchars($datos_pago->nombre_paquete); ?>
+            </span>
+            <span class="badge bg-success">
               $<?php echo number_format($datos_pago->precio); ?> USD
             </span>
           </p>
-          <p><strong>Descripción del Paquete:</strong> <span
-              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->descripcion) ?></span></p>
-          <p><strong>Usuarios Incluidos:</strong> <span
-              class="pasarela-data"><?php echo htmlspecialchars($datos_pago->usuarios) ?></span></p>
+
           <p>
-            <strong>Usuarios Extras:</strong>
+            <strong><?php echo t('pasarela.subscription.description'); ?>:</strong>
+            <span class="pasarela-data">
+              <?php echo t($plan_key . '.description', null, $plan_vars); ?>
+            </span>
+          </p>
+
+
+          <p>
+            <strong><?php echo t('pasarela.subscription.users_included'); ?>:</strong>
+            <span class="pasarela-data">
+              <?php echo htmlspecialchars($datos_pago->usuarios); ?>
+            </span>
+          </p>
+
+          <p>
+            <strong><?php echo t('pasarela.subscription.extra_users'); ?>:</strong>
             <span class="badge bg-primary">
-              <?php echo htmlspecialchars($cantidad_usuarios); ?> usuario(s)
+              <?php echo htmlspecialchars($cantidad_usuarios); ?>
+              <?php echo t('pasarela.subscription.users_suffix'); ?>
             </span>
             <span class="badge bg-success">
               $<?php echo number_format($cantidad_usuarios * 50, 2); ?> USD
             </span>
           </p>
-          <p><strong>Fecha de Vencimiento:</strong> <span
-              class="pasarela-data"><?php echo htmlspecialchars($fecha_vencimiento) ?></span></p>
-          <p><strong>Estado:</strong> <span class="pasarela-status"><?php echo htmlspecialchars($estado_pago) ?></span>
+
+          <p>
+            <strong><?php echo t('pasarela.subscription.due_date'); ?>:</strong>
+            <span class="pasarela-data">
+              <?php echo htmlspecialchars($fecha_vencimiento); ?>
+            </span>
           </p>
+
+          <p>
+            <strong><?php echo t('pasarela.subscription.status'); ?>:</strong>
+            <span class="pasarela-status">
+              <?php echo htmlspecialchars($estado_pago); ?>
+            </span>
+          </p>
+
         </div>
 
-        <!-- Tabla: usuarios extras -->
         <?php if (isset($usuarios) && ! empty($usuarios)): ?>
-        <h4>Usuarios Extras:</h4>
+        <h4><?php echo t('pasarela.subscription.extra_users_title'); ?></h4>
+
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Correo/descriocion</th>
-              <th>Precio</th>
+              <th><?php echo t('pasarela.subscription.table.name'); ?></th>
+              <th><?php echo t('pasarela.subscription.table.email'); ?></th>
+              <th><?php echo t('pasarela.subscription.table.price'); ?></th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><?php echo htmlspecialchars($datos_pago->nombre_paquete ?? '') ?></td>
-              <td><span class="descripcion-paquete"><?php echo nl2br($datos_pago->descripcion ?? 'Paquete'); ?></span>
-              </td>
-              <td>$<?php echo htmlspecialchars($datos_pago->precio ?? '') ?> USD</td>
 
-              <td></td>
+            <tr>
+              <td><?php echo htmlspecialchars($datos_pago->nombre_paquete ?? ''); ?></td>
+              <td>
+                <span class="descripcion-paquete">
+                  <?php echo t($plan_key . '.description', null, $plan_vars); ?>
+                </span>
+              </td>
+
+              <td>$<?php echo htmlspecialchars($datos_pago->precio ?? 0); ?> USD</td>
             </tr>
+
             <?php foreach ($usuarios as $usuario): ?>
             <tr>
               <td>
-                <?php echo htmlspecialchars($usuario->nombre ?? '') . ' ' . htmlspecialchars($usuario->paterno ?? '') ?>
+                <?php echo htmlspecialchars($usuario->nombre ?? '') . ' ' . htmlspecialchars($usuario->paterno ?? ''); ?>
               </td>
-              <td><?php echo htmlspecialchars($usuario->correo ?? '') ?></td>
-              <td>$<?php echo number_format($usuario->cobro ?? 0, 2) ?> USD</td>
+              <td><?php echo htmlspecialchars($usuario->correo ?? ''); ?></td>
+              <td>$<?php echo number_format($usuario->cobro ?? 0, 2); ?> USD</td>
             </tr>
             <?php endforeach; ?>
+
           </tbody>
         </table>
         <?php endif; ?>
 
-        <!-- Total -->
-        <input type="hidden" id="total" value="<?php echo htmlspecialchars(number_format($cobro, 2)) ?>" />
+        <input type="hidden" id="total" value="<?php echo htmlspecialchars(number_format($cobro, 2)); ?>" />
 
         <?php if (htmlspecialchars($estado_pago) === 'pagado'): ?>
-        <p class="precio-total"><strong>Precio Total:</strong> <span
-            class="pasarela-data">$<?php echo $datos_pago->precio + ($cantidad_usuarios * 50) ?> USD</span></p>
+        <p class="precio-total">
+          <strong><?php echo t('pasarela.subscription.total_price'); ?>:</strong>
+          <span class="pasarela-data">
+            $<?php echo $datos_pago->precio + ($cantidad_usuarios * 50); ?> USD
+          </span>
+        </p>
         <?php else: ?>
-
-        <p class="precio-total"><strong>Precio Total:</strong> <span
-            class="pasarela-data">$<?php echo number_format($cobro, 2) ?> USD</span></p>
+        <p class="precio-total">
+          <strong><?php echo t('pasarela.subscription.total_price'); ?>:</strong>
+          <span class="pasarela-data">
+            $<?php echo number_format($cobro, 2); ?> USD
+          </span>
+        </p>
         <?php endif; ?>
-<?php else: ?>
-        <!-- Si no hay datos -->
+
+        <?php else: ?>
         <div class="pasarela-alert">
-          No hay datos disponibles para este cliente.
+          <?php echo t('pasarela.subscription.no_data'); ?>
         </div>
         <?php endif; ?>
 
@@ -218,62 +263,69 @@
     </div>
   </div>
 
+
   <!-- ============================== -->
   <!-- 🟢 Pestaña: LINK DE PAGO -->
   <!-- ============================== -->
   <div class="tab-pane fade show active" id="linkPago" role="tabpanel" aria-labelledby="linkPago-tab">
+
     <div class="card-header pasarela-card-header">
-      <h3 class="text-center titulo-blanco">Detalles del Enlace de Pago</h3>
+      <h3 class="text-center titulo-blanco">
+        <?php echo t('portal_pay_link_title'); ?>
+      </h3>
     </div>
+
     <div class="card-body pasarela-card-body">
       <table id="tablaLinkPago" class="table table-bordered">
         <thead>
           <tr>
-            <th>ID Link de pago</th>
-            <th>Link para realizar pago</th>
-            <th>Estatus del link</th>
-            <th>Fue generado</th>
-            <th>El link Expira</th>
-            <th>Ver QR</th>
-            <th>Confirmar el Pago</th>
+            <th><?php echo t('portal_pay_table_link_id'); ?></th>
+            <th><?php echo t('portal_pay_table_link'); ?></th>
+            <th><?php echo t('portal_pay_table_link_status'); ?></th>
+            <th><?php echo t('portal_pay_table_created'); ?></th>
+            <th><?php echo t('portal_pay_table_expires'); ?></th>
+            <th><?php echo t('portal_pay_link_qr'); ?></th>
+            <th><?php echo t('portal_pay_link_confirm'); ?></th>
           </tr>
         </thead>
+
         <tbody>
           <?php if (isset($link_pago) && ! empty($link_pago)): ?>
           <tr>
-            <td><?php echo htmlspecialchars($link_pago->id) ?></td>
+            <td><?php echo htmlspecialchars($link_pago->id); ?></td>
+
             <td>
-              <a href="<?php echo htmlspecialchars($link_pago->payment_request_url) ?>" target="_blank"
+              <a href="<?php echo htmlspecialchars($link_pago->payment_request_url); ?>" target="_blank"
                 class="text-primary">
-                <i class="bi bi-credit-card"></i> Ir al Pago
+                <i class="bi bi-credit-card"></i>
+                <?php echo t('portal_pay_link_go'); ?>
               </a>
             </td>
+
             <td>
-              <span class="<?php echo htmlspecialchars($status_link_pago_class) ?>">
-                <?php echo htmlspecialchars($status_link_pago_text) ?>
+              <span class="<?php echo htmlspecialchars($status_link_pago_class); ?>">
+                <?php echo isset($status_link_pago_key) ? t($status_link_pago_key) : ''; ?>
               </span>
             </td>
-            <td><?php echo htmlspecialchars($link_pago->created_at) ?></td>
-            <td><?php echo htmlspecialchars($link_pago->expires_at) ?></td>
+
+            <td><?php echo htmlspecialchars($link_pago->created_at); ?></td>
+            <td><?php echo htmlspecialchars($link_pago->expires_at); ?></td>
+
             <td>
-              <a href="<?php echo htmlspecialchars($link_pago->qr_image_url) ?>" target="_blank"
-                class="text-primary">Ver QR</a>
+              <a href="<?php echo htmlspecialchars($link_pago->qr_image_url); ?>" target="_blank" class="text-primary">
+                <?php echo t('portal_pay_link_qr'); ?>
+              </a>
             </td>
+
             <td>
-              <?php if (isset($link_pago) && ! empty($link_pago)): ?>
-              <input type="button" class="btn pasarela-btn" value="Confirmar Pago"
-                onclick="confirmarPago('<?php echo $link_pago->payment_request_id ?>')">
-              <?php else: ?>
-              <span class="<?php echo htmlspecialchars($status_link_pago_class) ?>">
-                <?php echo htmlspecialchars($status_link_pago_text) ?>
-              </span>
-              <?php endif; ?>
+              <input type="button" class="btn pasarela-btn" value="<?php echo t('portal_pay_link_confirm'); ?>"
+                onclick="confirmarPago('<?php echo $link_pago->payment_request_id; ?>')">
             </td>
           </tr>
           <?php else: ?>
           <tr>
             <td colspan="7" class="text-center">
-              No se ha generado un link de pago o este ya expiró. Por favor, genera otro.
+              <?php echo t('portal_pay_no_link'); ?>
             </td>
           </tr>
           <?php endif; ?>
@@ -281,13 +333,15 @@
       </table>
     </div>
 
-    <!-- Botón para generar link si está expirado -->
-
-
+    <!-- Botón para generar link -->
     <div class="generar-link">
-      <button class="btn pasarela-btn-2" id="btnAbrirModalPago">Generar Link de Pago</button>
+      <button class="btn pasarela-btn-2" id="btnAbrirModalPago">
+        <?php echo t('portal_pay_link_generate'); ?>
+      </button>
     </div>
+
   </div>
+
 
   <!-- ============================== -->
   <!-- 🟢 MODAL: Generar pago -->
@@ -295,50 +349,80 @@
   <div class="modal fade" id="modalGenerarPago" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
+
         <!-- Encabezado del modal -->
         <div class="modal-header-pagos">
-          <h5 class="modal-title">Generar Pago -                                                 <?php echo $datos_pago->nombre_paquete ?? 'Paquete'; ?></h5>
+          <h5 class="modal-title">
+            <?php echo t('pasarela.modal.title'); ?> -
+            <?php echo $datos_pago->nombre_paquete ?? t('pasarela.modal.package_fallback'); ?>
+          </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
         <!-- Cuerpo del modal -->
         <div class="modal-body">
           <h5 class="title">
-            <strong
-              class="text-uppercase"><?php echo $datos_pago->nombre_paquete . ' ' . $datos_pago->precio . ' USD' ?></strong>
+            <strong class="text-uppercase">
+              <?php echo $datos_pago->nombre_paquete . ' ' . $datos_pago->precio . ' USD'; ?>
+            </strong>
             <br>
-            <span class="descripcion-paquete"><?php echo nl2br($datos_pago->descripcion ?? 'Paquete'); ?></span>
+            <span class="descripcion-paquete">
+              <?php
+                  echo t(
+                      $plan_key . '.description',
+                      t('pasarela.modal.package_fallback'),
+                      $plan_vars
+                  );
+              ?>
+            </span>
+
           </h5>
-          <p><strong>Usuarios Extras:</strong></p>
+
+          <p><strong><?php echo t('pasarela.modal.extra_users'); ?>:</strong></p>
           <ul>
             <?php foreach ($usuarios as $usuario): ?>
-            <li><?php echo $usuario->nombre; ?><?php echo $usuario->paterno . ' $50 USD'; ?></li>
+            <li>
+              <?php echo $usuario->nombre . ' ' . $usuario->paterno; ?>
+              <?php echo ' $50 USD'; ?>
+            </li>
             <?php endforeach; ?>
           </ul>
 
-          <p><strong>Selecciona los meses a pagar:</strong></p>
+          <p><strong><?php echo t('pasarela.modal.select_months'); ?>:</strong></p>
+
           <div class="meses-grid" id="mesesContainer">
             <?php foreach ($meses_disponibles as $mes): ?>
             <button type="button" class="btn btn-outline-primary btn-mes" data-fecha="<?php echo $mes['fecha']; ?>">
-              <?php echo $mes['nombre_mes']; ?>
+              <?php
+        echo t('months.' . $mes['month_key']) . ' ' . $mes['year'];
+      ?>
             </button>
             <?php endforeach; ?>
           </div>
 
+
           <!-- Campo oculto para enviar meses seleccionados -->
           <input type="hidden" id="inputMesesSeleccionados" name="meses" value="">
-          <!-- Monto total -->
-          <p class="total-monto"><strong>Total:</strong> <span id="montoTotal">$0.00 </span> USD</p>
 
+          <!-- Monto total -->
+          <p class="total-monto">
+            <strong><?php echo t('pasarela.modal.total'); ?>:</strong>
+            <span id="montoTotal">$0.00</span> USD
+          </p>
 
         </div>
+
         <!-- Pie del modal -->
         <div class="modal-footer">
-          <button type="button" class="btn btn-success" id="btnPagar">Generar Link</button>
+          <button type="button" class="btn btn-success" id="btnPagar">
+            <?php echo t('pasarela.modal.generate'); ?>
+          </button>
         </div>
+
       </div>
     </div>
   </div>
+
 
   <!-- ============================== -->
   <!-- 🟢 Pestaña: HISTORIAL DE PAGOS -->
@@ -346,40 +430,55 @@
   <div class="tab-pane fade" id="historial" role="tabpanel" aria-labelledby="historial-tab">
     <div class="card pasarela-card">
       <div class="card-header pasarela-card-header">
-        <h3 class="text-center titulo-blanco">Historial de Pagos</h3>
+        <h3 class="text-center titulo-blanco">
+          <?php echo t('pasarela.history.title'); ?>
+        </h3>
       </div>
+
       <div class="card-body pasarela-card-body">
         <table id="historialPagos" class="table table-bordered">
           <thead>
             <tr>
-              <th>ID Pago</th>
-              <th>Mes a pagar</th>
-              <th>Fecha de Pago</th>
-              <th>Monto</th>
-              <th>Estatus</th>
-              <th>Referencia</th>
+              <th><?php echo t('pasarela.history.columns.payment_id'); ?></th>
+              <th><?php echo t('pasarela.history.columns.month'); ?></th>
+              <th><?php echo t('pasarela.history.columns.payment_date'); ?></th>
+              <th><?php echo t('pasarela.history.columns.amount'); ?></th>
+              <th><?php echo t('pasarela.history.columns.status'); ?></th>
+              <th><?php echo t('pasarela.history.columns.reference'); ?></th>
             </tr>
           </thead>
+
           <tbody>
             <?php if (isset($historial_pagos) && ! empty($historial_pagos)): ?>
-<?php foreach ($historial_pagos as $pago): ?>
+            <?php foreach ($historial_pagos as $pago): ?>
             <tr>
-              <td><?php echo htmlspecialchars($pago->payment_request_id ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+
+              <!-- 1️⃣ PAYMENT ID -->
+              <td>
+                <?php echo htmlspecialchars($pago->payment_request_id ?? '', ENT_QUOTES, 'UTF-8'); ?>
+              </td>
+
+              <!-- 2️⃣ MONTH -->
               <td>
                 <?php
                     if (! empty($pago->mes)) {
                         $fecha = DateTime::createFromFormat('Y-m-d', $pago->mes);
                         if ($fecha) {
-                            // Mapeo manual de meses en español
                             $meses = [
-                                1 => 'Enero', 2       => 'Febrero', 3  => 'Marzo', 4      => 'Abril',
-                                5 => 'Mayo', 6        => 'Junio', 7    => 'Julio', 8      => 'Agosto',
-                                9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre',
+                                1  => t('months.january'),
+                                2  => t('months.february'),
+                                3  => t('months.march'),
+                                4  => t('months.april'),
+                                5  => t('months.may'),
+                                6  => t('months.june'),
+                                7  => t('months.july'),
+                                8  => t('months.august'),
+                                9  => t('months.september'),
+                                10 => t('months.october'),
+                                11 => t('months.november'),
+                                12 => t('months.december'),
                             ];
-
-                            $mesNum = (int) $fecha->format('n'); // número de mes 1-12
-                            $anio   = $fecha->format('Y');       // año completo
-                            echo $meses[$mesNum] . ' ' . $anio;  // ejemplo: Julio 2025
+                            echo $meses[(int) $fecha->format('n')] . ' ' . $fecha->format('Y');
                         } else {
                             echo '-';
                         }
@@ -388,42 +487,57 @@
                     }
                 ?>
               </td>
+
+              <!-- 3️⃣ PAYMENT DATE -->
               <td>
                 <?php
-                    $fechaPago  = $pago->fecha_pago ?? ''; // si es null, será cadena vacía
-                    $estadoPago = $pago->estado ?? '';     // igual, cadena vacía si es null
-
-                    echo $fechaPago !== ''
-                    ? htmlspecialchars($fechaPago, ENT_QUOTES, 'UTF-8')
-                    : htmlspecialchars($estadoPago, ENT_QUOTES, 'UTF-8');
+                    echo ! empty($pago->fecha_pago)
+                        ? htmlspecialchars($pago->fecha_pago, ENT_QUOTES, 'UTF-8')
+                        : '-';
                 ?>
               </td>
-              <td>$<?php echo htmlspecialchars($pago->monto) ?></td>
+
+              <!-- 4️⃣ AMOUNT -->
+              <td>
+                <?php echo '$' . number_format($pago->monto ?? 0, 2) . ' USD'; ?>
+              </td>
+
+              <!-- 5️⃣ STATUS -->
               <td>
                 <?php if (! empty($pago->link_status)): ?>
-                <!-- ✅ Hay link_status, mostramos el link normal -->
-                <a href="<?php echo htmlspecialchars($pago->link_status) ?>" target="_blank">Ver Status</a>
+                <a href="<?php echo htmlspecialchars($pago->link_status); ?>" target="_blank">
+                  <?php echo t('pasarela.history.view_status'); ?>
+                </a>
                 <?php else: ?>
-                <!-- ❌ No hay link_status, usamos un botón para lanzar SweetAlert -->
                 <button type="button" class="btn btn-sm btn-info verStatusLocal"
-                  data-fecha="<?php echo htmlspecialchars($pago->estado) ?>">
-                  Ver Status
+                  data-fecha="<?php echo htmlspecialchars($pago->estado ?? ''); ?>">
+                  <?php echo t('pasarela.history.view_status'); ?>
                 </button>
                 <?php endif; ?>
               </td>
-              <td><?php echo htmlspecialchars($pago->referencia ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+
+              <!-- 6️⃣ REFERENCE -->
+              <td>
+                <?php echo htmlspecialchars($pago->referencia ?? '-', ENT_QUOTES, 'UTF-8'); ?>
+              </td>
+
             </tr>
             <?php endforeach; ?>
-<?php else: ?>
+            <?php else: ?>
             <tr>
-              <td colspan="5" class="text-center">No hay historial de pagos disponible.</td>
+              <td colspan="6" class="text-center">
+                <?php echo t('pasarela.history.empty'); ?>
+              </td>
             </tr>
             <?php endif; ?>
           </tbody>
+
         </table>
       </div>
     </div>
   </div>
+
+
 
 </div> <!-- Fin tab-content -->
 
@@ -453,47 +567,50 @@ function confirmarPago(parametro) {
       if (response.status) {
         let statusMessage = '';
 
-        // Mapeo de estados a texto amigable
+        // Mapeo de estados a texto amigable (MULTILENGUAJE)
         switch (response.status) {
           case 'CHECKOUT_CREATED':
-            statusMessage = 'El link de pago fue creado y está pendiente de ser completado.';
+            statusMessage = "<?php echo t('portal_pay_status_created'); ?>";
             break;
           case 'CHECKOUT_PENDING':
-            statusMessage = 'El link de pago está activo y pendiente de ser completado.';
+            statusMessage = "<?php echo t('portal_pay_status_pending_text'); ?>";
             break;
           case 'CHECKOUT_CANCELLED':
-            statusMessage = 'El link de pago fue cancelado por exceso de intentos.';
+            statusMessage = "<?php echo t('portal_pay_status_cancelled'); ?>";
             break;
           case 'CHECKOUT_EXPIRED':
-            statusMessage = 'El link de pago expiró.';
+            statusMessage = "<?php echo t('portal_pay_status_expired_text'); ?>";
             break;
           case 'CHECKOUT_COMPLETED':
-            statusMessage = 'El link de pago se liquidó.';
+            statusMessage = "<?php echo t('portal_pay_status_paid_text'); ?>";
             break;
           default:
-            statusMessage = 'Estado desconocido.';
+            statusMessage = "<?php echo t('portal_pay_swal_unknown_status'); ?>";
             break;
         }
 
         // Armamos el contenido que se mostrará en SweetAlert
         let mensaje = `
-          <strong>Estatus:</strong> ${statusMessage}<br>
-          <strong>Monto:</strong> ${response.amount} ${response.currency}<br>
-          <strong>Descripción:</strong> ${response.purchase_description}<br>
-          <strong>URL:</strong> <a href="${response.payment_request_url}" target="_blank">Ir al Pago</a><br>
-        `;
+            <strong><?php echo t('portal_pay_status'); ?>:</strong> ${statusMessage}<br>
+            <strong><?php echo t('portal_pay_history_amount'); ?>:</strong> ${response.amount} ${response.currency}<br>
+            <strong><?php echo t('portal_pay_plan_description'); ?>:</strong> ${response.purchase_description}<br>
+            <strong>URL:</strong>
+            <a href="${response.payment_request_url}" target="_blank">
+              <?php echo t('portal_pay_link_go'); ?>
+            </a><br>
+          `;
 
         // Si hay acciones pendientes, las añadimos
         if (response.pending_action) {
           mensaje += `
-            <strong>Acción pendiente:</strong> ${response.pending_action.type}<br>
-            <strong>Referencia:</strong> ${response.pending_action.reference}<br>
-          `;
+              <strong><?php echo t('portal_pay_pending_action'); ?>:</strong> ${response.pending_action.type}<br>
+              <strong><?php echo t('portal_pay_history_reference'); ?>:</strong> ${response.pending_action.reference}<br>
+            `;
         }
 
         // Mostrar información con SweetAlert
         Swal.fire({
-          title: 'Información del pago',
+          title: "<?php echo t('portal_pay_swal_payment_info'); ?>",
           html: mensaje,
           icon: 'info',
           showConfirmButton: false,
@@ -507,12 +624,20 @@ function confirmarPago(parametro) {
       } else {
         // Error si no hay estado
         console.error("Error: No se pudo validar el pago.");
-        Swal.fire('Error', 'No se pudo obtener el estado del pago.', 'error');
+        Swal.fire(
+          "<?php echo t('portal_pay_swal_error'); ?>",
+          "<?php echo t('portal_pay_swal_request_error'); ?>",
+          'error'
+        );
       }
     },
     error: function(xhr, status, error) {
       console.error("Hubo un error en la solicitud AJAX:", error);
-      Swal.fire('Error', 'Hubo un problema con la solicitud, por favor intente de nuevo.', 'error');
+      Swal.fire(
+        "<?php echo t('portal_pay_swal_error'); ?>",
+        "<?php echo t('portal_pay_swal_request_error'); ?>",
+        'error'
+      );
     }
   });
 }
@@ -523,39 +648,30 @@ function confirmarPago(parametro) {
 document.addEventListener('DOMContentLoaded', function() {
 
   // Precio base mensual desde PHP
-  const precioMensual =                        <?php echo $datos_pago->precio ?? 999; ?>;
-  const cobroProporcional =                            <?php echo $cobro ?? 999; ?>;
-  const cobroMensualFijo =                           <?php echo $cobro_mes ?? 999; ?>;
+  const precioMensual = <?php echo $datos_pago->precio ?? 999; ?>;
+  const cobroProporcional = <?php echo $cobro ?? 999; ?>;
+  const cobroMensualFijo = <?php echo $cobro_mes ?? 999; ?>;
   const mesActual = "<?php echo date('Y-m') ?>";
-
-  // Array para guardar los meses seleccionados dinámicamente
 
   // =========================================================
   // ✅ Selección de meses (botones dinámicos)
   // =========================================================
-  // arreglo global
   let mesesSeleccionados = [];
 
   $(document).on('click', '.btn-mes', function() {
     const fecha = $(this).data('fecha');
-    const botones = $('.btn-mes'); // todos los botones en orden
-
-    // obtener índices de cada botón
+    const botones = $('.btn-mes');
     const indexClic = botones.index(this);
 
-    // si el mes ya estaba seleccionado → vamos a desmarcar desde ese índice en adelante
     if (mesesSeleccionados.includes(fecha)) {
-      // recorrer todos los botones desde el final hacia el índice clicado
       botones.each(function(i, btn) {
         const f = $(btn).data('fecha');
         if (i >= indexClic && mesesSeleccionados.includes(f)) {
-          // quitar selección
           mesesSeleccionados = mesesSeleccionados.filter(m => m !== f);
           $(btn).removeClass('btn-primary').addClass('btn-outline-primary');
         }
       });
     } else {
-      // no estaba seleccionado: marcar desde el inicio hasta este índice
       botones.each(function(i, btn) {
         const f = $(btn).data('fecha');
         if (i <= indexClic && !mesesSeleccionados.includes(f)) {
@@ -565,41 +681,28 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
-    // actualizar campo oculto y monto
     $('#inputMesesSeleccionados').val(mesesSeleccionados.join(','));
     calcularMonto();
   });
 
-
-
-
   // =========================================================
-  // ✅ Función: Calcular monto total en base a meses seleccionados
+  // ✅ Calcular monto total
   // =========================================================
   function calcularMonto() {
     let total = 0;
 
     mesesSeleccionados.forEach(function(fechaCompleta) {
-      // Normaliza el formato "YYYY-MM-DD" a solo "YYYY-MM"
       const soloMes = fechaCompleta.substring(0, 7);
-
-      if (soloMes === mesActual) {
-        // ✅ Es el mes actual → usar cobro proporcional
-        total += cobroProporcional;
-      } else {
-        // ✅ Es un mes futuro → usar cobro mensual fijo
-        total += cobroMensualFijo;
-      }
+      total += (soloMes === mesActual) ?
+        cobroProporcional :
+        cobroMensualFijo;
     });
 
-    // Mostrar el total en la interfaz
     $('#montoTotal').text(`$${total.toFixed(2)}`);
   }
 
-
-
   // =========================================================
-  // ✅ Abrir modal para generar pago (limpia selección)
+  // ✅ Abrir modal para generar pago
   // =========================================================
   $('#btnAbrirModalPago').on('click', function() {
     mesesSeleccionados = [];
@@ -616,23 +719,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // =========================================================
   $('#btnPagar').on('click', function() {
     if (mesesSeleccionados.length === 0) {
-      Swal.fire('Error', 'Debes seleccionar al menos un mes.', 'error');
+      Swal.fire(
+        "<?php echo t('portal_pay_swal_error'); ?>",
+        "<?php echo t('portal_pay_swal_select_month'); ?>",
+        'error'
+      );
       return;
     }
 
-    // Calcular monto y preparar datos
     const montoTotalTexto = document.getElementById('montoTotal').textContent;
-
-    // Ejemplo: "$0.00 USD"
-    console.log(montoTotalTexto);
-
-    // Si quieres convertirlo a número (quitar símbolos y letras):
     const montoTotalNumero = parseFloat(
-      montoTotalTexto.replace(/[^0-9.]+/g, '') // deja solo números y puntos
+      montoTotalTexto.replace(/[^0-9.]+/g, '')
     );
-    const description = 'Pago por ' + mesesSeleccionados.length + ' mes(es) de la suscripción.';
 
-    // Llamada AJAX para generar enlace de pago
+    const description = "<?php echo t('portal_pay_payment_details'); ?>";
+
     $.ajax({
       url: '<?php echo site_url("Checkout_Clip/generarPago") ?>',
       type: 'POST',
@@ -646,123 +747,84 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof response === 'string') response = JSON.parse(response);
 
         if (response.status == 'success' && response.linkPago) {
-          Swal.fire('¡Éxito!', 'El enlace de pago se generó correctamente.', 'success').then(() => {
-            location.reload();
-          });
+          Swal.fire(
+            "<?php echo t('portal_pay_swal_success'); ?>",
+            "<?php echo t('portal_pay_swal_link_success'); ?>",
+            'success'
+          ).then(() => location.reload());
         } else {
-          Swal.fire('Error', 'No se pudo generar el enlace de pago.', 'error');
+          Swal.fire(
+            "<?php echo t('portal_pay_swal_error'); ?>",
+            "<?php echo t('portal_pay_swal_link_error'); ?>",
+            'error'
+          );
         }
       },
       error: function() {
-        Swal.fire('Error', 'Hubo un error en la solicitud.', 'error');
+        Swal.fire(
+          "<?php echo t('portal_pay_swal_error'); ?>",
+          "<?php echo t('portal_pay_swal_request_error'); ?>",
+          'error'
+        );
       }
     });
 
-    // Cerrar modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('modalGenerarPago'));
     modal.hide();
   });
 
   // =========================================================
-  // ✅ Botón principal "Generar Pago" (fuera del modal)
-  // =========================================================
-  const btnGenerarPago = document.getElementById('btnGenerarPago');
-  if (btnGenerarPago) {
-    btnGenerarPago.addEventListener('click', function() {
-      Swal.fire({
-        title: 'Confirmar',
-        text: '¿Deseas generar un enlace de pago?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, generar',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const monto = parseFloat(document.getElementById('total').value) || 0;
-          const currency = 'USD';
-          const description =
-            'Pago mensual de la suscripción a TalentSafe. Para más detalles visita el apartado de Suscripción.';
-
-          // Generar enlace de pago
-          $.ajax({
-            url: '<?php echo site_url("Checkout_Clip/generarPago") ?>',
-            type: 'POST',
-            data: {
-              amount: monto,
-              currency: currency,
-              description: description
-            },
-            success: function(response) {
-              if (typeof response === 'string') response = JSON.parse(response);
-              if (response.status == 'success' && response.linkPago > 0) {
-                Swal.fire('¡Éxito!', 'El enlace de pago se generó con éxito.', 'success').then(() => {
-                  location.reload();
-                });
-              } else {
-                Swal.fire('Error', 'Hubo un problema al generar el enlace de pago.', 'error');
-              }
-            },
-            error: function(xhr, status, error) {
-              console.error('Error en la solicitud AJAX:', error);
-              Swal.fire('Error', 'Hubo un error al procesar la solicitud.', 'error');
-            }
-          });
-        }
-      });
-    });
-  }
-
-  // =========================================================
-  // ✅ Inicializar DataTables (evita errores si ya están inicializadas)
+  // ✅ Inicializar DataTables
   // =========================================================
   $.fn.dataTable.ext.errMode = 'throw';
+
   if ($.fn.DataTable.isDataTable('#historialPagos')) {
     $('#historialPagos').DataTable().destroy();
   }
   if ($.fn.DataTable.isDataTable('#tablaLinkPago')) {
     $('#tablaLinkPago').DataTable().destroy();
   }
-  // =========================================================
-  // ✅ Accion para  ver Status Pago
-  // =========================================================
 
+  // =========================================================
+  // ✅ Ver status local
+  // =========================================================
   $(document).on('click', '.verStatusLocal', function() {
-    const estado = $(this).data('fecha'); // ahora contiene 'pendiente', 'vencido' o 'pagado'
+    const estado = $(this).data('fecha');
 
     if (estado === 'pagado') {
       Swal.fire({
         icon: 'success',
-        title: 'Pago confirmado',
-        text: 'Este mes ya está pagado.',
-        confirmButtonText: 'Aceptar'
+        title: "<?php echo t('portal_pay_status_paid'); ?>",
+        text: "<?php echo t('portal_pay_status_paid_text'); ?>",
+        confirmButtonText: 'OK'
       });
     } else if (estado === 'pendiente') {
       Swal.fire({
         icon: 'warning',
-        title: 'Pago pendiente',
-        text: 'Este mes aún está pendiente de pago.',
-        confirmButtonText: 'Aceptar'
+        title: "<?php echo t('portal_pay_status_pending'); ?>",
+        text: "<?php echo t('portal_pay_status_pending_text'); ?>",
+        confirmButtonText: 'OK'
       });
     } else if (estado === 'expirado') {
       Swal.fire({
         icon: 'error',
-        title: 'Pago vencido',
-        text: 'Este mes ya pasó la fecha límite de pago.',
-        confirmButtonText: 'Aceptar'
+        title: "<?php echo t('portal_pay_status_expired'); ?>",
+        text: "<?php echo t('portal_pay_status_expired_text'); ?>",
+        confirmButtonText: 'OK'
       });
     } else {
       Swal.fire({
         icon: 'info',
-        title: 'Sin información',
-        text: 'No se encontró un estado válido.',
-        confirmButtonText: 'Aceptar'
+        title: "<?php echo t('portal_pay_swal_unknown_status'); ?>",
+        text: "<?php echo t('portal_pay_swal_unknown_status'); ?>",
+        confirmButtonText: 'OK'
       });
     }
   });
 
-
 }); // DOMContentLoaded
 </script>
+
 <style>
 /* =========================================================
  🎨 ESTILOS GENERALES

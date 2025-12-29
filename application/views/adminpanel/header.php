@@ -21,10 +21,12 @@
       $CI->lang->load('portal_generales', $idioma_ci);
 
   ?>
+
   <!DOCTYPE html>
   <html lang="<?php echo $lang; ?>">
 
   <head>
+    <?php i18n_js(['portal_', 'sidebar_', 'header_']); ?>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -88,7 +90,7 @@
     <!-- JavaScript -->
 
     <?php /*$token = $this->session->userdata('jwt_token'); 
-echo $token  */?>
+    echo $token  */?>
     <!-- Page Wrapper -->
     <div id="wrapper">
       <!-- Sidebar -->
@@ -98,15 +100,8 @@ echo $token  */?>
                 $logo = 'logo_nuevo.png';
         }?>
         <a class="sidebar-brand d-flex align-items-center justify-content-center">
-          <img style="
-      max-width: 220px;
-      max-height: 150px;
+          <img class="sidebar-logo" src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo">
 
-      padding: 10px 15px;   /* espacio interno alrededor del logo */
-      margin: 10px auto;    /* espacio externo respecto al contenedor */
-      border-radius: 6px;   /* opcional, esquinas redondeadas */
-      display: block;       /* para que el margin auto centre bien */
-    " src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo">
         </a>
 
         <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
@@ -114,7 +109,7 @@ echo $token  */?>
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
         <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10 || $idRol == 4) {?>
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
             aria-expanded="true" aria-controls="collapseUsuario">
             <div class="d-flex align-items-center">
@@ -162,7 +157,7 @@ echo $token  */?>
         <?php }?>
         <hr class="sidebar-divider my-0">
         <!-- Menú principal -->
-        <li class="nav-item active">
+        <li class="nav-item sidebar-main-item">
           <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span><?php echo $this->lang->line('sidebar_dashboard'); ?></span>
@@ -171,7 +166,7 @@ echo $token  */?>
         <!-- Divider -->
         <hr class="sidebar-divider">
         <!-- Manual de Usuario -->
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
             <i class="fas fa-book"></i>
             <span><?php echo $this->lang->line('sidebar_user_guide'); ?></span>
@@ -180,7 +175,7 @@ echo $token  */?>
         <!-- Divider -->
         <hr class="sidebar-divider">
         <!-- Divider with Text -->
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a class="nav-link " id="recruitment-btn" href="<?php echo site_url('Reclutamiento/menu') ?>">
             <i class="fas fa-users"></i>
             <span><?php echo $this->lang->line('sidebar_recruitment'); ?></span>
@@ -188,7 +183,7 @@ echo $token  */?>
         </li>
         <!-- Divider -->
         <hr class="sidebar-divider">
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a id="pre-employment-btn" href="<?php echo site_url('Empleados/preEmpleados') ?>" class="nav-link ">
             <i class="fas fa-user-clock"></i>
             <span><?php echo $this->lang->line('sidebar_pre_employment'); ?></span>
@@ -196,7 +191,7 @@ echo $token  */?>
         </li>
         <!-- Divider -->
         <hr class="sidebar-divider">
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a id="former-employment-btn" href="<?php echo site_url('Empleados/index') ?>" class="nav-link ">
             <i class="fas fa-user-times"></i>
             <span><?php echo $this->lang->line('sidebar_employees'); ?></span>
@@ -205,19 +200,30 @@ echo $token  */?>
         </li>
         <!-- Divider -->
         <hr class="sidebar-divider">
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a id="former-employment-btn" href="<?php echo site_url('Empleados/exEmpleados') ?>" class="nav-link ">
             <i class="fas fa-user-times"></i>
             <span><?php echo $this->lang->line('sidebar_former_employees'); ?></span>
           </a>
 
         </li>
+
+        <!-- Comunicación -->
+        <hr class="sidebar-divider">
+
+        <li class="nav-item sidebar-main-item">
+          <a id="communication-btn" href="<?php echo site_url('Empleados/comunicacion') ?>" class="nav-link">
+            <i class="fas fa-calendar-alt"></i>
+            <span><?php echo $this->lang->line('sidebar_communication'); ?></span>
+          </a>
+        </li>
+        <hr class="sidebar-divider">
         <!-- Divider -->
         <!-- Reportes -->
         <?php
             $portal = $this->session->userdata('idPortal');
         if (in_array(9, $submenus)) {?>
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
             aria-expanded="true" aria-controls="collapseReportes">
             <i class="fas fa-fw fa-medkit"></i>
@@ -288,7 +294,7 @@ echo $token  */?>
         ?>
         <?php
         if ($menuRegistrar): ?>
-        <li class="nav-item">
+        <li class="nav-item sidebar-main-item">
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCatalogos"
             aria-expanded="true" aria-controls="collapseCatalogos">
             <i class="fas fa-fw fa-folder"></i>
@@ -331,9 +337,12 @@ echo $token  */?>
         <button id="enviarCvsBtn">Enviar CVS</button>
         <div id="resultados2"></div>
         <?php }?>
-        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-          <i class="fa fa-bars"></i>
-        </button>
+        <hr class="sidebar-divider d-none d-md-block">
+
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+
       </ul>
       <!-- Content Wrapper -->
       <div id="content-wrapper" class="d-flex flex-column">
@@ -463,45 +472,33 @@ echo $token  */?>
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">
-                    <?= $this->lang->line('portal_logo_modal_title'); ?>
-                  </h5> <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                  <h5 class="modal-title"> <?php echo $this->lang->line('portal_logo_modal_title');?> </h5> <button
+                    type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                      aria-hidden="true">&times;</span> </button>
                 </div>
-
                 <div class="modal-body">
                   <form id="logoForm">
-                    <div class="form-group">
-                      <label for="fileLogo">
-                        <?= $this->lang->line('portal_logo_select_image'); ?>
-                      </label> <input type="file" class="form-control-file" id="fileLogo" name="fileLogo"
-                        accept="image/*">
-                    </div>
+                    <div class="form-group"> <label for="fileLogo">
+                        <?php echo $this->lang->line('portal_logo_select_image');?> </label> <input type="file"
+                        class="form-control-file" id="fileLogo" name="fileLogo" accept="image/*"> </div>
                   </form>
                   <div id="preview" style="display: none;">
-                    <h6><?= $this->lang->line('portal_logo_preview'); ?>:</h6>
-                    <img id="imagePreview" src="" alt="Vista previa de la imagen"
-                      style="max-width: 100%; height: auto;">
-                  </div>
-
-                  <!-- Si la variable de sesión 'logo' no es null, mostramos el botón de eliminar -->
-                  <?php if ($this->session->userdata('logo') != null) {?>
-                  <div id="currentLogoContainer">
-                    <h6><?= $this->lang->line('portal_logo_current'); ?>:</h6>
-                    <img id="currentLogo" src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>"" alt=" Logo
-                      actual" style="max-width: 100%; height: auto;">
-                    <button class="btn btn-danger">
-                      <?= $this->lang->line('portal_logo_delete'); ?>
+                    <h6><?php echo $this->lang->line('portal_logo_preview');?>:</h6> <img id="imagePreview" src=""
+                      alt="Vista previa de la imagen" style="max-width: 100%; height: auto;">
+                  </div> <!-- Si la variable de sesión 'logo' no es null, mostramos el botón de eliminar -->
+                  <?php if ($this->session->userdata('logo') != null) {?> <div id="currentLogoContainer">
+                    <h6><?php echo $this->lang->line('portal_logo_current');?>:</h6> <img id="currentLogo"
+                      src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>"" alt=" Logo actual"
+                      style="max-width: 100%; height: auto;"> <button id="deleteLogo" class="btn btn-danger">
+                      <?php echo $this->lang->line('portal_logo_delete');?>
                     </button>
-                  </div>
-                  <?php }?>
+
+                  </div> <?php }?>
                 </div>
-                <div class="modal-footer">
-                  <button class="btn btn-secondary" data-dismiss="modal">
-                    <?= $this->lang->line('portal_logo_close'); ?>
-                  </button> <button class="btn btn-primary">
-                    <?= $this->lang->line('portal_logo_save'); ?>
+                <div class="modal-footer"> <button class="btn btn-secondary" data-dismiss="modal">
+                    <?php echo $this->lang->line('portal_logo_close');?> </button>
+                  <button id="saveLogo" class="btn btn-primary">
+                    <?php echo $this->lang->line('portal_logo_save');?>
                   </button>
                 </div>
               </div>
@@ -513,10 +510,15 @@ echo $token  */?>
             aria-labelledby="updateAvisoModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
               <div class="modal-content">
+
                 <div class="modal-header py-2">
-                  <h5 class="modal-title">Documentos del portal</h5>
+                  <h5 class="modal-title">
+                    <?php echo $this->lang->line('portal_docs_modal_title');?>
+                  </h5>
                   <button type="button" class="close" data-dismiss="modal"
-                    aria-label="Cerrar"><span>&times;</span></button>
+                    aria-label="<?php echo $this->lang->line('portal_close');?>">
+                    <span>&times;</span>
+                  </button>
                 </div>
 
                 <div class="modal-body">
@@ -524,16 +526,17 @@ echo $token  */?>
                     <table class="table table-sm align-middle mb-0">
                       <thead>
                         <tr>
-                          <th style="width: 25%">Documento</th>
-                          <th>Actual / Por defecto</th>
-                          <th style="width: 35%">Cargar PDF</th>
-                          <th style="width: 20%">Acciones</th>
+                          <th style="width:25%"><?php echo $this->lang->line('portal_docs_th_document');?></th>
+                          <th><?php echo $this->lang->line('portal_docs_th_current');?></th>
+                          <th style="width:35%"><?php echo $this->lang->line('portal_docs_th_upload');?></th>
+                          <th style="width:20%"><?php echo $this->lang->line('portal_docs_th_actions');?></th>
                         </tr>
                       </thead>
                       <tbody>
+
                         <!-- AVISO -->
                         <tr id="row-aviso">
-                          <td><strong>Aviso para candidatos</strong></td>
+                          <td><strong><?php echo $this->lang->line('portal_docs_aviso');?></strong></td>
                           <td>
                             <div id="estado-aviso" class="small"></div>
                           </td>
@@ -541,30 +544,22 @@ echo $token  */?>
                             <input type="file" id="file-aviso" accept="application/pdf" class="form-control-file">
                           </td>
                           <td class="text-nowrap">
-                            <!-- Guardar -->
-                            <button type="button" id="btn-save-aviso" class="btn btn-sm btn-link" data-toggle="tooltip"
-                              title="Guardar"
-                              style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
-                              <span class="fas fa-save"
-                                style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
-                                onmouseenter="this.style.transform='scale(1.1)';"
-                                onmouseleave="this.style.transform='none';">
-                              </span>
+                            <button type="button" id="btn-save-aviso" class="btn btn-sm btn-link"
+                              title="<?php echo $this->lang->line('portal_save');?>">
+                              <span class="fas fa-save" style="font-size:2rem;color:#0d6efd;"></span>
                             </button>
 
-                            <!-- Eliminar -->
-                            <button type="button" id="btn-del-aviso" class="btn btn-sm btn-link" data-toggle="tooltip"
-                              title="Eliminar" disabled
-                              style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
-                              <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545;margin-left: 25px">
-                              </span>
+                            <button type="button" id="btn-del-aviso" class="btn btn-sm btn-link"
+                              title="<?php echo $this->lang->line('portal_delete');?>" disabled>
+                              <span class="fas fa-trash-alt"
+                                style="font-size:2rem;color:#dc3545;margin-left:25px"></span>
                             </button>
                           </td>
                         </tr>
 
                         <!-- TÉRMINOS -->
                         <tr id="row-terminos">
-                          <td><strong>Términos y condiciones (requisiciones)</strong></td>
+                          <td><strong><?php echo $this->lang->line('portal_docs_terminos');?></strong></td>
                           <td>
                             <div id="estado-terminos" class="small"></div>
                           </td>
@@ -572,30 +567,22 @@ echo $token  */?>
                             <input type="file" id="file-terminos" accept="application/pdf" class="form-control-file">
                           </td>
                           <td class="text-nowrap">
-                            <!-- Guardar -->
                             <button type="button" id="btn-save-terminos" class="btn btn-sm btn-link"
-                              data-toggle="tooltip" title="Guardar"
-                              style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
-                              <span class="fas fa-save"
-                                style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
-                                onmouseenter="this.style.transform='scale(1.1)';"
-                                onmouseleave="this.style.transform='none';">
-                              </span>
+                              title="<?php echo $this->lang->line('portal_save');?>">
+                              <span class="fas fa-save" style="font-size:2rem;color:#0d6efd;"></span>
                             </button>
 
-                            <!-- Eliminar -->
                             <button type="button" id="btn-del-terminos" class="btn btn-sm btn-link"
-                              data-toggle="tooltip" title="Eliminar" disabled
-                              style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
-                              <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545; margin-left: 25px">
-                              </span>
+                              title="<?php echo $this->lang->line('portal_delete');?>" disabled>
+                              <span class="fas fa-trash-alt"
+                                style="font-size:2rem;color:#dc3545;margin-left:25px"></span>
                             </button>
                           </td>
                         </tr>
 
-                        <!-- ACUERDO DE CONFIDENCIALIDAD (NUEVO) -->
+                        <!-- CONFIDENCIALIDAD -->
                         <tr id="row-confidencialidad">
-                          <td><strong>Acuerdo de confidencialidad</strong></td>
+                          <td><strong><?php echo $this->lang->line('portal_docs_confidencialidad');?></strong></td>
                           <td>
                             <div id="estado-confidencialidad" class="small"></div>
                           </td>
@@ -604,23 +591,15 @@ echo $token  */?>
                               class="form-control-file">
                           </td>
                           <td class="text-nowrap">
-                            <!-- Guardar -->
                             <button type="button" id="btn-save-confidencialidad" class="btn btn-sm btn-link"
-                              data-toggle="tooltip" title="Guardar"
-                              style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:pointer;">
-                              <span class="fas fa-save"
-                                style="font-size:2rem;color:#0d6efd;display:inline-block;transition:transform .12s ease;"
-                                onmouseenter="this.style.transform='scale(1.1)';"
-                                onmouseleave="this.style.transform='none';">
-                              </span>
+                              title="<?php echo $this->lang->line('portal_save');?>">
+                              <span class="fas fa-save" style="font-size:2rem;color:#0d6efd;"></span>
                             </button>
 
-                            <!-- Eliminar -->
                             <button type="button" id="btn-del-confidencialidad" class="btn btn-sm btn-link"
-                              data-toggle="tooltip" title="Eliminar" disabled
-                              style="background:transparent;border:0;padding:0;line-height:1;vertical-align:middle;cursor:not-allowed;opacity:.6;">
-                              <span class="fas fa-trash-alt" style="font-size:2rem;color:#dc3545; margin-left: 25px">
-                              </span>
+                              title="<?php echo $this->lang->line('portal_delete');?>" disabled>
+                              <span class="fas fa-trash-alt"
+                                style="font-size:2rem;color:#dc3545;margin-left:25px"></span>
                             </button>
                           </td>
                         </tr>
@@ -629,18 +608,21 @@ echo $token  */?>
                     </table>
                   </div>
 
-                  <!-- Opcional: nota -->
                   <div class="text-muted small mt-2">
-                    Si no hay archivo cargado, se mostrará el documento por defecto.
+                    <?php echo $this->lang->line('portal_docs_note_default');?>
                   </div>
                 </div>
 
                 <div class="modal-footer py-2">
-                  <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <?php echo $this->lang->line('portal_close');?>
+                  </button>
                 </div>
+
               </div>
             </div>
           </div>
+
 
 
 
@@ -874,10 +856,17 @@ echo $token  */?>
             if (!ref) return;
 
             if (!file) {
-              return toast('warning', 'Selecciona un PDF');
+              return toast('warning',
+                t('portal_docs_warn_title'),
+                t('portal_docs_select_pdf')
+              );
             }
+
             if (!isPDF(file)) {
-              return toast('warning', 'Archivo inválido', 'Debe ser un PDF (.pdf)');
+              return toast('warning',
+                t('portal_docs_invalid_file'),
+                t('portal_docs_only_pdf')
+              );
             }
 
             const fd = new FormData();
@@ -893,36 +882,39 @@ echo $token  */?>
               contentType: false,
               dataType: 'json',
               beforeSend: () => {
-                $(ref.estado).html('Subiendo…');
+                $(ref.estado).html(t('portal_docs_uploading'));
               },
               success: function(r) {
                 if (r && r.error) {
-                  toast('error', 'Error', r.error);
-                  $(ref.estado).html('<span class="text-danger">Error al subir</span>');
+                  toast('error', t('portal_error'), r.error);
+                  $(ref.estado).html('<span class="text-danger">' + t('portal_docs_upload_error') + '</span>');
                   return;
                 }
-                // limpiar input
+
                 $(ref.file).val('');
-                // habilitar botón eliminar
                 $(ref.del).prop('disabled', false).css({
                   cursor: 'pointer',
                   opacity: 1
                 });
-                toast('success', '¡Guardado!', (r && r.mensaje) || 'Documento actualizado.');
-                // refresca vista de estados si tienes esta función
+
+                toast('success',
+                  t('portal_docs_saved_title'),
+                  (r && r.mensaje) || t('portal_docs_updated')
+                );
+
                 if (typeof cargarDocumentos === 'function') cargarDocumentos();
                 else if (r && r.url) {
-                  $(ref.estado).html('<a href="' + r.url + '" target="_blank">Ver documento</a>');
+                  $(ref.estado).html('<a href="' + r.url + '" target="_blank">' + t('portal_docs_view') + '</a>');
                 } else {
-                  $(ref.estado).html('<span class="text-success">Actualizado</span>');
+                  $(ref.estado).html('<span class="text-success">' + t('portal_docs_updated') + '</span>');
                 }
               },
               error: function() {
-                toast('error', 'Error', 'No se pudo subir el documento.');
-                if (typeof cargarDocumentos === 'function') cargarDocumentos();
+                toast('error', t('portal_error'), t('portal_docs_upload_fail'));
               }
             });
           }
+
 
           // ==== Eliminar (genérico) ====
           function eliminarDocumento(tipo) {
@@ -940,19 +932,24 @@ echo $token  */?>
                 },
                 success: function(r) {
                   if (r && r.error) {
-                    return toast('error', 'Error', r.error);
+                    return toast('error', t('portal_error'), r.error);
                   }
-                  toast('success', 'Eliminado', (r && r.mensaje) || 'Documento eliminado.');
-                  // deshabilitar botón eliminar y limpiar estado
+
+                  toast('success',
+                    t('portal_docs_deleted_title'),
+                    (r && r.mensaje) || t('portal_docs_deleted')
+                  );
+
                   $(ref.del).prop('disabled', true).css({
                     cursor: 'not-allowed',
                     opacity: .6
                   });
                   if (typeof cargarDocumentos === 'function') cargarDocumentos();
-                  else $(ref.estado).html('<span class="text-muted">No cargado</span>');
+                  else $(ref.estado).html('<span class="text-muted">' + t('portal_docs_not_loaded') +
+                    '</span>');
                 },
                 error: function() {
-                  toast('error', 'Error', 'No se pudo eliminar.');
+                  toast('error', t('portal_error'), t('portal_docs_delete_fail'));
                 }
               });
             };
@@ -960,17 +957,18 @@ echo $token  */?>
             if (window.Swal) {
               Swal.fire({
                 icon: 'warning',
-                title: '¿Eliminar documento?',
+                title: t('portal_docs_confirm_delete'),
                 showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
+                confirmButtonText: t('portal_confirm'),
+                cancelButtonText: t('portal_cancel')
               }).then(r => {
                 if (r.isConfirmed) go();
               });
             } else {
-              if (confirm('¿Eliminar documento?')) go();
+              if (confirm(t('portal_docs_confirm_delete'))) go();
             }
           }
+
 
           // ==== Handlers de GUARDAR ====
           $('#btn-save-aviso').on('click', function() {
@@ -1102,6 +1100,8 @@ echo $token  */?>
           });
 
           $(document).ready(function() {
+
+
             $('#formContacto').on('submit', function(e) {
               e.preventDefault();
 
@@ -1188,57 +1188,74 @@ echo $token  */?>
            }); */
 
           // Funcionalidad para eliminar el logo usando AJAX
-          $("#deleteLogo").on("click", function() {
-            // Confirmación con SweetAlert2
-            Swal.fire({
-              title: '¿Estás seguro?',
-              text: "¡Esta acción no puede deshacerse!",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Sí, eliminarlo',
-              cancelButtonText: 'Cancelar',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                // Hacemos la solicitud AJAX para eliminar el logo
-                $.ajax({
-                  url: '<?php echo base_url(); ?>Area/eliminarLogo', // Archivo PHP que manejará la eliminación
-                  type: 'POST',
-                  dataType: 'json',
-                  success: function(response) {
-                    if (response.success) {
-                      // Mostrar mensaje de éxito con SweetAlert2
+          const deleteLogoBtn = document.getElementById('deleteLogo');
+
+          if (deleteLogoBtn) {
+            deleteLogoBtn.addEventListener('click', function() {
+
+              // Confirmación con SweetAlert2
+              Swal.fire({
+                title: t('portal_logo_swal_confirm_title'),
+                text: t('portal_logo_swal_confirm_text'),
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: t('portal_logo_swal_confirm_btn'),
+                cancelButtonText: t('portal_logo_swal_cancel_btn'),
+              }).then((result) => {
+                if (result.isConfirmed) {
+
+                  // Solicitud AJAX para eliminar el logo
+                  $.ajax({
+                    url: '<?php echo base_url(); ?>Area/eliminarLogo',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(response) {
+
+                      if (response.success) {
+
+                        // Éxito
+                        Swal.fire(
+                          t('portal_logo_deleted_title'),
+                          t('portal_logo_deleted_text'),
+                          'success'
+                        );
+
+                        setTimeout(function() {
+                          window.location.reload();
+                        }, 1000);
+
+                        $('#updateLogoModal').modal('hide');
+
+                        const container = document.getElementById('currentLogoContainer');
+                        if (container) {
+                          container.style.display = 'none';
+                        }
+
+                      } else {
+
+                        // Error controlado por backend
+                        Swal.fire(
+                          t('portal_logo_error_title'),
+                          t('portal_logo_delete_error'),
+                          'error'
+                        );
+                      }
+                    },
+                    error: function() {
+
+                      // Error de red / servidor
                       Swal.fire(
-                        '¡Eliminado!',
-                        'El logo ha sido eliminado exitosamente.',
-                        'success'
-                      );
-                      setTimeout(function() {
-                        window.location.reload(); // Recarga la página
-                      }, 1000);
-                      $('#updateLogoModal').modal('hide'); // Cierra el modal
-                      // Aquí puedes actualizar la vista o cerrar el modal
-                      document.getElementById("currentLogoContainer").style.display = "none";
-                    } else {
-                      // Mostrar mensaje de error con SweetAlert2
-                      Swal.fire(
-                        'Error',
-                        'Hubo un error al eliminar el logo.',
+                        t('portal_logo_error_title'),
+                        t('portal_logo_delete_error_try'),
                         'error'
                       );
                     }
-                  },
-                  error: function(xhr, status, error) {
-                    // Mostrar mensaje de error con SweetAlert2
-                    Swal.fire(
-                      'Error',
-                      'Ocurrió un error al intentar eliminar el logo.',
-                      'error'
-                    );
-                  }
-                });
-              }
+                  });
+                }
+              });
             });
-          });
+          }
+
 
           $('#form_aviso').submit(function(e) {
             e.preventDefault(); // Evitar el envío por defecto del formulario
@@ -1283,68 +1300,67 @@ echo $token  */?>
             });
           });
 
+          const saveLogoBtn = document.getElementById('saveLogo');
+          if (saveLogoBtn) {
+            saveLogoBtn.addEventListener('click', function() {
+              const fileLogo = document.getElementById('fileLogo');
+              const file = fileLogo ? fileLogo.files[0] : null;
 
-          // Funcionalidad del botón "Guardar Logo"
-          document.getElementById('saveLogo').addEventListener('click', function() {
-            const fileLogo = document.getElementById('fileLogo');
-            const file = fileLogo.files[0];
+              if (file) {
+                const formData = new FormData();
+                formData.append('fileLogo', file);
 
-            if (file) {
-              // Aquí puedes enviar la imagen al servidor para guardarla, o actualizar el logo en el front-end
-              const formData = new FormData();
-              formData.append('fileLogo', file); // Asegúrate de que el nombre del campo sea 'logo'
+                $.ajax({
+                  url: '<?php echo base_url(); ?>Area/updateLogo',
+                  type: 'POST',
+                  data: formData,
+                  contentType: false,
+                  processData: false,
+                  success: function(data) {
+                    let response = {};
+                    try {
+                      response = typeof data === 'string' ? JSON.parse(data) : data;
+                    } catch (e) {}
 
-              // Usando jQuery para enviar la solicitud AJAX
-              $.ajax({
-                url: '<?php echo base_url(); ?>Area/updateLogo', // URL de tu controlador en CodeIgniter
-                type: 'POST',
-                data: formData,
-                contentType: false, // No se establecerá el tipo de contenido, porque estamos enviando datos de tipo FormData
-                processData: false, // No procesar los datos automáticamente
-                success: function(data) {
-                  // Si todo fue bien, actualizar el logo en la página
-                  const response = JSON.parse(data); // Parsear la respuesta JSON
+                    if (response.success) {
+                      $('#updateLogoModal').modal('hide');
 
-                  if (response.success) {
-                    // Actualiza el logo en el sidebar
-                    $('#updateLogoModal').modal('hide'); // Cierra el modal
+                      Swal.fire({
+                        icon: 'success',
+                        title: t('portal_logo_update_success'),
+                        text: t('portal_logo_update_success_txt'),
+                      });
 
-                    // Mostrar mensaje de éxito con SweetAlert2
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Logo actualizado',
-                      text: 'El logo se ha actualizado correctamente.',
-                    });
-                    setTimeout(function() {
-                      window.location.reload(); // Recarga la página
-                    }, 1000);
-                  } else {
-                    // Mostrar mensaje de error con SweetAlert2
+                      setTimeout(function() {
+                        window.location.reload();
+                      }, 1000);
+
+                    } else {
+                      Swal.fire({
+                        icon: 'error',
+                        title: t('portal_logo_update_error'),
+                        text: response.message || t('portal_logo_generic_error'),
+                      });
+                    }
+                  },
+                  error: function() {
                     Swal.fire({
                       icon: 'error',
-                      title: 'Error al actualizar el logo',
-                      text: response.message || 'Hubo un problema al intentar actualizar el logo.',
+                      title: t('portal_logo_update_error'),
+                      text: t('portal_logo_generic_error'),
                     });
                   }
-                },
-                error: function(xhr, status, error) {
-                  // Si hay un error en la solicitud AJAX
-                  console.error('Error:', error);
-                  Swal.fire({
-                    icon: 'error',
-                    title: 'Error al actualizar el logo',
-                    text: 'Hubo un problema al intentar actualizar el logo.',
-                  });
-                }
-              });
-            } else {
-              Swal.fire({
-                icon: 'warning',
-                title: 'Sin archivo',
-                text: 'Por favor, selecciona una imagen para el logo.',
-              });
-            }
-          });
+                });
+
+              } else {
+                Swal.fire({
+                  icon: 'warning',
+                  title: t('portal_logo_no_file_title'),
+                  text: t('portal_logo_no_file_text'),
+                });
+              }
+            });
+          }
 
           // Al hacer clic en el botón
           $('#enviarNotificacionesBtn').on('click', function() {
@@ -1410,4 +1426,32 @@ echo $token  */?>
               }
             });
           });
+          $(document).ready(function() {
+
+            const sidebarHidden = localStorage.getItem('sidebar_hidden');
+
+            if (sidebarHidden === '1') {
+              $('body').addClass('sidebar-toggled');
+              $('.sidebar').addClass('toggled');
+            }
+
+          });
+          $(document).on('click', '[data-target="#collapseUsuario"]', function(e) {
+
+            // Si el sidebar está colapsado
+            if ($('body').hasClass('sidebar-toggled')) {
+              e.preventDefault();
+
+              // 1️⃣ Expandir sidebar
+              $('body').removeClass('sidebar-toggled');
+              $('.sidebar').removeClass('toggled');
+              localStorage.setItem('sidebar_hidden', '0');
+
+              // 2️⃣ Esperar animación y abrir menú
+              setTimeout(function() {
+                $('#collapseUsuario').collapse('show');
+              }, 300);
+            }
+          });
+          
           </script>
