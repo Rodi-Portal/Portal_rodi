@@ -99,10 +99,13 @@
         <?php if ($logo == null) {
                 $logo = 'logo_nuevo.png';
         }?>
-        <a class="sidebar-brand d-flex align-items-center justify-content-center">
-          <img class="sidebar-logo" src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo">
-
-        </a>
+    <a class="sidebar-brand d-flex align-items-center justify-content-center">
+    <img 
+        src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" 
+        alt="Logo"
+        style="max-width: 200px; width: 100%; height: auto; object-fit: contain;"
+    >
+</a>
 
         <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
         <br><br>
