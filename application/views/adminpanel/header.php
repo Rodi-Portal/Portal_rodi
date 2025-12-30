@@ -19,7 +19,7 @@
       // 👇 importante: 'header' = header_lang.php
       $CI->lang->load('header', $idioma_ci);
       $CI->lang->load('portal_generales', $idioma_ci);
-
+  
   ?>
 
   <!DOCTYPE html>
@@ -1453,5 +1453,4 @@
               }, 300);
             }
           });
-          
           </script>

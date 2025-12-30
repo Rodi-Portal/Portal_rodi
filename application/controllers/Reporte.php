@@ -15,6 +15,12 @@ class Reporte extends CI_Controller
         }
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
+
+        $lang      = $this->session->userdata('lang') ?: 'es';
+        $idioma_ci = ($lang === 'en') ? 'english' : 'espanol';
+
+        // Idiomas que usa esta vista
+        $this->lang->load('reportes_portal', $idioma_ci);
     }
 
     public function index()
@@ -1725,161 +1731,201 @@ class Reporte extends CI_Controller
     }
     public function reporteListadoClientes()
     {
-        /*$this->form_validation->set_rules('fi', 'Fecha de inicio', 'required|trim');
-				$this->form_validation->set_rules('ff', 'Fecha final', 'required|trim');*/
-        $this->form_validation->set_rules('cliente', 'Cliente', 'required|trim');
+        // ===== Validaciones =====
+        $this->form_validation->set_rules(
+            'cliente',
+            $this->lang->line('reportes_val_cliente'),
+            'required|trim'
+        );
 
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_message(
+            'required',
+            $this->lang->line('reportes_val_required')
+        );
+        $this->form_validation->set_message(
+            'numeric',
+            $this->lang->line('reportes_val_numeric')
+        );
 
         $msj = [];
+
         if ($this->form_validation->run() == false) {
+
             $msj = [
                 'codigo' => 0,
                 'msg'    => validation_errors(),
             ];
-        } else {
-            //$f_inicio = fecha_espanol_bd($this->input->post('fi'));
-            //$f_fin = fecha_espanol_bd($this->input->post('ff'));
-            $cliente = $this->input->post('cliente');
-            //	$res = $this->input->post('resultado');
 
-            /*$diaInicio = new DateTime($f_inicio);
-					$diaFinal = new DateTime($f_fin);
-					if($diaInicio > $diaFinal){
-						$msj = array(
-							'codigo' => 0,
-							'msg' => 'Fechas a filtrar no son válidas'
-						);
-					}
-					else{*/
-            /*if($res == ''){
-							$data['datos'] = $this->reporte_model->reporteListadoDopingTodos($f_inicio, $f_fin, $cliente);
-						}
-						else{
-							$data['datos'] = $this->reporte_model->reporteListadoDopingResultados($f_inicio, $f_fin, $cliente, $res);
-						}*/
-            $data['datos'] = $this->reporte_model->reporteListadoDopingClientes($cliente);
+        } else {
+
+            $cliente = $this->input->post('cliente');
+
+            $data['datos'] = $this->reporte_model
+                ->reporteListadoDopingClientes($cliente);
+
             if ($data['datos']) {
-                $salida = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteListadoClientes_Excel/' . $cliente . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
-                $salida .= '<table style="border: 0px; border-collapse: collapse;width: 100%;padding:5px;">';
+
+                // ===== Botón exportar =====
+                $salida = '<div style="text-align:center;margin-bottom:50px;">';
+                $salida .= '<a class="btn btn-success" href="'
+                . base_url()
+                    . 'Reporte/reporteListadoClientes_Excel/'
+                    . $cliente
+                    . '" target="_blank">';
+                $salida .= '<i class="fas fa-file-excel"></i> '
+                . $this->lang->line('reportes_btn_export_excel');
+                $salida .= '</a></div>';
+
+                // ===== Tabla =====
+                $salida .= '<table style="border:0;border-collapse:collapse;width:100%;padding:5px;">';
                 $salida .= '<tr>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Empresa</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;" width="20%">Razón social</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">En inglés</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Clave</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha Alta</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Subcliente</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Clave</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_empresa') . '</th>';
+                $salida .= '<th width="20%">' . $this->lang->line('reportes_th_razon_social') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_ingles') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_clave') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_fecha_alta') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_subcliente') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_clave') . '</th>';
                 $salida .= '</tr>';
+
                 foreach ($data['datos'] as $row) {
-                    $f_alta          = ($row->creacion != null) ? fecha_sinhora_espanol_bd($row->creacion) : '-';
-                    $ingles          = ($row->ingles == 1) ? 'SÍ' : 'NO';
-                    $razon_social    = ($row->razon_social != '' && $row->razon_social != null) ? $row->razon_social : 'Sin registro';
-                    $subcliente      = ($row->subcliente == null) ? 'Sin registro' : $row->subcliente;
-                    $claveSubcliente = ($row->subcliente == null) ? 'Sin registro' : $row->claveSubcliente;
-                    //
-                    $salida .= "<tr><tbody>";
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->nombre . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $razon_social . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $ingles . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->clave . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $subcliente . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $claveSubcliente . '</td>';
-                    $salida .= "</tbody></tr>";
+
+                    $f_alta = ($row->creacion != null)
+                        ? fecha_sinhora_espanol_bd($row->creacion)
+                        : '-';
+
+                    $ingles = ($row->ingles == 1)
+                        ? $this->lang->line('reportes_si')
+                        : $this->lang->line('reportes_no');
+
+                    $razon_social = (! empty($row->razon_social))
+                        ? $row->razon_social
+                        : $this->lang->line('reportes_sin_registro');
+
+                    $subcliente = ($row->subcliente == null)
+                        ? $this->lang->line('reportes_sin_registro')
+                        : $row->subcliente;
+
+                    $claveSubcliente = ($row->subcliente == null)
+                        ? $this->lang->line('reportes_sin_registro')
+                        : $row->claveSubcliente;
+
+                    $salida .= '<tr>';
+                    $salida .= '<td>' . $row->nombre . '</td>';
+                    $salida .= '<td>' . $razon_social . '</td>';
+                    $salida .= '<td>' . $ingles . '</td>';
+                    $salida .= '<td>' . $row->clave . '</td>';
+                    $salida .= '<td>' . $f_alta . '</td>';
+                    $salida .= '<td>' . $subcliente . '</td>';
+                    $salida .= '<td>' . $claveSubcliente . '</td>';
+                    $salida .= '</tr>';
                 }
-                $salida .= "</table>";
+
+                $salida .= '</table>';
+
             } else {
-                $salida = '<p style="text-align:center;font-size:18px;font-weight:bold;">Sin registros de acuerdo a los filtros aplicados</p>';
+
+                $salida = '<p style="text-align:center;font-size:18px;font-weight:bold;">'
+                . $this->lang->line('reportes_sin_resultados')
+                    . '</p>';
             }
+
             $msj = [
                 'codigo' => 1,
                 'msg'    => $salida,
             ];
-            //}
         }
+
         echo json_encode($msj);
     }
+
     public function reporteListadoClientes_Excel()
     {
-        $datos = $this->uri->segment(3);
-        $dato  = explode('_', $datos);
-        //$f_inicio = $dato[0];
-        //$f_fin = $dato[1];
+        $datos   = $this->uri->segment(3);
+        $dato    = explode('_', $datos);
         $cliente = $dato[0];
-        //$res = $dato[3];
 
-        /*if($res == ''){
-					$data['datos'] = $this->reporte_model->reporteListadoDopingTodos($f_inicio, $f_fin, $cliente);
-				}
-				else{
-					$data['datos'] = $this->reporte_model->reporteListadoDopingResultados($f_inicio, $f_fin, $cliente, $res);
-				}*/
-        $data['datos'] = $this->reporte_model->reporteListadoDopingClientes($cliente);
+        $data['datos'] = $this->reporte_model
+            ->reporteListadoDopingClientes($cliente);
+
         if ($data['datos']) {
-            //Se crea objeto de la clase.
-            $excel = new Spreadsheet();
-            //Contador de filas
+
+            // === Crear Excel ===
+            $excel    = new Spreadsheet();
             $contador = 1;
-            //Le aplicamos ancho las columnas.
-            // Tambien podria acotarse esta parte $variable = $excel->getActiveSheet();
-            //Le aplicamos ancho las columnas.
-            $excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
-            $excel->getActiveSheet()->getColumnDimension('B')->setWidth(80);
-            $excel->getActiveSheet()->getColumnDimension('C')->setWidth(25);
-            $excel->getActiveSheet()->getColumnDimension('D')->setWidth(25);
-            $excel->getActiveSheet()->getColumnDimension('E')->setWidth(80);
-            $excel->getActiveSheet()->getColumnDimension('F')->setWidth(25);
-            $excel->getActiveSheet()->getColumnDimension('G')->setWidth(25);
 
-            //Le aplicamos negrita a los títulos de la cabecera.
-            $excel->getActiveSheet()->getStyle("A{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("B{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("C{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("D{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("E{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("F{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("G{$contador}")->getFont()->setBold(true);
+            // === Ancho de columnas ===
+            $sheet = $excel->getActiveSheet();
+            $sheet->getColumnDimension('A')->setWidth(20);
+            $sheet->getColumnDimension('B')->setWidth(80);
+            $sheet->getColumnDimension('C')->setWidth(25);
+            $sheet->getColumnDimension('D')->setWidth(25);
+            $sheet->getColumnDimension('E')->setWidth(80);
+            $sheet->getColumnDimension('F')->setWidth(25);
+            $sheet->getColumnDimension('G')->setWidth(25);
 
-            //Definimos los títulos de la cabecera.
-            $excel->getActiveSheet()->setCellValue("A{$contador}", 'EMPRESA');
-            $excel->getActiveSheet()->setCellValue("B{$contador}", 'RAZÓN SOCIAL');
-            $excel->getActiveSheet()->setCellValue("C{$contador}", 'EN INGLÉS');
-            $excel->getActiveSheet()->setCellValue("D{$contador}", 'CLAVE');
-            $excel->getActiveSheet()->setCellValue("E{$contador}", 'FECHA ALTA');
-            $excel->getActiveSheet()->setCellValue("F{$contador}", 'SUBCLIENTE');
-            $excel->getActiveSheet()->setCellValue("G{$contador}", 'CLAVE');
-
-            //Definimos la data del cuerpo.
-            foreach ($data['datos'] as $row) {
-                $f_alta          = ($row->creacion != null) ? fecha_sinhora_espanol_bd($row->creacion) : '-';
-                $ingles          = ($row->ingles == 1) ? 'SÍ' : 'NO';
-                $razon_social    = ($row->razon_social != '' && $row->razon_social != null) ? $row->razon_social : 'Sin registro';
-                $subcliente      = ($row->subcliente == null) ? 'Sin registro' : $row->subcliente;
-                $claveSubcliente = ($row->subcliente == null) ? 'Sin registro' : $row->claveSubcliente;
-                //Incrementamos una fila más, para ir a la siguiente.
-                $contador++;
-                //Informacion de las filas de la consulta.
-                $excel->getActiveSheet()->setCellValue("A{$contador}", $row->nombre);
-                $excel->getActiveSheet()->setCellValue("B{$contador}", $razon_social);
-                $excel->getActiveSheet()->setCellValue("C{$contador}", $ingles);
-                $excel->getActiveSheet()->setCellValue("D{$contador}", $row->clave);
-                $excel->getActiveSheet()->setCellValue("E{$contador}", $f_alta);
-                $excel->getActiveSheet()->setCellValue("F{$contador}", $subcliente);
-                $excel->getActiveSheet()->setCellValue("G{$contador}", $claveSubcliente);
+            // === Cabecera en negritas ===
+            foreach (range('A', 'G') as $col) {
+                $sheet->getStyle("{$col}{$contador}")
+                    ->getFont()
+                    ->setBold(true);
             }
-                                                              //Creamos objeto para crear el archivo y definimos un nombre de archivo
-            $writer   = new Xlsx($excel);                     // instantiate Xlsx
-            $filename = 'Reporte_ListadoClientes';            // set filename for excel file to be exported
-                                                              //Cabeceras
-            header('Content-Type: application/vnd.ms-excel'); // generate excel file
+
+            // === Títulos (idioma) ===
+            $sheet->setCellValue("A{$contador}", strtoupper($this->lang->line('reportes_th_empresa')));
+            $sheet->setCellValue("B{$contador}", strtoupper($this->lang->line('reportes_th_razon_social')));
+            $sheet->setCellValue("C{$contador}", strtoupper($this->lang->line('reportes_th_ingles')));
+            $sheet->setCellValue("D{$contador}", strtoupper($this->lang->line('reportes_th_clave')));
+            $sheet->setCellValue("E{$contador}", strtoupper($this->lang->line('reportes_th_fecha_alta')));
+            $sheet->setCellValue("F{$contador}", strtoupper($this->lang->line('reportes_th_subcliente')));
+            $sheet->setCellValue("G{$contador}", strtoupper($this->lang->line('reportes_th_clave')));
+
+            // === Cuerpo ===
+            foreach ($data['datos'] as $row) {
+
+                $f_alta = ($row->creacion != null)
+                    ? fecha_sinhora_espanol_bd($row->creacion)
+                    : '-';
+
+                $ingles = ($row->ingles == 1)
+                    ? $this->lang->line('reportes_si')
+                    : $this->lang->line('reportes_no');
+
+                $razon_social = (! empty($row->razon_social))
+                    ? $row->razon_social
+                    : $this->lang->line('reportes_sin_registro');
+
+                $subcliente = ($row->subcliente == null)
+                    ? $this->lang->line('reportes_sin_registro')
+                    : $row->subcliente;
+
+                $claveSubcliente = ($row->subcliente == null)
+                    ? $this->lang->line('reportes_sin_registro')
+                    : $row->claveSubcliente;
+
+                $contador++;
+
+                $sheet->setCellValue("A{$contador}", $row->nombre);
+                $sheet->setCellValue("B{$contador}", $razon_social);
+                $sheet->setCellValue("C{$contador}", $ingles);
+                $sheet->setCellValue("D{$contador}", $row->clave);
+                $sheet->setCellValue("E{$contador}", $f_alta);
+                $sheet->setCellValue("F{$contador}", $subcliente);
+                $sheet->setCellValue("G{$contador}", $claveSubcliente);
+            }
+
+            // === Exportar ===
+            $writer   = new Xlsx($excel);
+            $filename = 'Reporte_ListadoClientes';
+
+            header('Content-Type: application/vnd.ms-excel');
             header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
             header('Cache-Control: max-age=0');
 
-            $writer->save('php://output'); // download file
+            $writer->save('php://output');
         }
     }
+
     /*----------------------------------------*/
     /*  Proceso de Reclutamiento
     /*----------------------------------------*/
@@ -2276,8 +2322,8 @@ class Reporte extends CI_Controller
 
         // 👇 join sin backticks automáticos
         $this->db->join($subquery, 'm.id_empleado = empleados.id', 'left', false);
-                $this->db->where('empleados.status', 2);
-                $this->db->where('empleados.eliminado', 0);
+        $this->db->where('empleados.status', 2);
+        $this->db->where('empleados.eliminado', 0);
         if ($sucursal) {
             $this->db->where('empleados.id_cliente', $sucursal);
         } else {
@@ -2299,7 +2345,6 @@ class Reporte extends CI_Controller
 
         $query     = $this->db->get();
         $empleados = $query->result_array();
-
 
         foreach ($empleados as &$empleado) {
             $id = $empleado['id'];
@@ -2499,181 +2544,234 @@ class Reporte extends CI_Controller
     }
     public function reporteProcesoReclutamiento()
     {
-        $this->form_validation->set_rules('fecha_inicio', 'Fecha de inicio', 'required|trim');
-        $this->form_validation->set_rules('fecha_fin', 'Fecha final', 'required|trim');
-        $this->form_validation->set_rules('usuario', 'Usuario', 'required|trim');
+        // ===== Validaciones =====
+        $this->form_validation->set_rules(
+            'fecha_inicio',
+            $this->lang->line('reportes_fecha_inicio'),
+            'required|trim'
+        );
+        $this->form_validation->set_rules(
+            'fecha_fin',
+            $this->lang->line('reportes_fecha_fin'),
+            'required|trim'
+        );
+        $this->form_validation->set_rules(
+            'usuario',
+            $this->lang->line('reportes_reclutador'),
+            'required|trim'
+        );
 
-        $this->form_validation->set_message('required', 'El campo {field} es obligatorio');
-        $this->form_validation->set_message('numeric', 'El campo {field} debe ser numérico');
+        $this->form_validation->set_message(
+            'required',
+            $this->lang->line('reportes_val_required')
+        );
+        $this->form_validation->set_message(
+            'numeric',
+            $this->lang->line('reportes_val_numeric')
+        );
 
         $msj = [];
+
         if ($this->form_validation->run() == false) {
+
             $msj = [
                 'codigo' => 0,
                 'msg'    => validation_errors(),
             ];
+
         } else {
-            $f_inicio      = $this->input->post('fecha_inicio');
-            $f_fin         = $this->input->post('fecha_fin');
-            $usuario       = $this->input->post('usuario');
-            $data['datos'] = $this->reporte_model->reporteProcesoReclutamiento($f_inicio, $f_fin, $usuario);
+
+            $f_inicio = $this->input->post('fecha_inicio');
+            $f_fin    = $this->input->post('fecha_fin');
+            $usuario  = $this->input->post('usuario');
+
+            $data['datos'] = $this->reporte_model
+                ->reporteProcesoReclutamiento($f_inicio, $f_fin, $usuario);
+
             if ($data['datos']) {
-                $salida = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteProcesoReclutamiento_Excel/' . $f_inicio . '_' . $f_fin . '_' . $usuario . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
-                $salida .= '<table style="border: 0px; border-collapse: collapse;width: 100%;padding:5px;">';
+
+                // ===== Botón Excel =====
+                $salida = '<div style="text-align:center;margin-bottom:50px;">';
+                $salida .= '<a class="btn btn-success" href="'
+                . base_url()
+                    . 'Reporte/reporteProcesoReclutamiento_Excel/'
+                    . $f_inicio . '_' . $f_fin . '_' . $usuario
+                    . '" target="_blank">';
+                $salida .= '<i class="fas fa-file-excel"></i> '
+                . $this->lang->line('reportes_btn_export_excel');
+                $salida .= '</a></div>';
+
+                // ===== Tabla =====
+                $salida .= '<table style="border:0;border-collapse:collapse;width:100%;padding:5px;">';
                 $salida .= '<tr>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;" width="15%">Reclutador</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha registro</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;" width="15%">Aspirante</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Teléfono</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;" width="20%">Domicilio</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Medio de contacto</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;" width="20%">Cliente</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;" width="15%">Puesto</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Sueldo</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha requisicion</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha ingreso</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;" width="20%">Garantía</th>';
-                $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Pago</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_reclutador') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_fecha_registro') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_aspirante') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_telefono') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_domicilio') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_medio_contacto') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_cliente') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_puesto') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_sueldo') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_fecha_requisicion') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_fecha_ingreso') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_garantia') . '</th>';
+                $salida .= '<th>' . $this->lang->line('reportes_th_pago') . '</th>';
                 $salida .= '</tr>';
+
                 foreach ($data['datos'] as $row) {
-                    $f_registro      = ($row->creacion != null) ? fecha_sinhora_espanol_bd($row->creacion) : '-';
-                    $usuario         = ($row->usuario != null) ? $row->usuario : 'Sin asignar';
-                    $comercial       = ($row->nombre_comercial != null) ? ' - ' . $row->nombre_comercial : '';
-                    $cliente         = $row->cliente . $comercial;
-                    $f_requisicion   = ($row->fechaRequisicion != null) ? fecha_sinhora_espanol_bd($row->fechaRequisicion) : '-';
-                    $sueldo_acordado = ($row->sueldo_acordado != null) ? '$' . $row->sueldo_acordado : '-';
-                    $f_ingreso       = ($row->fecha_ingreso != null) ? fecha_sinhora_espanol_bd($row->fecha_ingreso) : '-';
-                    $garantia        = ($row->garantia != null) ? $row->garantia : '-';
-                    $pago            = ($row->pago != null) ? $row->pago : '-';
-                    //
-                    $salida .= "<tr><tbody>";
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $usuario . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_registro . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->aspirante . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->telefono . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->domicilio . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->medio_contacto . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $cliente . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->puesto . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $sueldo_acordado . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_requisicion . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_ingreso . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $garantia . '</td>';
-                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $pago . '</td>';
-                    $salida .= "</tbody></tr>";
+
+                    $f_registro = ($row->creacion)
+                        ? fecha_sinhora_espanol_bd($row->creacion)
+                        : '-';
+
+                    $usuarioTxt = ($row->usuario)
+                        ? $row->usuario
+                        : $this->lang->line('reportes_sin_asignar');
+
+                    $comercial = ($row->nombre_comercial)
+                        ? ' - ' . $row->nombre_comercial
+                        : '';
+
+                    $cliente = $row->cliente . $comercial;
+
+                    $f_requisicion = ($row->fechaRequisicion)
+                        ? fecha_sinhora_espanol_bd($row->fechaRequisicion)
+                        : '-';
+
+                    $sueldo = ($row->sueldo_acordado)
+                        ? '$' . $row->sueldo_acordado
+                        : '-';
+
+                    $f_ingreso = ($row->fecha_ingreso)
+                        ? fecha_sinhora_espanol_bd($row->fecha_ingreso)
+                        : '-';
+
+                    $garantia = $row->garantia ?: '-';
+                    $pago     = $row->pago ?: '-';
+
+                    $salida .= '<tr>';
+                    $salida .= '<td>' . $usuarioTxt . '</td>';
+                    $salida .= '<td>' . $f_registro . '</td>';
+                    $salida .= '<td>' . $row->aspirante . '</td>';
+                    $salida .= '<td>' . $row->telefono . '</td>';
+                    $salida .= '<td>' . $row->domicilio . '</td>';
+                    $salida .= '<td>' . $row->medio_contacto . '</td>';
+                    $salida .= '<td>' . $cliente . '</td>';
+                    $salida .= '<td>' . $row->puesto . '</td>';
+                    $salida .= '<td>' . $sueldo . '</td>';
+                    $salida .= '<td>' . $f_requisicion . '</td>';
+                    $salida .= '<td>' . $f_ingreso . '</td>';
+                    $salida .= '<td>' . $garantia . '</td>';
+                    $salida .= '<td>' . $pago . '</td>';
+                    $salida .= '</tr>';
                 }
-                $salida .= "</table>";
+
+                $salida .= '</table>';
+
             } else {
-                $salida = '<p style="text-align:center;font-size:18px;font-weight:bold;">Sin registros de acuerdo a los filtros aplicados</p>';
+
+                $salida = '<p style="text-align:center;font-size:18px;font-weight:bold;">'
+                . $this->lang->line('reportes_sin_resultados')
+                    . '</p>';
             }
+
             $msj = [
                 'codigo' => 1,
                 'msg'    => $salida,
             ];
         }
+
         echo json_encode($msj);
     }
 
     public function reporteProcesoReclutamiento_Excel()
     {
-        $datos         = $this->uri->segment(3);
-        $dato          = explode('_', $datos);
-        $f_inicio      = $dato[0];
-        $f_fin         = $dato[1];
-        $usuario       = $dato[2];
-        $data['datos'] = $this->reporte_model->reporteProcesoReclutamiento($f_inicio, $f_fin, $usuario);
+        $datos    = $this->uri->segment(3);
+        $dato     = explode('_', $datos);
+        $f_inicio = $dato[0];
+        $f_fin    = $dato[1];
+        $usuario  = $dato[2];
+
+        $data['datos'] = $this->reporte_model
+            ->reporteProcesoReclutamiento($f_inicio, $f_fin, $usuario);
 
         if ($data['datos']) {
-            //Se crea objeto de la clase.
-            $excel = new Spreadsheet();
-            //Contador de filas
+
+            $excel    = new Spreadsheet();
+            $sheet    = $excel->getActiveSheet();
             $contador = 1;
-            //Le aplicamos ancho las columnas.
-            // Tambien podria acotarse esta parte $variable = $excel->getActiveSheet();
-            //Le aplicamos ancho las columnas.
-            $excel->getActiveSheet()->getColumnDimension('A')->setWidth(25);
-            $excel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
-            $excel->getActiveSheet()->getColumnDimension('C')->setWidth(35);
-            $excel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-            $excel->getActiveSheet()->getColumnDimension('E')->setWidth(25);
-            $excel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
-            $excel->getActiveSheet()->getColumnDimension('G')->setWidth(35);
-            $excel->getActiveSheet()->getColumnDimension('H')->setWidth(35);
-            $excel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
-            $excel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
-            $excel->getActiveSheet()->getColumnDimension('K')->setWidth(15);
-            $excel->getActiveSheet()->getColumnDimension('L')->setWidth(30);
-            $excel->getActiveSheet()->getColumnDimension('M')->setWidth(20);
 
-            //Le aplicamos negrita a los títulos de la cabecera.
-            $excel->getActiveSheet()->getStyle("A{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("B{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("C{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("D{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("E{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("F{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("G{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("H{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("I{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("J{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("K{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("L{$contador}")->getFont()->setBold(true);
-            $excel->getActiveSheet()->getStyle("M{$contador}")->getFont()->setBold(true);
-
-            //Definimos los títulos de la cabecera.
-            $excel->getActiveSheet()->setCellValue("A{$contador}", 'RECLUTADOR');
-            $excel->getActiveSheet()->setCellValue("B{$contador}", 'FECHA REGISTRO');
-            $excel->getActiveSheet()->setCellValue("C{$contador}", 'ASPIRANTE');
-            $excel->getActiveSheet()->setCellValue("D{$contador}", 'TELEFONO');
-            $excel->getActiveSheet()->setCellValue("E{$contador}", 'DOMICILIO');
-            $excel->getActiveSheet()->setCellValue("F{$contador}", 'MEDIO DE CONTACTO');
-            $excel->getActiveSheet()->setCellValue("G{$contador}", 'CLIENTE');
-            $excel->getActiveSheet()->setCellValue("H{$contador}", 'PUESTO');
-            $excel->getActiveSheet()->setCellValue("I{$contador}", 'SUELDO');
-            $excel->getActiveSheet()->setCellValue("J{$contador}", 'FECHA REQUISICION');
-            $excel->getActiveSheet()->setCellValue("K{$contador}", 'FECHA INGRESO');
-            $excel->getActiveSheet()->setCellValue("L{$contador}", 'GARANTÍA');
-            $excel->getActiveSheet()->setCellValue("M{$contador}", 'PAGO');
-
-            //Definimos la data del cuerpo.
-            foreach ($data['datos'] as $row) {
-                $f_registro      = ($row->creacion != null) ? fecha_sinhora_espanol_bd($row->creacion) : '-';
-                $usuario         = ($row->usuario != null) ? $row->usuario : 'Sin asignar';
-                $comercial       = ($row->nombre_comercial != null) ? ' - ' . $row->nombre_comercial : '';
-                $cliente         = $row->cliente . $comercial;
-                $f_requisicion   = ($row->fechaRequisicion != null) ? fecha_sinhora_espanol_bd($row->fechaRequisicion) : '-';
-                $sueldo_acordado = ($row->sueldo_acordado != null) ? '$' . $row->sueldo_acordado : '-';
-                $f_ingreso       = ($row->fecha_ingreso != null) ? fecha_sinhora_espanol_bd($row->fecha_ingreso) : '-';
-                $garantia        = ($row->garantia != null) ? $row->garantia : '-';
-                $pago            = ($row->pago != null) ? $row->pago : '-';
-                //Incrementamos una fila más, para ir a la siguiente.
-                $contador++;
-                //Informacion de las filas de la consulta.
-                $excel->getActiveSheet()->setCellValue("A{$contador}", $usuario);
-                $excel->getActiveSheet()->setCellValue("B{$contador}", $f_registro);
-                $excel->getActiveSheet()->setCellValue("C{$contador}", $row->aspirante);
-                $excel->getActiveSheet()->setCellValue("D{$contador}", $row->telefono);
-                $excel->getActiveSheet()->setCellValue("E{$contador}", $row->domicilio);
-                $excel->getActiveSheet()->setCellValue("F{$contador}", $row->medio_contacto);
-                $excel->getActiveSheet()->setCellValue("G{$contador}", $cliente);
-                $excel->getActiveSheet()->setCellValue("H{$contador}", $row->puesto);
-                $excel->getActiveSheet()->setCellValue("I{$contador}", $sueldo_acordado);
-                $excel->getActiveSheet()->setCellValue("J{$contador}", $f_requisicion);
-                $excel->getActiveSheet()->setCellValue("K{$contador}", $f_ingreso);
-                $excel->getActiveSheet()->setCellValue("L{$contador}", $garantia);
-                $excel->getActiveSheet()->setCellValue("M{$contador}", $pago);
+            // === Anchos ===
+            $widths = [
+                'A' => 25, 'B' => 15, 'C' => 35, 'D' => 15, 'E' => 25, 'F' => 20,
+                'G' => 35, 'H' => 35, 'I' => 15, 'J' => 15, 'K' => 15, 'L' => 30, 'M' => 20,
+            ];
+            foreach ($widths as $c => $w) {
+                $sheet->getColumnDimension($c)->setWidth($w);
             }
-                                                              //Creamos objeto para crear el archivo y definimos un nombre de archivo
-            $writer   = new Xlsx($excel);                     // instantiate Xlsx
-            $filename = 'Reporte_Procesos_Reclutamiento';     // set filename for excel file to be exported
-                                                              //Cabeceras
-            header('Content-Type: application/vnd.ms-excel'); // generate excel file
+
+            // === Negritas ===
+            foreach (range('A', 'M') as $col) {
+                $sheet->getStyle("{$col}{$contador}")
+                    ->getFont()->setBold(true);
+            }
+
+            // === Cabecera ===
+            $headers = [
+                'A' => 'reportes_th_reclutador',
+                'B' => 'reportes_th_fecha_registro',
+                'C' => 'reportes_th_aspirante',
+                'D' => 'reportes_th_telefono',
+                'E' => 'reportes_th_domicilio',
+                'F' => 'reportes_th_medio_contacto',
+                'G' => 'reportes_th_cliente',
+                'H' => 'reportes_th_puesto',
+                'I' => 'reportes_th_sueldo',
+                'J' => 'reportes_th_fecha_requisicion',
+                'K' => 'reportes_th_fecha_ingreso',
+                'L' => 'reportes_th_garantia',
+                'M' => 'reportes_th_pago',
+            ];
+
+            foreach ($headers as $col => $key) {
+                $sheet->setCellValue(
+                    "{$col}{$contador}",
+                    strtoupper($this->lang->line($key))
+                );
+            }
+
+            // === Datos ===
+            foreach ($data['datos'] as $row) {
+
+                $contador++;
+
+                $sheet->setCellValue("A{$contador}", $row->usuario ?: $this->lang->line('reportes_sin_asignar'));
+                $sheet->setCellValue("B{$contador}", $row->creacion ? fecha_sinhora_espanol_bd($row->creacion) : '-');
+                $sheet->setCellValue("C{$contador}", $row->aspirante);
+                $sheet->setCellValue("D{$contador}", $row->telefono);
+                $sheet->setCellValue("E{$contador}", $row->domicilio);
+                $sheet->setCellValue("F{$contador}", $row->medio_contacto);
+                $sheet->setCellValue("G{$contador}", $row->cliente);
+                $sheet->setCellValue("H{$contador}", $row->puesto);
+                $sheet->setCellValue("I{$contador}", $row->sueldo_acordado ? '$' . $row->sueldo_acordado : '-');
+                $sheet->setCellValue("J{$contador}", $row->fechaRequisicion ? fecha_sinhora_espanol_bd($row->fechaRequisicion) : '-');
+                $sheet->setCellValue("K{$contador}", $row->fecha_ingreso ? fecha_sinhora_espanol_bd($row->fecha_ingreso) : '-');
+                $sheet->setCellValue("L{$contador}", $row->garantia ?: '-');
+                $sheet->setCellValue("M{$contador}", $row->pago ?: '-');
+            }
+
+            $writer   = new Xlsx($excel);
+            $filename = 'Reporte_Procesos_Reclutamiento';
+
+            header('Content-Type: application/vnd.ms-excel');
             header('Content-Disposition: attachment;filename="' . $filename . '.xlsx"');
             header('Cache-Control: max-age=0');
 
-            $writer->save('php://output'); // download file
+            $writer->save('php://output');
         }
     }
+
 }
 
 /*  public function reporteListadoDoping()
