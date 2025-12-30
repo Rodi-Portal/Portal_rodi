@@ -466,15 +466,7 @@ $(document).ready(function() {
 
 })
 	</script>
-  <script>
-$(document).on('click', '.pagination a', function (e) {
-    e.preventDefault();
 
-    const url = $(this).attr('href');
-
-    $('#module-content').load(url);
-});
-</script>
 <script>
 $(document).on('submit', '#frmFiltros', function (e) {
     e.preventDefault();

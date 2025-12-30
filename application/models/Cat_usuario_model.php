@@ -43,7 +43,7 @@ class Cat_usuario_model extends CI_Model
 
     public function correoExiste($correo, $idDatos = null)
     {
-        $this->db->select('USP.id')
+        $this->db->select('USP.id, DATUP.correo')
             ->from('usuarios_portal as USP')
             ->join('datos_generales as DATUP', 'DATUP.id = USP.id_datos_generales')
             ->where('DATUP.correo', $correo);
@@ -56,6 +56,16 @@ class Cat_usuario_model extends CI_Model
         return $query->num_rows();
     }
 
+    public function obtenerCorreoPorUsuario($idUsuario)
+    {
+        return $this->db
+            ->select('DATUP.correo')
+            ->from('usuarios_portal USP')
+            ->join('datos_generales DATUP', 'DATUP.id = USP.id_datos_generales')
+            ->where('USP.id', $idUsuario)
+            ->get()
+            ->row('correo');
+    }
     public function check($id)
     {
         $this->db
@@ -114,7 +124,7 @@ class Cat_usuario_model extends CI_Model
             $this->db
                 ->where('id', $id)
                 ->update('usuarios_portal', $usuario);
-                $this->db->trans_commit();
+            $this->db->trans_commit();
             return "Solo usuarios actualizados";
         }
     }
@@ -285,7 +295,6 @@ class Cat_usuario_model extends CI_Model
         }
     }
 
-
     //.............................................................................//
     //---------------------LLevar  sucursales-------------------------------------//
     public function getSucursales()
@@ -307,8 +316,7 @@ class Cat_usuario_model extends CI_Model
         }
     }
 
-
-     /**
+    /**
      * Asigna sucursales a los usuarios en la tabla usuario_permiso
      * @param array $usuarios Lista de IDs de usuarios
      * @param array $sucursales Lista de IDs de sucursales
@@ -317,7 +325,6 @@ class Cat_usuario_model extends CI_Model
     public function asignarSucursal($usuarios, $sucursales)
     {
 
-    
         // Iniciar transacción para evitar errores en caso de fallo
         $this->db->trans_start();
 
@@ -329,11 +336,11 @@ class Cat_usuario_model extends CI_Model
                 $this->db->where('id_cliente', $id_cliente);
                 $existe = $this->db->get('usuario_permiso')->row();
 
-                if (!$existe) {
+                if (! $existe) {
                     // Insertar si no existe
                     $this->db->insert('usuario_permiso', [
                         'id_usuario' => $id_usuario,
-                        'id_cliente' => $id_cliente
+                        'id_cliente' => $id_cliente,
                     ]);
                 }
             }
@@ -346,44 +353,46 @@ class Cat_usuario_model extends CI_Model
         return $this->db->trans_status();
     }
 
-    public function verificarLimiteUsuariosPortal($id_portal) {
+    public function verificarLimiteUsuariosPortal($id_portal)
+    {
         // Obtener el id_paquete del portal
         $this->db->select('id_paquete');
         $this->db->from('portal');
         $this->db->where('id', $id_portal);
         $queryPortal = $this->db->get();
-    
+
         if ($queryPortal->num_rows() == 0) {
             return ['error' => true, 'mensaje' => 'Portal no encontrado'];
         }
-    
+
         $id_paquete = $queryPortal->row()->id_paquete;
-    
+
         // Obtener el límite de usuarios del paquete
         $this->db->select('usuarios');
         $this->db->from('paquetestalentsafe');
         $this->db->where('id', $id_paquete);
         $queryPaquete = $this->db->get();
-    
+
         if ($queryPaquete->num_rows() == 0) {
             return ['error' => true, 'mensaje' => 'Paquete no encontrado'];
         }
-    
+
         $limite = (int) $queryPaquete->row()->usuarios;
-    
+
         // Contar usuarios activos del portal
         $this->db->from('usuarios_portal');
         $this->db->where('id_portal', $id_portal);
         $this->db->where('status', 1); // Asumimos que status 1 es activo
         $total_activos = $this->db->count_all_results();
-    
+
         return [
-            'error' => false,
-            'supera_limite' => $total_activos >= $limite
+            'error'         => false,
+            'supera_limite' => $total_activos >= $limite,
         ];
     }
-    
-    public function eliminarPermiso($id_usuario, $id_cliente) {
+
+    public function eliminarPermiso($id_usuario, $id_cliente)
+    {
         // Eliminar el registro de la tabla usuario_permiso
         $this->db->where('id_usuario', $id_usuario);
         $this->db->where('id_cliente', $id_cliente);
@@ -396,6 +405,5 @@ class Cat_usuario_model extends CI_Model
             return false;
         }
     }
-
 
 }
