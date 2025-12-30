@@ -38,26 +38,39 @@ class Area extends CI_Controller
     }
     public function pasarela()
     {
-        $id_cliente = $this->session->userdata('id');
-        $id_portal  = $this->session->userdata('idPortal');
+        $id_portal = (int) $this->session->userdata('idPortal');
 
-        // ===============================
-        // 🧭 Menú / versión
-        // ===============================
-        $data['submenus'] = [];
+        /* ===============================
+     🧭 MENÚ / VERSIÓN
+        =============================== */
+        $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $items              = [];
+        foreach ($data['submodulos'] as $row) {
+            $items[] = $row->id_submodulo;
+        }
+        $data['submenus'] = $items;
 
         $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
-        // ===============================
-        // 💳 Datos de pago
-        // ===============================
-        $data['datos_pago'] = $this->area_model->getDatosPago($id_portal);
+        /* ===============================
+     🔒 ESTADO DEL SISTEMA (CLAVE)
+        =============================== */
+        $notPago = $this->session->userdata('notPago');
 
-        // Bandera general (evita textos duros)
+        $data['modo_sistema'] = in_array(
+            $notPago,
+            ['pagado', 'pendiente_en_plazo'],
+            true
+        ) ? 'normal' : 'bloqueado';
+
+        /* ===============================
+     💳 DATOS DE PAGO
+        =============================== */
+        $data['datos_pago']             = $this->area_model->getDatosPago($id_portal);
         $data['datos_pago_disponibles'] = false;
 
-        // Defaults seguros (evita warnings)
+        // Defaults seguros
         $data['usuarios']          = [];
         $data['cantidad_usuarios'] = 0;
         $data['cobro']             = 0;
@@ -69,60 +82,34 @@ class Area extends CI_Controller
         $data['meses_pagados']     = [];
         $data['meses_disponibles'] = [];
 
-        // ===============================
-        // ✅ Datos válidos
-        // ===============================
         if (! empty($data['datos_pago']) && ! empty($data['datos_pago']->creacion)) {
 
             $data['datos_pago_disponibles'] = true;
 
-            // ===============================
-            // 👥 Usuarios extras
-            // ===============================
             $data['usuarios']          = $this->calcularCobro($data['datos_pago']->creacion, $id_portal);
             $data['cantidad_usuarios'] = count($data['usuarios']);
 
-            // ===============================
-            // 💰 Cálculos de cobro
-            // ===============================
             $data['cobro'] = $this->calcularCobroMensualProporcional(
                 $data['datos_pago']->creacion,
                 $id_portal
             );
-
             $data['cobro_mes'] = $this->calcularCobroMensualFijo($id_portal);
 
-            // ===============================
-            // 📅 Vencimiento
-            // ===============================
-            $data['vencimiento'] = $this->definirFechaVencimiento(
+            $vencimiento = $this->definirFechaVencimiento(
                 $data['datos_pago']->creacion,
                 $id_portal
             );
+            $data['fecha_vencimiento'] = $vencimiento['fecha_vencimiento'];
+            $data['estado_pago']       = $vencimiento['estado'];
 
-            $data['fecha_vencimiento'] = $data['vencimiento']['fecha_vencimiento'];
-            $data['estado_pago']       = $data['vencimiento']['estado'];
-
-            // ===============================
-            // 🔗 Link de pago e historial
-            // ===============================
             $data['link_pago']         = $this->area_model->getLinkPago($id_portal);
             $data['historial_pagos']   = $this->area_model->getPagos($id_portal);
             $data['meses_pagados']     = $this->area_model->getMesesPagados($id_portal);
             $data['meses_disponibles'] = $this->area_model->getMesesDisponibles($id_portal);
 
-            // ===============================
-            // 🌐 Multilenguaje del paquete (por ID)
-            // ===============================
-            $data['plan_key']  = null;
-            $data['plan_vars'] = [];
-
+            /* 🌐 Multilenguaje del plan */
             if (! empty($data['datos_pago']->id_paquete)) {
-
-                // Clave base del paquete (ej: plan.2)
-                $data['plan_key'] = 'plan.' . $data['datos_pago']->id_paquete;
-
-                // Variables dinámicas para lang
+                $data['plan_key']  = 'plan.' . $data['datos_pago']->id_paquete;
                 $data['plan_vars'] = [
                     'users' => (int) ($data['datos_pago']->usuarios ?? 0),
                     'extra' => 50,
@@ -131,41 +118,30 @@ class Area extends CI_Controller
                 ];
             }
 
-            // ===============================
-            // 🔗 Estado del link (CLAVES, NO TEXTO)
-            // ===============================
             if ($data['link_pago']) {
-
-                $data['status_link_pago'] = $this->verificarFechaExpiracion(
-                    $data['link_pago']->expires_at
-                );
-
-                if ($data['status_link_pago'] == 1) {
-                    $data['status_link_pago_key']   = 'portal_pay_status_active';
-                    $data['status_link_pago_class'] = 'text-success';
-                } else {
-                    $data['status_link_pago_key']   = 'portal_pay_status_expired';
-                    $data['status_link_pago_class'] = 'text-danger';
-                }
+                $activo                         = $this->verificarFechaExpiracion($data['link_pago']->expires_at);
+                $data['status_link_pago_key']   = $activo ? 'portal_pay_status_active' : 'portal_pay_status_expired';
+                $data['status_link_pago_class'] = $activo ? 'text-success' : 'text-danger';
             }
         }
 
-        // ===============================
-        // 🧱 Header según estado de pago
-        // ===============================
-        $notPago = $this->session->userdata('notPago');
-
-        if ($notPago === 'pendiente_en_plazo' || $notPago === 'pagado') {
-            echo $this->load->view('adminpanel/header', $data, true);
+        /* ===============================
+     🧱 LAYOUT (SIEMPRE)
+    =============================== */
+        /* ===============================
+ 🧱 LAYOUT
+=============================== */
+        if ($data['modo_sistema'] === 'normal') {
+            // Sistema activo → layout completo
+            $this->load->view('adminpanel/header', $data);
+            $this->load->view('adminpanel/pasarela', $data);
+            $this->load->view('adminpanel/footer');
         } else {
-            // La vista decide qué recursos cargar
+            // Sistema bloqueado → solo pasarela
             $data['cargar_recursos'] = true;
+            $this->load->view('adminpanel/pasarela', $data);
         }
 
-        // ===============================
-        // 📄 Vista principal
-        // ===============================
-        echo $this->load->view('adminpanel/pasarela', $data, true);
     }
 
     public function calcularCobroMensualFijo($id_portal)
