@@ -155,6 +155,14 @@ $(document).ready(function() {
       $('#module-content').html('<p>Error al cargar el contenido. Por favor, inténtalo de nuevo.</p>');
     });
   }
+window.recLoadContent = loadContent;
+$('#module-content').on('click', '.cards-pagination a', function (e) {
+  e.preventDefault();
+  const url = $(this).attr('href');
+  if (!url || url === '#') return;
+
+  window.recLoadContent(url);
+});
 
   // Verificar si hay una URL guardada en localStorage
   var savedUrl = localStorage.getItem('lastMenuUrl');

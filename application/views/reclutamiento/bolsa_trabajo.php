@@ -261,14 +261,7 @@
     <span class="icon text-white-50"><i class="fas fa-arrow-left"></i></span>
     <span class="text"><?php echo t('rec_common_back_to_list', 'Regresar al listado'); ?></span>
   </a>
-  <script>
-  $(function() {
-    $('#ordenar, #filtrar, #asignar, #area_interes_search, #buscador').on('change', function() {
-      $('#page').val('0'); // al cambiar filtros, regresamos a la página 1
-      $('#frmFiltros').submit();
-    });
-  });
-  </script>
+
 
 
   <div class="">
@@ -573,7 +566,9 @@
               if (! empty($pagination)) {
                   echo '<div class="row">';
                   echo '  <div class="col-12">';
+                  echo '<div class="cards-pagination">';
                   echo $pagination;
+                  echo '</div>';
                   echo '  </div>';
                   echo '</div>';
               }
@@ -1020,7 +1015,7 @@
       allowClear: false,
       width: '100%' // Asegura que el select ocupe todo el ancho del contenedor
     });
-      initColoredFilter($(document));
+    initColoredFilter($(document));
     let url_applicants = '<?php echo base_url('Reclutamiento/bolsa'); ?>';
     let oldURL = url_applicants;
 
@@ -1040,7 +1035,12 @@
 
       // Realizar la petición AJAX
       $.get(newUrl, function(data) {
-        $('#module-content').html(data);
+        if (window.recLoadContent) {
+          window.recLoadContent(newUrl);
+        } else {
+          // fallback por si abrieron bolsa directo (sin contenedor)
+          window.location.href = newUrl;
+        }
       }).fail(function() {
         $('#module-content').html('<p>' + window.t('rec_bol_load_error', 'Error al cargar el contenido.') +
           '</p>');

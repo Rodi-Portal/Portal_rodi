@@ -130,15 +130,22 @@ class Cat_UsuarioInternos extends CI_Controller
 
         if ($existe > 0) {
 
-            $existeCorreo = $this->cat_usuario_model->correoExiste($correo, $idUsuario);
+            // Correo actual en BD
+            $correoActual = $this->cat_usuario_model->obtenerCorreoPorUsuario($idUsuario);
 
-            if ($existeCorreo !== 0) {
-                $msj = [
-                    'codigo' => 2,
-                    'msg'    => 'El correo proporcionado ya existe',
-                ];
-                echo json_encode($msj);
-                return; // Detener el flujo del código ya que hay un error
+            // Solo validar si el correo cambió
+            if ($correo !== $correoActual) {
+
+                $existeCorreo = $this->cat_usuario_model->correoExiste($correo, $idUsuario);
+
+                if ($existeCorreo > 0) {
+                    $msj = [
+                        'codigo' => 2,
+                        'msg'    => 'El correo proporcionado ya existe',
+                    ];
+                    echo json_encode($msj);
+                    return; // Detener el flujo del código ya que hay un error
+                }
             }
 
             $result = $this->cat_usuario_model->editUsuario($idUsuario, $usuariosInternos, $idDatos, $datosGenerales);
