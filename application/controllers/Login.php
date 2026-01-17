@@ -377,6 +377,7 @@ class Login extends CI_Controller
         $tipo_acceso = $this->session->userdata('tipo_acceso');
         //var_dump($tipo_acceso);
         // Verificar si el código ingresado coincide con el código de autenticación
+        //$this->issueDashJwt();
 
         switch ($tipo_acceso) {
             case 'usuario':
@@ -432,6 +433,7 @@ class Login extends CI_Controller
                 $ver  = ($ver >= 10) ? 1 : $ver + 1;
                 $data = ['verificacion' => $ver];
                 $this->usuario_model->actualizarVerificacion($data, $id);
+                $this->issueDashJwt();
 
                 switch ($tipo_acceso) {
                     case 'usuario':
@@ -601,6 +603,9 @@ class Login extends CI_Controller
             $usuario_data = [
                 'logueado' => false,
             ];
+            $this->session->unset_userdata('dash_jwt');
+            $this->session->unset_userdata('dash_jwt_exp');
+
             $this->session->sess_destroy();
         }
 
@@ -626,7 +631,8 @@ class Login extends CI_Controller
         if ($resultadoPago === 'pagado' || $resultadoPago === 'pendiente_en_plazo') {
 
             if (in_array($rol, [1, 6, 9, 10], true)) {
-                redirect('Cat_UsuarioInternos/index');
+                //redirect('Cat_UsuarioInternos/index');
+                redirect('Dashboard/show');
             } else {
                 redirect('Dashboard/index');
             }
@@ -635,6 +641,47 @@ class Login extends CI_Controller
 
         // Acceso bloqueado → pasarela
         redirect('Area/pasarela');
+    }
+
+    private function issueDashJwt(): void
+    {
+        // Solo si hay sesión válida
+        $userId   = (int) $this->session->userdata('id');
+        $portalId = (int) $this->session->userdata('idPortal');
+        $rolId    = (int) $this->session->userdata('idrol');
+
+        if ($userId <= 0 || $portalId <= 0) {
+            $this->session->unset_userdata('dash_jwt');
+            $this->session->unset_userdata('dash_jwt_exp');
+            return;
+        }
+
+        // TTL corto (10 min)
+        $issuedAt = time();
+        $exp      = $issuedAt + 600;
+
+        $payload = [
+            'iss'       => 'ci3-portal',  // pon tu issuer
+            'aud'       => 'laravel-api', // pon tu audience
+            'iat'       => $issuedAt,
+            'nbf'       => $issuedAt - 5,
+            'exp'       => $exp,
+            'sub'       => (string) $userId,
+            'portal_id' => $portalId,
+            'rol_id'    => $rolId,
+            'sid'       => session_id(), // amarra al session id de CI3
+        ];
+
+                                                              // ✅ Tu llave privada ya la tienes (RS256)
+        $privateKey = $this->config->item('jwt_private_key'); // o lee archivo pem
+                                                              // Ejemplo si es archivo:
+                                                              // $privateKey = file_get_contents(APPPATH.'keys/ci3_private.pem');
+
+        // Asegúrate que ya tienes JWT cargado (firebase/php-jwt)
+        $jwt = JWT::encode($payload, $privateKey, 'RS256');
+
+        $this->session->set_userdata('dash_jwt', $jwt);
+        $this->session->set_userdata('dash_jwt_exp', $exp);
     }
 
 }

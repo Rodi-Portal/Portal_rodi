@@ -118,6 +118,33 @@ class Empleados extends CI_Controller
         echo $scriptsView; // Mostrar scripts si es necesario
         echo $View;        // Mostrar el contenido del módulo de empleados
     }
+
+    public function goEmpleado($employeeId)
+{
+    $employeeId = (int) $employeeId;
+
+    $clientId = (int) $this->input->get('id_cliente');
+    $kind     = (string) $this->input->get('kind', true);   // document|course|exam
+    $itemId   = (int) $this->input->get('item_id');
+    $state    = (string) $this->input->get('state', true);  // expiring|expired
+
+    if ($employeeId <= 0 || $clientId <= 0) {
+        show_error('Missing employee_id or id_cliente', 422);
+        return;
+    }
+
+    // Redirigimos al módulo de empleados que YA tienes (Vue2 embebido)
+    // Le pasamos los datos por query para que luego Vue2 pueda “deep-link”
+    $qs = http_build_query([
+        'employee_id' => $employeeId,
+        'kind'        => $kind,
+        'item_id'     => $itemId,
+        'state'       => $state,
+    ]);
+
+    redirect(base_url("admin_clientes/showEmpleados/{$clientId}") . '?' . $qs);
+}
+
 // estta  Funcion es para  cargar  el modulo   de Pre  empleados
     public function preEmpleados()
     {
