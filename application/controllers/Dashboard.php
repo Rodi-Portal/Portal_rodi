@@ -184,7 +184,7 @@ class Dashboard extends CI_Controller
         $data_incompleta = false;
 
         // Cambiado a booleano para mayor claridad
-        if ($id_portal == 1 ) {
+        if ($id_portal == 1) {
             if (! empty($datos['cliente'])) {
                 foreach ($datos['cliente'] as $campo) {
                     // Verifica cada propiedad del objeto para encontrar campos vacíos
@@ -223,7 +223,7 @@ class Dashboard extends CI_Controller
         $id_cliente = $this->session->userdata('idcliente');
         $ingles     = $this->session->userdata('ingles');
         $tipo_bolsa = $this->session->userdata('tipo_bolsa');
-        $link     = $this->session->userdata('link');
+        $link       = $this->session->userdata('link');
 
         // Cargar el idioma
         if ($ingles == 1) {
@@ -233,16 +233,15 @@ class Dashboard extends CI_Controller
         }
 
         // Obtener datos del cliente
-        $data['link']     =  $link;
+        $data['link']          = $link;
         $data['tipo_bolsa']    = $tipo_bolsa;
-        $data['translations']     = $this->lang->language;
-        $modal['translations']    = $this->lang->language;
-        $data['modals']           = $this->load->view('modals/clientes/mdl_panel', $modal, true);
-      
+        $data['translations']  = $this->lang->language;
+        $modal['translations'] = $this->lang->language;
+        $data['modals']        = $this->load->view('modals/clientes/mdl_panel', $modal, true);
+
         $data['procesosActuales'] = $this->cliente_model->get_current_procedures2();
 
-        
-        $datos['cliente']         = $this->cat_cliente_model->getClienteValido();
+        $datos['cliente'] = $this->cat_cliente_model->getClienteValido();
 
                                   // Verificar si hay campos vacíos
         $data_incompleta = false; // Cambiado a booleano para mayor claridad
@@ -404,4 +403,84 @@ class Dashboard extends CI_Controller
             redirect('Login/index');
         }
     }
+
+    public function show()
+    {
+        $idUsuario = (int) $this->session->userdata('id');
+
+        // =============================
+        // Idioma
+        // =============================
+        $lang = $this->session->userdata('lang') ?? 'es';
+
+        $map = [
+            'es' => 'espanol',
+            'en' => 'english',
+        ];
+        $ciLang = $map[$lang] ?? 'espanol';
+
+        $this->lang->load('admin_users', $ciLang);
+
+        // =============================
+        // Menú y submenús (OBLIGATORIO)
+        // =============================
+        $data['submodulos'] = $this->rol_model->getMenu(
+            $this->session->userdata('idrol')
+        );
+
+        $items = [];
+        foreach ($data['submodulos'] as $row) {
+            $items[] = (int) $row->id_submodulo;
+        }
+        $data['submenus'] = $items;
+
+        // =============================
+        // Resolver clientes por DB
+        // =============================
+        $rows = $this->rol_model->getClientesByUsuario($idUsuario);
+
+        /**
+         * 🔑 IMPORTANTE:
+         * $rows puede venir como:
+         *  - array de stdClass
+         *  - array de arrays
+         * Hacemos acceso seguro para ambos casos
+         */
+        $cliente_ids = array_map(function ($r) {
+            if (is_array($r)) {
+                return isset($r['id_cliente']) ? (int) $r['id_cliente'] : null;
+            }
+
+            if (is_object($r)) {
+                return isset($r->id_cliente) ? (int) $r->id_cliente : null;
+            }
+
+            return null;
+        }, $rows);
+
+        // limpiar nulls y reindexar
+        $cliente_ids = array_values(array_filter($cliente_ids));
+
+        $data['cliente_id'] = $cliente_ids;
+
+        // =============================
+        // Configuración / versión
+        // =============================
+        $config          = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $config->version_sistema ?? '';
+
+        // =============================
+        // Idioma para la vista
+        // =============================
+        $data['lang'] = $lang;
+
+        // =============================
+        // Render
+        // =============================
+        $this->load
+            ->view('adminpanel/header', $data)
+            ->view('adminpanel/dashboard', $data)
+            ->view('adminpanel/footer');
+    }
+
 }

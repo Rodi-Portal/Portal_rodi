@@ -504,11 +504,13 @@ class Login extends CI_Controller
         $tipo_acceso = $this->session->userdata('tipo_acceso');
         //var_dump($tipo_acceso);
         // Verificar si el código ingresado coincide con el código de autenticación
+        //$this->issueDashJwt();
 
         switch ($tipo_acceso) {
             case 'usuario':
-                redirect('Cat_UsuarioInternos/index');
+                redirect('Dashboard/show');
                 break;
+
             case 'visitador':
                 redirect('Dashboard/visitador_panel');
                 break;
@@ -572,7 +574,7 @@ class Login extends CI_Controller
                             // ✅ Puede continuar normalmente
                             if ($rol == 1 || $rol == 6 || $rol == 9 || $rol == 10) {
 
-                                redirect('Cat_UsuarioInternos/index');
+                                redirect('Dashboard/show');
                                 break;
                             } else {
                                 redirect('Dashboard/index');
@@ -614,7 +616,7 @@ class Login extends CI_Controller
                     $usuario = ['password' => $password, 'verificacion' => 1];
                     $this->usuario_model->forgotenPass($usuario, $id);
 
-                    if (!empty($correo)) {
+                    if (! empty($correo)) {
                         $this->load->library('phpmailer_lib');
                         $mail = $this->phpmailer_lib->load();
                         $mail->isSMTP();
@@ -748,6 +750,9 @@ class Login extends CI_Controller
             $usuario_data = [
                 'logueado' => false,
             ];
+            $this->session->unset_userdata('dash_jwt');
+            $this->session->unset_userdata('dash_jwt_exp');
+
             $this->session->sess_destroy();
         }
 

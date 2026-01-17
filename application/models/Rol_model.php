@@ -18,4 +18,15 @@ class Rol_model extends CI_Model{
     }
   }
 
+   public function getClientesByUsuario($id_usuario)
+    {
+        return $this->db
+            ->select('id_cliente')
+            ->from('usuario_permiso')
+            ->where('id_usuario', $id_usuario)
+            ->group_by('id_cliente')
+            ->get()
+            ->result_array();
+    }
+
 }
