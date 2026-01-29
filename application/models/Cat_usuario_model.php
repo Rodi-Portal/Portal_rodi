@@ -254,20 +254,33 @@ class Cat_usuario_model extends CI_Model
             return false;
         }
     }
-
     public function accesosUsuariosCorreo($correo, $pass, $soloPass = 0)
     {
         if (empty($correo)) {
             return false;
         }
 
-        // Cargar configuración SMTP privada
+        // 🔐 Cargar configuración SMTP privada (NO versionada)
         $this->config->load('email_private', true);
-        $smtp = $this->config->item('email_private');
+        $smtp = $this->config->item('email_private', 'email_private');
 
-        $subject = "Credenciales TalentSafeControl";
+        // 🛑 Validación defensiva
+        if (
+            empty($smtp) ||
+            empty($smtp['host']) ||
+            empty($smtp['user']) ||
+            empty($smtp['pass']) ||
+            empty($smtp['port']) ||
+            empty($smtp['from']) ||
+            empty($smtp['fromName'])
+        ) {
+            log_message('error', 'Configuración SMTP privada incompleta o inexistente');
+            return false;
+        }
 
-        // Cargar vista del correo
+        $subject = 'Credenciales TalentSafeControl';
+
+        // 📧 Cargar vista del correo
         $message = $this->load->view(
             'catalogos/email_credenciales_view',
             [
@@ -278,17 +291,33 @@ class Cat_usuario_model extends CI_Model
             true
         );
 
-        // PHPMailer
+        // 📮 PHPMailer
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
+
+        // 🧪 DEBUG SMTP (puedes apagarlo cuando funcione)
+        $mail->SMTPDebug   = 2;
+        $mail->Debugoutput = function ($str, $level) {
+            log_message('error', "SMTP DEBUG [$level]: $str");
+        };
 
         $mail->isSMTP();
         $mail->Host       = $smtp['host'];
         $mail->SMTPAuth   = true;
         $mail->Username   = $smtp['user'];
         $mail->Password   = $smtp['pass'];
-        $mail->SMTPSecure = $smtp['secure'];
-        $mail->Port       = $smtp['port'];
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port       = (int) $smtp['port'];
+        $mail->Timeout    = 20;
+
+        // 🔒 Opciones SSL (muy importante en cPanel / AlmaLinux)
+        $mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true,
+            ],
+        ];
 
         $mail->setFrom($smtp['from'], $smtp['fromName']);
         $mail->addAddress($correo);
@@ -298,12 +327,12 @@ class Cat_usuario_model extends CI_Model
         $mail->CharSet = 'UTF-8';
         $mail->Body    = $message;
 
-        if ($mail->send()) {
-            return true;
+        if (! $mail->send()) {
+            log_message('error', 'Error correo SMTP: ' . $mail->ErrorInfo);
+            return false;
         }
 
-        log_message('error', 'Error correo SMTP: ' . $mail->ErrorInfo);
-        return false;
+        return true;
     }
 
     //.............................................................................//
