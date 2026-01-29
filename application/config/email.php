@@ -1,14 +1,35 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/*
+ |------------------------------------------------------------
+ | CONFIGURACIÓN BASE DE EMAIL
+ |------------------------------------------------------------
+ */
 
 $config = array(
-    'protocol' => 'smtp', // 'mail', 'sendmail', or 'smtp'
-    'smtp_host' => 'mail.rodicontrol.com', 
-    'smtp_port' => 465,
-    'smtp_user' => 'rodicontrol@rodicontrol.com',
-    'smtp_pass' => 'r49o*&rUm%91',
-    'smtp_crypto' => 'ssl', //can be 'ssl' or 'tls' for example
-    'mailtype' => 'html', //plaintext 'text' mails or 'html'
-    //'smtp_timeout' => '4', //in seconds
-    'charset' => 'utf-8',
-    'wordwrap' => TRUE
+    'protocol'    => 'smtp',
+    'mailtype'    => 'html',
+    'charset'     => 'utf-8',
+    'wordwrap'    => TRUE,
+    'newline'     => "\r\n",
+    'crlf'        => "\r\n"
 );
+
+/*
+ |------------------------------------------------------------
+ | CARGAR CONFIG PRIVADA (SI EXISTE)
+ |------------------------------------------------------------
+ */
+
+$private = APPPATH . 'config/email_private.php';
+
+if (file_exists($private)) {
+    require $private;
+
+    $config['smtp_host']   = $config['smtp_host'];
+    $config['smtp_user']   = $config['smtp_user'];
+    $config['smtp_pass']   = $config['smtp_pass'];
+    $config['smtp_port']   = $config['smtp_port'];
+    $config['smtp_crypto'] = $config['smtp_secure'];
+}

@@ -173,11 +173,11 @@ class Cat_usuario_model extends CI_Model
     public function updatePass($id, $DatosGenerales, $uncode_password, $correo)
     {
         /* echo '<pre>';
-  echo $id . ' aqui el id<br>';
-  echo $uncode_password . ' aqui el pass<br>';
-  echo $correo . ' aqui el correo<br>';
-  print_r($DatosGenerales);
-  echo '</pre>' */
+        echo $id . ' aqui el id<br>';
+        echo $uncode_password . ' aqui el pass<br>';
+        echo $correo . ' aqui el correo<br>';
+        print_r($DatosGenerales);
+        echo '</pre>' */
 
         $this->db->trans_start();
 
@@ -257,42 +257,53 @@ class Cat_usuario_model extends CI_Model
 
     public function accesosUsuariosCorreo($correo, $pass, $soloPass = 0)
     {
-        if ($correo === null || $correo === '') {
+        if (empty($correo)) {
             return false;
         }
+
+        // Cargar configuración SMTP privada
+        $this->config->load('email_private', true);
+        $smtp = $this->config->item('email_private');
 
         $subject = "Credenciales TalentSafeControl";
-        // Cargar la vista email_verification_view.php
-        $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
 
+        // Cargar vista del correo
+        $message = $this->load->view(
+            'catalogos/email_credenciales_view',
+            [
+                'correo' => $correo,
+                'pass'   => $pass,
+                'switch' => $soloPass,
+            ],
+            true
+        );
+
+        // PHPMailer
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
-        $mail->isSMTP();
-        $mail->Host       = 'mail.talentsafecontrol.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'soporte@talentsafecontrol.com';
-        $mail->Password   = 'FQ{[db{}%ja-';
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
 
-        if ($correo !== null && $correo !== '') {
-            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
-            $mail->addAddress($correo);
-        } else {
-            return false;
-        }
+        $mail->isSMTP();
+        $mail->Host       = $smtp['host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $smtp['user'];
+        $mail->Password   = $smtp['pass'];
+        $mail->SMTPSecure = $smtp['secure'];
+        $mail->Port       = $smtp['port'];
+
+        $mail->setFrom($smtp['from'], $smtp['fromName']);
+        $mail->addAddress($correo);
 
         $mail->Subject = $subject;
-        $mail->isHTML(true);      // Enviar el correo como HTML
-        $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
         $mail->Body    = $message;
 
         if ($mail->send()) {
             return true;
-        } else {
-            log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
-            return false;
         }
+
+        log_message('error', 'Error correo SMTP: ' . $mail->ErrorInfo);
+        return false;
     }
 
     //.............................................................................//
