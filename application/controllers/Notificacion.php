@@ -386,16 +386,17 @@ class Notificacion extends CI_Controller
     {
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
-
+        $this->config->load('email_private', true);
+         $smtp = $this->config->item('email_private', 'email_private');
         try {
                                                               // Configuración del servidor SMTP
-            $mail->isSMTP();                                  // Establecer el envío usando SMTP
-            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'soporte@talentsafecontrol.com';
-            $mail->Password   = 'FQ{[db{}%ja-';
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port       = 465; // Puerto SMTP
+            $mail->isSMTP();
+                $mail->Host       = $smtp['host'];
+                $mail->SMTPAuth   = true;
+                $mail->Username   = $smtp['user'];
+                $mail->Password   = $smtp['pass'];
+                $mail->SMTPSecure = $smtp['secure'];
+                $mail->Port       = $smtp['port'];
 
             // Remitente
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');

@@ -479,15 +479,19 @@ class Cat_portales_model extends CI_Model
         // Cargar la vista email_verification_view.php
         $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
 
+        $this->config->load('email_private', true);
+        $smtp = $this->config->item('email_private', 'email_private');
+
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
+
         $mail->isSMTP();
-        $mail->Host       = 'mail.talentsafecontrol.com';
+        $mail->Host       = $smtp['host'];
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'soporte@talentsafecontrol.com';
-        $mail->Password   = 'FQ{[db{}%ja-';
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
+        $mail->Username   = $smtp['user'];
+        $mail->Password   = $smtp['pass'];
+        $mail->SMTPSecure = $smtp['secure'];
+        $mail->Port       = $smtp['port'];
 
         if ($correo !== null && $correo !== '') {
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
@@ -551,11 +555,11 @@ class Cat_portales_model extends CI_Model
 
         $query = $this->db->get();
 
-        return $query->row(); 
+        return $query->row();
     }
     public function getDocs($id_portal)
     {
-        return $this->db->select('aviso, terminos','confidencialidad')
+        return $this->db->select('aviso, terminos', 'confidencialidad')
             ->from('portal')
             ->where('id', (int) $id_portal)
             ->get()->row();
@@ -642,18 +646,16 @@ class Cat_portales_model extends CI_Model
         echo json_encode(['status' => 'success', 'mensaje' => ucfirst($tipo) . ' eliminado.']);
     }
 
-     
     public function getDatosPortal()
     {
         $id_portal = $this->session->userdata('idPortal');
         $this->db
             ->select("P.nombre as nombre_portal, DAT.telefono, DAT.correo")
             ->from('portal as P')
-            ->join("usuarios_portal as UP", "UP.id = P.id_usuario_portal",'left')
-            ->join("datos_generales as DAT", "DAT.id = UP.id_datos_generales",'left')
-          
+            ->join("usuarios_portal as UP", "UP.id = P.id_usuario_portal", 'left')
+            ->join("datos_generales as DAT", "DAT.id = UP.id_datos_generales", 'left')
+
             ->where('P.id', $id_portal);
-          
 
         $query = $this->db->get();
         if ($query->num_rows() > 0) {

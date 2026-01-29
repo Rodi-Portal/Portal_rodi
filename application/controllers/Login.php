@@ -471,25 +471,36 @@ class Login extends CI_Controller
                     $this->usuario_model->forgotenPass($usuario, $id);
 
                     if (! empty($correo)) {
+
+                        // 🔐 cargar config SMTP privada (NO versionada)
+                        $this->config->load('email_private', true);
+                        $smtp = $this->config->item('email_private', 'email_private');
+
                         $this->load->library('phpmailer_lib');
                         $mail = $this->phpmailer_lib->load();
-                        $mail->isSMTP();
-                        $mail->Host       = 'mail.talentsafecontrol.com';
-                        $mail->SMTPAuth   = true;
-                        $mail->Username   = 'soporte@talentsafecontrol.com';
-                        $mail->Password   = 'FQ{[db{}%ja-';
-                        $mail->SMTPSecure = 'ssl';
-                        $mail->Port       = 465;
 
-                        $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
+                        $mail->isSMTP();
+                        $mail->Host       = $smtp['host'];
+                        $mail->SMTPAuth   = true;
+                        $mail->Username   = $smtp['user'];
+                        $mail->Password   = $smtp['pass'];
+                        $mail->SMTPSecure = $smtp['secure'];
+                        $mail->Port       = $smtp['port'];
+
+                        $mail->setFrom($smtp['from'], $smtp['fromName']);
                         $mail->addAddress($correo);
+
                         $mail->Subject = "Actualización de credenciales - TalentSafeControl";
 
-                        $message = $this->load->view('catalogos/email_credenciales_view', [
-                            'correo' => $correo,
-                            'pass'   => $pwd,
-                            'switch' => true,
-                        ], true);
+                        $message = $this->load->view(
+                            'catalogos/email_credenciales_view',
+                            [
+                                'correo' => $correo,
+                                'pass'   => $pwd,
+                                'switch' => true,
+                            ],
+                            true
+                        );
 
                         $mail->isHTML(true);
                         $mail->CharSet = 'UTF-8';
@@ -506,10 +517,12 @@ class Login extends CI_Controller
                             $this->session->set_flashdata('error_code', 'Error sending email.');
                             redirect('login/recovery_view');
                         }
+
                     } else {
                         $this->session->set_flashdata('error_code', 'Email not found.');
                         redirect('Login/recovery_view');
                     }
+
                 }
 
             } else {
@@ -565,15 +578,19 @@ class Login extends CI_Controller
         // Cargar la vista email_verification_view.php
         $message = $this->load->view('login/email_verification_view', ['codigo' => $codigo], true);
 
+        $this->config->load('email_private', true);
+        $smtp = $this->config->item('email_private', 'email_private');
+
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
+
         $mail->isSMTP();
-        $mail->Host       = 'mail.talentsafecontrol.com';
+        $mail->Host       = $smtp['host'];
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'soporte@talentsafecontrol.com';
-        $mail->Password   = 'FQ{[db{}%ja-';
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
+        $mail->Username   = $smtp['user'];
+        $mail->Password   = $smtp['pass'];
+        $mail->SMTPSecure = $smtp['secure'];
+        $mail->Port       = $smtp['port'];
 
         if ($correo !== null && $correo !== '') {
             $mail->setFrom('soporte@talentsafecontrol.com', 'TALENTSAFE CONTROL');

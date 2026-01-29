@@ -492,15 +492,19 @@ class Cat_cliente_model extends CI_Model
         // Cargar la vista email_verification_view.php
         $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
 
+        $this->config->load('email_private', true);
+        $smtp = $this->config->item('email_private', 'email_private');
+
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
+
         $mail->isSMTP();
-        $mail->Host       = 'mail.talentsafecontrol.com';
+        $mail->Host       = $smtp['host'];
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'soporte@talentsafecontrol.com';
-        $mail->Password   = 'FQ{[db{}%ja-';
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
+        $mail->Username   = $smtp['user'];
+        $mail->Password   = $smtp['pass'];
+        $mail->SMTPSecure = $smtp['secure'];
+        $mail->Port       = $smtp['port'];
 
         if ($correo !== null && $correo !== '') {
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
