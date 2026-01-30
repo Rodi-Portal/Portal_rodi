@@ -117,3 +117,6 @@ $lang['admin_users_modal_btn_update'] = "Guardar cambios";
 
 $lang['admin_users_edit_title']       = "Editar usuario";
 $lang['admin_users_btn_save_changes'] = "Guardar cambios";
+
+//$lang['dashboard_no_access_title'] = 'Acceso no disponible';
+//$lang['dashboard_no_access_msg']   = 'Este módulo muestra indicadores y métricas generales de la plataforma. Actualmente no cuentas con acceso a esta sección. Si consideras que deberías tenerlo, por favor comunícate con el administrador.';
