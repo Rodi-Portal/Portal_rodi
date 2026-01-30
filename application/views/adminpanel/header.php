@@ -161,7 +161,7 @@
         <hr class="sidebar-divider my-0">
         <!-- Menú principal -->
         <li class="nav-item sidebar-main-item">
-          <a class="nav-link" href="<?php echo site_url('Dashboard/dashboardIndex') ?>">
+          <a class="nav-link" href="<?php echo site_url('Dashboard/show') ?>">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span><?php echo $this->lang->line('sidebar_dashboard'); ?></span>
           </a>
