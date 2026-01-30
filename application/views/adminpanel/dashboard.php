@@ -20,11 +20,8 @@ $cliente_id = $cliente_id ?? [];
 <?php
 $portalActual = (int) $this->session->userdata('idPortal');
 $soloPortales = [1, 12]; // 👈 TEMPORAL: quitar esta línea después
-//if ((int)$this->session->userdata('idrol') == 4) { ?>
-<?php if (
-  (int)$this->session->userdata('idrol') == 4
-  || !in_array($portalActual, $soloPortales, true)
-) { ?>
+if ((int)$this->session->userdata('idrol') == 4) { ?>
+
 <div class="seccion" id="seccion1">
 
   <div style="
