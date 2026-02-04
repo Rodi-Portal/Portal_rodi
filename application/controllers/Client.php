@@ -765,7 +765,10 @@ class Client extends Custom_Controller
 
                     ];
 
-                    $url = API_URL . 'candidatoconprevio';
+                    $base = rtrim(API_URL, '/');
+                    $base = preg_replace('#^http://#', 'https://', $base);
+
+                    $url = $base . '/candidatoconprevio';
 
                     $ch = curl_init($url);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -776,7 +779,10 @@ class Client extends Custom_Controller
                         'Content-Type: application/json',
                         'Accept: application/json',
                     ]);
-                    $response    = curl_exec($ch);
+                    $response      = curl_exec($ch);
+                    $redirect_url  = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+                    $effective_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
                     $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                     // 👇 AGREGA ESTA LÍNEA
                     $curl_error = curl_error($ch);
@@ -833,7 +839,12 @@ class Client extends Custom_Controller
 
                         $msj = [
                             'codigo' => 0,
-                            'msg'    => $mensajeReal, // 👈 AQUÍ está la clave
+                            'msg'    => $mensajeReal,
+                            'debug'  => [
+                                'http_status'   => $http_status,
+                                'redirect_url'  => $redirect_url,
+                                'effective_url' => $effective_url,
+                            ],
                         ];
                     }
 
