@@ -840,7 +840,7 @@ class Client extends Custom_Controller
  * =====================
  * OUTPUT DEBUG
  * =====================
- */
+ */   /*
                     echo "<pre style='background:#111;color:#0f0;padding:15px;font-size:12px'>";
 
                     echo "=== DEBUG CI3 → LARAVEL API ===\n\n";
@@ -882,7 +882,7 @@ class Client extends Custom_Controller
 
                     echo "\n=== FIN DEBUG ===</pre>";
 
-                    exit;
+                    exit; */
 
                     if ($response === false) {
                         echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
