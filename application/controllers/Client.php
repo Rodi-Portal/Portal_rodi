@@ -780,7 +780,13 @@ class Client extends Custom_Controller
                         'Content-Type: application/json',
                         'Accept: application/json',
                     ]);
-                    $response      = curl_exec($ch);
+                    curl_setopt($ch, CURLOPT_VERBOSE, true);
+                    $verbose = fopen('php://temp', 'w+');
+                    curl_setopt($ch, CURLOPT_STDERR, $verbose);
+                    $response = curl_exec($ch);
+
+                    rewind($verbose);
+                    $verboseLog    = stream_get_contents($verbose);
                     $redirect_url  = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
                     $effective_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 
@@ -834,7 +840,15 @@ class Client extends Custom_Controller
                         $msj = [
                             'codigo' => 0,
                             'msg'    => $mensajeReal,
+                            'debug'  => [
+                                'http_status'   => $http_status,
+                                'effective_url' => $effective_url,
+                                'redirect_url'  => $redirect_url,
+                                'curl_error'    => $curl_error,
+                                'curl_verbose'  => $verboseLog,
+                            ],
                         ];
+
                     }
 
                     //Envio de correo al candidato con sus credenciales
