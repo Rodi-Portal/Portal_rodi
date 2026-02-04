@@ -378,7 +378,7 @@ class Client extends Custom_Controller
 
         // Si la respuesta es válida, construir el HTML
         if (isset($response_data)) {
-            $salida = '<table class="table table-striped">';
+            $salida  = '<table class="table table-striped">';
             $salida .= '<thead>';
             $salida .= '<tr>';
             $salida .= '<th scope="col">Description</th>';
@@ -778,6 +778,8 @@ class Client extends Custom_Controller
 
                     $response    = curl_exec($ch);
                     $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    // 👇 AGREGA ESTA LÍNEA
+                    $curl_error = curl_error($ch);
                     curl_close($ch);
 
                     if ($response === false) {
@@ -788,6 +790,13 @@ class Client extends Custom_Controller
                     // Decodificar la respuesta JSON
                     $responseData = json_decode($response, true);
 
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        $responseData = [
+                            'raw_response' => $response,
+                            'json_error'   => json_last_error_msg(),
+                        ];
+                    }
+
                     /*	echo '<pre>';
 									echo $seccion->proyecto."aqui el Resultado";
 										echo '</pre>';
@@ -795,14 +804,36 @@ class Client extends Custom_Controller
 
                     // Verificar el código de estado HTTP y el mensaje en la respuesta
                     if ($http_status == 201 && isset($responseData['codigo']) && $responseData['codigo'] === 1) {
+
                         $msj = [
                             'codigo' => 1,
                             'msg'    => "Success",
                         ];
+
                     } else {
+
+                        $mensajeReal = 'Error';
+
+                        // Prioridad 1: error explícito del API Laravel
+                        if (isset($responseData['error'])) {
+                            $mensajeReal = $responseData['error'];
+
+                            // Prioridad 2: mensaje genérico del API
+                        } elseif (isset($responseData['message'])) {
+                            $mensajeReal = $responseData['message'];
+
+                            // Prioridad 3: error de cURL
+                        } elseif (! empty($curl_error)) {
+                            $mensajeReal = $curl_error;
+
+                            // Prioridad 4: respuesta cruda
+                        } elseif (! empty($response)) {
+                            $mensajeReal = $response;
+                        }
+
                         $msj = [
                             'codigo' => 0,
-                            'msg'    => "Error",
+                            'msg'    => $mensajeReal, // 👈 AQUÍ está la clave
                         ];
                     }
 
@@ -976,12 +1007,12 @@ class Client extends Custom_Controller
                         //Datos Generales
                         if ($identidad == 1) {
                             if ($region == 'Mexico') {
-                                $id_seccion_datos_generales = 111;
+                                $id_seccion_datos_generales  = 111;
                                 //$salida = $this->candidato_model->getEtiquetaSeccion($id_seccion_datos_generales);
                                 $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_generales">Datos generales</a>';
                             }
                             if ($region == 'International') {
-                                $id_seccion_datos_generales = 83;
+                                $id_seccion_datos_generales  = 83;
                                 //$salida = $this->candidato_model->getEtiquetaSeccion($id_seccion_datos_generales);
                                 $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_generales">Datos generales</a>';
                             }
@@ -1000,8 +1031,8 @@ class Client extends Custom_Controller
                         }
                         //Estudios
                         if ($estudios != 0) {
-                            $lleva_estudios = 1;
-                            $id_estudios    = 3;
+                            $lleva_estudios  = 1;
+                            $id_estudios     = 3;
                             //$salida = $this->candidato_model->getEtiquetaSeccion(3);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_mayores_estudios">Mayores estudios</a>';
                             array_push($conjunto_docs, 7);
@@ -1011,7 +1042,7 @@ class Client extends Custom_Controller
                         }
                         //Global searches
                         if ($global != 0) {
-                            $id_seccion_global_search = $global;
+                            $id_seccion_global_search  = $global;
                             //$salida = $this->candidato_model->getEtiquetaSeccion($id_seccion_global_search);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_globales">Global data search</a>';
                         } else {
@@ -1020,9 +1051,9 @@ class Client extends Custom_Controller
                         //Domicilio
                         if ($domicilios != 0) {
                             //Candidato seccion
-                            $lleva_domicilios                = 1;
-                            $tiempo_domicilios               = $this->input->post('domicilios_tiempo');
-                            $id_seccion_historial_domicilios = $domicilios;
+                            $lleva_domicilios                 = 1;
+                            $tiempo_domicilios                = $this->input->post('domicilios_tiempo');
+                            $id_seccion_historial_domicilios  = $domicilios;
                             //$salida = $this->candidato_model->getEtiquetaSeccion($id_seccion_historial_domicilios);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_domicilios">Historial de domicilios</a>';
                             array_push($conjunto_docs, 2);
@@ -1035,13 +1066,13 @@ class Client extends Custom_Controller
                         //Empleos
                         if ($empleos != 0) {
                             //Candidato seccion
-                            $lleva_empleos  = 1;
-                            $lleva_gaps     = 1;
-                            $tiempo_empleos = $this->input->post('empleos_tiempo');
+                            $lleva_empleos   = 1;
+                            $lleva_gaps      = 1;
+                            $tiempo_empleos  = $this->input->post('empleos_tiempo');
                             //$salida = $this->candidato_model->getEtiquetaSeccion(16);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_laborales">Referencias laborales</a>';
                             array_push($conjunto_docs, 9);
-                            $id_empleos = 59;
+                            $id_empleos  = 59;
                         } else {
                             //Candidato seccion
                             $lleva_empleos  = 0;
@@ -1052,16 +1083,16 @@ class Client extends Custom_Controller
                         //Referencias Profesionales
                         if ($ref_profesionales > 0) {
                             //$salida = $this->candidato_model->getEtiquetaSeccion(22);
-                            $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_ref_profesionales">Referencias profesionales</a>';
-                            $id_ref_profesional = 22;
+                            $etiquetas          .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_ref_profesionales">Referencias profesionales</a>';
+                            $id_ref_profesional  = 22;
                         } else {
                             $id_ref_profesional = 0;
                         }
                         //Credito
                         if ($credito != 0) {
                             //Candidato seccion
-                            $lleva_credito  = 1;
-                            $tiempo_credito = $this->input->post('credito_tiempo');
+                            $lleva_credito   = 1;
+                            $tiempo_credito  = $this->input->post('credito_tiempo');
                             //$salida = $this->candidato_model->getEtiquetaSeccion(23);
                             $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_credito">Historial crediticio</a>';
                             array_push($conjunto_docs, 28);
@@ -1083,8 +1114,8 @@ class Client extends Custom_Controller
                         //Referencias Personales
                         if ($ref_personales > 0) {
                             //$salida = $this->candidato_model->getEtiquetaSeccion(26);
-                            $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_ref_personales">Referencias personales</a>';
-                            $id_ref_personales = 26;
+                            $etiquetas         .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_ref_personales">Referencias personales</a>';
+                            $id_ref_personales  = 26;
                         } else {
                             $id_ref_personales = 0;
                         }
@@ -1095,8 +1126,8 @@ class Client extends Custom_Controller
                         //Referencias Academicas
                         if ($ref_academicas > 0) {
                             //$salida = $this->candidato_model->getEtiquetaSeccion(84);
-                            $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_ref_academica">Referencias académicas</a>';
-                            $id_ref_academica = 84;
+                            $etiquetas        .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_ref_academica">Referencias académicas</a>';
+                            $id_ref_academica  = 84;
                         } else {
                             $id_ref_academica = null;
                         }
@@ -1184,7 +1215,7 @@ class Client extends Custom_Controller
                             $this->documentacion_model->addDocumentoRequerido($docs_requeridos);
                         }
 
-                        $etiquetas .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_documentacion">Verificación de documentos</a>';
+                        $etiquetas                    .= '<a class="dropdown-item" href="javascript:void(0)" id="datos_documentacion">Verificación de documentos</a>';
                         $id_seccion_verificacion_docs = 112;
                         //* Se guarda el registro para la tabla candidato_seccion
                         $candidato_secciones = [
@@ -1460,7 +1491,7 @@ class Client extends Custom_Controller
                     }
 
                 } else {
-              
+
                     $pais = ($this->input->post('pais') == -1) ? '' : $this->input->post('pais');
 
                     $data = [
