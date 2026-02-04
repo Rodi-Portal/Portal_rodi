@@ -766,8 +766,11 @@ class Client extends Custom_Controller
                     // CONFIGURACIÓN BÁSICA
                     // =====================
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_POST, true); // 👈 POST REAL
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
+                    curl_setopt($ch, CURLOPT_POST, true);            // 👈 POST REAL
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST'); // 👈 clave para el debug
+
+                    $jsonPayload = json_encode($data, JSON_UNESCAPED_UNICODE);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
 
                     // =====================
                     // HEADERS
@@ -778,9 +781,9 @@ class Client extends Custom_Controller
                         'Expect:', // evita problemas con payloads grandes
                     ]);
 
-                    // =====================
-                    // SEGURIDAD / COMPORTAMIENTO
-                    // =====================
+                                                                     // =====================
+                                                                     // SEGURIDAD / COMPORTAMIENTO
+                                                                     // =====================
                     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // evita POST → GET
                     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
@@ -807,6 +810,46 @@ class Client extends Custom_Controller
                     $curl_error    = curl_error($ch);
 
                     curl_close($ch);
+
+                    echo "<pre style='background:#111;color:#0f0;padding:15px;font-size:12px'>";
+
+                    echo "=== DEBUG CI3 → LARAVEL API ===\n\n";
+
+                    echo "URL FINAL:\n";
+                    print_r($url);
+
+                    echo "\n\nMETODO ESPERADO:\nPOST";
+
+                    echo "\n\nJSON LENGTH:\n";
+                    echo strlen($jsonPayload);
+
+                    echo "\n\nJSON PAYLOAD (primeros 1000 chars):\n";
+                    print_r(substr($jsonPayload, 0, 1000));
+
+                    echo "\n\nHEADERS ENVIADOS:\n";
+                    print_r($headers);
+
+                    echo "\n\nHTTP STATUS:\n";
+                    print_r($http_status);
+
+                    echo "\n\ncURL ERROR:\n";
+                    print_r($curl_error);
+
+                    echo "\n\nEFFECTIVE URL:\n";
+                    print_r($effective_url);
+
+                    echo "\n\nREDIRECT URL:\n";
+                    print_r($redirect_url);
+
+                    echo "\n\nRESPUESTA RAW:\n";
+                    print_r($response);
+
+                    echo "\n\nCURL VERBOSE:\n";
+                    print_r($verboseLog);
+
+                    echo "\n=== FIN DEBUG ===</pre>";
+
+                    exit; // 👈 IMPORTANTÍSIMO
 
                     if ($response === false) {
                         echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
