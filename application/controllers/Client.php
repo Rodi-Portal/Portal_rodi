@@ -613,16 +613,6 @@ class Client extends Custom_Controller
                         $tipo_formulario = 0;
                     }
 
-                    //Verificar Documentacion Requerida
-                    // $res  = $this->candidato_model->getCandidatoProyectoPrevio($seccion->proyecto);
-
-                    /*	echo '<pre>';
-									echo $seccion->proyecto."aqui el Resultado";
-										echo '</pre>';
-										die();*/
-                    //$d['info'] = $this->candidato_model->getDocumentosRequeridosCandidatoPrevio($res->id_candidato);
-                    //$tieneID = 0; $tienePasaporte = 0; $tieneSeguro = 0; $tieneFiscal = 0; $tieneCertificado = 0; $tieneAntecedentes = 0;
-                    //Inicia el cambio
                     $documentosSolicitados = [];
                     if ($seccion->lleva_empleos == 1) {
                         array_push($documentosSolicitados, 9);
@@ -771,29 +761,51 @@ class Client extends Custom_Controller
                     $url = $base . '/candidatoconprevio';
 
                     $ch = curl_init($url);
+
+                    // =====================
+                    // CONFIGURACIÓN BÁSICA
+                    // =====================
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
-                    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+                    curl_setopt($ch, CURLOPT_POST, true); // 👈 POST REAL
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data, JSON_UNESCAPED_UNICODE));
+
+                    // =====================
+                    // HEADERS
+                    // =====================
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                        'Content-Type: application/json',
+                        'Content-Type: application/json; charset=utf-8',
                         'Accept: application/json',
-                        'Expect:'
+                        'Expect:', // evita problemas con payloads grandes
                     ]);
+
+                    // =====================
+                    // SEGURIDAD / COMPORTAMIENTO
+                    // =====================
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // evita POST → GET
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+                    // =====================
+                    // DEBUG
+                    // =====================
                     curl_setopt($ch, CURLOPT_VERBOSE, true);
                     $verbose = fopen('php://temp', 'w+');
                     curl_setopt($ch, CURLOPT_STDERR, $verbose);
+
+                    // =====================
+                    // EJECUCIÓN
+                    // =====================
                     $response = curl_exec($ch);
 
+                    // =====================
+                    // INFO DE DEBUG
+                    // =====================
                     rewind($verbose);
                     $verboseLog    = stream_get_contents($verbose);
                     $redirect_url  = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
                     $effective_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                    $http_status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    $curl_error    = curl_error($ch);
 
-                    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                    // 👇 AGREGA ESTA LÍNEA
-                    $curl_error = curl_error($ch);
                     curl_close($ch);
 
                     if ($response === false) {
@@ -811,12 +823,6 @@ class Client extends Custom_Controller
                         ];
                     }
 
-                    /*	echo '<pre>';
-									echo $seccion->proyecto."aqui el Resultado";
-										echo '</pre>';
-										die();*/
-
-                    // Verificar el código de estado HTTP y el mensaje en la respuesta
                     if ($http_status == 201 && isset($responseData['codigo']) && $responseData['codigo'] === 1) {
 
                         $msj = [
@@ -851,110 +857,6 @@ class Client extends Custom_Controller
                         ];
 
                     }
-
-                    //Envio de correo al candidato con sus credenciales
-                    /* if ($seccion->lleva_identidad == 1 || $seccion->lleva_empleos == 1 || $seccion->lleva_estudios == 1 || $seccion->lleva_domicilios == 1 || $seccion->cantidad_ref_profesionales > 0 || $seccion->cantidad_ref_personales > 0) {
-                        $info_cliente = $this->cliente_general_model->getDatosCliente($id_cliente);
-
-                        if ($usuario == 1) {
-                            $from = $this->config->item('smtp_user');
-                            $to = $correo;
-                            $subject = strtolower($info_cliente->nombre) . " - credentials for register form";
-                            $datos['password'] = $aux;
-                            $datos['cliente'] = strtoupper($info_cliente->nombre);
-                            $datos['email'] = $correo;
-                            $message = $this->load->view('mails/mail_hcl', $datos, true);
-                            $this->load->library('phpmailer_lib');
-                            $mail = $this->phpmailer_lib->load();
-                            $mail->isSMTP();
-                            $mail->Host = 'mail.rodicontrol.com';
-                            $mail->SMTPAuth = true;
-                            $mail->Username = 'rodicontrol@rodicontrol.com';
-                            $mail->Password = 'r49o*&rUm%91';
-                            $mail->SMTPSecure = 'ssl';
-                            $mail->Port = 465;
-                            $mail->addCC('rodicontrol@rodicontrol.com');
-
-                            $mail->setFrom('rodicontrol@rodicontrol.com', 'Process of the candidate on RODI platform');
-                            $mail->addAddress($to);
-                            $mail->Subject = $subject;
-                            $mail->isHTML(true);
-                            $mailContent = $message;
-                            $mail->Body = $mailContent;
-
-                            if (!$mail->send()) {
-                                $msj = array(
-                                    'codigo' => 3,
-                                    'msg' => $aux,
-                                );
-                            } else {
-                                $msj = array(
-                                    'codigo' => 4,
-                                    'msg' => $aux,
-                                );
-                            }
-                        } else {
-                            $from = $this->config->item('smtp_user');
-                            $to = $correo;
-                            $subject = strtolower($info_cliente->nombre) . " - credentials for register form";
-                            $datos['password'] = $aux;
-                            $datos['cliente'] = strtoupper($info_cliente->nombre);
-                            $datos['email'] = $correo;
-                            $message = $this->load->view('mails/mail_hcl', $datos, true);
-                            $this->load->library('phpmailer_lib');
-                            $mail = $this->phpmailer_lib->load();
-                            $mail->isSMTP();
-                            $mail->Host = 'mail.rodicontrol.com';
-                            $mail->SMTPAuth = true;
-                            $mail->Username = 'rodicontrol@rodicontrol.com';
-                            $mail->Password = 'r49o*&rUm%91';
-                            $mail->SMTPSecure = 'ssl';
-                            $mail->Port = 465;
-
-                            $mail->setFrom('rodicontrol@rodicontrol.com', 'Process of the candidate on RODI platform');
-                            $mail->addAddress($to);
-                            $mail->Subject = $subject;
-                            $mail->isHTML(true);
-                            $mailContent = $message;
-                            $mail->Body = $mailContent;
-                            $mail->send();
-                            $msj = array(
-                                'codigo' => 1,
-                                'msg' => 'Success',
-                            );
-                        }
-                    } else {
-                        $msj = array(
-                            'codigo' => 1,
-                            'msg' => 'Success',
-                        );
-                    }
-                    //Envio de notificacion
-                    if ($usuario == 2 || $usuario == 3) {
-                        $cliente = $this->cat_cliente_model->getById($id_cliente);
-                        $aplicaDoping = '';
-                        $aplicaMedico = '';
-                        $rolDoping = 0;
-                        if ($examen != 0) {
-                            $aplicaDoping = ', para examen de drogas';
-                            $rolDoping = 8;
-                        }
-                        if ($medico != 0) {
-                            $rolDoping = 8;
-                            if ($examen != 0) {
-                                $aplicaMedico = ' y examen medico';
-                            } else {
-                                $aplicaMedico = ', para examen medico';
-                            }
-                        }
-                        $usuariosAnalistas = $this->usuario_model->get_usuarios_by_rol([1, 2, 6, $rolDoping, 9]);
-                        foreach ($usuariosAnalistas as $row) {
-                            $usuariosObjetivo[] = $row->id;
-                        }
-                        $titulo = 'Registro de un nuevo candidato';
-                        $mensaje = 'El cliente ' . $cliente->nombre . ' ha registrado al candidato: ' . $nombre . ' ' . $paterno . ' ' . $materno . ' para ESE' . $aplicaDoping . $aplicaMedico;
-                        $this->registrar_notificacion($usuariosObjetivo, $titulo, $mensaje);
-                    }*/
                 }
                 //TODO: hasta  aqui estoy trabajando
                 if ($this->input->post('previo') == 0) {
