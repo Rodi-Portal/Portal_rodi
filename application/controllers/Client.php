@@ -772,9 +772,10 @@ class Client extends Custom_Controller
 
                     $ch = curl_init($url);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST'); // 👈 FUERZA POST
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
                     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // 👈 EVITA REDIRECCIONES
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+                    curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [
                         'Content-Type: application/json',
                         'Accept: application/json',
@@ -820,31 +821,19 @@ class Client extends Custom_Controller
 
                         $mensajeReal = 'Error';
 
-                        // Prioridad 1: error explícito del API Laravel
                         if (isset($responseData['error'])) {
                             $mensajeReal = $responseData['error'];
-
-                            // Prioridad 2: mensaje genérico del API
                         } elseif (isset($responseData['message'])) {
                             $mensajeReal = $responseData['message'];
-
-                            // Prioridad 3: error de cURL
                         } elseif (! empty($curl_error)) {
                             $mensajeReal = $curl_error;
-
-                            // Prioridad 4: respuesta cruda
                         } elseif (! empty($response)) {
-                            $mensajeReal = $response;
+                            $mensajeReal = strip_tags($response); // 👈 limpia HTML
                         }
 
                         $msj = [
                             'codigo' => 0,
                             'msg'    => $mensajeReal,
-                            'debug'  => [
-                                'http_status'   => $http_status,
-                                'redirect_url'  => $redirect_url,
-                                'effective_url' => $effective_url,
-                            ],
                         ];
                     }
 
