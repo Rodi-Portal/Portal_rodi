@@ -779,6 +779,7 @@ class Client extends Custom_Controller
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [
                         'Content-Type: application/json',
                         'Accept: application/json',
+                        'Expect:'
                     ]);
                     curl_setopt($ch, CURLOPT_VERBOSE, true);
                     $verbose = fopen('php://temp', 'w+');
