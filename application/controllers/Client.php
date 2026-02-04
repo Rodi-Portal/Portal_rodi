@@ -758,59 +758,89 @@ class Client extends Custom_Controller
                     $base = rtrim(API_URL, '/');
                     $base = preg_replace('#^http://#', 'https://', $base);
 
+// 👉 API_URL YA incluye /api
                     $url = $base . '/candidatoconprevio';
 
-                    $ch = curl_init($url);
+                    $ch = curl_init();
 
-                    // =====================
-                    // CONFIGURACIÓN BÁSICA
-                    // =====================
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_POST, true);            // 👈 POST REAL
-                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST'); // 👈 clave para el debug
-
+/**
+ * =====================
+ * PAYLOAD
+ * =====================
+ */
                     $jsonPayload = json_encode($data, JSON_UNESCAPED_UNICODE);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
 
-                    // =====================
-                    // HEADERS
-                    // =====================
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+/**
+ * =====================
+ * HEADERS
+ * =====================
+ */
+                    $headers = [
                         'Content-Type: application/json; charset=utf-8',
                         'Accept: application/json',
-                        'Expect:', // evita problemas con payloads grandes
+                        'Expect:', // evita chunked / problemas con payload grande
+                    ];
+
+/**
+ * =====================
+ * CONFIGURACIÓN cURL
+ * =====================
+ */
+                    curl_setopt_array($ch, [
+                        CURLOPT_URL            => $url,
+                        CURLOPT_RETURNTRANSFER => true,
+
+                        // 🔴 FORZAR POST REAL (clave)
+                        CURLOPT_CUSTOMREQUEST  => 'POST',
+                        CURLOPT_POSTFIELDS     => $jsonPayload,
+
+                        // Headers
+                        CURLOPT_HTTPHEADER     => $headers,
+
+                                                         // Seguridad / comportamiento
+                        CURLOPT_FOLLOWLOCATION => false, // evita POST → GET
+                        CURLOPT_TIMEOUT        => 30,
+
+                        // DEBUG
+                        CURLOPT_VERBOSE        => true,
                     ]);
 
-                                                                     // =====================
-                                                                     // SEGURIDAD / COMPORTAMIENTO
-                                                                     // =====================
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // evita POST → GET
-                    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-
-                    // =====================
-                    // DEBUG
-                    // =====================
-                    curl_setopt($ch, CURLOPT_VERBOSE, true);
+/**
+ * =====================
+ * CAPTURAR VERBOSE
+ * =====================
+ */
                     $verbose = fopen('php://temp', 'w+');
                     curl_setopt($ch, CURLOPT_STDERR, $verbose);
 
-                    // =====================
-                    // EJECUCIÓN
-                    // =====================
+/**
+ * =====================
+ * EJECUCIÓN
+ * =====================
+ */
                     $response = curl_exec($ch);
 
-                    // =====================
-                    // INFO DE DEBUG
-                    // =====================
+/**
+ * =====================
+ * INFO POST-EJECUCIÓN
+ * =====================
+ */
                     rewind($verbose);
-                    $verboseLog    = stream_get_contents($verbose);
-                    $redirect_url  = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
-                    $effective_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                    $verboseLog = stream_get_contents($verbose);
+
                     $http_status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    $effective_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+                    $redirect_url  = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+                    $request_size  = curl_getinfo($ch, CURLINFO_REQUEST_SIZE);
                     $curl_error    = curl_error($ch);
 
                     curl_close($ch);
 
+/**
+ * =====================
+ * OUTPUT DEBUG
+ * =====================
+ */
                     echo "<pre style='background:#111;color:#0f0;padding:15px;font-size:12px'>";
 
                     echo "=== DEBUG CI3 → LARAVEL API ===\n\n";
@@ -829,17 +859,20 @@ class Client extends Custom_Controller
                     echo "\n\nHEADERS ENVIADOS:\n";
                     print_r($headers);
 
+                    echo "\n\nREQUEST SIZE (bytes enviados):\n";
+                    print_r($request_size);
+
                     echo "\n\nHTTP STATUS:\n";
                     print_r($http_status);
 
                     echo "\n\ncURL ERROR:\n";
-                    print_r($curl_error);
+                    print_r($curl_error ?: 'SIN ERROR');
 
                     echo "\n\nEFFECTIVE URL:\n";
                     print_r($effective_url);
 
                     echo "\n\nREDIRECT URL:\n";
-                    print_r($redirect_url);
+                    print_r($redirect_url ?: 'NINGUNO');
 
                     echo "\n\nRESPUESTA RAW:\n";
                     print_r($response);
@@ -849,7 +882,7 @@ class Client extends Custom_Controller
 
                     echo "\n=== FIN DEBUG ===</pre>";
 
-                    exit; // 👈 IMPORTANTÍSIMO
+                    exit;
 
                     if ($response === false) {
                         echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
