@@ -856,49 +856,52 @@ class Client extends Custom_Controller
                      * =====================
                      * OUTPUT DEBUG
                      * =====================
-                     *//*
-                    echo "<pre style='background:#111;color:#0f0;padding:15px;font-size:12px'>";
+                     *
+                     */
+                     /*
+                        echo "<pre style='background:#111;color:#0f0;padding:15px;font-size:12px'>";
 
-                    echo "=== DEBUG CI3 → LARAVEL API ===\n\n";
+                        echo "=== DEBUG CI3 → LARAVEL API ===\n\n";
 
-                    echo "URL FINAL:\n";
-                    print_r($url);
+                        echo "URL FINAL:\n";
+                        print_r($url);
 
-                    echo "\n\nMETODO ESPERADO:\nPOST";
+                        echo "\n\nMETODO ESPERADO:\nPOST";
 
-                    echo "\n\nJSON LENGTH:\n";
-                    echo strlen($jsonPayload);
+                        echo "\n\nJSON LENGTH:\n";
+                        echo strlen($jsonPayload);
 
-                    echo "\n\nJSON PAYLOAD (primeros 1000 chars):\n";
-                    print_r(substr($jsonPayload, 0, 1000));
+                        echo "\n\nJSON PAYLOAD (primeros 1000 chars):\n";
+                        print_r(substr($jsonPayload, 0, 1000));
 
-                    echo "\n\nHEADERS ENVIADOS:\n";
-                    print_r($headers);
+                        echo "\n\nHEADERS ENVIADOS:\n";
+                        print_r($headers);
 
-                    echo "\n\nREQUEST SIZE (bytes enviados):\n";
-                    print_r($request_size);
+                        echo "\n\nREQUEST SIZE (bytes enviados):\n";
+                        print_r($request_size);
 
-                    echo "\n\nHTTP STATUS:\n";
-                    print_r($http_status);
+                        echo "\n\nHTTP STATUS:\n";
+                        print_r($http_status);
 
-                    echo "\n\ncURL ERROR:\n";
-                    print_r($curl_error ?: 'SIN ERROR');
+                        echo "\n\ncURL ERROR:\n";
+                        print_r($curl_error ?: 'SIN ERROR');
 
-                    echo "\n\nEFFECTIVE URL:\n";
-                    print_r($effective_url);
+                        echo "\n\nEFFECTIVE URL:\n";
+                        print_r($effective_url);
 
-                    echo "\n\nREDIRECT URL:\n";
-                    print_r($redirect_url ?: 'NINGUNO');
+                        echo "\n\nREDIRECT URL:\n";
+                        print_r($redirect_url ?: 'NINGUNO');
 
-                    echo "\n\nRESPUESTA RAW:\n";
-                    print_r($response);
+                        echo "\n\nRESPUESTA RAW:\n";
+                        print_r($response);
 
-                    echo "\n\nCURL VERBOSE:\n";
-                    print_r($verboseLog);
+                        echo "\n\nCURL VERBOSE:\n";
+                        print_r($verboseLog);
 
-                    echo "\n=== FIN DEBUG ===</pre>";
+                        echo "\n=== FIN DEBUG ===</pre>";
 
-                    exit; */
+                        exit; 
+                    */
 
                     if ($response === false) {
                         echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
@@ -939,13 +942,7 @@ class Client extends Custom_Controller
                         $msj = [
                             'codigo' => 0,
                             'msg'    => $mensajeReal,
-                            'debug'  => [
-                                'http_status'   => $http_status,
-                                'effective_url' => $effective_url,
-                                'redirect_url'  => $redirect_url,
-                                'curl_error'    => $curl_error,
-                                'curl_verbose'  => $verboseLog,
-                            ],
+                            
                         ];
 
                     }
