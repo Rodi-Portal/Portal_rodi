@@ -756,11 +756,7 @@ class Client extends Custom_Controller
 
                     ];
 
-                    $base = rtrim(API_URL, '/');
-                    $base = preg_replace('#^http://#', 'https://', $base);
-
-                    // 👉 API_URL YA incluye /api
-                    $url = $base . '/candidatoconprevio';
+                    $url = API_URL . 'candidatoconprevio';
 
                     $ch = curl_init();
 
