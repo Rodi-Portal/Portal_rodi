@@ -422,7 +422,6 @@ class Client extends Custom_Controller
         echo "POST RAW:\n";
         print_r($_POST);
         echo "</pre>";
-        exit;
 
         $this->form_validation->set_rules('nombre', 'Name', 'required|trim');
         $this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
@@ -472,6 +471,12 @@ class Client extends Custom_Controller
         }
 
         if ($this->form_validation->run() == false) {
+            echo "<pre>";
+            echo "STEP 2 - VALIDACION FALLÓ\n";
+            echo validation_errors();
+            echo "</pre>";
+            exit;
+
             $msj = [
                 'codigo' => 0,
                 'msg'    => validation_errors(),
