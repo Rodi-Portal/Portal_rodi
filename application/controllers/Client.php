@@ -783,17 +783,7 @@ class Client extends Custom_Controller
                      * CONFIGURACIÓN cURL
                      * =====================
                      */
-                    echo "<pre>";
-                    echo "URL USADA:\n";
-                    var_dump($url);
-
-                    echo "\nSCHEME:\n";
-                    var_dump(parse_url($url, PHP_URL_SCHEME));
-
-                    echo "\nFOLLOWLOCATION:\n";
-                    var_dump(false);
-
-                    exit;
+                 
 
                     curl_setopt_array($ch, [
                         CURLOPT_URL            => $url,
