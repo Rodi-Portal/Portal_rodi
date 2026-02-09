@@ -942,7 +942,7 @@ class Client extends Custom_Controller
                         $msj = [
                             'codigo' => 0,
                             'msg'    => $mensajeReal,
-                            
+                        
                         ];
 
                     }
