@@ -416,12 +416,7 @@ class Client extends Custom_Controller
     /*----------------------------------------*/
     public function registrar()
     {
-        echo "<pre>";
-        echo "STEP 1 - INICIO registrar()\n";
-        echo "REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD'] . "\n";
-        echo "POST RAW:\n";
-        print_r($_POST);
-        echo "</pre>";
+     
 
         $this->form_validation->set_rules('nombre', 'Name', 'required|trim');
         $this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
@@ -471,11 +466,7 @@ class Client extends Custom_Controller
         }
 
         if ($this->form_validation->run() == false) {
-            echo "<pre>";
-            echo "STEP 2 - VALIDACION FALLÓ\n";
-            echo validation_errors();
-            echo "</pre>";
-            exit;
+       
 
             $msj = [
                 'codigo' => 0,
