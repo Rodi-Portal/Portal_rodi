@@ -416,7 +416,6 @@ class Client extends Custom_Controller
     /*----------------------------------------*/
     public function registrar()
     {
-     
 
         $this->form_validation->set_rules('nombre', 'Name', 'required|trim');
         $this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
@@ -466,7 +465,6 @@ class Client extends Custom_Controller
         }
 
         if ($this->form_validation->run() == false) {
-       
 
             $msj = [
                 'codigo' => 0,
@@ -789,6 +787,18 @@ class Client extends Custom_Controller
                      * CONFIGURACIÓN cURL
                      * =====================
                      */
+                    echo "<pre>";
+                    echo "URL USADA:\n";
+                    var_dump($url);
+
+                    echo "\nSCHEME:\n";
+                    var_dump(parse_url($url, PHP_URL_SCHEME));
+
+                    echo "\nFOLLOWLOCATION:\n";
+                    var_dump(false);
+
+                    exit;
+
                     curl_setopt_array($ch, [
                         CURLOPT_URL            => $url,
                         CURLOPT_RETURNTRANSFER => true,
