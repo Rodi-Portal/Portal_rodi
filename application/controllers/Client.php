@@ -416,6 +416,13 @@ class Client extends Custom_Controller
     /*----------------------------------------*/
     public function registrar()
     {
+        echo "<pre>";
+        echo "STEP 1 - INICIO registrar()\n";
+        echo "REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD'] . "\n";
+        echo "POST RAW:\n";
+        print_r($_POST);
+        echo "</pre>";
+        exit;
 
         $this->form_validation->set_rules('nombre', 'Name', 'required|trim');
         $this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
@@ -803,8 +810,6 @@ class Client extends Custom_Controller
                         CURLOPT_VERBOSE        => true,
                     ]);
 
-
-
                     /**
                      * =====================
                      * CAPTURAR VERBOSE
@@ -818,7 +823,7 @@ class Client extends Custom_Controller
                      * EJECUCIÓN
                      * =====================
                      */
-                            $response = curl_exec($ch);
+                    $response = curl_exec($ch);
 
                     /**
                      * =====================
@@ -840,7 +845,7 @@ class Client extends Custom_Controller
                      * =====================
                      * OUTPUT DEBUG
                      * =====================
-                     */   /*
+                     *//*
                     echo "<pre style='background:#111;color:#0f0;padding:15px;font-size:12px'>";
 
                     echo "=== DEBUG CI3 → LARAVEL API ===\n\n";
