@@ -758,73 +758,76 @@ class Client extends Custom_Controller
                     $base = rtrim(API_URL, '/');
                     $base = preg_replace('#^http://#', 'https://', $base);
 
-// 👉 API_URL YA incluye /api
+                    // 👉 API_URL YA incluye /api
                     $url = $base . '/candidatoconprevio';
 
                     $ch = curl_init();
 
-/**
- * =====================
- * PAYLOAD
- * =====================
- */
+                    /**
+                     * =====================
+                     * PAYLOAD
+                     * =====================
+                     */
                     $jsonPayload = json_encode($data, JSON_UNESCAPED_UNICODE);
 
-/**
- * =====================
- * HEADERS
- * =====================
- */
+                    /**
+                     * =====================
+                     * HEADERS
+                     * =====================
+                     */
                     $headers = [
                         'Content-Type: application/json; charset=utf-8',
                         'Accept: application/json',
                         'Expect:', // evita chunked / problemas con payload grande
                     ];
 
-/**
- * =====================
- * CONFIGURACIÓN cURL
- * =====================
- */
-                    curl_setopt_array($ch, [
+                    /**
+                     * =====================
+                     * CONFIGURACIÓN cURL
+                     * =====================
+                     */
+                 curl_setopt_array($ch, [
                         CURLOPT_URL            => $url,
                         CURLOPT_RETURNTRANSFER => true,
 
-                        // 🔴 FORZAR POST REAL (clave)
-                        CURLOPT_CUSTOMREQUEST  => 'POST',
+                        // ✅ POST REAL
+                        CURLOPT_POST           => true,
                         CURLOPT_POSTFIELDS     => $jsonPayload,
 
                         // Headers
                         CURLOPT_HTTPHEADER     => $headers,
 
-                                                         // Seguridad / comportamiento
-                        CURLOPT_FOLLOWLOCATION => false, // evita POST → GET
+                        // ✅ AHORA SÍ podemos seguir redirect (308 preserva POST)
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_MAXREDIRS      => 1,
+
                         CURLOPT_TIMEOUT        => 30,
 
-                        // DEBUG
+                        // Debug
                         CURLOPT_VERBOSE        => true,
                     ]);
 
-/**
- * =====================
- * CAPTURAR VERBOSE
- * =====================
- */
+
+                    /**
+                     * =====================
+                     * CAPTURAR VERBOSE
+                     * =====================
+                     */
                     $verbose = fopen('php://temp', 'w+');
                     curl_setopt($ch, CURLOPT_STDERR, $verbose);
 
-/**
- * =====================
- * EJECUCIÓN
- * =====================
- */
-                    $response = curl_exec($ch);
+                    /**
+                     * =====================
+                     * EJECUCIÓN
+                     * =====================
+                     */
+                            $response = curl_exec($ch);
 
-/**
- * =====================
- * INFO POST-EJECUCIÓN
- * =====================
- */
+                    /**
+                     * =====================
+                     * INFO POST-EJECUCIÓN
+                     * =====================
+                     */
                     rewind($verbose);
                     $verboseLog = stream_get_contents($verbose);
 
@@ -836,11 +839,11 @@ class Client extends Custom_Controller
 
                     curl_close($ch);
 
-/**
- * =====================
- * OUTPUT DEBUG
- * =====================
- */   /*
+                    /**
+                     * =====================
+                     * OUTPUT DEBUG
+                     * =====================
+                     */   /*
                     echo "<pre style='background:#111;color:#0f0;padding:15px;font-size:12px'>";
 
                     echo "=== DEBUG CI3 → LARAVEL API ===\n\n";
