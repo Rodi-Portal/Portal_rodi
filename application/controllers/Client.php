@@ -731,9 +731,7 @@ class Client extends Custom_Controller
                     $json = json_encode($candidato_secciones);
 
                     // Imprimir el JSON
-                    echo '<pre>';
-                    print_r($candidato_secciones['secciones']);
-                    exit;
+                  
                     //$this->candidato_seccion_model->store_secciones_candidato($candidato_secciones);
 
                     $data = [
