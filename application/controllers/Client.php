@@ -786,26 +786,23 @@ class Client extends Custom_Controller
                      * CONFIGURACIÓN cURL
                      * =====================
                      */
-                 curl_setopt_array($ch, [
+                    curl_setopt_array($ch, [
                         CURLOPT_URL            => $url,
                         CURLOPT_RETURNTRANSFER => true,
 
-                        // ✅ POST REAL
+                        // POST real
                         CURLOPT_POST           => true,
                         CURLOPT_POSTFIELDS     => $jsonPayload,
 
-                        // Headers
                         CURLOPT_HTTPHEADER     => $headers,
 
-                        // ✅ AHORA SÍ podemos seguir redirect (308 preserva POST)
-                        CURLOPT_FOLLOWLOCATION => true,
-                        CURLOPT_MAXREDIRS      => 1,
+                        // 🚫 NO seguir redirects
+                        CURLOPT_FOLLOWLOCATION => false,
 
                         CURLOPT_TIMEOUT        => 30,
-
-                        // Debug
                         CURLOPT_VERBOSE        => true,
                     ]);
+
 
 
                     /**
