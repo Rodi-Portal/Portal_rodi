@@ -706,12 +706,34 @@ class Client extends Custom_Controller
                             }
                         }
                     }
+                    /**
+                     * ============================
+                     * 🔐 PROTECCIÓN WAF (Base64)
+                     * ============================
+                     * Evita bloqueo ModSecurity por HTML (XSS false positive)
+                     */
+
+                    // Campo "secciones" (HTML)
+                    if (isset($candidato_secciones['secciones'])) {
+                        $candidato_secciones['secciones'] = base64_encode(
+                            $candidato_secciones['secciones']
+                        );
+                    }
+
+                    // Campo "visita" (HTML) – si existe
+                    if (isset($candidato_secciones['visita'])) {
+                        $candidato_secciones['visita'] = base64_encode(
+                            $candidato_secciones['visita']
+                        );
+                    }
 
                     // Codificar el array a JSON
                     $json = json_encode($candidato_secciones);
 
                     // Imprimir el JSON
-
+                    echo '<pre>';
+                    print_r($candidato_secciones['secciones']);
+                    exit;
                     //$this->candidato_seccion_model->store_secciones_candidato($candidato_secciones);
 
                     $data = [
@@ -783,7 +805,6 @@ class Client extends Custom_Controller
                      * CONFIGURACIÓN cURL
                      * =====================
                      */
-                 
 
                     curl_setopt_array($ch, [
                         CURLOPT_URL            => $url,
