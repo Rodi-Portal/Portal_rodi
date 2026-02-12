@@ -17,7 +17,8 @@ class Login extends CI_Controller
         $this->load->library('session');
     }
 
-    public function index1()
+    public function index1() 
+    
     {
         $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
