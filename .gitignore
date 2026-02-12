@@ -18,7 +18,7 @@ application/config/database.php
 application/config/keys/*
 .htaccess
 cpanel.yml
-
+config/*
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
