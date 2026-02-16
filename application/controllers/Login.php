@@ -433,7 +433,7 @@ class Login extends CI_Controller
                 $ver  = ($ver >= 10) ? 1 : $ver + 1;
                 $data = ['verificacion' => $ver];
                 $this->usuario_model->actualizarVerificacion($data, $id);
-                $this->issueDashJwt();
+                //$this->issueDashJwt();
 
                 switch ($tipo_acceso) {
                     case 'usuario':
@@ -620,8 +620,8 @@ class Login extends CI_Controller
             $usuario_data = [
                 'logueado' => false,
             ];
-            $this->session->unset_userdata('dash_jwt');
-            $this->session->unset_userdata('dash_jwt_exp');
+            //$this->session->unset_userdata('dash_jwt');
+            //$this->session->unset_userdata('dash_jwt_exp');
 
             $this->session->sess_destroy();
         }
