@@ -1013,6 +1013,8 @@ function addApplicant() {
   datos.append('correo', $("#correo1").val());
   datos.append('telefono', $("#telefono1").val());
   datos.append('medio', $("#medio").val());
+  datos.append('medio_otro', $("#medio_otro").val());
+
   datos.append('area_interes', $("#area_interes").val());
   datos.append('domicilio', $("#domicilio").val());
   // datos.append("cv", cv);

@@ -466,6 +466,7 @@ class Funciones_model extends CI_Model
             return false;
         }
     }
+    /*
     public function getMediosContacto()
     {
         $this->db
@@ -482,8 +483,81 @@ class Funciones_model extends CI_Model
         } else {
             return false;
         }
-    }
+    } */
+    public function saveMedioContacto($nombre)
+    {
+        $id_portal  = $this->session->userdata('idPortal');
+        $id_usuario = $this->session->userdata('id');
 
+        // Normalizar nombre
+        $nombre = trim($nombre);
+
+        // 1️⃣ Verificar si ya existe (global o del portal)
+        $this->db
+            ->select('id')
+            ->from('cat_medio_contacto')
+            ->where('nombre', $nombre)
+            ->where('status', 1)
+            ->where('eliminado', 0)
+            ->group_start()
+            ->where('id_portal IS NULL', null, false)
+            ->or_where('id_portal', $id_portal)
+            ->group_end();
+
+        if ($this->db->get()->num_rows() > 0) {
+            return false; // ya existe
+        }
+
+        // 2️⃣ Insertar nuevo medio
+        $now = date('Y-m-d H:i:s');
+
+        $data = [
+            'nombre'     => $nombre,
+            'id_portal'  => $id_portal,
+            'id_usuario' => $id_usuario,
+            'status'     => 1,
+            'eliminado'  => 0,
+            'creacion'   => $now,
+            'edicion'    => $now,
+        ];
+
+        return $this->db->insert('cat_medio_contacto', $data);
+    }
+    public function getMediosContacto()
+    {
+        $id_portal = (int) $this->session->userdata('idPortal');
+
+        $sql = "
+        SELECT c.*
+        FROM cat_medio_contacto c
+        LEFT JOIN cat_medio_contacto p
+            ON p.nombre = c.nombre
+           AND p.id_portal = ?
+           AND p.status = 1
+           AND p.eliminado = 0
+        WHERE c.status = 1
+          AND c.eliminado = 0
+          AND (
+                c.id_portal = ?
+                OR c.id_portal IS NULL
+              )
+          -- si existe uno del portal, descartamos el NULL
+          AND (
+                c.id_portal = ?
+                OR p.id IS NULL
+              )
+        GROUP BY c.nombre
+        ORDER BY c.nombre ASC
+    ";
+
+        $query = $this->db->query($sql, [
+            $id_portal,
+            $id_portal,
+            $id_portal,
+        ]);
+
+        return $query->num_rows() > 0 ? $query->result() : false;
+    }
     public function getAccionesRequisicion()
     {
         $portal = $this->session->userdata('idPortal');
