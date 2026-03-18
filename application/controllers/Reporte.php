@@ -2060,7 +2060,7 @@ class Reporte extends CI_Controller
         empleados.nss AS NSS,
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
-        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso 
+        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso
         ");
         $this->db->from('empleados');
         $this->db->where('empleados.status', 1);
@@ -2073,8 +2073,11 @@ class Reporte extends CI_Controller
         }
 
         if ($fecha_inicio && $fecha_fin) {
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) >=", $fecha_inicio . ' 00:00:00', false);
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fecha_fin . ' 23:59:59', false);
+            $this->db->where("
+            IFNULL(empleados.fecha_ingreso, empleados.creacion)
+            BETWEEN '" . $fecha_inicio . " 00:00:00'
+            AND '" . $fecha_fin . " 23:59:59'
+            ", null, false);
         }
 
         if ($puesto) {
@@ -2238,7 +2241,7 @@ class Reporte extends CI_Controller
                     unset($empleado[$col]);
                 }
             }
-
+            unset($empleado);
             $headers        = array_keys($finalData[0]);
             $column_aliases = [];
             foreach ($headers as $header) {
@@ -2330,11 +2333,10 @@ class Reporte extends CI_Controller
         } else {
             $this->db->where('empleados.id_portal', $portal);
         }
-
-        if ($fecha_inicio && $fecha_fin) {
-            $this->db->where('m.creacion >=', $fecha_inicio);
-            $this->db->where('m.creacion <=', $fecha_fin);
-        }
+if ($fecha_inicio && $fecha_fin) {
+    $this->db->where('m.creacion >=', $fecha_inicio . ' 00:00:00');
+    $this->db->where('m.creacion <=', $fecha_fin . ' 23:59:59');
+}
 
         if ($puesto) {
             $this->db->where('empleados.puesto', $puesto);
@@ -2497,7 +2499,7 @@ class Reporte extends CI_Controller
                     unset($empleado[$col]);
                 }
             }
-
+            unset($empleado);
             $headers        = array_keys($finalData[0]);
             $column_aliases = [];
             foreach ($headers as $header) {
