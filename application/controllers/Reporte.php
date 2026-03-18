@@ -101,7 +101,7 @@ class Reporte extends CI_Controller
         $data['datos'] = $this->reporte_model->reporteDopingFinalizados($f_inicio, $f_fin, $cliente, $subcliente, $proyecto, $resultado, $lab);
         //var_dump($data['datos']);
         if ($data['datos']) {
-            $salida = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteDopingFinalizados_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $subcliente . '_' . $proyecto . '_' . $resultado . '_' . $lab . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
+            $salida  = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteDopingFinalizados_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $subcliente . '_' . $proyecto . '_' . $resultado . '_' . $lab . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
             $salida .= '<table style="border: 0px; border-collapse: collapse;width: 100%;padding:5px;">';
             $salida .= '<tr>';
             $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha doping</th>';
@@ -116,23 +116,23 @@ class Reporte extends CI_Controller
             $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Laboratorio</th>';
             $salida .= '</tr>';
             foreach ($data['datos'] as $row) {
-                $subcliente  = ($row->subcliente != "" && $row->subcliente != null) ? $row->subcliente : "-";
-                $proyecto    = ($row->proyecto != "" && $row->proyecto != null) ? $row->proyecto : "-";
-                $f_doping    = $this->reporteFecha($row->fecha_doping);
-                $f_resultado = ($row->fecha_resultado != "" && $row->fecha_resultado != null) ? $this->reporteFecha($row->fecha_resultado) : "Sin resultado";
-                $res         = ($row->resultado == 1) ? "Positivo" : "Negativo";
-                $salida .= "<tr><tbody>";
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_doping . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $subcliente . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $proyecto . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->parametros . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->codigo_prueba . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_resultado . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $res . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->laboratorio . '</td>';
-                $salida .= "</tbody></tr>";
+                $subcliente   = ($row->subcliente != "" && $row->subcliente != null) ? $row->subcliente : "-";
+                $proyecto     = ($row->proyecto != "" && $row->proyecto != null) ? $row->proyecto : "-";
+                $f_doping     = $this->reporteFecha($row->fecha_doping);
+                $f_resultado  = ($row->fecha_resultado != "" && $row->fecha_resultado != null) ? $this->reporteFecha($row->fecha_resultado) : "Sin resultado";
+                $res          = ($row->resultado == 1) ? "Positivo" : "Negativo";
+                $salida      .= "<tr><tbody>";
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_doping . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $subcliente . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $proyecto . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->parametros . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->codigo_prueba . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_resultado . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $res . '</td>';
+                $salida      .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->laboratorio . '</td>';
+                $salida      .= "</tbody></tr>";
             }
             $salida .= "</table>";
         } else {
@@ -234,7 +234,7 @@ class Reporte extends CI_Controller
         $cliente  = $_POST['cliente'];
         $usuario  = $_POST['usuario'];
 
-        $salida = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteEstudiosFinalizados_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $usuario . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
+        $salida  = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteEstudiosFinalizados_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $usuario . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
         $salida .= '<table style="border: 0px; border-collapse: collapse;width: 100%;padding:5px;">';
         $salida .= '<tr>';
         $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha alta</th>';
@@ -256,16 +256,16 @@ class Reporte extends CI_Controller
                             $data['datos1'] = $this->reporte_model->reporteFinalizados_HCL_UST($f_inicio, $f_fin, $cl->id, $user->id);
                             if ($data['datos1']) {
                                 foreach ($data['datos1'] as $row) {
-                                    $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                    $f_final = $this->reporteFecha($row->fecha_final);
-                                    $salida .= '<tr>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                                    $salida .= '</tr>';
+                                    $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                    $f_final  = $this->reporteFecha($row->fecha_final);
+                                    $salida  .= '<tr>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                                    $salida  .= '</tr>';
                                 }
                                 $band = 0;
                             } else {
@@ -275,16 +275,16 @@ class Reporte extends CI_Controller
                             $data['datos2'] = $this->reporte_model->reporteFinalizados_TATA_WIPRO($f_inicio, $f_fin, $cl->id, $user->id);
                             if ($data['datos2']) {
                                 foreach ($data['datos2'] as $row) {
-                                    $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                    $f_final = $this->reporteFecha($row->fecha_final);
-                                    $salida .= '<tr>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
-                                    $salida .= '</tr>';
+                                    $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                    $f_final  = $this->reporteFecha($row->fecha_final);
+                                    $salida  .= '<tr>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
+                                    $salida  .= '</tr>';
                                 }
                                 $band = 0;
                             } else {
@@ -294,16 +294,16 @@ class Reporte extends CI_Controller
                             $data['datos3'] = $this->reporte_model->reporteFinalizados_Espanol($f_inicio, $f_fin, $cl->id, $user->id);
                             if ($data['datos3']) {
                                 foreach ($data['datos3'] as $row) {
-                                    $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                    $f_final = $this->reporteFecha($row->fecha_final);
-                                    $salida .= '<tr>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                    $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                                    $salida .= '</tr>';
+                                    $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                    $f_final  = $this->reporteFecha($row->fecha_final);
+                                    $salida  .= '<tr>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                    $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                                    $salida  .= '</tr>';
                                 }
                                 $band = 0;
                             } else {
@@ -318,16 +318,16 @@ class Reporte extends CI_Controller
                         $data['datos1'] = $this->reporte_model->reporteFinalizados_HCL_UST($f_inicio, $f_fin, $cliente, $user->id);
                         if ($data['datos1']) {
                             foreach ($data['datos1'] as $row) {
-                                $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                $f_final = $this->reporteFecha($row->fecha_final);
-                                $salida .= '<tr>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                                $salida .= '</tr>';
+                                $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                $f_final  = $this->reporteFecha($row->fecha_final);
+                                $salida  .= '<tr>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                                $salida  .= '</tr>';
                             }
                             $band = 0;
                         } else {
@@ -337,16 +337,16 @@ class Reporte extends CI_Controller
                         $data['datos2'] = $this->reporte_model->reporteFinalizados_TATA_WIPRO($f_inicio, $f_fin, $cliente, $user->id);
                         if ($data['datos2']) {
                             foreach ($data['datos2'] as $row) {
-                                $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                $f_final = $this->reporteFecha($row->fecha_final);
-                                $salida .= '<tr>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
-                                $salida .= '</tr>';
+                                $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                $f_final  = $this->reporteFecha($row->fecha_final);
+                                $salida  .= '<tr>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
+                                $salida  .= '</tr>';
 
                             }
                             $band = 0;
@@ -357,16 +357,16 @@ class Reporte extends CI_Controller
                         $data['datos3'] = $this->reporte_model->reporteFinalizados_Espanol($f_inicio, $f_fin, $cliente, $user->id);
                         if ($data['datos3']) {
                             foreach ($data['datos3'] as $row) {
-                                $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                $f_final = $this->reporteFecha($row->fecha_final);
-                                $salida .= '<tr>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                                $salida .= '</tr>';
+                                $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                $f_final  = $this->reporteFecha($row->fecha_final);
+                                $salida  .= '<tr>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                                $salida  .= '</tr>';
 
                             }
                             $band = 0;
@@ -386,16 +386,16 @@ class Reporte extends CI_Controller
                         $data['datos1'] = $this->reporte_model->reporteFinalizados_HCL_UST($f_inicio, $f_fin, $cl->id, $usuario);
                         if ($data['datos1']) {
                             foreach ($data['datos1'] as $row) {
-                                $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                $f_final = $this->reporteFecha($row->fecha_final);
-                                $salida .= '<tr>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                                $salida .= '</tr>';
+                                $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                $f_final  = $this->reporteFecha($row->fecha_final);
+                                $salida  .= '<tr>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                                $salida  .= '</tr>';
                             }
                             $band = 0;
                         } else {
@@ -405,16 +405,16 @@ class Reporte extends CI_Controller
                         $data['datos2'] = $this->reporte_model->reporteFinalizados_TATA_WIPRO($f_inicio, $f_fin, $cl->id, $usuario);
                         if ($data['datos2']) {
                             foreach ($data['datos2'] as $row) {
-                                $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                $f_final = $this->reporteFecha($row->fecha_final);
-                                $salida .= '<tr>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
-                                $salida .= '</tr>';
+                                $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                $f_final  = $this->reporteFecha($row->fecha_final);
+                                $salida  .= '<tr>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
+                                $salida  .= '</tr>';
 
                             }
                             $band = 0;
@@ -425,16 +425,16 @@ class Reporte extends CI_Controller
                         $data['datos3'] = $this->reporte_model->reporteFinalizados_Espanol($f_inicio, $f_fin, $cl->id, $usuario);
                         if ($data['datos3']) {
                             foreach ($data['datos3'] as $row) {
-                                $f_alta  = $this->reporteFecha($row->fecha_alta);
-                                $f_final = $this->reporteFecha($row->fecha_final);
-                                $salida .= '<tr>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                                $salida .= '</tr>';
+                                $f_alta   = $this->reporteFecha($row->fecha_alta);
+                                $f_final  = $this->reporteFecha($row->fecha_final);
+                                $salida  .= '<tr>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                                $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                                $salida  .= '</tr>';
 
                             }
                             $band = 0;
@@ -450,16 +450,16 @@ class Reporte extends CI_Controller
                     $data['datos1'] = $this->reporte_model->reporteFinalizados_HCL_UST($f_inicio, $f_fin, $cliente, $usuario);
                     if ($data['datos1']) {
                         foreach ($data['datos1'] as $row) {
-                            $f_alta  = $this->reporteFecha($row->fecha_alta);
-                            $f_final = $this->reporteFecha($row->fecha_final);
-                            $salida .= '<tr>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                            $salida .= '</tr>';
+                            $f_alta   = $this->reporteFecha($row->fecha_alta);
+                            $f_final  = $this->reporteFecha($row->fecha_final);
+                            $salida  .= '<tr>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                            $salida  .= '</tr>';
                         }
                         $band = 0;
                     } else {
@@ -469,16 +469,16 @@ class Reporte extends CI_Controller
                     $data['datos2'] = $this->reporte_model->reporteFinalizados_TATA_WIPRO($f_inicio, $f_fin, $cliente, $usuario);
                     if ($data['datos2']) {
                         foreach ($data['datos2'] as $row) {
-                            $f_alta  = $this->reporteFecha($row->fecha_alta);
-                            $f_final = $this->reporteFecha($row->fecha_final);
-                            $salida .= '<tr>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
-                            $salida .= '</tr>';
+                            $f_alta   = $this->reporteFecha($row->fecha_alta);
+                            $f_final  = $this->reporteFecha($row->fecha_final);
+                            $salida  .= '<tr>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo_parcial . ' días</td>';
+                            $salida  .= '</tr>';
 
                         }
                         $band = 0;
@@ -489,16 +489,16 @@ class Reporte extends CI_Controller
                     $data['datos3'] = $this->reporte_model->reporteFinalizados_Espanol($f_inicio, $f_fin, $cliente, $usuario);
                     if ($data['datos3']) {
                         foreach ($data['datos3'] as $row) {
-                            $f_alta  = $this->reporteFecha($row->fecha_alta);
-                            $f_final = $this->reporteFecha($row->fecha_final);
-                            $salida .= '<tr>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                            $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
-                            $salida .= '</tr>';
+                            $f_alta   = $this->reporteFecha($row->fecha_alta);
+                            $f_final  = $this->reporteFecha($row->fecha_final);
+                            $salida  .= '<tr>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_alta . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_final . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->usuario . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                            $salida  .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->tiempo . ' días</td>';
+                            $salida  .= '</tr>';
 
                         }
                         $band = 0;
@@ -827,7 +827,7 @@ class Reporte extends CI_Controller
         $data['datos'] = $this->reporte_model->reporteDopingGeneral($f_inicio, $f_fin, $cliente, $subcliente, $proyecto);
         //var_dump($data['datos']);
         if ($data['datos']) {
-            $salida = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteDopingGeneral_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $subcliente . '_' . $proyecto . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
+            $salida  = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteDopingGeneral_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $subcliente . '_' . $proyecto . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
             $salida .= '<table style="border: 0px; border-collapse: collapse;width: 100%;padding:5px;">';
             $salida .= '<tr>';
             $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha registro</th>';
@@ -839,18 +839,18 @@ class Reporte extends CI_Controller
             $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Código</th>';
             $salida .= '</tr>';
             foreach ($data['datos'] as $row) {
-                $subcliente = ($row->subcliente != "" && $row->subcliente != null) ? $row->subcliente : "-";
-                $proyecto   = ($row->proyecto != "" && $row->proyecto != null) ? $row->proyecto : "-";
-                $f_doping   = $this->reporteFecha($row->creacion);
-                $salida .= "<tr><tbody>";
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_doping . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $subcliente . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $proyecto . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->parametros . '</td>';
-                $salida .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->codigo_prueba . '</td>';
-                $salida .= "</tbody></tr>";
+                $subcliente  = ($row->subcliente != "" && $row->subcliente != null) ? $row->subcliente : "-";
+                $proyecto    = ($row->proyecto != "" && $row->proyecto != null) ? $row->proyecto : "-";
+                $f_doping    = $this->reporteFecha($row->creacion);
+                $salida     .= "<tr><tbody>";
+                $salida     .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $f_doping . '</td>';
+                $salida     .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->candidato . '</td>';
+                $salida     .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->cliente . '</td>';
+                $salida     .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $subcliente . '</td>';
+                $salida     .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $proyecto . '</td>';
+                $salida     .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->parametros . '</td>';
+                $salida     .= '<td style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">' . $row->codigo_prueba . '</td>';
+                $salida     .= "</tbody></tr>";
             }
             $salida .= "</table>";
         } else {
@@ -936,9 +936,9 @@ class Reporte extends CI_Controller
     }
     public function reporteFecha($date)
     {
-        $f     = explode(' ', $date);
-        $aux   = explode('-', $f[0]);
-        $fecha = $aux[2] . '/' . $aux[1] . '/' . $aux[0];
+        $f      = explode(' ', $date);
+        $aux    = explode('-', $f[0]);
+        $fecha  = $aux[2] . '/' . $aux[1] . '/' . $aux[0];
         $fecha .= " " . $f[1];
         return $fecha;
     }
@@ -1015,7 +1015,7 @@ class Reporte extends CI_Controller
                 //   $encabezado .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Centro de costo</th>';
                 // }
                 if ($data['datos']) {
-                    $salida = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteListadoEstudios_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $res . '_' . $estatus . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
+                    $salida  = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteListadoEstudios_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $res . '_' . $estatus . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
                     $salida .= '<table style="border: 0px; border-collapse: collapse;width: 100%;padding:5px;">';
                     $salida .= '<tr>';
                     $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Fecha Alta</th>';
@@ -1292,7 +1292,7 @@ class Reporte extends CI_Controller
             } else {
                 $data['datos'] = $this->reporte_model->reporteSLAIngles($f_inicio, $f_fin, $cliente, $finalizado);
                 if ($data['datos']) {
-                    $salida = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteSLAIngles_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $finalizado . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
+                    $salida  = '<div style="text-align:center;margin-bottom:50px;"><a class="btn btn-success" href="' . base_url() . 'Reporte/reporteSLAIngles_Excel/' . $f_inicio . '_' . $f_fin . '_' . $cliente . '_' . $finalizado . '" target="_blank"><i class="fas fa-file-excel"></i> Exportar a Excel</a></div>';
                     $salida .= '<table style="border: 0px; border-collapse: collapse;width: 100%;padding:5px;">';
                     $salida .= '<tr>';
                     $salida .= '<th style"border: 1px solid #a4a6a5;text-align: left;padding: 6px;">Company</th>';
@@ -1766,7 +1766,7 @@ class Reporte extends CI_Controller
             if ($data['datos']) {
 
                 // ===== Botón exportar =====
-                $salida = '<div style="text-align:center;margin-bottom:50px;">';
+                $salida  = '<div style="text-align:center;margin-bottom:50px;">';
                 $salida .= '<a class="btn btn-success" href="'
                 . base_url()
                     . 'Reporte/reporteListadoClientes_Excel/'
@@ -2197,7 +2197,7 @@ class Reporte extends CI_Controller
                 $empleado['Cursos'] = '';
                 if (! empty($cursos)) {
                     foreach ($cursos as $curso) {
-                        $nombre = empty($curso['id_opcion']) ? $curso['name'] : $curso['oname'];
+                        $nombre              = empty($curso['id_opcion']) ? $curso['name'] : $curso['oname'];
                         $empleado['Cursos'] .= "Nombre: {$nombre}\nDescripción: {$curso['description']}\nExpira: {$curso['expiry_date']}\n\n";
                     }
                 }
@@ -2331,8 +2331,8 @@ class Reporte extends CI_Controller
         }
 
         if ($fecha_inicio && $fecha_fin) {
-            $this->db->where('empleados.creacion >=', $fecha_inicio);
-            $this->db->where('empleados.creacion <=', $fecha_fin);
+            $this->db->where('m.creacion >=', $fecha_inicio);
+            $this->db->where('m.creacion <=', $fecha_fin);
         }
 
         if ($puesto) {
@@ -2455,7 +2455,7 @@ class Reporte extends CI_Controller
                 $empleado['Cursos'] = '';
                 if (! empty($cursos)) {
                     foreach ($cursos as $curso) {
-                        $nombre = empty($curso['id_opcion']) ? $curso['name'] : $curso['oname'];
+                        $nombre              = empty($curso['id_opcion']) ? $curso['name'] : $curso['oname'];
                         $empleado['Cursos'] .= "Nombre: {$nombre}\nDescripción: {$curso['description']}\nExpira: {$curso['expiry_date']}\n\n";
                     }
                 }
@@ -2591,7 +2591,7 @@ class Reporte extends CI_Controller
             if ($data['datos']) {
 
                 // ===== Botón Excel =====
-                $salida = '<div style="text-align:center;margin-bottom:50px;">';
+                $salida  = '<div style="text-align:center;margin-bottom:50px;">';
                 $salida .= '<a class="btn btn-success" href="'
                 . base_url()
                     . 'Reporte/reporteProcesoReclutamiento_Excel/'
