@@ -2060,7 +2060,7 @@ class Reporte extends CI_Controller
         empleados.nss AS NSS,
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
-        empleados.creacion  AS Fecha_Ingreso
+        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso 
         ");
         $this->db->from('empleados');
         $this->db->where('empleados.status', 1);
@@ -2084,7 +2084,7 @@ class Reporte extends CI_Controller
         if ($departamento) {
             $this->db->where('empleados.departamento', $departamento);
         }
-
+        $this->db->group_by('empleados.id');
         $query     = $this->db->get();
         $empleados = $query->result_array();
 
@@ -2309,7 +2309,7 @@ class Reporte extends CI_Controller
         empleados.nss AS NSS,
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
-        empleados.creacion  AS Fecha_Ingreso,
+        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso,
         m.creacion AS Fecha_Salida
         ", false);
 
