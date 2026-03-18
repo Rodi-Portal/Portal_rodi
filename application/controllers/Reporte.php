@@ -2073,8 +2073,8 @@ class Reporte extends CI_Controller
         }
 
         if ($fecha_inicio && $fecha_fin) {
-            $this->db->where('empleados.creacion >=', $fecha_inicio);
-            $this->db->where('empleados.creacion <=', $fecha_fin);
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) >=", $fecha_inicio . ' 00:00:00', false);
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fecha_fin . ' 23:59:59', false);
         }
 
         if ($puesto) {
@@ -2207,6 +2207,7 @@ class Reporte extends CI_Controller
 
             unset($empleado['id_domicilio_empleado']);
         }
+        unset($empleado);
 
         // Generar Excel una sola vez
         $finalData = $empleados;
@@ -2465,6 +2466,7 @@ class Reporte extends CI_Controller
 
             unset($empleado['id_domicilio_empleado']);
         }
+        unset($empleado);
 
         // Generar Excel una sola vez
         $finalData = $empleados;
