@@ -172,53 +172,36 @@ class Cat_usuario_model extends CI_Model
     }
     public function updatePass($id, $DatosGenerales, $uncode_password, $correo)
     {
-        /* echo '<pre>';
-        echo $id . ' aqui el id<br>';
-        echo $uncode_password . ' aqui el pass<br>';
-        echo $correo . ' aqui el correo<br>';
-        print_r($DatosGenerales);
-        echo '</pre>' */
-
         $this->db->trans_start();
 
         try {
-            // Verificar si el ID existe antes de intentar actualizar
-            $this->db->where('id', $id);
-            $query = $this->db->get('datos_generales');
-            if ($query->num_rows() <= 0) {
-                throw new Exception("ID no encontrado en la base de datos.");
+            // 1. Obtener id_datos_generales real
+            $this->db->select('id_datos_generales');
+            $this->db->where('id_usuario', $id);
+            $query = $this->db->get('usuario_portal');
+
+            if ($query->num_rows() == 0) {
+                throw new Exception("Usuario no encontrado.");
             }
 
-            // Actualiza los datos en la tabla 'datos_generales'
-            $this->db->where('id', $id);
+            $id_datos = $query->row()->id_datos_generales;
+
+            // 2. Actualizar password correctamente
+            $this->db->where('id', $id_datos);
             $this->db->update('datos_generales', $DatosGenerales);
 
-            // Muestra la consulta SQL generada para depuración
-            //echo $this->db->last_query() . '<br>';
-
-            // Verifica si la actualización fue exitosa
-            if ($this->db->affected_rows() <= 0) {
-                throw new Exception("No se actualizaron los datos en la base de datos.");
-            }
-
-            // Envía el correo y verifica si fue exitoso
+            // 3. Enviar correo
             $envioExitoso = $this->accesosUsuariosCorreo($correo, $uncode_password, 1);
 
             if (! $envioExitoso) {
                 throw new Exception("Error al enviar el correo.");
             }
 
-            // Finaliza la transacción
             $this->db->trans_complete();
 
-            // Verifica si la transacción fue exitosa
-            if ($this->db->trans_status() === false) {
-                return 0; // Transacción fallida
-            } else {
-                return 1; // Transacción exitosa
-            }
+            return ($this->db->trans_status() === false) ? 0 : 1;
+
         } catch (Exception $e) {
-            // Rollback en caso de excepción
             $this->db->trans_rollback();
             return "error excepcion " . $e->getMessage();
         }
