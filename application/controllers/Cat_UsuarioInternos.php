@@ -327,8 +327,7 @@ class Cat_UsuarioInternos extends CI_Controller
             $correo          = $this->input->post('correo');
             $uncode_password = $this->input->post('pass');
             $password        = password_hash($uncode_password, PASSWORD_BCRYPT, ['cost' => 12]);
-            var_dump($id);
-            exit;
+          
             // var_dump($uncode_password);
 
             $DatosGenerales = [
