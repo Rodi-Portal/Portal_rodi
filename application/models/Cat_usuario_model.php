@@ -172,53 +172,38 @@ class Cat_usuario_model extends CI_Model
     }
     public function updatePass($id, $DatosGenerales, $uncode_password, $correo)
     {
+        // 1️⃣ Iniciar transacción SOLO para DB
         $this->db->trans_start();
 
-        try {
-            // 1️⃣ Verificar que exista el registro
-            $query = $this->db->get_where('datos_generales', ['id' => $id]);
+        // Verificar que exista el ID
+        $query = $this->db->get_where('datos_generales', ['id' => $id]);
 
-            if ($query->num_rows() <= 0) {
-                throw new Exception("ID no encontrado en la base de datos.");
-            }
-
-            // 2️⃣ Actualizar password
-            $this->db->where('id', $id);
-            $this->db->update('datos_generales', $DatosGenerales);
-
-            // 🔥 DEBUG opcional (puedes activar temporalmente)
-            // log_message('error', $this->db->last_query());
-
-            // ⚠️ IMPORTANTE:
-            // NO usamos affected_rows() porque puede ser 0 aunque sí funcione
-
-            // 3️⃣ Enviar correo
-            $envioExitoso = $this->accesosUsuariosCorreo($correo, $uncode_password, 1);
-
-            if (! $envioExitoso) {
-                throw new Exception("Error al enviar el correo.");
-            }
-
-            // 4️⃣ Completar transacción
-            $this->db->trans_complete();
-
-            if ($this->db->trans_status() === false) {
-                return 0;
-            }
-
-            return 1;
-
-        } catch (Exception $e) {
-
-            $this->db->trans_rollback();
-
-            // 🔥 MUY ÚTIL PARA DEBUG
-            log_message('error', 'Error updatePass: ' . $e->getMessage());
-
+        if ($query->num_rows() <= 0) {
             return 0;
         }
+
+        // 2️⃣ Actualizar password
+        $this->db->where('id', $id);
+        $this->db->update('datos_generales', $DatosGenerales);
+       
+        // 3️⃣ Cerrar transacción
+        $this->db->trans_complete();
+
+        // 4️⃣ Validar si DB fue exitosa
+        if ($this->db->trans_status() === false) {
+            return 0;
+        }
+
+        // 🔥 5️⃣ Enviar correo (FUERA de la transacción)
+        try {
+            $this->accesosUsuariosCorreo($correo, $uncode_password, 1);
+        } catch (Exception $e) {
+            // ❗ No afecta el flujo
+            log_message('error', 'Error enviando correo: ' . $e->getMessage());
+        }
+
+        return 1;
     }
-    
 
     public function getById($idusuario)
     {
