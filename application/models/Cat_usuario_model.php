@@ -175,37 +175,50 @@ class Cat_usuario_model extends CI_Model
         $this->db->trans_start();
 
         try {
-            // 1. Obtener id_datos_generales real
-            $this->db->select('id_datos_generales');
-            $this->db->where('id_usuario', $id);
-            $query = $this->db->get('usuario_portal');
+            // 1️⃣ Verificar que exista el registro
+            $query = $this->db->get_where('datos_generales', ['id' => $id]);
 
-            if ($query->num_rows() == 0) {
-                throw new Exception("Usuario no encontrado.");
+            if ($query->num_rows() <= 0) {
+                throw new Exception("ID no encontrado en la base de datos.");
             }
 
-            $id_datos = $query->row()->id_datos_generales;
-
-            // 2. Actualizar password correctamente
-            $this->db->where('id', $id_datos);
+            // 2️⃣ Actualizar password
+            $this->db->where('id', $id);
             $this->db->update('datos_generales', $DatosGenerales);
 
-            // 3. Enviar correo
+            // 🔥 DEBUG opcional (puedes activar temporalmente)
+            // log_message('error', $this->db->last_query());
+
+            // ⚠️ IMPORTANTE:
+            // NO usamos affected_rows() porque puede ser 0 aunque sí funcione
+
+            // 3️⃣ Enviar correo
             $envioExitoso = $this->accesosUsuariosCorreo($correo, $uncode_password, 1);
 
             if (! $envioExitoso) {
                 throw new Exception("Error al enviar el correo.");
             }
 
+            // 4️⃣ Completar transacción
             $this->db->trans_complete();
 
-            return ($this->db->trans_status() === false) ? 0 : 1;
+            if ($this->db->trans_status() === false) {
+                return 0;
+            }
+
+            return 1;
 
         } catch (Exception $e) {
+
             $this->db->trans_rollback();
-            return "error excepcion " . $e->getMessage();
+
+            // 🔥 MUY ÚTIL PARA DEBUG
+            log_message('error', 'Error updatePass: ' . $e->getMessage());
+
+            return 0;
         }
     }
+    
 
     public function getById($idusuario)
     {
