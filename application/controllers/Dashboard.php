@@ -184,7 +184,7 @@ class Dashboard extends CI_Controller
         $data_incompleta = false;
 
         // Cambiado a booleano para mayor claridad
-        if ($id_portal == 999) {
+        if ($id_portal == 1) {
             if (! empty($datos['cliente'])) {
                 foreach ($datos['cliente'] as $campo) {
                     // Verifica cada propiedad del objeto para encontrar campos vacíos
