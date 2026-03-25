@@ -524,8 +524,9 @@ class Candidato_Conclusion extends CI_Controller
         ini_set('pcre.backtrack_limit', '5000000');
         date_default_timezone_set('America/Mexico_City');
 
-        $id_candidato = (int) $this->input->post('idPDF');
-      
+        $id_candidato = (int) (
+            $this->input->post('idPDF') ?? $this->input->post('idCandidatoPDF')
+        );
         if ($id_candidato <= 0) {
             show_error('ID de candidato no válido');
             return;
@@ -588,7 +589,6 @@ class Candidato_Conclusion extends CI_Controller
             'fotos'           => ! empty($apiData['fotos']) ? json_decode(json_encode($apiData['fotos'])) : [],
             'datos_cedula'    => ! empty($apiData['datos_cedula']) ? (object) $apiData['datos_cedula'] : (object) [],
         ];
-
 
         $mpdf = new \Mpdf\Mpdf([
             'mode'          => 'utf-8',
