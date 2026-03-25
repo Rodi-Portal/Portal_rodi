@@ -122,6 +122,7 @@ $lang['reportes_excel_dom_num_ext'] = 'Num. ext.';
 
 // ===== Reporte Exempleados =====
 $lang['reportes_ex_title']                = 'Generar reporte de Exempleados';
+$lang['reportes_rot_title']                = 'Generar reporte de Rotacion';
 
 // ===== Filtros =====
 $lang['reportes_ex_sucursal']             = 'Selecciona una sucursal:';

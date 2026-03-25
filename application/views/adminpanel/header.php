@@ -260,6 +260,12 @@
                 <?php echo $this->lang->line('sidebar_reports_former_employees'); ?>
               </a>
               <?php }?>
+              <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+
+              <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_rotacion') ?>">
+                <?php echo $this->lang->line('sidebar_reports_rotacion'); ?>
+              </a>
+              <?php }?>
             </div>
           </div>
         </li>

@@ -2035,6 +2035,29 @@ class Reporte extends CI_Controller
             ->view('reportes/reportes_exempleados', $datos)
             ->view('adminpanel/footer');
     }
+    public function reporte_rotacion()
+    {
+        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+
+        $datos['sucursales'] = $this->empleados_model->getSucursales($data['permisos']);
+        $datos['puestos']    = $this->empleados_model->getPuestos($datos['sucursales']);
+
+        $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        foreach ($data['submodulos'] as $row) {
+            $items[] = $row->id_submodulo;
+        }
+        $data['submenus'] = $items;
+        $config           = $this->funciones_model->getConfiguraciones();
+        $data['version']  = $config->version_sistema;
+        //Modals
+        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+
+        $this->load
+            ->view('adminpanel/header', $data)
+            ->view('adminpanel/scripts', $modales)
+            ->view('reportes/reportes_rotacion', $datos)
+            ->view('adminpanel/footer');
+    }
     public function exportar_excel()
     {
         $portal = $this->session->userdata('idPortal');
@@ -2314,29 +2337,24 @@ class Reporte extends CI_Controller
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
         IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso,
-        m.creacion AS Fecha_Salida
+        empleados.fecha_salida AS Fecha_Salida
         ", false);
 
         $this->db->from('empleados');
-        // 👇 Subconsulta como string literal, con alias m
-        $subquery = "(SELECT id_empleado, MIN(creacion) AS creacion
-              FROM comentarios_former_empleado
-              WHERE creacion IS NOT NULL
-              GROUP BY id_empleado) m";
-
-        // 👇 join sin backticks automáticos
-        $this->db->join($subquery, 'm.id_empleado = empleados.id', 'left', false);
         $this->db->where('empleados.status', 2);
         $this->db->where('empleados.eliminado', 0);
+        $this->db->where('empleados.fecha_salida IS NOT NULL', null, false);
+
         if ($sucursal) {
             $this->db->where('empleados.id_cliente', $sucursal);
         } else {
             $this->db->where('empleados.id_portal', $portal);
         }
-if ($fecha_inicio && $fecha_fin) {
-    $this->db->where('m.creacion >=', $fecha_inicio . ' 00:00:00');
-    $this->db->where('m.creacion <=', $fecha_fin . ' 23:59:59');
-}
+
+        if ($fecha_inicio && $fecha_fin) {
+            $this->db->where('empleados.fecha_salida >=', $fecha_inicio . ' 00:00:00');
+            $this->db->where('empleados.fecha_salida <=', $fecha_fin . ' 23:59:59');
+        }
 
         if ($puesto) {
             $this->db->where('empleados.puesto', $puesto);
@@ -2345,6 +2363,8 @@ if ($fecha_inicio && $fecha_fin) {
         if ($departamento) {
             $this->db->where('empleados.departamento', $departamento);
         }
+
+        $this->db->group_by('empleados.id');
 
         $query     = $this->db->get();
         $empleados = $query->result_array();
@@ -2359,9 +2379,11 @@ if ($fecha_inicio && $fecha_fin) {
                 ->where('id_empleado', $id)
                 ->get()
                 ->result_array();
+
             foreach ($campos_extra as $campo) {
                 $empleado[$campo['nombre']] = $campo['valor'];
             }
+
             if (in_array('domicilios_empleados', $campos) && ! empty($empleado['id_domicilio_empleado'])) {
                 $domicilio = $this->db
                     ->select('pais, estado, ciudad, calle, colonia, cp, num_int, num_ext')
@@ -2375,16 +2397,17 @@ if ($fecha_inicio && $fecha_fin) {
                     if (! empty($domicilio[$campo])) {
                         $texto = strtoupper($campo) . ': ' . $domicilio[$campo];
 
-                        // Insertar salto de línea después de ciudad
                         if ($campo === 'colonia') {
-                            $texto .= "\n"; // o "<br>" si es HTML
+                            $texto .= "\n";
                         }
 
                         $partes[] = $texto;
                     }
                 }
+
                 $empleado['Domicilio'] = implode(', ', $partes);
             }
+
             // Información médica
             if (in_array('medical_info', $campos)) {
                 $med = $this->db->from('medical_info')->where('id_empleado', $id)->get()->row_array();
@@ -2464,13 +2487,10 @@ if ($fecha_inicio && $fecha_fin) {
                 }
             }
 
-            // Domicilio
-
             unset($empleado['id_domicilio_empleado']);
         }
         unset($empleado);
 
-        // Generar Excel una sola vez
         $finalData = $empleados;
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -2479,7 +2499,6 @@ if ($fecha_inicio && $fecha_fin) {
         if (! empty($finalData)) {
             $headers = array_keys($finalData[0]);
 
-            // Eliminar columnas vacías
             $columnas_vacias = [];
             foreach ($headers as $header) {
                 $vacia = true;
@@ -2500,6 +2519,7 @@ if ($fecha_inicio && $fecha_fin) {
                 }
             }
             unset($empleado);
+
             $headers        = array_keys($finalData[0]);
             $column_aliases = [];
             foreach ($headers as $header) {
@@ -2525,10 +2545,11 @@ if ($fecha_inicio && $fecha_fin) {
             foreach ($finalData as $row) {
                 $rowData = [];
                 foreach ($headers as $header) {
-                    $valor     = isset($row[$header]) && trim($row[$header]) !== '' ? $row[$header] : '-';
+                    $valor     = isset($row[$header]) && trim((string) $row[$header]) !== '' ? $row[$header] : '-';
                     $rowData[] = $valor;
                 }
                 $sheet->fromArray($rowData, null, 'A' . $rowIndex);
+
                 for ($col = 0; $col < count($headers); $col++) {
                     $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col + 1);
                     $sheet->getStyle($colLetter . $rowIndex)->getAlignment()->setWrapText(true);
@@ -2537,7 +2558,7 @@ if ($fecha_inicio && $fecha_fin) {
             }
         }
 
-        $filename = 'reporte_empleados_' . date('Ymd_His') . '.xlsx';
+        $filename = 'reporte_empleados_bajas_' . date('Ymd_His') . '.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header("Content-Disposition: attachment;filename=\"$filename\"");
         header('Cache-Control: max-age=0');
@@ -2546,6 +2567,363 @@ if ($fecha_inicio && $fecha_fin) {
         $writer->save('php://output');
         exit;
     }
+    public function exportar_excel_rotacion()
+    {
+        $portal = $this->session->userdata('idPortal');
+        $this->load->database();
+
+        $sucursal     = $this->input->post('sucursal');
+        $fecha_inicio = $this->input->post('fecha_inicio');
+        $fecha_fin    = $this->input->post('fecha_fin');
+        $puesto       = $this->input->post('puesto');
+        $departamento = $this->input->post('departamento');
+
+        if (empty($fecha_inicio) || empty($fecha_fin)) {
+            show_error('Debes indicar fecha_inicio y fecha_fin');
+            return;
+        }
+
+        $inicio = $fecha_inicio . ' 00:00:00';
+        $fin    = $fecha_fin . ' 23:59:59';
+
+        /*
+    |--------------------------------------------------------------------------
+    | 1. Plantilla inicial
+    |--------------------------------------------------------------------------
+    */
+        $this->db->from('empleados');
+        $this->db->where('empleados.eliminado', 0);
+
+        if ($sucursal) {
+            $this->db->where('empleados.id_cliente', $sucursal);
+        } else {
+            $this->db->where('empleados.id_portal', $portal);
+        }
+
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <", $inicio);
+
+        $this->db->group_start();
+        $this->db->where('empleados.fecha_salida IS NULL', null, false);
+        $this->db->or_where('empleados.fecha_salida >=', $inicio);
+        $this->db->group_end();
+
+        if ($puesto) {
+            $this->db->where('empleados.puesto', $puesto);
+        }
+
+        if ($departamento) {
+            $this->db->where('empleados.departamento', $departamento);
+        }
+
+        $plantilla_inicial = $this->db->count_all_results();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 2. Ingresos del periodo (conteo)
+    |--------------------------------------------------------------------------
+    */
+        $this->db->from('empleados');
+        $this->db->where('empleados.eliminado', 0);
+
+        if ($sucursal) {
+            $this->db->where('empleados.id_cliente', $sucursal);
+        } else {
+            $this->db->where('empleados.id_portal', $portal);
+        }
+
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) >=", $inicio);
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fin);
+
+        if ($puesto) {
+            $this->db->where('empleados.puesto', $puesto);
+        }
+
+        if ($departamento) {
+            $this->db->where('empleados.departamento', $departamento);
+        }
+
+        $ingresos = $this->db->count_all_results();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 3. Bajas del periodo (conteo)
+    |--------------------------------------------------------------------------
+    */
+        $this->db->from('empleados');
+        $this->db->where('empleados.eliminado', 0);
+        $this->db->where('empleados.fecha_salida IS NOT NULL', null, false);
+        $this->db->where('empleados.fecha_salida >=', $inicio);
+        $this->db->where('empleados.fecha_salida <=', $fin);
+
+        if ($sucursal) {
+            $this->db->where('empleados.id_cliente', $sucursal);
+        } else {
+            $this->db->where('empleados.id_portal', $portal);
+        }
+
+        if ($puesto) {
+            $this->db->where('empleados.puesto', $puesto);
+        }
+
+        if ($departamento) {
+            $this->db->where('empleados.departamento', $departamento);
+        }
+
+        $bajas = $this->db->count_all_results();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 4. Plantilla final
+    |--------------------------------------------------------------------------
+    */
+        $this->db->from('empleados');
+        $this->db->where('empleados.eliminado', 0);
+
+        if ($sucursal) {
+            $this->db->where('empleados.id_cliente', $sucursal);
+        } else {
+            $this->db->where('empleados.id_portal', $portal);
+        }
+
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fin);
+
+        $this->db->group_start();
+        $this->db->where('empleados.fecha_salida IS NULL', null, false);
+        $this->db->or_where('empleados.fecha_salida >', $fin);
+        $this->db->group_end();
+
+        if ($puesto) {
+            $this->db->where('empleados.puesto', $puesto);
+        }
+
+        if ($departamento) {
+            $this->db->where('empleados.departamento', $departamento);
+        }
+
+        $plantilla_final = $this->db->count_all_results();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 5. Detalle ingresos
+    |--------------------------------------------------------------------------
+    */
+        $this->db->select("
+        empleados.id,
+        empleados.id_empleado,
+        CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
+        empleados.puesto AS Puesto,
+        empleados.departamento AS Area_Departamento,
+        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso
+    ", false);
+        $this->db->from('empleados');
+        $this->db->where('empleados.eliminado', 0);
+
+        if ($sucursal) {
+            $this->db->where('empleados.id_cliente', $sucursal);
+        } else {
+            $this->db->where('empleados.id_portal', $portal);
+        }
+
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) >=", $inicio);
+        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fin);
+
+        if ($puesto) {
+            $this->db->where('empleados.puesto', $puesto);
+        }
+
+        if ($departamento) {
+            $this->db->where('empleados.departamento', $departamento);
+        }
+
+        $this->db->order_by('Fecha_Ingreso', 'ASC');
+        $this->db->group_by('empleados.id');
+        $detalle_ingresos = $this->db->get()->result_array();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 6. Detalle bajas
+    |--------------------------------------------------------------------------
+    */
+        $this->db->select("
+        empleados.id,
+        empleados.id_empleado,
+        CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
+        empleados.puesto AS Puesto,
+        empleados.departamento AS Area_Departamento,
+        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso,
+        empleados.fecha_salida AS Fecha_Salida
+    ", false);
+        $this->db->from('empleados');
+        $this->db->where('empleados.eliminado', 0);
+        $this->db->where('empleados.fecha_salida IS NOT NULL', null, false);
+        $this->db->where('empleados.fecha_salida >=', $inicio);
+        $this->db->where('empleados.fecha_salida <=', $fin);
+
+        if ($sucursal) {
+            $this->db->where('empleados.id_cliente', $sucursal);
+        } else {
+            $this->db->where('empleados.id_portal', $portal);
+        }
+
+        if ($puesto) {
+            $this->db->where('empleados.puesto', $puesto);
+        }
+
+        if ($departamento) {
+            $this->db->where('empleados.departamento', $departamento);
+        }
+
+        $this->db->order_by('empleados.fecha_salida', 'ASC');
+        $this->db->group_by('empleados.id');
+        $detalle_bajas = $this->db->get()->result_array();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 7. Cálculos
+    |--------------------------------------------------------------------------
+    */
+        $promedio_plantilla = ($plantilla_inicial + $plantilla_final) / 2;
+        $rotacion           = $promedio_plantilla > 0
+            ? round(($bajas / $promedio_plantilla) * 100, 2)
+            : 0;
+
+        $resumen = [[
+            'Fecha_Inicio'        => $fecha_inicio,
+            'Fecha_Fin'           => $fecha_fin,
+            'Plantilla_Inicial'   => $plantilla_inicial,
+            'Ingresos'            => $ingresos,
+            'Bajas'               => $bajas,
+            'Plantilla_Final'     => $plantilla_final,
+            'Promedio_Plantilla'  => $promedio_plantilla,
+            'Rotacion_Porcentaje' => $rotacion . '%',
+        ]];
+
+        /*
+    |--------------------------------------------------------------------------
+    | 8. Excel
+    |--------------------------------------------------------------------------
+    */
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+        $headerStyle = [
+            'font'      => [
+                'bold'  => true,
+                'color' => ['rgb' => 'FFFFFF'],
+                'size'  => 12,
+            ],
+            'fill'      => [
+                'fillType'   => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1F4E78'],
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+            ],
+        ];
+
+        $bodyStyle = [
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+            ],
+        ];
+
+        /*
+    |--------------------------------------------------------------------------
+    | Hoja 1: Resumen
+    |--------------------------------------------------------------------------
+    */
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Resumen');
+
+        $headersResumen = array_keys($resumen[0]);
+        $sheet->fromArray($headersResumen, null, 'A1');
+        $sheet->fromArray($resumen, null, 'A2');
+
+        $lastColumnResumen = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($headersResumen));
+        $sheet->getStyle("A1:{$lastColumnResumen}1")->applyFromArray($headerStyle);
+        $sheet->getStyle("A2:{$lastColumnResumen}2")->applyFromArray($bodyStyle);
+
+        for ($col = 1; $col <= count($headersResumen); $col++) {
+            $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+            $sheet->getColumnDimension($colLetter)->setAutoSize(true);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Hoja 2: Ingresos
+    |--------------------------------------------------------------------------
+    */
+        $sheetIngresos = $spreadsheet->createSheet();
+        $sheetIngresos->setTitle('Ingresos');
+
+        if (! empty($detalle_ingresos)) {
+            $headersIngresos = array_keys($detalle_ingresos[0]);
+            $sheetIngresos->fromArray($headersIngresos, null, 'A1');
+
+            $row = 2;
+            foreach ($detalle_ingresos as $item) {
+                $sheetIngresos->fromArray(array_values($item), null, 'A' . $row);
+                $row++;
+            }
+
+            $lastColumnIngresos = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($headersIngresos));
+            $sheetIngresos->getStyle("A1:{$lastColumnIngresos}1")->applyFromArray($headerStyle);
+            $sheetIngresos->getStyle("A2:{$lastColumnIngresos}{$row}")->applyFromArray($bodyStyle);
+
+            for ($col = 1; $col <= count($headersIngresos); $col++) {
+                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                $sheetIngresos->getColumnDimension($colLetter)->setAutoSize(true);
+            }
+        } else {
+            $sheetIngresos->setCellValue('A1', 'Sin registros de ingresos en el periodo');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Hoja 3: Bajas
+    |--------------------------------------------------------------------------
+    */
+        $sheetBajas = $spreadsheet->createSheet();
+        $sheetBajas->setTitle('Bajas');
+
+        if (! empty($detalle_bajas)) {
+            $headersBajas = array_keys($detalle_bajas[0]);
+            $sheetBajas->fromArray($headersBajas, null, 'A1');
+
+            $row = 2;
+            foreach ($detalle_bajas as $item) {
+                $sheetBajas->fromArray(array_values($item), null, 'A' . $row);
+                $row++;
+            }
+
+            $lastColumnBajas = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex(count($headersBajas));
+            $sheetBajas->getStyle("A1:{$lastColumnBajas}1")->applyFromArray($headerStyle);
+            $sheetBajas->getStyle("A2:{$lastColumnBajas}{$row}")->applyFromArray($bodyStyle);
+
+            for ($col = 1; $col <= count($headersBajas); $col++) {
+                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                $sheetBajas->getColumnDimension($colLetter)->setAutoSize(true);
+            }
+        } else {
+            $sheetBajas->setCellValue('A1', 'Sin registros de bajas en el periodo');
+        }
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $filename = 'reporte_rotacion_' . date('Ymd_His') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+
     public function reporteProcesoReclutamiento()
     {
         // ===== Validaciones =====
