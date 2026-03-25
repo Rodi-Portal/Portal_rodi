@@ -519,242 +519,96 @@ class Candidato_Conclusion extends CI_Controller
         echo json_encode($msj);
     }
 
-    public function createPDF()
+    public function reporteBecasPDF()
     {
-        //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
-        ini_set('pcre.backtrack_limit', '50000000');
-        ini_set('pcre.recursion_limit', '50000000');
-
-        $mpdf = new \Mpdf\Mpdf();
+        ini_set('pcre.backtrack_limit', '5000000');
         date_default_timezone_set('America/Mexico_City');
-        //$id_candidato = $this->input->post('idPDF');
-        $id_usuario   = $this->session->userdata('id');
-        $id_candidato = isset($_POST['idCandidatoPDF']) ? $_POST['idCandidatoPDF'] : (isset($_GET['idCandidatoPDF']) ? $_GET['idCandidatoPDF'] : null);
 
-        $url = API_URL . "report/{$id_candidato}";
+        $id_candidato = (int) $this->input->post('idPDF');
+      
+        if ($id_candidato <= 0) {
+            show_error('ID de candidato no válido');
+            return;
+        }
 
-        $options = [
-            "http" => [
-                "method" => "GET",
-                "header" => "Content-Type: application/json\r\n",
+        $this->load->helper(['url', 'pdf_img_helper']);
+
+        // Armar endpoint usando la constante del ambiente
+        $apiUrl = rtrim(API_URL, '/') . '/rodi/reportes/becas/' . $id_candidato;
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $apiUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_HTTPHEADER     => [
+                'Accept: application/json',
+                // 'Authorization: Bearer TU_TOKEN', // si aplica
             ],
+        ]);
+
+        $response  = curl_exec($ch);
+        $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+
+        curl_close($ch);
+
+        if ($response === false) {
+            show_error('No fue posible conectar con la API. ' . $curlError);
+            return;
+        }
+
+        if ($httpCode !== 200) {
+            show_error('La API devolvió un código HTTP no esperado: ' . $httpCode);
+            return;
+        }
+
+        $json = json_decode($response, true);
+
+        if (! is_array($json)) {
+            show_error('La respuesta de la API no es un JSON válido');
+            return;
+        }
+
+        if (! isset($json['status']) || ! $json['status']) {
+            $message = isset($json['message']) ? $json['message'] : 'La API devolvió una respuesta inválida';
+            show_error($message);
+            return;
+        }
+
+        $apiData = $json['data'] ?? [];
+
+        $data = [
+            'datos_generales' => ! empty($apiData['datos_generales']) ? (object) $apiData['datos_generales'] : (object) [],
+            'familiares'      => ! empty($apiData['familiares']) ? json_decode(json_encode($apiData['familiares'])) : [],
+            'vivienda'        => ! empty($apiData['vivienda']) ? (object) $apiData['vivienda'] : (object) [],
+            'economia'        => ! empty($apiData['economia']) ? (object) $apiData['economia'] : (object) [],
+            'becas'           => ! empty($apiData['becas']) ? (object) $apiData['becas'] : (object) [],
+            'fotos'           => ! empty($apiData['fotos']) ? json_decode(json_encode($apiData['fotos'])) : [],
+            'datos_cedula'    => ! empty($apiData['datos_cedula']) ? (object) $apiData['datos_cedula'] : (object) [],
         ];
 
-        $context  = stream_context_create($options);
-        $response = file_get_contents($url, false, $context);
 
-        // Decodifica la respuesta JSON
+        $mpdf = new \Mpdf\Mpdf([
+            'mode'          => 'utf-8',
+            'format'        => 'A4-L',
+            'margin_left'   => 5,
+            'margin_right'  => 5,
+            'margin_top'    => 0,
+            'margin_bottom' => 0,
+            'margin_header' => 0,
+            'margin_footer' => 0,
+        ]);
 
-        $data1 = json_decode($response, true);
+        $mpdf->shrink_tables_to_fit = 0;
+        $mpdf->showImageErrors      = true;
+        $mpdf->SetDisplayMode('fullwidth');
 
-        // Accede a los datos específicos
+        $html = $this->load->view('pdfs/reporte_becas_pdf', $data, true);
 
-        // Utiliza los datos como necesites
-
-        $data = $data1;
-
-        /*
-
-        //* Detalles del candidato en tabla candidato
-        $data['info'] = $this->candidato_model->getDetalles($id_candidato);//
-        //* Se obtienen los registros de los archivos asignado al candidato
-        $data['docs'] = $this->candidato_model->getDocumentacion($id_candidato);
-        //* Se obtienen las secciones registradas del candidato de acuerdo al estudio/proceso/proyecto asignado
-        $data['secciones'] = $this->candidato_seccion_model->getSecciones($id_candidato);//
-        //* Examenes asignados al candidato
-        $data['pruebas'] = $this->candidato_model->getExamenes($id_candidato);//
-        //* Se obtiene la informacion de doping en caso de asignacion al candidato
-        $data['doping'] = $this->candidato_model->getDoping($id_candidato);//
-        //* Se obtiene la verificación de documentos de la tabla verificacion_documento
-        $data['verDoc'] = $this->candidato_documentacion_model->getById($id_candidato);//
-        //* Se obtiene la experiencia academica
-        $data['academico'] = $this->candidato_estudio_model->getHistorialById($id_candidato);//
-        $data['verMayoresEstudios'] = $this->candidato_estudio_model->getMayorById($id_candidato);//
-        $data['verificacionEstudios'] = $this->candidato_estudio_model->getVerificacion($id_candidato);//
-        $data['verificacionDetallesEstudios'] = $this->candidato_estudio_model->getDetalleVerificacion($id_candidato);//
-        //* Se obtienen los datos sociales
-        $data['sociales'] = $this->candidato_social_model->getById($id_candidato);//
-        //* Se obtiene la información familiar
-        $data['familia'] = $this->candidato_familiar_model->getById($id_candidato);//
-        //* Se obtienen los contactos del candidato que laboran en el mismo lugar
-        $data['contacto_trabajo'] = $this->candidato_laboral_model->getContactosMismoTrabajo($id_candidato);//
-        //* Se obtienen los datos financieros
-        $data['finanzas'] = $this->candidato_finanzas_model->getById($id_candidato);//
-        //* Se obtiene el historial de empleos
-        $data['empleos'] = $this->candidato_laboral_model->getHistorialLaboralById($id_candidato);//
-        $data['nom'] = $this->candidato_laboral_model->getNoMencionadosById($id_candidato);//
-        $data['laborales'] = $this->candidato_laboral_model->getAntecedentesLaboralesById($id_candidato);//
-
-        $data['contactos'] = $this->candidato_laboral_model->getObservacionesContactoById($id_candidato);//
-
-        $data['verificacionEmpleos'] = $this->candidato_laboral_model->getVerificacion($id_candidato);//
-        $data['verificacionDetallesEmpleos'] = $this->candidato_laboral_model->getDetalleVerificacion($id_candidato);//
-        //* GAPS o periodos inactivos laborales
-        $data['gaps'] = $this->candidato_model->getGAPS($id_candidato);//
-        //* Referencias personales
-        $data['refPersonal'] = $this->candidato_ref_personal_model->getById($id_candidato);//
-        //* Conclusiones de la tabla candidato_finalizado
-        $data['finalizado'] = $this->candidato_conclusion_model->getFinalizadoById($id_candidato);//
-        $data['conclusion'] = $this->candidato_conclusion_model->getBGCById($id_candidato); //
-        //* Informacion de vivienda
-        $data['vivienda'] = $this->candidato_vivienda_model->getById($id_candidato);//
-        //* Referencias vecinales
-        $data['refVecinal'] = $this->candidato_ref_vecinal_model->getById($id_candidato);//
-        //* Información de la investigación legal
-        $data['legal'] = $this->candidato_model->getInvestigacionLegal($id_candidato);//
-        //* Información del estado de salud
-        $data['salud'] = $this->candidato_salud_model->getById($id_candidato);//
-        //* Información de servicios públicos
-        $data['servicios'] = $this->candidato_servicio_model->getById($id_candidato);
-        //* Información de historial crediticio
-        $data['credito'] = $this->candidato_model->checkCredito($id_candidato);//
-        //* Busquedas globales con Refinitiv World check
-        $data['global_searches'] = $this->candidato_global_model->getById($id_candidato);//
-        //* Verificacion criminal
-        $data['verificacionCriminal'] = $this->criminal_model->getVerificacion($id_candidato);//
-        $data['verificacionDetallesCriminal'] = $this->criminal_model->getDetalleVerificacion($id_candidato);//
-        //* Referencias de clientes
-        $data['refClientes'] = $this->referencia_cliente_model->getById($id_candidato);
-        //* Empresa de candidato
-        $data['empresa'] = $this->candidato_empresa_model->getById($id_candidato);
-        //* Referencias academicas
-        $data['refAcademicas'] = $this->candidato_ref_academica_model->getById($id_candidato);
-        //* Referencias profesionales
-        $data['refProfesionales'] = $this->referencia_profesional_model->getById($id_candidato);*/
-
-        foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $subKey => $subValue) {
-                    $data[$key][$subKey] = handleNull($subValue);
-                }
-            } else {
-                $data[$key] = handleNull($value);
-            }
-        }
-        /* echo'<pre>';
-        //echo $data['sociales']['sindical'];
-        print_r($data);
-        echo'</pre>';
-        die();*/
-        // Checar si el cliente en cuestión es en inglés o español
-        $idioma         = (isset($data['info']['ingles']) && $data['info']['ingles'] == 0) ? 'espanol' : 'ingles';
-        $data['idioma'] = $idioma;
-
-        // Revisar si $info->fecha_fin es la fecha edición en lugar de la creación de la finalización del candidato
-        if (isset($data['info']['fecha_fin']) && $data['info']['fecha_fin'] != null) {
-            $data['fecha_finalizado'] = fechaTexto($data['info']['fecha_fin'], $idioma);
-        }
-        if (isset($data['info']['fecha_bgc']) && $data['info']['fecha_bgc'] != null) {
-            $data['fecha_finalizado'] = fechaTexto($data['info']['fecha_bgc'], $idioma);
-        }
-
-        // Extracción de detalles del candidato
-        if (isset($data['info']['fecha_fin']) && $data['info']['fecha_fin'] != null) {
-            $fecha_fin = formatoFechaEspanol($data['info']['fecha_fin']);
-        }
-        if (isset($data['info']['fecha_bgc']) && $data['info']['fecha_bgc'] != null) {
-            $fecha_fin = formatoFechaEspanol($data['info']['fecha_bgc']);
-        }
-        if (isset($data['info']['fecha_alta'])) {
-            $f_alta = formatoFechaEspanol($data['info']['fecha_alta']);
-        }
-
-        //* Filtro de usuario
-        /* $tipo_usuario = $this->session->userdata('tipo');
-        if($tipo_usuario == 1){
-        $usuario = $this->usuario_model->getDatosUsuarioInterno($id_usuario);
-        }
-        if($tipo_usuario == 2){
-        $usuario = $this->usuario_model->getDatosUsuarioCliente($id_usuario);
-        }
-        if($tipo_usuario == 4){
-        $usuario = $this->usuario_model->getDatosUsuarioSubcliente($id_usuario);
-        }
-         */
-
-        //* Vista PDF del reporte
-        $html = $this->load->view('pdfs/reporte_espanol_pdf', $data, true);
-        $this->load->helper('pdf_img_helper');
-        $html = mpdf_localize_assets($html);
-        /* echo $html;
-        exit;*/
-        if ($data['info']['status_bgc'] != 0) {
-            //* Configuraciones del mPDF
-            $mpdf->setAutoTopMargin = 'stretch';
-            $mpdf->AddPage();
-            //TODO: Organizar encabezados y pies de pagina de acuerdo al cliente mediante BD
-            if ($data['info']['id_cliente'] == 39) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="' . base_url() . 'img/logo_talink.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-            }
-            if ($data['info']['id_cliente'] == 7) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 100px;" src="' . base_url() . 'img/logo_gentex.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-            }
-            if ($data['info']['id_cliente'] == 16) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
-            }
-            if ($data['info']['id_cliente'] == 159) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:100px;" src="' . base_url() . 'img/logo_pisa.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">PISA FARMACÉUTICA</p></div><div style="position: absolute; right: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Av. España No. 1840 Colonia Moderna C.P. 44190 Guadalajara, Jalisco. Tel. 33 3678 Fax: 33 3810 Lada sin costo: 800 627</p></div>');
-            }
-            if ($data['info']['id_cliente'] == 172) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Request Date: ' . $f_alta . '<br>Release Date: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
-            }
-            if ($data['info']['id_cliente'] == 190) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="' . base_url() . 'img/logo_gesthion.jpg"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-            }
-            if ($data['info']['id_cliente'] == 209) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="width:130px;height:70px;" src="' . base_url() . 'img/logo_velazquez.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div>');
-            }
-            if ($data['info']['id_cliente'] != 7 && $data['info']['id_cliente'] != 16 && $data['info']['id_cliente'] != 39 && $data['info']['id_cliente'] != 159 && $data['info']['id_cliente'] != 172 && $data['info']['id_cliente'] != 190 && $data['info']['id_cliente'] != 209) {
-                $mpdf->SetHTMLHeader('<div style="width: 33%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div><div style="width: 33%; float: right;text-align: right;">Fecha de Registro: ' . $f_alta . '<br>Fecha de Elaboración: ' . $fecha_fin . '</div>');
-                $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: #646363ff;"><p style="font-size: 10px;">Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco C.P. 45018 <br>Tel. (33) 2301-8599<br><br>4-EST-001.Rev. 01 <br>Fecha de Rev. 05/06/2020</p></div><div style="position: absolute; right: 0;  bottom: 0;"><img class="" src="' . base_url() . 'img/logo_pie.png"></div>');
-            }
-        }
-        //*Cifrar pdf
-        $nombreArchivo = substr(md5(microtime()), 1, 12);
-        /*$claveAleatoria = substr( md5(microtime()), 1, 8);
-        $clave = ($usuario->clave != null)? $usuario->clave:$claveAleatoria;
-        $mpdf->SetProtection(array(), $clave, 'r0d1@');*/
-        $mpdf->autoPageBreak = false;
-        $html                = preg_replace('/\s+/', ' ', $html);
         $mpdf->WriteHTML($html);
-        $mpdf->Output('' . $nombreArchivo . '.pdf', 'D');
-
-        // //* Inactivar reportes anteriores en caso de haber
-        // $estatus_reporte = array(
-        //   'status' => 0
-        // );
-        // $this->candidato_conclusion_model->setReporte($id_candidato, $estatus_reporte);
-        // //* Guardar reporte finalizado en carpeta local _estudios del sistema
-        // $dir = set_realpath('./_estudios/'.$data['info']->id."/");
-        // if(!is_dir($dir)){
-        //   mkdir($dir,0777);
-        //   $mpdf->WriteHTML($html);
-        //   $mpdf->Output($dir.$nombreArchivo.'.pdf','F');
-        //   $archivo = array(
-        //     'creacion' =>  date('Y-m-d H:i:s'),
-        //     'id_candidato' => $id_candidato,
-        //     'archivo' => $nombreArchivo.'.pdf'
-        //   );
-        //   $this->candidato_conclusion_model->addReporte($archivo);
-        // }
-        // else{
-        //   $mpdf->WriteHTML($html);
-        //   $mpdf->Output($dir.$nombreArchivo.'.pdf','F');
-        //   $archivo = array(
-        //     'creacion' =>  date('Y-m-d H:i:s'),
-        //     'id_candidato' => $id_candidato,
-        //     'archivo' => $nombreArchivo.'.pdf'
-        //   );
-        //   $this->candidato_conclusion_model->addReporte($archivo);
-        // }
-
+        $mpdf->Output('reporte_becas_' . $id_candidato . '.pdf', 'D');
     }
     public function createPrevioPDF()
     {

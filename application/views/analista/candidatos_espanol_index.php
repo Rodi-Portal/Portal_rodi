@@ -4,7 +4,7 @@
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">
-    Cliente/Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
+      Cliente/Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
 
 
     <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">
@@ -1351,54 +1351,75 @@ function changeDatatable(url1) {
 
 
               if (full.cancelado == 0) {
+
                 if (full.socioeconomico == 1) {
                   let icono_resultado = '';
                   let previo = '';
+
                   if (full.liberado == 0) {
+
+                    // 🔥 detectar proyecto
+                    let urlPrevio = "Candidato_Conclusion/createPrevioPDF";
+
+                    if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
+                      urlPrevio = "Candidato_Conclusion/reporteBecasPDF";
+                    }
+
                     previo =
-                      ' <div style="display: inline-flex;"><form id="reportePrevioForm' +
-                      data +
-                      '" action="<?php echo base_url('Candidato_Conclusion/createPrevioPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="fa-tooltip icono_datatable icono_previo"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idPDF" id="idPDF' +
-                      data + '" value="' + data + '"></form></div>';
+                      '<div style="display: inline-flex;">' +
+                      '<form id="reportePrevioForm' + data +
+                      '" action="<?php echo base_url(); ?>' + urlPrevio + '" method="POST">' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF' +
+                      data + '" class="fa-tooltip icono_datatable icono_previo">' +
+                      '<i class="far fa-file-powerpoint"></i>' +
+                      '</a>' +
+                      '<input type="hidden" name="idPDF" id="idPDF' + data + '" value="' + data + '">' +
+                      '</form>' +
+                      '</div>';
+
                     return previo;
+
                   } else {
+
+                    let icono_resultado = '';
 
                     switch (full.status_bgc) {
                       case 1:
-                        icono_resultado = 'icono_resultado_aprobado';
-
-                        break;
                       case 4:
                         icono_resultado = 'icono_resultado_aprobado';
                         break;
                       case 2:
                         icono_resultado = 'icono_resultado_reprobado';
                         break;
-
                       case 3:
                         icono_resultado = 'icono_resultado_revision';
                         break;
                       default:
-
                         icono_resultado = 'icono_resultado_espera';
-                        break;
-
                         break;
                     }
 
+                    // 🔥 detectar proyecto
+                    let urlFinal = "Candidato_Conclusion/createPDF";
 
-                    return '<div style="display: inline-block;">' +
+                    if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
+                      urlFinal = "Candidato_Conclusion/reporteBecasPDF";
+                    }
+
+                    return (
+                      '<div style="display: inline-block;">' +
                       '<form id="reporteForm' + data +
-                      '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST">' +
-                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="fa-tooltip icono_datatable ' +
-                      icono_resultado + '">' +
+                      '" action="<?php echo base_url(); ?>' + urlFinal + '" method="POST">' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF' +
+                      data + '" class="fa-tooltip icono_datatable ' + icono_resultado + '">' +
                       '<i class="fas fa-file-pdf"></i>' +
                       '</a>' +
                       '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
                       '" value="' + data + '">' +
                       '</form>' +
-                      '</div>' + previo;
-
+                      '</div>' +
+                      previo
+                    );
                   }
 
                 } else {
