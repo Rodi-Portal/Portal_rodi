@@ -949,7 +949,7 @@ th {
                               <td style="border:none; padding-bottom:0.4mm; vertical-align:middle;">Se rechaza</td>
                             </tr>
 
-                         
+
                           </table>
                         </td>
                       </tr>
@@ -1707,7 +1707,7 @@ th {
                 <tr>
                   <td>
                     <div style="padding:2mm; font-size:11px;">
-                      <b>  Firma</b>
+                      <b> Firma</b>
                     </div>
                   </td>
                 <tr>
@@ -1717,15 +1717,21 @@ th {
                   <td style="height:40mm; padding:0; text-align:center; vertical-align:middle;">
 
                     <?php
-                      $ruta_firma = FCPATH . 'img/' . $datos_cedula->firma;
-                    ?>
+                        $ruta_firma = '';
 
-                    <?php if (file_exists($ruta_firma)): ?>
-                    <img src="<?php echo $ruta_firma ?>"
+                        if (!empty($datos_cedula) && !empty($datos_cedula->firma)) {
+                            $ruta_temp = FCPATH . 'img/' . $datos_cedula->firma;
+
+                            if (file_exists($ruta_temp)) {
+                                $ruta_firma = $ruta_temp;
+                            }
+                        }
+                      ?>
+
+                    <?php if (!empty($ruta_firma)): ?>
+                    <img src="<?php echo $ruta_firma; ?>"
                       style="display:block; margin:0 auto; max-height:35mm; width:auto;">
                     <?php endif; ?>
-
-
 
                   </td>
                 </tr>
