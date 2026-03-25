@@ -832,6 +832,10 @@ $(document).ready(function() {
 
   $('#tipoFiltro').on('change', function() {
     const tipo = $(this).val();
+
+    // Guardar filtro seleccionado
+    localStorage.setItem('bgv_tipo_filtro', tipo);
+
     if (tipo === 'externo') {
       $('#tablaInternos').hide();
       $('#tabla').show();
@@ -843,6 +847,13 @@ $(document).ready(function() {
       loadInternos(urlInternos);
     }
   });
+  const filtroGuardado = localStorage.getItem('bgv_tipo_filtro');
+
+  if (filtroGuardado) {
+    $('#tipoFiltro').val(filtroGuardado);
+  }
+
+  // Disparar lógica del filtro
   $('#tipoFiltro').trigger('change');
   $('.tipo_fecha').inputmask('dd/mm/yyyy', {
     'placeholder': 'dd/mm/yyyy'
@@ -976,7 +987,7 @@ function loadInternos(url1) {
             mRender: function(data, type, full) {
               return full.nombreCompleto +
                 '<br><br>'
-                //<button class="btn btn-success btn-sm" onclick="confirmAction(' +
+              //<button class="btn btn-success btn-sm" onclick="confirmAction(' +
               //  full.id + ')">Enviar a Empleados</button>';
               // reclutador;
             } // Centrado de contenido
@@ -1009,7 +1020,7 @@ function loadInternos(url1) {
                 '<i class="fa fa-eye"></i></button>';
             }
           },
-         {
+          {
             title: 'Exámenes',
             data: null,
             "width": "15%",
@@ -1025,21 +1036,21 @@ function loadInternos(url1) {
 
             }
           },
-         /* {
-            title: 'Eliminar',
-            data: 'id',
-            width: "10%",
-            className: 'text-center',
-            render: function(data, type, row) {
-              return `<button class="btn btn-link text-danger "
-                    onclick="eliminarCandidato(${data})"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    title="Eliminar candidato">
-                <i class="fas fa-trash fa-lg"></i>
-            </button> `;
-            }
-          },*/
+          /* {
+             title: 'Eliminar',
+             data: 'id',
+             width: "10%",
+             className: 'text-center',
+             render: function(data, type, row) {
+               return `<button class="btn btn-link text-danger "
+                     onclick="eliminarCandidato(${data})"
+                     data-toggle="tooltip"
+                     data-placement="top"
+                     title="Eliminar candidato">
+                 <i class="fas fa-trash fa-lg"></i>
+             </button> `;
+             }
+           },*/
         ]
       });
     },
@@ -1069,7 +1080,7 @@ function changeDatatable(url1) {
         return item;
       });
 
-  $('#tablaInternos').empty();
+      $('#tablaInternos').empty();
       if ($.fn.DataTable.isDataTable('#tablaInternos')) {
         $('#tablaInternos').DataTable().clear().destroy();
       }
@@ -1265,7 +1276,7 @@ function changeDatatable(url1) {
                 /*else {
                 	salida += "<b>Médico: N/A</b> <hr>";
                 }*/
-             //* Psicometria
+                //* Psicometria
                 if (full.psicometrico == 1) {
                   const HREF = '<?php echo base_url('Archivo/ver_psico/'); ?>' + encodeURIComponent((full
                       .archivo ||
@@ -1305,54 +1316,75 @@ function changeDatatable(url1) {
 
 
               if (full.cancelado == 0) {
+
                 if (full.socioeconomico == 1) {
                   let icono_resultado = '';
                   let previo = '';
+
                   if (full.liberado == 0) {
+
+                    // 🔥 detectar proyecto
+                    let urlPrevio = "Candidato_Conclusion/createPrevioPDF";
+
+                    if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
+                      urlPrevio = "Candidato_Conclusion/reporteBecasPDF";
+                    }
+
                     previo =
-                      ' <div style="display: inline-flex;"><form id="reportePrevioForm' +
-                      data +
-                      '" action="<?php echo base_url('Candidato_Conclusion/createPrevioPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF" class="fa-tooltip icono_datatable icono_previo"><i class="far fa-file-powerpoint"></i></a><input type="hidden" name="idPDF" id="idPDF' +
-                      data + '" value="' + data + '"></form></div>';
+                      '<div style="display: inline-flex;">' +
+                      '<form id="reportePrevioForm' + data +
+                      '" action="<?php echo base_url(); ?>' + urlPrevio + '" method="POST">' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF' +
+                      data + '" class="fa-tooltip icono_datatable icono_previo">' +
+                      '<i class="far fa-file-powerpoint"></i>' +
+                      '</a>' +
+                      '<input type="hidden" name="idPDF" id="idPDF' + data + '" value="' + data + '">' +
+                      '</form>' +
+                      '</div>';
+
                     return previo;
+
                   } else {
+
+                    let icono_resultado = '';
 
                     switch (full.status_bgc) {
                       case 1:
-                        icono_resultado = 'icono_resultado_aprobado';
-
-                        break;
                       case 4:
                         icono_resultado = 'icono_resultado_aprobado';
                         break;
                       case 2:
                         icono_resultado = 'icono_resultado_reprobado';
                         break;
-
                       case 3:
                         icono_resultado = 'icono_resultado_revision';
                         break;
                       default:
-
                         icono_resultado = 'icono_resultado_espera';
-                        break;
-
                         break;
                     }
 
+                    // 🔥 detectar proyecto
+                    let urlFinal = "Candidato_Conclusion/createPDF";
 
-                    return '<div style="display: inline-block;">' +
+                    if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
+                      urlFinal = "Candidato_Conclusion/reporteBecasPDF";
+                    }
+
+                    return (
+                      '<div style="display: inline-block;">' +
                       '<form id="reporteForm' + data +
-                      '" action="<?php echo base_url('Candidato_Conclusion/createPDF'); ?>" method="POST">' +
-                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF" class="fa-tooltip icono_datatable ' +
-                      icono_resultado + '">' +
+                      '" action="<?php echo base_url(); ?>' + urlFinal + '" method="POST">' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF' +
+                      data + '" class="fa-tooltip icono_datatable ' + icono_resultado + '">' +
                       '<i class="fas fa-file-pdf"></i>' +
                       '</a>' +
                       '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
                       '" value="' + data + '">' +
                       '</form>' +
-                      '</div>' + previo;
-
+                      '</div>' +
+                      previo
+                    );
                   }
 
                 } else {
@@ -2260,6 +2292,7 @@ function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
 
   $("#docsModalInterno").modal("show");
 }
+
 function subirDocInterno() {
   var origen = $("#origen").val();
   var nombreCandidato = $("#nameCandidatoInterno").val();

@@ -380,7 +380,7 @@
         let url_psicometria = '<?php echo base_url(); ?>_psicometria/';
         let url_clinico = '<?php echo base_url(); ?>_clinico/';
         let idioma = '<?php echo $this->session->userdata('ingles') ?>';
-      
+
         let id_cliente = '<?php echo $this->session->userdata('idcliente') ?>';
         let url_paises = '<?php echo base_url("Funciones/getPaises"); ?>'
         let url_subclientes = '<?php echo base_url("Subcliente/get_all"); ?>'
@@ -500,6 +500,7 @@
         });
 
         $(document).ready(function() {
+         
           $('#formContacto').on('submit', function(e) {
             e.preventDefault();
 
@@ -556,6 +557,42 @@
           });
 
         });
+        // Función para cargar contenido en las secciones
+        function loadSection(sectionIdToShow, url, data = {}, callback = null) {
+          if ($('#' + sectionIdToShow).length) {
+            $.ajax({
+              url: url,
+              method: "GET",
+              data: data,
+              success: function(response) {
+                $('#' + sectionIdToShow).html(response);
+                if (callback) {
+                  callback();
+                }
+                showSection(sectionIdToShow);
+              },
+              error: function(xhr) {
+                console.error(`Error al cargar la sección: ${xhr.responseText}`);
+              }
+            });
+          } else {
+            console.error(`El elemento con el id ${sectionIdToShow} no se encontró en el DOM.`);
+          }
+        }
+
+        // Función para mostrar la sección
+        function showSection(sectionIdToShow) {
+          $('.dynamic-section').hide();
+          $('#' + sectionIdToShow).show();
+
+          $('.custom-btn').removeClass('active');
+          $('.custom-btn[data-section="' + sectionIdToShow + '"]').addClass('active');
+
+          // Guardar solo las secciones que sí quieres recordar
+          if (sectionIdToShow === 'panel-inicio' || sectionIdToShow === 'seccion-bgv') {
+            localStorage.setItem('ultima_seccion_id', sectionIdToShow);
+          }
+        }
 
         function openHistory() {
           //$('#lista_candidatos').DataTable().destroy();
@@ -1057,52 +1094,33 @@
           );
         }
         // Cargar ambas secciones al principio
+        // Cargar ambas secciones al principio
         $(document).ready(function() {
           $('.dropdown-toggle').dropdown();
           $('.dynamic-section').hide();
 
           $.get("<?php echo base_url('Dashboard/client'); ?>", function(response) {
-            $('#panel-inicio').html(response).show();
-            $('.custom-btn[data-section="panel-inicio"]').addClass('active'); // Activa el botón inicial
+            $('#panel-inicio').html(response);
           });
 
           $.get("<?php echo base_url('Cliente_General/indexCliente'); ?>", function(response) {
             $('#seccion-bgv').html(response);
+
+            const ultimaSeccionId = localStorage.getItem('ultima_seccion_id');
+
+            if (
+              (ultimaSeccionId === 'panel-inicio' || ultimaSeccionId === 'seccion-bgv') &&
+              $('#' + ultimaSeccionId).length
+            ) {
+              showSection(ultimaSeccionId);
+            } else {
+              showSection('panel-inicio');
+            }
           });
         });
 
 
-        // Función para cargar contenido en las secciones
-        function loadSection(sectionIdToShow, url, data = {}, callback = null) {
-          if ($('#' + sectionIdToShow).length) {
-            $.ajax({
-              url: url,
-              method: "GET",
-              data: data,
-              success: function(response) {
-                $('#' + sectionIdToShow).html(response); // Cargar el contenido en la sección
-                if (callback) {
-                  callback(); // Ejecutar callback si existe
-                }
-                showSection(sectionIdToShow); // Mostrar la sección después de cargar
-              },
-              error: function(xhr) {
-                console.error(`Error al cargar la sección: ${xhr.responseText}`);
-              }
-            });
-          } else {
-            console.error(`El elemento con el id ${sectionIdToShow} no se encontró en el DOM.`);
-          }
-        }
 
-        // Función para mostrar la sección
-        function showSection(sectionIdToShow) {
-          $('.dynamic-section').hide();
-          $('#' + sectionIdToShow).show();
-
-          $('.custom-btn').removeClass('active');
-          $('.custom-btn[data-section="' + sectionIdToShow + '"]').addClass('active');
-        }
 
 
         function loadEnglishVersion() {
