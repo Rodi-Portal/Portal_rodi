@@ -120,30 +120,30 @@ class Empleados extends CI_Controller
     }
 
     public function goEmpleado($employeeId)
-{
-    $employeeId = (int) $employeeId;
+    {
+        $employeeId = (int) $employeeId;
 
-    $clientId = (int) $this->input->get('id_cliente');
-    $kind     = (string) $this->input->get('kind', true);   // document|course|exam
-    $itemId   = (int) $this->input->get('item_id');
-    $state    = (string) $this->input->get('state', true);  // expiring|expired
+        $clientId = (int) $this->input->get('id_cliente');
+        $kind     = (string) $this->input->get('kind', true); // document|course|exam
+        $itemId   = (int) $this->input->get('item_id');
+        $state    = (string) $this->input->get('state', true); // expiring|expired
 
-    if ($employeeId <= 0 || $clientId <= 0) {
-        show_error('Missing employee_id or id_cliente', 422);
-        return;
+        if ($employeeId <= 0 || $clientId <= 0) {
+            show_error('Missing employee_id or id_cliente', 422);
+            return;
+        }
+
+        // Redirigimos al módulo de empleados que YA tienes (Vue2 embebido)
+        // Le pasamos los datos por query para que luego Vue2 pueda “deep-link”
+        $qs = http_build_query([
+            'employee_id' => $employeeId,
+            'kind'        => $kind,
+            'item_id'     => $itemId,
+            'state'       => $state,
+        ]);
+
+        redirect(base_url("admin_clientes/showEmpleados/{$clientId}") . '?' . $qs);
     }
-
-    // Redirigimos al módulo de empleados que YA tienes (Vue2 embebido)
-    // Le pasamos los datos por query para que luego Vue2 pueda “deep-link”
-    $qs = http_build_query([
-        'employee_id' => $employeeId,
-        'kind'        => $kind,
-        'item_id'     => $itemId,
-        'state'       => $state,
-    ]);
-
-    redirect(base_url("admin_clientes/showEmpleados/{$clientId}") . '?' . $qs);
-}
 
 // estta  Funcion es para  cargar  el modulo   de Pre  empleados
     public function preEmpleados()
@@ -151,7 +151,6 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']  = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-   
 
         $data['permisos']   = $this->usuario_model->getPermisos(false, 'pre');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
@@ -201,7 +200,7 @@ class Empleados extends CI_Controller
         // Obtiene los submenús y otros datos necesarios
         $data['submenus']  = $this->rol_model->getMenu($this->session->userdata('idrol'));
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-       
+
         $data['permisos']   = $this->usuario_model->getPermisos(true, 'former');
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
 
@@ -292,7 +291,75 @@ class Empleados extends CI_Controller
         echo $scriptsView; // Mostrar scripts si es necesario
         echo $View;        // Mostrar el contenido del módulo de exempleados
     }
+    public function comunicacion_central($modulo = null)
+    {
+        $submodulos = $this->rol_model->getMenu($this->session->userdata('idrol'));
+        $items      = [];
 
+        if (! empty($submodulos)) {
+            foreach ($submodulos as $row) {
+                $items[] = (int) $row->id_submodulo;
+            }
+        }
+
+        $data['submenus']  = $items;
+        $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
+
+        $config          = $this->funciones_model->getConfiguraciones();
+        $data['version'] = $config->version_sistema;
+
+        $data['permisos'] = $this->usuario_model->getPermisos(true, 'com');
+
+        $clientes_ids         = [];
+        $clientes_disponibles = [];
+        $clientes_indexados   = [];
+
+        if (! empty($data['permisos'])) {
+            foreach ($data['permisos'] as $p) {
+                $idCliente     = isset($p['id_cliente']) ? (int) $p['id_cliente'] : 0;
+                $nombreCliente = isset($p['nombreCliente']) ? trim($p['nombreCliente']) : '';
+
+                // Ignorar filas especiales o vacías
+                if ($idCliente > 0) {
+                    $clientes_ids[] = $idCliente;
+
+                    if (! isset($clientes_indexados[$idCliente])) {
+                        $clientes_indexados[$idCliente] = true;
+
+                        $clientes_disponibles[] = [
+                            'id'     => $idCliente,
+                            'nombre' => $nombreCliente !== '' ? $nombreCliente : ('Cliente ' . $idCliente),
+                        ];
+                    }
+                }
+            }
+        }
+
+        $data['cliente_id']           = array_values(array_unique($clientes_ids));
+        $data['clientes_disponibles'] = $clientes_disponibles;
+
+        // Si no viene módulo, mostramos la vista router
+        if ($modulo === null) {
+            $View = $this->load->view('moduloComunicacion/comunicacion_router', $data, true);
+
+            echo $this->load->view('adminpanel/header', $data, true);
+            echo $this->load->view('adminpanel/scripts', $modales, true);
+            echo $View;
+            echo $this->load->view('adminpanel/footer', $config, true);
+            return;
+        }
+
+        // Normalizar módulo
+        $modulo                = ($modulo === '360') ? '360' : 'interna';
+        $data['modulo_actual'] = $modulo;
+
+        $View = $this->load->view('moduloComunicacion/comunicacion_central', $data, true);
+
+        echo $this->load->view('adminpanel/header', $data, true);
+        echo $this->load->view('adminpanel/scripts', $modales, true);
+        echo $View;
+        echo $this->load->view('adminpanel/footer', $config, true);
+    }
     public function comunicacion()
     {
         // Obtiene los submenús y otros datos necesarios

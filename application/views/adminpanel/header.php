@@ -404,7 +404,7 @@
                       <?php echo $this->lang->line('topbar_former_employees'); ?>
                     </div>
                   </a>
-                  <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion') ?>"
+                  <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion_central') ?>"
                     class="btn custom-btn former-actividades-btn">
                     <div class="module-label">
                       <?php echo $this->lang->line('topbar_module_label'); ?>

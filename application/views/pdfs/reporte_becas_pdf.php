@@ -1711,11 +1711,7 @@ th {
                     </div>
                   </td>
                 <tr>
-
-
-
                   <td style="height:40mm; padding:0; text-align:center; vertical-align:middle;">
-
                     <?php
                         $ruta_firma = '';
 
@@ -1727,12 +1723,10 @@ th {
                             }
                         }
                       ?>
-
                     <?php if (!empty($ruta_firma)): ?>
                     <img src="<?php echo $ruta_firma; ?>"
                       style="display:block; margin:0 auto; max-height:35mm; width:auto;">
                     <?php endif; ?>
-
                   </td>
                 </tr>
           </tr>
