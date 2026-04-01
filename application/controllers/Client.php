@@ -416,6 +416,14 @@ class Client extends Custom_Controller
     /*----------------------------------------*/
     public function registrar()
     {
+            echo '<pre>';
+    echo "ENTRO A registrar()\n\n";
+    echo "POST:\n";
+    print_r($_POST);
+    echo "\n\nSESSION:\n";
+    print_r($this->session->userdata());
+    echo '</pre>';
+    exit;
 
         $this->form_validation->set_rules('nombre', 'Name', 'required|trim');
         $this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
