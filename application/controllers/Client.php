@@ -778,23 +778,7 @@ class Client extends Custom_Controller
                         'secciones'             => $candidato_secciones,
 
                     ];
-echo '<pre>';
-echo "ANTES DEL CURL candidatoconprevio\n\n";
 
-echo "documentosSolicitados:\n";
-print_r($documentosSolicitados);
-
-echo "\n\ndocs_requeridos:\n";
-print_r($docs_requeridos);
-
-echo "\n\ncandidato_secciones:\n";
-print_r($candidato_secciones);
-
-echo "\n\ndata:\n";
-print_r($data);
-
-echo '</pre>';
-exit;
                     $url = API_URL . 'candidatoconprevio';
 
                     $ch = curl_init();
