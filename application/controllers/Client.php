@@ -589,7 +589,12 @@ class Client extends Custom_Controller
 
             }if ($opcion == 0) {
                   echo '<pre>';
-    echo "ENTRO A RAMA opcion == 0\n\n";
+    
+                //TODO:  aqui comienza   a trabajar
+                //----- aqui comienza   el registro del  candidaton  con un proyecto previo
+                if ($this->input->post('previo') != 0) {
+                      echo '<pre>';
+    echo "ENTRO A SUBRAMA opcion == 0 && previo != 0\n\n";
     print_r([
         'opcion' => $opcion,
         'previo_post' => $this->input->post('previo'),
@@ -597,10 +602,6 @@ class Client extends Custom_Controller
     ]);
     echo '</pre>';
     exit;
-                //TODO:  aqui comienza   a trabajar
-                //----- aqui comienza   el registro del  candidaton  con un proyecto previo
-                if ($this->input->post('previo') != 0) {
-
                     $id_proyecto_previo = $this->input->post('previo');
                     $subproyecto_previo = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
                     $pais_previo        = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
