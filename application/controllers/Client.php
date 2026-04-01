@@ -588,7 +588,6 @@ class Client extends Custom_Controller
                 }
 
             }if ($opcion == 0) {
-                  echo '<pre>';
     
                 //TODO:  aqui comienza   a trabajar
                 //----- aqui comienza   el registro del  candidaton  con un proyecto previo
