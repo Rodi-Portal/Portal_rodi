@@ -593,21 +593,30 @@ class Client extends Custom_Controller
                 //TODO:  aqui comienza   a trabajar
                 //----- aqui comienza   el registro del  candidaton  con un proyecto previo
                 if ($this->input->post('previo') != 0) {
-                      echo '<pre>';
-    echo "ENTRO A SUBRAMA opcion == 0 && previo != 0\n\n";
-    print_r([
-        'opcion' => $opcion,
-        'previo_post' => $this->input->post('previo'),
-        'previo_var' => $previo,
-    ]);
-    echo '</pre>';
-    exit;
+   
                     $id_proyecto_previo = $this->input->post('previo');
                     $subproyecto_previo = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
                     $pais_previo        = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
                     $migracion          = ($this->input->post('migracion') == '') ? null : $this->input->post('migracion');
                     $seccion            = $this->candidato_model->getProyectoPrevio($id_proyecto_previo);
+                    echo '<pre>';
+echo "DATOS DE getProyectoPrevio()\n\n";
+echo "id_proyecto_previo:\n";
+print_r($id_proyecto_previo);
 
+echo "\n\npais_previo:\n";
+print_r($pais_previo);
+
+echo "\n\nsubproyecto_previo:\n";
+print_r($subproyecto_previo);
+
+echo "\n\nmigracion:\n";
+print_r($migracion);
+
+echo "\n\nseccion:\n";
+print_r($seccion);
+echo '</pre>';
+exit;
                     //Acceo a Candidatos
                     if ($seccion->lleva_identidad == 1 || $seccion->lleva_empleos == 1 || $seccion->lleva_estudios == 1 || $seccion->lleva_domicilios == 1 || $seccion->cantidad_ref_profesionales > 0 || $seccion->cantidad_ref_personales > 0) {
                         $aux   = substr(md5(microtime()), 1, 8);
