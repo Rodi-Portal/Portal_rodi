@@ -416,14 +416,7 @@ class Client extends Custom_Controller
     /*----------------------------------------*/
     public function registrar()
     {
-            echo '<pre>';
-    echo "ENTRO A registrar()\n\n";
-    echo "POST:\n";
-    print_r($_POST);
-    echo "\n\nSESSION:\n";
-    print_r($this->session->userdata());
-    echo '</pre>';
-    exit;
+
 
         $this->form_validation->set_rules('nombre', 'Name', 'required|trim');
         $this->form_validation->set_rules('paterno', 'First lastname', 'required|trim');
@@ -471,7 +464,34 @@ class Client extends Custom_Controller
         } else {
             $id_cliente = $this->input->post('id_cliente');
         }
-
+    echo '<pre>';
+echo "VARIABLES YA PROCESADAS\n\n";
+print_r([
+    'previo'          => $previo,
+    'id_cliente'      => $id_cliente,
+    'id_portal'       => $id_portal,
+    'opcion'          => $opcion,
+    'nombre'          => $nombre,
+    'paterno'         => $paterno,
+    'materno'         => $materno,
+    'puesto'          => $puesto,
+    'puesto_otro'     => $puesto_otro,
+    'nss'             => $nss,
+    'curp'            => $curp,
+    'cel'             => $cel,
+    'correo'          => $correo,
+    'proyecto'        => $proyecto,
+    'examen'          => $examen,
+    'medico'          => $medico,
+    'region'          => $region,
+    'psicometrico'    => $psicometrico,
+    'tipo_antidoping' => $tipo_antidoping,
+    'antidoping'      => $antidoping,
+    'id_usuario'      => $id_usuario,
+    'usuario'         => $usuario,
+]);
+echo '</pre>';
+exit;
         if ($this->form_validation->run() == false) {
 
             $msj = [
