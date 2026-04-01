@@ -599,24 +599,7 @@ class Client extends Custom_Controller
                     $pais_previo        = ($this->input->post('pais_previo') == '') ? 'México' : $this->input->post('pais_previo');
                     $migracion          = ($this->input->post('migracion') == '') ? null : $this->input->post('migracion');
                     $seccion            = $this->candidato_model->getProyectoPrevio($id_proyecto_previo);
-                    echo '<pre>';
-echo "DATOS DE getProyectoPrevio()\n\n";
-echo "id_proyecto_previo:\n";
-print_r($id_proyecto_previo);
 
-echo "\n\npais_previo:\n";
-print_r($pais_previo);
-
-echo "\n\nsubproyecto_previo:\n";
-print_r($subproyecto_previo);
-
-echo "\n\nmigracion:\n";
-print_r($migracion);
-
-echo "\n\nseccion:\n";
-print_r($seccion);
-echo '</pre>';
-exit;
                     //Acceo a Candidatos
                     if ($seccion->lleva_identidad == 1 || $seccion->lleva_empleos == 1 || $seccion->lleva_estudios == 1 || $seccion->lleva_domicilios == 1 || $seccion->cantidad_ref_profesionales > 0 || $seccion->cantidad_ref_personales > 0) {
                         $aux   = substr(md5(microtime()), 1, 8);
@@ -795,7 +778,23 @@ exit;
                         'secciones'             => $candidato_secciones,
 
                     ];
+echo '<pre>';
+echo "ANTES DEL CURL candidatoconprevio\n\n";
 
+echo "documentosSolicitados:\n";
+print_r($documentosSolicitados);
+
+echo "\n\ndocs_requeridos:\n";
+print_r($docs_requeridos);
+
+echo "\n\ncandidato_secciones:\n";
+print_r($candidato_secciones);
+
+echo "\n\ndata:\n";
+print_r($data);
+
+echo '</pre>';
+exit;
                     $url = API_URL . 'candidatoconprevio';
 
                     $ch = curl_init();
