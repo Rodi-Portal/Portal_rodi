@@ -464,43 +464,35 @@ class Client extends Custom_Controller
         } else {
             $id_cliente = $this->input->post('id_cliente');
         }
-    echo '<pre>';
-echo "VARIABLES YA PROCESADAS\n\n";
-print_r([
-    'previo'          => $previo,
-    'id_cliente'      => $id_cliente,
-    'id_portal'       => $id_portal,
-    'opcion'          => $opcion,
-    'nombre'          => $nombre,
-    'paterno'         => $paterno,
-    'materno'         => $materno,
-    'puesto'          => $puesto,
-    'puesto_otro'     => $puesto_otro,
-    'nss'             => $nss,
-    'curp'            => $curp,
-    'cel'             => $cel,
-    'correo'          => $correo,
-    'proyecto'        => $proyecto,
-    'examen'          => $examen,
-    'medico'          => $medico,
-    'region'          => $region,
-    'psicometrico'    => $psicometrico,
-    'tipo_antidoping' => $tipo_antidoping,
-    'antidoping'      => $antidoping,
-    'id_usuario'      => $id_usuario,
-    'usuario'         => $usuario,
-]);
-echo '</pre>';
-exit;
+    
         if ($this->form_validation->run() == false) {
 
-            $msj = [
-                'codigo' => 0,
-                'msg'    => validation_errors(),
-            ];
-        } else {
+    echo '<pre>';
+    echo "FALLO VALIDACION PRINCIPAL\n\n";
+    echo validation_errors();
+    echo "\n\nPOST:\n";
+    print_r($_POST);
+    echo '</pre>';
+    exit;
 
-            $privacidad_usuario = 0;
+    $msj = [
+        'codigo' => 0,
+        'msg'    => validation_errors(),
+    ];
+} else {
+
+    echo '<pre>';
+    echo "PASO VALIDACION PRINCIPAL\n\n";
+    print_r([
+        'opcion' => $opcion,
+        'previo' => $this->input->post('previo'),
+        'usuario' => $usuario,
+        'id_cliente' => $id_cliente,
+    ]);
+    echo '</pre>';
+    exit;
+
+    $privacidad_usuario = 0;
             switch ($usuario) {
                 case 1:
                     $tipo_usuario = "id_usuario";
