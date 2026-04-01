@@ -467,32 +467,13 @@ class Client extends Custom_Controller
     
         if ($this->form_validation->run() == false) {
 
-    echo '<pre>';
-    echo "FALLO VALIDACION PRINCIPAL\n\n";
-    echo validation_errors();
-    echo "\n\nPOST:\n";
-    print_r($_POST);
-    echo '</pre>';
-    exit;
+            $msj = [
+                'codigo' => 0,
+                'msg'    => validation_errors(),
+            ];
+        } else {
 
-    $msj = [
-        'codigo' => 0,
-        'msg'    => validation_errors(),
-    ];
-} else {
-
-    echo '<pre>';
-    echo "PASO VALIDACION PRINCIPAL\n\n";
-    print_r([
-        'opcion' => $opcion,
-        'previo' => $this->input->post('previo'),
-        'usuario' => $usuario,
-        'id_cliente' => $id_cliente,
-    ]);
-    echo '</pre>';
-    exit;
-
-    $privacidad_usuario = 0;
+            $privacidad_usuario = 0;
             switch ($usuario) {
                 case 1:
                     $tipo_usuario = "id_usuario";
@@ -607,6 +588,15 @@ class Client extends Custom_Controller
                 }
 
             }if ($opcion == 0) {
+                  echo '<pre>';
+    echo "ENTRO A RAMA opcion == 0\n\n";
+    print_r([
+        'opcion' => $opcion,
+        'previo_post' => $this->input->post('previo'),
+        'previo_var' => $previo,
+    ]);
+    echo '</pre>';
+    exit;
                 //TODO:  aqui comienza   a trabajar
                 //----- aqui comienza   el registro del  candidaton  con un proyecto previo
                 if ($this->input->post('previo') != 0) {
