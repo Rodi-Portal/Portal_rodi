@@ -251,6 +251,8 @@ class Area_model extends CI_Model
                     'fecha'     => $mesFormateado,                        // 2026-01-01
                     'month'     => (int) $fechaInicio->format('n'),       // 1–12
                     'month_key' => strtolower($fechaInicio->format('F')), // january
+                    'nombre_mes' =>$fechaInicio->format('F'), // january
+
                     'year'      => (int) $fechaInicio->format('Y'),       // 2026
                 ];
             }
