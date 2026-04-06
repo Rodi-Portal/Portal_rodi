@@ -804,14 +804,14 @@ th {
 
     $egresos_items = [
     'Alimentación:'                  => $economia->alimentos ?? '',
-    'Créditos Hipotecarios y autos:' => $economia->infonavit ?? '',
+    'Créditos Hipotecarios y autos:' => $economia->credito_infonavit_importe ?? '',
     'Colegiaturas y mat. Escolar:'   => $economia->educacion ?? '',
     'Médicos y medicamentos:'        => $economia->medicamento ?? '',
     'Renta:'                         => $economia->renta ?? '',
     'Transporte o gasolina:'         => $economia->transporte ?? '',
     'Agua, Luz, Predial, Teléfono:'  => $economia->servicios ?? '',
-    'Tarjetas de crédito:'           => $economia->tarjeta_credito ?? '',
-    'Otros:'                         => $economia->otros ?? '',
+    'Tarjetas de crédito:'           => $economia->credito_banco_importe ?? '',
+    'Otros:'                         => $economia->credito_otro_importe ?? '',
     'Diversiones:'                   => $economia->diversion ?? '',
     ];
 
@@ -1476,7 +1476,7 @@ th {
                 <tr class="egr-row">
                   <td style="width:73%;"><?php echo htmlspecialchars($concepto); ?></td>
                   <td class="val-r" style="width:27%;">
-                    <?php echo is_numeric($valor) ? '$' . number_format((float) $valor, 2) : ''; ?>
+                  <?php echo is_numeric($valor) ? '$' . number_format((float) $valor, 2) : '$0.00'; ?>
                   </td>
                 </tr>
                 <?php endforeach; ?>
