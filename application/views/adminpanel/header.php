@@ -99,13 +99,10 @@
         <?php if ($logo == null) {
                 $logo = 'logo_nuevo.png';
         }?>
-    <a class="sidebar-brand d-flex align-items-center justify-content-center">
-    <img 
-        src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" 
-        alt="Logo"
-        style="max-width: 200px; width: 100%; height: auto; object-fit: contain;"
-    >
-</a>
+        <a class="sidebar-brand d-flex align-items-center justify-content-center">
+          <img src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo"
+            style="max-width: 200px; width: 100%; height: auto; object-fit: contain;">
+        </a>
 
         <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
         <br><br>
@@ -215,7 +212,7 @@
         <hr class="sidebar-divider">
 
         <li class="nav-item sidebar-main-item">
-          <a id="communication-btn" href="<?php echo site_url('Empleados/comunicacion') ?>" class="nav-link">
+          <a id="communication-btn" href="<?php echo site_url('Empleados/comunicacion_central') ?>" class="nav-link">
             <i class="fas fa-calendar-alt"></i>
             <span><?php echo $this->lang->line('topbar_communication'); ?></span>
           </a>
@@ -631,10 +628,6 @@
               </div>
             </div>
           </div>
-
-
-
-
 
           <!-- Modal Principal: Nuestros Proveedores Destacados -->
           <div class="modal fade" id="modalKey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1443,7 +1436,16 @@
               $('body').addClass('sidebar-toggled');
               $('.sidebar').addClass('toggled');
             }
+            // Guardar estado al usar el toggle normal del sidebar
+            $('#sidebarToggle, #sidebarToggleTop').on('click', function() {
+              setTimeout(function() {
+                const isCollapsed =
+                  $('body').hasClass('sidebar-toggled') ||
+                  $('.sidebar').hasClass('toggled');
 
+                localStorage.setItem('sidebar_hidden', isCollapsed ? '1' : '0');
+              }, 50);
+            });
           });
           $(document).on('click', '[data-target="#collapseUsuario"]', function(e) {
 

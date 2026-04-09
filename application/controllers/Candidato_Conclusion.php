@@ -601,7 +601,7 @@ class Candidato_Conclusion extends CI_Controller
             'margin_footer' => 0,
         ]);
 
-        $mpdf->shrink_tables_to_fit = 0;
+        $mpdf->shrink_tables_to_fit = 1;
         $mpdf->showImageErrors      = true;
         $mpdf->SetDisplayMode('fullwidth');
 

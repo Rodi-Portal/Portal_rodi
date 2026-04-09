@@ -319,7 +319,6 @@ class Empleados extends CI_Controller
                 $idCliente     = isset($p['id_cliente']) ? (int) $p['id_cliente'] : 0;
                 $nombreCliente = isset($p['nombreCliente']) ? trim($p['nombreCliente']) : '';
 
-                // Ignorar filas especiales o vacías
                 if ($idCliente > 0) {
                     $clientes_ids[] = $idCliente;
 
@@ -338,19 +337,25 @@ class Empleados extends CI_Controller
         $data['cliente_id']           = array_values(array_unique($clientes_ids));
         $data['clientes_disponibles'] = $clientes_disponibles;
 
-        // Si no viene módulo, mostramos la vista router
-        if ($modulo === null) {
-            $View = $this->load->view('moduloComunicacion/comunicacion_router', $data, true);
+        // Cargar archivo de idioma
+        $lang       = $this->session->userdata('lang') ?: 'es';
+        $langFolder = ($lang === 'en') ? 'english' : 'espanol';
+        $this->lang->load('comunicacion', $langFolder);
 
-            echo $this->load->view('adminpanel/header', $data, true);
-            echo $this->load->view('adminpanel/scripts', $modales, true);
-            echo $View;
-            echo $this->load->view('adminpanel/footer', $config, true);
-            return;
-        }
+        // Obtener módulos activos del portal
+        $modulosPortal = $this->cat_portales_model->getModulos();
 
-        // Normalizar módulo
-        $modulo                = ($modulo === '360') ? '360' : 'interna';
+        $data['com_habilitado'] = ! empty($modulosPortal)
+        && isset($modulosPortal['com'])
+        && (int) $modulosPortal['com'] === 1;
+
+        $data['com360_habilitado'] = ! empty($modulosPortal)
+        && isset($modulosPortal['com360'])
+        && (int) $modulosPortal['com360'] === 1;
+
+        // Si no viene módulo, dejar interna por default
+        $modulo = ($modulo === '360') ? '360' : 'interna';
+
         $data['modulo_actual'] = $modulo;
 
         $View = $this->load->view('moduloComunicacion/comunicacion_central', $data, true);

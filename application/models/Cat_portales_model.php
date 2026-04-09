@@ -532,7 +532,7 @@ class Cat_portales_model extends CI_Model
         $portal = $this->session->userdata('idPortal');
 
         // Construye la consulta SQL
-        $this->db->select("P.reclu, P.pre, P.emp, P.former, P.com")
+        $this->db->select("P.reclu, P.pre, P.emp, P.former, P.com, P.com360")
             ->from('portal AS P')
             ->where('P.status', 1)
             ->where('P.id', $portal); // Asumiendo que necesitas filtrar por el ID del portal
