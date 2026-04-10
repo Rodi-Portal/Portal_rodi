@@ -43,7 +43,7 @@
                   <option value="11">Coordinador reclutamiento</option>
                   <option value="13">Visor</option>
                 </select>
-                <input type="hidden" id="id_rolUsuarioInterno_hidden" name="id_rolUsuarioInterno">
+                <input type="hidden" id="id_rolUsuarioInterno_hidden" name="id_rolUsuarioInterno_hidden">
                 <br>
               </div>
             </div>

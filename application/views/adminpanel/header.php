@@ -100,8 +100,8 @@
                 $logo = 'logo_nuevo.png';
         }?>
         <a class="sidebar-brand d-flex align-items-center justify-content-center">
-          <img class="sidebar-logo" src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo">
-
+          <img src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo"
+            style="max-width: 200px; width: 100%; height: auto; object-fit: contain;">
         </a>
 
         <!--h2 class="text-white text-center font-weight-bold">TalentSafe Control</h2> <!-- Divider -->
@@ -157,12 +157,6 @@
         <?php }?>
         <hr class="sidebar-divider my-0">
         <!-- Menú principal -->
-        <!-- li class="nav-item sidebar-main-item">
-          <a class="nav-link" href="< ?php echo site_url('Dashboard/dashboardIndex') ?>">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>< ?php echo $this->lang->line('sidebar_dashboard'); ?> </span>
-          </a >
-        </li-->
         <li class="nav-item sidebar-main-item">
           <a class="nav-link" href="<?php echo site_url('Dashboard/show') ?>">
             <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -218,7 +212,7 @@
         <hr class="sidebar-divider">
 
         <li class="nav-item sidebar-main-item">
-          <a id="communication-btn" href="<?php echo site_url('Empleados/comunicacion') ?>" class="nav-link">
+          <a id="communication-btn" href="<?php echo site_url('Empleados/comunicacion_central') ?>" class="nav-link">
             <i class="fas fa-calendar-alt"></i>
             <span><?php echo $this->lang->line('topbar_communication'); ?></span>
           </a>
@@ -261,6 +255,12 @@
 
               <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_exempleados') ?>">
                 <?php echo $this->lang->line('sidebar_reports_former_employees'); ?>
+              </a>
+              <?php }?>
+              <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+
+              <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_rotacion') ?>">
+                <?php echo $this->lang->line('sidebar_reports_rotacion'); ?>
               </a>
               <?php }?>
             </div>
@@ -401,7 +401,7 @@
                       <?php echo $this->lang->line('topbar_former_employees'); ?>
                     </div>
                   </a>
-                  <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion') ?>"
+                  <a id="former-actividades-btn" href="<?php echo site_url('Empleados/comunicacion_central') ?>"
                     class="btn custom-btn former-actividades-btn">
                     <div class="module-label">
                       <?php echo $this->lang->line('topbar_module_label'); ?>
@@ -628,10 +628,6 @@
               </div>
             </div>
           </div>
-
-
-
-
 
           <!-- Modal Principal: Nuestros Proveedores Destacados -->
           <div class="modal fade" id="modalKey" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1440,7 +1436,16 @@
               $('body').addClass('sidebar-toggled');
               $('.sidebar').addClass('toggled');
             }
+            // Guardar estado al usar el toggle normal del sidebar
+            $('#sidebarToggle, #sidebarToggleTop').on('click', function() {
+              setTimeout(function() {
+                const isCollapsed =
+                  $('body').hasClass('sidebar-toggled') ||
+                  $('.sidebar').hasClass('toggled');
 
+                localStorage.setItem('sidebar_hidden', isCollapsed ? '1' : '0');
+              }, 50);
+            });
           });
           $(document).on('click', '[data-target="#collapseUsuario"]', function(e) {
 

@@ -305,16 +305,10 @@ document.getElementById('filtroModal')?.addEventListener('input', function() {
 // Marcar toda la sección
 function marcarFilaModal(section, effect) {
   document.querySelectorAll('#modalPermisos tr[data-section="' + section + '"]').forEach(tr => {
-    const radios = tr.querySelectorAll('input[type="radio"]');
-    radios.forEach(r => {
-      const isAllow = (effect === 'allow' && r.id.indexOf('m-allow-') === 0);
-      const isDeny = (effect === 'deny' && r.id.indexOf('m-deny-') === 0);
-      const isInherit = (effect === 'inherit' && r.id.indexOf('m-inh-') === 0);
-      if (isAllow || isDeny || isInherit) r.checked = true;
-    });
+    const radio = tr.querySelector('input[type="radio"][value="' + effect + '"]');
+    if (radio) radio.checked = true;
   });
 }
-
 // Cambiar de módulo = recargar el cuerpo del modal
 (function() {
   var baseUrl = window.BASE_URL || '<?php echo base_url(); ?>';
