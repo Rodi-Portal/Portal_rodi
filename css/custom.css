@@ -965,7 +965,7 @@ color: white;
 }
 /* Asegurarse de que el contenido no se oculte detrás del sidebar */
 #content {
-  transition: margin-left 0.3s ease; /* Suaviza la animación cuando el sidebar se abre o cierra */
+  padding-top: 0 !important;/* Suaviza la animación cuando el sidebar se abre o cierra */
 }
 
 /* Ocultar el contenido en pantallas pequeñas */
@@ -1343,9 +1343,17 @@ color: white;
   background-color: #58c4f5 !important; /* Azul claro */
   color: white;
 }
-.former-actividades-btn {
-  background-color: #bb67bb !important; /* Azul claro */
+.former-employment-btn:hover {
+  background-color: #58c4f5 !important; /* Azul claro */
   color: white;
+}
+.former-actividades-btn {
+  background-color: #1414d7 !important; /* Azul claro */
+  color: rgb(7, 6, 5) !important; 
+}
+.former-actividades-btn:hover{
+  background-color: #070766 !important; /* Azul claro */
+  color: rgb(247, 247, 246) !important; 
 }
 .bg-neutral {
   background-color: #f4f7f6; /* Gris claro elegante */
@@ -1403,11 +1411,15 @@ color: white;
   background-color: rgba(16, 16, 16, 0.397); /* Color de la barra de separación */
   z-index: 0; /* Asegura que la barra de separación esté detrás del botón */
 }
-
+.navbar.topbar {
+  padding-left: 1px !important;
+}
 /* Resaltar el botón activo */
 .custom-btn.active {
   background-color: rgba(54, 91, 131, 0.968); /* Color de fondo del botón activo */
   color: white; /* Color del texto del botón activo */
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 /* Estilo para el contenedor de botones */
@@ -1666,9 +1678,13 @@ body.sidebar-toggled #accordionSidebar .sidebar-divider {
 
 /* ===== CONTENT ===== */
 body.sidebar-toggled #content-wrapper {
-  margin-left: 6.5rem !important;
+  margin-left: 0 !important;
 }
-
+.topbar {
+  margin-bottom: 1px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
 /* ===============================
    PERFIL CENTRADO EN SIDEBAR COLLAPSED
 ================================ */

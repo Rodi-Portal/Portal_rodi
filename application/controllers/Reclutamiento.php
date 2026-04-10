@@ -708,9 +708,26 @@ class Reclutamiento extends CI_Controller
 
         // "null" (string) -> NULL real
         $medio = $this->input->post('medio', true);
+
         if ($medio === 'null' || $medio === 'NULL' || $medio === '' || $medio === null) {
-            $medio = null;
+
+            $medio = 'N/A';
+
+        } elseif ($medio === 'otro') {
+
+            $medio_otro = trim($this->input->post('medio_otro', true));
+
+            if ($medio_otro === '') {
+                $medio = 'N/A';
+            } else {
+                // Guardar el nuevo medio si no existe
+                $this->funciones_model->saveMedioContacto($medio_otro);
+
+                // Usar el valor personalizado
+                $medio = $medio_otro;
+            }
         }
+      
 
         // 3) Verifica que la requisición exista (evita FK error)
         $existsReq = $this->reclutamiento_model->existsRequisitionInPortal($req, $id_portal);

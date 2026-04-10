@@ -172,56 +172,37 @@ class Cat_usuario_model extends CI_Model
     }
     public function updatePass($id, $DatosGenerales, $uncode_password, $correo)
     {
-        /* echo '<pre>';
-  echo $id . ' aqui el id<br>';
-  echo $uncode_password . ' aqui el pass<br>';
-  echo $correo . ' aqui el correo<br>';
-  print_r($DatosGenerales);
-  echo '</pre>' */
-
+        // 1️⃣ Iniciar transacción SOLO para DB
         $this->db->trans_start();
 
-        try {
-            // Verificar si el ID existe antes de intentar actualizar
-            $this->db->where('id', $id);
-            $query = $this->db->get('datos_generales');
-            if ($query->num_rows() <= 0) {
-                throw new Exception("ID no encontrado en la base de datos.");
-            }
+        // Verificar que exista el ID
+        $query = $this->db->get_where('datos_generales', ['id' => $id]);
 
-            // Actualiza los datos en la tabla 'datos_generales'
-            $this->db->where('id', $id);
-            $this->db->update('datos_generales', $DatosGenerales);
-
-            // Muestra la consulta SQL generada para depuración
-            //echo $this->db->last_query() . '<br>';
-
-            // Verifica si la actualización fue exitosa
-            if ($this->db->affected_rows() <= 0) {
-                throw new Exception("No se actualizaron los datos en la base de datos.");
-            }
-
-            // Envía el correo y verifica si fue exitoso
-            $envioExitoso = $this->accesosUsuariosCorreo($correo, $uncode_password, 1);
-
-            if (! $envioExitoso) {
-                throw new Exception("Error al enviar el correo.");
-            }
-
-            // Finaliza la transacción
-            $this->db->trans_complete();
-
-            // Verifica si la transacción fue exitosa
-            if ($this->db->trans_status() === false) {
-                return 0; // Transacción fallida
-            } else {
-                return 1; // Transacción exitosa
-            }
-        } catch (Exception $e) {
-            // Rollback en caso de excepción
-            $this->db->trans_rollback();
-            return "error excepcion " . $e->getMessage();
+        if ($query->num_rows() <= 0) {
+            return 0;
         }
+
+        // 2️⃣ Actualizar password
+        $this->db->where('id', $id);
+        $this->db->update('datos_generales', $DatosGenerales);
+       
+        // 3️⃣ Cerrar transacción
+        $this->db->trans_complete();
+
+        // 4️⃣ Validar si DB fue exitosa
+        if ($this->db->trans_status() === false) {
+            return 0;
+        }
+
+        // 🔥 5️⃣ Enviar correo (FUERA de la transacción)
+        try {
+            $this->accesosUsuariosCorreo($correo, $uncode_password, 1);
+        } catch (Exception $e) {
+            // ❗ No afecta el flujo
+            log_message('error', 'Error enviando correo: ' . $e->getMessage());
+        }
+
+        return 1;
     }
 
     public function getById($idusuario)
@@ -254,45 +235,85 @@ class Cat_usuario_model extends CI_Model
             return false;
         }
     }
-
     public function accesosUsuariosCorreo($correo, $pass, $soloPass = 0)
     {
-        if ($correo === null || $correo === '') {
+        if (empty($correo)) {
             return false;
         }
 
-        $subject = "Credenciales TalentSafeControl";
-        // Cargar la vista email_verification_view.php
-        $message = $this->load->view('catalogos/email_credenciales_view', ['correo' => $correo, 'pass' => $pass, 'switch' => $soloPass], true);
+        // 🔐 Cargar configuración SMTP privada (NO versionada)
+        $this->config->load('email_private', true);
+        $smtp = $this->config->item('email_private', 'email_private');
 
+        // 🛑 Validación defensiva
+        if (
+            empty($smtp) ||
+            empty($smtp['host']) ||
+            empty($smtp['user']) ||
+            empty($smtp['pass']) ||
+            empty($smtp['port']) ||
+            empty($smtp['from']) ||
+            empty($smtp['fromName'])
+        ) {
+            log_message('error', 'Configuración SMTP privada incompleta o inexistente');
+            return false;
+        }
+
+        $subject = 'Credenciales TalentSafeControl';
+
+        // 📧 Cargar vista del correo
+        $message = $this->load->view(
+            'catalogos/email_credenciales_view',
+            [
+                'correo' => $correo,
+                'pass'   => $pass,
+                'switch' => $soloPass,
+            ],
+            true
+        );
+
+        // 📮 PHPMailer
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
-        $mail->isSMTP();
-        $mail->Host       = 'mail.talentsafecontrol.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'soporte@talentsafecontrol.com';
-        $mail->Password   = 'FQ{[db{}%ja-';
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
 
-        if ($correo !== null && $correo !== '') {
-            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafeControl');
-            $mail->addAddress($correo);
-        } else {
-            return false;
-        }
+        // 🧪 DEBUG SMTP (puedes apagarlo cuando funcione)
+        $mail->SMTPDebug   = 2;
+        $mail->Debugoutput = function ($str, $level) {
+            log_message('error', "SMTP DEBUG [$level]: $str");
+        };
+
+        $mail->isSMTP();
+        $mail->Host       = $smtp['host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $smtp['user'];
+        $mail->Password   = $smtp['pass'];
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port       = (int) $smtp['port'];
+        $mail->Timeout    = 20;
+
+        // 🔒 Opciones SSL (muy importante en cPanel / AlmaLinux)
+        $mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true,
+            ],
+        ];
+
+        $mail->setFrom($smtp['from'], $smtp['fromName']);
+        $mail->addAddress($correo);
 
         $mail->Subject = $subject;
-        $mail->isHTML(true);      // Enviar el correo como HTML
-        $mail->CharSet = 'UTF-8'; // Establecer la codificación de caracteres UTF-8
+        $mail->isHTML(true);
+        $mail->CharSet = 'UTF-8';
         $mail->Body    = $message;
 
-        if ($mail->send()) {
-            return true;
-        } else {
-            log_message('error', 'Error al enviar el correo: ' . $mail->ErrorInfo);
+        if (! $mail->send()) {
+            log_message('error', 'Error correo SMTP: ' . $mail->ErrorInfo);
             return false;
         }
+
+        return true;
     }
 
     //.............................................................................//

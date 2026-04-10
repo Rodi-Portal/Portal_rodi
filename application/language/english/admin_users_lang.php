@@ -120,3 +120,6 @@ $lang['admin_users_modal_btn_save']   = "Save";
 $lang['admin_users_modal_btn_update'] = "Save Changes";
 $lang['admin_users_edit_title']       = "Edit User";
 $lang['admin_users_btn_save_changes'] = "Save Changes";
+
+//$lang['dashboard_no_access_title'] = 'Access unavailable';
+//$lang['dashboard_no_access_msg']   = 'This module displays general platform indicators and metrics. You currently do not have access to this section. If you believe you should have access, please contact the administrator.';

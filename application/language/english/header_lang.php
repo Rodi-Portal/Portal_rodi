@@ -17,7 +17,7 @@ $lang['sidebar_reports_branches']                = 'Branch / client reports';
 $lang['sidebar_reports_recruitment_process']     = 'Recruitment processes';
 $lang['sidebar_reports_employees']               = 'Employees';
 $lang['sidebar_reports_former_employees']        = 'Former employees';
-
+$lang['sidebar_reports_rotacion']        = 'Turnover';
 $lang['sidebar_register']          = 'Administration';
 $lang['sidebar_admin_users']       = 'Admin users';
 $lang['sidebar_branches_clients']  = 'Branches / clients';

@@ -309,7 +309,7 @@ class Cronjobs extends CI_Controller
     public function actualizarCampo()
     {
         // Definir los datos a actualizar
-      $respuesta = $this->cronjobs_model->actualizarCampoExcluyendoPortal1();
+        $respuesta = $this->cronjobs_model->actualizarCampoExcluyendoPortal1();
 
         // Verificar si se actualizó alguna fila
     }
@@ -704,9 +704,9 @@ class Cronjobs extends CI_Controller
                         $ofac = 1;
                     }
                 }
-                $p = ($aviso == 1) ? 5 : 0;
+                $p          = ($aviso == 1) ? 5 : 0;
                 $porcentaje += $p;
-                $p2 = ($ofac == 1) ? 5 : 0;
+                $p2         = ($ofac == 1) ? 5 : 0;
                 $porcentaje += $p2;
             }
             $this->cronjobs_model->cleanAvance($c->idCandidato);
@@ -2115,7 +2115,7 @@ class Cronjobs extends CI_Controller
         print_r($data);
     }
 
- public function obtener_estado_empleado($id_portal, $id_cliente)
+    public function obtener_estado_empleado($id_portal, $id_cliente)
     {
         $api_url = API_URL;
         // URL del endpoint
@@ -2299,25 +2299,29 @@ class Cronjobs extends CI_Controller
 /*correos  para  notificaciones */
     public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
     {
+        // 🔐 cargar configuración SMTP privada (NO versionada)
+        $this->config->load('email_private', true);
+        $smtp = $this->config->item('email_private', 'email_private');
+
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
 
         try {
-                                                              // Configuración del servidor SMTP
-            $mail->isSMTP();                                  // Establecer el envío usando SMTP
-            $mail->Host       = 'mail.talentsafecontrol.com'; // Servidor SMTP
+            // Configuración del servidor SMTP
+            $mail->isSMTP();
+            $mail->Host       = $smtp['host'];
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'soporte@talentsafecontrol.com';
-            $mail->Password   = 'FQ{[db{}%ja-';
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port       = 465; // Puerto SMTP
+            $mail->Username   = $smtp['user'];
+            $mail->Password   = $smtp['pass'];
+            $mail->SMTPSecure = $smtp['secure']; // 'ssl'
+            $mail->Port       = $smtp['port'];   // 465
 
             // Remitente
-            $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
+            $mail->setFrom($smtp['from'], $smtp['fromName']);
 
             // Destinatarios
             foreach ($destinatarios as $correo) {
-                $mail->addAddress($correo); // Agrega el destinatario
+                $mail->addAddress($correo);
             }
 
             // Asunto
@@ -2326,32 +2330,33 @@ class Cronjobs extends CI_Controller
             $mail->Subject = '🔔 Notificación TalentSafe Control';
 
             $mensaje = '
-            <div style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: auto; color: #333;">
-              <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                <h2 style="color: #1a73e8; margin-top: 0;">📌 Recordatorio Importante</h2>
-                <p style="font-size: 16px;">Hola,</p>
-                <p style="font-size: 16px;">Este es un recordatorio de que tienes <strong>archivos por vencer</strong> en tu sucursal <strong>' . $nombrecliente . '</strong> en los siguientes módulos:</p>
-            
-                <ul style="font-size: 16px; padding-left: 20px; color: #444;">
-                  ' . ( !empty($modulos) ? implode('', $modulos) : '<li>No hay módulos registrados.</li>') . '
-                </ul>
-            
-                <p style="font-size: 16px;">Ingresa a tu cuenta en <a href="https://portal.talentsafecontrol.com" target="_blank" style="color: #1a73e8; text-decoration: none;">TalentSafe Control</a> para realizar las actualizaciones necesarias.</p>
-            
-                <p style="font-size: 16px;">Gracias por tu atención.</p>
-                <p style="font-size: 16px; margin-bottom: 0;">Atentamente,</p>
-                <p style="font-size: 16px; font-weight: bold; color: #1a73e8;">Equipo TalentSafe Control</p>
-              </div>
-            </div>';
-            
-            $mail->Body = $mensaje; // Asignar el cuerpo del mensaje
+        <div style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: auto; color: #333;">
+          <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #1a73e8; margin-top: 0;">📌 Recordatorio Importante</h2>
+            <p style="font-size: 16px;">Hola,</p>
+            <p style="font-size: 16px;">Este es un recordatorio de que tienes <strong>archivos por vencer</strong> en tu sucursal <strong>' . $nombrecliente . '</strong> en los siguientes módulos:</p>
+
+            <ul style="font-size: 16px; padding-left: 20px; color: #444;">
+              ' . (! empty($modulos) ? implode('', $modulos) : '<li>No hay módulos registrados.</li>') . '
+            </ul>
+
+            <p style="font-size: 16px;">Ingresa a tu cuenta en <a href="https://portal.talentsafecontrol.com" target="_blank" style="color: #1a73e8; text-decoration: none;">TalentSafe Control</a> para realizar las actualizaciones necesarias.</p>
+
+            <p style="font-size: 16px;">Gracias por tu atención.</p>
+            <p style="font-size: 16px; margin-bottom: 0;">Atentamente,</p>
+            <p style="font-size: 16px; font-weight: bold; color: #1a73e8;">Equipo TalentSafe Control</p>
+          </div>
+        </div>';
+
+            $mail->Body = $mensaje;
 
             // Enviar el correo
             $mail->send();
-            echo "<script>console.log('Correo enviado a: {$correo}');</script>";
+            echo "<script>console.log('Correo enviado correctamente');</script>";
+
         } catch (Exception $e) {
             echo "<script>console.log('No se pudo enviar el correo. Error: {$mail->ErrorInfo}');</script>";
         }
     }
-                
+
 }

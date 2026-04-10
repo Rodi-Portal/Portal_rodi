@@ -1,5 +1,4 @@
-<!-- Vista Vue -->
- <?php
+<?php
 $CI = &get_instance();
 
 // Idioma actual (como en el header)
@@ -11,9 +10,9 @@ if (ENVIRONMENT === 'development') {
 } else {
     $assets_version = $CI->config->item('assets_version') ?: '1';
 }
-?>
-<link rel="stylesheet" href="<?= base_url('public/comunicacion/comunicacion_vue3.css'); ?>?v=<?php echo $assets_version; ?>">
-<!-- script src="https://cdn.jsdelivr.net/npm/vue@3"></script -->
+?><!-- Vista Vue -->
+<link rel="stylesheet" href="<?= base_url('public/comunicacion/comunicacion_vue3.css'); ?>">
+<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 
 <?php
 // ===== 1) Slugs del módulo que vas a usar en el front =====
@@ -56,7 +55,7 @@ foreach ($SLUGS as $slug) {
 <script>
   // Slugs permitidos para el usuario actual (leerá comunicacion-vue3.js)
   window.APP_PERMS = <?= json_encode($ALLOWED) ?>;
-  console.log("🚀 ~ APP_PERMS:", window.APP_PERMS);
+ // console.log("🚀 ~ APP_PERMS:", window.APP_PERMS);
 
   // Helper de permisos compartido (Vue 2/3)
   window.$perms = {

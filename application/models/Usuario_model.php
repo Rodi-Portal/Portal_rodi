@@ -214,7 +214,7 @@ class Usuario_model extends CI_Model
         }
 
     }
-//TODO: pendiente  de revisar  esta  consulta   ya  que
+    //TODO: pendiente  de revisar  esta  consulta   ya  que
     //Consulta si el usuario-cliente que quiere loguearse existe; regresa sus datos en dado caso que exista
     public function existeUsuarioCliente($correo)
     {

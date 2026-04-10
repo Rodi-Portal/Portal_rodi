@@ -121,6 +121,7 @@ $lang['reportes_excel_dom_num_ext'] = 'Ext.';
 
 // ===== Former Employees Report =====
 $lang['reportes_ex_title']                = 'Generate Former Employees Report';
+$lang['reportes_rot_title']                = 'Generate Employee Turnover Report';
 
 // ===== Filters =====
 $lang['reportes_ex_sucursal']             = 'Select a branch:';

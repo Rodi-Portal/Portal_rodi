@@ -17,6 +17,7 @@ $lang['sidebar_reports_branches']                = 'Reportes de sucursales/clien
 $lang['sidebar_reports_recruitment_process']     = 'Procesos de Reclutamiento.';
 $lang['sidebar_reports_employees']               = 'Empleados.';
 $lang['sidebar_reports_former_employees']        = 'Exempleados.';
+$lang['sidebar_reports_rotacion']        = 'Rotacion';
 
 $lang['sidebar_register']          = 'Registrar';
 $lang['sidebar_admin_users']       = 'Usuarios Administradores';
