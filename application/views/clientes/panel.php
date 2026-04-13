@@ -1309,21 +1309,26 @@ function changeDatatable(url1) {
 
           {
             title: 'Resultado',
-            data: 'id',
-            bSortable: false,
+            data: 'liberado', // 👈 IMPORTANTE
+            "orderable": true,
             "width": "12%",
-            mRender: function(data, type, full) {
+            render: function(data, type, full) {
 
+              // 🔥 esto controla el ORDEN
+              if (type === 'sort') {
+                return data; // 1 = arriba, 0 = abajo
+              }
 
+              // 👇 tu lógica ORIGINAL intacta
               if (full.cancelado == 0) {
 
                 if (full.socioeconomico == 1) {
+
                   let icono_resultado = '';
                   let previo = '';
 
                   if (full.liberado == 0) {
 
-                    // 🔥 detectar proyecto
                     let urlPrevio = "Candidato_Conclusion/createPrevioPDF";
 
                     if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
@@ -1332,21 +1337,18 @@ function changeDatatable(url1) {
 
                     previo =
                       '<div style="display: inline-flex;">' +
-                      '<form id="reportePrevioForm' + data +
+                      '<form id="reportePrevioForm' + full.id +
                       '" action="<?php echo base_url(); ?>' + urlPrevio + '" method="POST">' +
-                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF' +
-                      data + '" class="fa-tooltip icono_datatable icono_previo">' +
+                      '<a href="javascript:void(0);" class="icono_datatable icono_previo">' +
                       '<i class="far fa-file-powerpoint"></i>' +
                       '</a>' +
-                      '<input type="hidden" name="idPDF" id="idPDF' + data + '" value="' + data + '">' +
+                      '<input type="hidden" name="idPDF" value="' + full.id + '">' +
                       '</form>' +
                       '</div>';
 
                     return previo;
 
                   } else {
-
-                    let icono_resultado = '';
 
                     switch (full.status_bgc) {
                       case 1:
@@ -1364,7 +1366,6 @@ function changeDatatable(url1) {
                         break;
                     }
 
-                    // 🔥 detectar proyecto
                     let urlFinal = "Candidato_Conclusion/createPDF";
 
                     if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
@@ -1373,17 +1374,14 @@ function changeDatatable(url1) {
 
                     return (
                       '<div style="display: inline-block;">' +
-                      '<form id="reporteForm' + data +
+                      '<form id="reporteForm' + full.id +
                       '" action="<?php echo base_url(); ?>' + urlFinal + '" method="POST">' +
-                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF' +
-                      data + '" class="fa-tooltip icono_datatable ' + icono_resultado + '">' +
+                      '<a href="javascript:void(0);" class="icono_datatable ' + icono_resultado + '">' +
                       '<i class="fas fa-file-pdf"></i>' +
                       '</a>' +
-                      '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
-                      '" value="' + data + '">' +
+                      '<input type="hidden" name="idCandidatoPDF" value="' + full.id + '">' +
                       '</form>' +
-                      '</div>' +
-                      previo
+                      '</div>'
                     );
                   }
 
