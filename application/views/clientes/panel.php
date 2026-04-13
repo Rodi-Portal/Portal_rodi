@@ -1068,40 +1068,27 @@ function changeDatatable(url1) {
     success: function(data) {
       // Normalizar los datos devueltos para que cada entrada tenga la misma estructura de objeto
       var formattedData = data.map(function(item) {
-
+        // Si el objeto solo contiene algunas propiedades, crear un nuevo objeto con la estructura completa
         if (!item.id) {
           item = {
             id: item.id_candidato_rodi,
             creacion: item.creacion,
             edicion: item.edicion,
+            // Agrega otras propiedades necesarias aquí
           };
         }
-
-        return {
-          ...item,
-          liberado: item.liberado || 0
-        };
+        return item;
       });
 
-      // 🔥 ORDEN
-      formattedData.sort((a, b) => {
-        return (Number(b.liberado) || 0) - (Number(a.liberado) || 0);
-      });
-
-      // 🔥 destruir antes
-      if ($.fn.DataTable.isDataTable('#tabla')) {
-        $('#tabla').DataTable().clear().destroy();
-      }
-
-      $('#tabla').empty();
+      $('#tablaInternos').empty();
       if ($.fn.DataTable.isDataTable('#tablaInternos')) {
         $('#tablaInternos').DataTable().clear().destroy();
       }
       // Inicializar DataTable con los datos formateados
       $('#tabla').DataTable({
         "pageLength": 10,
-        "order": [],
-        "stateSave": true,
+        "order": [[0, "desc"]]
+        "stateSave": false,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
         "data": formattedData,
@@ -1111,6 +1098,9 @@ function changeDatatable(url1) {
           "infoEmpty": "Mostrando 0 a 0 de 0 registros"
         }, // Usar los datos formateados
         "columns": [{
+            data: 'liberado',
+            visible: false
+          }, {
             title: 'Candidato',
             data: 'candidato',
             "width": "15%",
