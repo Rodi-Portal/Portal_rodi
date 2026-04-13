@@ -1088,7 +1088,7 @@ function changeDatatable(url1) {
       $('#tabla').DataTable({
         "pageLength": 10,
         "order": [],
-        "stateSave": true,
+        "stateSave": false,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
         "data": formattedData,
@@ -1112,8 +1112,10 @@ function changeDatatable(url1) {
                 '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
                 .reclutadorAspirante + '</span>' : '';
               return '<span class="badge badge-pill badge-dark">#' + full.id +
-                '</span><br><a data-toggle="tooltip" class="sin_vinculo" style="color:black;"><b>' +
-                data;
+                '</span><br>' +
+                '<a data-toggle="tooltip" class="sin_vinculo" style="color:black;">' +
+                '<b>' + data + '</b>' +
+                '</a>';
               // reclutador;
             }
           },
