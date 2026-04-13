@@ -1068,28 +1068,39 @@ function changeDatatable(url1) {
     success: function(data) {
       // Normalizar los datos devueltos para que cada entrada tenga la misma estructura de objeto
       var formattedData = data.map(function(item) {
-        // Si el objeto solo contiene algunas propiedades, crear un nuevo objeto con la estructura completa
+
         if (!item.id) {
           item = {
             id: item.id_candidato_rodi,
             creacion: item.creacion,
             edicion: item.edicion,
-            // Agrega otras propiedades necesarias aquí
           };
         }
-        return item;
+
+        return {
+          ...item,
+          liberado: item.liberado || 0
+        };
       });
 
-      $('#tablaInternos').empty();
+      // 🔥 ORDEN
+      formattedData.sort((a, b) => {
+        return (Number(b.liberado) || 0) - (Number(a.liberado) || 0);
+      });
+
+      // 🔥 destruir antes
+      if ($.fn.DataTable.isDataTable('#tabla')) {
+        $('#tabla').DataTable().clear().destroy();
+      }
+
+      $('#tabla').empty();
       if ($.fn.DataTable.isDataTable('#tablaInternos')) {
         $('#tablaInternos').DataTable().clear().destroy();
       }
       // Inicializar DataTable con los datos formateados
       $('#tabla').DataTable({
         "pageLength": 10,
-        "order": [
-          [5, "desc"]
-        ],
+        "order": [],
         "stateSave": true,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
@@ -1311,25 +1322,21 @@ function changeDatatable(url1) {
 
           {
             title: 'Resultado',
-            data: 'liberado', // 👈 IMPORTANTE
-            "orderable": true,
+            data: 'id',
+            bSortable: false,
             "width": "12%",
-            render: function(data, type, full) {
+            mRender: function(data, type, full) {
 
-              // 🔥 esto controla el ORDEN
-              if (type === 'sort' || type === 'type') {
-                return full.liberado; // 👈 clave real
-              }
-              // 👇 tu lógica ORIGINAL intacta
+
               if (full.cancelado == 0) {
 
                 if (full.socioeconomico == 1) {
-
                   let icono_resultado = '';
                   let previo = '';
 
                   if (full.liberado == 0) {
 
+                    // 🔥 detectar proyecto
                     let urlPrevio = "Candidato_Conclusion/createPrevioPDF";
 
                     if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
@@ -1338,18 +1345,21 @@ function changeDatatable(url1) {
 
                     previo =
                       '<div style="display: inline-flex;">' +
-                      '<form id="reportePrevioForm' + full.id +
+                      '<form id="reportePrevioForm' + data +
                       '" action="<?php echo base_url(); ?>' + urlPrevio + '" method="POST">' +
-                      '<a href="javascript:void(0);" class="icono_datatable icono_previo">' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF' +
+                      data + '" class="fa-tooltip icono_datatable icono_previo">' +
                       '<i class="far fa-file-powerpoint"></i>' +
                       '</a>' +
-                      '<input type="hidden" name="idPDF" value="' + full.id + '">' +
+                      '<input type="hidden" name="idPDF" id="idPDF' + data + '" value="' + data + '">' +
                       '</form>' +
                       '</div>';
 
                     return previo;
 
                   } else {
+
+                    let icono_resultado = '';
 
                     switch (full.status_bgc) {
                       case 1:
@@ -1367,6 +1377,7 @@ function changeDatatable(url1) {
                         break;
                     }
 
+                    // 🔥 detectar proyecto
                     let urlFinal = "Candidato_Conclusion/createPDF";
 
                     if (full.nombre_proyecto?.trim().toLowerCase() === "becas itea") {
@@ -1375,14 +1386,17 @@ function changeDatatable(url1) {
 
                     return (
                       '<div style="display: inline-block;">' +
-                      '<form id="reporteForm' + full.id +
+                      '<form id="reporteForm' + data +
                       '" action="<?php echo base_url(); ?>' + urlFinal + '" method="POST">' +
-                      '<a href="javascript:void(0);" class="icono_datatable ' + icono_resultado + '">' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF' +
+                      data + '" class="fa-tooltip icono_datatable ' + icono_resultado + '">' +
                       '<i class="fas fa-file-pdf"></i>' +
                       '</a>' +
-                      '<input type="hidden" name="idCandidatoPDF" value="' + full.id + '">' +
+                      '<input type="hidden" name="idCandidatoPDF" id="idCandidatoPDF' + data +
+                      '" value="' + data + '">' +
                       '</form>' +
-                      '</div>'
+                      '</div>' +
+                      previo
                     );
                   }
 
