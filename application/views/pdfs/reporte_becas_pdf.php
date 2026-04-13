@@ -534,7 +534,7 @@ th {
 </style>
 
 <?php
-    $logo = FCPATH . 'img/logo.png';
+    $logo = base_url('img/logo.png');
 
     $datos_generales = (isset($datos_generales) && is_object($datos_generales)) ? $datos_generales : (object) [];
     $familiares      = (isset($familiares) && is_array($familiares)) ? $familiares : [];
@@ -872,7 +872,7 @@ th {
                     <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
                       <tr>
                         <td style="border:none; width:28mm; text-align:left; vertical-align:middle; padding:0;">
-                          <?php if (! empty($logo) && file_exists($logo)): ?>
+                          <?php if (! empty($logo)): ?>
                           <img src="<?php echo $logo; ?>"
                             style="width:50mm; max-width:50mm; height:auto; display:block; margin:0;">
                           <?php endif; ?>
