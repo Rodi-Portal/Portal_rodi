@@ -1087,7 +1087,9 @@ function changeDatatable(url1) {
       // Inicializar DataTable con los datos formateados
       $('#tabla').DataTable({
         "pageLength": 10,
-       "order": [[5, "desc"]],
+        "order": [
+          [5, "desc"]
+        ],
         "stateSave": true,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
@@ -1315,10 +1317,9 @@ function changeDatatable(url1) {
             render: function(data, type, full) {
 
               // 🔥 esto controla el ORDEN
-              if (type === 'sort') {
-                return data; // 1 = arriba, 0 = abajo
+              if (type === 'sort' || type === 'type') {
+                return full.liberado; // 👈 clave real
               }
-
               // 👇 tu lógica ORIGINAL intacta
               if (full.cancelado == 0) {
 
