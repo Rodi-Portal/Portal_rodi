@@ -1087,7 +1087,7 @@ function changeDatatable(url1) {
       // Inicializar DataTable con los datos formateados
       $('#tabla').DataTable({
         "pageLength": 10,
-        "order": [0, "desc"],
+       "order": [[5, "desc"]],
         "stateSave": true,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
