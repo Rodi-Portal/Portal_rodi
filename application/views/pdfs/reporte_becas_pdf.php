@@ -514,10 +514,140 @@ th {
 </style>
 
 <?php
- /*--------------------------------------------------------------------------
- | Helpers localesparalavista
- | --------------------------------------------------------------------------
- */
+    $logo = FCPATH . 'img/logo.png';
+
+    $datos_generales = (isset($datos_generales) && is_object($datos_generales)) ? $datos_generales : (object) [];
+    $familiares      = (isset($familiares) && is_array($familiares)) ? $familiares : [];
+    $vivienda        = (isset($vivienda) && is_object($vivienda)) ? $vivienda : (object) [];
+    $economia        = (isset($economia) && is_object($economia)) ? $economia : (object) [];
+    $becas           = (isset($becas) && is_object($becas)) ? $becas : (object) [];
+    $fotos           = (isset($fotos) && is_array($fotos)) ? $fotos : [];
+
+    $dictamenColor = '#e9ede9';
+    if($datos_generales->status_bgc == 1){
+      $dictamenColor = '#36bd36';
+    }elseif($datos_generales->status_bgc == 3){
+        $dictamenColor = '#cba51b';
+    }elseif($datos_generales->status_bgc == 2){
+        $dictamenColor = '#cb301b';
+    }
+
+    $porcentaje = $becas->porcentaje ?? '';
+
+    $fecha_dia  = '';
+    $fecha_mes  = '';
+    $fecha_anio = '';
+
+    if (! empty($becas->fecha_apertura)) {
+    $timestamp = strtotime($becas->fecha_apertura);
+    if ($timestamp) {
+        $fecha_dia  = date('d', $timestamp);
+        $fecha_mes  = date('m', $timestamp);
+        $fecha_anio = date('Y', $timestamp);
+    }
+    }
+
+
+    $check_nueva    = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 1;
+    $check_reafilia = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 2;
+    $check_rechaza  = isset($becas->estatus_final) && (int) $becas->estatus_final === 2;
+    $check_beca     = true;
+
+    $no_expediente = $becas->no_expediente ?? '';
+    $pasaporte     = $becas->pasaporte ?? '';
+    $grado         = $becas->grado ?? '';
+    $escuela       = $becas->escuela ?? '';
+
+    $ubicacion = trim(
+    ($datos_generales->municipio_completo ?? $datos_generales->municipio ?? '') .
+    (! empty($datos_generales->estado) ? ', ' . $datos_generales->estado : '')
+    );
+
+    $nombre_alumno = $datos_generales->nombre_completo ?? '';
+    $religion      = $datos_generales->religion ?? '';
+
+    $domicilio = '';
+    if (! empty($datos_generales->domicilio_internacional)) {
+    $domicilio = $datos_generales->domicilio_internacional;
+    } else {
+    $partes_domicilio = [];
+
+    $calle_base = trim(
+        ($datos_generales->calle ?? '') .
+        (! empty($datos_generales->exterior) ? ' ' . $datos_generales->exterior : '') .
+        (! empty($datos_generales->interior) ? ' Int. ' . $datos_generales->interior : '')
+    );
+
+    if ($calle_base !== '') {
+        $partes_domicilio[] = $calle_base;
+    }
+    if (! empty($datos_generales->colonia)) {
+        $partes_domicilio[] = $datos_generales->colonia;
+    }
+    if (! empty($datos_generales->cp)) {
+        $partes_domicilio[] = 'CP ' . $datos_generales->cp;
+    }
+
+    $domicilio = implode(', ', $partes_domicilio);
+    }
+
+    $cruza_con = $becas->cruz ?? ($datos_generales->entre_calles ?? '');
+    $municipio = $datos_generales->municipio_completo ?? ($datos_generales->municipio ?? '');
+    $estado    = $datos_generales->estado ?? '';
+    $telefono  = $datos_generales->celular ?? ($datos_generales->telefono_casa ?? '');
+    $promedio  = $becas->promedio ?? '';
+
+    $conceptos_fijos = [
+    ['concepto' => 'Sueldo', 'qnal' => '', 'mensual' => $economia->sueldo ?? ''],
+    ['concepto' => 'Aportación', 'qnal' => '', 'mensual' => $economia->aportacion ?? ''],
+    ['concepto' => 'Bienes', 'qnal' => '', 'mensual' => $economia->bienes ?? ''],
+    ['concepto' => 'Deudas', 'qnal' => '', 'mensual' => $economia->deudas ?? ''],
+    ['concepto' => 'Solvencia', 'qnal' => '', 'mensual' => $economia->solvencia ?? ''],
+    ['concepto' => 'Crédito banco', 'qnal' => '', 'mensual' => $economia->credito_banco_importe ?? ''],
+    ['concepto' => 'Crédito Infonavit', 'qnal' => '', 'mensual' => $economia->credito_infonavit_importe ?? ''],
+    ['concepto' => 'Otro crédito', 'qnal' => '', 'mensual' => $economia->credito_otro_importe ?? ''],
+    ];
+
+    $total_ingreso_mensual = 0;
+    foreach ($conceptos_fijos as $item) {
+    $valor                  = is_numeric($item['mensual']) ? (float) $item['mensual'] : 0;
+    $total_ingreso_mensual += $valor;
+    }
+
+    /*
+|--------------------------------------------------------------------------
+| SECCIONES 8, 9, 10, 11 y 12
+|--------------------------------------------------------------------------
+*/
+
+    $servicio_apoyo    = $becas->servicio_apoyo ?? '';
+    $descripcion_apoyo = $becas->descripcion_apoyo ?? '';
+
+    $motivo_estudio = trim($servicio_apoyo . ' ' . $descripcion_apoyo);
+    if ($motivo_estudio === '') {
+    $motivo_estudio = 'Beca Escolar en Apoyo a la Familia.';
+    }
+
+    $diagnostico_social = $becas->diagnostico_social ?? '';
+
+    $instituciones         = strtolower(trim((string) ($becas->instituciones ?? '')));
+    $enfermedades_cronicas = $becas->enfermedades ?? '';
+    $observaciones_salud   = $becas->observaciones ?? '';
+
+    $salud_imss                 = strpos($instituciones, 'imss') !== false;
+    $salud_issste               = strpos($instituciones, 'issste') !== false;
+    $salud_ssj                  = strpos($instituciones, 'ssj') !== false;
+    $salud_dif                  = strpos($instituciones, 'dif') !== false;
+    $salud_cruz_roja            = strpos($instituciones, 'cruz roja') !== false;
+    $salud_smmc                 = strpos($instituciones, 'seguro popular') !== false || strpos($instituciones, 'smmc') !== false;
+    $salud_servicios_part       = strpos($instituciones, 'particular') !== false || strpos($instituciones, 'servicios particulares') !== false;
+    $salud_medicina_alternativa = strpos($instituciones, 'alternativa') !== false;
+
+    /*
+|--------------------------------------------------------------------------
+| Helpers locales para la vista
+|--------------------------------------------------------------------------
+*/
     if (! function_exists('imageToCoverDataUri')) {
     function imageToCoverDataUri($path, $targetW = 900, $targetH = 600)
     {
@@ -642,144 +772,8 @@ th {
     }
     }
 
-    $logo      = '';
-    $ruta_logo = FCPATH . 'img/logo.png';
-
-    if (file_exists($ruta_logo) && ! is_dir($ruta_logo)) {
-    $logo = imageToDataUri($ruta_logo);
-    }
-
-    $datos_generales = (isset($datos_generales) && is_object($datos_generales)) ? $datos_generales : (object) [];
-    $familiares      = (isset($familiares) && is_array($familiares)) ? $familiares : [];
-    $vivienda        = (isset($vivienda) && is_object($vivienda)) ? $vivienda : (object) [];
-    $economia        = (isset($economia) && is_object($economia)) ? $economia : (object) [];
-    $becas           = (isset($becas) && is_object($becas)) ? $becas : (object) [];
-    $fotos           = (isset($fotos) && is_array($fotos)) ? $fotos : [];
-
-    $dictamenColor = '#e9ede9';
-    if ($datos_generales->status_bgc == 1) {
-    $dictamenColor = '#36bd36';
-    } elseif ($datos_generales->status_bgc == 3) {
-    $dictamenColor = '#cba51b';
-    } elseif ($datos_generales->status_bgc == 2) {
-    $dictamenColor = '#cb301b';
-    }
-
-    $porcentaje = $becas->porcentaje ?? '';
-
-    $fecha_dia  = '';
-    $fecha_mes  = '';
-    $fecha_anio = '';
-
-    if (! empty($becas->fecha_apertura)) {
-    $timestamp = strtotime($becas->fecha_apertura);
-    if ($timestamp) {
-        $fecha_dia  = date('d', $timestamp);
-        $fecha_mes  = date('m', $timestamp);
-        $fecha_anio = date('Y', $timestamp);
-    }
-    }
-
-    $check_nueva    = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 1;
-    $check_reafilia = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 2;
-    $check_rechaza  = isset($becas->estatus_final) && (int) $becas->estatus_final === 2;
-    $check_beca     = true;
-
-    $no_expediente = $becas->no_expediente ?? '';
-    $pasaporte     = $becas->pasaporte ?? '';
-    $grado         = $becas->grado ?? '';
-    $escuela       = $becas->escuela ?? '';
-
-    $ubicacion = trim(
-    ($datos_generales->municipio_completo ?? $datos_generales->municipio ?? '') .
-    (! empty($datos_generales->estado) ? ', ' . $datos_generales->estado : '')
-    );
-
-    $nombre_alumno = $datos_generales->nombre_completo ?? '';
-    $religion      = $datos_generales->religion ?? '';
-
-    $domicilio = '';
-    if (! empty($datos_generales->domicilio_internacional)) {
-    $domicilio = $datos_generales->domicilio_internacional;
-    } else {
-    $partes_domicilio = [];
-
-    $calle_base = trim(
-        ($datos_generales->calle ?? '') .
-        (! empty($datos_generales->exterior) ? ' ' . $datos_generales->exterior : '') .
-        (! empty($datos_generales->interior) ? ' Int. ' . $datos_generales->interior : '')
-    );
-
-    if ($calle_base !== '') {
-        $partes_domicilio[] = $calle_base;
-    }
-    if (! empty($datos_generales->colonia)) {
-        $partes_domicilio[] = $datos_generales->colonia;
-    }
-    if (! empty($datos_generales->cp)) {
-        $partes_domicilio[] = 'CP ' . $datos_generales->cp;
-    }
-
-    $domicilio = implode(', ', $partes_domicilio);
-    }
-
-    $cruza_con = $becas->cruz ?? ($datos_generales->entre_calles ?? '');
-    $municipio = $datos_generales->municipio_completo ?? ($datos_generales->municipio ?? '');
-    $estado    = $datos_generales->estado ?? '';
-    $telefono  = $datos_generales->celular ?? ($datos_generales->telefono_casa ?? '');
-    $promedio  = $becas->promedio ?? '';
-
-    $conceptos_fijos = [
-    ['concepto' => 'Sueldo', 'qnal' => '', 'mensual' => $economia->sueldo ?? ''],
-    ['concepto' => 'Aportación', 'qnal' => '', 'mensual' => $economia->aportacion ?? ''],
-    ['concepto' => 'Bienes', 'qnal' => '', 'mensual' => $economia->bienes ?? ''],
-    ['concepto' => 'Deudas', 'qnal' => '', 'mensual' => $economia->deudas ?? ''],
-    ['concepto' => 'Solvencia', 'qnal' => '', 'mensual' => $economia->solvencia ?? ''],
-    ['concepto' => 'Crédito banco', 'qnal' => '', 'mensual' => $economia->credito_banco_importe ?? ''],
-    ['concepto' => 'Crédito Infonavit', 'qnal' => '', 'mensual' => $economia->credito_infonavit_importe ?? ''],
-    ['concepto' => 'Otro crédito', 'qnal' => '', 'mensual' => $economia->credito_otro_importe ?? ''],
-    ];
-
-    $total_ingreso_mensual = 0;
-    foreach ($conceptos_fijos as $item) {
-    $valor                  = is_numeric($item['mensual']) ? (float) $item['mensual'] : 0;
-    $total_ingreso_mensual += $valor;
-    }
-
     /*
 |--------------------------------------------------------------------------
-| SECCIONES 8, 9, 10, 11 y 12
-|--------------------------------------------------------------------------
-*/
-
-    $servicio_apoyo    = $becas->servicio_apoyo ?? '';
-    $descripcion_apoyo = $becas->descripcion_apoyo ?? '';
-
-    $motivo_estudio = trim($servicio_apoyo . ' ' . $descripcion_apoyo);
-    if ($motivo_estudio === '') {
-    $motivo_estudio = 'Beca Escolar en Apoyo a la Familia.';
-    }
-
-    $diagnostico_social = $becas->diagnostico_social ?? '';
-
-    $instituciones         = strtolower(trim((string) ($becas->instituciones ?? '')));
-    $enfermedades_cronicas = $becas->enfermedades ?? '';
-    $observaciones_salud   = $becas->observaciones ?? '';
-
-    $salud_imss                 = strpos($instituciones, 'imss') !== false;
-    $salud_issste               = strpos($instituciones, 'issste') !== false;
-    $salud_ssj                  = strpos($instituciones, 'ssj') !== false;
-    $salud_dif                  = strpos($instituciones, 'dif') !== false;
-    $salud_cruz_roja            = strpos($instituciones, 'cruz roja') !== false;
-    $salud_smmc                 = strpos($instituciones, 'seguro popular') !== false || strpos($instituciones, 'smmc') !== false;
-    $salud_servicios_part       = strpos($instituciones, 'particular') !== false || strpos($instituciones, 'servicios particulares') !== false;
-    $salud_medicina_alternativa = strpos($instituciones, 'alternativa') !== false;
-
-    /*
-
-    /*
-
- |--------------------------------------------------------------------------
 | Fotos de vivienda
 |--------------------------------------------------------------------------
 */
@@ -832,8 +826,8 @@ th {
 
     $diferencia = $total_ingresos_mensuales - $total_egresos_mensuales;
 
-    $analista    = $datos_generales->nombre_analista ?? '';
-    $fecha_final = $datos_generales->fecha_final ?? '';
+    $analista = $datos_generales->nombre_analista ?? '';
+     $fecha_final = $datos_generales->fecha_final ?? '';
 ?>
 <!-- =========================
      ENCABEZADO
@@ -1482,7 +1476,7 @@ th {
                 <tr class="egr-row">
                   <td style="width:73%;"><?php echo htmlspecialchars($concepto); ?></td>
                   <td class="val-r" style="width:27%;">
-                    <?php echo is_numeric($valor) ? '$' . number_format((float) $valor, 2) : '$0.00'; ?>
+                  <?php echo is_numeric($valor) ? '$' . number_format((float) $valor, 2) : '$0.00'; ?>
                   </td>
                 </tr>
                 <?php endforeach; ?>
@@ -1721,15 +1715,15 @@ th {
                     <?php
                         $ruta_firma = '';
 
-                        if (! empty($datos_cedula) && ! empty($datos_cedula->firma)) {
+                        if (!empty($datos_cedula) && !empty($datos_cedula->firma)) {
                             $ruta_temp = FCPATH . 'img/' . $datos_cedula->firma;
 
                             if (file_exists($ruta_temp)) {
                                 $ruta_firma = $ruta_temp;
                             }
                         }
-                    ?>
-                    <?php if (! empty($ruta_firma)): ?>
+                      ?>
+                    <?php if (!empty($ruta_firma)): ?>
                     <img src="<?php echo $ruta_firma; ?>"
                       style="display:block; margin:0 auto; max-height:35mm; width:auto;">
                     <?php endif; ?>
@@ -1761,7 +1755,7 @@ th {
           </tr>
           <tr>
             <td style="padding:1mm; font-size:11px; height:16mm;">
-              <b>Fecha: <?php echo $fecha_final ?></b>
+              <b>Fecha: <?php echo   $fecha_final ?></b>
             </td>
           </tr>
         </table>
