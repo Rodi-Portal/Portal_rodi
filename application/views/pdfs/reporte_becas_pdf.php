@@ -514,6 +514,134 @@ th {
 </style>
 
 <?php
+ /*--------------------------------------------------------------------------
+ | Helpers localesparalavista
+ | --------------------------------------------------------------------------
+ */
+    if (! function_exists('imageToCoverDataUri')) {
+    function imageToCoverDataUri($path, $targetW = 900, $targetH = 600)
+    {
+        if (empty($path) || ! file_exists($path)) {
+            return '';
+        }
+
+        $info = @getimagesize($path);
+        if (! $info) {
+            return '';
+        }
+
+        $mime = $info['mime'];
+
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $src = @imagecreatefromjpeg($path);
+                break;
+            case 'image/png':
+                $src = @imagecreatefrompng($path);
+                break;
+            case 'image/gif':
+                $src = @imagecreatefromgif($path);
+                break;
+            case 'image/webp':
+                $src = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($path) : false;
+                break;
+            default:
+                return '';
+        }
+
+        if (! $src) {
+            return '';
+        }
+
+        $srcW = imagesx($src);
+        $srcH = imagesy($src);
+
+        if ($srcW <= 0 || $srcH <= 0) {
+            imagedestroy($src);
+            return '';
+        }
+
+        $srcRatio    = $srcW / $srcH;
+        $targetRatio = $targetW / $targetH;
+
+        if ($srcRatio > $targetRatio) {
+            // imagen más ancha: recortar lados
+            $cropH = $srcH;
+            $cropW = (int) round($srcH * $targetRatio);
+            $srcX  = (int) round(($srcW - $cropW) / 2);
+            $srcY  = 0;
+        } else {
+            // imagen más alta: recortar arriba/abajo
+            $cropW = $srcW;
+            $cropH = (int) round($srcW / $targetRatio);
+            $srcX  = 0;
+            $srcY  = (int) round(($srcH - $cropH) / 2);
+        }
+
+        $dst = imagecreatetruecolor($targetW, $targetH);
+
+        imagecopyresampled(
+            $dst,
+            $src,
+            0,
+            0,
+            $srcX,
+            $srcY,
+            $targetW,
+            $targetH,
+            $cropW,
+            $cropH
+        );
+
+        ob_start();
+        imagejpeg($dst, null, 90);
+        $data = ob_get_clean();
+
+        imagedestroy($src);
+        imagedestroy($dst);
+
+        if (! $data) {
+            return '';
+        }
+
+        return 'data:image/jpeg;base64,' . base64_encode($data);
+    }
+    }
+    if (! function_exists('imageToDataUri')) {
+    function imageToDataUri($path)
+    {
+        if (empty($path) || ! file_exists($path)) {
+            return '';
+        }
+
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        $mime = 'image/jpeg';
+        if ($ext === 'png') {
+            $mime = 'image/png';
+        } elseif ($ext === 'gif') {
+            $mime = 'image/gif';
+        } elseif ($ext === 'webp') {
+            $mime = 'image/webp';
+        }
+
+        $data = @file_get_contents($path);
+        if ($data === false) {
+            return '';
+        }
+
+        return 'data:' . $mime . ';base64,' . base64_encode($data);
+    }
+    }
+
+    if (! function_exists('chkx')) {
+    function chkx($value)
+    {
+        return ! empty($value) ? '☒' : '☐';
+    }
+    }
+
     $logo      = '';
     $ruta_logo = FCPATH . 'img/logo.png';
 
@@ -648,136 +776,10 @@ th {
     $salud_medicina_alternativa = strpos($instituciones, 'alternativa') !== false;
 
     /*
-|--------------------------------------------------------------------------
-| Helpers locales para la vista
-|--------------------------------------------------------------------------
-*/
-    if (! function_exists('imageToCoverDataUri')) {
-    function imageToCoverDataUri($path, $targetW = 900, $targetH = 600)
-    {
-        if (empty($path) || ! file_exists($path)) {
-            return '';
-        }
-
-        $info = @getimagesize($path);
-        if (! $info) {
-            return '';
-        }
-
-        $mime = $info['mime'];
-
-        switch ($mime) {
-            case 'image/jpeg':
-            case 'image/jpg':
-                $src = @imagecreatefromjpeg($path);
-                break;
-            case 'image/png':
-                $src = @imagecreatefrompng($path);
-                break;
-            case 'image/gif':
-                $src = @imagecreatefromgif($path);
-                break;
-            case 'image/webp':
-                $src = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($path) : false;
-                break;
-            default:
-                return '';
-        }
-
-        if (! $src) {
-            return '';
-        }
-
-        $srcW = imagesx($src);
-        $srcH = imagesy($src);
-
-        if ($srcW <= 0 || $srcH <= 0) {
-            imagedestroy($src);
-            return '';
-        }
-
-        $srcRatio    = $srcW / $srcH;
-        $targetRatio = $targetW / $targetH;
-
-        if ($srcRatio > $targetRatio) {
-            // imagen más ancha: recortar lados
-            $cropH = $srcH;
-            $cropW = (int) round($srcH * $targetRatio);
-            $srcX  = (int) round(($srcW - $cropW) / 2);
-            $srcY  = 0;
-        } else {
-            // imagen más alta: recortar arriba/abajo
-            $cropW = $srcW;
-            $cropH = (int) round($srcW / $targetRatio);
-            $srcX  = 0;
-            $srcY  = (int) round(($srcH - $cropH) / 2);
-        }
-
-        $dst = imagecreatetruecolor($targetW, $targetH);
-
-        imagecopyresampled(
-            $dst,
-            $src,
-            0,
-            0,
-            $srcX,
-            $srcY,
-            $targetW,
-            $targetH,
-            $cropW,
-            $cropH
-        );
-
-        ob_start();
-        imagejpeg($dst, null, 90);
-        $data = ob_get_clean();
-
-        imagedestroy($src);
-        imagedestroy($dst);
-
-        if (! $data) {
-            return '';
-        }
-
-        return 'data:image/jpeg;base64,' . base64_encode($data);
-    }
-    }
-    if (! function_exists('imageToDataUri')) {
-    function imageToDataUri($path)
-    {
-        if (empty($path) || ! file_exists($path)) {
-            return '';
-        }
-
-        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-
-        $mime = 'image/jpeg';
-        if ($ext === 'png') {
-            $mime = 'image/png';
-        } elseif ($ext === 'gif') {
-            $mime = 'image/gif';
-        } elseif ($ext === 'webp') {
-            $mime = 'image/webp';
-        }
-
-        $data = @file_get_contents($path);
-        if ($data === false) {
-            return '';
-        }
-
-        return 'data:' . $mime . ';base64,' . base64_encode($data);
-    }
-    }
-
-    if (! function_exists('chkx')) {
-    function chkx($value)
-    {
-        return ! empty($value) ? '☒' : '☐';
-    }
-    }
 
     /*
-|--------------------------------------------------------------------------
+
+ |--------------------------------------------------------------------------
 | Fotos de vivienda
 |--------------------------------------------------------------------------
 */
