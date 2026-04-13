@@ -5,8 +5,16 @@ body {
   margin: 0;
   padding: 0;
   color: #000;
+  max-width: 280mm;  /* 🔥 límite real imprimible */
+  margin: 0 auto;
 }
-
+* {
+  box-sizing: border-box;
+}
+.page-wrap {
+  padding-right: 3mm;
+  padding-left: 3mm;
+}
 html,
 body {
   height: 100%;
@@ -511,6 +519,18 @@ th {
   vertical-align: top;
   padding: 0;
 }
+.tbl-caracteristicas td {
+  padding: 4px 10px;
+}
+
+.tbl-caracteristicas td.lbl {
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+.tbl-caracteristicas td:nth-child(2) {
+  padding-left: 12px;
+}
 </style>
 
 <?php
@@ -550,7 +570,7 @@ th {
 
     $check_nueva    = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 1;
     $check_reafilia = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 2;
-    $check_rechaza  = isset($becas->estatus_final) && (int) $becas->estatus_final === 2;
+    $check_rechaza  = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 3;
     $check_beca     = true;
 
     $no_expediente = $becas->no_expediente ?? '';
@@ -810,8 +830,8 @@ th {
     'Renta:'                         => $economia->renta ?? '',
     'Transporte o gasolina:'         => $economia->transporte ?? '',
     'Agua, Luz, Predial, Teléfono:'  => $economia->servicios ?? '',
-    'Tarjetas de crédito:'           => $economia->credito_banco_importe ?? '',
-    'Otros:'                         => $economia->credito_otro_importe ?? '',
+    'Tarjetas de crédito:'           => $economia->tarjeta_credito ?? '',
+    'Otros:'                         => $economia->otros ?? '',
     'Diversiones:'                   => $economia->diversion ?? '',
     ];
 
@@ -1368,7 +1388,7 @@ th {
 
                   <!-- COLUMNA DERECHA -->
                   <td class="split-col viv-col-mid" style="width:50%; vertical-align:top; border-left:1px solid #000;">
-                    <table class="tbl-clean">
+                    <table class="tbl-clean tbl-caracteristicas">
                       <tr>
                         <td colspan="2" class="clean-subtitle">5.4. Características</td>
                       </tr>
@@ -1400,10 +1420,16 @@ th {
                           <?php echo(stripos((string) ($vivienda->tipo_zona ?? ''), 'sub') !== false) ? '☒' : '☐'; ?>
                         </td>
                       </tr>
-                      <tr class="clean-line-light">
+                      <tr class="no-line">
                         <td>Rural</td>
                         <td class="chk">
                           <?php echo(stripos((string) ($vivienda->tipo_zona ?? ''), 'rural') !== false) ? '☒' : '☐'; ?>
+                        </td>
+                      </tr>
+                      <tr class="clean-line-light">
+                        <td>Periferia</td>
+                        <td class="chk">
+                          <?php echo(stripos((string) ($vivienda->tipo_zona ?? ''), 'per') !== false) ? '☒' : '☐'; ?>
                         </td>
                       </tr>
 
@@ -1476,7 +1502,7 @@ th {
                 <tr class="egr-row">
                   <td style="width:73%;"><?php echo htmlspecialchars($concepto); ?></td>
                   <td class="val-r" style="width:27%;">
-                  <?php echo is_numeric($valor) ? '$' . number_format((float) $valor, 2) : '$0.00'; ?>
+                    <?php echo is_numeric($valor) ? '$' . number_format((float) $valor, 2) : '$0.00'; ?>
                   </td>
                 </tr>
                 <?php endforeach; ?>
@@ -1711,22 +1737,22 @@ th {
                     </div>
                   </td>
                 <tr>
+
+
+
                   <td style="height:40mm; padding:0; text-align:center; vertical-align:middle;">
+
                     <?php
-                        $ruta_firma = '';
+                      $ruta_firma = FCPATH . 'img/' . $datos_cedula->firma;
+                    ?>
 
-                        if (!empty($datos_cedula) && !empty($datos_cedula->firma)) {
-                            $ruta_temp = FCPATH . 'img/' . $datos_cedula->firma;
-
-                            if (file_exists($ruta_temp)) {
-                                $ruta_firma = $ruta_temp;
-                            }
-                        }
-                      ?>
-                    <?php if (!empty($ruta_firma)): ?>
-                    <img src="<?php echo $ruta_firma; ?>"
+                    <?php if (file_exists($ruta_firma)): ?>
+                    <img src="<?php echo $ruta_firma ?>"
                       style="display:block; margin:0 auto; max-height:35mm; width:auto;">
                     <?php endif; ?>
+
+
+
                   </td>
                 </tr>
           </tr>
