@@ -1087,8 +1087,8 @@ function changeDatatable(url1) {
       // Inicializar DataTable con los datos formateados
       $('#tabla').DataTable({
         "pageLength": 10,
-        "order": [[6, "desc"]]
-        "stateSave": false,
+        "order": [],
+        "stateSave": true,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
         "data": formattedData,
@@ -1097,8 +1097,7 @@ function changeDatatable(url1) {
           "zeroRecords": "No se encontraron coincidencias",
           "infoEmpty": "Mostrando 0 a 0 de 0 registros"
         }, // Usar los datos formateados
-        "columns": [ 
-          {
+        "columns": [{
             title: 'Candidato',
             data: 'candidato',
             "width": "15%",
@@ -1395,10 +1394,6 @@ function changeDatatable(url1) {
                 return 'N/A';
               }
             }
-          },
-          {
-            data: 'liberado',
-            visible: false
           }
           // Agrega más columnas según la estructura de tus datos
         ],
