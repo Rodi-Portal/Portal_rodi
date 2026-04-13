@@ -5,16 +5,8 @@ body {
   margin: 0;
   padding: 0;
   color: #000;
-  max-width: 280mm;  /* 🔥 límite real imprimible */
-  margin: 0 auto;
 }
-* {
-  box-sizing: border-box;
-}
-.page-wrap {
-  padding-right: 3mm;
-  padding-left: 3mm;
-}
+
 html,
 body {
   height: 100%;
@@ -519,22 +511,15 @@ th {
   vertical-align: top;
   padding: 0;
 }
-.tbl-caracteristicas td {
-  padding: 4px 10px;
-}
-
-.tbl-caracteristicas td.lbl {
-  padding-right: 8px;
-  white-space: nowrap;
-}
-
-.tbl-caracteristicas td:nth-child(2) {
-  padding-left: 12px;
-}
 </style>
 
 <?php
-    $logo = FCPATH . 'img/logo.png';
+    $logo      = '';
+    $ruta_logo = FCPATH . 'img/logo.png';
+
+    if (file_exists($ruta_logo) && ! is_dir($ruta_logo)) {
+    $logo = imageToDataUri($ruta_logo);
+    }
 
     $datos_generales = (isset($datos_generales) && is_object($datos_generales)) ? $datos_generales : (object) [];
     $familiares      = (isset($familiares) && is_array($familiares)) ? $familiares : [];
@@ -544,12 +529,12 @@ th {
     $fotos           = (isset($fotos) && is_array($fotos)) ? $fotos : [];
 
     $dictamenColor = '#e9ede9';
-    if($datos_generales->status_bgc == 1){
-      $dictamenColor = '#36bd36';
-    }elseif($datos_generales->status_bgc == 3){
-        $dictamenColor = '#cba51b';
-    }elseif($datos_generales->status_bgc == 2){
-        $dictamenColor = '#cb301b';
+    if ($datos_generales->status_bgc == 1) {
+    $dictamenColor = '#36bd36';
+    } elseif ($datos_generales->status_bgc == 3) {
+    $dictamenColor = '#cba51b';
+    } elseif ($datos_generales->status_bgc == 2) {
+    $dictamenColor = '#cb301b';
     }
 
     $porcentaje = $becas->porcentaje ?? '';
@@ -567,10 +552,9 @@ th {
     }
     }
 
-
     $check_nueva    = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 1;
     $check_reafilia = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 2;
-    $check_rechaza  = isset($becas->tipo_dictamen) && (int) $becas->tipo_dictamen === 3;
+    $check_rechaza  = isset($becas->estatus_final) && (int) $becas->estatus_final === 2;
     $check_beca     = true;
 
     $no_expediente = $becas->no_expediente ?? '';
@@ -830,8 +814,8 @@ th {
     'Renta:'                         => $economia->renta ?? '',
     'Transporte o gasolina:'         => $economia->transporte ?? '',
     'Agua, Luz, Predial, Teléfono:'  => $economia->servicios ?? '',
-    'Tarjetas de crédito:'           => $economia->tarjeta_credito ?? '',
-    'Otros:'                         => $economia->otros ?? '',
+    'Tarjetas de crédito:'           => $economia->credito_banco_importe ?? '',
+    'Otros:'                         => $economia->credito_otro_importe ?? '',
     'Diversiones:'                   => $economia->diversion ?? '',
     ];
 
@@ -846,8 +830,8 @@ th {
 
     $diferencia = $total_ingresos_mensuales - $total_egresos_mensuales;
 
-    $analista = $datos_generales->nombre_analista ?? '';
-     $fecha_final = $datos_generales->fecha_final ?? '';
+    $analista    = $datos_generales->nombre_analista ?? '';
+    $fecha_final = $datos_generales->fecha_final ?? '';
 ?>
 <!-- =========================
      ENCABEZADO
@@ -1388,7 +1372,7 @@ th {
 
                   <!-- COLUMNA DERECHA -->
                   <td class="split-col viv-col-mid" style="width:50%; vertical-align:top; border-left:1px solid #000;">
-                    <table class="tbl-clean tbl-caracteristicas">
+                    <table class="tbl-clean">
                       <tr>
                         <td colspan="2" class="clean-subtitle">5.4. Características</td>
                       </tr>
@@ -1420,16 +1404,10 @@ th {
                           <?php echo(stripos((string) ($vivienda->tipo_zona ?? ''), 'sub') !== false) ? '☒' : '☐'; ?>
                         </td>
                       </tr>
-                      <tr class="no-line">
+                      <tr class="clean-line-light">
                         <td>Rural</td>
                         <td class="chk">
                           <?php echo(stripos((string) ($vivienda->tipo_zona ?? ''), 'rural') !== false) ? '☒' : '☐'; ?>
-                        </td>
-                      </tr>
-                      <tr class="clean-line-light">
-                        <td>Periferia</td>
-                        <td class="chk">
-                          <?php echo(stripos((string) ($vivienda->tipo_zona ?? ''), 'per') !== false) ? '☒' : '☐'; ?>
                         </td>
                       </tr>
 
@@ -1737,22 +1715,22 @@ th {
                     </div>
                   </td>
                 <tr>
-
-
-
                   <td style="height:40mm; padding:0; text-align:center; vertical-align:middle;">
-
                     <?php
-                      $ruta_firma = FCPATH . 'img/' . $datos_cedula->firma;
-                    ?>
+                        $ruta_firma = '';
 
-                    <?php if (file_exists($ruta_firma)): ?>
-                    <img src="<?php echo $ruta_firma ?>"
+                        if (! empty($datos_cedula) && ! empty($datos_cedula->firma)) {
+                            $ruta_temp = FCPATH . 'img/' . $datos_cedula->firma;
+
+                            if (file_exists($ruta_temp)) {
+                                $ruta_firma = $ruta_temp;
+                            }
+                        }
+                    ?>
+                    <?php if (! empty($ruta_firma)): ?>
+                    <img src="<?php echo $ruta_firma; ?>"
                       style="display:block; margin:0 auto; max-height:35mm; width:auto;">
                     <?php endif; ?>
-
-
-
                   </td>
                 </tr>
           </tr>
@@ -1781,7 +1759,7 @@ th {
           </tr>
           <tr>
             <td style="padding:1mm; font-size:11px; height:16mm;">
-              <b>Fecha: <?php echo   $fecha_final ?></b>
+              <b>Fecha: <?php echo $fecha_final ?></b>
             </td>
           </tr>
         </table>
