@@ -585,15 +585,21 @@ class Login extends CI_Controller
         $mail = $this->phpmailer_lib->load();
 
         $mail->isSMTP();
-        $mail->Host       = $smtp['host'];
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp['user'];
-        $mail->Password   = $smtp['pass'];
-        $mail->SMTPSecure = $smtp['secure'];
-        $mail->Port       = $smtp['port'];
-
+        $mail->Host        = $smtp['host'];
+        $mail->SMTPAuth    = true;
+        $mail->Username    = $smtp['user'];
+        $mail->Password    = $smtp['pass'];
+        $mail->SMTPSecure  = $smtp['secure'];
+        $mail->Port        = $smtp['port'];
+        $mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true,
+            ],
+        ];
         if ($correo !== null && $correo !== '') {
-            $mail->setFrom('soporte@talentsafecontrol.com', 'TALENTSAFE CONTROL');
+            $mail->setFrom($smtp['from'], $smtp['fromName']);
             $mail->addAddress($correo);
         } else {
             return false;
