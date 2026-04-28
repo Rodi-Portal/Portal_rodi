@@ -1755,4 +1755,4 @@ if (! empty($fotos[1]) && ! empty($fotos[1]->archivo)) {
   </td>
   </tr>
   </table>
-</div>
+</div> 
