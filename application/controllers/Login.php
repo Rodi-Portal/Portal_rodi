@@ -47,7 +47,7 @@ class Login extends CI_Controller
                 }
 
                 $this->session->set_userdata('correo', $correo);
-
+              
                 $ver = $usuario->verificacion;
 
                 // Aquí deberías establecer el tipo de acceso, no el código de autenticación

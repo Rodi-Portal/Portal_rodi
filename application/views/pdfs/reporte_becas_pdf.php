@@ -801,19 +801,18 @@ th {
 | Fotos de vivienda
 |--------------------------------------------------------------------------
 */
+$foto_vivienda_1 = '';
+$foto_vivienda_2 = '';
 
-    $foto_vivienda_1 = '';
-    $foto_vivienda_2 = '';
+if (! empty($fotos[0]) && ! empty($fotos[0]->archivo)) {
+    $ruta1 = FCPATH . '_docs/' . $fotos[0]->archivo;
+    $foto_vivienda_1 = imageToDataUri($ruta1);
+}
 
-    if (! empty($fotos[0]) && ! empty($fotos[0]->archivo)) {
-    $ruta1           = FCPATH . '_docs/' . $fotos[0]->archivo;
-    $foto_vivienda_1 = imageToCoverDataUri($ruta1, 900, 620);
-    }
-
-    if (! empty($fotos[1]) && ! empty($fotos[1]->archivo)) {
-    $ruta2           = FCPATH . '_docs/' . $fotos[1]->archivo;
-    $foto_vivienda_2 = imageToCoverDataUri($ruta2, 900, 620);
-    }
+if (! empty($fotos[1]) && ! empty($fotos[1]->archivo)) {
+    $ruta2 = FCPATH . '_docs/' . $fotos[1]->archivo;
+    $foto_vivienda_2 = imageToDataUri($ruta2);
+}
 ?>
 <?php
     $total_ingresos_mensuales = 0;
@@ -892,9 +891,10 @@ th {
                 </tr>
 
                 <tr>
-                  <td colspan="7" style="border:none; padding:0;">
+                  <td colspan="7" style="border:none; padding:0; height:32mm; vertical-align:bottom; text-align:right;">
+
                     <table align="right"
-                      style="width:72%; border-collapse:collapse; table-layout:fixed; font-size:11px; margin:0;">
+                      style="width:72%; border-collapse:collapse; table-layout:fixed; font-size:11px; margin:0 0 1mm auto;">
 
                       <!-- DICTAMEN + DEPARTAMENTO -->
                       <tr>
@@ -902,6 +902,7 @@ th {
                           style="border:none; width:20%; font-size:13px; text-align:right; font-weight:bold; padding:0.5mm 1mm 0.5mm 0;">
                           Dictamen
                         </td>
+
                         <td style="border:none; width:12%; text-align:left; padding:0.5mm 0;">
                           <table style="border-collapse:collapse; width:9mm; margin:0;">
                             <tr>
@@ -915,6 +916,7 @@ th {
                           style="border:none; width:22%; text-align:right; font-weight:bold; font-size:13px; padding:0.5mm 1mm 0.5mm 2mm;">
                           Departamento
                         </td>
+
                         <td colspan="3" style="border:none; text-align:left; padding:0.5mm 0;">
                           <span
                             style="display:inline-block; font-size:13px; min-width:28mm; text-align:center; font-weight:bold; border-bottom:1px solid #000; padding-bottom:0.2mm;">
@@ -923,90 +925,28 @@ th {
                         </td>
                       </tr>
 
-                      <!-- ESTUDIO + CHECKS -->
+                      <!-- ESPACIO PARA BAJAR FECHA -->
                       <tr>
-                        <td colspan="2"
-                          style="border:none; text-align:right; font-weight:bold; vertical-align:top; padding:1mm 1mm 0 0;">
-                          Estudio Socio-Familiar
-                        </td>
-                        <td colspan="4" style="border:none; vertical-align:top; padding:0.5mm 0 0 2mm;">
-                          <table style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:13px;">
-                            <tr>
-                              <td style="border:none; width:5mm; padding-bottom:0.4mm;">
-                                <table style="border-collapse:collapse; width:4mm; margin:0;">
-                                  <tr>
-                                    <td
-                                      style="border:1px solid #000; width:4mm; height:4mm; text-align:center; font-size:8px; line-height:3.2mm;">
-                                      <?php echo $check_nueva ? 'X' : ''; ?>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                              <td style="border:none; padding-bottom:0.4mm; vertical-align:middle; ">Nueva</td>
-                            </tr>
-
-                            <tr>
-                              <td style="border:none; width:5mm; padding-bottom:0.4mm;">
-                                <table style="border-collapse:collapse; width:4mm; margin:0;">
-                                  <tr>
-                                    <td
-                                      style="border:1px solid #000; width:3.4mm; height:3.4mm; text-align:center; font-size:8px; line-height:3.2mm;">
-                                      <?php echo $check_reafilia ? 'X' : ''; ?>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                              <td style="border:none; padding-bottom:0.4mm; vertical-align:middle;">Se ratifica</td>
-                            </tr>
-
-                            <tr>
-                              <td style="border:none; width:5mm; padding-bottom:0.4mm;">
-                                <table style="border-collapse:collapse; width:3.4mm; margin:0;">
-                                  <tr>
-                                    <td
-                                      style="border:1px solid #000; width:3.4mm; height:3.4mm; text-align:center; font-size:8px; line-height:3.2mm;">
-                                      <?php echo $check_rechaza ? 'X' : ''; ?>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                              <td style="border:none; padding-bottom:0.4mm; vertical-align:middle;">Se rechaza</td>
-                            </tr>
-
-
-                          </table>
-                        </td>
+                        <td colspan="6" style="border:none; height:12mm;"></td>
                       </tr>
 
+                      <!-- FECHA PEGADA ABAJO Y A LA DERECHA -->
                       <tr>
-                        <td colspan="6" style="border:none; height:0.2mm;"></td>
-                      </tr>
+                        <td colspan="6" style="border:none; padding:0; text-align:right; vertical-align:bottom;">
 
-                      <!-- PORCENTAJE + FECHA -->
-                      <tr>
-                        <td style="border:none; text-align:right; font-weight:bold; padding:0.4mm 1mm 0.4mm 0;">
-                          Porcentaje
-                        </td>
-                        <td style="border:none; text-align:left; padding:0.4mm 0;">
-                          <table style="width:12mm; border-collapse:collapse;">
+                          <table align="right"
+                            style="width:45mm; border-collapse:collapse; table-layout:fixed; font-size:8px; margin:0 0 0 auto;">
+
                             <tr>
-                              <td
-                                style="border:none; border-bottom:1px solid #000; text-align:center; font-weight:bold; font-size:11px; height:3mm;">
-                                <?php echo htmlspecialchars($porcentaje); ?> %
+                              <td colspan="4"
+                                style="border:none; text-align:left; font-weight:bold; padding:0 0 1mm 0; white-space:nowrap;">
+                                Fecha de apertura
                               </td>
                             </tr>
-                          </table>
-                        </td>
 
-                        <td
-                          style="border:none; text-align:right; font-weight:bold; padding:0.4mm 1mm 0.4mm 2mm; white-space:nowrap;">
-                          Fecha de apertura
-                        </td>
-                        <td colspan="3" style="border:none; padding:0.4mm 0;">
-                          <table style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:8px;">
                             <tr>
-                              <td style="border:none; width:16%; text-align:left;">
-                                <table style="width:9mm; border-collapse:collapse;">
+                              <td style="border:none; width:10mm; text-align:center;">
+                                <table style="width:9mm; border-collapse:collapse; margin:0 auto;">
                                   <tr>
                                     <td
                                       style="border:none; border-bottom:1px solid #000; text-align:center; font-weight:bold; font-size:11px; height:3mm;">
@@ -1015,8 +955,9 @@ th {
                                   </tr>
                                 </table>
                               </td>
-                              <td style="border:none; width:16%; text-align:left;">
-                                <table style="width:9mm; border-collapse:collapse;">
+
+                              <td style="border:none; width:10mm; text-align:center;">
+                                <table style="width:9mm; border-collapse:collapse; margin:0 auto;">
                                   <tr>
                                     <td
                                       style="border:none; border-bottom:1px solid #000; text-align:center; font-weight:bold; font-size:11px; height:3mm;">
@@ -1025,8 +966,9 @@ th {
                                   </tr>
                                 </table>
                               </td>
-                              <td style="border:none; width:20%; text-align:left;">
-                                <table style="width:12mm; border-collapse:collapse;">
+
+                              <td style="border:none; width:13mm; text-align:center;">
+                                <table style="width:12mm; border-collapse:collapse; margin:0 auto;">
                                   <tr>
                                     <td
                                       style="border:none; border-bottom:1px solid #000; text-align:center; font-weight:bold; font-size:11px; height:3mm;">
@@ -1035,8 +977,10 @@ th {
                                   </tr>
                                 </table>
                               </td>
-                              <td style="border:none; width:48%;"></td>
+
+                              <td style="border:none; width:12mm;"></td>
                             </tr>
+
                             <tr>
                               <td
                                 style="border:none; text-align:center; font-size:10px; font-weight:bold; padding-top:0.2mm;">
@@ -1049,11 +993,14 @@ th {
                                 Año</td>
                               <td style="border:none;"></td>
                             </tr>
+
                           </table>
+
                         </td>
                       </tr>
 
                     </table>
+
                   </td>
                 </tr>
 
@@ -1583,10 +1530,10 @@ th {
 
                         <!-- FOTO 1 -->
                         <td
-                          style="width:67.25mm; height:85mm; padding:0; vertical-align:middle; text-align:center; overflow:hidden;">
+                          style="width:67.25mm; height:85mm; padding:0 !important; padding-top:0 !important; padding-bottom:0 !important; line-height:0; vertical-align:middle; text-align:center;">
                           <?php if (! empty($foto_vivienda_1)): ?>
                           <img src="<?php echo $foto_vivienda_1; ?>"
-                            style="width:67.25mm; height:85mm; display:block; margin:0;">
+                            style="width:67.25mm; height:auto; display:block; margin:0 auto; padding:0; border:none;">
                           <?php else: ?>
                           <div style="width:67.25mm; height:85mm; line-height:85mm; text-align:center;">
                             Sin fotografía
@@ -1596,10 +1543,10 @@ th {
 
                         <!-- FOTO 2 -->
                         <td
-                          style="width:67.25mm; height:85mm; padding:0; vertical-align:middle; text-align:center; overflow:hidden;">
+                          style="width:67.25mm; height:85mm; padding:0 !important; padding-top:0 !important; padding-bottom:0 !important; line-height:0; vertical-align:middle; text-align:center;">
                           <?php if (! empty($foto_vivienda_2)): ?>
                           <img src="<?php echo $foto_vivienda_2; ?>"
-                            style="width:67.25mm; height:85mm; display:block; margin:0;">
+                            style="width:67.25mm; height:auto; display:block; margin:0 auto; padding:0; border:none;">
                           <?php else: ?>
                           <div style="width:67.25mm; height:85mm; line-height:85mm; text-align:center;">
                             Sin fotografía
@@ -1747,17 +1694,15 @@ th {
                   <td style="height:40mm; padding:0; text-align:center; vertical-align:middle;">
 
                     <?php
-                        $ruta_firma = '';
-
-                        if (! empty($datos_cedula->firma)) {
-                            $ruta_firma = FCPATH . 'img/' . $datos_cedula->firma;
-                        }
+                        $ruta_firma = FCPATH . 'img/' . $datos_cedula->firma;
                     ?>
 
-                    <?php if (! empty($ruta_firma) && is_file($ruta_firma)): ?>
-                    <img src="<?php echo $ruta_firma; ?>"
+                    <?php if (file_exists($ruta_firma)): ?>
+                    <img src="<?php echo $ruta_firma ?>"
                       style="display:block; margin:0 auto; max-height:35mm; width:auto;">
                     <?php endif; ?>
+
+
 
                   </td>
                 </tr>
