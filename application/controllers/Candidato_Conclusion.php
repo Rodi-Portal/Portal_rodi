@@ -518,7 +518,7 @@ class Candidato_Conclusion extends CI_Controller
         ];
         echo json_encode($msj);
     }
-   public function createPDF()
+    public function createPDF()
     {
         //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
         ini_set('pcre.backtrack_limit', '50000000');
