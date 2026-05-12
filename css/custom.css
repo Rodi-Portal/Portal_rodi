@@ -1348,12 +1348,39 @@ color: white;
   color: white;
 }
 .former-actividades-btn {
-  background-color: #1414d7 !important; /* Azul claro */
-  color: rgb(7, 6, 5) !important; 
+  background: linear-gradient(
+    135deg,
+    #1d4ed8 0%,
+    #1e40af 100%
+  ) !important;
+color: #ffffff !important;
+
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+
+  box-shadow:
+    0 8px 22px rgba(30, 64, 175, 0.18);
 }
-.former-actividades-btn:hover{
-  background-color: #070766 !important; /* Azul claro */
-  color: rgb(247, 247, 246) !important; 
+
+.former-actividades-btn:hover {
+  background: linear-gradient(
+    135deg,
+    #1e3a8a 0%,
+    #172554 100%
+  ) !important;
+
+    color: #d4a72c !important;
+
+  border: 1px solid rgba(212, 167, 44, 0.22);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.22);
 }
 .bg-neutral {
   background-color: #f4f7f6; /* Gris claro elegante */

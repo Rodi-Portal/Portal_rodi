@@ -1,38 +1,9 @@
-<div class="container-fluid px-0 py-0">
-  <div class="com-switch-wrap">
-    <a href="<?php echo site_url('empleados/comunicacion_central/interna'); ?>"
-      class="com-switch-btn <?php echo ($modulo_actual === 'interna') ? 'active' : ''; ?>"
-      data-modulo="interna">
-      <?= $this->lang->line('com_tab_internal'); ?>
-    </a>
-
-    <a href="<?php echo site_url('empleados/comunicacion_central/360'); ?>"
-      class="com-switch-btn <?php echo ($modulo_actual === '360') ? 'active' : ''; ?>"
-      data-modulo="360">
-      <?= $this->lang->line('com_tab_360'); ?>
-    </a>
-  </div>
-
-  <div class="com-content mt-0">
-    <?php
-      if ($modulo_actual === 'interna') {
-          if (! empty($com_habilitado)) {
-              $this->load->view('moduloComunicacion/embeds/comunicacion_interna_embed');
-          } else {
-              $this->load->view('moduloComunicacion/descripcion_comunicacion_interna');
-          }
-      } else {
-          if (! empty($com360_habilitado)) {
-              $this->load->view('moduloComunicacion/embeds/comunicacion_360_embed');
-          } else {
-              $this->load->view('moduloComunicacion/descripcion_comunicacion_360');
-          }
-      }
-    ?>
-  </div>
-</div>
-
 <style>
+.com-page-shell {
+  min-height: calc(100vh - 80px);
+  background: #f8fafc;
+}
+
 .com-switch-wrap {
   display: flex;
   align-items: center;
@@ -91,6 +62,40 @@
   }
 }
 </style>
+
+<div class="container-fluid px-0 py-0 com-page-shell">
+  <div class="com-switch-wrap">
+    <a href="<?php echo site_url('empleados/comunicacion_central/interna'); ?>"
+      class="com-switch-btn <?php echo ($modulo_actual === 'interna') ? 'active' : ''; ?>"
+      data-modulo="interna">
+      <?= $this->lang->line('com_tab_internal'); ?>
+    </a>
+
+    <a href="<?php echo site_url('empleados/comunicacion_central/360'); ?>"
+      class="com-switch-btn <?php echo ($modulo_actual === '360') ? 'active' : ''; ?>"
+      data-modulo="360">
+      <?= $this->lang->line('com_tab_360'); ?>
+    </a>
+  </div>
+
+  <div class="com-content mt-0">
+    <?php
+      if ($modulo_actual === 'interna') {
+          if (! empty($com_habilitado)) {
+              $this->load->view('moduloComunicacion/embeds/comunicacion_interna_embed');
+          } else {
+              $this->load->view('moduloComunicacion/descripcion_comunicacion_interna');
+          }
+      } else {
+          if (! empty($com360_habilitado)) {
+              $this->load->view('moduloComunicacion/embeds/comunicacion_360_embed');
+          } else {
+              $this->load->view('moduloComunicacion/descripcion_comunicacion_360');
+          }
+      }
+    ?>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
