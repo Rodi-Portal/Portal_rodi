@@ -627,93 +627,130 @@
 <div class="modal fade" id="documentosModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h4 class="modal-title">Documentos del candidato: <span class="nombreCandidato"></span></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <h4 class="modal-title">
+          <?php echo t('preemployment_candidate_documents_title'); ?>:
+          <span class="nombreCandidato"></span>
+        </h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('preemployment_close'); ?>">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
+
         <form id="d_documentos">
+
           <div class="alert alert-info">
-            <p class="text-center">Comprobante de estudios (cedula, titulo o constancia) <br>
+            <p class="text-center">
+              <?php echo t('preemployment_study_proof'); ?> <br>
             <div id="doc_estudios"></div>
             </p>
           </div>
+
           <div class="row">
             <div class="col-md-6">
-              <label>Número de documento</label>
+              <label><?php echo t('preemployment_document_number'); ?></label>
               <input type="text" class="form-control" name="lic_profesional" id="lic_profesional">
               <br>
             </div>
+
             <div class="col-md-6">
-              <label>Fecha / Institución</label>
+              <label><?php echo t('preemployment_date_institution'); ?></label>
               <input type="text" class="form-control" name="lic_institucion" id="lic_institucion">
               <br>
             </div>
           </div>
+
           <div class="alert alert-info">
-            <p class="text-center">INE <br>
+            <p class="text-center">
+              <?php echo t('preemployment_ine'); ?> <br>
             <div id="doc_ine"></div>
             </p>
           </div>
+
           <div class="row">
             <div class="col-md-4">
-              <label>ID o clave</label>
-              <input type="text" class="form-control" name="ine_clave" id="ine_clave" onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()" maxlength="18">
+              <label><?php echo t('preemployment_id_or_key'); ?></label>
+              <input type="text" class="form-control" name="ine_clave" id="ine_clave"
+                onKeyUp="document.getElementById(this.id).value=document.getElementById(this.id).value.toUpperCase()"
+                maxlength="18">
               <br>
             </div>
+
             <div class="col-md-4">
-              <label>Año de registro</label>
+              <label><?php echo t('preemployment_registration_year'); ?></label>
               <input type="text" class="form-control solo_numeros" name="ine_registro" id="ine_registro" maxlength="4">
               <br>
             </div>
+
             <div class="col-md-4">
-              <label>Número vertical</label>
+              <label><?php echo t('preemployment_vertical_number'); ?></label>
               <input type="text" class="form-control solo_numeros" name="ine_vertical" id="ine_vertical" maxlength="13">
               <br>
             </div>
           </div>
+
           <div class="row">
             <div class="col-md-4">
-              <label>Fecha / Institución</label>
+              <label><?php echo t('preemployment_date_institution'); ?></label>
               <input type="text" class="form-control" name="ine_institucion" id="ine_institucion">
               <br>
             </div>
           </div>
+
           <div class="alert alert-info">
-            <p class="text-center">Carta de no antecedentes penales (carta policía) <br>
+            <p class="text-center">
+              <?php echo t('preemployment_criminal_record'); ?> <br>
             <div id="doc_penales"></div>
             </p>
           </div>
+
           <div class="row">
             <div class="col-md-6">
-              <label>Número de documento</label>
+              <label><?php echo t('preemployment_document_number'); ?></label>
               <input type="text" class="form-control" name="penales_numero" id="penales_numero">
               <br>
             </div>
+
             <div class="col-md-6">
-              <label>Fecha / Institución</label>
+              <label><?php echo t('preemployment_date_institution'); ?></label>
               <input type="text" class="form-control" name="penales_institucion" id="penales_institucion">
               <br><br>
             </div>
           </div>
+
           <div class="alert alert-info">
-            <p class="text-center">Comentarios * </p>
+            <p class="text-center">
+              <?php echo t('preemployment_comments'); ?>
+            </p>
           </div>
+
           <div class="row">
             <div class="col-md-12">
               <textarea class="form-control" name="doc_comentarios" id="doc_comentarios" rows="2"></textarea>
               <br>
             </div>
           </div>
+
         </form>
+
         <div id="msj_error" class="alert alert-danger hidden"></div>
+
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success" onclick="guardarDocumentacion()">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('preemployment_cancel'); ?>
+        </button>
+
+        <button type="button" class="btn btn-success" onclick="guardarDocumentacion()">
+          <?php echo t('preemployment_save'); ?>
+        </button>
       </div>
+
     </div>
   </div>
 </div>

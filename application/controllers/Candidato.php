@@ -7,15 +7,37 @@ require_once APPPATH . 'src/CryptoJsAes.php';
 class Candidato extends Custom_Controller
 {
 
-    public function __construct()
-    {
-        parent::__construct();
-        if (! $this->session->userdata('id')) {
-            redirect('Login/index');
-        }
-        $this->load->library('usuario_sesion');
-        $this->usuario_sesion->checkStatusBD();
+   public function __construct()
+{
+    parent::__construct();
+
+    // ✅ Helpers
+    $this->load->helper(['url', 'language', 'i18n']);
+
+    // 🔒 Validar sesión
+    if (! $this->session->userdata('id')) {
+        redirect('Login/index');
     }
+
+    // ✅ Idioma actual
+    $raw = strtolower((string) ($this->session->userdata('lang') ?: 'es'));
+
+    $map = [
+        'es'      => 'espanol',
+        'en'      => 'english',
+        'spanish' => 'espanol',
+        'english' => 'english',
+    ];
+
+    $lang = $map[$raw] ?? 'espanol';
+
+    // ✅ Cargar archivo de idioma
+    $this->lang->load('pre_empleo', $lang);
+
+    // ✅ Librerías
+    $this->load->library('usuario_sesion');
+    $this->usuario_sesion->checkStatusBD();
+}
 
     public function getById()
     {
@@ -1855,20 +1877,24 @@ class Candidato extends Custom_Controller
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($http_status !== 200) {
+       if ($http_status !== 200) {
+
             echo '<table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Archivo</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Fecha de carga</th>
-                            <th scope="col">Eliminar</th>
+                            <th scope="col">' . t('preemployment_file') . '</th>
+                            <th scope="col">' . t('preemployment_name') . '</th>
+                            <th scope="col">' . t('preemployment_upload_date') . '</th>
+                            <th scope="col">' . t('preemployment_delete') . '</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td class="text-center" colspan="3">No documents yet</td></tr>
+                        <tr>
+                            <td class="text-center" colspan="3">' . t('preemployment_no_documents_yet') . '</td>
+                        </tr>
                     </tbody>
                 </table>';
+
             return;
         }
 
@@ -1881,10 +1907,11 @@ class Candidato extends Custom_Controller
             $salida .= '<table class="table table-striped">';
             $salida .= '<thead>';
             $salida .= '<tr>';
-            $salida .= '<th width="40%" scope="col">Archivo</th>';
-            $salida .= '<th scope="col">Nombre</th>';
-            $salida .= '<th scope="col">Fecha de carga</th>';
-            $salida .= '<th scope="col">Eliminar</th>';
+            $salida .= '<th width="40%" scope="col">' . t('preemployment_file') . '</th>';
+            $salida .= '<th scope="col">' . t('preemployment_name') . '</th>';
+            $salida .= '<th scope="col">' . t('preemployment_upload_date') . '</th>';
+            $salida .= '<th scope="col">' . t('preemployment_delete') . '</th>';
+
             $salida .= '</tr>';
             $salida .= '</thead>';
             $salida .= '<tbody>';
@@ -2071,19 +2098,24 @@ class Candidato extends Custom_Controller
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($http_status !== 200) {
+            if ($http_status !== 200) {
+
             echo '<table class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Archivo</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Fecha de carga</th>
+                            <th scope="col">' . t('preemployment_file') . '</th>
+                            <th scope="col">' . t('preemployment_name') . '</th>
+                            <th scope="col">' . t('preemployment_upload_date') . '</th>
+                            <th scope="col">' . t('preemployment_delete') . '</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td class="text-center" colspan="3">No documents yet</td></tr>
+                        <tr>
+                            <td class="text-center" colspan="3">' . t('preemployment_no_documents_yet') . '</td>
+                        </tr>
                     </tbody>
                 </table>';
+
             return;
         }
 
@@ -2096,9 +2128,9 @@ class Candidato extends Custom_Controller
             $salida .= '<table class="table table-striped">';
             $salida .= '<thead>';
             $salida .= '<tr>';
-            $salida .= '<th width="40%" scope="col">Archivo</th>';
-            $salida .= '<th scope="col">Nombre</th>';
-            $salida .= '<th scope="col">Fecha de carga</th>';
+            $salida .= '<th width="40%" scope="col">' . t('preemployment_file') . '</th>';
+            $salida .= '<th scope="col">' . t('preemployment_name') . '</th>';
+            $salida .= '<th scope="col">' . t('preemployment_upload_date') . '</th>';
             $salida .= '</tr>';
             $salida .= '</thead>';
             $salida .= '<tbody>';
