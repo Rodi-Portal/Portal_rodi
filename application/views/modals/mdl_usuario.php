@@ -168,63 +168,146 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="modalLinkEmpleado" tabindex="-1" role="dialog" aria-labelledby="titleLinkEmpleado"
-  aria-hidden="true">
+<div class="modal fade" id="modalLinkEmpleado" tabindex="-1" role="dialog"
+  aria-labelledby="titleLinkEmpleado" aria-hidden="true">
+
   <div class="modal-dialog modal-md" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h5 id="titleLinkEmpleado" class="modal-title">Link de PreEmpleo</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+
+        <h5 id="titleLinkEmpleado" class="modal-title">
+          <?php echo t('preemployment_link_title'); ?>
+        </h5>
+
+        <button type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="<?php echo t('preemployment_close'); ?>">
+
           <span>&times;</span>
         </button>
       </div>
 
       <div class="modal-body">
+
         <!-- Loader -->
         <div id="lk_loader" class="text-center my-3" style="display:none;">
           <div class="spinner-border" role="status"></div>
-          <div class="small mt-2">Cargando…</div>
+
+          <div class="small mt-2">
+            <?php echo t('preemployment_loading'); ?>
+          </div>
         </div>
 
         <!-- SIN LINK -->
         <div id="lk_empty" class="alert alert-warning" style="display:none;">
-          No hay link disponible para este empleado.
+          <?php echo t('preemployment_no_link_available'); ?>
         </div>
 
         <!-- CON LINK -->
         <div id="lk_info" style="display:none;">
+
           <p class="mb-2">
-            <b>Estado:</b>
+            <b><?php echo t('preemployment_status'); ?>:</b>
+
             <span id="lk_estado" class="badge badge-secondary">—</span>
           </p>
 
           <div class="form-group mb-2">
-            <label class="mb-1"><b>Link:</b></label>
+
+            <label class="mb-1">
+              <b><?php echo t('preemployment_link'); ?>:</b>
+            </label>
+
             <div class="d-flex align-items-center">
-              <a id="lk_url" href="#" target="_blank" class="text-truncate" style="max-width: 100%;">—</a>
-              <button id="lk_copy" type="button" class="btn btn-outline-secondary btn-sm ml-2">Copiar</button>
+
+              <a id="lk_url"
+                href="#"
+                target="_blank"
+                class="text-truncate"
+                style="max-width: 100%;">
+
+                —
+              </a>
+
+              <button id="lk_copy"
+                type="button"
+                class="btn btn-outline-secondary btn-sm ml-2">
+
+                <?php echo t('preemployment_copy'); ?>
+              </button>
+
             </div>
           </div>
 
           <div class="text-center my-3">
-            <img id="lk_qr" src="" alt="QR" class="img-fluid border p-1" style="max-height:220px;">
+            <img id="lk_qr"
+              src=""
+              alt="QR"
+              class="img-fluid border p-1"
+              style="max-height:220px;">
           </div>
 
           <ul class="list-unstyled small mb-0">
-            <li><b>Creación:</b> <span id="lk_creacion">—</span></li>
-            <li><b>Expira:</b> <span id="lk_expira">—</span></li>
-            <li><b>Usado en:</b> <span id="lk_used">—</span></li>
-            <li><b>Revocado:</b> <span id="lk_revoked">—</span></li>
-            <li><b>JTI:</b> <span id="lk_jti">—</span></li>
-            <li><b>SHA16:</b> <span id="lk_sha">—</span></li>
+
+            <li>
+              <b><?php echo t('preemployment_creation'); ?>:</b>
+              <span id="lk_creacion">—</span>
+            </li>
+
+            <li>
+              <b><?php echo t('preemployment_expires'); ?>:</b>
+              <span id="lk_expira">—</span>
+            </li>
+
+            <li>
+              <b><?php echo t('preemployment_used_at'); ?>:</b>
+              <span id="lk_used">—</span>
+            </li>
+
+            <li>
+              <b><?php echo t('preemployment_revoked'); ?>:</b>
+              <span id="lk_revoked">—</span>
+            </li>
+
+            <li>
+              <b>JTI:</b>
+              <span id="lk_jti">—</span>
+            </li>
+
+            <li>
+              <b>SHA16:</b>
+              <span id="lk_sha">—</span>
+            </li>
+
           </ul>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button id="lk_btn_regen" type="button" class="btn btn-primary">Crear / Actualizar</button>
-        <button id="lk_btn_revoke" type="button" class="btn btn-danger">Revocar / Eliminar</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+
+        <button id="lk_btn_regen"
+          type="button"
+          class="btn btn-primary">
+
+          <?php echo t('preemployment_create_update'); ?>
+        </button>
+
+        <button id="lk_btn_revoke"
+          type="button"
+          class="btn btn-danger">
+
+          <?php echo t('preemployment_revoke_delete'); ?>
+        </button>
+
+        <button type="button"
+          class="btn btn-secondary"
+          data-dismiss="modal">
+
+          <?php echo t('preemployment_close'); ?>
+        </button>
+
       </div>
     </div>
   </div>
