@@ -146,3 +146,17 @@ $lang['preemployment_branch_client'] = 'Sucursal (cliente)';
 $lang['preemployment_loading_branches'] = 'Cargando sucursales...';
 $lang['preemployment_select_branch'] = 'Seleccione una sucursal.';
 $lang['preemployment_assign'] = 'Asignar';
+
+
+$lang['preemployment_link_title'] = 'Link de PreEmpleo';
+$lang['preemployment_loading'] = 'Cargando…';
+$lang['preemployment_no_link_available'] = 'No hay link disponible para este empleado.';
+$lang['preemployment_status'] = 'Estado';
+$lang['preemployment_link'] = 'Link';
+$lang['preemployment_copy'] = 'Copiar';
+$lang['preemployment_creation'] = 'Creación';
+$lang['preemployment_expires'] = 'Expira';
+$lang['preemployment_used_at'] = 'Usado en';
+$lang['preemployment_revoked'] = 'Revocado';
+$lang['preemployment_create_update'] = 'Crear / Actualizar';
+$lang['preemployment_revoke_delete'] = 'Revocar / Eliminar';
