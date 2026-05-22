@@ -4,7 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Cliente_General extends Custom_Controller
 {
 
-     public function __construct()
+    public function __construct()
     {
         parent::__construct();
 
@@ -13,7 +13,7 @@ class Cliente_General extends Custom_Controller
 
         // 🔒 Seguridad
         if (! $this->session->userdata('id')) {
-            redirect('Login/index'); 
+            redirect('Login/index');
             return;
         }
 
@@ -33,7 +33,7 @@ class Cliente_General extends Custom_Controller
         $this->lang->load('reclutamiento_finalizadas', $lang);
         $this->lang->load('reclutamiento_bolsa', $lang);
         $this->lang->load('registro_candidatos', $lang);
-
+        $this->lang->load('pre_empleo', $lang);
         // Sesión/estatus
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
@@ -42,8 +42,13 @@ class Cliente_General extends Custom_Controller
     public function index()
     {
         if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 1) {
+
+            // CARGAR ARCHIVO DE IDIOMA
+        
+
             $id_cliente       = $this->uri->segment(3);
             $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+
             if ($data['permisos']) {
                 foreach ($data['permisos'] as $p) {
                     if ($p['id_cliente'] == $id_cliente) {
@@ -51,17 +56,19 @@ class Cliente_General extends Custom_Controller
                     }
                 }
             }
+
             $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
+
             foreach ($data['submodulos'] as $row) {
                 $items[] = $row->id_submodulo;
             }
+
             $data['submenus']      = $items;
             $data['parentescos']   = $this->funciones_model->getParentescos();
             $data['escolaridades'] = $this->funciones_model->getEscolaridades();
-            //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
-            //$info['estados'] = $this->funciones_model->getEstados();
+
             $info['civiles'] = $this->funciones_model->getEstadosCiviles();
-            // $info['subclientes'] = $this->cliente_general_model->getSubclientes($id_cliente);
+
             $info['puestos']             = $this->funciones_model->getPuestos();
             $info['grados']              = $this->funciones_model->getGradosEstudio();
             $info['drogas']              = $this->funciones_model->getPaquetesAntidoping();
@@ -82,46 +89,29 @@ class Cliente_General extends Custom_Controller
             $info['paises_estudio']      = $this->funciones_model->getPaisesEstudio();
 
             $vista['modals'] = $this->load->view('modals/mdl_clientes_general', $info, true);
-            //$vista['modals'] = $this->load->view('modals/formulario/mdl_formulario', $info, TRUE);
+
             $config          = $this->funciones_model->getConfiguraciones();
             $data['version'] = $config->version_sistema;
 
-            //Modals
+            // Modals
             $modales['modals']        = $this->load->view('modals/mdl_usuario', '', true);
             $modales['mdl_candidato'] = $this->load->view('modals/mdl_candidato', '', true);
 
-            // $this->load->library('pagination');
+            $notificaciones = $this->notificacion_model->get_by_usuario(
+                $this->session->userdata('id'),
+                [0, 1]
+            );
 
-            // // Configuración del paginador
-            // $config['base_url'] = base_url('cliente_general/index');
-            // $config['total_rows'] = $this->cliente_general_model->count_candidates(); // Número total de filas en tu modelo
-            // $config['per_page'] = 10; // Número de registros por página
-
-            // // Opcional: Personaliza las etiquetas de paginación
-            // $config['full_tag_open'] = '<ul class="pagination">';
-            // $config['full_tag_close'] = '</ul>';
-            // $config['first_link'] = 'Primero';
-            // $config['last_link'] = 'Último';
-            // $config['next_link'] = '&raquo;';
-            // $config['prev_link'] = '&laquo;';
-            // $config['num_tag_open'] = '<li>';
-            // $config['num_tag_close'] = '</li>';
-            // $config['cur_tag_open'] = '<li class="active"><a href="#">';
-            // $config['cur_tag_close'] = '</a></li>';
-
-            // // Inicializar el paginador
-            // $this->pagination->initialize($config);
-
-            // // Obtener los datos paginados de tu modelo
-            // $vista['registros'] = json_decode(json_encode($this->modelo->get_paginated_data($config['per_page'], $this->uri->segment(3))), true);
-            $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
             if (! empty($notificaciones)) {
+
                 $contador = 0;
+
                 foreach ($notificaciones as $row) {
                     if ($row->visto == 0) {
                         $contador++;
                     }
                 }
+
                 $data['contadorNotificaciones'] = $contador;
             }
 
@@ -479,9 +469,9 @@ class Cliente_General extends Custom_Controller
                         </script>';
                 $cont++;
             }
-            $salida .= '<hr>';
+            $salida    .= '<hr>';
             $candidato = $this->candidato_model->getInfoCandidatoEspecifico($id_candidato);
-            $salida .= '<form id="d_familiar_candidato">
+            $salida    .= '<form id="d_familiar_candidato">
                       <div class="row">
                         <div class="col-md-6">
                             <label>Muebles e inmuebles del candidato *</label>
@@ -524,8 +514,8 @@ class Cliente_General extends Custom_Controller
                       $("#candidato_adeudo").val(' . $candidato->adeudo_muebles . ');
                       </script>';
         } else {
-            $candidato = $this->candidato_model->getInfoCandidatoEspecifico($id_candidato);
-            $salida .= '<form id="d_familiar_candidato">
+            $candidato  = $this->candidato_model->getInfoCandidatoEspecifico($id_candidato);
+            $salida    .= '<form id="d_familiar_candidato">
                       <div class="row">
                         <div class="col-md-6">
                           <label>Muebles e inmuebles del candidato *</label>
@@ -2266,7 +2256,7 @@ class Cliente_General extends Custom_Controller
     }
     public function getEmpleadosInternos($id)
     {
-                                                       
+
         $data = $this->candidato_avance_model->getAllEmpleados($id); // Obtiene los datos
         echo json_encode(["data" => $data]);                         // Retorna JSON compatible con DataTables
     }

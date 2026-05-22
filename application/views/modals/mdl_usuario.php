@@ -233,52 +233,109 @@
 <div class="modal fade" id="docsModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title">
+          <?php echo t('preemployment_candidate_documentation'); ?>:
+          <span class="nombreCandidato"></span>
+        </h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('preemployment_close'); ?>">
           <span>&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
+
         <div class="row">
           <div class="col-12">
             <div id="tablaDocs" class="text-center"></div><br><br>
           </div>
         </div>
+
         <div class="row">
+
           <div class="col-md-6 text-center">
-            <label>Selecciona el documento</label><br>
-            <input type="file" id="documento" class="doc_obligado" name="documento"
-              accept=".jpg, .png, .jpeg, .pdf"><br><br>
-            <br>
+
+            <label><?php echo t('preemployment_select_document'); ?></label><br>
+
+            <input
+              type="file"
+              id="documento"
+              class="doc_obligado"
+              name="documento"
+              accept=".jpg, .png, .jpeg, .pdf">
+
+            <br><br><br>
+
           </div>
+
           <div class="col-md-6 text-center">
-            <label>Tipo de archivo *</label>
+
+            <label><?php echo t('preemployment_file_type'); ?></label>
+
             <select name="tipo_archivo" id="tipo_archivo" class="form-control personal_obligado">
-              <option value="">Selecciona</option>
+
+              <option value="">
+                <?php echo t('preemployment_select'); ?>
+              </option>
+
               <?php
                   foreach ($tipos_docs as $t) {
-                  if ($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45) {?>
-              <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
+
+                      if (
+                          $t->id == 3 ||
+                          $t->id == 8 ||
+                          $t->id == 9 ||
+                          $t->id == 14 ||
+                          $t->id == 45
+                  ) {?>
+
+                  <option value="<?php echo $t->id; ?>">
+                    <?php echo $t->nombre; ?>
+                  </option>
+
               <?php }
               }?>
+
             </select>
+
             <br>
+
           </div>
         </div>
-        <div id="msj_error" class="alert alert-danger hidden"></div>
-      </div>
-      <div class="modal-footer">
-        <Form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
-          <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
-          <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
 
-          <!--button type="submit" class="btn btn-primary">Descargar todos los documentos</button -->
+        <div id="msj_error" class="alert alert-danger hidden"></div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <Form method="POST" action="<?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
+
+          <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
+
+          <input type="hidden"
+            id="nameCandidato"
+            name="nameCandidato"
+            class="nombreCandidato">
+
+          <!--button type="submit" class="btn btn-primary">
+            Descargar todos los documentos
+          </button -->
+
         </form>
 
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('preemployment_close'); ?>
+        </button>
+
+        <button type="button" class="btn btn-success" onclick="subirDoc()">
+          <?php echo t('preemployment_upload'); ?>
+        </button>
+
       </div>
+
     </div>
   </div>
 </div>
@@ -286,47 +343,79 @@
 <div class="modal fade" id="docsModalInterno" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h4 class="modal-title">
+          <?php echo t('preemployment_candidate_documentation'); ?>:
+          <span class="nombreCandidato"></span>
+        </h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('preemployment_close'); ?>">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
+
         <div class="row">
           <div class="col-12">
             <div id="tablaDocsInterno" class="text-center"></div><br><br>
           </div>
         </div>
+
         <div class="row">
+
           <div class="col-md-6 text-center">
-            <label>Selecciona el documento</label><br>
-            <input type="file" id="documentoInterno" class="doc_obligado" name="documentoInterno"
-              accept=".jpg, .png, .jpeg, .pdf"><br><br>
-            <br>
+            <label><?php echo t('preemployment_select_document'); ?></label><br>
+
+            <input type="file"
+              id="documentoInterno"
+              class="doc_obligado"
+              name="documentoInterno"
+              accept=".jpg, .png, .jpeg, .pdf">
+
+            <br><br><br>
           </div>
+
           <div class="col-md-6 text-center">
-            <label>Nombre del Archivo *</label>
-            <input name="nombre_archivoInterno" id="nombre_archivoInterno" class="form-control personal_obligado">
+
+            <label><?php echo t('preemployment_file_name'); ?></label>
+
+            <input
+              name="nombre_archivoInterno"
+              id="nombre_archivoInterno"
+              class="form-control personal_obligado">
+
             <input type="hidden" name="employee_id" id="employee_id">
             <input type="hidden" id="nameCandidatoInterno" name="nameCandidatoInterno">
             <input type="hidden" id="origen" name="origen">
 
             <br>
+
           </div>
         </div>
-        <div id="msj_error" class="alert alert-danger hidden"></div>
-      </div>
-      <div class="modal-footer">
-        <Form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
-          <input type="hidden" id="idCandidatoDocsInterno" name="idCandidatoDocsInterno">
 
+        <div id="msj_error" class="alert alert-danger hidden"></div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <Form method="POST" action="<?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
+          <input type="hidden" id="idCandidatoDocsInterno" name="idCandidatoDocsInterno">
           <!--button type="submit" class="btn btn-primary">Descargar todos los documentos</button -->
         </form>
 
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="subirDocInterno()">Subir</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('preemployment_close'); ?>
+        </button>
+
+        <button type="button" class="btn btn-success" onclick="subirDocInterno()">
+          <?php echo t('preemployment_upload'); ?>
+        </button>
+
       </div>
+
     </div>
   </div>
 </div>
@@ -337,9 +426,9 @@
       <div class="modal-header">
         <h5 class="modal-title">
           <i class="fas fa-user mr-2"></i>
-          <span id="empDynTitle">Empleado</span>
+          <span id="empDynTitle"><?php echo t('preemployment_employee'); ?></span>
         </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('preemployment_close'); ?>">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -350,16 +439,24 @@
 
         <ul class="nav nav-tabs" id="empDynTabs" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active" id="tab-base" data-toggle="tab" href="#pane-base" role="tab">Datos base</a>
+            <a class="nav-link active" id="tab-base" data-toggle="tab" href="#pane-base" role="tab">
+              <?php echo t('preemployment_base_data'); ?>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="tab-extra" data-toggle="tab" href="#pane-extra" role="tab">Informacion Adicional</a>
+            <a class="nav-link" id="tab-extra" data-toggle="tab" href="#pane-extra" role="tab">
+              <?php echo t('preemployment_additional_information'); ?>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="tab-docs" data-toggle="tab" href="#pane-docs" role="tab">Documentos</a>
+            <a class="nav-link" id="tab-docs" data-toggle="tab" href="#pane-docs" role="tab">
+              <?php echo t('preemployment_documents'); ?>
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="tab-exams" data-toggle="tab" href="#pane-exams" role="tab">Exámenes</a>
+            <a class="nav-link" id="tab-exams" data-toggle="tab" href="#pane-exams" role="tab">
+              <?php echo t('preemployment_exams'); ?>
+            </a>
           </li>
         </ul>
 
@@ -367,12 +464,15 @@
           <div class="tab-pane fade show active" id="pane-base" role="tabpanel">
             <div id="empDynBase"></div>
           </div>
+
           <div class="tab-pane fade" id="pane-extra" role="tabpanel">
             <div id="empDynExtra"></div>
           </div>
+
           <div class="tab-pane fade" id="pane-docs" role="tabpanel">
             <div id="empDynDocs"></div>
           </div>
+
           <div class="tab-pane fade" id="pane-exams" role="tabpanel">
             <div id="empDynExams"></div>
           </div>
@@ -381,38 +481,54 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button class="btn btn-secondary" data-dismiss="modal">
+          <?php echo t('preemployment_close'); ?>
+        </button>
       </div>
 
     </div>
   </div>
 </div>
+
 <div class="modal fade" id="modalAsignarCliente" tabindex="-1" role="dialog" aria-labelledby="modalAsignarClienteLabel"
   aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title" id="modalAsignarClienteLabel">Asignar a sucursal</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+        <h5 class="modal-title" id="modalAsignarClienteLabel">
+          <?php echo t('preemployment_assign_branch'); ?>
+        </h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="<?php echo t('preemployment_close'); ?>">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
       <div class="modal-body">
         <input type="hidden" id="idCandidatoSeleccionado" value="">
+
         <div class="form-group">
-          <label for="selectCliente">Sucursal (cliente)</label>
+          <label for="selectCliente"><?php echo t('preemployment_branch_client'); ?></label>
+
           <select id="selectCliente" class="form-control">
-            <option value="">Cargando sucursales...</option>
+            <option value=""><?php echo t('preemployment_loading_branches'); ?></option>
           </select>
         </div>
-        <div id="asignarAlert" class="alert alert-danger d-none mb-0">Seleccione una sucursal.</div>
+
+        <div id="asignarAlert" class="alert alert-danger d-none mb-0">
+          <?php echo t('preemployment_select_branch'); ?>
+        </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
-        <button type="button" id="asignarCliente" class="btn btn-primary">Asignar</button>
+        <button type="button" class="btn btn-light" data-dismiss="modal">
+          <?php echo t('preemployment_cancel'); ?>
+        </button>
+
+        <button type="button" id="asignarCliente" class="btn btn-primary">
+          <?php echo t('preemployment_assign'); ?>
+        </button>
       </div>
 
     </div>
@@ -429,15 +545,15 @@
     $vence   = new DateTime($hoy->format('Y-m-05 00:00:00'), $tz); // día 5 del mes actual
 
     if (class_exists('IntlDateFormatter')) {
-        $fmtMesAnio    = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "LLLL y");
-        $fmtLargo      = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "d 'de' LLLL 'de' y");
-        $periodo_label = $fmtMesAnio->format($periodo);
-        $vence_label   = $fmtLargo->format($vence);
+    $fmtMesAnio    = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "LLLL y");
+    $fmtLargo      = new IntlDateFormatter('es_MX', IntlDateFormatter::LONG, IntlDateFormatter::NONE, $tz->getName(), IntlDateFormatter::GREGORIAN, "d 'de' LLLL 'de' y");
+    $periodo_label = $fmtMesAnio->format($periodo);
+    $vence_label   = $fmtLargo->format($vence);
     } else {
-        // Fallback sin extensión intl (útil en Windows/Laragon)
-        $MESES         = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-        $periodo_label = ucfirst($MESES[(int) $periodo->format('n') - 1]) . ' ' . $periodo->format('Y');
-        $vence_label   = $vence->format('j') . ' de ' . $MESES[(int) $vence->format('n') - 1] . ' de ' . $vence->format('Y');
+    // Fallback sin extensión intl (útil en Windows/Laragon)
+    $MESES         = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    $periodo_label = ucfirst($MESES[(int) $periodo->format('n') - 1]) . ' ' . $periodo->format('Y');
+    $vence_label   = $vence->format('j') . ' de ' . $MESES[(int) $vence->format('n') - 1] . ' de ' . $vence->format('Y');
     }
 ?>
 <div class="modal fade" id="modalAvisoPago" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
@@ -979,8 +1095,8 @@ function abbreviateFilename(name, max = 32) {
 
   return base.slice(0, front) + '…' + base.slice(-back) + ext;
 }
-var URL_VER_DOC  = '<?= site_url("archivo/ver_doc/") ?>';
-var URL_VER_EXAM = '<?= site_url("archivo/ver_exam/") ?>';
+var URL_VER_DOC  = '<?php echo site_url("archivo/ver_doc/") ?>';
+var URL_VER_EXAM = '<?php echo site_url("archivo/ver_exam/") ?>';
 function renderDocs(list) {
   if (!list || !list.length) return '<div class="text-muted">Sin documentos</div>';
 

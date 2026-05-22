@@ -470,18 +470,27 @@
 <div class="modal fade" id="documentosModal" role="dialog" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
+
       <div class="modal-header">
-        <h4 class="modal-title">Candidate documents</h4>
+        <h4 class="modal-title">
+          <?php echo t('preemployment_candidate_documents'); ?>
+        </h4>
+
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         <p id="lista_documentos"></p><br>
       </div>
+
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <?php echo t('preemployment_close'); ?>
+        </button>
       </div>
+
     </div>
   </div>
 </div>
@@ -1087,8 +1096,8 @@ function changeDatatable(url1) {
       // Inicializar DataTable con los datos formateados
       $('#tabla').DataTable({
         "pageLength": 10,
-        "order": [0, "desc"],
-        "stateSave": true,
+        "order": [],
+        "stateSave": false,
         "serverSide": false,
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
         "data": formattedData,
@@ -1112,8 +1121,10 @@ function changeDatatable(url1) {
                 '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
                 .reclutadorAspirante + '</span>' : '';
               return '<span class="badge badge-pill badge-dark">#' + full.id +
-                '</span><br><a data-toggle="tooltip" class="sin_vinculo" style="color:black;"><b>' +
-                data;
+                '</span><br>' +
+                '<a data-toggle="tooltip" class="sin_vinculo" style="color:black;">' +
+                '<b>' + data + '</b>' +
+                '</a>';
               // reclutador;
             }
           },

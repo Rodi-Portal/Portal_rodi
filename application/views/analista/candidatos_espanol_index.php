@@ -4,14 +4,15 @@
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">
-      Cliente/Sucursal:<small><?php echo ! empty($cliente) ? $cliente : 'Sin Sucursal'; ?></small></h1><br>
-
+      <?php echo t('preemployment_client_branch') ?>
+      <small><?php echo ! empty($cliente) ? $cliente : t('preemployment_no_branch'); ?></small>
+    </h1><br>
 
     <a href="#" class="btn btn-primary btn-icon-split" id="btn_nuevo" onclick="modalRegistrarCandidato()">
       <span class="icon text-white-50">
         <i class="fas fa-user-plus"></i>
       </span>
-      <span class="text">Registrar candidato</span>
+      <span class="text"><?php echo t('preemployment_register_candidate') ?></span>
     </a>
 
     <a href="#" class="btn btn-primary btn-icon-split hidden" id="btn_regresar" onclick="regresarListado()"
@@ -19,21 +20,22 @@
       <span class="icon text-white-50">
         <i class="fas fa-arrow-left"></i>
       </span>
-      <span class="text">Regresar al listado</span>
+      <span class="text"><?php echo t('preemployment_back_to_list') ?></span>
     </a>
 
   </div>
+
   <p>
-    En este módulo se presenta un listado de los posibles empleados asociados a una sucursal, área o departamento
-    específicos. Estos candidatos aún se encuentran en periodo de exámenes y pruebas. Una vez que hayan concluido
-    satisfactoriamente dicho proceso, podrás proceder a contratarlos y enviarlos al módulo de empleados para su gestión.
+    <?php echo t('preemployment_module_description') ?>
   </p>
 
   <?php echo $modals;
   echo $mdl_candidato; ?>
+
   <div class="top-loader" style="display: none;">
-    <h3 class="text-center">Actualizando listado, por favor espere...</h3>
+    <h3 class="text-center"><?php echo t('preemployment_updating_list') ?></h3>
   </div>
+
   <div class="loader" style="display: none;"></div>
   <input type="hidden" id="idCandidato">
   <input type="hidden" id="idSeccion">
@@ -48,47 +50,45 @@
   <input type="hidden" id="idFamiliar">
   <input type="hidden" id="tokenForm">
 
-
   <div id="listado">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary"></h6>
       </div>
+
       <div class="card-body">
         <div class="row mb-3">
           <div class="col-sm-12 col-md-4 col-lg-4 m-auto">
             <select class="form-control" name="filtroListado" id="filtroListado">
-              <option value="">Selecciona un filtro para el listado de candidatos</option>
-              <option value="1">Candidatos en enviados a RODI</option>
-              <option value="2" selected>Candidatos Registrados Internamente</option>
+              <option value=""><?php echo t('preemployment_filter_placeholder') ?></option>
+              <option value="1"><?php echo t('preemployment_filter_sent_to_rodi') ?></option>
+              <option value="2" selected><?php echo t('preemployment_filter_internal') ?></option>
             </select>
           </div>
         </div>
+
         <div class="table-responsive">
           <table id="tablaInternos" class="table table-hover table-bordered" width="100%" cellspacing="0"></table>
           <table id="tablaExternos" class="table table-hover table-bordered" width="100%" cellspacing="0"
             style="display: none;"></table>
-
-
-          </table>
         </div>
       </div>
     </div>
   </div>
 
   <!-- <div id="listadoFinalizados" style="display: none;">
-		<div class="card shadow mb-4">
-			<div class="card-header py-3">
-				<h6 class="m-0 font-weight-bold text-primary"></h6>
-			</div>
-			<div class="card-body">
-				<div class="table-responsive">
-					<table id="tablaFinalizados" class="table table-hover table-bordered" id="dataTable" width="100%" cellspacing="0">
-					</table>
-				</div>
-			</div>
-		</div>
-	</div> -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"></h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table id="tablaFinalizados" class="table table-hover table-bordered" id="dataTable" width="100%" cellspacing="0">
+          </table>
+        </div>
+      </div>
+    </div>
+  </div> -->
 
   <section class="content" id="formulario" style="display: none;">
     <div class="row" id="rowLaboralExtra"></div>
@@ -108,7 +108,7 @@ var id = '<?php echo $this->uri->segment(3) ?>';
 if (id === "" || id === "null" || id === null) {
   id = 0;
 }
-var nombre_cliente = '<?php echo isset($cliente) ? $cliente : 'Sin Sucursal'; ?>'
+var nombre_cliente = '<?php echo isset($cliente) ? $cliente : t("preemployment_no_branch"); ?>';
 if (nombre_cliente === "" || nombre_cliente === "null" || nombre_cliente === null) {
   nombre_cliente = 0;
 }
@@ -132,13 +132,12 @@ function modalRegistrarCandidato() {
     async: false,
     url: '<?php echo base_url('Cat_Puestos/getAllPositions'); ?>',
     type: 'GET',
-    data: {
-
-    },
+    data: {},
     success: function(res) {
       id_position = res;
     }
   });
+
   $.ajax({
     async: false,
     url: '<?php echo base_url('Candidato_Seccion/getHistorialProyectosByCliente'); ?>',
@@ -150,6 +149,7 @@ function modalRegistrarCandidato() {
       $('#previos').html(res);
     }
   });
+
   setTimeout(() => {
     $.ajax({
       async: false,
@@ -158,30 +158,29 @@ function modalRegistrarCandidato() {
       success: function(res) {
         if (res != 0) {
           let data = JSON.parse(res);
-          $('#puesto').append('<option value="">Selecciona</option>');
+
+          $('#puesto').append('<option value=""><?php echo t('preemployment_select') ?></option>');
+
           for (let i = 0; i < data.length; i++) {
-            $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] +
-              '</option>');
+            $('#puesto').append('<option value="' + data[i]['id'] + '">' + data[i]['nombre'] + '</option>');
           }
 
         } else {
-          $('#puesto').append('<option value="">No hay puestos registrados</option>');
+          $('#puesto').append(
+            '<option value=""><?php echo t('preemployment_no_positions_registered') ?></option>');
         }
       }
     });
   }, 200);
+
   setTimeout(function() {
     $('#puesto')('val', id_position)
     $('.loader').fadeOut();
   }, 250);
-
-
 }
 
 function registrarCandidato() {
   var datos = new FormData();
-
-
 
   datos.append('nombre', $("#nombre_registro").val());
   datos.append('paterno', $("#paterno_registro").val());
@@ -189,17 +188,13 @@ function registrarCandidato() {
   datos.append('celular', $("#celular_registro").val());
   datos.append('subcliente', $("#subcliente").val());
   datos.append('opcion', $('#opcion_registro').val());
-  //datos.append('puesto', $('#puesto').('val'));
   datos.append('pais', $("#pais").val());
   datos.append('region', $("#region").val());
-
   datos.append('previo', $("#previos").val());
   datos.append('proyecto', $("#proyecto_registro").val());
   datos.append('id_cliente_hidden', id_cliente);
   datos.append('examen', $("#examen_registro").val());
   datos.append('medico', $("#examen_medico").val());
-
-
   datos.append('clave', $("#clave").val());
   datos.append('cliente', nombre_cliente);
   datos.append('idAspiranteReq', $("#idAspiranteReq").val());
@@ -228,9 +223,10 @@ function registrarCandidato() {
       }, 200);
 
       var data = JSON.parse(res);
-      if (data.codigo === 1) {
 
+      if (data.codigo === 1) {
         $("#registroCandidatoModal").modal('hide');
+
         Swal.fire({
           position: 'center',
           icon: 'success',
@@ -238,25 +234,26 @@ function registrarCandidato() {
           showConfirmButton: false,
           timer: 3500
         });
+
         window.location.reload();
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Hubo un problema',
+          title: '<?php echo t('preemployment_problem_title') ?>',
           html: data.msg,
           width: '50em',
-          confirmButtonText: 'Cerrar'
+          confirmButtonText: '<?php echo t('preemployment_close') ?>'
         });
       }
-
     },
     error: function(xhr, status, error) {
-      console.error("Error en la solicitud AJAX:", error);
+      console.error("<?php echo t('preemployment_ajax_console_error') ?>", error);
+
       Swal.fire({
         icon: 'error',
-        title: 'Error en la solicitud AJAX',
-        text: 'Hubo un problema al comunicarse con el servidor',
-        confirmButtonText: 'Cerrar'
+        title: '<?php echo t('preemployment_ajax_error_title') ?>',
+        text: '<?php echo t('preemployment_ajax_error_text') ?>',
+        confirmButtonText: '<?php echo t('preemployment_close') ?>'
       });
     }
   });
@@ -291,10 +288,11 @@ $(document).ready(function() {
     Swal.fire({
       position: 'center',
       icon: 'success',
-      title: 'Se ha actualizado correctamente',
+      title: '<?php echo t('preemployment_updated_successfully') ?>',
       showConfirmButton: false,
       timer: 2500
     })
+
     localStorage.removeItem("success");
   }
   //
@@ -834,7 +832,7 @@ function loadInternos(url1) {
         "destroy": true,
         "data": formattedData,
         "columns": [{
-            title: 'N°',
+            title: '<?php echo t('preemployment_number') ?>',
             data: 'id',
             width: '10%',
             className: 'text-center',
@@ -864,11 +862,11 @@ function loadInternos(url1) {
                 `<br><br>
                     <div class="d-flex gap-2 mt-2 w-100">
                       <button class="btn btn-success btn-sm flex-fill"
-                              onclick="verCandidato(${data})" title="Ver Candidato">
+                              onclick="verCandidato(${data})" title="<?php echo t('preemployment_view_candidate') ?>">
                         <i class="fas fa-user"></i>
                       </button>
                       <button class="btn btn-info btn-sm flex-fill"
-                              onclick="linkPreEmpleo(${data})" title="Link PreEmpleo">
+                              onclick="linkPreEmpleo(${data})" title="<?php echo t('preemployment_preemployment_link') ?>">
                         <i class="fas fa-link"></i>
                       </button>
                     </div>
@@ -885,7 +883,7 @@ function loadInternos(url1) {
             }
           },
           {
-            title: 'Nombre',
+            title: '<?php echo t('preemployment_name') ?>',
             data: 'nombreCompleto',
             width: '20%',
             className: 'text-center',
@@ -906,7 +904,7 @@ function loadInternos(url1) {
 
               const btnEnviar = ((emp === 1 || former === 1) && id !== '') ?
                 `<br><br><button class="btn btn-success btn-sm" onclick="confirmActionInterno(${id})">
-                Enviar a Empleados
+                <?php echo t('preemployment_send_to_employees') ?>
               </button>` :
                 '';
 
@@ -916,13 +914,13 @@ function loadInternos(url1) {
             }
           },
           {
-            title: 'Fecha Alta',
+            title: '<?php echo t('preemployment_created_date') ?>',
             data: 'creacion',
             "width": "15%",
             className: 'text-center' // Centrado de contenido
           },
           {
-            title: 'Correo y Teléfono',
+            title: '<?php echo t('preemployment_email_phone') ?>',
             data: function(row) {
               return row.correo + '<br>' + row.telefono;
             },
@@ -930,7 +928,7 @@ function loadInternos(url1) {
             className: 'text-center' // Centrado de contenido
           },
           {
-            title: 'Documentos',
+            title: '<?php echo t('preemployment_documents') ?>',
             data: null,
             width: '15%',
             className: 'text-center align-middle',
@@ -941,8 +939,8 @@ function loadInternos(url1) {
                 <div class="d-flex justify-content-center">
                   <button class="btn btn-outline-info btn-sm d-inline-flex align-items-center justify-content-center py-2"
                           type="button"
-                          title="Ver documentos"
-                          aria-label="Ver documentos"
+                          title="<?php echo t('preemployment_view_documents') ?>"
+                          aria-label="<?php echo t('preemployment_view_documents') ?>"
                           data-toggle="tooltip" data-placement="top"
                           onclick='cargarDocumentosPanelClienteInterno(${row.id}, ${safeName}, 1)'>
                     <i class="fas fa-file-alt"></i>
@@ -952,7 +950,7 @@ function loadInternos(url1) {
             }
           },
           {
-            title: 'Exámenes',
+            title: '<?php echo t('preemployment_exams') ?>',
             data: null,
             width: '15%',
             className: 'text-center align-middle',
@@ -963,8 +961,8 @@ function loadInternos(url1) {
                 <div class="d-flex justify-content-center">
                   <button class="btn btn-outline-warning btn-sm d-inline-flex align-items-center justify-content-center py-2"
                           type="button"
-                          title="Ver exámenes"
-                          aria-label="Ver exámenes"
+                           title="<?php echo t('preemployment_view_exams') ?>"
+                          aria-label="<?php echo t('preemployment_view_exams') ?>"
                           data-toggle="tooltip" data-placement="top"
                           onclick='cargarDocumentosPanelClienteInterno(${row.id}, ${safeName}, 2)'>
                     <i class="fas fa-syringe"></i>
@@ -974,7 +972,7 @@ function loadInternos(url1) {
             }
           },
           {
-            title: 'Acciones',
+            title: '<?php echo t('preemployment_actions') ?>',
             data: 'id',
             width: "14%",
             className: 'text-center align-middle',
@@ -995,12 +993,12 @@ function loadInternos(url1) {
 
               // Todo en UNA sola fila
               let html =
-                '<div class="btn-group btn-group-sm" role="group" aria-label="Acciones" style="white-space:nowrap;">';
+                '<div class="btn-group btn-group-sm" role="group" aria-label="<?php echo t('preemployment_actions') ?>" style="white-space:nowrap;">';
 
               if (showVer) {
                 html += `
                   <button class="btn btn-outline-success"
-                          type="button" title="Ver candidato"
+                          type="button" title="<?php echo t('preemployment_view_candidate') ?>"
                           data-toggle="tooltip" data-placement="top"
                           onclick="verCandidato(${data})">
                     <i class="fas fa-user"></i>
@@ -1010,7 +1008,7 @@ function loadInternos(url1) {
               if (showPreEmpleo) {
                 html += `
                   <button class="btn btn-outline-info"
-                          type="button" title="Link PreEmpleo"
+                          type="button" title="<?php echo t('preemployment_preemployment_link') ?>"
                           data-toggle="tooltip" data-placement="top"
                           onclick="linkPreEmpleo(${data})">
                     <i class="fas fa-link"></i>
@@ -1020,7 +1018,7 @@ function loadInternos(url1) {
               if (showAsignar) {
                 html += `
                   <button class="btn btn-outline-primary btn-asignar-cliente"
-                          type="button" title="Asignar a sucursal"
+                          type="button" title="<?php echo t('preemployment_assign_branch') ?>"
                           data-toggle="tooltip" data-placement="top"
                           data-id="${data}">
                     <i class="fas fa-sitemap"></i>
@@ -1030,7 +1028,7 @@ function loadInternos(url1) {
               if (showEliminar) {
                 html += `
                   <button class="btn btn-outline-danger"
-                          type="button" title="Eliminar candidato"
+                          type="button" title="<?php echo t('preemployment_delete_candidate') ?>"
                           data-toggle="tooltip" data-placement="top"
                           onclick="eliminarCandidato(${data})">
                     <i class="fas fa-trash fa-lg"></i>
@@ -1046,16 +1044,25 @@ function loadInternos(url1) {
       });
     },
     error: function(xhr, status, error) {
-      console.error("Error en la petición AJAX de Internos:", status, error);
+      console.error("<?php echo t('preemployment_ajax_internal_error') ?>", status, error);
     }
   });
 }
 
 
 function verCandidato(id) {
-  $('#empDynTitle').text('Empleado #' + id);
-  $('#empDynAlert').hide().removeClass('alert-danger').addClass('alert-info').text('');
-  $('#empDynBase').html('<div class="text-muted">Cargando…</div>');
+  $('#empDynTitle').text('<?php echo t('preemployment_employee') ?> #' + id);
+
+  $('#empDynAlert')
+    .hide()
+    .removeClass('alert-danger')
+    .addClass('alert-info')
+    .text('');
+
+  $('#empDynBase').html(
+    '<div class="text-muted"><?php echo t('preemployment_loading') ?></div>'
+  );
+
   $('#empDynExtra').empty();
   $('#empDynDocs').empty();
   $('#empDynExams').empty();
@@ -1063,19 +1070,23 @@ function verCandidato(id) {
   $('#empDynModal').modal('show');
 
   $.ajax({
-
-      url: '<?php echo base_url("Empleados/getPreEmpleados/") ?>' + id, // llamada directa al controlador/función
+      url: '<?php echo base_url("Empleados/getPreEmpleados/") ?>' + id,
       type: "GET",
       dataType: "json"
     })
     .done(function(resp) {
+
       if (!resp || !resp.ok) {
-        $('#empDynAlert').show().addClass('alert-danger').removeClass('alert-info')
-          .text('No se pudo obtener información del empleado.');
+        $('#empDynAlert')
+          .show()
+          .addClass('alert-danger')
+          .removeClass('alert-info')
+          .text('<?php echo t('preemployment_employee_info_error') ?>');
+
         return;
       }
+
       const D = resp.data || {};
-      //console.log("🚀 ~ verCandidato ~ D:", D)
 
       // BASE
       $('#empDynBase').html(renderKV(D.base || {}));
@@ -1085,7 +1096,9 @@ function verCandidato(id) {
         $('#empDynExtra').html(renderCamposExtra(D.campos_extra));
         $('#tab-extra').parent().show();
       } else {
-        $('#empDynExtra').html('<div class="text-muted">Sin campos extra</div>');
+        $('#empDynExtra').html(
+          '<div class="text-muted"><?php echo t('preemployment_no_extra_fields') ?></div>'
+        );
       }
 
       // DOCUMENTOS
@@ -1093,7 +1106,9 @@ function verCandidato(id) {
         $('#empDynDocs').html(renderDocs(D.documentos));
         $('#tab-docs').parent().show();
       } else {
-        $('#empDynDocs').html('<div class="text-muted">Sin documentos</div>');
+        $('#empDynDocs').html(
+          '<div class="text-muted"><?php echo t('preemployment_no_documents') ?></div>'
+        );
       }
 
       // EXÁMENES
@@ -1101,12 +1116,19 @@ function verCandidato(id) {
         $('#empDynExams').html(renderExams(D.examenes));
         $('#tab-exams').parent().show();
       } else {
-        $('#empDynExams').html('<div class="text-muted">Sin exámenes</div>');
+        $('#empDynExams').html(
+          '<div class="text-muted"><?php echo t('preemployment_no_exams') ?></div>'
+        );
       }
     })
     .fail(function(xhr) {
-      $('#empDynAlert').show().addClass('alert-danger').removeClass('alert-info')
-        .text('Error al cargar los datos del empleado.');
+
+      $('#empDynAlert')
+        .show()
+        .addClass('alert-danger')
+        .removeClass('alert-info')
+        .text('<?php echo t('preemployment_load_employee_error') ?>');
+
       console.log('FAIL', xhr.responseText);
     });
 }
@@ -1143,21 +1165,24 @@ function changeDatatable(url1) {
         "destroy": true, // Destruye cualquier instancia existente de DataTable antes de recrearla
         "data": formattedData, // Usar los datos formateados
         "columns": [{
-            title: 'Candidate',
+            title: '<?php echo t("preemployment_candidate"); ?>',
             data: 'candidato',
             "width": "15%",
             mRender: function(data, type, full) {
 
               var subcliente = (full.subcliente === null || full.subcliente === "") ? 'Sin Subcliente' :
-                '<span class="badge badge-pill badge-primary">Subcliente: ' + full.subcliente +
+                '<span class="badge badge-pill badge-primary"><?php echo t("preemployment_subclient"); ?>: ' +
+                full.subcliente +
                 '</span><br>';
               var analista = (full.usuario === null || full.usuario === '') ?
-                'Analista: Sin definir' : 'Analista: ' + full.usuario;
+                '<?php echo t("preemployment_analyst_undefined"); ?>' :
+                '<?php echo t("preemployment_analyst"); ?>: ' + full.usuario; + full.usuario;
               var reclutador = (full.reclutadorAspirante !== null) ?
-                '<br><span class="badge badge-pill badge-info">Reclutador(a): ' + full
+                '<br><span class="badge badge-pill badge-info"><?php echo t("preemployment_recruiter"); ?>: ' +
+                full
                 .reclutadorAspirante + '</span>' : '';
               var actionButton = '<br><button class="btn btn-success btn-sm" onclick="confirmAction(' +
-                full.id + ')">Enviar a Empleados</button>';
+                full.id + ')"><?php echo t('preemployment_send_to_employees') ?></button>';
 
 
               return '<span class="badge badge-pill badge-dark">#' + full.id +
@@ -1167,7 +1192,7 @@ function changeDatatable(url1) {
             }
           },
           {
-            title: 'Dates',
+            title: '<?php echo t("preemployment_dates"); ?>',
             data: 'fecha_alta',
             bSortable: false,
             "width": "15%",
@@ -1192,9 +1217,11 @@ function changeDatatable(url1) {
               if (full.fecha_final == null && full.fecha_bgc == null) {
                 fechaFinal = '-'
               }
-              return fechas = '<b>Alta:</b> ' + fechaAlta + '<br>' + '<b>Formulario:</b> ' +
-                fechaFormulario + '<br>' + '<b>Documentos:</b> ' + fechaDocumentos + '<br>' +
-                '<b>Final:</b> ' + fechaFinal
+              return fechas = '<b><?php echo t("preemployment_created"); ?>:</b>' + fechaAlta + '<br>' +
+                '<b><?php echo t("preemployment_form"); ?>:</b>' +
+                fechaFormulario + '<br>' + '<b><?php echo t("preemployment_documents_label"); ?>:</b>' +
+                fechaDocumentos + '<br>' +
+                '<b><?php echo t("preemployment_final"); ?>:</b>' + fechaFinal
             }
           },
           {
@@ -1211,15 +1238,21 @@ function changeDatatable(url1) {
                         ' days</div>';
                     }
                     if (data > 2 && data <= 4) {
-                      return res = '<div class="formato_dias dias_amarillo">' + data +
-                        ' days</div>';
+                      return res =
+                        '<div class="formato_dias dias_amarillo">' +
+                        data +
+                        ' <?php echo t("preemployment_days"); ?></div>';
                     }
+
                     if (data >= 5) {
-                      return res = '<div class="formato_dias dias_rojo">' + data +
-                        ' days</div>';
+                      return res =
+                        '<div class="formato_dias dias_rojo">' +
+                        data +
+                        ' <?php echo t("preemployment_days"); ?></div>';
                     }
+
                   } else {
-                    return "Updating...";
+                    return "<?php echo t('preemployment_updating'); ?>";
                   }
                 }
               } else {
@@ -1228,35 +1261,67 @@ function changeDatatable(url1) {
             }
           },
           {
-            title: 'Acciones',
+            title: '<?php echo t("preemployment_actions"); ?>',
             data: 'id',
             "width": "10%",
             bSortable: false,
             mRender: function(data, type, full) {
+
               // Condición para el usuario espectador
               if (full.socioeconomico == 1) {
+
                 if (full.tipo_formulario != 0) {
+
                   var documentos =
-                    ' <a href="javascript:void(0)" data-toggle="tooltip" title="Documents of the candidate" id="subirDocs" class="fa-tooltip icono_datatable"><i class="fas fa-folder"></i></a>';
-                  return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a> <a href="javascript:void(0)" data-toggle="tooltip" title="Status process" id="ver" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a>' +
+                    ' <a href="javascript:void(0)" ' +
+                    'data-toggle="tooltip" ' +
+                    'title="<?php echo t("preemployment_candidate_documents"); ?>" ' +
+                    'id="subirDocs" class="fa-tooltip icono_datatable">' +
+                    '<i class="fas fa-folder"></i></a>';
+
+                  return '<a href="javascript:void(0)" ' +
+                    'data-toggle="tooltip" ' +
+                    'title="<?php echo t("preemployment_follow_up_candidate"); ?>" ' +
+                    'id="msj_avances" class="fa-tooltip icono_datatable">' +
+                    '<i class="fas fa-comment-dots"></i></a> ' +
+
+                    '<a href="javascript:void(0)" ' +
+                    'data-toggle="tooltip" ' +
+                    'title="<?php echo t("preemployment_status_process"); ?>" ' +
+                    'id="ver" class="fa-tooltip icono_datatable">' +
+                    '<i class="fas fa-eye"></i></a>' +
+
                     documentos;
+
                 } else {
-                  return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a>';
+
+                  return '<a href="javascript:void(0)" ' +
+                    'data-toggle="tooltip" ' +
+                    'title="<?php echo t("preemployment_follow_up_candidate"); ?>" ' +
+                    'id="msj_avances" class="fa-tooltip icono_datatable">' +
+                    '<i class="fas fa-comment-dots"></i></a>';
                 }
+
               } else {
-                return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a>';
+
+                return '<a href="javascript:void(0)" ' +
+                  'data-toggle="tooltip" ' +
+                  'title="<?php echo t("preemployment_follow_up_candidate"); ?>" ' +
+                  'id="msj_avances" class="fa-tooltip icono_datatable">' +
+                  '<i class="fas fa-comment-dots"></i></a>';
               }
 
             }
           },
           {
-            title: 'Exámenes',
+            title: '<?php echo t("preemployment_exams"); ?>',
             data: null,
             bSortable: false,
             "width": "15%",
             mRender: function(data, type, full) {
               if (full.cancelado == 0) {
                 var salida = '';
+
                 //* Doping
                 if (full.tipo_antidoping == 1) {
                   if (full.doping_hecho == 1) {
@@ -1265,49 +1330,49 @@ function changeDatatable(url1) {
                         salida +=
                           '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
                           full.idDoping +
-                          '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_reprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
+                          '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="<?php echo t("preemployment_download_result"); ?>" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_reprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
                           full.idDoping + '" value="' + full.idDoping +
                           '"></form></div>';
                       } else {
                         salida +=
                           '<b>DrugTest: </b><div style="display: inline-block;margin-left:3px;"><form id="pdfForm' +
                           full.idDoping +
-                          '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar resultado" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_aprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
+                          '" action="<?php echo base_url('Doping/createPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="<?php echo t("preemployment_download_result"); ?>" id="pdfDoping" class="fa-tooltip icono_datatable icono_doping_aprobado"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idDop" id="idDop' +
                           full.idDoping + '" value="' + full.idDoping +
                           '"></form></div>';
                       }
 
                     } else {
-                      salida += "<b>DrugTest: Pendiente</b> ";
+                      salida += "<b>DrugTest: <?php echo t("preemployment_pending"); ?></b> ";
                     }
                   } else {
-                    salida += "<b>DrugTest: Pendiente</b> ";
+                    salida += "<b>DrugTest: <?php echo t("preemployment_pending"); ?></b> ";
                   }
+
                   if (full.medico == 1 || full.psicometrico == 1) {
                     salida += '<hr>';
                   }
                 }
-                /*if (full.tipo_antidoping == 0) {
-                	salida += "<b>Doping: N/A</b> <hr>";
-                }*/
+
                 //* Médico
                 if (full.medico == 1) {
 
                   if (full.idMedico != null) {
                     if (full.conclusion != null && full.descripcion != null) {
                       salida +=
-                        '<b>Médico:</b> <div style="display: inline-flex;"><form id="formMedico' +
+                        '<b><?php echo t("preemployment_medical"); ?>:</b> <div style="display: inline-flex;"><form id="formMedico' +
                         full.idMedico +
-                        '" action="<?php echo base_url('Medico/crearPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="Descargar documento final" id="pdfMedico" class="icono_datatable icono_medico"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idMedico" id="idMedico' +
+                        '" action="<?php echo base_url('Medico/crearPDF'); ?>" method="POST"><a href="javascript:void(0);" data-toggle="tooltip" title="<?php echo t("preemployment_download_final_document"); ?>" id="pdfMedico" class="icono_datatable icono_medico"><i class="fas fa-file-pdf"></i></a><input type="hidden" name="idMedico" id="idMedico' +
                         full.idMedico + '" value="' + full.idMedico +
                         '"></form></div><hr>';
                     } else {
-                      salida += "<b>Médico: En proceso</b>";
+                      salida +=
+                        "<b><?php echo t("preemployment_medical"); ?>: <?php echo t("preemployment_in_progress"); ?></b>";
                     }
 
                   } else {
                     salida +=
-                      '<b>Médico: Pendiente</b><div style="display: inline-block;margin-left:3px;"> <br>';
+                      '<b><?php echo t("preemployment_medical"); ?>: <?php echo t("preemployment_pending"); ?></b><div style="display: inline-block;margin-left:3px;"> <br>';
                   }
 
                 }
@@ -1315,18 +1380,17 @@ function changeDatatable(url1) {
                 //* Psicometria
                 if (full.psicometrico == 1) {
                   const HREF = '<?php echo base_url('Archivo/ver_psico/'); ?>' + encodeURIComponent((full
-                      .archivo ||
-                      '')
-                    .toString().trim());
+                    .archivo || '').toString().trim());
+
                   if (full.archivo) {
                     salida +=
-                      '<b>Psicométrico:</b> ' +
-                      '<a href="javascript:void(0)" data-toggle="tooltip" title="Subir psicometría" id="psicometria" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-brain"></i></a> ' +
+                      '<b><?php echo t("preemployment_psychometric"); ?>:</b> ' +
+                      '<a href="javascript:void(0)" data-toggle="tooltip" title="<?php echo t("preemployment_upload_psychometric"); ?>" id="psicometria" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-brain"></i></a> ' +
                       '<a href="' + HREF +
-                      '" target="_blank" data-toggle="tooltip" title="Ver psicometría" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-file-powerpoint"></i></a>';
+                      '" target="_blank" data-toggle="tooltip" title="<?php echo t("preemployment_view_psychometric"); ?>" id="descarga_psicometrico" class="fa-tooltip icono_datatable icono_psicometria"><i class="fas fa-file-powerpoint"></i></a>';
                   } else {
                     salida +=
-                      '<b>Psicométrico:</b> <i class="fas fa-brain"></i></a>';
+                      '<b><?php echo t("preemployment_psychometric"); ?>:</b> <i class="fas fa-brain"></i></a>';
                   }
                 }
 
@@ -1338,21 +1402,22 @@ function changeDatatable(url1) {
               } else {
                 salida = "<b>N/A</b> ";
               }
+
               return salida;
             }
           },
 
           {
-            title: 'Resultado',
+            title: '<?php echo t("preemployment_result"); ?>',
             data: 'id',
             bSortable: false,
             "width": "12%",
             mRender: function(data, type, full) {
 
-
               if (full.cancelado == 0) {
 
                 if (full.socioeconomico == 1) {
+
                   let icono_resultado = '';
                   let previo = '';
 
@@ -1369,7 +1434,7 @@ function changeDatatable(url1) {
                       '<div style="display: inline-flex;">' +
                       '<form id="reportePrevioForm' + data +
                       '" action="<?php echo base_url(); ?>' + urlPrevio + '" method="POST">' +
-                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte previo" id="reportePrevioPDF' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="<?php echo t("preemployment_download_previous_report"); ?>" id="reportePrevioPDF' +
                       data + '" class="fa-tooltip icono_datatable icono_previo">' +
                       '<i class="far fa-file-powerpoint"></i>' +
                       '</a>' +
@@ -1388,12 +1453,15 @@ function changeDatatable(url1) {
                       case 4:
                         icono_resultado = 'icono_resultado_aprobado';
                         break;
+
                       case 2:
                         icono_resultado = 'icono_resultado_reprobado';
                         break;
+
                       case 3:
                         icono_resultado = 'icono_resultado_revision';
                         break;
+
                       default:
                         icono_resultado = 'icono_resultado_espera';
                         break;
@@ -1410,7 +1478,7 @@ function changeDatatable(url1) {
                       '<div style="display: inline-block;">' +
                       '<form id="reporteForm' + data +
                       '" action="<?php echo base_url(); ?>' + urlFinal + '" method="POST">' +
-                      '<a href="javascript:void(0);" data-toggle="tooltip" title="Descargar reporte PDF" id="reportePDF' +
+                      '<a href="javascript:void(0);" data-toggle="tooltip" title="<?php echo t("preemployment_download_pdf_report"); ?>" id="reportePDF' +
                       data + '" class="fa-tooltip icono_datatable ' + icono_resultado + '">' +
                       '<i class="fas fa-file-pdf"></i>' +
                       '</a>' +
@@ -1423,8 +1491,9 @@ function changeDatatable(url1) {
                   }
 
                 } else {
-                  return 'Sin ESE';
+                  return '<?php echo t("preemployment_no_ese"); ?>';
                 }
+
               } else {
                 return 'N/A';
               }
@@ -1478,19 +1547,30 @@ function changeDatatable(url1) {
             Swal.fire({
               position: 'center',
               icon: 'success',
-              title: 'El reporte PDF se esta creando y se descargará en breve',
+              title: '<?php echo t("preemployment_pdf_creating"); ?>',
               showConfirmButton: false,
               timer: 2500
             })
           });
 
           $("a#psicometria", row).bind('click', () => {
+
             $('#subirArchivoModal #titulo_modal').html(
-              'Carga de archivo de psicometría del candidato: <br>' + data.candidato);
-            $('#subirArchivoModal #label_modal').text('Selecciona el archivo de psicometría *');
-            $('#btnSubir').attr("onclick", "subirArchivo('psicometrico'," + data.id + "," + data
-              .idPsicometrico + ")");
+              '<?php echo t("preemployment_upload_psychometric_candidate"); ?>: <br>' +
+              data.candidato
+            );
+
+            $('#subirArchivoModal #label_modal').text(
+              '<?php echo t("preemployment_select_psychometric_file"); ?>'
+            );
+
+            $('#btnSubir').attr(
+              "onclick",
+              "subirArchivo('psicometrico'," + data.id + "," + data.idPsicometrico + ")"
+            );
+
             $('#subirArchivoModal').modal('show');
+
           });
           $("a#msj_avances", row).bind('click', () => {
             $.ajax({
@@ -2385,17 +2465,21 @@ function changeDatatable(url1) {
 
 // Llama a esta función con el ID del candidato
 function confirmActionInterno(id) {
+
   Swal.fire({
-    title: '¿Estás seguro?',
-    text: 'Enviarás este candidato al módulo de Empleados.',
+    title: '<?php echo t("preemployment_are_you_sure"); ?>',
+    text: '<?php echo t("preemployment_send_employee_confirmation"); ?>',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Sí, continuar',
-    cancelButtonText: 'No, cancelar',
+    confirmButtonText: '<?php echo t("preemployment_yes_continue"); ?>',
+    cancelButtonText: '<?php echo t("preemployment_no_cancel"); ?>',
     reverseButtons: true
   }).then((res) => {
+
     if (!res.isConfirmed) return;
+
     abrirModalSucursales(id);
+
   });
 }
 
@@ -2466,12 +2550,13 @@ function abrirModalSucursales(idCandidato) {
 
 // POST final: id + sucursal_id
 function enviarInternoEmpleado(idCandidato, sucursalId) {
+
   // Corrige el typo: Emplesa -> Empresa
   const urlEnviar = '<?php echo base_url('CandidatoEmpresa/enviarInternoEmpleado'); ?>';
 
   Swal.fire({
-    title: 'Procesando...',
-    text: 'Enviando candidato',
+    title: '<?php echo t("preemployment_processing"); ?>',
+    text: '<?php echo t("preemployment_sending_candidate"); ?>',
     allowOutsideClick: false,
     didOpen: () => Swal.showLoading()
   });
@@ -2485,95 +2570,138 @@ function enviarInternoEmpleado(idCandidato, sucursalId) {
         sucursal_id: sucursalId
       }
     })
+
     .done(function(data) {
+
       if (data?.success) {
+
         Swal.fire({
-          title: '¡Éxito!',
-          text: 'Candidato procesado correctamente.',
+          title: '<?php echo t("preemployment_success"); ?>',
+          text: '<?php echo t("preemployment_candidate_processed"); ?>',
           icon: 'success',
-          confirmButtonText: 'Aceptar'
+          confirmButtonText: '<?php echo t("preemployment_accept"); ?>'
         }).then(r => {
-          if (r.isConfirmed) location.reload();
+
+          if (r.isConfirmed) {
+            location.reload();
+          }
+
         });
+
       } else {
+
         Swal.fire({
-          title: 'Error',
-          text: data?.error || 'Ocurrió un error al procesar el candidato.',
+          title: '<?php echo t("preemployment_error"); ?>',
+          text: data?.error || '<?php echo t("preemployment_candidate_process_error"); ?>',
           icon: 'error'
         });
+
       }
+
     })
+
     .fail(function(xhr) {
+
       Swal.fire({
-        title: 'Error',
-        text: xhr.responseJSON?.message || 'Hubo un problema con la solicitud. Intenta de nuevo.',
+        title: '<?php echo t("preemployment_error"); ?>',
+        text: xhr.responseJSON?.message || '<?php echo t("preemployment_request_error"); ?>',
         icon: 'error'
       });
-      console.error('Error al realizar la solicitud:', xhr);
+
+      console.error(
+        '<?php echo t("preemployment_request_console_error"); ?>',
+        xhr
+      );
+
     });
 }
 
-
 function confirmAction(id) {
+
   // Muestra la alerta de confirmación con SweetAlert
   Swal.fire({
-    title: '¿Estás seguro?',
-    text: '¿Estás seguro de que quieres enviar este candidato al módulo de Empleados?',
+    title: '<?php echo t("preemployment_are_you_sure"); ?>',
+    text: '<?php echo t("preemployment_send_employee_confirmation"); ?>',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Sí, enviarlo!',
-    cancelButtonText: 'No, cancelar',
+    confirmButtonText: '<?php echo t("preemployment_yes_continue"); ?>',
+    cancelButtonText: '<?php echo t("preemployment_no_cancel"); ?>',
     reverseButtons: true
-  }).then((result) => {
+  })
+
+  .then((result) => {
+
     if (result.isConfirmed) {
 
       // Si el usuario confirma, realiza la solicitud AJAX
-
       var urlFiltrada = '<?php echo API_URL ?>candidato-send/' + id;
 
       $.ajax({
         url: urlFiltrada,
-        method: 'POST', // Asegúrate de usar el método adecuado
+        method: 'POST',
         dataType: 'json',
+
         success: function(data) {
+
           // Aquí verificamos si la respuesta contiene un éxito o un error
           if (data.success) {
+
             // Si todo salió bien, mostramos un mensaje de éxito
             Swal.fire({
-              title: '¡Éxito!',
-              text: 'Candidato procesado correctamente.',
+              title: '<?php echo t("preemployment_success"); ?>',
+              text: '<?php echo t("preemployment_candidate_processed"); ?>',
               icon: 'success',
-              confirmButtonText: 'Aceptar'
-            }).then((result) => {
+              confirmButtonText: '<?php echo t("preemployment_accept"); ?>'
+            })
+
+            .then((result) => {
+
               if (result.isConfirmed) {
                 window.location.reload();
               }
+
             });
+
           } else {
+
             // Si no se procesó correctamente, mostramos un mensaje de error
             Swal.fire({
-              title: 'Error',
-              text: data.error || 'Ocurrió un error al procesar el candidato.',
+              title: '<?php echo t("preemployment_error"); ?>',
+              text: data.error || '<?php echo t("preemployment_candidate_process_error"); ?>',
               icon: 'error',
-              confirmButtonText: 'Aceptar'
+              confirmButtonText: '<?php echo t("preemployment_accept"); ?>'
             });
+
           }
+
         },
+
         error: function(xhr, status, error) {
+
           // Si ocurre un error en la solicitud AJAX, mostramos el error
           Swal.fire({
-            title: 'Error',
-            text: 'Hubo un problema con la solicitud. Intenta de nuevo.',
+            title: '<?php echo t("preemployment_error"); ?>',
+            text: '<?php echo t("preemployment_request_error"); ?>',
             icon: 'error',
-            confirmButtonText: 'Aceptar'
+            confirmButtonText: '<?php echo t("preemployment_accept"); ?>'
           });
-          console.error('Error al realizar la solicitud:', error);
+
+          console.error(
+            '<?php echo t("preemployment_request_console_error"); ?>',
+            error
+          );
+
         }
+
       });
+
     } else {
+
       // Si el usuario cancela, no hace nada
       console.log('Acción cancelada');
+
     }
+
   });
 }
 
@@ -3025,8 +3153,10 @@ function guardarDatosContacto() {
 function subirExamenMedico() {
   var docs = new FormData();
   var archivo = $("#doc_medico")[0].files[0];
+
   docs.append("id_candidato", $("#idCandidato").val());
   docs.append("archivo", archivo);
+
   $.ajax({
     url: "<?php echo base_url('Medico/subirExamenMedico'); ?>",
     method: "POST",
@@ -3034,71 +3164,94 @@ function subirExamenMedico() {
     contentType: false,
     cache: false,
     processData: false,
+
     beforeSend: function() {
       $('.loader').css("display", "block");
     },
+
     success: function(res) {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
+
       var data = JSON.parse(res);
+
       if (data.codigo === 1) {
-        recargarTable()
-        $("#medicoModal").modal('hide')
+        recargarTable();
+        $("#medicoModal").modal('hide');
+
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: 'Se ha subido correctamente',
+          title: '<?php echo t("preemployment_uploaded_successfully"); ?>',
           showConfirmButton: false,
           timer: 2500
-        })
+        });
+
       } else {
+
         Swal.fire({
           icon: 'error',
-          title: 'Hubo un problema al enviar el formulario',
+          title: '<?php echo t("preemployment_form_submit_error"); ?>',
           html: data.msg,
           width: '50em',
-          confirmButtonText: 'Cerrar'
-        })
+          confirmButtonText: '<?php echo t("preemployment_close"); ?>'
+        });
+
       }
     }
   });
 }
 
 function actualizarChecklist() {
-  let datos = $('#formChecklist').serialize()
-  datos += '&id_candidato=' + $("#idCandidato").val()
+
+  let datos = $('#formChecklist').serialize();
+
+  datos += '&id_candidato=' + $("#idCandidato").val();
+
   $.ajax({
     url: '<?php echo base_url('Candidato_Conclusion/edit_checklist'); ?>',
     type: 'POST',
     data: datos,
+
     beforeSend: function() {
       $('.loader').css("display", "block");
     },
+
     success: function(res) {
+
       recargarTable();
+
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
+
       var data = JSON.parse(res);
+
       if (data.codigo === 1) {
-        $("#checklistModal").modal('hide')
+
+        $("#checklistModal").modal('hide');
+
         Swal.fire({
           position: 'center',
           icon: 'success',
-          title: 'Checklist actualizado correctamente',
+          title: '<?php echo t("preemployment_checklist_updated"); ?>',
           showConfirmButton: false,
           timer: 2500
-        })
+        });
+
       } else {
+
         Swal.fire({
           icon: 'error',
-          title: 'Hubo un problema al enviar el formulario',
+          title: '<?php echo t("preemployment_form_submit_error"); ?>',
           html: data.msg,
           width: '50em',
-          confirmButtonText: 'Cerrar'
-        })
+          confirmButtonText: '<?php echo t("preemployment_close"); ?>'
+        });
+
       }
+
     }
   });
 }
@@ -3394,11 +3547,6 @@ function eliminarIntegranteFamiliar(id_familiar, candidato) {
     }
   });
 }
-
-
-
-
-
 
 function nuevoDomicilio(id_candidato, id_seccion) {
   let opciones = '';
@@ -5828,75 +5976,104 @@ function eliminarArchivo(idDoc, archivo, id_candidato) {
 }
 
 function eliminarCandidato(idCandidato) {
+
   // Primera confirmación
   Swal.fire({
-    title: '¿Estás seguro?',
-    text: '¿Deseas eliminar al candidato y todos sus documentos relacionados?',
+    title: '<?php echo t("preemployment_are_you_sure"); ?>',
+    text: '<?php echo t("preemployment_delete_candidate_confirmation"); ?>',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Sí, eliminarlo',
-    cancelButtonText: 'No, cancelar',
-  }).then((result) => {
+    confirmButtonText: '<?php echo t("preemployment_yes_delete_candidate"); ?>',
+    cancelButtonText: '<?php echo t("preemployment_no_cancel"); ?>',
+  })
+
+  .then((result) => {
+
     if (result.isConfirmed) {
+
       // Segunda confirmación
       Swal.fire({
-        title: 'Confirmación final',
-        text: 'Esta acción es irreversible. ¿Realmente deseas eliminar al candidato?',
+        title: '<?php echo t("preemployment_final_confirmation"); ?>',
+        text: '<?php echo t("preemployment_irreversible_action"); ?>',
         icon: 'error',
         showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar definitivamente',
-        cancelButtonText: 'No, cancelar',
-      }).then((finalResult) => {
+        confirmButtonText: '<?php echo t("preemployment_yes_delete_permanently"); ?>',
+        cancelButtonText: '<?php echo t("preemployment_no_cancel"); ?>',
+      })
+
+      .then((finalResult) => {
+
         if (finalResult.isConfirmed) {
+
           // Realizar solicitud AJAX
           $.ajax({
             url: '<?php echo base_url('Candidato/eliminarCandidatoInterno'); ?>',
             method: 'POST',
+
             data: {
               'id': idCandidato
             },
+
             beforeSend: function() {
               $('.loader').css("display", "block");
             },
+
             success: function(response) {
+
               setTimeout(function() {
                 $('.loader').fadeOut();
               }, 200);
+
               var data = JSON.parse(response);
+
               if (data.codigo === 1) {
+
                 Swal.fire({
                   position: 'center',
                   icon: 'success',
-                  title: 'Candidato eliminado correctamente',
+                  title: '<?php echo t("preemployment_candidate_deleted"); ?>',
                   showConfirmButton: false,
                   timer: 2500
                 });
 
-                window.location.reload(); // 👈 recarga cuando termine de cerrarse
+                window.location.reload();
+
               } else {
+
                 Swal.fire({
                   position: 'center',
                   icon: 'error',
-                  title: 'Hubo un problema al eliminar, intenta más tarde',
+                  title: '<?php echo t("preemployment_delete_error"); ?>',
                   showConfirmButton: false,
                   timer: 2500
                 });
+
               }
+
             },
+
             error: function() {
+
               Swal.fire({
                 position: 'center',
                 icon: 'error',
-                title: 'Error en la conexión con el servidor',
+                title: '<?php echo t("preemployment_server_connection_error"); ?>',
                 showConfirmButton: false,
                 timer: 2500
               });
+
             }
+
           });
+
         }
+
       });
+
     }
+
   });
+
 }
 
 
@@ -5924,7 +6101,6 @@ function cargarDocumentosPanelClienteInterno(id, nombre, origen) {
 
   $("#docsModalInterno").modal("show");
 }
-
 function subirDocInterno() {
   var origen = $("#origen").val();
   var nombreCandidato = $("#nameCandidatoInterno").val();
@@ -5934,19 +6110,20 @@ function subirDocInterno() {
   var modal = $("#docsModalInterno");
 
   var docInput = modal.find("#documentoInterno")[0];
+
   if (docInput.files.length === 0) {
     Swal.fire({
       icon: 'warning',
-      title: 'Selecciona un archivo',
-      text: 'Por favor, elige un archivo antes de subirlo.',
+      title: '<?php echo t("preemployment_select_file"); ?>',
+      text: '<?php echo t("preemployment_choose_file_before_upload"); ?>',
       timer: 2500
     });
     return;
   }
+
   var doc = docInput.files[0];
   var id_portal = "<?php echo $this->session->userdata('idPortal') ?>";
 
-  // Agregar los datos esperados por el backend
   data.append('employee_id', id);
   data.append('name', modal.find("#nombre_archivoInterno").val());
   data.append('description', null);
@@ -5957,20 +6134,21 @@ function subirDocInterno() {
   data.append('id_portal', id_portal);
   data.append('origen', origen);
 
-  // Determinar la carpeta y la URL de destino
   var carpeta = (origen == 1) ? '_documentEmpleado' : '_examEmpleado';
   data.append('carpeta', carpeta);
 
   $.ajax({
-    url: "<?php echo site_url('Avance/subirDocumentoInterno'); ?>", // Este es el endpoint de tu controlador CodeIgniter
+    url: "<?php echo site_url('Avance/subirDocumentoInterno'); ?>",
     method: "POST",
     data: data,
     contentType: false,
     cache: false,
     processData: false,
+
     beforeSend: function() {
       $('.loader').css("display", "block");
     },
+
     success: function(res) {
       setTimeout(function() {
         $('.loader').fadeOut();
@@ -5987,41 +6165,41 @@ function subirDocInterno() {
           timer: 2500
         });
 
-        // Limpiar campos del formulario
         let modal = $("#docsModalInterno");
         modal.find("#documentoInterno").val("");
         modal.find("#tablaDocsInterno").empty();
         modal.find("#nombre_archivoInterno").val("");
 
-        // Recargar documentos
         cargarDocumentosPanelClienteInterno(id, nombreCandidato, origen);
+
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: data.error || 'No se pudo subir el documento.',
+          title: '<?php echo t("preemployment_error"); ?>',
+          text: data.error || '<?php echo t("preemployment_document_upload_error"); ?>',
           timer: 2500
         });
       }
     },
+
     error: function(jqXHR) {
       setTimeout(function() {
         $('.loader').fadeOut();
       }, 200);
 
-      let errorMessage = "Error en la solicitud.";
+      let errorMessage = '<?php echo t("preemployment_request_error_short"); ?>';
 
       if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
         errorMessage = jqXHR.responseJSON.error;
       } else if (jqXHR.status === 413) {
-        errorMessage = "El archivo es demasiado grande.";
+        errorMessage = '<?php echo t("preemployment_file_too_large"); ?>';
       } else if (jqXHR.status === 500) {
-        errorMessage = "Error interno del servidor.";
+        errorMessage = '<?php echo t("preemployment_server_error"); ?>';
       }
 
       Swal.fire({
         icon: 'error',
-        title: 'Error',
+        title: '<?php echo t("preemployment_error"); ?>',
         text: errorMessage,
         timer: 2500
       });
@@ -6031,55 +6209,74 @@ function subirDocInterno() {
 
 
 function eliminarArchivoInterno(idDoc, archivo, id_candidato, origen) {
+
   Swal.fire({
-    title: "¿Estás seguro?",
-    text: "Este documento se eliminará para siempre.",
+    title: "<?php echo t('preemployment_delete_confirmation'); ?>",
+    text: "<?php echo t('preemployment_delete_document_warning'); ?>",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#d33",
     cancelButtonColor: "#3085d6",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar"
-  }).then((result) => {
+    confirmButtonText: "<?php echo t('preemployment_yes_delete'); ?>",
+    cancelButtonText: "<?php echo t('preemployment_cancel'); ?>"
+  })
+
+  .then((result) => {
+
     if (result.isConfirmed) {
+
       $.ajax({
         url: '<?php echo base_url('Candidato/eliminarDocumentoInterno'); ?>',
         method: 'POST',
+
         data: {
           'idDoc': idDoc,
           'archivo': archivo,
           'id_candidato': id_candidato,
           'origen': origen
         },
+
         beforeSend: function() {
           $('.loader').css("display", "block");
         },
+
         success: function(res) {
+
           setTimeout(function() {
             $('.loader').fadeOut();
           }, 200);
+
           var data = JSON.parse(res);
+
           if (data.codigo === 1) {
-            $("#fila" + idDoc).remove(); // Elimina la fila solo si se eliminó con éxito
+
+            $("#fila" + idDoc).remove();
+
             Swal.fire({
               position: 'center',
               icon: 'success',
-              title: 'Se ha eliminado correctamente',
+              title: '<?php echo t("preemployment_deleted_successfully"); ?>',
               showConfirmButton: false,
               timer: 2500
             });
+
           } else {
+
             Swal.fire({
               position: 'center',
               icon: 'error',
-              title: 'Hubo un problema al eliminar, intenta más tarde',
+              title: '<?php echo t("preemployment_delete_error"); ?>',
               showConfirmButton: false,
               timer: 2500
             });
+
           }
+
         }
       });
+
     }
+
   });
 }
 
