@@ -18,17 +18,15 @@
             <div class="row">
               <div class="col-md-4">
                 <label><?php echo $this->lang->line('admin_users_modal_firstname'); ?></label>
-                <input type="text" class="form-control" name="nombreUsuarioInterno"
-                       id="nombreUsuarioInterno"
-                       onkeyup="this.value=this.value.toUpperCase()">
+                <input type="text" class="form-control" name="nombreUsuarioInterno" id="nombreUsuarioInterno"
+                  onkeyup="this.value=this.value.toUpperCase()">
                 <br>
               </div>
 
               <div class="col-md-4">
                 <label><?php echo $this->lang->line('admin_users_modal_lastname'); ?></label>
-                <input type="text" class="form-control" name="paternoUsuarioInterno"
-                       id="paternoUsuarioInterno"
-                       onkeyup="this.value=this.value.toUpperCase()">
+                <input type="text" class="form-control" name="paternoUsuarioInterno" id="paternoUsuarioInterno"
+                  onkeyup="this.value=this.value.toUpperCase()">
                 <br>
               </div>
 
@@ -36,12 +34,13 @@
                 <label><?php echo $this->lang->line('admin_users_modal_role'); ?></label>
                 <select class="form-control" id="id_rolUsuarioInterno" name="id_rolUsuarioInterno">
                   <option value=""><?php echo $this->lang->line('admin_users_modal_select_role'); ?></option>
-                  <option value="6">Administrador</option>
-                  <option value="9">Gerente</option>
-                  <option value="10">RRHH</option>
-                  <option value="4">Reclutadora</option>
-                  <option value="11">Coordinador reclutamiento</option>
-                  <option value="13">Visor</option>
+                  <option value="6"><?php echo $this->lang->line('admin_users_role_admin'); ?></option>
+                  <option value="9"><?php echo $this->lang->line('admin_users_role_manager'); ?></option>
+                  <option value="10"><?php echo $this->lang->line('admin_users_role_hr'); ?></option>
+                  <option value="4"><?php echo $this->lang->line('admin_users_role_recruiter'); ?></option>
+                  <option value="11"><?php echo $this->lang->line('admin_users_role_recruitment_coordinator'); ?>
+                  </option>
+                  <option value="13"><?php echo $this->lang->line('admin_users_role_viewer'); ?></option>
                 </select>
                 <input type="hidden" id="id_rolUsuarioInterno_hidden" name="id_rolUsuarioInterno_hidden">
                 <br>
@@ -116,7 +115,7 @@
       <div class="modal-header">
         <h5 class="modal-title" id="titulo_mensaje"></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span >&times;</span>
+          <span>&times;</span>
         </button>
       </div>
       <div class="modal-body" id="mensaje"></div>
@@ -133,26 +132,21 @@
 
 
 <script>
+$("#accesoModal").on("hidden.bs.modal", function() {
+  $("#accesoModal input, #accesoModal select").val("");
+  $("#accesoModal #id_rol").val(0);
+  $("#accesoModal input").removeClass("requerido");
+  $("#accesoModal #msj_error").css('display', 'none');
+  $("#idusuario").val("");
+  // Habilitar los elementos fuera del modal
 
-  $("#accesoModal").on("hidden.bs.modal", function() {
-    $("#accesoModal input, #accesoModal select").val("");
-    $("#accesoModal #id_rol").val(0);
-    $("#accesoModal input").removeClass("requerido");
-    $("#accesoModal #msj_error").css('display', 'none');
-    $("#idusuario").val("");
-     // Habilitar los elementos fuera del modal
-   
 
-  });
-  $("#editarModal").on("hidden.bs.modal", function() {
-    $("#editarModalinput").val("");
-    $("#editarModal #msj_error").css('display', 'none');
-    $("#titulo_editar_modal").text("Nuevo Usuario");
-    // Habilitar los elementos fuera del modal
+});
+$("#editarModal").on("hidden.bs.modal", function() {
+  $("#editarModalinput").val("");
+  $("#editarModal #msj_error").css('display', 'none');
+  $("#titulo_editar_modal").text("Nuevo Usuario");
+  // Habilitar los elementos fuera del modal
 
-  }); 
-
+});
 </script>
-
-
-  

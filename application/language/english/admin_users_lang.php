@@ -97,29 +97,14 @@ $lang['admin_users_modal_copy_warning'] =
 $lang['admin_users_modal_btn_close']  = "Close";
 $lang['admin_users_modal_btn_save']   = "Save";
 $lang['admin_users_modal_btn_update'] = "Save Changes";
-$lang['admin_users_modal_new_title']  = "Register Internal User *";
-$lang['admin_users_modal_edit_title'] = "Edit Internal User";
 
-$lang['admin_users_modal_firstname']   = "First Name *";
-$lang['admin_users_modal_lastname']    = "Last Name *";
-$lang['admin_users_modal_role']        = "Role Type *";
-$lang['admin_users_modal_select_role'] = "Select a role";
-
-$lang['admin_users_modal_phone'] = "Phone *";
-$lang['admin_users_modal_email'] = "Email *";
-
-$lang['admin_users_modal_click']             = "Click";
-$lang['admin_users_modal_generate_password'] = "Generate password";
-$lang['admin_users_modal_password']          = "Password *";
-
-$lang['admin_users_modal_copy_warning'] =
-    "* Copy the password to send it later. If not copied now, a new one must be generated.";
-
-$lang['admin_users_modal_btn_close']  = "Close";
-$lang['admin_users_modal_btn_save']   = "Save";
-$lang['admin_users_modal_btn_update'] = "Save Changes";
 $lang['admin_users_edit_title']       = "Edit User";
 $lang['admin_users_btn_save_changes'] = "Save Changes";
-
+$lang['admin_users_role_admin'] = "Administrator";
+$lang['admin_users_role_manager'] = "Manager";
+$lang['admin_users_role_hr'] = "HR";
+$lang['admin_users_role_recruiter'] = "Recruiter";
+$lang['admin_users_role_recruitment_coordinator'] = "Recruitment Coordinator";
+$lang['admin_users_role_viewer'] = "Viewer";
 //$lang['dashboard_no_access_title'] = 'Access unavailable';
 //$lang['dashboard_no_access_msg']   = 'This module displays general platform indicators and metrics. You currently do not have access to this section. If you believe you should have access, please contact the administrator.';

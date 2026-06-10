@@ -117,6 +117,11 @@ $lang['admin_users_modal_btn_update'] = "Guardar cambios";
 
 $lang['admin_users_edit_title']       = "Editar usuario";
 $lang['admin_users_btn_save_changes'] = "Guardar cambios";
-
+$lang['admin_users_role_admin'] = "Administrador";
+$lang['admin_users_role_manager'] = "Gerente";
+$lang['admin_users_role_hr'] = "RRHH";
+$lang['admin_users_role_recruiter'] = "Reclutadora";
+$lang['admin_users_role_recruitment_coordinator'] = "Coordinador reclutamiento";
+$lang['admin_users_role_viewer'] = "Visor";
 //$lang['dashboard_no_access_title'] = 'Acceso no disponible';
 //$lang['dashboard_no_access_msg']   = 'Este módulo muestra indicadores y métricas generales de la plataforma. Actualmente no cuentas con acceso a esta sección. Si consideras que deberías tenerlo, por favor comunícate con el administrador.';

@@ -12,11 +12,11 @@
 
     // -> window.PERM = { ... }
     echo perms_js_flags([
-        'USR_EDITAR'         => ['admin.usuarios_internos.editar', $L_EDITAR],
-        'USR_CAMBIAR_ESTADO' => ['admin.usuarios_internos.cambiar_estado', $L_CAMBIAR_ESTADO],
-        'USR_ELIMINAR'       => ['admin.usuarios_internos.eliminar', $L_ELIMINAR],
-        'USR_RESET'          => ['admin.usuarios_internos.reset_credenciales', $L_RESET],
-        'USR_CONFIG'         => ['admin.usuarios_internos.config_permisos', $L_CONFIG],
+    'USR_EDITAR'         => ['admin.usuarios_internos.editar', $L_EDITAR],
+    'USR_CAMBIAR_ESTADO' => ['admin.usuarios_internos.cambiar_estado', $L_CAMBIAR_ESTADO],
+    'USR_ELIMINAR'       => ['admin.usuarios_internos.eliminar', $L_ELIMINAR],
+    'USR_RESET'          => ['admin.usuarios_internos.reset_credenciales', $L_RESET],
+    'USR_CONFIG'         => ['admin.usuarios_internos.config_permisos', $L_CONFIG],
     ]);
 ?>
 <script>
@@ -193,7 +193,12 @@ window.CURRENT_USER_ID = <?php echo (int) $myId ?>;
   </div>
 </div>
 
-
+<script>
+  const ADMIN_USERS_LANG = {
+    save: "<?php echo $this->lang->line('admin_users_modal_btn_save'); ?>",
+    update: "<?php echo $this->lang->line('admin_users_modal_btn_update'); ?>"
+  };
+</script>
 <?php echo $modals; ?>
 <div class="loader" style="display: none;"></div>
 <input type="hidden" id="idusuario">
@@ -586,7 +591,7 @@ function mostrarModalRegistroUsuario() {
   $("#ocultar-en-editar").css('display', 'block');
   $("#labelOcultar").css('display', 'block');
 
-  $("#btnGuardar").text("Guardar");
+$("#btnGuardar").text(ADMIN_USERS_LANG.save);
   $("#btnGuardar").off("click").on("click", function() {
     registroUsuariosInternos();
   });
