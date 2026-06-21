@@ -2083,7 +2083,7 @@ class Reporte extends CI_Controller
         empleados.nss AS NSS,
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
-        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso
+        empleados.fecha_ingreso AS Fecha_Ingreso
         ");
         $this->db->from('empleados');
         $this->db->where('empleados.status', 1);
@@ -2097,9 +2097,9 @@ class Reporte extends CI_Controller
 
         if ($fecha_inicio && $fecha_fin) {
             $this->db->where("
-            IFNULL(empleados.fecha_ingreso, empleados.creacion)
-            BETWEEN '" . $fecha_inicio . " 00:00:00'
-            AND '" . $fecha_fin . " 23:59:59'
+          empleados.fecha_ingreso
+            BETWEEN '$fecha_inicio 00:00:00'
+            AND '$fecha_fin 23:59:59'
             ", null, false);
         }
 
@@ -2336,7 +2336,7 @@ class Reporte extends CI_Controller
         empleados.nss AS NSS,
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
-        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso,
+        empleados.fecha_ingreso AS Fecha_Ingreso,
         empleados.fecha_salida AS Fecha_Salida
         ", false);
 
@@ -2587,10 +2587,10 @@ class Reporte extends CI_Controller
         $fin    = $fecha_fin . ' 23:59:59';
 
         /*
-    |--------------------------------------------------------------------------
-    | 1. Plantilla inicial
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 1. Plantilla inicial
+        |--------------------------------------------------------------------------
+        */
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
 
@@ -2600,8 +2600,7 @@ class Reporte extends CI_Controller
             $this->db->where('empleados.id_portal', $portal);
         }
 
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <", $inicio);
-
+        $this->db->where('empleados.fecha_ingreso <', $inicio);
         $this->db->group_start();
         $this->db->where('empleados.fecha_salida IS NULL', null, false);
         $this->db->or_where('empleados.fecha_salida >=', $inicio);
@@ -2618,10 +2617,10 @@ class Reporte extends CI_Controller
         $plantilla_inicial = $this->db->count_all_results();
 
         /*
-    |--------------------------------------------------------------------------
-    | 2. Ingresos del periodo (conteo)
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 2. Ingresos del periodo (conteo)
+        |--------------------------------------------------------------------------
+        */
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
 
@@ -2631,8 +2630,8 @@ class Reporte extends CI_Controller
             $this->db->where('empleados.id_portal', $portal);
         }
 
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) >=", $inicio);
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fin);
+        $this->db->where('empleados.fecha_ingreso >=', $inicio);
+        $this->db->where('empleados.fecha_ingreso <=', $fin);
 
         if ($puesto) {
             $this->db->where('empleados.puesto', $puesto);
@@ -2645,10 +2644,10 @@ class Reporte extends CI_Controller
         $ingresos = $this->db->count_all_results();
 
         /*
-    |--------------------------------------------------------------------------
-    | 3. Bajas del periodo (conteo)
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 3. Bajas del periodo (conteo)
+        |--------------------------------------------------------------------------
+        */
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
         $this->db->where('empleados.fecha_salida IS NOT NULL', null, false);
@@ -2672,10 +2671,10 @@ class Reporte extends CI_Controller
         $bajas = $this->db->count_all_results();
 
         /*
-    |--------------------------------------------------------------------------
-    | 4. Plantilla final
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 4. Plantilla final
+        |--------------------------------------------------------------------------
+        */
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
 
@@ -2685,7 +2684,7 @@ class Reporte extends CI_Controller
             $this->db->where('empleados.id_portal', $portal);
         }
 
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fin);
+        $this->db->where('empleados.fecha_ingreso <=', $fin);
 
         $this->db->group_start();
         $this->db->where('empleados.fecha_salida IS NULL', null, false);
@@ -2703,18 +2702,18 @@ class Reporte extends CI_Controller
         $plantilla_final = $this->db->count_all_results();
 
         /*
-    |--------------------------------------------------------------------------
-    | 5. Detalle ingresos
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 5. Detalle ingresos
+        |--------------------------------------------------------------------------
+        */
         $this->db->select("
         empleados.id,
         empleados.id_empleado,
         CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
         empleados.puesto AS Puesto,
         empleados.departamento AS Area_Departamento,
-        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso
-    ", false);
+        empleados.fecha_ingreso AS Fecha_Ingreso
+        ", false);
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
 
@@ -2724,8 +2723,8 @@ class Reporte extends CI_Controller
             $this->db->where('empleados.id_portal', $portal);
         }
 
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) >=", $inicio);
-        $this->db->where("IFNULL(empleados.fecha_ingreso, empleados.creacion) <=", $fin);
+        $this->db->where('empleados.fecha_ingreso >=', $inicio);
+        $this->db->where('empleados.fecha_ingreso <=', $fin);
 
         if ($puesto) {
             $this->db->where('empleados.puesto', $puesto);
@@ -2740,19 +2739,19 @@ class Reporte extends CI_Controller
         $detalle_ingresos = $this->db->get()->result_array();
 
         /*
-    |--------------------------------------------------------------------------
-    | 6. Detalle bajas
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 6. Detalle bajas
+        |--------------------------------------------------------------------------
+        */
         $this->db->select("
         empleados.id,
         empleados.id_empleado,
         CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
         empleados.puesto AS Puesto,
         empleados.departamento AS Area_Departamento,
-        IFNULL(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso,
+        empleados.fecha_ingreso AS Fecha_Ingreso,
         empleados.fecha_salida AS Fecha_Salida
-    ", false);
+        ", false);
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
         $this->db->where('empleados.fecha_salida IS NOT NULL', null, false);
@@ -2778,10 +2777,10 @@ class Reporte extends CI_Controller
         $detalle_bajas = $this->db->get()->result_array();
 
         /*
-    |--------------------------------------------------------------------------
-    | 7. Cálculos
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 7. Cálculos
+        |--------------------------------------------------------------------------
+        */
         $promedio_plantilla = ($plantilla_inicial + $plantilla_final) / 2;
         $rotacion           = $promedio_plantilla > 0
             ? round(($bajas / $promedio_plantilla) * 100, 2)
@@ -2799,10 +2798,10 @@ class Reporte extends CI_Controller
         ]];
 
         /*
-    |--------------------------------------------------------------------------
-    | 8. Excel
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | 8. Excel
+        |--------------------------------------------------------------------------
+        */
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
         $headerStyle = [
@@ -2831,10 +2830,10 @@ class Reporte extends CI_Controller
         ];
 
         /*
-    |--------------------------------------------------------------------------
-    | Hoja 1: Resumen
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Hoja 1: Resumen
+        |--------------------------------------------------------------------------
+        */
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Resumen');
 
@@ -2852,10 +2851,10 @@ class Reporte extends CI_Controller
         }
 
         /*
-    |--------------------------------------------------------------------------
-    | Hoja 2: Ingresos
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Hoja 2: Ingresos
+        |--------------------------------------------------------------------------
+        */
         $sheetIngresos = $spreadsheet->createSheet();
         $sheetIngresos->setTitle('Ingresos');
 
@@ -2882,10 +2881,10 @@ class Reporte extends CI_Controller
         }
 
         /*
-    |--------------------------------------------------------------------------
-    | Hoja 3: Bajas
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Hoja 3: Bajas
+        |--------------------------------------------------------------------------
+        */
         $sheetBajas = $spreadsheet->createSheet();
         $sheetBajas->setTitle('Bajas');
 
