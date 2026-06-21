@@ -3,6 +3,7 @@
 namespace PhpOffice\PhpSpreadsheet\Calculation;
 
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Shared\StringHelper;
 
@@ -217,7 +218,7 @@ class Functions
      *
      * @param mixed $array Array to be flattened
      *
-     * @return array Flattened array
+     * @return array<mixed> Flattened array
      */
     public static function flattenArray(mixed $array): array
     {
@@ -247,7 +248,7 @@ class Functions
      *
      * @param mixed $array Array to be flattened
      *
-     * @return array Flattened array
+     * @return array<mixed> Flattened array
      */
     public static function flattenArray2(mixed ...$array): array
     {
@@ -285,7 +286,7 @@ class Functions
      *
      * @param array|mixed $array Array to be flattened
      *
-     * @return array Flattened array
+     * @return array<mixed> Flattened array
      */
     public static function flattenArrayIndexed($array): array
     {
@@ -359,5 +360,48 @@ class Functions
         }
 
         return $coordinate;
+    }
+
+    /** @param mixed[] $array */
+    public static function convertArrayToCellRange(array $array): string
+    {
+        $retVal = '';
+        $lastRow = $lastColumn = $firstRow = $firstColumn = 0;
+        foreach ($array as $rowkey => $row) {
+            if (!is_array($row) || !is_int($rowkey) || $rowkey < 1) {
+                $firstRow = 0;
+
+                break;
+            }
+            if ($firstRow > $rowkey || $firstRow === 0) {
+                $firstRow = $rowkey;
+            }
+            if ($lastRow < $rowkey) {
+                $lastRow = $rowkey;
+            }
+            foreach ($row as $colkey => $cellValue) {
+                if (!preg_match('/^[A-Z]{1,3}$/', $colkey)) {
+                    $firstRow = 0;
+
+                    break 2;
+                }
+                $column = Coordinate::columnIndexFromString($colkey);
+                if ($firstColumn > $column || $firstColumn === 0) {
+                    $firstColumn = $column;
+                }
+                if ($lastColumn < $column) {
+                    $lastColumn = $column;
+                }
+            }
+        }
+        if ($firstRow > 0 && $firstColumn > 0 && ($firstRow !== $lastRow || $firstColumn !== $lastColumn)) {
+            $retVal = Coordinate::stringFromColumnIndex($firstColumn)
+                . $firstRow
+                . ':'
+                . Coordinate::stringFromColumnIndex($lastColumn)
+                . $lastRow;
+        }
+
+        return $retVal;
     }
 }

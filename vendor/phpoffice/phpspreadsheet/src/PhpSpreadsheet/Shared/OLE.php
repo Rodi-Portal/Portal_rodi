@@ -58,6 +58,8 @@ class OLE
 
     /**
      * Array of PPS's found on the OLE container.
+     *
+     * @var array<OLE\PPS|OLE\PPS\File|Root>
      */
     public array $_list = [];
 
@@ -69,14 +71,14 @@ class OLE
     /**
      * Big Block Allocation Table.
      *
-     * @var array (blockId => nextBlockId)
+     * @var mixed[] (blockId => nextBlockId)
      */
     public array $bbat;
 
     /**
      * Short Block Allocation Table.
      *
-     * @var array (blockId => nextBlockId)
+     * @var mixed[] (blockId => nextBlockId)
      */
     public array $sbat;
 
@@ -231,10 +233,7 @@ class OLE
             $path .= '&blockId=' . $blockIdOrPps;
         }
 
-        $resource = fopen($path, 'rb');
-        if ($resource === false) {
-            throw new Exception("Unable to open stream $path");
-        }
+        $resource = fopen($path, 'rb') ?: throw new Exception("Unable to open stream $path");
 
         return $resource;
     }
@@ -247,6 +246,7 @@ class OLE
     private static function readInt1($fileHandle): int
     {
         [, $tmp] = unpack('c', fread($fileHandle, 1) ?: '') ?: [0, 0];
+        /** @var int $tmp */
 
         return $tmp;
     }
@@ -259,6 +259,7 @@ class OLE
     private static function readInt2($fileHandle): int
     {
         [, $tmp] = unpack('v', fread($fileHandle, 2) ?: '') ?: [0, 0];
+        /** @var int $tmp */
 
         return $tmp;
     }
@@ -275,6 +276,7 @@ class OLE
     private static function readInt4($fileHandle): int
     {
         [, $tmp] = unpack('V', fread($fileHandle, 4) ?: '') ?: [0, 0];
+        /** @var int $tmp */
         if ($tmp >= self::SIGNED_4OCTET_LIMIT) {
             $tmp -= self::SIGNED_4OCTET_SUBTRACT;
         }
@@ -369,9 +371,13 @@ class OLE
      */
     private function ppsTreeComplete(int $index): bool
     {
-        return isset($this->_list[$index])
-            && ($pps = $this->_list[$index])
-            && ($pps->PrevPps == -1
+        if (!isset($this->_list[$index])) {
+            return false;
+        }
+        $pps = $this->_list[$index];
+
+        return
+            ($pps->PrevPps == -1
                 || $this->ppsTreeComplete($pps->PrevPps))
             && ($pps->NextPps == -1
                 || $this->ppsTreeComplete($pps->NextPps))
@@ -500,7 +506,7 @@ class OLE
         }
         $dateTime = Date::dateTimeFromTimestamp("$date");
 
-        // days from 1-1-1601 until the beggining of UNIX era
+        // days from 1-1-1601 until the beginning of UNIX era
         $days = 134774;
         // calculate seconds
         $big_date = $days * 24 * 3600 + (float) $dateTime->format('U');
@@ -535,6 +541,7 @@ class OLE
         }
 
         // convert to units of 100 ns since 1601:
+        /** @var int[] */
         $unpackedTimestamp = unpack('v4', $oleTimestamp) ?: [];
         $timestampHigh = (float) $unpackedTimestamp[4] * 65536 + (float) $unpackedTimestamp[3];
         $timestampLow = (float) $unpackedTimestamp[2] * 65536 + (float) $unpackedTimestamp[1];

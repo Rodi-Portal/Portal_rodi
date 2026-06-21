@@ -15,17 +15,16 @@
 		"nexmo/client": "^2.0",
 		"setasign/fpdi": "^2.1",
 		"mpdf/mpdf": "^8.2",
-		"phpoffice/phpspreadsheet": "^4.2",
+		"phpoffice/phpspreadsheet": "5.8",
     "pusher/pusher-php-server": "^7.2",
 		"brainfoolong/cryptojs-aes-php": "^2.1",
-		"firebase/php-jwt": "^6.11",
+		"firebase/php-jwt": "7.0",
 		"endroid/qr-code": "^5.1"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
 	},
 	"require-dev": {
-		"mikey179/vfsstream": "1.1.*",
-		"phpunit/phpunit": "4.* || 5.*"
+		"mikey179/vfsstream": "1.1.*"
 	}
 }

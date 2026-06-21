@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2026 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -26,7 +26,7 @@ class GraphicsState
     /**
      * @param Matrix|null $ctm
      */
-    public function __construct(Matrix $ctm = null)
+    public function __construct(?Matrix $ctm = null)
     {
         if ($ctm === null) {
             $ctm = new Matrix();
@@ -53,13 +53,13 @@ class GraphicsState
      */
     public function rotate($x, $y, $angle)
     {
-        if (abs($angle) < 1e-5) {
+        if (\abs($angle) < 1e-5) {
             return  $this;
         }
 
-        $angle = deg2rad($angle);
-        $c = cos($angle);
-        $s = sin($angle);
+        $angle = \deg2rad($angle);
+        $c = \cos($angle);
+        $s = \sin($angle);
 
         $this->add(new Matrix($c, $s, -$s, $c, $x, $y));
 

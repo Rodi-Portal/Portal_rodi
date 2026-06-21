@@ -3,6 +3,7 @@
 namespace PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 use PhpOffice\PhpSpreadsheet\Chart\Axis;
+use PhpOffice\PhpSpreadsheet\Chart\Chart as SpreadsheetChart;
 use PhpOffice\PhpSpreadsheet\Chart\ChartColor;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
@@ -27,7 +28,7 @@ class Chart extends WriterPart
      *
      * @return string XML Output
      */
-    public function writeChart(\PhpOffice\PhpSpreadsheet\Chart\Chart $chart, bool $calculateCellValues = true): string
+    public function writeChart(SpreadsheetChart $chart, bool $calculateCellValues = true): string
     {
         // Create XML writer
         $objWriter = null;
@@ -1313,12 +1314,12 @@ class Chart extends WriterPart
                     }
                     if ($trendLineType == TrendLine::TRENDLINE_POLYNOMIAL) {
                         $objWriter->startElement('c:order');
-                        $objWriter->writeAttribute('val', $order);
+                        $objWriter->writeAttribute('val', "$order");
                         $objWriter->endElement(); // order
                     }
                     if ($trendLineType == TrendLine::TRENDLINE_MOVING_AVG) {
                         $objWriter->startElement('c:period');
-                        $objWriter->writeAttribute('val', $period);
+                        $objWriter->writeAttribute('val', "$period");
                         $objWriter->endElement(); // period
                     }
                     $objWriter->startElement('c:dispRSqr');
@@ -1435,6 +1436,7 @@ class Chart extends WriterPart
         $objWriter->endElement();
 
         foreach (($plotSeriesLabel->getDataValues() ?? []) as $plotLabelKey => $plotLabelValue) {
+            /** @var string $plotLabelValue */
             $objWriter->startElement('c:pt');
             $objWriter->writeAttribute('idx', $plotLabelKey);
 
@@ -1477,6 +1479,7 @@ class Chart extends WriterPart
                 $objWriter->startElement('c:lvl');
 
                 foreach (($plotSeriesValues->getDataValues() ?? []) as $plotSeriesKey => $plotSeriesValue) {
+                    /** @var string[] $plotSeriesValue */
                     if (isset($plotSeriesValue[$level])) {
                         $objWriter->startElement('c:pt');
                         $objWriter->writeAttribute('idx', $plotSeriesKey);
@@ -1519,6 +1522,7 @@ class Chart extends WriterPart
                 $objWriter->writeAttribute('val', (string) $plotSeriesValues->getPointCount());
                 $objWriter->endElement();
 
+                /** @var array<string, string> */
                 $dataValues = $plotSeriesValues->getDataValues();
                 if (!empty($dataValues)) {
                     foreach ($dataValues as $plotSeriesKey => $plotSeriesValue) {
@@ -1750,7 +1754,12 @@ class Chart extends WriterPart
         foreach (['kx', 'ky'] as $sizeType) {
             $sizeValue = $xAxis->getShadowProperty(['size', $sizeType]);
             if (is_numeric($sizeValue)) {
-                $objWriter->writeAttribute($sizeType, Properties::angleToXml((float) $sizeValue));
+                $temp = (float) Properties::angleToXml((float) $sizeValue);
+                if (abs($temp) <= Properties::MAX_SKEW_ANGLE_XML) {
+                    // This corresponds to values between -90 amd +90 EXCLUSIVE.
+                    // 90 and anything higher is invalid.
+                    $objWriter->writeAttribute($sizeType, Properties::angleToXml((float) $sizeValue));
+                }
             }
         }
         $rotWithShape = $xAxis->getShadowProperty('rotWithShape');
