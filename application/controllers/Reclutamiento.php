@@ -30,6 +30,9 @@ class Reclutamiento extends CI_Controller
             'english' => 'english',
         ];
         $lang = $map[$raw] ?? 'espanol';
+
+        // ✅ Descripciones generales de módulos bloqueados
+        $this->lang->load('modulos_description', $lang);
         // ✅ Reclutamiento (4 submódulos)
         $this->lang->load('reclutamiento_escritorio', $lang);
         $this->lang->load('reclutamiento_progreso', $lang);

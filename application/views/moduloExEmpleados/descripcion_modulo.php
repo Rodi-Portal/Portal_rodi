@@ -76,47 +76,49 @@
 </style>
 
 <div class="exempleados-container">
-  <h1 class="exempleados-title">Módulo de Exempleados</h1>
-  <p>
-    Este módulo te permite gestionar la información de los exempleados de tu organización, incluyendo documentos importantes y comentarios para referencia futura.
-  </p>
+    <h1 class="exempleados-title">
+        <?= $this->lang->line('former_modulo_titulo'); ?>
+    </h1>
 
-  <div class="exempleados-section">
-    <h2>¿Qué puedes hacer con este módulo?</h2>
+    <p>
+        <?= $this->lang->line('former_modulo_descripcion'); ?>
+    </p>
 
-    <div class="exempleados-card">
-      <i class="fas fa-user-times"></i>
-      <div>
-        <h3>Detalles del exempleado</h3>
-        <p>
-          Registra y administra información clave del exempleado como sus datos personales, historial laboral y otros datos relevantes.
-        </p>
-      </div>
+    <div class="exempleados-section">
+        <h2><?= $this->lang->line('former_acciones_titulo'); ?></h2>
+
+        <div class="exempleados-card">
+            <i class="fas fa-user-times"></i>
+            <div>
+                <h3><?= $this->lang->line('former_detalles_titulo'); ?></h3>
+                <p><?= $this->lang->line('former_detalles_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="exempleados-card">
+            <i class="fas fa-file-upload"></i>
+            <div>
+                <h3><?= $this->lang->line('former_documentos_titulo'); ?></h3>
+                <p><?= $this->lang->line('former_documentos_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="exempleados-card">
+            <i class="fas fa-comments"></i>
+            <div>
+                <h3><?= $this->lang->line('former_comentarios_titulo'); ?></h3>
+                <p><?= $this->lang->line('former_comentarios_descripcion'); ?></p>
+            </div>
+        </div>
     </div>
 
-    <div class="exempleados-card">
-      <i class="fas fa-file-upload"></i>
-      <div>
-        <h3>Agregar documentos</h3>
+    <div class="exempleados-contacto">
+        <p><?= $this->lang->line('former_contacto_texto'); ?></p>
         <p>
-          Adjunta cartas de renuncia, evaluaciones de desempeño y otros archivos importantes que desees conservar para consulta futura.
+            <strong><?= $this->lang->line('former_correo'); ?></strong>
+            <a href="mailto:bramirez@rodicontrol.com">
+                bramirez@rodicontrol.com
+            </a>
         </p>
-      </div>
     </div>
-
-    <div class="exempleados-card">
-      <i class="fas fa-comments"></i>
-      <div>
-        <h3>Comentarios para referencia</h3>
-        <p>
-          Agrega notas o comentarios sobre la conducta, desempeño o cualquier aspecto relevante del exempleado.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <div class="exempleados-contacto">
-    <p>¿Tienes dudas o necesitas ayuda? Contacta al equipo de Recursos Humanos:</p>
-    <p><strong>Correo:</strong> <a href="mailto:bramirez@rodicontrol.com">bramirez@rodicontrol.com</a></p>
-  </div>
 </div>
