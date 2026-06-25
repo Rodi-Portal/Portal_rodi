@@ -76,22 +76,21 @@
 </style>
 
 <div class="empleado-container">
-  <h1 class="empleado-title">Módulo de Empleados</h1>
+  <h1 class="empleado-title"><?= $this->lang->line('emp_modulo_titulo'); ?></h1>
+
   <p>
-    Este módulo te permite gestionar expedientes de empleados y dar seguimiento a documentos y evaluaciones clave.
-    A continuación se describen las principales secciones incluidas:
+    <?= $this->lang->line('emp_modulo_descripcion'); ?>
   </p>
 
   <div class="empleado-section">
-    <h2>Expediente del Empleado</h2>
+    <h2><?= $this->lang->line('emp_expediente_titulo'); ?></h2>
 
     <div class="empleado-card">
       <i class="fas fa-folder-open"></i>
       <div>
-        <h3>Registro y Documentación</h3>
+        <h3><?= $this->lang->line('emp_registro_titulo'); ?></h3>
         <p>
-          Registra a los empleados y carga documentos personales como contratos y comprobantes de domicilio.
-          Configura recordatorios para vencimientos.
+          <?= $this->lang->line('emp_registro_descripcion'); ?>
         </p>
       </div>
     </div>
@@ -99,42 +98,47 @@
     <div class="empleado-card">
       <i class="fas fa-calendar-alt"></i>
       <div>
-        <h3>Información General</h3>
+        <h3><?= $this->lang->line('emp_info_titulo'); ?></h3>
         <p>
-          Administra datos como información personal, médica, vacaciones, incapacidades y otros detalles importantes.
+          <?= $this->lang->line('emp_info_descripcion'); ?>
         </p>
       </div>
     </div>
   </div>
 
   <div class="empleado-section">
-    <h2>Cursos y Capacitación</h2>
+    <h2><?= $this->lang->line('emp_cursos_titulo'); ?></h2>
+
     <div class="empleado-card">
       <i class="fas fa-graduation-cap"></i>
       <div>
-        <h3>Historial de Formación</h3>
+        <h3><?= $this->lang->line('emp_historial_titulo'); ?></h3>
         <p>
-          Da seguimiento a los cursos y capacitaciones realizadas por los empleados, incluyendo fechas de vencimiento.
+          <?= $this->lang->line('emp_historial_descripcion'); ?>
         </p>
       </div>
     </div>
   </div>
 
   <div class="empleado-section">
-    <h2>Evaluaciones</h2>
+    <h2><?= $this->lang->line('emp_evaluaciones_titulo'); ?></h2>
+
     <div class="empleado-card">
       <i class="fas fa-check-circle"></i>
       <div>
-        <h3>Evaluaciones de Desempeño</h3>
+        <h3><?= $this->lang->line('emp_desempeno_titulo'); ?></h3>
         <p>
-          Carga evidencias de evaluaciones y encuestas realizadas para medir el clima laboral y el rendimiento del personal.
+          <?= $this->lang->line('emp_desempeno_descripcion'); ?>
         </p>
       </div>
     </div>
   </div>
 
   <div class="empleado-contacto">
-    <p>¿Necesitas ayuda con este módulo? Contacta a nuestro equipo de soporte:</p>
-    <p><strong>Correo:</strong> <a href="mailto:bramirez@talentsafecontrol.com">bramirez@talentsafecontrol.com</a></p>
+    <p><?= $this->lang->line('emp_contacto_texto'); ?></p>
+    <p>
+      <strong><?= $this->lang->line('emp_correo'); ?></strong>
+      <a href="mailto:bramirez@talentsafecontrol.com">bramirez@talentsafecontrol.com</a>
+    </p>
   </div>
 </div>

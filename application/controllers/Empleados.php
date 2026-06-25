@@ -19,6 +19,7 @@ class Empleados extends CI_Controller
         $idioma_ci = ($lang === 'en') ? 'english' : 'espanol';
 
         $this->lang->load('modulos', $idioma_ci);
+        $this->lang->load('modulos_description', $idioma_ci);
 
     }
 // esta  funcion  es  para  cargar el modulo de empleados

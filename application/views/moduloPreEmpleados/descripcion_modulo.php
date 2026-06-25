@@ -76,58 +76,65 @@
 </style>
 
 <div class="preempleo-container">
-  <h1 class="preempleo-title">Módulo de Preempleo</h1>
-  <p>
-    En este módulo podrás registrar candidatos para la aplicación de diferentes evaluaciones. Estas pruebas tienen un costo adicional y serán aplicadas por RODI Perintex S.A. de C.V.
-    Los resultados estarán disponibles en tiempo real y en formato digital.
-  </p>
+    <h1 class="preempleo-title">
+        <?= $this->lang->line('pre_modulo_titulo'); ?>
+    </h1>
 
-  <div class="preempleo-section">
-    <h2>Evaluaciones Disponibles</h2>
+    <p>
+        <?= $this->lang->line('pre_modulo_descripcion'); ?>
+    </p>
 
-    <div class="preempleo-card">
-      <i class="fas fa-user-check"></i>
-      <div>
-        <h3>Evaluación de Preselección (ESE)</h3>
-        <p>Evalúa las competencias, habilidades y perfil general del candidato para su posible incorporación.</p>
-      </div>
+    <div class="preempleo-section">
+        <h2><?= $this->lang->line('pre_evaluaciones_titulo'); ?></h2>
+
+        <div class="preempleo-card">
+            <i class="fas fa-user-check"></i>
+            <div>
+                <h3><?= $this->lang->line('pre_ese_titulo'); ?></h3>
+                <p><?= $this->lang->line('pre_ese_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="preempleo-card">
+            <i class="fas fa-shield-alt"></i>
+            <div>
+                <h3><?= $this->lang->line('pre_bgv_titulo'); ?></h3>
+                <p><?= $this->lang->line('pre_bgv_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="preempleo-card">
+            <i class="fas fa-brain"></i>
+            <div>
+                <h3><?= $this->lang->line('pre_psicometrica_titulo'); ?></h3>
+                <p><?= $this->lang->line('pre_psicometrica_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="preempleo-card">
+            <i class="fas fa-stethoscope"></i>
+            <div>
+                <h3><?= $this->lang->line('pre_medico_titulo'); ?></h3>
+                <p><?= $this->lang->line('pre_medico_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="preempleo-card">
+            <i class="fas fa-syringe"></i>
+            <div>
+                <h3><?= $this->lang->line('pre_antidoping_titulo'); ?></h3>
+                <p><?= $this->lang->line('pre_antidoping_descripcion'); ?></p>
+            </div>
+        </div>
     </div>
 
-    <div class="preempleo-card">
-      <i class="fas fa-shield-alt"></i>
-      <div>
-        <h3>Verificación de Antecedentes (BGV)</h3>
-        <p>Realiza una revisión completa del historial y credenciales del candidato.</p>
-      </div>
+    <div class="preempleo-contacto">
+        <p><?= $this->lang->line('pre_contacto_texto'); ?></p>
+        <p>
+            <strong><?= $this->lang->line('pre_correo'); ?></strong>
+            <a href="mailto:bramirez@talentsafecontrol.com">
+                bramirez@talentsafecontrol.com
+            </a>
+        </p>
     </div>
-
-    <div class="preempleo-card">
-      <i class="fas fa-brain"></i>
-      <div>
-        <h3>Pruebas Psicométricas</h3>
-        <p>Aplicación de instrumentos para evaluar capacidades cognitivas y estilo de comportamiento.</p>
-      </div>
-    </div>
-
-    <div class="preempleo-card">
-      <i class="fas fa-stethoscope"></i>
-      <div>
-        <h3>Examen Médico</h3>
-        <p>Examen clínico general para asegurar que el candidato cumple con los requisitos de salud.</p>
-      </div>
-    </div>
-
-    <div class="preempleo-card">
-      <i class="fas fa-syringe"></i>
-      <div>
-        <h3>Prueba Antidopaje</h3>
-        <p>Evalúa el cumplimiento del candidato con la política de consumo de sustancias.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="preempleo-contacto">
-    <p>Para más información sobre las evaluaciones y sus costos, contacta a nuestro equipo de soporte:</p>
-    <p><strong>Correo:</strong> <a href="mailto:bramirez@talentsafecontrol.com">bramirez@talentsafecontrol.com</a></p>
-  </div>
 </div>

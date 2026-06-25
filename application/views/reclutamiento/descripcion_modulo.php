@@ -76,50 +76,57 @@
 </style>
 
 <div class="reclutamiento-container">
-  <h1 class="reclutamiento-title">Módulo de Reclutamiento</h1>
-  <p>
-    El módulo que estás intentando acceder no forma parte de tu plan contratado.
-    Por favor, revisa tus opciones de suscripción o contacta al área de soporte para más información.
-  </p>
+    <h1 class="reclutamiento-title">
+        <?= $this->lang->line('rec_modulo_titulo'); ?>
+    </h1>
 
-  <div class="reclutamiento-section">
-    <h2>Descripción del Módulo</h2>
+    <p>
+        <?= $this->lang->line('rec_modulo_descripcion'); ?>
+    </p>
 
-    <div class="reclutamiento-card">
-      <i class="fas fa-clipboard-list"></i>
-      <div>
-        <h3>Solicitud de Vacantes</h3>
-        <p>Permite crear y gestionar solicitudes de personal, definiendo los requisitos del puesto e iniciando el proceso de reclutamiento de forma eficiente.</p>
-      </div>
+    <div class="reclutamiento-section">
+        <h2><?= $this->lang->line('rec_descripcion_titulo'); ?></h2>
+
+        <div class="reclutamiento-card">
+            <i class="fas fa-clipboard-list"></i>
+            <div>
+                <h3><?= $this->lang->line('rec_solicitud_titulo'); ?></h3>
+                <p><?= $this->lang->line('rec_solicitud_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="reclutamiento-card">
+            <i class="fas fa-users"></i>
+            <div>
+                <h3><?= $this->lang->line('rec_activas_titulo'); ?></h3>
+                <p><?= $this->lang->line('rec_activas_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="reclutamiento-card">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <h3><?= $this->lang->line('rec_cerradas_titulo'); ?></h3>
+                <p><?= $this->lang->line('rec_cerradas_descripcion'); ?></p>
+            </div>
+        </div>
+
+        <div class="reclutamiento-card">
+            <i class="fas fa-id-card"></i>
+            <div>
+                <h3><?= $this->lang->line('rec_candidatos_titulo'); ?></h3>
+                <p><?= $this->lang->line('rec_candidatos_descripcion'); ?></p>
+            </div>
+        </div>
     </div>
 
-    <div class="reclutamiento-card">
-      <i class="fas fa-users"></i>
-      <div>
-        <h3>Vacantes Activas</h3>
-        <p>Asigna candidatos a vacantes activas y revisa sus perfiles, seguimiento y comentarios. Esto facilita decisiones de contratación más informadas.</p>
-      </div>
+    <div class="reclutamiento-contacto">
+        <p><?= $this->lang->line('rec_contacto_texto'); ?></p>
+        <p>
+            <strong><?= $this->lang->line('rec_correo'); ?></strong>
+            <a href="mailto:bramirez@talentsafecontrol.com">
+                bramirez@talentsafecontrol.com
+            </a>
+        </p>
     </div>
-
-    <div class="reclutamiento-card">
-      <i class="fas fa-check-circle"></i>
-      <div>
-        <h3>Vacantes Cerradas</h3>
-        <p>Consulta el historial de vacantes cubiertas o canceladas. Esta sección te permite hacer análisis y reportes de la eficiencia del reclutamiento.</p>
-      </div>
-    </div>
-
-    <div class="reclutamiento-card">
-      <i class="fas fa-id-card"></i>
-      <div>
-        <h3>Candidatos</h3>
-        <p>Sube perfiles de candidatos y asígnalos a vacantes específicas. Conserva un banco de talento disponible para futuras contrataciones.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="reclutamiento-contacto">
-    <p>Para activar este módulo, contacta a nuestro Responsable de Operaciones:</p>
-    <p><strong>Correo:</strong> <a href="mailto:bramirez@talentsafecontrol.com">bramirez@talentsafecontrol.com</a></p>
-  </div>
 </div>

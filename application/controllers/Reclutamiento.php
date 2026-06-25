@@ -30,6 +30,9 @@ class Reclutamiento extends CI_Controller
             'english' => 'english',
         ];
         $lang = $map[$raw] ?? 'espanol';
+
+        // ✅ Descripciones generales de módulos bloqueados
+        $this->lang->load('modulos_description', $lang);
         // ✅ Reclutamiento (4 submódulos)
         $this->lang->load('reclutamiento_escritorio', $lang);
         $this->lang->load('reclutamiento_progreso', $lang);
@@ -715,8 +718,8 @@ class Reclutamiento extends CI_Controller
 
         } elseif ($medio === 'otro') {
 
-            $medio_otro = trim($this->input->post('medio_otro', true));
-
+            $medio_otro_post = $this->input->post('medio_otro', true);
+            $medio_otro = $medio_otro_post !== null ? trim($medio_otro_post) : '';
             if ($medio_otro === '') {
                 $medio = 'N/A';
             } else {
