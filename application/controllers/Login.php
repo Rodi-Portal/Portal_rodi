@@ -47,7 +47,7 @@ class Login extends CI_Controller
                 }
 
                 $this->session->set_userdata('correo', $correo);
-              
+
                 $ver = $usuario->verificacion;
 
                 // Aquí deberías establecer el tipo de acceso, no el código de autenticación
@@ -381,6 +381,16 @@ class Login extends CI_Controller
 
         switch ($tipo_acceso) {
             case 'usuario':
+                if (! $this->completarAutenticacionAdministrativa()) {
+                    show_error(
+                        'El servicio de autenticación administrativa no está disponible. Intenta iniciar sesión nuevamente.',
+                        503,
+                        'Acceso temporalmente no disponible'
+                    );
+
+                    return;
+                }
+
                 $this->resolverAccesoUsuario();
                 break;
 
@@ -427,7 +437,14 @@ class Login extends CI_Controller
 
         log_message('debug', "Verificando código: ingresado=$codigo_ingresado, autenticacion=$codigo_autenticacion, id=$id, new=$new, correo=$correo");
 
-        if ($codigo_ingresado === $codigo_autenticacion || $codigo_ingresado === '12345678910') {
+        /*if ($codigo_ingresado === $codigo_autenticacion || $codigo_ingresado === '12345678910') {*/
+
+        if (
+            is_string($codigo_autenticacion) &&
+            $codigo_autenticacion !== '' &&
+            hash_equals($codigo_autenticacion, $codigo_ingresado)
+        ) {
+            $this->session->unset_userdata('codigo_autenticacion');
 
             if ($id > 0) {
                 $ver  = ($ver >= 10) ? 1 : $ver + 1;
@@ -437,6 +454,16 @@ class Login extends CI_Controller
 
                 switch ($tipo_acceso) {
                     case 'usuario':
+                        if (! $this->completarAutenticacionAdministrativa()) {
+                            show_error(
+                                'El servicio de autenticación administrativa no está disponible. Intenta iniciar sesión nuevamente.',
+                                503,
+                                'Acceso temporalmente no disponible'
+                            );
+
+                            return;
+                        }
+
                         $this->resolverAccesoUsuario();
                         break;
 
@@ -539,27 +566,34 @@ class Login extends CI_Controller
     // Funcion para generar aut
     public function generarCodigoAutenticacion($correo)
     {
-        $longitud_codigo      = 12;
-        $caracteres_validos   = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $codigo_autenticacion = '';
+        $longitudCodigo = 12;
+        $caracteres     = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $codigo         = '';
+        $maximo         = strlen($caracteres) - 1;
 
-        for ($i = 0; $i < $longitud_codigo; $i++) {
-            $codigo_autenticacion .= $caracteres_validos[rand(0, strlen($caracteres_validos) - 1)];
+        for ($i = 0; $i < $longitudCodigo; $i++) {
+            $codigo .= $caracteres[random_int(0, $maximo)];
         }
-        $this->enviarCorreoAutenticacion($correo, $codigo_autenticacion);
-        $this->session->set_userdata('codigo_autenticacion', $codigo_autenticacion);
-        return $codigo_autenticacion;
+
+        $this->enviarCorreoAutenticacion($correo, $codigo);
+        $this->session->set_userdata(
+            'codigo_autenticacion',
+            $codigo
+        );
+
+        return $codigo;
     }
 
     // Función para renviar correo de autenticación
     public function generar_codigo_autenticacion()
     {
-        $correo               = $this->session->userdata('correo');
-        $codigo_autenticacion = $this->generarCodigoAutenticacion($correo);
+        $correo = $this->session->userdata('correo');
+
+        $this->generarCodigoAutenticacion($correo);
 
         $response = [
             'success' => true,
-            'codigo'  => $codigo_autenticacion,
+            'message' => 'Código de autenticación enviado.',
         ];
 
         $this->output
@@ -621,21 +655,15 @@ class Login extends CI_Controller
     //Funcion para salir del sistema y presentar el formulario del login
     public function logout()
     {
-        // Verificación antes de la llamada a sess_destroy
-        if ($this->session->userdata('logueado') !== false) {
-            $usuario_data = [
-                'logueado' => false,
-            ];
-            //$this->session->unset_userdata('dash_jwt');
-            //$this->session->unset_userdata('dash_jwt_exp');
+        /*
+     * Si existe un token administrativo intenta revocarlo.
+     * Si no existe, el método simplemente devuelve true.
+     */
+        $this->revocarTokenAdministrativo();
 
-            $this->session->sess_destroy();
-        }
+        $this->session->sess_destroy();
 
-        // Verificación antes de la llamada a redirect
-
-        redirect('Login/index'); // Ajusta la URL de redirección según tu estructura de carpetas
-
+        redirect('Login/index');
     }
     /**
      * Regla central de acceso para usuarios con pago
@@ -705,6 +733,131 @@ class Login extends CI_Controller
 
         $this->session->set_userdata('dash_jwt', $jwt);
         $this->session->set_userdata('dash_jwt_exp', $exp);
+    }
+
+    private function marcarSesionAdministrativaVerificada(): void
+    {
+        $this->session->sess_regenerate(true);
+
+        /*
+     * Elimina cualquier token anterior antes de crear una nueva
+     * identidad de sesión.
+     */
+        $this->session->unset_userdata([
+            'admin_access_token',
+            'admin_token_expires_at',
+            'admin_token_usuario',
+        ]);
+
+        $this->session->set_userdata([
+            'autenticacion_completa' => true,
+            'auth_verified_at'       => time(),
+            'bridge_session_id'      => bin2hex(random_bytes(32)),
+        ]);
+    }
+    private function completarAutenticacionAdministrativa(): bool
+    {
+        $this->marcarSesionAdministrativaVerificada();
+
+        try {
+            $this->load->library('admin_auth_bridge');
+
+            $resultado = $this->admin_auth_bridge->obtenerToken();
+
+            if (
+                (int) ($resultado['http_code'] ?? 0) === 200 &&
+                ($resultado['body']['status'] ?? false) === true &&
+                ! empty($resultado['body']['access_token'])
+            ) {
+                return true;
+            }
+
+            log_message(
+                'error',
+                'No se completó la autenticación administrativa. HTTP: '
+                . ($resultado['http_code'] ?? 0)
+                . '. Mensaje: '
+                . ($resultado['body']['message'] ?? 'Sin mensaje')
+            );
+        } catch (Throwable $exception) {
+            log_message(
+                'error',
+                'Excepción al completar autenticación administrativa: '
+                . $exception->getMessage()
+            );
+        }
+
+        /*
+     * Fallo cerrado: no conservar una sesión CI3 parcialmente
+     * autenticada si Laravel no emitió el token.
+     */
+        $this->session->sess_destroy();
+
+        return false;
+    }
+    private function revocarTokenAdministrativo(): bool
+    {
+        $accessToken = $this->session->userdata(
+            'admin_access_token'
+        );
+
+        if (! is_string($accessToken) || $accessToken === '') {
+            return true;
+        }
+
+        $url = rtrim(API_URL, '/')
+            . '/admin/auth/logout';
+
+        $curl = curl_init($url);
+
+        curl_setopt_array($curl, [
+            CURLOPT_POST           => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_HTTPHEADER     => [
+                'Accept: application/json',
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $accessToken,
+            ],
+            CURLOPT_POSTFIELDS     => '{}',
+
+            // Mantener habilitado en producción.
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+        ]);
+
+        $response  = curl_exec($curl);
+        $curlError = curl_error($curl);
+        $httpCode  = (int) curl_getinfo(
+            $curl,
+            CURLINFO_HTTP_CODE
+        );
+
+        curl_close($curl);
+
+        if ($response === false) {
+            log_message(
+                'error',
+                'No fue posible revocar el token administrativo: '
+                . $curlError
+            );
+
+            return false;
+        }
+
+        if ($httpCode !== 200 && $httpCode !== 401) {
+            log_message(
+                'error',
+                'Laravel respondió HTTP '
+                . $httpCode
+                . ' al revocar el token administrativo.'
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
 }
