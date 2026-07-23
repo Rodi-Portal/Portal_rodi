@@ -81,6 +81,14 @@ window.$perms = {
 </div>
 <?php }?>
 <script>
+window.AUTH_BRIDGE = {
+  exchangeUrl: <?php echo json_encode(
+                       site_url('AuthBridge/exchange'),
+                       JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+               ); ?>
+};
+</script>
+<script>
 window.global = window;
 window.process = window.process || { env: {} };
 </script>
@@ -110,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 .com360-shell {
   width: 100%;
-  padding: 0;     
+  padding: 0;
     margin: 0;       /* quitamos el espacio */
   background: transparent; /* quitamos fondo */
   border-radius: 0;      /* quitamos bordes */

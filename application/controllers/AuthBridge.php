@@ -33,6 +33,9 @@ class AuthBridge extends CI_Controller
         return $this->output
             ->set_status_header($status)
             ->set_content_type('application/json', 'utf-8')
+            ->set_header('Cache-Control: no-store, no-cache, must-revalidate, private')
+            ->set_header('Pragma: no-cache')
+            ->set_header('Expires: 0')
             ->set_output(json_encode($data));
     }
 }
