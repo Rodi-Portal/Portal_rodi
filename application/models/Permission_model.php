@@ -66,4 +66,34 @@ class Permission_model extends CI_Model
         return $this->db->order_by('module', 'ASC')->get()->result_array();
     }
 
+    public function get_active_permission_keys($module, $include_module_gate = true)
+    {
+        $module = trim((string) $module);
+
+        if ($module === '') {
+            return [];
+        }
+
+        $this->db
+            ->select('p.key')
+            ->from('auth_permission AS p')
+            ->where('p.is_active', 1)
+            ->group_start()
+            ->where('p.module', $module);
+
+        if ($include_module_gate) {
+            $this->db->or_where('p.key', 'module.' . $module . '.ver');
+        }
+
+        $rows = $this->db
+            ->group_end()
+            ->order_by('p.module', 'ASC')
+            ->order_by('p.section', 'ASC')
+            ->order_by('p.action', 'ASC')
+            ->get()
+            ->result_array();
+
+        return array_values(array_column($rows, 'key'));
+    }
+
 }

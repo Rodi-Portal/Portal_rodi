@@ -577,10 +577,10 @@ class Notificacion extends CI_Controller
         }
     }
 
-/**
- * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
- * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
- */
+        /**
+         * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
+         * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
+         */
 
     private function enviar_whatsapp_recordatorio($telefonos, $portal, $cliente, $recordatorio, $mensaje, $fecha, $template = 'notificacion_recordatorio')
     {
