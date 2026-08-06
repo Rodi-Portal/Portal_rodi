@@ -9,39 +9,26 @@
     $assets_version = $CI->config->item('assets_version') ?: '1';
     }
 
-    $SLUGS = [
-    'comunicacion.sucursales.seleccionar_multiple',
-    'comunicacion.nomina.periodos.ver',
-    'comunicacion.nomina.periodos.crear',
-    'comunicacion.nomina.periodos.editar',
-    'comunicacion.nomina.prenomina.crear',
-    'comunicacion.nomina.prenomina.editar',
-    'comunicacion.nomina.prenomina.descargar_excel',
-    'comunicacion.nomina.prenomina.modificar_celdas',
-    'comunicacion.nomina.historial.ver',
-    'comunicacion.nomina.historial.editar',
-    'comunicacion.calendario.ver_meses',
-    'comunicacion.calendario.registrar_evento',
-    'comunicacion.calendario.guardar_eventos',
-    'comunicacion.calendario.eliminar_evento',
-    'comunicacion.calendario.ver_dia',
-    'comunicacion.calendario.descargar_evento',
-    'comunicacion.mensajeria.configurar_columnas',
-    'comunicacion.mensajeria.crear_plantilla',
-    'comunicacion.mensajeria.actualizar_plantilla',
-    'comunicacion.mensajeria.enviar_masivo',
-    'comunicacion.recordatorios.ver',
-    'comunicacion.recordatorios.crear',
-    'comunicacion.recordatorios.editar',
-    'comunicacion.recordatorios.eliminar',
-    ];
+    $CI->load->model('Permission_model');
+
+    $SLUGS = $CI->Permission_model->get_active_permission_keys(
+    'comunicacion',
+    true
+    );
 
     $ALLOWED = [];
+
     foreach ($SLUGS as $slug) {
     if (user_can($slug, false)) {
         $ALLOWED[] = $slug;
     }
     }
+
+    $CAN_ACCESS_MODULE = in_array(
+    'module.comunicacion.ver',
+    $ALLOWED,
+    true
+    );
 ?>
 
 <link rel="stylesheet" href="<?php echo base_url('public/comunicacion/comunicacion_vue3.css'); ?>">
@@ -63,7 +50,7 @@ window.$perms = {
 };
 </script>
 
-<?php if ($this->session->userdata('idrol') == 11 || $this->session->userdata('idrol') == 4) {?>
+<?php if (! $CAN_ACCESS_MODULE) {?>
 <div class="seccion" id="seccion1">
   <h3 style="text-align:center;font-size:2em;color:blue;">No tienes acceso a este módulo</h3>
 </div>
@@ -78,7 +65,14 @@ window.$perms = {
   </div>
 </div>
 <?php }?>
-
+<script>
+window.AUTH_BRIDGE = {
+  exchangeUrl: <?php echo json_encode(
+                       site_url('AuthBridge/exchange'),
+                       JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+               ); ?>
+};
+</script>
 <script src="<?php echo base_url('public/comunicacion/comunicacion-vue3.js'); ?>?v=<?php echo $assets_version; ?>">
 </script>
 <script>
