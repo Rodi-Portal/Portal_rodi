@@ -2083,8 +2083,8 @@ class Reporte extends CI_Controller
         empleados.nss AS NSS,
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
-        empleados.fecha_ingreso AS Fecha_Ingreso
-        ");
+        COALESCE(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso
+       ", false);
         $this->db->from('empleados');
         $this->db->where('empleados.status', 1);
         $this->db->where('empleados.eliminado', 0);
@@ -2096,11 +2096,15 @@ class Reporte extends CI_Controller
         }
 
         if ($fecha_inicio && $fecha_fin) {
-            $this->db->where("
-          empleados.fecha_ingreso
-            BETWEEN '$fecha_inicio 00:00:00'
-            AND '$fecha_fin 23:59:59'
-            ", null, false);
+            $this->db->where(
+                'COALESCE(empleados.fecha_ingreso, empleados.creacion) >=',
+                $fecha_inicio . ' 00:00:00'
+            );
+
+            $this->db->where(
+                'COALESCE(empleados.fecha_ingreso, empleados.creacion) <=',
+                $fecha_fin . ' 23:59:59'
+            );
         }
 
         if ($puesto) {
@@ -2336,7 +2340,7 @@ class Reporte extends CI_Controller
         empleados.nss AS NSS,
         empleados.curp AS CURP,
         empleados.fecha_nacimiento AS Fecha_Nacimiento,
-        empleados.fecha_ingreso AS Fecha_Ingreso,
+        COALESCE(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso,
         empleados.fecha_salida AS Fecha_Salida
         ", false);
 
@@ -2600,7 +2604,10 @@ class Reporte extends CI_Controller
             $this->db->where('empleados.id_portal', $portal);
         }
 
-        $this->db->where('empleados.fecha_ingreso <', $inicio);
+        $this->db->where(
+            'COALESCE(empleados.fecha_ingreso, empleados.creacion) <',
+            $inicio
+        );
         $this->db->group_start();
         $this->db->where('empleados.fecha_salida IS NULL', null, false);
         $this->db->or_where('empleados.fecha_salida >=', $inicio);
@@ -2630,9 +2637,15 @@ class Reporte extends CI_Controller
             $this->db->where('empleados.id_portal', $portal);
         }
 
-        $this->db->where('empleados.fecha_ingreso >=', $inicio);
-        $this->db->where('empleados.fecha_ingreso <=', $fin);
+        $this->db->where(
+            'COALESCE(empleados.fecha_ingreso, empleados.creacion) >=',
+            $inicio
+        );
 
+        $this->db->where(
+            'COALESCE(empleados.fecha_ingreso, empleados.creacion) <=',
+            $fin
+        );
         if ($puesto) {
             $this->db->where('empleados.puesto', $puesto);
         }
@@ -2684,7 +2697,10 @@ class Reporte extends CI_Controller
             $this->db->where('empleados.id_portal', $portal);
         }
 
-        $this->db->where('empleados.fecha_ingreso <=', $fin);
+        $this->db->where(
+            'COALESCE(empleados.fecha_ingreso, empleados.creacion) <=',
+            $fin
+        );
 
         $this->db->group_start();
         $this->db->where('empleados.fecha_salida IS NULL', null, false);
@@ -2712,7 +2728,7 @@ class Reporte extends CI_Controller
         CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
         empleados.puesto AS Puesto,
         empleados.departamento AS Area_Departamento,
-        empleados.fecha_ingreso AS Fecha_Ingreso
+      COALESCE(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso
         ", false);
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
@@ -2722,10 +2738,15 @@ class Reporte extends CI_Controller
         } else {
             $this->db->where('empleados.id_portal', $portal);
         }
+        $this->db->where(
+            'COALESCE(empleados.fecha_ingreso, empleados.creacion) >=',
+            $inicio
+        );
 
-        $this->db->where('empleados.fecha_ingreso >=', $inicio);
-        $this->db->where('empleados.fecha_ingreso <=', $fin);
-
+        $this->db->where(
+            'COALESCE(empleados.fecha_ingreso, empleados.creacion) <=',
+            $fin
+        );
         if ($puesto) {
             $this->db->where('empleados.puesto', $puesto);
         }
@@ -2749,12 +2770,13 @@ class Reporte extends CI_Controller
         CONCAT_WS(' ', empleados.nombre, empleados.paterno, empleados.materno) AS Nombre_Colaborador,
         empleados.puesto AS Puesto,
         empleados.departamento AS Area_Departamento,
-        empleados.fecha_ingreso AS Fecha_Ingreso,
+        COALESCE(empleados.fecha_ingreso, empleados.creacion) AS Fecha_Ingreso,
         empleados.fecha_salida AS Fecha_Salida
         ", false);
         $this->db->from('empleados');
         $this->db->where('empleados.eliminado', 0);
         $this->db->where('empleados.fecha_salida IS NOT NULL', null, false);
+
         $this->db->where('empleados.fecha_salida >=', $inicio);
         $this->db->where('empleados.fecha_salida <=', $fin);
 
