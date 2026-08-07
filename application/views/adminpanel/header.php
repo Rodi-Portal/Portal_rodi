@@ -19,7 +19,37 @@
       // 👇 importante: 'header' = header_lang.php
       $CI->lang->load('header', $idioma_ci);
       $CI->lang->load('portal_generales', $idioma_ci);
-  
+      // Permisos de Mi cuenta
+      $canMenuMiCuenta = user_can('mi_cuenta.__menu.ver', false);
+      $canMenuReportes = user_can('reportes.__menu.ver', false);
+
+      // Opciones de Mi cuenta
+      $canActualizarLogo = user_can('mi_cuenta.logo.actualizar', false);
+
+      $canPrivacidad = (
+          user_can('mi_cuenta.privacidad_tc.cargar', false) ||
+          user_can('mi_cuenta.privacidad_tc.eliminar', false) ||
+          user_can('mi_cuenta.privacidad_tc.ver_descargar', false)
+      );
+
+      $canPagos = (
+          user_can('mi_cuenta.pagos.confirmar', false) ||
+          user_can('mi_cuenta.pagos.generar_link', false) ||
+          user_can('mi_cuenta.pagos.ver_historial', false)
+      );
+
+      $canTerminos = (
+          user_can('mi_cuenta.tc.ver', false) ||
+          user_can('mi_cuenta.tc.descargar', false)
+      );
+
+      // Opciones de Reportes
+      $canReporteSucursales    = user_can('reportes.sucursales_excel.descargar', false);
+      $canReporteReclutamiento = user_can('reportes.reclutamiento.proceso', false);
+      $canReporteEmpleados     = user_can('reportes.empleados.descargar', false);
+      $canReporteExempleados   = user_can('reportes.exempleados.descargar', false);
+      $canReporteRotacion      = user_can('reportes.rotacion.descargar', false);
+
   ?>
 
   <!DOCTYPE html>
@@ -89,7 +119,7 @@
   <body id="page-top">
     <!-- JavaScript -->
 
-    <?php /*$token = $this->session->userdata('jwt_token'); 
+    <?php /*$token = $this->session->userdata('jwt_token');
     echo $token  */?>
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -108,7 +138,7 @@
         <br><br>
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
-        <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10 || $idRol == 4) {?>
+
         <li class="nav-item sidebar-main-item">
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuario"
             aria-expanded="true" aria-controls="collapseUsuario">
@@ -129,24 +159,35 @@
           </a>
           <div id="collapseUsuario" class="collapse" aria-labelledby="headingUser" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-              <?php if ($idRol == 1 || $idRol == 6) {?>
+              <?php if ($canMenuMiCuenta): ?>
+              <?php if ($canActualizarLogo): ?>
               <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateLogoModal">
                 <i class="fas fa-image fa-sm fa-fw mr-2 text-gray-400"></i>
                 <?php echo $this->lang->line('sidebar_update_logo'); ?>
               </a>
+              <?php endif; ?>
+
+              <?php if ($canPrivacidad): ?>
               <a class="collapse-item" href="javascript:void(0);" data-toggle="modal" data-target="#updateAvisoModal">
                 <i class="fas fa-user-shield fa-sm fa-fw mr-2 text-gray-400"></i>
                 <?php echo $this->lang->line('sidebar_privacy_notice'); ?>
               </a>
+              <?php endif; ?>
+
+              <?php if ($canPagos): ?>
               <a class="collapse-item" href="<?php echo base_url(); ?>Area/pasarela">
                 <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
                 <?php echo $this->lang->line('sidebar_billing_subscription'); ?>
               </a>
+              <?php endif; ?>
+
+              <?php if ($canTerminos): ?>
               <a class="collapse-item" href="<?php echo base_url(); ?>legal">
                 <i class="fas fa-credit-card fa-sm fa-fw mr-2 text-gray-400"></i>
                 <?php echo $this->lang->line('sidebar_terms_conditions'); ?>
               </a>
-              <?php }?>
+              <?php endif; ?>
+              <?php endif; ?>
               <a class="collapse-item" href="<?php echo base_url(); ?>Login/logout">
                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                 <?php echo $this->lang->line('sidebar_logout'); ?>
@@ -154,7 +195,7 @@
             </div>
           </div>
         </li>
-        <?php }?>
+
         <hr class="sidebar-divider my-0">
         <!-- Menú principal -->
         <li class="nav-item sidebar-main-item">
@@ -222,7 +263,7 @@
         <!-- Reportes -->
         <?php
             $portal = $this->session->userdata('idPortal');
-        if (in_array(9, $submenus)) {?>
+        if ($canMenuReportes): ?>
         <li class="nav-item sidebar-main-item">
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
             aria-expanded="true" aria-controls="collapseReportes">
@@ -232,41 +273,41 @@
           <div id="collapseReportes" class="collapse" aria-labelledby="headingUtilities"
             data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-              <?php
-              if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+
+              <?php if ($canReporteSucursales): ?>
               <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/listado_clientes_index') ?>">
                 <?php echo $this->lang->line('sidebar_reports_branches'); ?>
               </a>
               <?php
-                  }
-                  if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+                  endif;
+              if ($canReporteReclutamiento): ?>
               <a class="collapse-item contraer" ...
                 href="<?php echo site_url('Reporte/proceso_reclutamiento_index') ?>">
                 <?php echo $this->lang->line('sidebar_reports_recruitment_process'); ?>
               </a>
               <?php
-              }?>
-              <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+              endif ?>
+              <?php if ($canReporteEmpleados): ?>
               <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_empleados_index') ?>">
                 <?php echo $this->lang->line('sidebar_reports_employees'); ?>
               </a>
-              <?php }?>
-              <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+              <?php endif ?>
+              <?php if ($canReporteExempleados): ?>
 
               <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_exempleados') ?>">
                 <?php echo $this->lang->line('sidebar_reports_former_employees'); ?>
               </a>
-              <?php }?>
-              <?php if ($idRol == 1 || $idRol == 6 || $idRol == 9 || $idRol == 10) {?>
+              <?php endif ?>
+              <?php if ($canReporteRotacion): ?>
 
               <a class="collapse-item contraer" ... href="<?php echo site_url('Reporte/reporte_rotacion') ?>">
                 <?php echo $this->lang->line('sidebar_reports_rotacion'); ?>
               </a>
-              <?php }?>
+              <?php endif ?>
             </div>
           </div>
         </li>
-        <?php }?>
+        <?php endif; ?>
         <!-- Catalogos -->
         <?php
             // ¿Se muestra el menú "Registrar"?
@@ -460,11 +501,11 @@
 
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="langDropdown">
                   <button class="dropdown-item lang-option" data-lang="es">
-                    <img src="<?php echo $flag_mx; ?>" class="lang-flag-img mr-2" alt="Español">
+                    <img src="<?php echo $flag_mx;?>" class="lang-flag-img mr-2" alt="Español">
                     Español
                   </button>
                   <button class="dropdown-item lang-option" data-lang="en">
-                    <img src="<?php echo $flag_us; ?>" class="lang-flag-img mr-2" alt="English">
+                    <img src="<?php echo $flag_us;?>" class="lang-flag-img mr-2" alt="English">
                     English
                   </button>
                 </div>
@@ -494,7 +535,7 @@
                   </div> <!-- Si la variable de sesión 'logo' no es null, mostramos el botón de eliminar -->
                   <?php if ($this->session->userdata('logo') != null) {?> <div id="currentLogoContainer">
                     <h6><?php echo $this->lang->line('portal_logo_current');?>:</h6> <img id="currentLogo"
-                      src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>"" alt=" Logo actual"
+                      src="<?php echo base_url();?>_logosPortal/<?php echo $logo ?>"" alt=" Logo actual"
                       style="max-width: 100%; height: auto;"> <button id="deleteLogo" class="btn btn-danger">
                       <?php echo $this->lang->line('portal_logo_delete');?>
                     </button>
@@ -704,9 +745,9 @@
             aviso: 'AV_TL_V1.pdf',
             terminos: 'TM_TL_V1.pdf'
           };
-          const CSRF_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
-          const CSRF_HASH = '<?php echo $this->security->get_csrf_hash(); ?>';
-          const VIEW_AVISO_BASE = '<?php echo base_url("Avance/ver_aviso/"); ?>';
+          const CSRF_NAME = '<?php echo $this->security->get_csrf_token_name();?>';
+          const CSRF_HASH = '<?php echo $this->security->get_csrf_hash();?>';
+          const VIEW_AVISO_BASE = '<?php echo base_url("Avance/ver_aviso/");?>';
 
           function linkDoc(nombre) {
             const safe = encodeURIComponent(nombre || '');
@@ -718,7 +759,7 @@
             if (!ref) return;
 
             // Siempre apuntamos al controlador. Él decide: archivo propio o default.
-            const urlVer = '<?php echo base_url("portal/doc"); ?>/' + tipo;
+            const urlVer = '<?php echo base_url("portal/doc");?>/' + tipo;
 
             if (tieneActual) {
               $(ref.estado).html(
@@ -748,7 +789,7 @@
 
           function cargarDocumentos() {
             $.ajax({
-              url: '<?php echo base_url("Avance/documentos_info"); ?>',
+              url: '<?php echo base_url("Avance/documentos_info");?>',
               type: 'POST',
               dataType: 'json',
               data: {
@@ -781,7 +822,7 @@
             var nuevoLang = $(this).data('lang');
 
             $.ajax({
-              url: '<?php echo base_url("Usuario/cambiar_idioma"); ?>',
+              url: '<?php echo base_url("Usuario/cambiar_idioma");?>',
               type: 'POST',
               dataType: 'json',
               data: (function() {
@@ -877,7 +918,7 @@
             fd.append(CSRF_NAME, CSRF_HASH);
 
             $.ajax({
-              url: '<?php echo base_url("Avance/documentos_guardar"); ?>',
+              url: '<?php echo base_url("Avance/documentos_guardar");?>',
               type: 'POST',
               data: fd,
               processData: false,
@@ -925,7 +966,7 @@
 
             const go = () => {
               $.ajax({
-                url: '<?php echo base_url("Avance/documentos_eliminar"); ?>',
+                url: '<?php echo base_url("Avance/documentos_eliminar");?>',
                 type: 'POST',
                 dataType: 'json',
                 data: {
@@ -1008,7 +1049,7 @@
             const id = $(this).data('id');
             const nombre = $(this).data('nombre');
             const color = $(this).data('color') || '#333';
-            const imagen = $(this).data('imagen') || '<?php echo base_url("img/portal_icon.png"); ?>';
+            const imagen = $(this).data('imagen') || '<?php echo base_url("img/portal_icon.png");?>';
 
             const modal = $('#modalContactoGlobal');
 
@@ -1030,7 +1071,7 @@
 
             // AJAX para cargar proveedores
             $.ajax({
-              url: '<?php echo base_url("Proveedor/destacados"); ?>',
+              url: '<?php echo base_url("Proveedor/destacados");?>',
               method: 'GET',
               dataType: 'json',
               success: function(data) {
@@ -1038,7 +1079,7 @@
 
                 data.forEach(function(prov) {
                   const color = prov.color || '#333';
-                  const imagen = prov.imagen || '<?php echo base_url("img/portal_icon.png"); ?>';
+                  const imagen = prov.imagen || '<?php echo base_url("img/portal_icon.png");?>';
 
                   // Botón sitio web
                   const btnSitio = prov.url1 ?
@@ -1112,7 +1153,7 @@
               btn.prop('disabled', true).text('Enviando...');
 
               $.ajax({
-                url: '<?php echo base_url("Proveedor/enviar"); ?>',
+                url: '<?php echo base_url("Proveedor/enviar");?>',
                 method: 'POST',
                 data: form.serialize(),
                 dataType: 'json',
@@ -1208,7 +1249,7 @@
 
                   // Solicitud AJAX para eliminar el logo
                   $.ajax({
-                    url: '<?php echo base_url(); ?>Area/eliminarLogo',
+                    url: '<?php echo base_url();?>Area/eliminarLogo',
                     type: 'POST',
                     dataType: 'json',
                     success: function(response) {
@@ -1265,7 +1306,7 @@
             var formData = new FormData(this); // Obtener los datos del formulario
 
             $.ajax({
-              url: '<?php echo base_url('Avance/guardar_aviso'); ?>',
+              url: '<?php echo base_url('Avance/guardar_aviso');?>',
               type: 'POST',
               data: formData,
               processData: false, // No procesar los datos
@@ -1313,7 +1354,7 @@
                 formData.append('fileLogo', file);
 
                 $.ajax({
-                  url: '<?php echo base_url(); ?>Area/updateLogo',
+                  url: '<?php echo base_url();?>Area/updateLogo',
                   type: 'POST',
                   data: formData,
                   contentType: false,
@@ -1367,7 +1408,7 @@
           // Al hacer clic en el botón
           $('#enviarNotificacionesBtn').on('click', function() {
             $.ajax({
-              url: '<?php echo base_url("Notificacion/enviar_notificaciones_cron_job2"); ?>', // Ruta a la función
+              url: '<?php echo base_url("Notificacion/enviar_notificaciones_cron_job2");?>', // Ruta a la función
               type: 'GET', // Método GET
               dataType: 'json', // Esperamos una respuesta en formato JSON
               success: function(response) {
@@ -1381,7 +1422,7 @@
           });
           $('#enviarNotificacionesBtnex').on('click', function() {
             $.ajax({
-              url: '<?php echo base_url("Notificacion/enviar_notificaciones_exempleados_cron_job"); ?>', // Ruta a la función
+              url: '<?php echo base_url("Notificacion/enviar_notificaciones_exempleados_cron_job");?>', // Ruta a la función
               type: 'GET', // Método GET
               dataType: 'json', // Esperamos una respuesta en formato JSON
               success: function(response) {
@@ -1395,7 +1436,7 @@
           });
           $('#enviarNotificacionesBtnrec').on('click', function() {
             $.ajax({
-              url: '<?php echo base_url("Notificacion/enviar_recordatorios_cron_job_run"); ?>', // Ruta a la función
+              url: '<?php echo base_url("Notificacion/enviar_recordatorios_cron_job_run");?>', // Ruta a la función
               type: 'GET', // Método GET
               dataType: 'json', // Esperamos una respuesta en formato JSON
               success: function(response) {
@@ -1410,7 +1451,7 @@
 
           $('#enviarCvsBtn').on('click', function() {
             $.ajax({
-              url: '<?php echo base_url("Tools/migrar_cv"); ?>',
+              url: '<?php echo base_url("Tools/migrar_cv");?>',
               type: 'GET',
               dataType: 'json',
               success: function(response) {
