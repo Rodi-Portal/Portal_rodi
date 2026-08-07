@@ -41,6 +41,7 @@ $lang['perm_modal_title'] = "Permissions for user #";
 
 $lang['perm_module_admin'] = "Administration";
 $lang['perm_module_comunicacion'] = "Communication";
+$lang['perm_module_comunicacion360'] = "Communication 360";
 $lang['perm_module_dashboards'] = "Dashboards";
 $lang['perm_module_empleados'] = "Employees";
 $lang['perm_module_exempleados'] = "Former employees";

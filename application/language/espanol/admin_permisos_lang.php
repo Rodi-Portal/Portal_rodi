@@ -316,6 +316,7 @@ $lang['perm_mi_cuenta.tc.ver'] = "Ver Términos y Condiciones";
 
 $lang['perm_module_admin'] = "Administración";
 $lang['perm_module_comunicacion'] = "Comunicación";
+$lang['perm_module_comunicacion360'] = "Comunicación 360";
 $lang['perm_module_dashboards'] = "Dashboards";
 $lang['perm_module_empleados'] = "Empleados";
 $lang['perm_module_exempleados'] = "Exempleados";
