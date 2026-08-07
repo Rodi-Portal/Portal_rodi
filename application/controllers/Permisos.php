@@ -231,11 +231,15 @@ class Permisos extends CI_Controller
 
         // 3) Cargar catálogo válido del módulo (tolerando mayúsc/minúsc)
         //    Intento exacto + variantes.
-        $this->db->select('`key`')->from('auth_permission')->where('is_active', 1);
-        $this->db->group_start()
+        $this->db
+            ->select('`key`')
+            ->from('auth_permission')
+            ->where('is_active', 1)
+            ->group_start()
             ->where('module', $module)
             ->or_where('module', strtolower($module))
             ->or_where('module', strtoupper($module))
+            ->or_where('`key`', 'module.' . strtolower($module) . '.ver')
             ->group_end();
         $valid_rows = $this->db->get()->result_array();
 

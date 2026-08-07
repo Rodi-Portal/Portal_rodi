@@ -18,7 +18,11 @@ class Permission_model extends CI_Model
         $this->db->where('p.is_active', 1);
 
         if (! empty($module)) {
-            $this->db->where('p.module', $module);
+            $this->db
+                ->group_start()
+                ->where('p.module', $module)
+                ->or_where('p.key', 'module.' . $module . '.ver')
+                ->group_end();
         }
 
         $this->db->order_by('p.module ASC, p.section ASC, p.action ASC');
@@ -45,9 +49,16 @@ class Permission_model extends CI_Model
       WHERE a.user_id   = ?
         AND a.scope_type = 'global'
         AND a.scope_value IS NULL
-        AND p.module = ?
+       AND (
+            p.module = ?
+            OR p.`key` = ?
+        )
     ";
-        $row = $this->db->query($sql, [(int) $user_id, (string) $module])->row_array();
+        $row = $this->db->query($sql, [
+            (int) $user_id,
+            (string) $module,
+            'module.' . $module . '.ver',
+        ])->row_array();
         return [
             'allow' => (int) ($row['allow_count'] ?? 0),
             'deny'  => (int) ($row['deny_count'] ?? 0),
