@@ -66,7 +66,7 @@ class Permission_model extends CI_Model
         ];
     }
 
-    public function get_modules(array $allowed = null)
+    public function get_modules(?array $allowed = null)
     {
         $this->db->select('DISTINCT module', false)
             ->from('auth_permission')
