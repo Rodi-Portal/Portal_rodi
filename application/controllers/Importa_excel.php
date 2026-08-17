@@ -59,12 +59,7 @@ class Importa_excel extends CI_Controller
         $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
 
         try {
-            // 1) Caché a disco
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod(
-                \PhpOffice\PhpSpreadsheet\CachedObjectStorageFactory::cache_to_discISAM,
-                ['dir' => sys_get_temp_dir()]
-            );
-
+            // 1) Carga optimizada en modo lectura
             $tmp    = $_FILES['archivo_excel']['tmp_name'];
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($tmp);
             $reader->setReadDataOnly(true);    // sin estilos
@@ -485,7 +480,7 @@ class Importa_excel extends CI_Controller
                     $colIndex  = Coordinate::columnIndexFromString($colLetter);
 
                     // Hipervínculo real de la celda
-                    $cell = $sheet->getCellByColumnAndRow($colIndex, $i);
+                    $cell = $sheet->getCell([$colIndex, $i]);
                     if ($cell && $cell->hasHyperlink()) {
                         $u = trim((string) $cell->getHyperlink()->getUrl());
                         if ($u !== '') {
@@ -1066,7 +1061,7 @@ class Importa_excel extends CI_Controller
                     $colIndex  = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($colLetter);
 
                     // Hipervínculo real de la celda
-                    $cell = $sheet->getCellByColumnAndRow($colIndex, $i);
+                    $cell = $sheet->getCell([$colIndex, $i]);
                     if ($cell && $cell->hasHyperlink()) {
                         $u = trim((string) $cell->getHyperlink()->getUrl());
                         if ($u !== '') {
@@ -1218,13 +1213,8 @@ class Importa_excel extends CI_Controller
         $id_usuario = (int) ($this->session->userdata('id') ?: 1);
         $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
 
-        // === Carga optimizada en modo lectura y cache a disco ===
+        // === Carga optimizada en modo lectura ===
         try {
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod(
-                \PhpOffice\PhpSpreadsheet\CachedObjectStorageFactory::cache_to_discISAM,
-                ['dir' => sys_get_temp_dir()]
-            );
-
             $tmp    = $_FILES['archivo_excel']['tmp_name'];
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($tmp);
             $reader->setReadDataOnly(true);
@@ -1263,7 +1253,7 @@ class Importa_excel extends CI_Controller
 
         $headers = []; // ["A"=>"Task Name", "B"=>"Task ID", ...]
         for ($col = 1; $col <= $highestColumnIndex; $col++) {
-            $title = trim((string) $sheet->getCellByColumnAndRow($col, 1)->getValue());
+            $title = trim((string) $sheet->getCell([$col, 1])->getValue());
             if ($title !== '') {
                 $colLetter           = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                 $headers[$colLetter] = $title;
@@ -1675,7 +1665,7 @@ class Importa_excel extends CI_Controller
                     $colIndex  = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($colLetter);
 
                     // Hipervínculo real de la celda
-                    $cell = $sheet->getCellByColumnAndRow($colIndex, $i);
+                    $cell = $sheet->getCell([$colIndex, $i]);
                     if ($cell && $cell->hasHyperlink()) {
                         $u = trim((string) $cell->getHyperlink()->getUrl());
                         if ($u !== '') {
