@@ -8813,18 +8813,6 @@ class Candidato extends Custom_Controller
             echo $salida;
         }
     }
-    public function xx()
-    {
-        $basic  = new \Nexmo\Client\Credentials\Basic('5aa133d2', 'mvVfoFEKFZsHDH8c');
-        $client = new \Nexmo\Client($basic);
-
-        $message = $client->message()->send([
-            'to'   => '523331493010',
-            'from' => 'Nexmo',
-            'text' => 'Hello from NexmoRODI',
-        ]);
-    }
-
     /************************************************ Candidatos *********************************************************/
 
     public function actualizarDatosGeneralesIngles()
