@@ -13,7 +13,7 @@
 	"require": {
 		"php": ">=5.3.7",
 		"setasign/fpdi": "^2.1",
-		"mpdf/mpdf": "^8.2",
+		"mpdf/mpdf": "~8.3.1",
 		"phpoffice/phpspreadsheet": "~5.8.1",
     "pusher/pusher-php-server": "^7.2",
 		"brainfoolong/cryptojs-aes-php": "^2.1",
