@@ -15,7 +15,6 @@
 		"setasign/fpdi": "^2.1",
 		"mpdf/mpdf": "~8.3.1",
 		"phpoffice/phpspreadsheet": "~5.8.1",
-		"brainfoolong/cryptojs-aes-php": "^2.1",
 		"firebase/php-jwt": ">=7.1 <8.0",
 		"endroid/qr-code": "^5.1"
 	},
