@@ -2,8 +2,6 @@
 
 <h1 class="mb-5">Manual de usuario</h1>
 
-<!-- <input type="text" class="form-control" id="msgNotificacion" name="msgNotificacion">
-<button type="button" onclick="enviarNotificacion()">Enviar</button> -->
 <div class="accordion" id="accordion">
   <div class="card">
     <div class="card-header bg-secondary" id="headingOne">

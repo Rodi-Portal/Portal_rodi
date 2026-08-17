@@ -104,8 +104,6 @@
     <!-- Dropzone JS -->
     <!-- FullCalendar (Descomentado si se necesita) -->
     <!--<link href='< ?php echo base_url(); ?>calendar/css/fullcalendar.css' rel='stylesheet' >-->
-    <!-- Uncomment if Pusher is needed -->
-    <!-- <script src="https://js.pusher.com/7.2/pusher.min.js"></script> -->
     <!-- Inicialización de Selectpicker -->
     <script>
     $(document).on('focusin', function(e) {
