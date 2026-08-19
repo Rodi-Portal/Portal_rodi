@@ -4,6 +4,17 @@
       $logo                 = $CI->session->userdata('logo');
       $aviso_actual         = $CI->session->userdata('aviso');
       $lang                 = $CI->session->userdata('lang') ?: 'es';
+      $manualUsuarioUrl = ($lang === 'en')
+      ? (
+          defined('MANUAL_USUARIO_EN_URL')
+              ? MANUAL_USUARIO_EN_URL
+              : base_url('_manuales/guia_usuario_v1.pdf')
+      )
+      : (
+          defined('MANUAL_USUARIO_ES_URL')
+              ? MANUAL_USUARIO_ES_URL
+              : base_url('_manuales/guia_usuario_v1.pdf')
+      );
       $terminos_condiciones = $CI->session->userdata('terminos');
       $archivo              = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
       $terminos             = $terminos_condiciones ? $terminos_condiciones : 'TM_TL_V1.pdf';
@@ -208,7 +219,14 @@
         <hr class="sidebar-divider">
         <!-- Manual de Usuario -->
         <li class="nav-item sidebar-main-item">
-          <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
+          <a class="nav-link"
+              href="<?php echo htmlspecialchars(
+                  $manualUsuarioUrl,
+                  ENT_QUOTES,
+                  'UTF-8'
+              ); ?>"
+              target="_blank"
+              rel="noopener noreferrer">
             <i class="fas fa-book"></i>
             <span><?php echo $this->lang->line('sidebar_user_guide'); ?></span>
           </a>
