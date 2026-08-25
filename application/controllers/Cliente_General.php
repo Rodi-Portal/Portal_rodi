@@ -64,27 +64,27 @@ class Cliente_General extends Custom_Controller
             }
 
             $data['submenus']      = $items;
-            $data['parentescos']   = $this->funciones_model->getParentescos();
-            $data['escolaridades'] = $this->funciones_model->getEscolaridades();
+            //$data['parentescos']   = $this->funciones_model->getParentescos();
+            //$data['escolaridades'] = $this->funciones_model->getEscolaridades();
 
-            $info['civiles'] = $this->funciones_model->getEstadosCiviles();
+            //$info['civiles'] = $this->funciones_model->getEstadosCiviles();
 
             $info['puestos']             = $this->funciones_model->getPuestos();
-            $info['grados']              = $this->funciones_model->getGradosEstudio();
-            $info['drogas']              = $this->funciones_model->getPaquetesAntidoping();
-            $info['zonas']               = $this->funciones_model->getNivelesZona();
-            $info['viviendas']           = $this->funciones_model->getTiposVivienda();
-            $info['condiciones']         = $this->funciones_model->getTiposCondiciones();
-            $info['studies']             = $this->funciones_model->getTiposEstudios();
+            //$info['grados']              = $this->funciones_model->getGradosEstudio();
+            //$info['drogas']              = $this->funciones_model->getPaquetesAntidoping();
+            //$info['zonas']               = $this->funciones_model->getNivelesZona();
+            //$info['viviendas']           = $this->funciones_model->getTiposVivienda();
+            //$info['condiciones']         = $this->funciones_model->getTiposCondiciones();
+            //$info['studies']             = $this->funciones_model->getTiposEstudios();
             $info['usuarios_cliente']    = $this->candidato_model->getUsuariosCliente($this->uri->segment(3));
             $info['tipos_docs']          = $this->funciones_model->getTiposDocumentos();
-            $info['paises']              = $this->funciones_model->getPaises();
+            //$info['paises']              = $this->funciones_model->getPaises();
             $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
             $info['sanguineos']          = $this->funciones_model->getGruposSanguineos();
-            $info['parentescos']         = $this->funciones_model->getParentescos();
-            $info['civiles']             = $this->funciones_model->getEstadosCiviles();
-            $info['escolaridades']       = $this->funciones_model->getEscolaridades();
-            $info['grados_estudios']     = $this->funciones_model->getGradosEstudio();
+            //$info['parentescos']         = $this->funciones_model->getParentescos();
+            //$info['civiles']             = $this->funciones_model->getEstadosCiviles();
+            //$info['escolaridades']       = $this->funciones_model->getEscolaridades();
+            //$info['grados_estudios']     = $this->funciones_model->getGradosEstudio();
             $info['usuarios_subcliente'] = $this->subcliente_model->getSubclientesByIdCliente($this->uri->segment(3));
             $info['paises_estudio']      = $this->funciones_model->getPaisesEstudio();
 
