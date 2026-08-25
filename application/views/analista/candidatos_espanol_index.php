@@ -119,8 +119,8 @@ var psico = '<?php echo base_url(); ?>_psicometria/';
 var beca_url = '<?php echo base_url(); ?>_beca/';
 let url_form = '<?php echo base_url() . "Form/external?fid="; ?>';
 //var parentescos_php ='< ?php foreach($parentescos as $p){ echo '<option value="'.$p->id.'">'.$p->nombre.'</option>';} ?>';
-var civiles_php =
-  '<?php foreach ($civiles as $c) {echo '<option value="' . $c->nombre . '">' . $c->nombre . '</option>';}?>';
+/* var civiles_php =
+  '< ?php foreach ($civiles as $c) {echo '<option value="' . $c->nombre . '">' . $c->nombre . '</option>';}?>'; */
 //var escolaridades_php ='< ?php foreach($escolaridades as $e){ echo '<option value="'.$e->id.'">'.$e->nombre.'</option>';} ?>';
 var extras = [];
 
