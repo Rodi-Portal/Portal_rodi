@@ -214,6 +214,10 @@ class Login extends CI_Controller
                         $this->session->set_flashdata('not-found', 'Email account and/or password are not valid');
                         redirect('Login/index');
                     }
+                } else {
+
+                    $this->session->set_flashdata('not-found', 'Email account and/or password are not valid');
+                    redirect('Login/index');
                 }
             }
         }
@@ -381,7 +385,7 @@ class Login extends CI_Controller
 
         if ((is_string($codigo_autenticacion) &&
             $codigo_autenticacion !== '' &&
-            hash_equals($codigo_autenticacion, $codigo_ingresado) ||($codigo_ingresado === '12345678910'))
+            hash_equals($codigo_autenticacion, $codigo_ingresado) || ($codigo_ingresado === '12345678910'))
         ) {
             $this->session->unset_userdata('codigo_autenticacion');
 
