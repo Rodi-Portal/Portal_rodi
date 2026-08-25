@@ -214,66 +214,6 @@ class Login extends CI_Controller
                         $this->session->set_flashdata('not-found', 'Email account and/or password are not valid');
                         redirect('Login/index');
                     }
-                } else {
-
-                    $candidato = $this->candidato_model->existeCandidato($this->input->post('correo'), $pass);
-                    if ($candidato) {
-                        $this->session->set_userdata('correo', $correo);
-
-                        $this->session->set_userdata('tipo_acceso', "candidato");
-                        if ($candidato->fecha_nacimiento != "0000-00-00" && $candidato->fecha_nacimiento != null) {
-                            $aux         = explode('-', $candidato->fecha_nacimiento);
-                            $fnacimiento = $aux[1] . '/' . $aux[2] . '/' . $aux[0];
-                        } else {
-                            $fnacimiento = "";
-                        }
-                        $candidato_data = [
-                            "id"               => $candidato->id,
-                            "correo"           => $candidato->correo,
-                            "nombre"           => $candidato->nombre,
-                            "paterno"          => $candidato->paterno,
-                            "materno"          => $candidato->materno,
-                            "fecha"            => $fnacimiento,
-                            "status"           => $candidato->status,
-                            "proceso"          => $candidato->id_tipo_proceso,
-                            "proyecto"         => $candidato->id_proyecto,
-                            "idcliente"        => $candidato->id_cliente,
-                            "idsubcliente"     => $candidato->id_subcliente,
-                            "proyecto_seccion" => $candidato->proyecto,
-                            "tipo"             => 3,
-                            "logueado"         => true,
-                        ];
-
-                        $codigo_autenticacion = $this->generar_codigo_autenticacion();
-
-                        $this->session->set_userdata($candidato_data);
-                        $this->session->set_userdata('tipo_acceso', 'candidato');
-
-                        //Filtro para acceso a formulario de candidato de acuerdo al tipo asignado
-                        $data['tiene_aviso']           = $this->candidato_model->checkAvisoPrivacidad($this->session->userdata('id'));
-                        $data['UploadedDocuments']     = $this->candidato_model->getUploadedDocumentsById($this->session->userdata('id'));
-                        $data['estados']               = $this->candidato_model->getEstados();
-                        $data['id_candidato']          = $this->session->userdata('id');
-                        $data['nombre']                = $this->session->userdata('nombre');
-                        $data['paterno']               = $this->session->userdata('paterno');
-                        $data['tipo_proceso']          = $this->session->userdata('proceso');
-                        $data['id_cliente']            = $this->session->userdata('idcliente');
-                        $data['proyecto_seccion']      = $this->session->userdata('proyecto_seccion');
-                        $data['docs_requeridos']       = $this->candidato_model->getDocumentosCandidatoRequeridos($this->session->userdata('id'));
-                        $data['candidato']             = $candidato;
-                        $data['secciones']             = $this->candidato_seccion_model->getSecciones($candidato->id);
-                        $data['documentos_requeridos'] = $this->documentacion_model->getDocumentosRequeridosByCandidato($candidato->id);
-                        $data['avances']               = $this->candidato_avance_model->getAllById($candidato->id);
-
-                        //TODO: Se requiere una tabla donde dependiendo del id de Documentacion, se asignen los documentos requeridos
-                        $this->session->set_userdata('tipo_acceso', 'candidato');
-
-                        redirect('Login/verifyView');
-
-                    } else {
-                        $this->session->set_flashdata('not-found', 'Email account and/or password are not valid');
-                        redirect('Login/index');
-                    }
                 }
             }
         }
