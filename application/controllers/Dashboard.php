@@ -7,6 +7,16 @@ class Dashboard extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+
+        $this->load->helper('url');
+
+        if (! $this->session->userdata('id')) {
+            redirect('Login/index');
+            exit;
+        }
+
+        $this->load->library('usuario_sesion');
+        $this->usuario_sesion->checkStatusBD();
     }
 
     public function index()
