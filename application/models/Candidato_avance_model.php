@@ -78,6 +78,7 @@ class Candidato_avance_model extends CI_Model
             ->select("*")
             ->from("empleados")
             ->where('status', 3)
+            ->where('eliminado', 0)
             ->where('id_portal', $portal);
 
         // 👇 Aquí la diferencia:

@@ -468,5 +468,120 @@ class Archivo extends CI_Controller
         fclose($fp);
         exit; // MUY importante
     }
+    public function ver_doc_id($id = 0)
+    {
+        $this->proxyArchivoEmpleadoLaravel(
+            (int) $id,
+           'pre-empleo/archivos/documentos/'
+        );
+    }
+
+    public function ver_exam_id($id = 0)
+    {
+        $this->proxyArchivoEmpleadoLaravel(
+            (int) $id,
+            'pre-empleo/archivos/examenes/'
+        );
+    }
+
+    private function proxyArchivoEmpleadoLaravel(
+        int $id,
+        string $endpoint
+    ): void {
+        if (! $this->session->userdata('id') || $id <= 0) {
+            show_404();
+            return;
+        }
+
+        $this->load->library('admin_auth_bridge');
+
+        $resultado = $this->admin_auth_bridge->obtenerToken();
+        $token     = (string) (
+            $resultado['body']['access_token'] ?? ''
+        );
+
+        if ($token === '') {
+            log_message(
+                'error',
+                'No fue posible obtener el token para descargar archivo de empleado.'
+            );
+            show_404();
+            return;
+        }
+
+        $url = rtrim(API_URL, '/') . '/' . $endpoint . $id;
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER         => true,
+            CURLOPT_HTTPGET        => true,
+            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_HTTPHEADER     => [
+                'Accept: */*',
+                'Authorization: Bearer ' . $token,
+            ],
+        ]);
+
+        $respuesta = curl_exec($ch);
+
+        if ($respuesta === false) {
+            log_message(
+                'error',
+                'Error al descargar archivo desde Laravel: '
+                . curl_error($ch)
+            );
+            curl_close($ch);
+            show_404();
+            return;
+        }
+
+        $codigoHttp  = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $tamCabecera = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $tipoMime    = (string) (
+            curl_getinfo($ch, CURLINFO_CONTENT_TYPE)
+                ?: 'application/octet-stream'
+        );
+        curl_close($ch);
+
+        if ($codigoHttp !== 200) {
+            log_message(
+                'error',
+                'Laravel respondió HTTP ' . $codigoHttp
+                . ' al descargar archivo de empleado #' . $id
+            );
+            show_404();
+            return;
+        }
+
+        $cabeceras   = substr($respuesta, 0, $tamCabecera);
+        $contenido   = substr($respuesta, $tamCabecera);
+        $disposition = '';
+
+        foreach (preg_split("/\r\n|\n|\r/", $cabeceras) as $cabecera) {
+            if (stripos($cabecera, 'Content-Disposition:') === 0) {
+                $disposition = trim(
+                    substr($cabecera, strlen('Content-Disposition:'))
+                );
+                break;
+            }
+        }
+
+        while (ob_get_level() > 0) {
+            @ob_end_clean();
+        }
+
+        header('Content-Type: ' . $tipoMime);
+        header('Content-Length: ' . strlen($contenido));
+
+        if ($disposition !== '') {
+            header('Content-Disposition: ' . $disposition);
+        }
+
+        header('X-Content-Type-Options: nosniff');
+
+        echo $contenido;
+        exit;
+    }
 
 }

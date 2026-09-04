@@ -13,12 +13,13 @@ class Avance extends CI_Controller
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
         $this->load->library('encryption');
-            // ✅ MAPEO DE IDIOMA
-    $lang = $this->session->userdata('lang') ?? 'es';
+        // ✅ MAPEO DE IDIOMA
+        $lang = $this->session->userdata('lang') ?? 'es';
 
-    $idioma = ($lang === 'en') ? 'english' : 'espanol';
+        $idioma = ($lang === 'en') ? 'english' : 'espanol';
 
-    $this->lang->load('portal_generales', $idioma);
+        $this->lang->load('portal_generales', $idioma);
+        $this->lang->load('pre_empleo', $idioma);
 
     }
 
@@ -101,114 +102,169 @@ class Avance extends CI_Controller
 
     public function subirDocumentoInterno()
     {
-        // Validación básica de los campos
-        $this->form_validation->set_rules('employee_id', 'Employee ID', 'required');
-        $this->form_validation->set_rules('name', 'Document Name', 'required');
+        $this->form_validation->set_rules(
+            'employee_id',
+            'Employee ID',
+            'required|integer'
+        );
+        $this->form_validation->set_rules(
+            'name',
+            'Document Name',
+            'required'
+        );
 
-        if ($this->form_validation->run() == false) {
-            echo json_encode(['error' => validation_errors()]);
-            return;
-        }
-
-        // Validar si se ha seleccionado un archivo
-        if (empty($_FILES['file']['name'])) {
-            echo json_encode(['error' => 'Por favor, elige un archivo antes de subirlo.']);
-            return;
-        }
-
-        // Obtener los datos del archivo
-        $file = $_FILES['file'];
-
-        // Datos adicionales del formulario
-        $employee_id     = $this->input->post('employee_id');
-        $name            = $this->input->post('name');
-        $expiry_reminder = $this->input->post('expiry_reminder');
-        $status          = $this->input->post('status');
-        $id_portal       = $this->input->post('id_portal');
-        $carpeta         = $this->input->post('carpeta');
-
-        // Determina la URL del endpoint de la API de Laravel
-        if ($this->input->post('origen') == 1) {
-            $api_url = API_URL . 'documents';
-        } else {
-            $api_url = API_URL . 'exams';
-        }
-
-        // Preparar los datos para la API de Laravel
-        $data = [
-            'employee_id'     => $employee_id,
-            'name'            => $name,
-            'expiry_reminder' => $expiry_reminder,
-            'status'          => $status,
-            'id_portal'       => $id_portal,
-            'carpeta'         => $carpeta,
-        ];
-
-        // Adjuntar el archivo al cuerpo de la solicitud
-        $file_data = [
-            'file' => curl_file_create($file['tmp_name'], $file['type'], $file['name']),
-        ];
-
-        // Fusionar los datos del archivo y los campos del formulario
-        $post_fields = array_merge($data, $file_data);
-
-        // Realizar la solicitud cURL a la API de Laravel
-
-        // Procesar la respuesta de la API
-        $response = $this->callApi($api_url, $post_fields);
-
-        // Procesar la respuesta de la API
-        if ($response['message']) {
-            // Obtener el mensaje y los datos del documento desde la respuesta
-            $message  = $response['message'];
-            $document = $response['document'];
-
-            // Responder con el mensaje y datos
+        if ($this->form_validation->run() === false) {
             echo json_encode([
-                'message'  => $message,
-                'document' => $document,
+                'error' => validation_errors(),
             ]);
-        } else {
-            // Manejar error si no es exitoso
-            echo json_encode(['error' => 'No se pudo subir el documento']);
+            return;
         }
+
+        if (empty($_FILES['file']['name'])) {
+            echo json_encode([
+                'error' => t('preemployment_choose_file_before_upload'),
+            ]);
+            return;
+        }
+
+        $employeeId = (int) $this->input->post('employee_id');
+        $origen     = (int) $this->input->post('origen');
+
+        if ($employeeId <= 0 || ! in_array($origen, [1, 2], true)) {
+            echo json_encode([
+                'error' => t('preemployment_document_upload_error'),
+            ]);
+            return;
+        }
+
+        $this->load->library('admin_auth_bridge');
+
+        $resultadoToken = $this->admin_auth_bridge->obtenerToken();
+        $accessToken    = (string) (
+            $resultadoToken['body']['access_token'] ?? ''
+        );
+
+        if ($accessToken === '') {
+            log_message(
+                'error',
+                'No fue posible obtener el token al cargar archivo de Preempleo.'
+            );
+
+            echo json_encode([
+                'error' => t('preemployment_document_upload_error'),
+            ]);
+            return;
+        }
+
+        $tipoRuta = $origen === 1 ? 'documentos' : 'examenes';
+
+        $apiUrl = rtrim(API_URL, '/')
+            . '/pre-empleo/candidatos/'
+            . $employeeId
+            . '/'
+            . $tipoRuta;
+
+        /*
+        * El portal y la carpeta no se mandan a Laravel:
+        * se resuelven con el token y el empleado autorizado.
+        */
+        $description = trim((string) $this->input->post('description'));
+
+        if (strtolower($description) === 'null') {
+            $description = '';
+        }
+        $postFields = [
+
+            'name'            => (string) $this->input->post('name'),
+            'description'     => $description,
+            'expiry_date'     => (string) $this->input->post('expiry_date'),
+            'expiry_reminder' => (string) (
+                $this->input->post('expiry_reminder') ?? 0
+            ),
+            'status'          => 1,
+            'file'            => curl_file_create(
+                $_FILES['file']['tmp_name'],
+                $_FILES['file']['type'],
+                $_FILES['file']['name']
+            ),
+        ];
+
+        $respuesta = $this->callApi(
+            $apiUrl,
+            $postFields,
+            $accessToken
+        );
+
+        if (! $respuesta['ok']) {
+            log_message(
+                'error',
+                'No fue posible cargar archivo de Preempleo. HTTP '
+                . $respuesta['http_status']
+                . '. cURL: ' . $respuesta['curl_error']
+                . '. Respuesta API: ' . $respuesta['raw_response']
+            );
+
+            echo json_encode([
+                'error' => t('preemployment_document_upload_error'),
+            ]);
+            return;
+        }
+
+        echo json_encode([
+            'message'  => t('preemployment_uploaded_successfully'),
+            'document' => $respuesta['body']['document'] ?? [],
+        ]);
     }
 
-    private function callApi($url, $data)
-    {
+    private function callApi(
+        string $url,
+        array $data,
+        string $accessToken
+    ): array {
         $ch = curl_init($url);
 
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS     => $data,
+            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_HTTPHEADER     => [
+                'Accept: application/json',
+                'Authorization: Bearer ' . $accessToken,
+            ],
+        ]);
 
-        // Ejecutar la solicitud y obtener la respuesta
-        $response = curl_exec($ch);
-
-        // Verificar si hay errores en la solicitud cURL
-        if (curl_errno($ch)) {
-            echo json_encode(['error' => curl_error($ch)]);
-            curl_close($ch);
-            return;
-        }
+        $rawResponse = curl_exec($ch);
+        $curlError   = curl_error($ch);
+        $httpStatus  = (int) curl_getinfo(
+            $ch,
+            CURLINFO_HTTP_CODE
+        );
 
         curl_close($ch);
 
-        // Verifica si la respuesta está vacía
-        if (empty($response)) {
-            echo json_encode(['error' => 'Respuesta vacía de la API']);
-            return;
+        $body = null;
+
+        if (is_string($rawResponse) && $rawResponse !== '') {
+            $decoded = json_decode($rawResponse, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $body = $decoded;
+            }
         }
 
-        // Verifica que la respuesta sea un JSON válido
-        $decodedResponse = json_decode($response, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            echo json_encode(['error' => 'Error al decodificar la respuesta JSON']);
-            return;
-        }
-
-        // Decodificar la respuesta JSON
-        return $decodedResponse;
+        return [
+            'ok'           => $rawResponse !== false
+            && $httpStatus >= 200
+            && $httpStatus < 300
+            && is_array($body),
+            'http_status'  => $httpStatus,
+            'curl_error'   => $curlError,
+            'raw_response' => is_string($rawResponse)
+                ? $rawResponse
+                : '',
+            'body'         => $body,
+        ];
     }
 
     public function ver($token = null)
@@ -328,158 +384,151 @@ class Avance extends CI_Controller
         // Devolver los datos en formato JSON
         echo json_encode($proveedores);
     }
-public function documentos_info()
-{
-    $id_portal = (int) $this->session->userdata('idPortal');
+    public function documentos_info()
+    {
+        $id_portal = (int) $this->session->userdata('idPortal');
 
-    if (empty($id_portal)) {
+        if (empty($id_portal)) {
+            jsonOut([
+                'error' => t('portal_docs_err_no_session'),
+            ], 401);
+        }
+
+        $row = $this->cat_portales_model->getDocs($id_portal);
+
         jsonOut([
-            'error' => t('portal_docs_err_no_session')
-        ], 401);
+            'aviso_tiene'            => ! empty($row->aviso),
+            'terminos_tiene'         => ! empty($row->terminos),
+            'confidencialidad_tiene' => ! empty($row->confidencialidad),
+        ]);
     }
 
-    $row = $this->cat_portales_model->getDocs($id_portal);
+    public function documentos_guardar()
+    {
+        $id_portal = (int) $this->session->userdata('idPortal');
+        $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
 
-    jsonOut([
-        'aviso_tiene'            => ! empty($row->aviso),
-        'terminos_tiene'         => ! empty($row->terminos),
-        'confidencialidad_tiene' => ! empty($row->confidencialidad),
-    ]);
-}
+        if (empty($id_portal)) {
+            jsonOut([
+                'error' => t('portal_docs_err_no_session'),
+            ], 401);
+        }
 
+        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
+            jsonOut([
+                'error' => t('portal_docs_err_invalid_type'),
+            ], 422);
+        }
 
+        if (empty($_FILES['archivo']['name'])) {
+            jsonOut([
+                'error' => t('portal_docs_err_select_pdf'),
+            ], 422);
+        }
 
-public function documentos_guardar()
-{
-    $id_portal = (int) $this->session->userdata('idPortal');
-    $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
+        // Directorio de subida
+        $upload_path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
+        if (! is_dir($upload_path)) {
+            @mkdir($upload_path, 0775, true);
+        }
 
-    if (empty($id_portal)) {
+        // Nombre final según tipo
+        switch ($tipo) {
+            case 'aviso':
+                $nombre_final = $id_portal . '_avisoPrivacidad.pdf';
+                break;
+            case 'terminos':
+                $nombre_final = $id_portal . '_terminosCondiciones.pdf';
+                break;
+            case 'confidencialidad':
+                $nombre_final = $id_portal . '_acuerdoConfidencialidad.pdf';
+                break;
+        }
+
+        // Configuración de upload
+        $config = [
+            'upload_path'   => $upload_path,
+            'allowed_types' => 'pdf',
+            'max_size'      => 5120, // 5MB
+            'file_name'     => $nombre_final,
+            'overwrite'     => true,
+        ];
+
+        $this->load->library('upload', $config);
+
+        if (! $this->upload->do_upload('archivo')) {
+            $error = strip_tags($this->upload->display_errors('', ''));
+            jsonOut([
+                'error' => t('portal_docs_err_upload', '', ['error' => $error]),
+            ], 422);
+        }
+
+        // Guardar en BD
+        $this->cat_portales_model->updateDocs($id_portal, [
+            $tipo     => $nombre_final,
+            'edicion' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Endpoint de visualización
+        $ver_endpoint = [
+            'aviso'            => 'ver_aviso/',
+            'terminos'         => 'ver_terminos/',
+            'confidencialidad' => 'ver_confidencialidad/',
+        ][$tipo];
+
+        // 👉 CLAVE: traducir el NOMBRE del documento, no el identificador
+        $tipo_label = t('portal_docs_tipo_' . $tipo);
+
         jsonOut([
-            'error' => t('portal_docs_err_no_session')
-        ], 401);
+            'status'  => 'success',
+            'mensaje' => t('portal_docs_saved_backend', '', [
+                'tipo' => $tipo_label,
+            ]),
+            'archivo' => $nombre_final,
+            'url'     => base_url('Avance/' . $ver_endpoint . rawurlencode($nombre_final)),
+        ]);
     }
 
-    if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
+    public function documentos_eliminar()
+    {
+        $id_portal = (int) $this->session->userdata('idPortal');
+        $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
+
+        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
+            jsonOut([
+                'error' => t('portal_docs_err_invalid_type'),
+            ], 422);
+        }
+
+        $row     = $this->cat_portales_model->getDocs($id_portal);
+        $current = $row ? ($row->{$tipo} ?? null) : null;
+
+        if (! $current) {
+            jsonOut([
+                'error' => t('portal_docs_err_no_file_delete'),
+            ], 404);
+        }
+
+        // Eliminar archivo físico
+        $path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR . $current;
+        if (is_file($path)) {
+            @unlink($path);
+        }
+
+        // Limpiar columna en BD
+        $this->cat_portales_model->updateDocs($id_portal, [
+            $tipo => null,
+        ]);
+
+        // 👉 CLAVE: traducir el nombre del documento
+        $tipo_label = t('portal_docs_tipo_' . $tipo);
+
         jsonOut([
-            'error' => t('portal_docs_err_invalid_type')
-        ], 422);
+            'status'  => 'success',
+            'mensaje' => t('portal_docs_deleted_backend', '', [
+                'tipo' => $tipo_label,
+            ]),
+        ]);
     }
-
-    if (empty($_FILES['archivo']['name'])) {
-        jsonOut([
-            'error' => t('portal_docs_err_select_pdf')
-        ], 422);
-    }
-
-    // Directorio de subida
-    $upload_path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
-    if (! is_dir($upload_path)) {
-        @mkdir($upload_path, 0775, true);
-    }
-
-    // Nombre final según tipo
-    switch ($tipo) {
-        case 'aviso':
-            $nombre_final = $id_portal . '_avisoPrivacidad.pdf';
-            break;
-        case 'terminos':
-            $nombre_final = $id_portal . '_terminosCondiciones.pdf';
-            break;
-        case 'confidencialidad':
-            $nombre_final = $id_portal . '_acuerdoConfidencialidad.pdf';
-            break;
-    }
-
-    // Configuración de upload
-    $config = [
-        'upload_path'   => $upload_path,
-        'allowed_types' => 'pdf',
-        'max_size'      => 5120, // 5MB
-        'file_name'     => $nombre_final,
-        'overwrite'     => true,
-    ];
-
-    $this->load->library('upload', $config);
-
-    if (! $this->upload->do_upload('archivo')) {
-        $error = strip_tags($this->upload->display_errors('', ''));
-        jsonOut([
-            'error' => t('portal_docs_err_upload', '', ['error' => $error])
-        ], 422);
-    }
-
-    // Guardar en BD
-    $this->cat_portales_model->updateDocs($id_portal, [
-        $tipo     => $nombre_final,
-        'edicion' => date('Y-m-d H:i:s'),
-    ]);
-
-    // Endpoint de visualización
-    $ver_endpoint = [
-        'aviso'            => 'ver_aviso/',
-        'terminos'         => 'ver_terminos/',
-        'confidencialidad' => 'ver_confidencialidad/',
-    ][$tipo];
-
-    // 👉 CLAVE: traducir el NOMBRE del documento, no el identificador
-    $tipo_label = t('portal_docs_tipo_' . $tipo);
-
-    jsonOut([
-        'status'  => 'success',
-        'mensaje' => t('portal_docs_saved_backend', '', [
-            'tipo' => $tipo_label
-        ]),
-        'archivo' => $nombre_final,
-        'url'     => base_url('Avance/' . $ver_endpoint . rawurlencode($nombre_final)),
-    ]);
-}
-
-
-
-public function documentos_eliminar()
-{
-    $id_portal = (int) $this->session->userdata('idPortal');
-    $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
-
-    if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
-        jsonOut([
-            'error' => t('portal_docs_err_invalid_type')
-        ], 422);
-    }
-
-    $row     = $this->cat_portales_model->getDocs($id_portal);
-    $current = $row ? ($row->{$tipo} ?? null) : null;
-
-    if (! $current) {
-        jsonOut([
-            'error' => t('portal_docs_err_no_file_delete')
-        ], 404);
-    }
-
-    // Eliminar archivo físico
-    $path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR . $current;
-    if (is_file($path)) {
-        @unlink($path);
-    }
-
-    // Limpiar columna en BD
-    $this->cat_portales_model->updateDocs($id_portal, [
-        $tipo => null
-    ]);
-
-    // 👉 CLAVE: traducir el nombre del documento
-    $tipo_label = t('portal_docs_tipo_' . $tipo);
-
-    jsonOut([
-        'status'  => 'success',
-        'mensaje' => t('portal_docs_deleted_backend', '', [
-            'tipo' => $tipo_label
-        ]),
-    ]);
-}
-
-
-
 
 }

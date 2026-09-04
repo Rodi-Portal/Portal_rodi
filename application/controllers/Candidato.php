@@ -1828,6 +1828,220 @@ class Candidato extends Custom_Controller
         echo $salida;
     }
 
+    public function downloadDocumentosPanelCliente()
+    {
+        if (isset($_POST['idCandidatoDocs'])) {
+            $id_candidato = $_POST['idCandidatoDocs'];
+            $this->load->library('zip');
+            $documentos = $this->candidato_model->getDocumentacion($id_candidato);
+            //if($documentos){
+            foreach ($documentos as $doc) {
+                if ($doc->id_tipo_documento == 3 || $doc->id_tipo_documento == 8 || $doc->id_tipo_documento == 9 || $doc->id_tipo_documento == 14 || $doc->id_tipo_documento == 45) {
+                    $this->zip->read_file('_docs/' . $doc->archivo);
+                }
+
+            }
+            $this->zip->download(time() . '.zip');
+
+        }
+    }
+
+    public function getDocumentos()
+    {
+        $id_candidato           = $this->input->post('id_candidato');
+        $data['docs_candidato'] = $this->candidato_model->getDocumentacionCandidato($id_candidato);
+        $salida                 = '';
+        if ($data['docs_candidato']) {
+            $salida .= '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th width="40%" scope="col">Nombre archivo</th>';
+            $salida .= '<th scope="col">Tipo archivo</th>';
+            $salida .= '<th scope="col">Acción</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            foreach ($data['docs_candidato'] as $doc) {
+                $salida .= '<tr id="fila' . $doc->id . '">';
+                $salida .= '<th>
+                                <a href="' . base_url('archivo/ver_doc_docs/' . rawurlencode($doc['archivo'])) . '"
+                                target="_blank"
+                                style="word-break: break-word;">
+                                ' . htmlspecialchars($doc['archivo']) . '
+                                </a>
+                            </th>';
+                $salida .= '<th>' . $doc->tipo . '</th>';
+                $salida .= '<th><a href="javascript:void(0);"  data-toggle="tooltip" title="Eliminar documento" class="fa-tooltip icono_datatable" onclick="eliminarArchivo(' . $doc->id . ',\'' . $doc->archivo . '\',' . $id_candidato . ')"><i class="fas fa-trash"></i></a></th>';
+
+            }
+            $salida .= '</tr></tbody></table>';
+        } else {
+            $salida = '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th scope="col">Nombre archivo</th>';
+            $salida .= '<th scope="col">Tipo archivo</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            $salida .= '<tr>';
+            $salida .= '<th class="text-center" colspan="2">Sin documentos subidos</th>';
+            $salida .= '</tr>';
+            $salida .= '</tbody>';
+            $salida .= '</table>';
+        }
+
+        echo $salida;
+    }
+
+    public function getDocumentosPanelClienteInterno1()
+    {
+        $id     = $this->input->post('id_candidato');
+        $origen = $this->input->post('origen');
+
+        // Verificar si ID y origen están definidos
+        if (empty($id) || empty($origen)) {
+            echo json_encode(['codigo' => 0, 'msg' => 'ID o origen no proporcionado']);
+            return;
+        }
+
+        // Configurar la URL del endpoint según el origen
+        $api_base_url = API_URL;
+
+        if ($origen == 1) {
+            $url  =$api_base_url . "pre-empleo/candidatos/" . $id . "/documentos";
+        } elseif ($origen == 2) {
+            $url  = $api_base_url . "pre-empleo/candidatos/" . $id . "/examenes"; // URL diferente para origen 2
+        } else {
+            echo json_encode(['codigo' => 0, 'msg' => 'Origen no válido']);
+            return;
+        }
+
+        $this->load->library('admin_auth_bridge');
+
+        $resultadoToken = $this->admin_auth_bridge->obtenerToken();
+        $accessToken = (string) (
+            $resultadoToken['body']['access_token'] ?? ''
+        );
+
+        if ($accessToken === '') {
+            log_message(
+                'error',
+                'No fue posible obtener el token al consultar documentos del empleado.'
+            );
+            $this->output->set_status_header(503);
+            echo json_encode(['codigo' => 0]);
+            return;
+        }
+        // Inicializar cURL
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPGET, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $accessToken,
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ]);
+
+        // Ejecutar la solicitud
+        $response = curl_exec($ch);
+
+        // Verificar errores en cURL
+        if ($response === false) {
+            $error_msg = curl_error($ch);
+            echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
+            curl_close($ch);
+            return;
+        }
+
+        // Verificar el código HTTP
+        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+            if ($http_status !== 200) {
+
+            echo '<table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">' . t('preemployment_file') . '</th>
+                            <th scope="col">' . t('preemployment_name') . '</th>
+                            <th scope="col">' . t('preemployment_upload_date') . '</th>
+                            <th scope="col">' . t('preemployment_delete') . '</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center" colspan="3">' . t('preemployment_no_documents_yet') . '</td>
+                        </tr>
+                    </tbody>
+                </table>';
+
+            return;
+        }
+
+        // Decodificar la respuesta JSON
+        $response_data = json_decode($response, true);
+
+        // Construir la tabla de salida
+        $salida = '';
+        if (! empty($response_data['documentos']) && is_array($response_data['documentos'])) {
+            $salida .= '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th width="40%" scope="col">' . t('preemployment_file') . '</th>';
+            $salida .= '<th scope="col">' . t('preemployment_name') . '</th>';
+            $salida .= '<th scope="col">' . t('preemployment_upload_date') . '</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+
+            foreach ($response_data['documentos'] as $doc) {
+                $idDoc = isset($doc['id']) ? (int) $doc['id'] : 0;
+
+                if ($idDoc <= 0) {
+                    continue;
+                }
+
+                $href = $origen == 1
+                    ? site_url('Archivo/ver_doc_id/' . $idDoc)
+                    : site_url('Archivo/ver_exam_id/' . $idDoc);
+
+                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
+
+                // Archivo real (nameDocument)
+                $salida .= '<td><a href="' . html_escape($href) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno'] ?? '') . '</a></td>';
+
+                // Categoría o tipo de documento
+                $salida .= '<td>' . htmlspecialchars($doc['nameDocument'] ?? '') . '</td>';
+
+                // Fecha de carga
+                $salida .= '<td>' . htmlspecialchars($doc['upload_date'] ?? '') . '</td>';
+
+                // Botón eliminar
+
+                $salida .= '</tr>';
+            }
+
+            $salida .= '</tbody></table>';
+        } else {
+            $salida = '<table class="table table-striped">';
+            $salida .= '<thead>';
+            $salida .= '<tr>';
+            $salida .= '<th scope="col">File name</th>';
+            $salida .= '<th scope="col">Category</th>';
+            $salida .= '<th scope="col">Upload Date</th>';
+            $salida .= '</tr>';
+            $salida .= '</thead>';
+            $salida .= '<tbody>';
+            $salida .= '<tr>';
+            $salida .= '<td class="text-center" colspan="3">No documents yet</td>';
+            $salida .= '</tr>';
+            $salida .= '</tbody></table>';
+        }
+
+        // Mostrar la salida
+        echo $salida;
+    }
     public function getDocumentosPanelClienteInterno()
     {
         $id     = $this->input->post('id_candidato');
@@ -1843,13 +2057,27 @@ class Candidato extends Custom_Controller
         $api_base_url = API_URL;
 
         if ($origen == 1) {
-            $url  = $api_base_url . "documents/" . $id;
-            $path = '_documentEmpleado/';
+            $url  = $api_base_url . "pre-empleo/candidatos/" . $id . "/documentos";
         } elseif ($origen == 2) {
-            $url  = $api_base_url . "exam/" . $id; // URL diferente para origen 2
-            $path = '_examEmpleado/';
+            $url  = $api_base_url . "pre-empleo/candidatos/" . $id . "/examenes";// URL diferente para origen 2
         } else {
             echo json_encode(['codigo' => 0, 'msg' => 'Origen no válido']);
+            return;
+        }
+        $this->load->library('admin_auth_bridge');
+
+        $resultadoToken = $this->admin_auth_bridge->obtenerToken();
+        $accessToken = (string) (
+            $resultadoToken['body']['access_token'] ?? ''
+        );
+
+        if ($accessToken === '') {
+            log_message(
+                'error',
+                'No fue posible obtener el token al consultar documentos del empleado.'
+            );
+            $this->output->set_status_header(503);
+            echo json_encode(['codigo' => 0]);
             return;
         }
 
@@ -1858,6 +2086,7 @@ class Candidato extends Custom_Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPGET, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $accessToken,
             'Content-Type: application/json',
             'Accept: application/json',
         ]);
@@ -1923,12 +2152,13 @@ class Candidato extends Custom_Controller
                 $uploadDate = isset($doc['upload_date']) ? (string) $doc['upload_date'] : '';
 
                 // URL al archivo
-                if($origen == 1){ 
-                $href = site_url('docs/' . rawurlencode($nameDoc));
-                }elseif($origen == 2){
-                $href = site_url('exams/' . rawurlencode($nameDoc));
+             if ($idDoc <= 0) {
+                continue;
+            }
 
-                }
+            $href = $origen == 1
+                ? site_url('Archivo/ver_doc_id/' . $idDoc)
+                : site_url('Archivo/ver_exam_id/' . $idDoc);
                 // Args seguros para JS
                 $jsId     = $idDoc;
                 $jsName   = json_encode($nameDoc, JSON_UNESCAPED_UNICODE);
@@ -1982,197 +2212,6 @@ class Candidato extends Custom_Controller
         // Mostrar la salida
         echo $salida;
     }
-
-    public function downloadDocumentosPanelCliente()
-    {
-        if (isset($_POST['idCandidatoDocs'])) {
-            $id_candidato = $_POST['idCandidatoDocs'];
-            $this->load->library('zip');
-            $documentos = $this->candidato_model->getDocumentacion($id_candidato);
-            //if($documentos){
-            foreach ($documentos as $doc) {
-                if ($doc->id_tipo_documento == 3 || $doc->id_tipo_documento == 8 || $doc->id_tipo_documento == 9 || $doc->id_tipo_documento == 14 || $doc->id_tipo_documento == 45) {
-                    $this->zip->read_file('_docs/' . $doc->archivo);
-                }
-
-            }
-            $this->zip->download(time() . '.zip');
-
-        }
-    }
-
-    public function getDocumentos()
-    {
-        $id_candidato           = $this->input->post('id_candidato');
-        $data['docs_candidato'] = $this->candidato_model->getDocumentacionCandidato($id_candidato);
-        $salida                 = '';
-        if ($data['docs_candidato']) {
-            $salida .= '<table class="table table-striped">';
-            $salida .= '<thead>';
-            $salida .= '<tr>';
-            $salida .= '<th width="40%" scope="col">Nombre archivo</th>';
-            $salida .= '<th scope="col">Tipo archivo</th>';
-            $salida .= '<th scope="col">Acción</th>';
-            $salida .= '</tr>';
-            $salida .= '</thead>';
-            $salida .= '<tbody>';
-            foreach ($data['docs_candidato'] as $doc) {
-                $salida .= '<tr id="fila' . $doc->id . '">';
-                $salida .= '<th>
-                                <a href="' . base_url('archivo/ver_doc_docs/' . rawurlencode($doc['archivo'])) . '" 
-                                target="_blank" 
-                                style="word-break: break-word;">
-                                ' . htmlspecialchars($doc['archivo']) . '
-                                </a>
-                            </th>';
-                $salida .= '<th>' . $doc->tipo . '</th>';
-                $salida .= '<th><a href="javascript:void(0);"  data-toggle="tooltip" title="Eliminar documento" class="fa-tooltip icono_datatable" onclick="eliminarArchivo(' . $doc->id . ',\'' . $doc->archivo . '\',' . $id_candidato . ')"><i class="fas fa-trash"></i></a></th>';
-
-            }
-            $salida .= '</tr></tbody></table>';
-        } else {
-            $salida = '<table class="table table-striped">';
-            $salida .= '<thead>';
-            $salida .= '<tr>';
-            $salida .= '<th scope="col">Nombre archivo</th>';
-            $salida .= '<th scope="col">Tipo archivo</th>';
-            $salida .= '</tr>';
-            $salida .= '</thead>';
-            $salida .= '<tbody>';
-            $salida .= '<tr>';
-            $salida .= '<th class="text-center" colspan="2">Sin documentos subidos</th>';
-            $salida .= '</tr>';
-            $salida .= '</tbody>';
-            $salida .= '</table>';
-        }
-
-        echo $salida;
-    }
-
-    public function getDocumentosPanelClienteInterno1()
-    {
-        $id     = $this->input->post('id_candidato');
-        $origen = $this->input->post('origen');
-
-        // Verificar si ID y origen están definidos
-        if (empty($id) || empty($origen)) {
-            echo json_encode(['codigo' => 0, 'msg' => 'ID o origen no proporcionado']);
-            return;
-        }
-
-        // Configurar la URL del endpoint según el origen
-        $api_base_url = API_URL;
-
-        if ($origen == 1) {
-            $url  = $api_base_url . "documents/" . $id;
-            $path = '_documentEmpleado/';
-        } elseif ($origen == 2) {
-            $url  = $api_base_url . "exam/" . $id; // URL diferente para origen 2
-            $path = '_examEmpleado/';
-        } else {
-            echo json_encode(['codigo' => 0, 'msg' => 'Origen no válido']);
-            return;
-        }
-
-        // Inicializar cURL
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPGET, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Accept: application/json',
-        ]);
-
-        // Ejecutar la solicitud
-        $response = curl_exec($ch);
-
-        // Verificar errores en cURL
-        if ($response === false) {
-            $error_msg = curl_error($ch);
-            echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
-            curl_close($ch);
-            return;
-        }
-
-        // Verificar el código HTTP
-        $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-            if ($http_status !== 200) {
-
-            echo '<table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">' . t('preemployment_file') . '</th>
-                            <th scope="col">' . t('preemployment_name') . '</th>
-                            <th scope="col">' . t('preemployment_upload_date') . '</th>
-                            <th scope="col">' . t('preemployment_delete') . '</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center" colspan="3">' . t('preemployment_no_documents_yet') . '</td>
-                        </tr>
-                    </tbody>
-                </table>';
-
-            return;
-        }
-
-        // Decodificar la respuesta JSON
-        $response_data = json_decode($response, true);
-
-        // Construir la tabla de salida
-        $salida = '';
-        if (! empty($response_data['documentos']) && is_array($response_data['documentos'])) {
-            $salida .= '<table class="table table-striped">';
-            $salida .= '<thead>';
-            $salida .= '<tr>';
-            $salida .= '<th width="40%" scope="col">' . t('preemployment_file') . '</th>';
-            $salida .= '<th scope="col">' . t('preemployment_name') . '</th>';
-            $salida .= '<th scope="col">' . t('preemployment_upload_date') . '</th>';
-            $salida .= '</tr>';
-            $salida .= '</thead>';
-            $salida .= '<tbody>';
-
-            foreach ($response_data['documentos'] as $doc) {
-                $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
-
-                // Archivo real (nameDocument)
-                $salida .= '<td><a href="' . base_url($path . htmlspecialchars($doc['nameDocument'] ?? '')) . '" target="_blank" style="word-break: break-word;">' . htmlspecialchars($doc['nameAlterno'] ?? '') . '</a></td>';
-
-                // Categoría o tipo de documento
-                $salida .= '<td>' . htmlspecialchars($doc['nameDocument'] ?? '') . '</td>';
-
-                // Fecha de carga
-                $salida .= '<td>' . htmlspecialchars($doc['upload_date'] ?? '') . '</td>';
-
-                // Botón eliminar
-
-                $salida .= '</tr>';
-            }
-
-            $salida .= '</tbody></table>';
-        } else {
-            $salida = '<table class="table table-striped">';
-            $salida .= '<thead>';
-            $salida .= '<tr>';
-            $salida .= '<th scope="col">File name</th>';
-            $salida .= '<th scope="col">Category</th>';
-            $salida .= '<th scope="col">Upload Date</th>';
-            $salida .= '</tr>';
-            $salida .= '</thead>';
-            $salida .= '<tbody>';
-            $salida .= '<tr>';
-            $salida .= '<td class="text-center" colspan="3">No documents yet</td>';
-            $salida .= '</tr>';
-            $salida .= '</tbody></table>';
-        }
-
-        // Mostrar la salida
-        echo $salida;
-    }
-
     public function downloadDocumentosPanelCliente1()
     {
         if (isset($_POST['idCandidatoDocs'])) {
@@ -2587,111 +2626,148 @@ class Candidato extends Custom_Controller
     // funcion para   el area  de pre empleo
     public function eliminarDocumentoInterno()
     {
-        $id           = $this->input->post('idDoc');
-        $archivo      = $this->input->post('archivo');
-        $id_candidato = $this->input->post('id_candidato');
-        $origen       = $this->input->post('origen');
+        $idDoc = (int) $this->input->post('idDoc');
+        $origen = (int) $this->input->post('origen');
 
-        // Determinar el directorio según el origen
-        $directorio = '';
-        if ($origen == 1) {
-            $directorio = './_documentEmpleado/';
-            $tabla      = 'documents_empleado';
-        } elseif ($origen == 2) {
-            $directorio = './_examEmpleado/';
-            $tabla      = 'exams_empleados';
-        } else {
-            $directorio = './_docs/'; // Directorio por defecto
-        }
-
-        $existe = 0;
-        if ($id !== null && $archivo !== null) {
-            // Obtener lista de archivos en el directorio seleccionado
-            $aux = directory_map($directorio);
-
-            for ($i = 0; $i < count($aux); $i++) {
-                $indice = explode('_', $aux[$i]);
-                if ($indice[0] === $id_candidato) {
-                    $existe++;
-                    break;
-                }
-            }
-
-            if ($existe == 1) {
-                // Verificar si el archivo existe antes de eliminarlo
-                $rutaArchivo = $directorio . $archivo;
-                if (file_exists($rutaArchivo)) {
-                    unlink($rutaArchivo);
-                }
-
-                // Eliminar el registro en la base de datos
-                $this->candidato_model->eliminarDocCandidatoInterno($id, $tabla);
-                $msj = [
-                    'codigo' => 1,
-                    'msg'    => 'success',
-                ];
-            } else {
-                // Eliminar el registro de la base de datos, aunque el archivo no exista
-                $this->candidato_model->eliminarDocCandidatoInterno($id, $tabla);
-                $msj = [
-                    'codigo' => 1,
-                    'msg'    => 'success',
-                ];
-            }
-        } else {
-            $msj = [
+        if ($idDoc <= 0 || ! in_array($origen, [1, 2], true)) {
+            echo json_encode([
                 'codigo' => 0,
                 'msg'    => 'error',
-            ];
+            ]);
+            return;
         }
 
-        echo json_encode($msj);
+        $endpoint = $origen === 1
+            ? 'pre-empleo/documentos/' . $idDoc
+            : 'pre-empleo/examenes/' . $idDoc;
+
+        $this->load->library('admin_auth_bridge');
+
+        $resultadoToken = $this->admin_auth_bridge->obtenerToken();
+        $accessToken = (string) (
+            $resultadoToken['body']['access_token'] ?? ''
+        );
+
+        if ($accessToken === '') {
+            log_message(
+                'error',
+                'No fue posible obtener el token al eliminar archivo de Preempleo.'
+            );
+
+            echo json_encode([
+                'codigo' => 0,
+                'msg'    => 'error',
+            ]);
+            return;
+        }
+
+        $ch = curl_init(rtrim(API_URL, '/') . '/' . $endpoint);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST  => 'DELETE',
+            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_HTTPHEADER     => [
+                'Accept: application/json',
+                'Authorization: Bearer ' . $accessToken,
+            ],
+        ]);
+
+        $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $httpStatus = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || $httpStatus !== 200) {
+            log_message(
+                'error',
+                'No fue posible eliminar archivo de Preempleo. HTTP '
+                . $httpStatus . '. ' . $curlError
+            );
+
+            echo json_encode([
+                'codigo' => 0,
+                'msg'    => 'error',
+            ]);
+            return;
+        }
+
+        echo json_encode([
+            'codigo' => 1,
+            'msg'    => 'success',
+        ]);
     }
 
     public function eliminarCandidatoInterno()
     {
-        $idCandidato = $this->input->post('id');
+        $idCandidato = (int) $this->input->post('id');
 
-        if (! $idCandidato) {
-            echo json_encode(['codigo' => 0, 'mensaje' => 'ID de candidato no recibido']);
+        if ($idCandidato <= 0) {
+            echo json_encode([
+                'codigo'  => 0,
+                'mensaje' => 'error',
+            ]);
             return;
         }
 
-        $this->load->database();
+        $this->load->library('admin_auth_bridge');
 
-        // 1️⃣ Buscar y eliminar documentos del candidato
-        $documentos = $this->db->get_where('documents_empleado', ['employee_id' => $idCandidato])->result();
+        $resultadoToken = $this->admin_auth_bridge->obtenerToken();
+        $accessToken = (string) (
+            $resultadoToken['body']['access_token'] ?? ''
+        );
 
-        foreach ($documentos as $doc) {
-            $rutaArchivo = './_documentsEmpleado/' . $doc->name;
-            if (file_exists($rutaArchivo)) {
-                unlink($rutaArchivo);
-            }
+        if ($accessToken === '') {
+            log_message(
+                'error',
+                'No fue posible obtener el token al eliminar candidato de Preempleo.'
+            );
+
+            echo json_encode([
+                'codigo'  => 0,
+                'mensaje' => 'error',
+            ]);
+            return;
         }
 
-        // Eliminar registros de documentos en la base de datos
-        $this->db->delete('documents_empleado', ['employee_id' => $idCandidato]);
+        $url = rtrim(API_URL, '/')
+            . '/pre-empleo/candidatos/' . $idCandidato;
 
-        // 2️⃣ Buscar y eliminar exámenes del candidato
-        $examenes = $this->db->get_where('exams_empleados', ['employee_id' => $idCandidato])->result();
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST  => 'DELETE',
+            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_HTTPHEADER     => [
+                'Accept: application/json',
+                'Authorization: Bearer ' . $accessToken,
+            ],
+        ]);
 
-        foreach ($examenes as $exam) {
-            $ext = pathinfo($exam->name, PATHINFO_EXTENSION);
-            if (in_array(strtolower($ext), ['jpg', 'png', 'jpeg', 'pdf'])) {
-                $rutaArchivo = './_examEmpleado/' . $exam->name;
-                if (file_exists($rutaArchivo)) {
-                    unlink($rutaArchivo);
-                }
-            }
+        $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $httpStatus = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || $httpStatus !== 200) {
+            log_message(
+                'error',
+                'No fue posible eliminar candidato de Preempleo. HTTP '
+                    . $httpStatus
+                    . '. cURL: ' . $curlError
+                    . '. Respuesta API: ' . (string) $response
+            );
+
+            echo json_encode([
+                'codigo'  => 0,
+                'mensaje' => 'error',
+            ]);
+            return;
         }
 
-        // Eliminar registros de exámenes en la base de datos
-        $this->db->delete('exams_empleados', ['employee_id' => $idCandidato]);
-
-        // 3️⃣ Eliminar candidato de la tabla empleados
-        $this->db->delete('empleados', ['id' => $idCandidato]);
-
-        echo json_encode(['codigo' => 1, 'mensaje' => 'Candidato eliminado correctamente']);
+        echo json_encode([
+            'codigo'  => 1,
+            'mensaje' => 'success',
+        ]);
     }
 
     public function eliminarReferenciaLaboral()
