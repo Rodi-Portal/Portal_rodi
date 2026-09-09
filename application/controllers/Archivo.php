@@ -192,6 +192,14 @@ class Archivo extends CI_Controller
         fclose($fp);
         exit;
     }
+    public function ver_docs_bolsa_id($id = 0)
+    {
+        $this->proxyArchivoEmpleadoLaravel(
+            (int) $id,
+            'reclutamiento/bolsa/documentos/'
+        );
+    }
+
     public function ver_portal_doc($tipo = '')
     {
         if (! $this->session->userdata('id')) {show_404();}
@@ -472,7 +480,7 @@ class Archivo extends CI_Controller
     {
         $this->proxyArchivoEmpleadoLaravel(
             (int) $id,
-           'pre-empleo/archivos/documentos/'
+            'pre-empleo/archivos/documentos/'
         );
     }
 

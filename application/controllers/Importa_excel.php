@@ -5,8 +5,6 @@ use PhpOffice\PhpSpreadsheet\Shared\Date as XlsDate;
 
 class Importa_excel extends CI_Controller
 {
-    private string $path_docs_empleado;
-    private string $path_docs_bolsa;
 
     public function __construct()
     {
@@ -14,619 +12,8 @@ class Importa_excel extends CI_Controller
         date_default_timezone_set('America/Mexico_City');
         // $this->load->database(); // si no está en autoload
 
-        $this->path_docs_empleado = rtrim(FCPATH, '/') . '/_documentEmpleado/';
-        $this->path_docs_bolsa    = rtrim(FCPATH, '/') . '/_documentosBolsa/';
-
-        if (! is_dir($this->path_docs_empleado)) {
-            @mkdir($this->path_docs_empleado, 0775, true);
-        }
-
-        if (! is_dir($this->path_docs_bolsa)) {
-            @mkdir($this->path_docs_bolsa, 0775, true);
-        }
-
     }
 
-    /**
-     * Importa Excel:
-     *  - Inserta en bolsa_trabajo (fijos + extras JSON).
-     *  - Según STATUS, decide si insertar en empleados y con qué status.
-     *  - Descarga documentos (hipervínculos y/o URLs en texto).
-     *  - Guarda links en EXTRAS SOLO si la descarga falla.
-     *
-     * POST:
-     *  - archivo_excel: .xlsx/.xls
-     *  - id_portal (opcional; default 1)
-     *  - id_cliente (opcional; para empleados)
-     */
-    /*
-    public function importar()
-    {
-        /* ===== Booster SOLO para esta petición =====
-                                                   // — Booster mínimo por-request (CI3) —
-        @ini_set('max_execution_time', '900');     // 15 min (mejor margen que 300s)
-        @ini_set('memory_limit', '1024M');         // o 1024M si tu Excel es grande
-        @ini_set('default_socket_timeout', '120'); // si descargas URLs
-
-        $this->output->set_content_type('application/json', 'utf-8');
-
-        if (empty($_FILES['archivo_excel']['name'])) {
-            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Sube un archivo Excel']));
-        }
-
-        $id_portal  = (int) ($this->session->userdata('idPortal') ?: 1);
-        $id_usuario = (int) ($this->session->userdata('id') ?: 1);
-        $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
-
-        try {
-            // 1) Caché a disco
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod(
-                \PhpOffice\PhpSpreadsheet\CachedObjectStorageFactory::cache_to_discISAM,
-                ['dir' => sys_get_temp_dir()]
-            );
-
-            $tmp    = $_FILES['archivo_excel']['tmp_name'];
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($tmp);
-            $reader->setReadDataOnly(true);    // sin estilos
-            $reader->setReadEmptyCells(false); // opcional: ignora celdas vacías
-
-            $spreadsheet = $reader->load($tmp);
-            unset($reader);
-        } catch (Exception $e) {
-            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Excel inválido: ' . $e->getMessage()]));
-        }
-
-        $sheet = $spreadsheet->getSheet(0);
-        $rows  = $sheet->toArray(null, true, true, true);
-
-        if (count($rows) < 2) {
-            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Excel vacío']));
-        }
-        $toUtf8 = function ($s) {
-            if ($s === null) {
-                return null;
-            }
-
-            $s = (string) $s;
-            // Detecta y convierte a UTF-8 si viniera raro (CSV antiguos, copy/paste)
-            $enc = mb_detect_encoding($s, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true) ?: 'UTF-8';
-            if ($enc !== 'UTF-8') {
-                $s = iconv($enc, 'UTF-8//IGNORE', $s);
-            }
-            // Normaliza acentos compuestos (NFC)
-            if (class_exists('Normalizer')) {
-                $s = Normalizer::normalize($s, Normalizer::FORM_C);
-            }
-            return trim($s);
-        };
-        // Cabeceras robustas (evita trim(null))
-        $rawHeaders = $rows[1] ?? [];
-        $headers    = [];
-        foreach ($rawHeaders as $colLetter => $title) {
-            $t = $title === null ? '' : trim((string) $title);
-            if ($t !== '') {
-                $headers[$colLetter] = $t;
-            }
-
-        }
-        $index = [];
-        foreach ($headers as $colLetter => $title) {$index[$title] = $colLetter;}
-
-        // ===== Helpers lectura =====
-        $get = function ($row, $names) use ($index, $toUtf8) {
-            $names = is_array($names) ? $names : [$names];
-            foreach ($names as $name) {
-                if (isset($index[$name])) {
-                    $col = $index[$name];
-                    return isset($row[$col]) ? $toUtf8($row[$col]) : null; // <- NORMALIZA AQUÍ
-                }
-            }
-            return null;
-        };
-
-        $getDateYmd = function ($row, $names) use ($get) {
-            $raw = $get($row, $names);
-            if ($raw === null || $raw === '') {
-                return null;
-            }
-
-            if (is_numeric($raw)) {
-                try {return XlsDate::excelToDateTimeObject($raw)->format('Y-m-d');} catch (Exception $e) {return null;}
-            }
-            $ts = strtotime($raw);
-            return $ts ? date('Y-m-d', $ts) : null;
-        };
-        $getNumber = function ($row, $names) use ($get) {
-            $raw = $get($row, $names);
-            if ($raw === null || $raw === '') {
-                return null;
-            }
-
-            $raw = str_replace([',', '$'], '', (string) $raw);
-            return is_numeric($raw) ? $raw : null;
-        };
-        $splitNombre = function ($full) {
-            $full = trim(preg_replace('/\s+/', ' ', (string) $full));
-            if ($full === '') {
-                return ['nombre' => '', 'paterno' => null, 'materno' => null];
-            }
-
-            $parts = explode(' ', $full);
-            $n     = count($parts);
-
-            if ($n === 1) {
-                return ['nombre' => $parts[0], 'paterno' => null, 'materno' => null];
-            }
-
-            if ($n === 2) {
-                // Nombre + Paterno
-                return ['nombre' => $parts[0], 'paterno' => $parts[1], 'materno' => null];
-            }
-
-            // 3 o más: último = materno, penúltimo = paterno, resto = nombre(s)
-            $materno = array_pop($parts);
-            $paterno = array_pop($parts);
-            $nombre  = implode(' ', $parts);
-
-            return ['nombre' => $nombre, 'paterno' => $paterno, 'materno' => $materno];
-        };
-
-        $calcEdad = function ($ymd) {
-            if (! $ymd) {
-                return null;
-            }
-
-            try { $b = new DateTime($ymd);
-                $t                             = new DateTime('today');return (int) $b->diff($t)->y;} catch (Exception $e) {return null;}
-        };
-
-        // ===== Nombres de columnas =====
-        $X_NOMBRE_COMPLETO = 'Task Name';
-        $X_TASK_ID         = 'Task ID';
-
-        // Campos fijos bolsa
-        $MAP_BOLSA = [
-            'domicilio'        => ['Dirección (short text)'],
-            'fecha_nacimiento' => ['FECHA DE NACIMIENTO (date)'],
-            'telefono'         => ['TELEFONO DE CONTACTO (phone)'],
-            'medio_contacto'   => ['Medio de contacto', 'MEDIO DE CONTACTO'],
-            'area_interes'     => ['Área de interés', 'AREA INTERES', 'Cliente/Servicio (short text)'],
-            'sueldo_deseado'   => ['PAGO MENSUAL (number)'],
-        ];
-
-        // Campos fijos empleado
-        $MAP_EMPLE = [
-            'id_empleado'      => [$X_TASK_ID],
-            'nombre'           => [$X_NOMBRE_COMPLETO],
-            'telefono'         => ['TELEFONO DE CONTACTO (phone)'],
-            'correo'           => ['E-MAIL E.G.C (email)'],
-            'departamento'     => ['Departamento', 'Cliente/Servicio (short text)'],
-            'puesto'           => ['Puesto', 'Cargo'],
-            'rfc'              => ['RFC'],
-            'nss'              => ['NSS', 'IMSS'],
-            'curp'             => ['N° DE CEDULA (short text)', 'CURP'],
-            'foto'             => ['Foto', 'FOTO'],
-            'fecha_nacimiento' => ['FECHA DE NACIMIENTO (date)'],
-        ];
-
-        // Adjuntos: etiquetas + posibles cabeceras
-        $ATTACH_COLS = [
-            ['label' => 'Hoja de vida', 'headers' => ['Hoja de vida (attachment)', 'Hoja de vida', 'CV', 'Curriculum', 'Currículum']],
-            ['label' => 'Cédula de identidad', 'headers' => ['Cedula Asociado (attachment)', 'Cédula', 'Cedula']],
-            ['label' => 'Foto Asociado', 'headers' => ['Foto Asociado (attachment)', 'Foto Asociado', 'Foto']],
-            ['label' => 'Acuerdo de Confidencialidad', 'headers' => ['Acuerdo Confidencialidad (attachment)', 'Acuerdo de Confidencialidad']],
-            ['label' => 'Convenio de Confidencialidad', 'headers' => ['Convenio de confidencialidad (attachment)', 'Convenio de confidencialidad']],
-            ['label' => 'Validación Técnica', 'headers' => ['Validación Técnica (attachment)', 'Validación Técnica']],
-            ['label' => 'Informe de cierre', 'headers' => ['informe de cierre de servicio (attachment)', 'Informe de cierre']],
-        ];
-        $ATTACH_HEADERS = [];
-        foreach ($ATTACH_COLS as $def) {
-            foreach ($def['headers'] as $h) {
-                $ATTACH_HEADERS[] = $h;
-            }
-        }
-
-        $creacionAhora     = date('Y-m-d H:i:s');
-        $insertados_bolsa  = 0;
-        $insertados_emp    = 0;
-        $extras_rows_total = 0;
-        $errores           = [];
-        $fallas_descargas  = []; // para swal: listado detallado de fallas de descarga
-
-        // ===== Filas =====
-        for ($i = 2; $i <= count($rows); $i++) {
-            $r = $rows[$i] ?? [];
-
-            $fullName = isset($index[$X_NOMBRE_COMPLETO]) ? $toUtf8(trim((string) ($r[$index[$X_NOMBRE_COMPLETO]] ?? ''))) : '';
-            $np       = $splitNombre($fullName);
-            if ($fullName === '') {$errores[] = "Fila $i: nombre vacío";
-                continue;}
-
-            // STATUS
-            $status_raw = $get($r, ['Status', 'ESTADO', 'Estado', 'status', 'Estatus']);
-            $action     = $this->map_status_action($status_raw); // bolsa_status, create_empleado, empleado_status
-
-            // --- Bolsa (datos base) ---
-            $domicilio_bt      = $get($r, $MAP_BOLSA['domicilio']);
-            $fecha_nac_bt      = $getDateYmd($r, $MAP_BOLSA['fecha_nacimiento']);
-            $telefono_bt       = $get($r, $MAP_BOLSA['telefono']) ?: '';
-            $medio_contacto_bt = $get($r, $MAP_BOLSA['medio_contacto']);
-            $area_interes_bt   = $get($r, $MAP_BOLSA['area_interes']);
-            $sueldo_deseado_bt = $getNumber($r, $MAP_BOLSA['sueldo_deseado']);
-
-            if ($telefono_bt === '') {$errores[] = "Fila $i ({$fullName}): teléfono vacío";
-                continue;}
-
-            // Excluir adjuntos de extras
-            $used_bolsa = [$X_NOMBRE_COMPLETO];
-            foreach ($MAP_BOLSA as $arr) {
-                foreach ((array) $arr as $hn) {
-                    $used_bolsa[] = $hn;
-                }
-            }
-
-            $used_bolsa = array_merge($used_bolsa, $ATTACH_HEADERS);
-
-            // extras iniciales (sin adjuntos)
-            $extras_bolsa = [];
-            foreach ($headers as $colKey => $headerName) {
-                $headerName = trim($headerName);
-                if ($headerName === '' || in_array($headerName, $used_bolsa, true)) {
-                    continue;
-                }
-
-                $valx = isset($r[$colKey]) ? $r[$colKey] : null;
-                if ($valx === null || $valx === '') {
-                    continue;
-                }
-
-                if (is_numeric($valx) && $valx > 20000 && $valx < 60000) {
-                    try { $valx = XlsDate::excelToDateTimeObject($valx)->format('Y-m-d');} catch (Exception $e) {}
-                }
-                $extras_bolsa[$headerName] = $toUtf8($valx);
-            }
-
-            $data_bolsa = [
-                'creacion'         => $creacionAhora,
-                'edicion'          => null,
-                'id_portal'        => $id_portal,
-                'id_usuario'       => $id_usuario,
-                'nombre'           => $toUtf8($np['nombre']),
-                'paterno'          => $toUtf8($np['paterno']),
-                'materno'          => $toUtf8($np['materno']),
-                'domicilio'        => $toUtf8($domicilio_bt),
-                'fecha_nacimiento' => $fecha_nac_bt,
-                'edad'             => $calcEdad($fecha_nac_bt),
-                'telefono'         => preg_replace('/\D+/', '', (string) $telefono_bt),
-                'nacionalidad'     => null,
-                'civil'            => null,
-                'dependientes'     => null,
-                'grado_estudios'   => null,
-                'salud'            => null,
-                'enfermedad'       => null,
-                'deporte'          => null,
-                'metas'            => null,
-                'idiomas'          => null,
-                'maquinas'         => null,
-                'software'         => null,
-                'medio_contacto'   => $toUtf8($medio_contacto_bt),
-                'area_interes'     => $toUtf8($area_interes_bt),
-                'sueldo_deseado'   => $sueldo_deseado_bt !== null ? (string) $sueldo_deseado_bt : null,
-                'otros_ingresos'   => null,
-                'viajar'           => null,
-                'trabajar'         => null,
-                'comentario'       => null,
-                'extras'           => json_encode($extras_bolsa, JSON_UNESCAPED_UNICODE),
-                'status'           => $action['bolsa_status'],
-                'semaforo'         => 0,
-            ];
-            // === Anti-duplicado SIMPLE (bolsa_trabajo) =============================
-            $tel_clean = preg_replace('/\D+/', '', (string) $telefono_bt);
-            $norm      = function ($s) {
-                $s = @iconv('UTF-8', 'ASCII//TRANSLIT', (string) $s);
-                return strtolower(preg_replace('/[^a-z0-9]+/', '', $s));
-            };
-            $nom = $norm($np['nombre'] ?? '');
-            $pat = $norm($np['paterno'] ?? '');
-            $mat = $norm($np['materno'] ?? '');
-
-            $dup_id = null;
-            if (! empty($fecha_nac_bt)) {
-                $sql1 = "
-                    SELECT id
-                    FROM bolsa_trabajo
-                    WHERE id_portal = ?
-                    AND fecha_nacimiento = ?
-                    AND REPLACE(REPLACE(REPLACE(REPLACE(telefono,' ',''),'-',''),'(',''),')','') = ?
-                    LIMIT 1
-                ";
-                $q1     = $this->db->query($sql1, [$id_portal, $fecha_nac_bt, $tel_clean])->row();
-                $dup_id = $q1->id ?? null;
-            }
-            if (! $dup_id) {
-                $sql2 = "
-                    SELECT id
-                    FROM bolsa_trabajo
-                    WHERE id_portal = ?
-                    AND REPLACE(REPLACE(REPLACE(REPLACE(telefono,' ',''),'-',''),'(',''),')','') = ?
-                    AND LOWER(REPLACE(REPLACE(REPLACE(COALESCE(nombre ,''),' ',''),'-',''),'.',''))  = ?
-                    AND LOWER(REPLACE(REPLACE(REPLACE(COALESCE(paterno,''),' ',''),'-',''),'.','')) = ?
-                    AND LOWER(REPLACE(REPLACE(REPLACE(COALESCE(materno,''),' ',''),'-',''),'.','')) = ?
-                    LIMIT 1
-                ";
-                $q2     = $this->db->query($sql2, [$id_portal, $tel_clean, $nom, $pat, $mat])->row();
-                $dup_id = $q2->id ?? null;
-            }
-            if ($dup_id) {
-                $this->db->where('id', $dup_id)->update('bolsa_trabajo', [
-                    'edicion' => date('Y-m-d H:i:s'),
-                    'status'  => $action['bolsa_status'] ?? 1,
-                    'extras'  => json_encode($extras_bolsa, JSON_UNESCAPED_UNICODE),
-                ]);
-                $errores[] = "Fila $i ({$fullName}): duplicado — se actualizó (id=$dup_id)";
-                continue;
-            }
-
-            // ======================================================================
-
-            $this->db->trans_start();
-
-            $ok_b = $this->db->insert('bolsa_trabajo', $data_bolsa);
-            if (! $ok_b) {
-                $this->db->trans_complete();
-                $errores[] = "Fila $i ({$fullName}): error al insertar en bolsa_trabajo";
-                continue;
-            }
-            $insertados_bolsa++;
-            $id_bolsa = $this->db->insert_id();
-
-            $id_empleado_pk  = null;
-            $failed_bolsa    = []; // label => [urls]
-            $failed_empleado = []; // label => [urls]
-
-            // --- Empleado (si aplica por STATUS) ---
-            if ($action['create_empleado']) {
-                $tel_emp    = $get($r, $MAP_EMPLE['telefono']);
-                $correo_emp = $get($r, $MAP_EMPLE['correo']);
-                $dep_emp    = $get($r, $MAP_EMPLE['departamento']);
-                $pto_emp    = $get($r, $MAP_EMPLE['puesto']);
-                $rfc_emp    = $get($r, $MAP_EMPLE['rfc']);
-                $nss_emp    = $get($r, $MAP_EMPLE['nss']);
-                $curp_emp   = $get($r, $MAP_EMPLE['curp']);
-                $foto_emp   = $get($r, $MAP_EMPLE['foto']);
-                $fnac_emp   = $getDateYmd($r, $MAP_EMPLE['fecha_nacimiento']);
-                $id_emp_ext = $get($r, $MAP_EMPLE['id_empleado']);
-                $id_emp_ext = ($id_emp_ext !== null && $id_emp_ext !== '') ? mb_substr(trim((string) $id_emp_ext), 0, 50) : null;
-
-                $data_emp = [
-                    'creacion'              => $creacionAhora,
-                    'edicion'               => null,
-                    'id_portal'             => $id_portal ?: null,
-                    'id_cliente'            => $id_cliente ?: null,
-                    'id_usuario'            => $id_usuario ?: null,
-                    'id_empleado'           => $id_emp_ext,
-                    'id_domicilio_empleado' => null,
-                    'nombre'                => $np['nombre'] ?: null,
-                    'paterno'               => $np['paterno'],
-                    'materno'               => $np['materno'],
-                    'telefono'              => $tel_emp ?: $telefono_bt,
-                    'correo'                => $correo_emp,
-                    'departamento'          => $dep_emp,
-                    'puesto'                => $pto_emp,
-                    'rfc'                   => $rfc_emp,
-                    'nss'                   => $nss_emp,
-                    'curp'                  => $curp_emp,
-                    'foto'                  => $foto_emp,
-                    'fecha_nacimiento'      => $fnac_emp,
-                    'id_bolsa'              => $id_bolsa,
-                    'status'                => $action['empleado_status'], // 3 cuando es Contratado
-                    'eliminado'             => 0,
-                ];
-
-                $ok_e = $this->db->insert('empleados', $data_emp);
-                if (! $ok_e) {
-                    $this->db->trans_complete();
-                    $errores[] = "Fila $i ({$fullName}): error al insertar en empleados";
-                    continue;
-                }
-                $insertados_emp++;
-                $id_empleado_pk = $this->db->insert_id();
-
-                // Extras de empleado (excluyendo adjuntos)
-                $used_emple = [];
-                foreach ($MAP_EMPLE as $arr) {
-                    foreach ((array) $arr as $hn) {
-                        $used_emple[] = $hn;
-                    }
-                }
-
-                $used_emple[] = $X_NOMBRE_COMPLETO;
-                $used_emple   = array_merge($used_emple, $ATTACH_HEADERS);
-
-                $extras_rows = [];
-                foreach ($headers as $colKey => $headerName) {
-                    $headerName = trim($headerName);
-                    if ($headerName === '' || in_array($headerName, $used_emple, true)) {
-                        continue;
-                    }
-
-                    $valx = isset($r[$colKey]) ? $r[$colKey] : null;
-                    if ($valx === null || $valx === '') {
-                        continue;
-                    }
-
-                    if (is_numeric($valx) && $valx > 20000 && $valx < 60000) {
-                        try { $valx = XlsDate::excelToDateTimeObject($valx)->format('Y-m-d');} catch (Exception $e) {}
-                    }
-
-                    $extras_rows[] = [
-                        'id_empleado' => $id_empleado_pk,
-                        'nombre'      => mb_substr($headerName, 0, 255),
-                        'valor'       => mb_substr((string) $valx, 0, 255),
-                    ];
-                }
-
-                if (! empty($extras_rows)) {
-                    $this->db->insert_batch('empleado_campos_extra', $extras_rows);
-                    $extras_rows_total += count($extras_rows);
-                }
-            }
-            // --- DOCUMENTOS: intenta descargar; SOLO inserta si la descarga fue OK ---
-            foreach ($ATTACH_COLS as $def) {
-                $label = $def['label'];
-                $urls  = [];
-
-                foreach ($def['headers'] as $hname) {
-                    if (! isset($index[$hname])) {
-                        continue;
-                    }
-
-                    $colLetter = $index[$hname];
-                    $colIndex  = Coordinate::columnIndexFromString($colLetter);
-
-                    // Hipervínculo real de la celda
-                    $cell = $sheet->getCellByColumnAndRow($colIndex, $i);
-                    if ($cell && $cell->hasHyperlink()) {
-                        $u = trim((string) $cell->getHyperlink()->getUrl());
-                        if ($u !== '') {
-                            $urls[] = $u;
-                        }
-
-                    }
-                    // Texto visible con posibles URLs
-                    $visible = isset($rows[$i][$colLetter]) ? (string) $rows[$i][$colLetter] : '';
-                    if ($visible !== '') {
-                        foreach ($this->extract_urls($visible) as $u2) {
-                            $urls[] = $u2;
-                        }
-
-                    }
-                }
-
-                if (empty($urls)) {
-                    continue;
-                }
-
-                $urls = array_values(array_unique($urls));
-
-                foreach ($urls as $u) {
-                    $uNorm = $this->normalize_share_url($u);
-
-                    // ===== Bolsa =====
-                    $bolRes = $this->save_remote_file(
-                        $uNorm,
-                        $this->path_docs_bolsa,
-                        "bolsa_{$id_bolsa}_" . $this->slug($label)
-                    );
-
-                    // Considera OK solo si devolvió ok, existe el archivo y tiene tamaño > 0
-                    $bol_ok = ($bolRes['ok'] ?? false)
-                    && isset($bolRes['path'])
-                    && is_file($bolRes['path'])
-                    && filesize($bolRes['path']) > 0;
-
-                    if ($bol_ok) {
-                        $this->insert_doc_bolsa($id_bolsa, $id_usuario, basename($bolRes['path']), $label);
-                    } else {
-                        // NO insertes en documentos_bolsa: guárdalo como FALLO para pasarlo a EXTRAS
-                        if (! empty($bolRes['path']) && is_file($bolRes['path'])) {
-                            @unlink($bolRes['path']);
-                        }
-                        // limpia basura
-                        $failed_bolsa[$label][] = $uNorm;
-                        $fallas_descargas[]     = [
-                            'fila'      => $i,
-                            'nombre'    => $fullName,
-                            'entidad'   => 'bolsa',
-                            'label'     => $label,
-                            'url'       => $uNorm,
-                            'http_code' => $bolRes['http_code'] ?? 0,
-                            'error'     => $bolRes['error'] ?? 'Descarga fallida',
-                        ];
-                    }
-
-                    // ===== Empleado (si se creó) =====
-                    if ($id_empleado_pk) {
-                        $empRes = $this->save_remote_file(
-                            $uNorm,
-                            $this->path_docs_empleado,
-                            "emp_{$id_empleado_pk}_" . $this->slug($label)
-                        );
-
-                        $emp_ok = ($empRes['ok'] ?? false)
-                        && isset($empRes['path'])
-                        && is_file($empRes['path'])
-                        && filesize($empRes['path']) > 0;
-
-                        if ($emp_ok) {
-                            $this->insert_doc_empleado($id_empleado_pk, basename($empRes['path']), $label);
-                        } else {
-                            if (! empty($empRes['path']) && is_file($empRes['path'])) {
-                                @unlink($empRes['path']);
-                            }
-
-                            $failed_empleado[$label][] = $uNorm;
-                            $fallas_descargas[]        = [
-                                'fila'      => $i,
-                                'nombre'    => $fullName,
-                                'entidad'   => 'empleado',
-                                'label'     => $label,
-                                'url'       => $uNorm,
-                                'http_code' => $empRes['http_code'] ?? 0,
-                                'error'     => $empRes['error'] ?? 'Descarga fallida',
-                            ];
-                        }
-                    }
-                }
-            }
-
-            // --- Si hubo fallas: agregar links a EXTRAS ---
-            if (! empty($failed_bolsa)) {
-                $extras_merge = $extras_bolsa;
-                foreach ($failed_bolsa as $key => $urlsFail) {
-                    $extras_merge[$key] = implode(' ', array_unique($urlsFail));
-                }
-                $this->db->where('id', $id_bolsa)->update('bolsa_trabajo', [
-                    'extras' => json_encode($extras_merge, JSON_UNESCAPED_UNICODE),
-                ]);
-            }
-            if ($id_empleado_pk && ! empty($failed_empleado)) {
-                $rowsFail = [];
-                foreach ($failed_empleado as $key => $urlsFail) {
-                    $rowsFail[] = [
-                        'id_empleado' => $id_empleado_pk,
-                        'nombre'      => mb_substr($key, 0, 255),
-                        'valor'       => mb_substr(implode(' ', array_unique($urlsFail)), 0, 255),
-                    ];
-                }
-                if (! empty($rowsFail)) {
-                    $this->db->insert_batch('empleado_campos_extra', $rowsFail);
-                }
-
-            }
-
-            $this->db->trans_complete();
-            if ($this->db->trans_status() === false) {
-                $errores[] = "Fila $i ({$fullName}): transacción fallida";
-            }
-        }
-        if (isset($sheet)) {unset($sheet);}
-        if (isset($spreadsheet)) {
-            $spreadsheet->disconnectWorksheets();
-            unset($spreadsheet);
-        }
-        gc_collect_cycles();
-
-        return $this->output->set_output(json_encode([
-            'ok'                   => true,
-            'bolsa_insertados'     => $insertados_bolsa,
-            'empleados_insertados' => $insertados_emp,
-            'empleado_extras_rows' => $extras_rows_total,
-            'errores'              => $errores,
-            'fallas_descargas'     => $fallas_descargas, // <- para SweetAlert
-        ]));
-    }
-    */
     public function importar()
     {
         /* ===== Booster SOLO para esta petición ===== */
@@ -640,10 +27,35 @@ class Importa_excel extends CI_Controller
             return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Sube un archivo Excel']));
         }
 
-        $id_portal  = (int) ($this->session->userdata('idPortal') ?: 1);
-        $id_usuario = (int) ($this->session->userdata('id') ?: 1);
-        $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
+        $id_portal  = (int) $this->session->userdata('idPortal');
+        $id_usuario = (int) $this->session->userdata('id');
 
+        if ($id_portal <= 0 || $id_usuario <= 0) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Sesión administrativa no válida.',
+            ]));
+        }
+        $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
+        if ($id_cliente > 0) {
+            $clienteValido = $this->db
+                ->select('C.id')
+                ->from('cliente AS C')
+                ->join('usuario_permiso AS UP', 'UP.id_cliente = C.id')
+                ->where('C.id', $id_cliente)
+                ->where('C.id_portal', $id_portal)
+                ->where('UP.id_usuario', $id_usuario)
+                ->limit(1)
+                ->get()
+                ->row();
+
+            if (! $clienteValido) {
+                return $this->output->set_output(json_encode([
+                    'ok'  => false,
+                    'msg' => 'No tienes acceso al cliente seleccionado.',
+                ]));
+            }
+        }
         try {
             // === Cargar Excel con lector en modo "read-only" (sin cachés especiales) ===
             $tmp    = $_FILES['archivo_excel']['tmp_name'];
@@ -1094,11 +506,31 @@ class Importa_excel extends CI_Controller
                     $uNorm = $this->normalize_share_url($u);
 
                     // ===== Bolsa =====
-                    $bolRes = $this->save_remote_file(
-                        $uNorm,
-                        $this->path_docs_bolsa,
-                        "bolsa_{$id_bolsa}_" . $this->slug($label)
-                    );
+                    $bolsaDestDir = $this->bolsa_documentos_path($id_bolsa);
+
+                    if ($bolsaDestDir === null) {
+                        $bolRes = [
+                            'ok'        => false,
+                            'error'     => 'No se pudo resolver el directorio de documentos de la Bolsa.',
+                            'http_code' => 0,
+                        ];
+                    } else {
+                        $bolsaDestDir = $this->bolsa_documentos_path($id_bolsa);
+
+                        if ($bolsaDestDir === null) {
+                            $bolRes = [
+                                'ok'        => false,
+                                'error'     => 'No se pudo resolver el directorio de documentos de la Bolsa.',
+                                'http_code' => 0,
+                            ];
+                        } else {
+                            $bolRes = $this->save_remote_file(
+                                $uNorm,
+                                $bolsaDestDir,
+                                "bolsa_{$id_bolsa}_" . $this->slug($label)
+                            );
+                        }
+                    }
 
                     $bol_ok = ($bolRes['ok'] ?? false)
                     && isset($bolRes['path'])
@@ -1123,19 +555,38 @@ class Importa_excel extends CI_Controller
 
                     // ===== Empleado (si se creó) =====
                     if ($id_empleado_pk) {
-                        $empRes = $this->save_remote_file(
-                            $uNorm,
-                            $this->path_docs_empleado,
-                            "emp_{$id_empleado_pk}_" . $this->slug($label)
-                        );
+                        $empleadoPath = $this->empleado_documentos_path($id_empleado_pk);
+
+                        if ($empleadoPath === null) {
+                            $empRes = [
+                                'ok'        => false,
+                                'error'     => 'No se pudo resolver la ruta del documento del empleado.',
+                                'http_code' => 0,
+                            ];
+                        } else {
+                            $empRes = $this->save_remote_file(
+                                $uNorm,
+                                $empleadoPath['absolute_dir'],
+                                "emp_{$id_empleado_pk}_" . $this->slug($label)
+                            );
+                        }
 
                         $emp_ok = ($empRes['ok'] ?? false)
                         && isset($empRes['path'])
                         && is_file($empRes['path'])
                         && filesize($empRes['path']) > 0;
 
-                        if ($emp_ok) {
-                            $this->insert_doc_empleado($id_empleado_pk, basename($empRes['path']), $label);
+                        if ($emp_ok && $empleadoPath !== null) {
+                            $relativePath = rtrim(
+                                $empleadoPath['relative_dir'],
+                                '/\\'
+                            ) . '/' . basename($empRes['path']);
+
+                            $this->insert_doc_empleado(
+                                $id_empleado_pk,
+                                $relativePath,
+                                $label
+                            );
                         } else {
                             if (! empty($empRes['path']) && is_file($empRes['path'])) {@unlink($empRes['path']);}
                             $failed_empleado[$label][] = $uNorm;
@@ -1214,10 +665,35 @@ class Importa_excel extends CI_Controller
             return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Sube un archivo Excel']));
         }
 
-        $id_portal  = (int) ($this->session->userdata('idPortal') ?: 1);
-        $id_usuario = (int) ($this->session->userdata('id') ?: 1);
-        $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
+        $id_portal  = (int) $this->session->userdata('idPortal');
+        $id_usuario = (int) $this->session->userdata('id');
 
+        if ($id_portal <= 0 || $id_usuario <= 0) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Sesión administrativa no válida.',
+            ]));
+        }
+        $id_cliente = (int) ($this->input->post('id_cliente') ?: null); // opcional
+        if ($id_cliente > 0) {
+            $clienteValido = $this->db
+                ->select('C.id')
+                ->from('cliente AS C')
+                ->join('usuario_permiso AS UP', 'UP.id_cliente = C.id')
+                ->where('C.id', $id_cliente)
+                ->where('C.id_portal', $id_portal)
+                ->where('UP.id_usuario', $id_usuario)
+                ->limit(1)
+                ->get()
+                ->row();
+
+            if (! $clienteValido) {
+                return $this->output->set_output(json_encode([
+                    'ok'  => false,
+                    'msg' => 'No tienes acceso al cliente seleccionado.',
+                ]));
+            }
+        }
         // === Carga optimizada en modo lectura y cache a disco ===
         try {
             \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod(
@@ -1704,11 +1180,21 @@ class Importa_excel extends CI_Controller
                     $uNorm = $this->normalize_share_url($u);
 
                     // ===== Bolsa =====
-                    $bolRes = $this->save_remote_file(
-                        $uNorm,
-                        $this->path_docs_bolsa,
-                        "bolsa_{$id_bolsa}_" . $this->slug($label)
-                    );
+                    $bolsaDestDir = $this->bolsa_documentos_path($id_bolsa);
+
+                    if ($bolsaDestDir === null) {
+                        $bolRes = [
+                            'ok'        => false,
+                            'error'     => 'No se pudo resolver el directorio de documentos de la Bolsa.',
+                            'http_code' => 0,
+                        ];
+                    } else {
+                        $bolRes = $this->save_remote_file(
+                            $uNorm,
+                            $bolsaDestDir,
+                            "bolsa_{$id_bolsa}_" . $this->slug($label)
+                        );
+                    }
 
                     $bol_ok = ($bolRes['ok'] ?? false)
                     && isset($bolRes['path'])
@@ -1736,19 +1222,38 @@ class Importa_excel extends CI_Controller
 
                     // ===== Empleado (si se creó) =====
                     if ($id_empleado_pk) {
-                        $empRes = $this->save_remote_file(
-                            $uNorm,
-                            $this->path_docs_empleado,
-                            "emp_{$id_empleado_pk}_" . $this->slug($label)
-                        );
+                        $empleadoPath = $this->empleado_documentos_path($id_empleado_pk);
+
+                        if ($empleadoPath === null) {
+                            $empRes = [
+                                'ok'        => false,
+                                'error'     => 'No se pudo resolver la ruta del documento del empleado.',
+                                'http_code' => 0,
+                            ];
+                        } else {
+                            $empRes = $this->save_remote_file(
+                                $uNorm,
+                                $empleadoPath['absolute_dir'],
+                                "emp_{$id_empleado_pk}_" . $this->slug($label)
+                            );
+                        }
 
                         $emp_ok = ($empRes['ok'] ?? false)
                         && isset($empRes['path'])
                         && is_file($empRes['path'])
                         && filesize($empRes['path']) > 0;
 
-                        if ($emp_ok) {
-                            $this->insert_doc_empleado($id_empleado_pk, basename($empRes['path']), $label);
+                        if ($emp_ok && $empleadoPath !== null) {
+                            $relativePath = rtrim(
+                                $empleadoPath['relative_dir'],
+                                '/\\'
+                            ) . '/' . basename($empRes['path']);
+
+                            $this->insert_doc_empleado(
+                                $id_empleado_pk,
+                                $relativePath,
+                                $label
+                            );
                         } else {
                             if (! empty($empRes['path']) && is_file($empRes['path'])) {
                                 @unlink($empRes['path']);
@@ -1885,6 +1390,85 @@ class Importa_excel extends CI_Controller
         return $u;
     }
 
+    private function bolsa_documentos_path(int $id_bolsa): ?string
+    {
+        if ($id_bolsa <= 0) {
+            return null;
+        }
+
+        $bolsa = $this->db
+            ->select('id, id_portal')
+            ->from('bolsa_trabajo')
+            ->where('id', $id_bolsa)
+            ->get()
+            ->row();
+
+        if (! $bolsa || (int) $bolsa->id_portal <= 0) {
+            return null;
+        }
+
+        $destDir = rtrim(FCPATH, '/\\')
+        . '/storagetalentsafe/portales/'
+        . (int) $bolsa->id_portal
+        . '/bolsa_trabajo/'
+        . (int) $bolsa->id
+            . '/documentos';
+
+        if (! is_dir($destDir)) {
+            @mkdir($destDir, 0775, true);
+        }
+
+        if (! is_dir($destDir) || ! is_writable($destDir)) {
+            return null;
+        }
+
+        return $destDir;
+    }
+    private function empleado_documentos_path(int $employee_id): ?array
+    {
+        if ($employee_id <= 0) {
+            return null;
+        }
+
+        $empleado = $this->db
+            ->select('id, id_portal, id_cliente')
+            ->from('empleados')
+            ->where('id', $employee_id)
+            ->get()
+            ->row();
+
+        if (
+            ! $empleado
+            || (int) $empleado->id_portal <= 0
+            || (int) $empleado->id_cliente <= 0
+        ) {
+            return null;
+        }
+
+        $relativeDir = 'portales/'
+        . (int) $empleado->id_portal
+        . '/_documentEmpleado/clientes/'
+        . (int) $empleado->id_cliente
+        . '/empleados/'
+        . (int) $empleado->id;
+
+        $absoluteDir = rtrim(FCPATH, '/\\')
+            . '/storagetalentsafe/'
+            . $relativeDir;
+
+        if (! is_dir($absoluteDir)) {
+            @mkdir($absoluteDir, 0775, true);
+        }
+
+        if (! is_dir($absoluteDir) || ! is_writable($absoluteDir)) {
+            return null;
+        }
+
+        return [
+            'absolute_dir' => $absoluteDir,
+            'relative_dir' => $relativeDir,
+        ];
+    }
     /**
      * Intenta descargar. Devuelve:
      * ['ok'=>true, 'path'=>'/abs/file', 'http_code'=>200] o

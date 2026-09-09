@@ -171,7 +171,7 @@ class Reclutamiento extends CI_Controller
         /*
         echo'<pre>';
         print_r($info['orders_search'] );
-        echo'</pre>'; 
+        echo'</pre>';
         die(); */
         $info['sortOrder'] = $getSort;
         $info['filter']    = $getFilter;
@@ -730,7 +730,6 @@ class Reclutamiento extends CI_Controller
                 $medio = $medio_otro;
             }
         }
-      
 
         // 3) Verifica que la requisición exista (evita FK error)
         $existsReq = $this->reclutamiento_model->existsRequisitionInPortal($req, $id_portal);
@@ -2707,8 +2706,34 @@ class Reclutamiento extends CI_Controller
         if ($id <= 0 || $nombre === '') {
             return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'Datos inválidos']));
         }
+        $id_portal = (int) $this->session->userdata('idPortal');
 
-        $ok = $this->db->where('id', $id)
+        if ($id_portal <= 0) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Sesión administrativa no válida.',
+            ]));
+        }
+
+        $documento = $this->db
+            ->select('db.id')
+            ->from('documentos_bolsa db')
+            ->join('bolsa_trabajo bt', 'bt.id = db.id_bolsa')
+            ->where('db.id', $id)
+            ->where('db.eliminado', 0)
+            ->where('bt.id_portal', $id_portal)
+            ->get()
+            ->row();
+
+        if (! $documento) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Documento no disponible.',
+            ]));
+        }
+$ok = $this->db
+            ->where('id', $id)
+            ->where('eliminado', 0)
             ->update('documentos_bolsa', [
                 'nombre_personalizado' => $nombre,
                 'fecha_actualizacion'  => date('Y-m-d H:i:s'),
@@ -2726,19 +2751,88 @@ class Reclutamiento extends CI_Controller
             return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'ID inválido']));
         }
 
-        // Obtén el registro para poder borrar el archivo físico (opcional)
-        $row = $this->db->get_where('documentos_bolsa', ['id' => $id])->row();
+        // Obtener documento y portal real de la Bolsa
+        $row = $this->db
+            ->select('db.id, db.id_bolsa, db.nombre_archivo, bt.id_portal')
+            ->from('documentos_bolsa db')
+            ->join('bolsa_trabajo bt', 'bt.id = db.id_bolsa')
+            ->where('db.id', $id)
+            ->where('db.eliminado', 0)
+            ->get()
+            ->row();
+
         if (! $row) {
-            return $this->output->set_output(json_encode(['ok' => false, 'msg' => 'No encontrado']));
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'No encontrado',
+            ]));
+        }
+        $id_portal = (int) $this->session->userdata('idPortal');
+
+        if (
+            $id_portal <= 0
+            || (int) $row->id_portal !== $id_portal
+        ) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Documento no disponible.',
+            ]));
+        }
+        $filename = basename(
+            str_replace('\\', '/', trim((string) $row->nombre_archivo))
+        );
+
+        // Ruta definitiva
+        $newPath = rtrim(FCPATH, '/\\')
+            . '/storagetalentsafe/portales/'
+            . (int) $row->id_portal
+            . '/bolsa_trabajo/'
+            . (int) $row->id_bolsa
+            . '/documentos/'
+            . $filename;
+
+        // Ruta legacy
+        $legacyPath = rtrim(FCPATH, '/\\')
+            . '/_documentosBolsa/'
+            . $filename;
+
+        // Eliminar de cualquiera de las dos ubicaciones donde exista
+        if (is_file($newPath)) {
+            @unlink($newPath);
         }
 
-        // Borra archivo físico (opcional pero recomendado)
-        $destDir = rtrim(FCPATH, '/\\') . '/_documentosBolsa/';
-        $path    = $destDir . $row->nombre_archivo;
-        if (is_file($path)) {@unlink($path);}
+        if (is_file($legacyPath)) {
+            @unlink($legacyPath);
+        }
+        $id_portal = (int) $this->session->userdata('idPortal');
 
+        if ($id_portal <= 0) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Sesión administrativa no válida.',
+            ]));
+        }
+
+        $documento = $this->db
+            ->select('db.id')
+            ->from('documentos_bolsa db')
+            ->join('bolsa_trabajo bt', 'bt.id = db.id_bolsa')
+            ->where('db.id', $id)
+            ->where('db.eliminado', 0)
+            ->where('bt.id_portal', $id_portal)
+            ->get()
+            ->row();
+
+        if (! $documento) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Documento no disponible.',
+            ]));
+        }
         // Soft-delete en BD
-        $ok = $this->db->where('id', $id)
+        $ok = $this->db
+            ->where('id', $id)
+            ->where('eliminado', 0)
             ->update('documentos_bolsa', [
                 'eliminado'           => 1,
                 'fecha_actualizacion' => date('Y-m-d H:i:s'),
@@ -2820,10 +2914,44 @@ class Reclutamiento extends CI_Controller
         }
 
         // 3) Directorio de destino
-        $destDir = rtrim(FCPATH, '/\\') . '/_documentosBolsa';
+       // 3) Resolver portal real de la Bolsa y directorio de destino
+        $bolsa = $this->db
+            ->select('id, id_portal')
+            ->from('bolsa_trabajo')
+            ->where('id', $id_bolsa)
+            ->get()
+            ->row();
+
+        if (! $bolsa || (int) $bolsa->id_portal <= 0) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Bolsa de trabajo no válida.',
+            ]));
+        }
+
+        $id_portal = (int) $bolsa->id_portal;
+        $id_portal_sesion = (int) $this->session->userdata('idPortal');
+
+        if (
+            $id_portal_sesion <= 0
+            || $id_portal !== $id_portal_sesion
+        ) {
+            return $this->output->set_output(json_encode([
+                'ok'  => false,
+                'msg' => 'Bolsa de trabajo no disponible.',
+            ]));
+        }
+        $destDir = rtrim(FCPATH, '/\\')
+            . '/storagetalentsafe/portales/'
+            . $id_portal
+            . '/bolsa_trabajo/'
+            . $id_bolsa
+            . '/documentos';
+
         if (! is_dir($destDir)) {
             @mkdir($destDir, 0755, true);
         }
+
         if (! is_dir($destDir) || ! is_writable($destDir)) {
             return $this->output->set_output(json_encode([
                 'ok'  => false,

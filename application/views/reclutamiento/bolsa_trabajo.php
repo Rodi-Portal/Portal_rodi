@@ -1384,8 +1384,7 @@
               doc.nombre_personalizado :
               doc.nombre_archivo;
 
-            const href = '<?php echo base_url('docsBolsa/'); ?>' + encodeURIComponent(doc.nombre_archivo);
-
+            const href = '<?php echo site_url('Archivo/ver_docs_bolsa_id/'); ?>' + doc.id;
             const safeNombreMostrar = (nombreMostrar || '').replace(/'/g, "\\'");
             const safeNombreArchivo = (doc.nombre_archivo || '').replace(/'/g, "\\'");
 
