@@ -478,7 +478,7 @@ class Importa_excel extends CI_Controller
                     $colIndex  = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($colLetter);
 
                     // Hipervínculo real de la celda
-                    $cell = $sheet->getCellByColumnAndRow($colIndex, $i);
+                    $cell = $sheet->getCell([$colIndex, $i]);
                     if ($cell && $cell->hasHyperlink()) {
                         $u = trim((string) $cell->getHyperlink()->getUrl());
                         if ($u !== '') {
@@ -696,12 +696,7 @@ class Importa_excel extends CI_Controller
         }
         // === Carga optimizada en modo lectura y cache a disco ===
         try {
-            \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod(
-                \PhpOffice\PhpSpreadsheet\CachedObjectStorageFactory::cache_to_discISAM,
-                ['dir' => sys_get_temp_dir()]
-            );
-
-            $tmp    = $_FILES['archivo_excel']['tmp_name'];
+$tmp    = $_FILES['archivo_excel']['tmp_name'];
             $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($tmp);
             $reader->setReadDataOnly(true);
             $reader->setReadEmptyCells(false);
@@ -739,7 +734,7 @@ class Importa_excel extends CI_Controller
 
         $headers = []; // ["A"=>"Task Name", "B"=>"Task ID", ...]
         for ($col = 1; $col <= $highestColumnIndex; $col++) {
-            $title = trim((string) $sheet->getCellByColumnAndRow($col, 1)->getValue());
+            $title = trim((string) $sheet->getCell([$col, 1])->getValue());
             if ($title !== '') {
                 $colLetter           = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                 $headers[$colLetter] = $title;
@@ -1151,7 +1146,7 @@ class Importa_excel extends CI_Controller
                     $colIndex  = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($colLetter);
 
                     // Hipervínculo real de la celda
-                    $cell = $sheet->getCellByColumnAndRow($colIndex, $i);
+                    $cell = $sheet->getCell([$colIndex, $i]);
                     if ($cell && $cell->hasHyperlink()) {
                         $u = trim((string) $cell->getHyperlink()->getUrl());
                         if ($u !== '') {

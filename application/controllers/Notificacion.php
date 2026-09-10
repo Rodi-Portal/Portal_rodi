@@ -989,42 +989,6 @@ class Notificacion extends CI_Controller
     /*correos  para  notificaciones */
 
     // aqui termina   la funcion notificaciones  via  whatsapp   y correos
-    public function alertaNuevoCandidato()
-    {
-        $Pusher_Opciones = [
-            //"scheme" => "http",
-            //"host" => "tudominio.com", //"The HOST option overrides the CLUSTER option!"
-            //"port" => 80,
-            //"timeout" => 30,
-            //
-            "encrypted" => false,
-            //"cluster" => "mt1",
-            //"curl_options" => array(
-            //CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
-            //)
-        ];
-
-        $options = [
-            'cluster'   => 'mt1',
-            'useTLS'    => true,
-            "encrypted" => false,
-        ];
-        $pusher = new Pusher\Pusher(
-            '1c1dc3822919195c87be',
-            'aebe2c78bb647fffeb02',
-            '1561704',
-            $options
-        );
-
-        $Mi_Info = [
-            "notificacion" => $this->input->post('mensaje'),
-            "timestamp"    => time(),
-        ];
-
-        //$data['message'] = 'hello world';
-        $pusher->trigger('rodicontrol-channel', 'my-event', $Mi_Info);
-    }
-
     public function marcar_visto()
     {
         $id         = $this->input->post('id');

@@ -20,7 +20,6 @@
 	<!-- SweetAlert -->
 	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-	<!-- <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script> -->
 
 
 
@@ -269,19 +268,6 @@ function downloadFile() {
     })
     return false;
   }
-}
-
-function enviarNotificacion() {
-  // $.ajax({
-  //   url: '<?php //echo base_url('Notificacion/alertaNuevoCandidato'); ?>',
-  //   method: 'POST',
-  //   data: {
-  //     'mensaje': $('#msgNotificacion').val()
-  //   },
-  //   success: function(res) {
-
-  //   }
-  // });
 }
 
 function getNotificaciones() {
