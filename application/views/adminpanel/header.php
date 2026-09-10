@@ -141,7 +141,7 @@
                 $logo = 'logo_nuevo.png';
         }?>
         <a class="sidebar-brand d-flex align-items-center justify-content-center">
-          <img src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo; ?>" alt="Logo"
+         <img src="<?php echo base_url('Archivo/ver_portal_logo'); ?>" alt="Logo"
             style="max-width: 200px; width: 100%; height: auto; object-fit: contain;">
         </a>
 
@@ -553,7 +553,7 @@
                   </div> <!-- Si la variable de sesión 'logo' no es null, mostramos el botón de eliminar -->
                   <?php if ($this->session->userdata('logo') != null) {?> <div id="currentLogoContainer">
                     <h6><?php echo $this->lang->line('portal_logo_current');?>:</h6> <img id="currentLogo"
-                      src="<?php echo base_url();?>_logosPortal/<?php echo $logo ?>"" alt=" Logo actual"
+                      src="<?php echo base_url('Archivo/ver_portal_logo'); ?>" alt="Logo actual"
                       style="max-width: 100%; height: auto;"> <button id="deleteLogo" class="btn btn-danger">
                       <?php echo $this->lang->line('portal_logo_delete');?>
                     </button>

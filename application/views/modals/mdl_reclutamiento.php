@@ -107,7 +107,7 @@
             </div>
           </div>
 
-          
+
             <div class="col-sm-12 col-md-4">
               <label><?php echo t('rec_prog_app_f_email', 'Correo*'); ?></label>
               <input type="mail" id="correo1" name="correo1" class="form-control">
@@ -115,7 +115,7 @@
               <input type="hidden" id="idAspirante" name="idAspirante">
               <input type="hidden" id="idBolsa" name="idBolsa">
             </div>
-          
+
 
         </form>
       </div>
@@ -1040,9 +1040,8 @@
         <!-- Logo actual -->
         <div class="mb-3 text-center">
           <label><strong><?php echo t('rec_bol_link_logo_current', 'Logo Actual:'); ?></strong></label><br>
-          <img id="logoActual" src="<?php echo base_url('_logosPortal/' . $this->session->userdata('logo')) ?>"
-            alt="<?php echo t('rec_bol_link_logo_alt', 'Logo'); ?>" style="max-height: 80px;"
-            onerror="this.onerror=null; this.src='<?php echo base_url('_logosPortal/portal_icon.png') ?>';">
+          <img id="logoActual" src="<?php echo base_url('Archivo/ver_portal_logo'); ?>"
+            alt="<?php echo t('rec_bol_link_logo_alt', 'Logo'); ?>" style="max-height: 80px;">
         </div>
 
         <!-- Aviso actual -->

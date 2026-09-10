@@ -6,7 +6,7 @@ $lang['app_title'] = 'Control Panel';
 
 // Sidebar
 $lang['sidebar_dashboard']      = 'Dashboard';
-$lang['sidebar_user_guide']     = 'User guide';
+$lang['sidebar_user_guide']     = 'Help Videos';
 $lang['sidebar_recruitment']    = 'Recruitment';
 $lang['sidebar_pre_employment'] = 'Pre-employment';
 $lang['sidebar_employees']      = 'Employees';

@@ -199,63 +199,173 @@ class Archivo extends CI_Controller
             'reclutamiento/bolsa/documentos/'
         );
     }
-
     public function ver_portal_doc($tipo = '')
     {
-        if (! $this->session->userdata('id')) {show_404();}
-
-        $id_portal = (int) $this->session->userdata('idPortal');
-        if (empty($id_portal)) {show_404();}
-
-        $tipo = strtolower(trim((string) $tipo));
-        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {show_404();}
-
-        // === Ambos en _avisosPortal/ porque ahí tienes los defaults ===
-        $upload_dir   = rtrim(FCPATH, '/\\') . '/_avisosPortal/';
-        $defaults_dir = $upload_dir;
-
-        if (! is_dir($upload_dir)) {@mkdir($upload_dir, 0775, true);}
-        if (! is_dir($defaults_dir)) {@mkdir($defaults_dir, 0775, true);}
-
-        $map = [
-            'aviso'            => ['db' => 'aviso', 'def' => 'AV_TL_V1.pdf'],
-            'terminos'         => ['db' => 'terminos', 'def' => 'TM_TL_V1.pdf'],
-            'confidencialidad' => ['db' => 'confidencialidad', 'def' => 'AC_TL_V1.docx'],
-        ];
-
-        // Trae nombre guardado en DB (p.ej. "23_avisoPrivacidad.pdf")
-        $row    = $this->cat_portales_model->getDocs($id_portal);
-        $nombre = $row ? ($row->{$map[$tipo]['db']} ?? null) : null;
-
-        // Si hay archivo propio y existe físicamente -> úsalo; si no -> usa el default en la MISMA carpeta
-        if ($nombre && is_file($upload_dir . $nombre)) {
-            $fileAbs = $upload_dir . $nombre;
-        } else {
-            $fileAbs = $defaults_dir . $map[$tipo]['def'];
+        if (! $this->session->userdata('id')) {
+            show_404();
         }
 
-        // Si tampoco existe el default, 404
-        if (! is_file($fileAbs) || ! is_readable($fileAbs)) {show_404();}
+        $id_portal = (int) $this->session->userdata('idPortal');
+
+        if ($id_portal <= 0) {
+            show_404();
+        }
+
+        $tipo = strtolower(trim((string) $tipo));
+
+        if (! in_array(
+            $tipo,
+            ['aviso', 'terminos', 'confidencialidad'],
+            true
+        )) {
+            show_404();
+        }
+
+        $map = [
+            'aviso'            => [
+                'db'      => 'aviso',
+                'default' => 'AV_TL_V1.pdf',
+            ],
+            'terminos'         => [
+                'db'      => 'terminos',
+                'default' => 'TM_TL_V1.pdf',
+            ],
+            'confidencialidad' => [
+                'db'      => null,
+                'default' => 'AC_TL_V1.docx',
+            ],
+        ];
+
+        $base = rtrim(FCPATH, '/\\');
+
+        $fileAbs = '';
+
+        $customDir = $base
+            . '/storagetalentsafe/portales/'
+            . $id_portal
+            . '/configuracion/documentos/';
+
+        if ($tipo === 'confidencialidad') {
+            /*
+     * Producción no tiene portal.confidencialidad.
+     * El documento personalizado tiene nombre determinístico.
+     */
+            $customPath = $customDir
+                . $id_portal
+                . '_acuerdoConfidencialidad.pdf';
+
+            if (is_file($customPath) && is_readable($customPath)) {
+                $fileAbs = $customPath;
+            }
+        } elseif ($map[$tipo]['db'] !== null) {
+            $row = $this->cat_portales_model->getDocs($id_portal);
+
+            $nombre = $row
+                ? trim((string) ($row->{$map[$tipo]['db']} ?? ''))
+                : '';
+
+            $nombre = basename(
+                str_replace('\\', '/', $nombre)
+            );
+
+            if ($nombre !== '') {
+                $customPath = $customDir . $nombre;
+
+                if (is_file($customPath) && is_readable($customPath)) {
+                    $fileAbs = $customPath;
+                }
+            }
+        }
+
+        if ($fileAbs === '') {
+            $defaultPath = $base
+                . '/storagetalentsafe/default/documentos/'
+                . $map[$tipo]['default'];
+
+            if (! is_file($defaultPath) || ! is_readable($defaultPath)) {
+                show_404();
+            }
+
+            $fileAbs = $defaultPath;
+        }
 
         $ext  = strtolower(pathinfo($fileAbs, PATHINFO_EXTENSION));
         $mime = $this->_detect_mime($fileAbs, $ext);
 
-        $forceDownload = (bool) $this->input->get('dl');
-        $disp          = $forceDownload ? 'attachment' : 'inline';
-
-        $downloadName = basename($fileAbs);
-        $ascii        = preg_replace('/[^A-Za-z0-9\._-]+/', '_', $downloadName);
-
         header('Content-Type: ' . $mime);
         header('Content-Length: ' . filesize($fileAbs));
         header('X-Content-Type-Options: nosniff');
-        header('Cache-Control: private, max-age=0, must-revalidate');
-        header("Content-Disposition: $disp; filename=\"{$ascii}\"; filename*=UTF-8''" . rawurlencode($downloadName));
+        header('Cache-Control: private, max-age=300');
+
+        if ($tipo === 'confidencialidad') {
+            header(
+                'Content-Disposition: attachment; filename="'
+                . basename($fileAbs)
+                . '"'
+            );
+        } else {
+            header(
+                'Content-Disposition: inline; filename="'
+                . basename($fileAbs)
+                . '"'
+            );
+        }
 
         @readfile($fileAbs);
         exit;
     }
+    public function ver_portal_logo()
+    {
+        $id_portal = (int) $this->session->userdata('idPortal');
 
+        if ($id_portal <= 0) {
+            show_404();
+        }
+
+        $logo = basename(
+            str_replace(
+                '\\',
+                '/',
+                trim((string) $this->session->userdata('logo'))
+            )
+        );
+
+        $base = rtrim(FCPATH, '/\\');
+
+        if ($logo !== '') {
+            $customPath = $base
+                . '/storagetalentsafe/portales/'
+                . $id_portal
+                . '/configuracion/logo/'
+                . $logo;
+
+            if (is_file($customPath) && is_readable($customPath)) {
+                $fileAbs = $customPath;
+            }
+        }
+
+        if (empty($fileAbs)) {
+            $defaultPath = $base
+                . '/storagetalentsafe/default/logo/logo_nuevo.png';
+
+            if (! is_file($defaultPath) || ! is_readable($defaultPath)) {
+                show_404();
+            }
+
+            $fileAbs = $defaultPath;
+        }
+
+        $ext  = strtolower(pathinfo($fileAbs, PATHINFO_EXTENSION));
+        $mime = $this->_detect_mime($fileAbs, $ext);
+
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . filesize($fileAbs));
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, max-age=300');
+
+        @readfile($fileAbs);
+        exit;
+    }
     public function ver_aspirante($id)
     {
         $this->_serve_doc_aspirante((int) $id, false); // inline si tipo_vista==1

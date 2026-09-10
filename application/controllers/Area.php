@@ -156,8 +156,8 @@ class Area extends CI_Controller
         // Calcular total de usuarios extras con cobro fijo
         $totalExtras = 0;
         foreach ($usuariosExtras as &$usuario) {
-            $usuario->cobro = 50; // Cobro fijo por usuario extra
-            $totalExtras += $usuario->cobro;
+            $usuario->cobro  = 50; // Cobro fijo por usuario extra
+            $totalExtras    += $usuario->cobro;
         }
 
         // Total final
@@ -268,8 +268,8 @@ class Area extends CI_Controller
         $usuariosExtras = $this->area_model->getUsuariosExtras($id_portal);
         $totalExtras    = 0;
         foreach ($usuariosExtras as &$usuario) {
-            $usuario->cobro = $this->calcularCobro1($usuario->creacion);
-            $totalExtras += $usuario->cobro;
+            $usuario->cobro  = $this->calcularCobro1($usuario->creacion);
+            $totalExtras    += $usuario->cobro;
         }
 
         // Total final proporcional
@@ -355,93 +355,133 @@ class Area extends CI_Controller
             return 1;
         }
     }
-
     public function updateLogo()
     {
-        // Establecer la zona horaria
         date_default_timezone_set('America/Mexico_City');
         $date = date('Y-m-d H:i:s');
 
-        // Obtener datos de la sesión
-        $idPortal       = $this->session->userdata('idPortal');
-        $portal         = $this->session->userdata('nombrePortal');
-        $portal         = explode(' ', $portal)[0];
+        $idPortal = (int) $this->session->userdata('idPortal');
+
+        if ($idPortal <= 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Portal no válido',
+            ]);
+            return;
+        }
+
+        $portal = trim((string) $this->session->userdata('nombrePortal'));
+        $portal = explode(' ', $portal)[0];
+
         $archivo        = $idPortal . '_' . $portal;
         $nombre_archivo = trim($archivo);
-                                                             // Configuración para la carga de archivo
-        $config['upload_path']   = FCPATH . '_logosPortal/'; // Ruta completa
-        $config['allowed_types'] = 'pdf|jpg|jpeg|png';       // Tipos de archivo permitidos
-        $config['overwrite']     = true;                     // Sobrescribir archivo si existe
-        $config['file_name']     = $nombre_archivo;          // Nombre de archivo único basado en el idPortal y nombre del portal
 
-        // Cargar la librería de carga
+        // Ruta definitiva
+        $upload_path = rtrim(FCPATH, '/\\')
+            . '/storagetalentsafe/portales/'
+            . $idPortal
+            . '/configuracion/logo/';
+
+        if (! is_dir($upload_path)) {
+            @mkdir($upload_path, 0775, true);
+        }
+
+        if (! is_dir($upload_path) || ! is_writable($upload_path)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'No fue posible preparar el directorio del logo',
+            ]);
+            return;
+        }
+
+        $config['upload_path']   = $upload_path;
+        $config['allowed_types'] = 'pdf|jpg|jpeg|png';
+        $config['overwrite']     = true;
+        $config['file_name']     = $nombre_archivo;
+
         $this->load->library('upload', $config);
         $this->upload->initialize($config);
 
-        // Verificar si se sube un archivo
-        if ($_FILES['fileLogo']['name']) {
-            // Intentar cargar el archivo
+        if (! empty($_FILES['fileLogo']['name'])) {
             if ($this->upload->do_upload('fileLogo')) {
-                // Obtener los datos del archivo cargado
                 $data = $this->upload->data();
 
-                                                     // Obtener la extensión del archivo
-                $file_extension = $data['file_ext']; // Ejemplo: .jpg, .png, .pdf
+                $file_extension = $data['file_ext'];
+                $logo           = $nombre_archivo . $file_extension;
 
-                // Preparar los datos para la actualización
                 $doc = [
                     'edicion' => $date,
-                    'logo'    => $nombre_archivo . $file_extension, // El logo con su extensión
+                    'logo'    => $logo,
                 ];
 
-                // Llamar al modelo para actualizar el logo
                 $this->area_model->subirLogo($idPortal, $doc);
-                $this->session->set_userdata('logo', $nombre_archivo . $file_extension);
-                // Responder con éxito
-                echo json_encode(['success' => true,
-                    'message'                   => 'Logo actualizado correctamente']);
+                $this->session->set_userdata('logo', $logo);
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Logo actualizado correctamente',
+                ]);
             } else {
-                // Si ocurre un error con la carga, mostrar el error
-                echo json_encode(['success' => false, 'message' => $this->upload->display_errors()]);
+                echo json_encode([
+                    'success' => false,
+                    'message' => $this->upload->display_errors(),
+                ]);
             }
         } else {
-            // Si no se subió ningún archivo
-            echo json_encode(['success' => false, 'message' => 'No se ha seleccionado un archivo']);
+            echo json_encode([
+                'success' => false,
+                'message' => 'No se ha seleccionado un archivo',
+            ]);
         }
     }
+
     public function eliminarLogo()
     {
-        // Establecer la zona horaria
         date_default_timezone_set('America/Mexico_City');
         $date = date('Y-m-d H:i:s');
 
-        // Obtener datos de la sesión
-        $idPortal = $this->session->userdata('idPortal');
-        $logo     = $this->session->userdata('logo');
+        $idPortal = (int) $this->session->userdata('idPortal');
+        $logo     = basename(
+            str_replace(
+                '\\',
+                '/',
+                trim((string) $this->session->userdata('logo'))
+            )
+        );
 
-        $data = './_logosPortal/' . $logo;
-
-        if ($data && file_exists($data)) {
-            // Eliminar el archivo de la imagen
-            unlink($data);
-
-            // Actualizar la variable de sesión
-            $_SESSION['logo'] = null;
-            $doc              = [
-                'edicion' => $date,
-                'logo'    => null, // El logo con su extensión
-            ];
-
-            // Llamar al modelo para actualizar el logo
-            $this->area_model->subirLogo($idPortal, $doc);
-            // Responder con éxito
-            echo json_encode(['success' => true]);
-        } else {
-            // Responder con error si no se puede eliminar
+        if ($idPortal <= 0) {
             echo json_encode(['success' => false]);
+            return;
         }
 
+        if ($logo !== '') {
+            // Ruta definitiva
+            $newPath = rtrim(FCPATH, '/\\')
+                . '/storagetalentsafe/portales/'
+                . $idPortal
+                . '/configuracion/logo/'
+                . $logo;
+
+            if (is_file($newPath)) {
+                @unlink($newPath);
+            }
+        }
+
+        // Limpiar referencia aunque el archivo físico ya no exista
+        $this->session->set_userdata('logo', null);
+
+        $doc = [
+            'edicion' => $date,
+            'logo'    => null,
+        ];
+
+        $ok = $this->area_model->subirLogo($idPortal, $doc);
+
+        echo json_encode([
+            'success' => (bool) $ok,
+        ]);
     }
+
     public function select2()
     {
         // Portal actual

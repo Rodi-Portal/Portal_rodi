@@ -719,7 +719,7 @@ class Reclutamiento extends CI_Controller
         } elseif ($medio === 'otro') {
 
             $medio_otro_post = $this->input->post('medio_otro', true);
-            $medio_otro = $medio_otro_post !== null ? trim($medio_otro_post) : '';
+            $medio_otro      = $medio_otro_post !== null ? trim($medio_otro_post) : '';
             if ($medio_otro === '') {
                 $medio = 'N/A';
             } else {
@@ -1245,26 +1245,104 @@ class Reclutamiento extends CI_Controller
 
     public function getOrderPDF()
     {
-        //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
         $mpdf = new \Mpdf\Mpdf();
-        date_default_timezone_set('America/Mexico_City');
-        $id = $_POST['idReq'];
 
-        //* Detalles de la requisicion por ID
+        date_default_timezone_set('America/Mexico_City');
+
+        $id = (int) $this->input->post('idReq');
+
+        // Detalles de la requisición
         $data['requisicion'] = $this->reclutamiento_model->getRequisionById($id);
 
-        //* Vista PDF del reporte
-        if ($this->session->userdata('idrol') == 4 || $this->session->userdata('idrol') == 11) {
-            $html = $this->load->view('pdfs/reclutamiento/requisicion_detalles_pdf', $data, true);
-        } else {
-            $html = $this->load->view('pdfs/reclutamiento/requisicion_completa_pdf', $data, true);
+        // ==============================
+        // Logo del portal
+        // ==============================
+        $idPortal = (int) $this->session->userdata('idPortal');
+
+        $logo = basename(
+            str_replace(
+                '\\',
+                '/',
+                trim((string) $this->session->userdata('logo'))
+            )
+        );
+
+        $base     = rtrim(FCPATH, '/\\');
+        $logoPath = '';
+
+        // Logo personalizado
+        if ($idPortal > 0 && $logo !== '') {
+            $customLogoPath = $base
+                . '/storagetalentsafe/portales/'
+                . $idPortal
+                . '/configuracion/logo/'
+                . $logo;
+
+            if (is_file($customLogoPath) && is_readable($customLogoPath)) {
+                $logoPath = $customLogoPath;
+            }
         }
 
-        //* Configuraciones del mPDF
+        // Logo default
+        if ($logoPath === '') {
+            $defaultLogoPath = $base
+                . '/storagetalentsafe/default/logo/logo_nuevo.png';
+
+            if (is_file($defaultLogoPath) && is_readable($defaultLogoPath)) {
+                $logoPath = $defaultLogoPath;
+            }
+        }
+
+        $logoUrl = $logoPath !== ''
+            ? 'file:///' . str_replace('\\', '/', $logoPath)
+            : '';
+
+        // ==============================
+        // Vista PDF
+        // ==============================
+        if (
+            $this->session->userdata('idrol') == 4 ||
+            $this->session->userdata('idrol') == 11
+        ) {
+            $html = $this->load->view(
+                'pdfs/reclutamiento/requisicion_detalles_pdf',
+                $data,
+                true
+            );
+        } else {
+            $html = $this->load->view(
+                'pdfs/reclutamiento/requisicion_completa_pdf',
+                $data,
+                true
+            );
+        }
+
+        // ==============================
+        // Header
+        // ==============================
         $mpdf->setAutoTopMargin = 'stretch';
-        $mpdf->SetHTMLHeader('<div style=""><img style="" src="' . base_url() . 'img/Encabezado.png"></div>');
-        $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 10px;"><div style="border-bottom:1px solid gray;"><b>Teléfono:</b> (33) 2301-8599 | <b>Correo:</b> hola@rodi.com.mx | <b>Sitio web:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br></p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
-        //$nombreArchivo = substr( md5(microtime()), 1, 12);
+
+        $mpdf->SetHTMLHeader(
+            '<div style="padding:8px 15px; text-align:left;">'
+            . ($logoUrl !== ''
+                    ? '<img src="' . $logoUrl . '" style="max-width:220px; max-height:90px;">'
+                    : '')
+            . '</div>'
+        );
+
+        // ==============================
+        // Footer
+        // ==============================
+        $mpdf->SetHTMLFooter(
+            '<div style="
+            position:absolute;
+            left:20px;
+            bottom:10px;
+            color:rgba(0,0,0,0.5);
+        ">
+        </div>'
+        );
+
         $mpdf->WriteHTML($html);
         $mpdf->Output('Req' . $id . '.pdf', 'D');
     }
@@ -1312,15 +1390,53 @@ class Reclutamiento extends CI_Controller
             return rtrim($base, '/') . '/' . $fname;
         };
         $intake->archivo_url  = $mkUrl(LINKDOCREQUICICION, $intake->archivo_path ?? '');
-        $intake->terminos_url = $mkUrl(LINKAVISOS, $intake->terminos_file ?? '');
-        $data['intake']       = $intake;
+        $intake->terminos_url = ! empty($intake->terminos_file)
+            ? base_url('Archivo/ver_portal_doc/terminos')
+            : '';
+        $data['intake'] = $intake;
 
         // === Branding / logo ===
         $brand = '#0C9DD3';
-        $logo  = $this->session->userdata('logo') ?: 'logo_nuevo.png';
-        if (! is_file(FCPATH . '_logosPortal/' . $logo)) {$logo = 'logo_nuevo.png';}
-        $logoUrl = base_url('_logosPortal/' . $logo);
-        $hoy     = date('d/m/Y');
+
+        $idPortal = (int) $this->session->userdata('idPortal');
+        $logo     = basename(
+            str_replace(
+                '\\',
+                '/',
+                trim((string) $this->session->userdata('logo'))
+            )
+        );
+
+        $base = rtrim(FCPATH, '/\\');
+
+        $logoPath = '';
+
+        if ($idPortal > 0 && $logo !== '') {
+            $customLogoPath = $base
+                . '/storagetalentsafe/portales/'
+                . $idPortal
+                . '/configuracion/logo/'
+                . $logo;
+
+            if (is_file($customLogoPath) && is_readable($customLogoPath)) {
+                $logoPath = $customLogoPath;
+            }
+        }
+
+        if ($logoPath === '') {
+            $defaultLogoPath = $base
+                . '/storagetalentsafe/default/logo/logo_nuevo.png';
+
+            if (is_file($defaultLogoPath) && is_readable($defaultLogoPath)) {
+                $logoPath = $defaultLogoPath;
+            }
+        }
+
+        $logoUrl = $logoPath !== ''
+            ? 'file:///' . str_replace('\\', '/', $logoPath)
+            : '';
+
+        $hoy = date('d/m/Y');
 
         // === Header (usa nombre del portal) ===
         $headerHtml = '
@@ -2731,7 +2847,7 @@ class Reclutamiento extends CI_Controller
                 'msg' => 'Documento no disponible.',
             ]));
         }
-$ok = $this->db
+        $ok = $this->db
             ->where('id', $id)
             ->where('eliminado', 0)
             ->update('documentos_bolsa', [
@@ -2784,10 +2900,10 @@ $ok = $this->db
 
         // Ruta definitiva
         $newPath = rtrim(FCPATH, '/\\')
-            . '/storagetalentsafe/portales/'
-            . (int) $row->id_portal
-            . '/bolsa_trabajo/'
-            . (int) $row->id_bolsa
+        . '/storagetalentsafe/portales/'
+        . (int) $row->id_portal
+        . '/bolsa_trabajo/'
+        . (int) $row->id_bolsa
             . '/documentos/'
             . $filename;
 
@@ -2914,7 +3030,7 @@ $ok = $this->db
         }
 
         // 3) Directorio de destino
-       // 3) Resolver portal real de la Bolsa y directorio de destino
+        // 3) Resolver portal real de la Bolsa y directorio de destino
         $bolsa = $this->db
             ->select('id, id_portal')
             ->from('bolsa_trabajo')
@@ -2929,7 +3045,7 @@ $ok = $this->db
             ]));
         }
 
-        $id_portal = (int) $bolsa->id_portal;
+        $id_portal        = (int) $bolsa->id_portal;
         $id_portal_sesion = (int) $this->session->userdata('idPortal');
 
         if (

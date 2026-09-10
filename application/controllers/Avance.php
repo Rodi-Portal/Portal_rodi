@@ -340,42 +340,6 @@ class Avance extends CI_Controller
             show_error('Token inválido', 400);
         }
     }
-
-    public function ver_aviso($archivo = null)
-    {
-        $default = 'AV_TL_V1.pdf'; // <- tu default
-        $baseDir = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
-
-        // 1) si no viene nombre, usa default
-        $archivo = $archivo ? trim($archivo, "/\\") : $default;
-
-        // 2) sanitiza (sin rutas)
-        $archivo = basename($archivo);
-
-        // 3) arma ruta y fallback al default si no existe
-        $ruta = $baseDir . $archivo;
-        if (! is_file($ruta)) {
-            $ruta = $baseDir . $default;
-            if (! is_file($ruta)) {
-                show_error('Archivo no encontrado', 404);
-                return;
-            }
-            $archivo = $default;
-        }
-
-        // 4) MIME y headers
-        $mime = function_exists('mime_content_type') ? mime_content_type($ruta) : 'application/pdf';
-        if (stripos($mime, 'pdf') === false) {$mime = 'application/pdf';}
-
-        header('Content-Type: ' . $mime);
-        header('Content-Length: ' . filesize($ruta));
-        header('Content-Disposition: inline; filename="' . rawurlencode($archivo) . '"');
-        readfile($ruta);
-        exit;
-    }
-
-    // application/controllers/Proveedores.php
-
     public function get_proveedores()
     {
         // Obtener los proveedores desde el modelo
@@ -384,151 +348,263 @@ class Avance extends CI_Controller
         // Devolver los datos en formato JSON
         echo json_encode($proveedores);
     }
-    public function documentos_info()
-    {
-        $id_portal = (int) $this->session->userdata('idPortal');
 
-        if (empty($id_portal)) {
-            jsonOut([
-                'error' => t('portal_docs_err_no_session'),
-            ], 401);
-        }
+    public function ver_aviso($archivo = null)
+{
+    // Compatibilidad con enlaces antiguos.
+    // Ya no se recibe ni se resuelve un nombre físico.
+    redirect('Archivo/ver_portal_doc/aviso');
+}
 
-        $row = $this->cat_portales_model->getDocs($id_portal);
+public function documentos_info()
+{
+    $id_portal = (int) $this->session->userdata('idPortal');
 
+    if ($id_portal <= 0) {
         jsonOut([
-            'aviso_tiene'            => ! empty($row->aviso),
-            'terminos_tiene'         => ! empty($row->terminos),
-            'confidencialidad_tiene' => ! empty($row->confidencialidad),
-        ]);
+            'error' => t('portal_docs_err_no_session'),
+        ], 401);
     }
 
-    public function documentos_guardar()
-    {
-        $id_portal = (int) $this->session->userdata('idPortal');
-        $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
+    $row = $this->cat_portales_model->getDocs($id_portal);
 
-        if (empty($id_portal)) {
-            jsonOut([
-                'error' => t('portal_docs_err_no_session'),
-            ], 401);
-        }
+    $base = rtrim(FCPATH, '/\\');
 
-        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
-            jsonOut([
-                'error' => t('portal_docs_err_invalid_type'),
-            ], 422);
-        }
+    $confidencialidadPath = $base
+        . '/storagetalentsafe/portales/'
+        . $id_portal
+        . '/configuracion/documentos/'
+        . $id_portal
+        . '_acuerdoConfidencialidad.pdf';
 
-        if (empty($_FILES['archivo']['name'])) {
-            jsonOut([
-                'error' => t('portal_docs_err_select_pdf'),
-            ], 422);
-        }
+    jsonOut([
+        'aviso_tiene' => $row && ! empty($row->aviso),
+        'terminos_tiene' => $row && ! empty($row->terminos),
 
-        // Directorio de subida
-        $upload_path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR;
-        if (! is_dir($upload_path)) {
-            @mkdir($upload_path, 0775, true);
-        }
+        // Producción no tiene portal.confidencialidad.
+        // La existencia del archivo determina si hay personalizado.
+        'confidencialidad_tiene' => is_file($confidencialidadPath),
+    ]);
+}
 
-        // Nombre final según tipo
-        switch ($tipo) {
-            case 'aviso':
-                $nombre_final = $id_portal . '_avisoPrivacidad.pdf';
-                break;
-            case 'terminos':
-                $nombre_final = $id_portal . '_terminosCondiciones.pdf';
-                break;
-            case 'confidencialidad':
-                $nombre_final = $id_portal . '_acuerdoConfidencialidad.pdf';
-                break;
-        }
+public function documentos_guardar()
+{
+    $id_portal = (int) $this->session->userdata('idPortal');
 
-        // Configuración de upload
-        $config = [
-            'upload_path'   => $upload_path,
-            'allowed_types' => 'pdf',
-            'max_size'      => 5120, // 5MB
-            'file_name'     => $nombre_final,
-            'overwrite'     => true,
-        ];
+    $tipo = strtolower(
+        trim((string) $this->input->post('tipo'))
+    );
 
-        $this->load->library('upload', $config);
+    if ($id_portal <= 0) {
+        jsonOut([
+            'error' => t('portal_docs_err_no_session'),
+        ], 401);
+    }
 
-        if (! $this->upload->do_upload('archivo')) {
-            $error = strip_tags($this->upload->display_errors('', ''));
-            jsonOut([
-                'error' => t('portal_docs_err_upload', '', ['error' => $error]),
-            ], 422);
-        }
+    if (! in_array(
+        $tipo,
+        ['aviso', 'terminos', 'confidencialidad'],
+        true
+    )) {
+        jsonOut([
+            'error' => t('portal_docs_err_invalid_type'),
+        ], 422);
+    }
 
-        // Guardar en BD
+    if (empty($_FILES['archivo']['name'])) {
+        jsonOut([
+            'error' => t('portal_docs_err_select_pdf'),
+        ], 422);
+    }
+
+    $upload_path = rtrim(FCPATH, '/\\')
+        . '/storagetalentsafe/portales/'
+        . $id_portal
+        . '/configuracion/documentos/';
+
+    if (! is_dir($upload_path)) {
+        @mkdir($upload_path, 0775, true);
+    }
+
+    if (! is_dir($upload_path) || ! is_writable($upload_path)) {
+        jsonOut([
+            'error' => t('portal_docs_err_upload', '', [
+                'error' => 'Directorio de almacenamiento no disponible.',
+            ]),
+        ], 500);
+    }
+
+    switch ($tipo) {
+        case 'aviso':
+            $nombre_final = $id_portal . '_avisoPrivacidad.pdf';
+            break;
+
+        case 'terminos':
+            $nombre_final = $id_portal . '_terminosCondiciones.pdf';
+            break;
+
+        case 'confidencialidad':
+            $nombre_final = $id_portal . '_acuerdoConfidencialidad.pdf';
+            break;
+    }
+
+    $config = [
+        'upload_path'   => $upload_path,
+        'allowed_types' => 'pdf',
+        'max_size'      => 5120,
+        'file_name'     => $nombre_final,
+        'overwrite'     => true,
+    ];
+
+    $this->load->library('upload', $config);
+    $this->upload->initialize($config);
+
+    if (! $this->upload->do_upload('archivo')) {
+        $error = strip_tags(
+            $this->upload->display_errors('', '')
+        );
+
+        jsonOut([
+            'error' => t('portal_docs_err_upload', '', [
+                'error' => $error,
+            ]),
+        ], 422);
+    }
+
+    /*
+     * aviso y terminos sí tienen columna en portal.
+     *
+     * confidencialidad NO tiene columna en producción.
+     * Para ella usamos el nombre determinístico del archivo.
+     */
+    if ($tipo === 'aviso' || $tipo === 'terminos') {
         $this->cat_portales_model->updateDocs($id_portal, [
             $tipo     => $nombre_final,
             'edicion' => date('Y-m-d H:i:s'),
         ]);
-
-        // Endpoint de visualización
-        $ver_endpoint = [
-            'aviso'            => 'ver_aviso/',
-            'terminos'         => 'ver_terminos/',
-            'confidencialidad' => 'ver_confidencialidad/',
-        ][$tipo];
-
-        // 👉 CLAVE: traducir el NOMBRE del documento, no el identificador
-        $tipo_label = t('portal_docs_tipo_' . $tipo);
-
-        jsonOut([
-            'status'  => 'success',
-            'mensaje' => t('portal_docs_saved_backend', '', [
-                'tipo' => $tipo_label,
-            ]),
-            'archivo' => $nombre_final,
-            'url'     => base_url('Avance/' . $ver_endpoint . rawurlencode($nombre_final)),
-        ]);
     }
 
-    public function documentos_eliminar()
-    {
-        $id_portal = (int) $this->session->userdata('idPortal');
-        $tipo      = $this->input->post('tipo'); // aviso | terminos | confidencialidad
+    $tipo_label = t('portal_docs_tipo_' . $tipo);
 
-        if (! in_array($tipo, ['aviso', 'terminos', 'confidencialidad'], true)) {
-            jsonOut([
-                'error' => t('portal_docs_err_invalid_type'),
-            ], 422);
-        }
+    jsonOut([
+        'status' => 'success',
 
-        $row     = $this->cat_portales_model->getDocs($id_portal);
-        $current = $row ? ($row->{$tipo} ?? null) : null;
+        'mensaje' => t('portal_docs_saved_backend', '', [
+            'tipo' => $tipo_label,
+        ]),
 
-        if (! $current) {
+        'archivo' => $nombre_final,
+
+        // Ya no exponemos el nombre físico en la URL.
+        'url' => base_url(
+            'Archivo/ver_portal_doc/' . rawurlencode($tipo)
+        ),
+    ]);
+}
+
+public function documentos_eliminar()
+{
+    $id_portal = (int) $this->session->userdata('idPortal');
+
+    $tipo = strtolower(
+        trim((string) $this->input->post('tipo'))
+    );
+
+    if ($id_portal <= 0) {
+        jsonOut([
+            'error' => t('portal_docs_err_no_session'),
+        ], 401);
+    }
+
+    if (! in_array(
+        $tipo,
+        ['aviso', 'terminos', 'confidencialidad'],
+        true
+    )) {
+        jsonOut([
+            'error' => t('portal_docs_err_invalid_type'),
+        ], 422);
+    }
+
+    $base = rtrim(FCPATH, '/\\');
+
+    $directorio = $base
+        . '/storagetalentsafe/portales/'
+        . $id_portal
+        . '/configuracion/documentos/';
+
+    /*
+     * Confidencialidad no depende de una columna de BD.
+     */
+    if ($tipo === 'confidencialidad') {
+        $current = $id_portal
+            . '_acuerdoConfidencialidad.pdf';
+
+        $path = $directorio . $current;
+
+        if (! is_file($path)) {
             jsonOut([
                 'error' => t('portal_docs_err_no_file_delete'),
             ], 404);
         }
 
-        // Eliminar archivo físico
-        $path = FCPATH . '_avisosPortal' . DIRECTORY_SEPARATOR . $current;
-        if (is_file($path)) {
-            @unlink($path);
-        }
+        @unlink($path);
 
-        // Limpiar columna en BD
-        $this->cat_portales_model->updateDocs($id_portal, [
-            $tipo => null,
-        ]);
-
-        // 👉 CLAVE: traducir el nombre del documento
         $tipo_label = t('portal_docs_tipo_' . $tipo);
 
         jsonOut([
-            'status'  => 'success',
+            'status' => 'success',
+
             'mensaje' => t('portal_docs_deleted_backend', '', [
                 'tipo' => $tipo_label,
             ]),
         ]);
     }
+
+    /*
+     * Aviso y términos sí utilizan la referencia guardada
+     * en la tabla portal.
+     */
+    $row = $this->cat_portales_model->getDocs($id_portal);
+
+    $current = $row
+        ? trim((string) ($row->{$tipo} ?? ''))
+        : '';
+
+    $current = basename(
+        str_replace('\\', '/', $current)
+    );
+
+    if ($current === '') {
+        jsonOut([
+            'error' => t('portal_docs_err_no_file_delete'),
+        ], 404);
+    }
+
+    $path = $directorio . $current;
+
+    if (is_file($path)) {
+        @unlink($path);
+    }
+
+    /*
+     * Limpiamos BD aunque el archivo físico ya no exista.
+     * Así no dejamos referencias huérfanas.
+     */
+    $this->cat_portales_model->updateDocs($id_portal, [
+        $tipo     => null,
+        'edicion' => date('Y-m-d H:i:s'),
+    ]);
+
+    $tipo_label = t('portal_docs_tipo_' . $tipo);
+
+    jsonOut([
+        'status' => 'success',
+
+        'mensaje' => t('portal_docs_deleted_backend', '', [
+            'tipo' => $tipo_label,
+        ]),
+    ]);
+}
 
 }

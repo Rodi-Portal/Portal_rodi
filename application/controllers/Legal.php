@@ -3,25 +3,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Legal extends CI_Controller
 {
-    // Carpeta donde almacenarás los PDFs (p.ej. /public_html/_docs/legal/)
+    // Documentos legales globales
     private $pdf_base;
 
     public function __construct()
     {
         parent::__construct();
+
         $this->load->helper(['url', 'html']);
-        $this->pdf_base = FCPATH . '_docs/legal/';
-        $lang           = $this->session->userdata('lang') ?: 'es';
-        $idioma_ci      = ($lang === 'en') ? 'english' : 'espanol';
+
+        $lang      = $this->session->userdata('lang') ?: 'es';
+        $idioma_ci = ($lang === 'en') ? 'english' : 'espanol';
 
         // Cargar idiomas necesarios
         $this->lang->load('header', $idioma_ci);
-        $this->lang->load('portal_generales', $idioma_ci); // sidebar
-        $this->lang->load('legal', $idioma_ci);            // 👈 ESTE ES EL CLAVE
+        $this->lang->load('portal_generales', $idioma_ci);
+        $this->lang->load('legal', $idioma_ci);
 
-        // Carpeta de PDFs
-        $this->pdf_base = FCPATH . '_legal/';
-        // Asegúrate de crear esta carpeta y subir tus PDFs
+        // Carpeta de documentos legales globales
+        $this->pdf_base = rtrim(FCPATH, '/\\')
+            . '/storagetalentsafe/legal/';
     }
 
     public function index()
@@ -48,7 +49,7 @@ class Legal extends CI_Controller
     public function download($tipo = '')
     {
 
-         //die('ENTRO A DOWNLOAD: ' . $tipo);
+        //die('ENTRO A DOWNLOAD: ' . $tipo);
         $map = [
             'terminos'         => 'terminos_y_condiciones.pdf',
             'confidencialidad' => 'aviso_de_confidencialidad.pdf',

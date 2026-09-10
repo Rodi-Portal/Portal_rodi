@@ -559,7 +559,7 @@ class Cat_portales_model extends CI_Model
     }
     public function getDocs($id_portal)
     {
-        return $this->db->select('aviso, terminos', 'confidencialidad')
+        return $this->db->select('aviso, terminos')
             ->from('portal')
             ->where('id', (int) $id_portal)
             ->get()->row();

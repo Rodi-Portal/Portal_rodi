@@ -93,7 +93,7 @@
       }?>
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
         <img style="max-width: 220px; max-height: 150px; background: white;"
-          src="<?php echo base_url(); ?>_logosPortal/<?php echo $logo ?>" alt="Logo">
+          src="<?php echo base_url('Archivo/ver_portal_logo'); ?>" alt="Logo">
       </a>
       <hr class="sidebar-divider my-0">
       <li class="nav-item">

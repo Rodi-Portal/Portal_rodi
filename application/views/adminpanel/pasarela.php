@@ -78,8 +78,8 @@ z
  <?= t('portal_logout'); ?>
 </a>
 <a class="sidebar-brand d-flex align-items-center justify-content-center">
-  <img style="max-width: 220px; max-height: 150px;" src="<?php echo base_url(); ?>_logosPortal/logo_nuevo.png"
-    alt="Logo">
+ <img style="max-width: 220px; max-height: 150px;" src="<?php echo base_url('Archivo/ver_portal_logo'); ?>"
+  alt="Logo">
 </a>
 <div class="alert alert-danger text-center" role="alert" style="margin:10px; font-weight:600;">
   <i class="fas fa-exclamation-triangle"></i>
