@@ -502,7 +502,6 @@ class Archivo extends CI_Controller
             $f = finfo_open(FILEINFO_MIME_TYPE);
             if ($f) {
                 $m = finfo_file($f, $path);
-                finfo_close($f);
                 if ($m) {
                     return $m;
                 }
