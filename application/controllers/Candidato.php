@@ -1769,13 +1769,11 @@ class Candidato extends Custom_Controller
         if ($response === false) {
             $error_msg = curl_error($ch);
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
-            curl_close($ch);
             return;
         }
 
         // Verificar el código HTTP
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($http_status !== 200) {
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud, código HTTP: ' . $http_status]);
@@ -1950,13 +1948,11 @@ class Candidato extends Custom_Controller
         if ($response === false) {
             $error_msg = curl_error($ch);
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
-            curl_close($ch);
             return;
         }
 
         // Verificar el código HTTP
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
             if ($http_status !== 200) {
 
@@ -2098,13 +2094,11 @@ class Candidato extends Custom_Controller
         if ($response === false) {
             $error_msg = curl_error($ch);
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
-            curl_close($ch);
             return;
         }
 
         // Verificar el código HTTP
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
        if ($http_status !== 200) {
 
@@ -2446,7 +2440,6 @@ class Candidato extends Custom_Controller
                     $response   = curl_exec($ch);
                     $http_code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                     $curl_error = curl_error($ch);
-                    curl_close($ch);
 
                     // Depuración: Verificar respuesta de cURL
                     // log_message('info', 'Respuesta de cURL: ' . $response);
@@ -2675,7 +2668,6 @@ class Candidato extends Custom_Controller
         $response = curl_exec($ch);
         $curlError = curl_error($ch);
         $httpStatus = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($response === false || $httpStatus !== 200) {
             log_message(
@@ -2746,7 +2738,6 @@ class Candidato extends Custom_Controller
         $response = curl_exec($ch);
         $curlError = curl_error($ch);
         $httpStatus = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($response === false || $httpStatus !== 200) {
             log_message(
@@ -3897,13 +3888,11 @@ class Candidato extends Custom_Controller
         if ($response === false) {
             $error_msg = curl_error($ch);
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
-            curl_close($ch);
             return;
         }
 
         // Verificar el código HTTP
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($http_status !== 200) {
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud, código HTTP: ' . $http_status]);

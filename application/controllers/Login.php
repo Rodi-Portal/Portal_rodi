@@ -777,7 +777,6 @@ class Login extends CI_Controller
             CURLINFO_HTTP_CODE
         );
 
-        curl_close($curl);
 
         if ($response === false) {
             log_message(

@@ -23,7 +23,6 @@ class Area_model extends CI_Model
             return "Error en la solicitud cURL: " . $error;
         }
 
-        curl_close($ch);
 
         if ($http_status == 200) {
             $datosArea = json_decode($response, true);

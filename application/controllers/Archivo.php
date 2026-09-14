@@ -648,7 +648,6 @@ class Archivo extends CI_Controller
                 'Error al descargar archivo desde Laravel: '
                 . curl_error($ch)
             );
-            curl_close($ch);
             show_404();
             return;
         }
@@ -659,7 +658,6 @@ class Archivo extends CI_Controller
             curl_getinfo($ch, CURLINFO_CONTENT_TYPE)
                 ?: 'application/octet-stream'
         );
-        curl_close($ch);
 
         if ($codigoHttp !== 200) {
             log_message(

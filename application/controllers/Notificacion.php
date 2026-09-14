@@ -50,7 +50,6 @@ class Notificacion extends CI_Controller
         }
 
         // Cerrar la conexión cURL
-        curl_close($ch);
 
                                              // Decodificar la respuesta JSON
         return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
@@ -78,12 +77,10 @@ class Notificacion extends CI_Controller
         if ($response === false) {
             // Mejor log que echo en cron
             log_message('error', 'Error cURL obtener_estado_empleado: ' . curl_error($ch));
-            curl_close($ch);
             return null;
         }
 
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($httpCode < 200 || $httpCode >= 300) {
             log_message('error', "HTTP {$httpCode} en obtener_estado_empleado: {$url}");
@@ -634,12 +631,10 @@ class Notificacion extends CI_Controller
             $response = curl_exec($ch);
             if ($response === false) {
                 log_message('error', '[WA-REC] cURL error (' . $phone . '): ' . curl_error($ch));
-                curl_close($ch);
                 continue;
             }
 
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
 
             $json = json_decode($response, true);
             if ($code >= 200 && $code < 300 && isset($json['status']) && $json['status'] === 'success') {
@@ -899,12 +894,10 @@ class Notificacion extends CI_Controller
             // Maneja errores de cURL
             if (curl_errno($ch)) {
                 log_message('error', 'Error de cURL: ' . curl_error($ch));
-                curl_close($ch);
                 continue;
             }
 
             // Cierra cURL
-            curl_close($ch);
 
             // Decodifica la respuesta
             $result = json_decode($response, true);
@@ -966,12 +959,10 @@ class Notificacion extends CI_Controller
             // Maneja errores de cURL
             if (curl_errno($ch)) {
                 log_message('error', 'Error de cURL: ' . curl_error($ch));
-                curl_close($ch);
                 continue;
             }
 
             // Cierra cURL
-            curl_close($ch);
 
             // Decodifica la respuesta
             $result = json_decode($response, true);

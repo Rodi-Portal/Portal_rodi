@@ -90,7 +90,6 @@ class Medico_model extends CI_Model{
         }
 
         // Cerrar cURL
-        curl_close($ch);
 
         // Procesar la respuesta
         if ($http_status == 200) {

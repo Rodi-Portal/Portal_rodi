@@ -305,7 +305,6 @@ p {
 		 // Verificar si ocurrió un error durante la ejecución de cURL
 		 if ($response_doping === false) {
 				 $error_doping = curl_error($ch_doping);
-				 curl_close($ch_doping);
 				 die('Error en la solicitud cURL para Doping: ' . $error_doping);
 		 }
 
@@ -316,7 +315,6 @@ p {
 		 echo "<br>";
 		 die(); */
 		 // Cerrar la sesión cURL para la primera solicitud
-		 curl_close($ch_doping);
 
 		//$data['sustancias'] = $this->doping_model->getSustanciasDoping($doping->id);
 		foreach($data['sustancias'] as $d){

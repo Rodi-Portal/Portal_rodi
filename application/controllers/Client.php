@@ -359,13 +359,11 @@ class Client extends Custom_Controller
         if ($response === false) {
             $error_msg = curl_error($ch); // Obtener el error de cURL
             echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL: ' . $error_msg]);
-            curl_close($ch);
             return;
         }
 
         // Verificar el código de estado HTTP
         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         // Si el código HTTP no es 200, algo salió mal
         if ($http_status !== 200) {
@@ -543,7 +541,6 @@ class Client extends Custom_Controller
 
                 $response    = curl_exec($ch);
                 $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
 
                 if ($response === false) {
                     echo json_encode(['codigo' => 0, 'msg' => 'Error en la solicitud cURL']);
@@ -852,7 +849,6 @@ class Client extends Custom_Controller
                     $request_size  = curl_getinfo($ch, CURLINFO_REQUEST_SIZE);
                     $curl_error    = curl_error($ch);
 
-                    curl_close($ch);
 
                     /**
                      * =====================

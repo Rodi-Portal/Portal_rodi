@@ -789,7 +789,6 @@ public function createPDF()
         $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
 
-        curl_close($ch);
 
         if ($response === false) {
             show_error('No fue posible conectar con la API. ' . $curlError);

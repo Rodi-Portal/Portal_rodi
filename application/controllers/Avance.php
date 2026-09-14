@@ -241,7 +241,6 @@ class Avance extends CI_Controller
             CURLINFO_HTTP_CODE
         );
 
-        curl_close($ch);
 
         $body = null;
 

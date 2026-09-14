@@ -25,7 +25,6 @@ class Api_traer_documentos_model extends CI_Model{
         // Verificar si ocurrió un error durante la ejecución de cURL
         if ($response === false) {
             $error = curl_error($ch);
-            curl_close($ch);
             return ['error' => 'Error en la solicitud cURL: ' . $error];
         }
 
@@ -33,7 +32,6 @@ class Api_traer_documentos_model extends CI_Model{
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         // Cerrar la sesión cURL
-        curl_close($ch);
 
         // Verificar el código de respuesta HTTP
         if ($httpCode !== 200) {

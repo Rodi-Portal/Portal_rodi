@@ -64,7 +64,6 @@ class Notificaciones_whatsapp_model extends CI_Model
         // Ejecutar la solicitud cURL
         $api_response = curl_exec($ch);
         $api_error = curl_error($ch);
-        curl_close($ch);
 
         if ($api_error) {
             return array(

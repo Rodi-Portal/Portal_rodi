@@ -1304,14 +1304,12 @@ class Doping extends CI_Controller
         if ($response_doping === false) {
             $error_doping = curl_error($ch_doping);
             $_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $error_doping;
-            curl_close($ch_doping);
             header('Location: ' . $_SERVER['HTTP_REFERER']);
             exit(); // Asegúrate de salir después de redirigir
         }
     
         // Decodificar la respuesta JSON para la primera solicitud
         $doping = json_decode($response_doping);
-        curl_close($ch_doping); // Cerrar la sesión cURL para la primera solicitud
     
         $directorio = '_doping';
         $nombreArchivo = $doping->foto;
@@ -1327,13 +1325,11 @@ class Doping extends CI_Controller
     
         if ($responseArea === false) {
             $errorArea = curl_error($chArea);
-            curl_close($chArea);
             $_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $errorArea;
             header('Location: ' . $_SERVER['HTTP_REFERER']);
             exit(); // Asegúrate de salir después de redirigir
         } else {
             $area = json_decode($responseArea);
-            curl_close($chArea);
             $data['area'] = $area;
         }
     

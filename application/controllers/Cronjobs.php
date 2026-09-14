@@ -2138,7 +2138,6 @@ class Cronjobs extends CI_Controller
         }
 
         // Cerrar la conexión cURL
-        curl_close($ch);
 
                                              // Decodificar la respuesta JSON
         return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
@@ -2276,12 +2275,10 @@ class Cronjobs extends CI_Controller
             // Maneja errores de cURL
             if (curl_errno($ch)) {
                 log_message('error', 'Error de cURL: ' . curl_error($ch));
-                curl_close($ch);
                 continue;
             }
 
             // Cierra cURL
-            curl_close($ch);
 
             // Decodifica la respuesta
             $result = json_decode($response, true);

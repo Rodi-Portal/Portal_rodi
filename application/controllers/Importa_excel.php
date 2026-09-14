@@ -1489,7 +1489,6 @@ $tmp    = $_FILES['archivo_excel']['tmp_name'];
         curl_exec($ch);
         $ctype     = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         $head_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         $path = parse_url($url, PHP_URL_PATH) ?: '';
         $ext  = strtolower(pathinfo($path, PATHINFO_EXTENSION) ?: '');
@@ -1547,7 +1546,6 @@ $tmp    = $_FILES['archivo_excel']['tmp_name'];
         $ok   = curl_exec($ch);
         $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $err  = (string) curl_error($ch);
-        curl_close($ch);
         fclose($fp);
 
         if (! $ok || $code >= 400) {

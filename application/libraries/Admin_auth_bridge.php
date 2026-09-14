@@ -210,7 +210,6 @@ class Admin_auth_bridge
             CURLINFO_HTTP_CODE
         );
 
-        curl_close($curl);
 
         if ($response === false) {
             log_message(

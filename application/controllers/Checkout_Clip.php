@@ -159,7 +159,6 @@ class Checkout_Clip extends CI_Controller
             return json_decode($response, true);
         }
 
-        curl_close($ch);
         log_message('info', 'Respuesta cURL: ' . $response);
 
         return json_decode($response, true);
@@ -198,7 +197,6 @@ class Checkout_Clip extends CI_Controller
         $err = curl_error($curl);
 
         // Cerrar la conexión cURL
-        curl_close($curl);
 
         // Si hubo un error, devolver el error
         if ($err) {
