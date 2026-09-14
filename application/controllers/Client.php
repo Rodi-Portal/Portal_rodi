@@ -528,7 +528,8 @@ class Client extends Custom_Controller
 
                 ];
 
-                $url = API_URL . 'candidatos';
+                $rodiApiUrl = defined('RODI_API_URL') ? RODI_API_URL : API_URL;
+                $url = rtrim($rodiApiUrl, '/') . '/candidatos';
 
                 $ch = curl_init($url);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -775,7 +776,8 @@ class Client extends Custom_Controller
 
                     ];
 
-                    $url = API_URL . 'candidatoconprevio';
+                    $rodiApiUrl = defined('RODI_API_URL') ? RODI_API_URL : API_URL;
+                    $url = rtrim($rodiApiUrl, '/') . '/candidatoconprevio';
 
                     $ch = curl_init();
 
