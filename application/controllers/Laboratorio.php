@@ -175,7 +175,9 @@ class Laboratorio extends CI_Controller{
       echo json_encode($msj);
     }
     function crearPDF(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $id_analisis = $this->input->post('idAnalisis');
       $datos = $this->laboratorio_model->getDatosExamen($id_analisis);

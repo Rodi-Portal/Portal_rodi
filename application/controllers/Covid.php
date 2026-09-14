@@ -305,7 +305,9 @@ class Covid extends CI_Controller{
   /*  PDF
   /*----------------------------------------*/
   function createNasofaringeaPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -337,7 +339,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'.pdf','D'); 
   }
   function createNasofaringeaInglesPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -369,7 +373,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'_english.pdf','D'); 
   }
   function createNasofaringeaDigitalPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -403,7 +409,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'.pdf','D'); 
   }
   function createNasofaringeaDigitalENPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -437,7 +445,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'_english.pdf','D'); 
   }
   function createSanguineaPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -472,7 +482,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'.pdf','D'); 
   }
   function createSanguineaMembretadoPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -505,7 +517,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'.pdf','D'); 
   }
   function createPCRPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -537,7 +551,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'.pdf','D'); 
   }
   function createPCRInglesPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -569,7 +585,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'_english.pdf','D'); 
   }
   function createPCRDigitalPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");
@@ -603,7 +621,9 @@ class Covid extends CI_Controller{
     $mpdf->Output($prueba->orden.'.pdf','D'); 
   }
   function createPCRDigitalENPDF(){
-    $mpdf = new \Mpdf\Mpdf();
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => APPPATH . 'cache/mpdf',
+    ]);
     date_default_timezone_set('America/Mexico_City');
     $data['hoy'] = date("d-m-Y");
     $hoy = date("d-m-Y");

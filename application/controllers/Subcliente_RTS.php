@@ -710,7 +710,9 @@ class Subcliente_RTS extends CI_Controller{
       echo json_encode($msj);
     }
     function crearPDFSimple(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $data['hoy'] = date("d-m-Y");
       $hoy = date("d-m-Y");
@@ -795,7 +797,9 @@ class Subcliente_RTS extends CI_Controller{
       $mpdf->Output(''.$nombreArchivo.'.pdf','D'); // opens in browser
     }
     function crearPDFCompleto(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $data['hoy'] = date("d-m-Y");
       $hoy = date("d-m-Y");

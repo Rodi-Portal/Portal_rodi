@@ -2572,7 +2572,7 @@ class Client extends Custom_Controller
 
     public function crearReportePDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy']   = date("d-m-Y");
         $hoy           = date("d-m-Y");
@@ -2663,7 +2663,7 @@ class Client extends Custom_Controller
 
     public function crearReporteParcialPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy']   = date("d-m-Y");
         $hoy           = date("d-m-Y");
@@ -2749,7 +2749,7 @@ class Client extends Custom_Controller
 //TODO: verificar  si estas  funciones  son utiles para  talentsafe
 /*
 function createGeneral(){
-$mpdf = new \Mpdf\Mpdf();
+$mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
 date_default_timezone_set('America/Mexico_City');
 $data['hoy'] = date("d-m-Y");
 $hoy = date("d-m-Y");
@@ -2813,7 +2813,7 @@ $mpdf->WriteHTML($html);
 $mpdf->Output('Background_'.$cliente.'-'.$nombreCandidato.'.pdf','D'); // opens in browser
 }
 function createCustom(){
-$mpdf = new \Mpdf\Mpdf();
+$mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
 date_default_timezone_set('America/Mexico_City');
 $data['hoy'] = date("d-m-Y");
 $hoy = date("d-m-Y");
@@ -2868,7 +2868,7 @@ $mpdf->WriteHTML($html);
 $mpdf->Output('Background_'.$cliente.'-'.$nombreCandidato.'.pdf','D'); // opens in browser
 }
 function createInternacional(){
-$mpdf = new \Mpdf\Mpdf();
+$mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
 date_default_timezone_set('America/Mexico_City');
 $data['hoy'] = date("d-m-Y");
 $hoy = date("d-m-Y");

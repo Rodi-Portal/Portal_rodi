@@ -402,7 +402,9 @@ class Cliente_Monex extends CI_Controller{
     }
     
     function crearPDF(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $data['hoy'] = date("d-m-Y");
       $hoy = date("d-m-Y");
@@ -473,7 +475,9 @@ class Cliente_Monex extends CI_Controller{
       $mpdf->Output(''.$nombreArchivo.'.pdf','D'); // opens in browser
     }
     function crearPrevioPDF(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $data['hoy'] = date("d-m-Y");
       $hoy = date("d-m-Y");

@@ -763,7 +763,7 @@ class Medico extends CI_Controller{
             echo $salida = 1;
         }
         function crearPDF(){
-            $mpdf = new \Mpdf\Mpdf();
+            $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
             date_default_timezone_set('America/Mexico_City');
             if(isset($_POST['idMedico'])){
                 $id_medico = $_POST['idMedico'];

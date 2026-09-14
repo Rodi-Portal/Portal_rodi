@@ -524,7 +524,9 @@ public function createPDF()
         ini_set('pcre.backtrack_limit', '50000000');
         ini_set('pcre.recursion_limit', '50000000');
 
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => APPPATH . 'cache/mpdf',
+        ]);
         date_default_timezone_set('America/Mexico_City');
         //$id_candidato = $this->input->post('idPDF');
         $id_usuario   = $this->session->userdata('id');
@@ -826,6 +828,7 @@ public function createPDF()
         ];
 
         $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => APPPATH . 'cache/mpdf',
             'mode'          => 'utf-8',
             'format'        => 'A4-L',
             'margin_left'   => 15,
@@ -849,7 +852,9 @@ public function createPDF()
     {
 
         //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => APPPATH . 'cache/mpdf',
+        ]);
         date_default_timezone_set('America/Mexico_City');
         $id_candidato = $this->input->post('idPDF');
         $id_usuario   = $this->session->userdata('id');
@@ -952,7 +957,9 @@ public function createPDF()
     public function recreatePDF()
     {
         //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => APPPATH . 'cache/mpdf',
+        ]);
         date_default_timezone_set('America/Mexico_City');
         $id_candidato = $this->input->post('idPDF');
         $id_usuario   = $this->session->userdata('id');

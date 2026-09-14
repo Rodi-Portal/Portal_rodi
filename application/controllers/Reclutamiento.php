@@ -1245,7 +1245,9 @@ class Reclutamiento extends CI_Controller
 
     public function getOrderPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => APPPATH . 'cache/mpdf',
+        ]);
 
         date_default_timezone_set('America/Mexico_City');
 
@@ -1354,6 +1356,7 @@ class Reclutamiento extends CI_Controller
     public function getOrderPDFIntake()
     {
         $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => APPPATH . 'cache/mpdf',
             'mode'          => 'utf-8',
             'format'        => 'A4',
             'margin_top'    => 42, // espacio para header

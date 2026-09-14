@@ -1193,7 +1193,9 @@ class Cliente_Ust extends CI_Controller{
       echo json_encode($msj);
     }
     function crearPDFProcesoESE(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $data['hoy'] = date("d-m-Y");
       $hoy = date("d-m-Y");
@@ -1271,7 +1273,9 @@ class Cliente_Ust extends CI_Controller{
       $mpdf->Output(''.$nombreArchivo.'.pdf','D'); // opens in browser
     }
     function crearPrevio(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $data['hoy'] = date("d-m-Y");
       $hoy = date("d-m-Y");
@@ -1543,7 +1547,9 @@ class Cliente_Ust extends CI_Controller{
       echo json_encode($msj);
     }
     function crearPDFProcesoFACIS(){
-      $mpdf = new \Mpdf\Mpdf();
+      $mpdf = new \Mpdf\Mpdf([
+          'tempDir' => APPPATH . 'cache/mpdf',
+      ]);
       date_default_timezone_set('America/Mexico_City');
       $data['hoy'] = date("d-m-Y");
       $hoy = date("d-m-Y");

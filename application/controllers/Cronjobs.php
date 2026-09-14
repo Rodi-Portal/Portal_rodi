@@ -322,7 +322,9 @@ class Cronjobs extends CI_Controller
             $num++;
             if ($candidato->idCandidato != null) {
                 //* Llamada a la libreria de mpdf, iniciación de fechas y captura POST
-                $mpdf = new \Mpdf\Mpdf();
+                $mpdf = new \Mpdf\Mpdf([
+                    'tempDir' => APPPATH . 'cache/mpdf',
+                ]);
                 date_default_timezone_set('America/Mexico_City');
 
                 $id_candidato = $candidato->idCandidato;

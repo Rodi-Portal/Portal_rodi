@@ -1229,7 +1229,7 @@ class Doping extends CI_Controller
     }
     public function createReporteDopingPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");
@@ -1281,7 +1281,7 @@ class Doping extends CI_Controller
     }
     public function createPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");
@@ -1375,7 +1375,7 @@ class Doping extends CI_Controller
 
     public function crearPDFIngles()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");
@@ -1419,7 +1419,7 @@ class Doping extends CI_Controller
     }
     public function createPDF2()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");
@@ -1442,7 +1442,7 @@ class Doping extends CI_Controller
     }
     public function createCadenaPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");
@@ -1460,7 +1460,7 @@ class Doping extends CI_Controller
     }
     public function createMembretadoPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");
@@ -1499,7 +1499,7 @@ class Doping extends CI_Controller
     }
     public function crearMembretadoPDFIngles()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
         $hoy = date("d-m-Y");

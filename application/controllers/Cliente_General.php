@@ -2139,7 +2139,7 @@ class Cliente_General extends Custom_Controller
 
     public function crearPrevioPDF()
     {
-        $mpdf = new \Mpdf\Mpdf();
+        $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy']   = date("d-m-Y");
         $hoy           = date("d-m-Y");
