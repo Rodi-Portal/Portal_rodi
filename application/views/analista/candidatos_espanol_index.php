@@ -174,7 +174,7 @@ function modalRegistrarCandidato() {
   }, 200);
 
   setTimeout(function() {
-    $('#puesto')('val', id_position)
+    $('#puesto').val(id_position);
     $('.loader').fadeOut();
   }, 250);
 }
