@@ -78,7 +78,7 @@ class Cliente_General extends Custom_Controller
             //$info['studies']             = $this->funciones_model->getTiposEstudios();
             $info['usuarios_cliente']    = $this->candidato_model->getUsuariosCliente($this->uri->segment(3));
             $info['tipos_docs']          = $this->funciones_model->getTiposDocumentos();
-            //$info['paises']              = $this->funciones_model->getPaises();
+            $info['paises']               = $this->funciones_model->getPaises();
             $info['paquetes_antidoping'] = $this->funciones_model->getPaquetesAntidoping();
             $info['sanguineos']          = $this->funciones_model->getGruposSanguineos();
             //$info['parentescos']         = $this->funciones_model->getParentescos();
@@ -118,7 +118,7 @@ class Cliente_General extends Custom_Controller
             $this->load
                 ->view('adminpanel/header', $data)
                 ->view('adminpanel/scripts', $modales)
-                ->view('modals/mdl_reclutamiento')
+                ->view('modals/mdl_reclutamiento', $info)
                 ->view('analista/candidatos_espanol_index', $vista)
                 ->view('adminpanel/footer');
         }
