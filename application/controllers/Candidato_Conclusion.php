@@ -672,9 +672,21 @@ public function createPDF()
          */
 
         //* Vista PDF del reporte
-        $html = $this->load->view('pdfs/reporte_espanol_pdf', $data, true);
         $this->load->helper('pdf_img_helper');
-        $html = mpdf_localize_assets($html);
+
+        $id_portal = (int) $this->session->userdata('idPortal');
+
+        $data['pdf_id_portal'] = $id_portal;
+        $data['pdf_id_candidato'] = (int) $id_candidato;
+
+        $html = $this->load->view('pdfs/reporte_espanol_pdf', $data, true);
+
+
+        $html = mpdf_localize_assets(
+            $html,
+            $id_portal,
+            (int) $id_candidato
+        );
         /* echo $html;
         exit;*/
         if ($data['info']['status_bgc'] != 0) {
@@ -824,6 +836,8 @@ public function createPDF()
             'becas'           => ! empty($apiData['becas']) ? (object) $apiData['becas'] : (object) [],
             'fotos'           => ! empty($apiData['fotos']) ? json_decode(json_encode($apiData['fotos'])) : [],
             'datos_cedula'    => ! empty($apiData['datos_cedula']) ? (object) $apiData['datos_cedula'] : (object) [],
+            'pdf_id_portal'    => (int) $this->session->userdata('idPortal'),
+            'pdf_id_candidato' => (int) $id_candidato,
         ];
 
         $mpdf = new \Mpdf\Mpdf([
@@ -897,7 +911,24 @@ public function createPDF()
         $f_alta = formatoFechaEspanol($data['info']['fecha_alta']);
 
         //* Vista PDF del reporte
+        $this->load->helper('pdf_img_helper');
+
+        $id_portal = (int) $this->session->userdata('idPortal');
+
+        $data['pdf_id_portal'] = $id_portal;
+        $data['pdf_id_candidato'] = (int) $id_candidato;
+
         $html = $this->load->view('pdfs/reporte_espanol_pdf', $data, true);
+
+
+
+        $html = mpdf_localize_assets(
+            $html,
+            $id_portal,
+            (int) $id_candidato
+        );
+
+
         if ($data['info']['status_bgc'] != 0) {
             //* Configuraciones del mPDF
             $mpdf->setAutoTopMargin = 'stretch';

@@ -805,12 +805,12 @@ $foto_vivienda_1 = '';
 $foto_vivienda_2 = '';
 
 if (! empty($fotos[0]) && ! empty($fotos[0]->archivo)) {
-    $ruta1 = FCPATH . '_docs/' . $fotos[0]->archivo;
+    $ruta1 = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $fotos[0]->archivo);
     $foto_vivienda_1 = imageToDataUri($ruta1);
 }
 
 if (! empty($fotos[1]) && ! empty($fotos[1]->archivo)) {
-    $ruta2 = FCPATH . '_docs/' . $fotos[1]->archivo;
+    $ruta2 = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $fotos[1]->archivo);
     $foto_vivienda_2 = imageToDataUri($ruta2);
 }
 ?>
@@ -1694,10 +1694,24 @@ if (! empty($fotos[1]) && ! empty($fotos[1]->archivo)) {
                   <td style="height:40mm; padding:0; text-align:center; vertical-align:middle;">
 
                     <?php
-                        $ruta_firma = FCPATH . 'img/' . $datos_cedula->firma;
+                        $firma = isset($datos_cedula->firma)
+                            ? trim((string) $datos_cedula->firma)
+                            : '';
+
+                        $ruta_firma = '';
+
+                        if ($firma !== '') {
+                            $ruta_firma = FCPATH
+                                . 'img/'
+                                . basename(str_replace('\\', '/', $firma));
+                        }
                     ?>
 
-                    <?php if (file_exists($ruta_firma)): ?>
+                    <?php if (
+                        $ruta_firma !== ''
+                        && is_file($ruta_firma)
+                        && is_readable($ruta_firma)
+                    ): ?>
                     <img src="<?php echo $ruta_firma ?>"
                       style="display:block; margin:0 auto; max-height:35mm; width:auto;">
                     <?php endif; ?>
@@ -1755,4 +1769,4 @@ if (! empty($fotos[1]) && ! empty($fotos[1]->archivo)) {
   </td>
   </tr>
   </table>
-</div> 
+</div>

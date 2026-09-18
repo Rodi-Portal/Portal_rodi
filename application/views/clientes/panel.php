@@ -345,14 +345,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Candidate Status: <br><span class="nombreCandidato"></span></h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Cerrar"></button>
 
       </div>
       <div class="modal-body">
         <div id="div_status"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -362,7 +362,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
 
       </div>
       <div class="modal-body">
@@ -396,14 +396,14 @@
         <div id="msj_error" class="alert alert-danger hidden"></div>
       </div>
       <div class="modal-footer">
-        <Form method="POST" action="< ?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
-          <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
-          <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
+        <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
+        <input type="hidden" id="nameCandidato" name="nameCandidato" class="nombreCandidato">
 
-          <!--button type="submit" class="btn btn-primary">Descargar todos los documentos</button -->
-        </form>
+        <button type="button" class="btn btn-primary" onclick="descargarZip()">
+          Descargar todos los documentos
+        </button>
 
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
       </div>
     </div>
@@ -415,7 +415,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="avancesModalLabel">Progress messages:</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <ul class="nav nav-tabs" id="modalTabs">
@@ -441,7 +441,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -680,55 +680,6 @@
   </div>
 </div>
 
-<div class="modal fade" id="docsModal" role="dialog" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Documentación del candidato: <span class="nombreCandidato"></span></h4>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-12">
-            <div id="tablaDocs" class="text-center"></div><br><br>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 text-center">
-            <label>Selecciona el documento</label><br>
-            <input type="file" id="documento" class="doc_obligado" name="documento"
-              accept=".jpg, .png, .jpeg, .pdf"><br><br>
-            <br>
-          </div>
-          <div class="col-md-6 text-center">
-            <label>Tipo de archivo *</label>
-            <select name="tipo_archivo" id="tipo_archivo" class="form-control personal_obligado">
-              <option value="">Selecciona</option>
-              <?php
-                  foreach ($tipos_docs as $t) {
-                  if ($t->id == 3 || $t->id == 8 || $t->id == 9 || $t->id == 14 || $t->id == 45) {?>
-              <option value="<?php echo $t->id; ?>"><?php echo $t->nombre; ?></option>
-              <?php }
-              }?>
-            </select>
-            <br>
-          </div>
-        </div>
-        <div id="msj_error" class="alert alert-danger hidden"></div>
-      </div>
-      <div class="modal-footer">
-        <form method="POST" action="<?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>">
-          <input type="hidden" id="idCandidatoDocs" name="idCandidatoDocs">
-          <button type="submit" class="btn btn-primary">Descargar todos los documentos</button>
-        </form>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="subirDoc()">Subir</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <header>
   <!--nav class="navbar navbar-expand-lg navbar-light bg-light" id="menu">
@@ -2230,9 +2181,15 @@ function changeDatatable(url1) {
 
 
 
-          $(document).on('click', '.subirDocs', function() {
-            cargarDocumentosPanelCliente(data.id, (data.nombre + ' ' + data.paterno), data.paterno);
-          });
+          $(row).find('.subirDocs')
+            .off('click.docs')
+            .on('click.docs', function() {
+              cargarDocumentosPanelCliente(
+                data.id,
+                (data.nombre + ' ' + data.paterno),
+                data.paterno
+              );
+            });
 
 
           $('a[id^=reportePDF]', row).bind('click', () => {
@@ -2931,23 +2888,15 @@ function subirDoc1() {
 }
 
 function descargarZip() {
-  let id_candidato = $(".idCandidato").val();
-  $.ajax({
-    url: "<?php echo base_url('Candidato/downloadDocumentosPanelCliente'); ?>",
-    method: "POST",
-    data: {
-      'id_candidato': id_candidato
-    },
-    beforeSend: function() {
-      $('.loader').css("display", "block");
-    },
-    success: function(res) {
-      setTimeout(function() {
-        $('.loader').fadeOut();
-      }, 200);
-      window.location = res;
-    }
-  });
+  const idCandidato = parseInt($("#idCandidatoDocs").val(), 10);
+
+  if (!idCandidato || idCandidato <= 0) {
+    return;
+  }
+
+  window.location.href =
+    '<?php echo base_url('archivo/descargar_docs_rodi_zip/'); ?>' +
+    idCandidato;
 }
 
 function estatusOFAC() {

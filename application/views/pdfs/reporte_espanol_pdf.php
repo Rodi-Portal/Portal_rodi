@@ -13642,7 +13642,7 @@ if(!empty($conclusion)){
 				echo '<div class="center margen-top">';
 				foreach($docs as $doc){
 					if($doc['id_tipo_documento'] == 19){
-						$path = FCPATH.'_docs/'.$doc['archivo'];
+						$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 						echo '<img class="foto" src="'.img64($path).'">';
 					}
 				}
@@ -13659,11 +13659,11 @@ if(!empty($conclusion)){
 					<div class="center margen-top">
 						<?php 
 						if($doc['id_tipo_documento'] == 34){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 							echo '<img class="foto" src="'.img64($path).'" width="300" height="600">';
 						}
 						if($doc['id_tipo_documento'] == 39){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 							echo '<img class="foto" src="'.img64($path).'" width="700" height="400">';
 						} ?>
 					</div>
@@ -13681,11 +13681,11 @@ if(!empty($conclusion)){
 					<div class="center">
 						<?php 
 						if($doc['id_tipo_documento'] == 35){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 							echo '<img class="foto" src="'.img64($path).'" width="300" height="600">';
 						}
 						if($doc['id_tipo_documento'] == 40){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 							echo '<img class="foto" src="'.img64($path).'" width="700" height="400">';
 						} ?>
 					</div>
@@ -13701,11 +13701,11 @@ if(!empty($conclusion)){
 					<div class="center">
 						<?php 
 						if($doc['id_tipo_documento'] == 33){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 							echo '<img class="foto" src="'.img64($path).'" width="300" height="600">';
 						}
 						if($doc['id_tipo_documento'] == 38){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 							echo '<img class="foto" src="'.img64($path).'" width="700" height="400">';
 						} ?>
 					</div>
@@ -13728,7 +13728,7 @@ if(!empty($conclusion)){
 						} ?>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 						echo '<img class="foto" src="'.img64($path).'" width="800" height="500"><br><br>'; ?>
 					</div>
 				<?php
@@ -13741,7 +13741,7 @@ if(!empty($conclusion)){
 						<p class="f-20">Records criminales – OFAC </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'"><br><br>'; ?>
 					</div>
 				<?php
@@ -13754,7 +13754,7 @@ echo '<img class="foto" src="'.img64($path).'"><br><br>'; ?>
 						<p class="f-20">Comprobante de investigación legal </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'"><br><br>'; ?>
 					</div>
 				<?php
@@ -13767,7 +13767,7 @@ echo '<img class="foto" src="'.img64($path).'"><br><br>'; ?>
 						<p class="f-20">Aviso de privacidad </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
@@ -13781,7 +13781,7 @@ echo '<img class="foto" src="'.img64($path).'">'; ?>
 						<p class="f-20">Comprobante de historial laboral </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
@@ -13796,11 +13796,11 @@ echo '<img class="foto" src="'.img64($path).'">'; ?>
 					<div class="center">
 						<?php 
 						if($doc['id_tipo_documento'] == 7){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">';
 						}
 						if($doc['id_tipo_documento'] == 10){ 
-							$path = FCPATH.'_docs/'.$doc['archivo'];
+							$path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">';
 						} ?>
 					</div>
@@ -13814,7 +13814,7 @@ echo '<img class="foto" src="'.img64($path).'">';
 						<p class="f-20">Carta laboral </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
@@ -13827,7 +13827,7 @@ echo '<img class="foto" src="'.img64($path).'">'; ?>
 						<p class="f-20">Evidencia de correo </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
@@ -13840,7 +13840,7 @@ echo '<img class="foto" src="'.img64($path).'">'; ?>
 						<p class="f-20">Evidencia de chat </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
@@ -13853,7 +13853,7 @@ echo '<img class="foto" src="'.img64($path).'">'; ?>
 						<p class="f-20">Comprobante de demanda </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
@@ -13866,7 +13866,7 @@ echo '<img class="foto" src="'.img64($path).'">'; ?>
 						<p class="f-20">Buró de crédito </p>
 					</div>
 					<div class="center">
-						<?php $path = FCPATH.'_docs/'.$doc['archivo'];
+						<?php $path = resolver_doc_rodi_pdf((int) $pdf_id_portal, (int) $pdf_id_candidato, (string) $doc['archivo']);
 echo '<img class="foto" src="'.img64($path).'">'; ?>
 					</div>
 				<?php
@@ -16246,9 +16246,5 @@ echo '<img class="foto" src="'.img64($path).'">'; ?>
 		}
 	}?>
 <!-- Fin Tipo PDF 5 -->
-
-
-
-
 </body>
 </html>
