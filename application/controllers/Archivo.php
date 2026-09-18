@@ -601,9 +601,199 @@ class Archivo extends CI_Controller
         );
     }
 
+    public function ver_doc_rodi_id($id = 0)
+    {
+        $tipo = (int) $this->session->userdata('tipo');
+
+        if ($tipo === 2) {
+            $this->proxyArchivoRodiClienteLaravel((int) $id);
+            return;
+        }
+
+        $this->proxyArchivoEmpleadoLaravel(
+            (int) $id,
+            'pre-empleo/rodi/documentos/'
+        );
+    }
+
+    public function descargar_docs_rodi_zip($id = 0)
+    {
+        $tipo = (int) $this->session->userdata('tipo');
+
+        if ($tipo === 2) {
+            $this->proxyArchivoRodiClienteLaravel(
+                (int) $id,
+                'integraciones/portal/clientes/candidatos/',
+                '/documentos/zip'
+            );
+
+            return;
+        }
+
+        $this->proxyArchivoEmpleadoLaravel(
+            (int) $id,
+            'pre-empleo/rodi/candidatos/',
+            '/documentos/zip'
+        );
+    }
+
+    private function proxyArchivoRodiClienteLaravel(
+        int $id,
+        string $endpoint = 'integraciones/portal/clientes/documentos/',
+        string $suffix = ''
+    ): void
+    {
+        $logueado = (bool) $this->session->userdata('logueado');
+        $tipo     = (int) $this->session->userdata('tipo');
+        $idPortal = (int) $this->session->userdata('idPortal');
+        $idCliente = (int) $this->session->userdata('idcliente');
+
+        if (
+            ! $logueado
+            || $tipo !== 2
+            || $id <= 0
+            || $idPortal <= 0
+            || $idCliente <= 0
+        ) {
+            show_404();
+            return;
+        }
+
+        if (
+            ! defined('PORTAL_DOCUMENT_INTEGRATION_KEY')
+            || PORTAL_DOCUMENT_INTEGRATION_KEY === ''
+        ) {
+            log_message(
+                'error',
+                'PORTAL_DOCUMENT_INTEGRATION_KEY no está configurada.'
+            );
+            show_404();
+            return;
+        }
+
+        $url = rtrim(API_URL, '/')
+            . '/'
+            . $endpoint
+            . $id
+            . $suffix;
+
+        $ch = curl_init($url);
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER         => true,
+            CURLOPT_HTTPGET        => true,
+            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_HTTPHEADER     => [
+                'Accept: */*',
+                'X-Portal-Integration-Key: '
+                    . PORTAL_DOCUMENT_INTEGRATION_KEY,
+                'X-Talent-Portal-Id: ' . $idPortal,
+                'X-Talent-Client-Id: ' . $idCliente,
+            ],
+        ]);
+
+        $respuesta = curl_exec($ch);
+
+        if ($respuesta === false) {
+            log_message(
+                'error',
+                'Error al descargar documento RODI para cliente: '
+                . curl_error($ch)
+            );
+
+            curl_close($ch);
+            show_404();
+            return;
+        }
+
+        $codigoHttp = (int) curl_getinfo(
+            $ch,
+            CURLINFO_HTTP_CODE
+        );
+
+        $tamCabecera = (int) curl_getinfo(
+            $ch,
+            CURLINFO_HEADER_SIZE
+        );
+
+        $tipoMime = (string) (
+            curl_getinfo($ch, CURLINFO_CONTENT_TYPE)
+                ?: 'application/octet-stream'
+        );
+
+        curl_close($ch);
+
+        if ($codigoHttp !== 200) {
+            log_message(
+                'error',
+                'Laravel respondió HTTP '
+                . $codigoHttp
+                . ' al descargar documento RODI para cliente #'
+                . $id
+            );
+
+            show_404();
+            return;
+        }
+
+        $cabeceras = substr(
+            $respuesta,
+            0,
+            $tamCabecera
+        );
+
+        $contenido = substr(
+            $respuesta,
+            $tamCabecera
+        );
+
+        $disposition = '';
+
+        foreach (
+            preg_split("/\r\n|\n|\r/", $cabeceras)
+            as $cabecera
+        ) {
+            if (
+                stripos(
+                    $cabecera,
+                    'Content-Disposition:'
+                ) === 0
+            ) {
+                $disposition = trim(
+                    substr(
+                        $cabecera,
+                        strlen('Content-Disposition:')
+                    )
+                );
+
+                break;
+            }
+        }
+
+        while (ob_get_level() > 0) {
+            @ob_end_clean();
+        }
+
+        header('Content-Type: ' . $tipoMime);
+        header('Content-Length: ' . strlen($contenido));
+
+        if ($disposition !== '') {
+            header(
+                'Content-Disposition: ' . $disposition
+            );
+        }
+
+        header('X-Content-Type-Options: nosniff');
+
+        echo $contenido;
+        exit;
+    }
+
     private function proxyArchivoEmpleadoLaravel(
         int $id,
-        string $endpoint
+        string $endpoint,
+        string $suffix = ''
     ): void {
         if (! $this->session->userdata('id') || $id <= 0) {
             show_404();
@@ -626,7 +816,7 @@ class Archivo extends CI_Controller
             return;
         }
 
-        $url = rtrim(API_URL, '/') . '/' . $endpoint . $id;
+        $url = rtrim(API_URL, '/') . '/' . $endpoint . $id . $suffix;
 
         $ch = curl_init($url);
         curl_setopt_array($ch, [

@@ -1797,8 +1797,8 @@ class Candidato extends Custom_Controller
             foreach ($response_data as $doc) {
                 $salida .= '<tr id="fila' . htmlspecialchars($doc['id']) . '">';
                 $salida .= '<th>
-                                <a href="' . base_url('archivo/ver_doc_docs/' . rawurlencode($doc['archivo'])) . '" 
-                                target="_blank" 
+                                <a href="' . base_url('archivo/ver_doc_rodi_id/' . (int) $doc['id']) . '"
+                                target="_blank"
                                 style="word-break: break-word;">
                                 ' . htmlspecialchars($doc['archivo']) . '
                                 </a>

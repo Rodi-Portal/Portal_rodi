@@ -2,12 +2,64 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
+ * Resuelve un documento RODI de candidato para generación de PDF.
+ *
+ * Orden:
+ * 1. Nueva estructura TalentSafe.
+ * 2. Directorio legacy _docs.
+ */
+if (! function_exists('resolver_doc_rodi_pdf')) {
+    function resolver_doc_rodi_pdf(
+        int $idPortal,
+        int $idCandidato,
+        string $archivo
+    ): string {
+        $archivo = basename(str_replace('\\', '/', trim($archivo)));
+        $base    = rtrim(FCPATH, '/\\');
+
+        if ($archivo === '') {
+            return '';
+        }
+
+        if ($idPortal > 0 && $idCandidato > 0) {
+            $nuevo = $base
+                . '/storagetalentsafe/portales/'
+                . $idPortal
+                . '/_docs/candidatos/'
+                . $idCandidato
+                . '/'
+                . $archivo;
+
+            if (is_file($nuevo) && is_readable($nuevo)) {
+                return str_replace('\\', '/', $nuevo);
+            }
+        }
+
+        $legacy = $base . '/_docs/' . $archivo;
+
+        if (is_file($legacy) && is_readable($legacy)) {
+            return str_replace('\\', '/', $legacy);
+        }
+
+        /*
+         * Conservamos la ruta legacy aunque el archivo no exista.
+         * Así mPDF mantiene el comportamiento anterior y puede
+         * reportar el recurso faltante de la misma manera.
+         */
+        return str_replace('\\', '/', $legacy);
+    }
+}
+/**
  * Convierte en el HTML todas las referencias a /_docs/ y /img/ (src=..., url(...))
  * a rutas ABSOLUTAS del sistema de archivos usando FCPATH.
  * No depende de HTTP ni cookies y funciona con mPDF.
  */
 if (! function_exists('mpdf_localize_assets')) {
-    function mpdf_localize_assets(string $html): string
+    function mpdf_localize_assets(
+        string $html,
+        int $idPortal = 0,
+        int $idCandidato = 0
+    ): string
     {
         // Asegura helper url
         if (! function_exists('base_url')) {
@@ -40,13 +92,75 @@ if (! function_exists('mpdf_localize_assets')) {
             '/_psicometria/',
         ];
 
+        /*
+         * Resolver documentos RODI con lectura dual.
+         *
+         * Se procesa antes del mapa estático porque _docs depende
+         * del portal y del candidato.
+         */
+        if ($idPortal > 0 && $idCandidato > 0) {
+            $docsPrefixes = [
+                base_url() . '_docs/',
+                site_url() . '_docs/',
+                'https://' . $host . '/_docs/',
+                'http://' . $host . '/_docs/',
+                '/_docs/',
+                rtrim(FCPATH, '/\\') . '/_docs/',
+                rtrim(FCPATH, '/\\') . '\\_docs/',
+                rtrim(FCPATH, '/\\') . '/_docs\\',
+                rtrim(FCPATH, '/\\') . '\\_docs\\',
+            ];
+
+            $docsPrefixes = array_values(array_unique($docsPrefixes));
+
+            usort(
+                $docsPrefixes,
+                function ($a, $b) {
+                    return strlen($b) <=> strlen($a);
+                }
+            );
+
+            $quotedPrefixes = array_map(
+                function ($prefix) {
+                    return preg_quote($prefix, '#');
+                },
+                $docsPrefixes
+            );
+
+            $docsPattern = '#(?:'
+                . implode('|', $quotedPrefixes)
+                . ')([^"\'<>\s\)]+)#i';
+
+            $html = preg_replace_callback(
+                $docsPattern,
+                function ($matches) use ($idPortal, $idCandidato) {
+                    return resolver_doc_rodi_pdf(
+                        $idPortal,
+                        $idCandidato,
+                        $matches[1]
+                    );
+                },
+                $html
+            );
+        }
+
         // Reemplazo simple cuando el valor empieza exactamente por uno de los prefijos (src/href directos)
         $map = [
-            base_url() . '_docs/'                 => FCPATH . '_docs/',
-            site_url() . '_docs/'                 => FCPATH . '_docs/',
-            'https://' . $host . '/_docs/'        => FCPATH . '_docs/',
-            'http://' . $host . '/_docs/'         => FCPATH . '_docs/',
-            '/_docs/'                             => FCPATH . '_docs/',
+            base_url() . '_docs/'                 => ($idPortal > 0 && $idCandidato > 0)
+                ? base_url() . '_docs/'
+                : FCPATH . '_docs/',
+            site_url() . '_docs/'                 => ($idPortal > 0 && $idCandidato > 0)
+                ? site_url() . '_docs/'
+                : FCPATH . '_docs/',
+            'https://' . $host . '/_docs/'        => ($idPortal > 0 && $idCandidato > 0)
+                ? 'https://' . $host . '/_docs/'
+                : FCPATH . '_docs/',
+            'http://' . $host . '/_docs/'         => ($idPortal > 0 && $idCandidato > 0)
+                ? 'http://' . $host . '/_docs/'
+                : FCPATH . '_docs/',
+            '/_docs/'                             => ($idPortal > 0 && $idCandidato > 0)
+                ? '/_docs/'
+                : FCPATH . '_docs/',
 
             base_url() . 'img/'                   => FCPATH . 'img/',
             site_url() . 'img/'                   => FCPATH . 'img/',

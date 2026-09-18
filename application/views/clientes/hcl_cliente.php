@@ -968,7 +968,7 @@
 									} else {
 											if(full.socioeconomico == 1){
 													if(full.tipo_formulario != 0){
-															var documentos = ' <a href="javascript:void(0)" data-toggle="tooltip" title="Documents of the candidate" id="subirDocs" class="fa-tooltip icono_datatable"><i class="fas fa-folder"></i></a>';
+															var documentos = ' <a href="javascript:void(0)" data-toggle="tooltip" title="Documents of the candidate" class="subirDocs fa-tooltip icono_datatable"><i class="fas fa-folder"></i></a>';
 															return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a> <a href="javascript:void(0)" data-toggle="tooltip" title="Status process" id="ver" class="fa-tooltip icono_datatable"><i class="fas fa-eye"></i></a>' + documentos;
 													} else {
 															return '<a href="javascript:void(0)" data-toggle="tooltip" title="Follow up of the candidate" id="msj_avances" class="fa-tooltip icono_datatable"><i class="fas fa-comment-dots"></i></a>';
@@ -1281,27 +1281,46 @@
 							}
 						});
 					});
-          $("a#subirDocs", row).bind('click', () => {
-            $(".idCandidato").val(data.id);
-            $("#idCandidatoDocs").val(data.id);
-            $(".nombreCandidato").text(data.candidato);
-            $.ajax({
-			
-              url: '<?php echo base_url('Candidato/getDocumentosPanelCliente'); ?>',
-              type: 'post',
-              data: {
-                'id_candidato': data.id,
-                'prefijo': data.id + "_" + data.nombre + "" + data.paterno
-              },
-              success: function(res) {
-                $("#tablaDocs").html(res);
-              }
-            });
-            $("#docsModal").modal("show");
-          });
 				}
 			});
 			$("#tabla").DataTable().search(" ");
+
+                  /*
+                   * Un solo listener para documentos.
+                   * La identidad del candidato se obtiene de la fila
+                   * realmente pulsada y no del rowCallback.
+                   */
+                  $("#tabla")
+                    .off("click.docs", "a.subirDocs")
+                    .on("click.docs", "a.subirDocs", function(e) {
+                      e.preventDefault();
+
+                      var tabla = $("#tabla").DataTable();
+                      var fila = $(this).closest("tr");
+                      var data = tabla.row(fila).data();
+
+                      if (!data) {
+                        return;
+                      }
+
+                      $(".idCandidato").val(data.id);
+                      $("#idCandidatoDocs").val(data.id);
+                      $(".nombreCandidato").text(data.candidato);
+
+                      $.ajax({
+                        url: '<?php echo base_url('Candidato/getDocumentosPanelCliente'); ?>',
+                        type: 'post',
+                        data: {
+                          'id_candidato': data.id,
+                          'prefijo': data.id + "_" + data.nombre + "" + data.paterno
+                        },
+                        success: function(res) {
+                          $("#tablaDocs").html(res);
+                        }
+                      });
+
+                      $("#docsModal").modal("show");
+                    });
 			$("#opcion_registro").change(function(){
 				var opcion = $(this).val();
 				$('.div_info_project').css('display','block');
