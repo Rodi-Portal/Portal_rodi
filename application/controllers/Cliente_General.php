@@ -129,7 +129,7 @@ class Cliente_General extends Custom_Controller
         if ($this->session->userdata('logueado') && $this->session->userdata('tipo') == 2) {
             $id_cliente = $this->session->userdata('idcliente');
 
-            $data['parentescos'] = $this->funciones_model->getParentescos();
+            // $data['parentescos'] = $this->funciones_model->getParentescos();
 
             //$data['examenes_doping'] = $this->funciones_model->getExamenDoping($id_cliente);
             //$info['estados'] = $this->funciones_model->getEstados();
