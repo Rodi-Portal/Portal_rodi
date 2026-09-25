@@ -281,12 +281,24 @@ class Cat_Portales extends CI_Controller
 
                 if ($hayId > 0) {
 
-                    $this->cat_portales_model->editPortal($idPortal, $datos_portal, $datos_factura, $datos_domicilios);
+                    $resultado = $this->cat_portales_model->editPortal(
+                        $idPortal,
+                        $datos_portal,
+                        $datos_factura,
+                        $datos_domicilios
+                    );
 
-                    $msj = [
-                        'codigo' => 1,
-                        'msg'    => 'El portal ha sido actualizado exitosamente.',
-                    ];
+                    if ($resultado) {
+                        $msj = [
+                            'codigo' => 1,
+                            'msg'    => 'El portal ha sido actualizado exitosamente.',
+                        ];
+                    } else {
+                        $msj = [
+                            'codigo' => 0,
+                            'msg'    => 'Error al actualizar el Portal.',
+                        ];
+                    }
                     echo json_encode($msj);
                     return;
                 } else {

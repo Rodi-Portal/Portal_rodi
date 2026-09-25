@@ -288,52 +288,201 @@ class Cat_portales_model extends CI_Model
         }
     }
 
-    public function editPortal($idPortal, $portal, $datosFacturacion = null, $datosDomicilios = null)
-    {
+    public function editPortal($idPortal, $portal, $datosFacturacion = null, $datosDomicilios = null) {
         try {
-            // Imprimir datos para depuración (elimina esto en producción)
-            /* echo '<pre>';
-            print_r($datosFacturacion);
-            print_r($datosDomicilios);
-            print_r($portal);
-            echo '</pre>';
-            die();  */
 
-            // Iniciar la transacción
+            // Iniciar transacción
             $this->db->trans_start();
 
-            // Editar los domicilios si se proporcionaron
-            if (! is_null($datosDomicilios) && ! empty($datosDomicilios)) {
-                $this->generales_model->editDomicilios($portal['id_domicilios'], $datosDomicilios);
+            /*
+            * ============================================================
+            * 1. OBTENER LOS DATOS ACTUALES DEL PORTAL
+            * ============================================================
+            *
+            * No dependemos de que $portal traiga estos IDs.
+            */
+            $portalActual = $this->db
+                ->select('id_domicilios, id_datos_facturacion')
+                ->from('portal')
+                ->where('id', $idPortal)
+                ->get()
+                ->row_array();
+
+            if (!$portalActual) {
+                throw new Exception(
+                    'No se encontró el portal con ID: ' . $idPortal
+                );
             }
 
-            // Editar los datos de facturación si se proporcionaron
-            if (! is_null($datosFacturacion) && ! empty($datosFacturacion)) {
-                $this->generales_model->editDatosFacturacion($portal['id_datos_facturacion'], $datosFacturacion);
+
+            /*
+            * ============================================================
+            * 2. DOMICILIO
+            * ============================================================
+            *
+            * Si existe ID:
+            *      → Actualizar domicilio existente.
+            *
+            * Si NO existe ID:
+            *      → Crear nuevo domicilio.
+            *      → Guardar el nuevo ID en portal.
+            */
+            if (!is_null($datosDomicilios) && !empty($datosDomicilios)) {
+
+                if (!empty($portalActual['id_domicilios'])) {
+
+                    // ----------------------------------------------------
+                    // Ya existe domicilio → ACTUALIZAR
+                    // ----------------------------------------------------
+                    $resultadoDomicilio = $this->generales_model->editDomicilios(
+                        $portalActual['id_domicilios'],
+                        $datosDomicilios
+                    );
+
+                    if ($resultadoDomicilio === false) {
+                        throw new Exception(
+                            'No se pudo actualizar el domicilio.'
+                        );
+                    }
+
+                } else {
+
+                    // ----------------------------------------------------
+                    // No existe domicilio → CREAR
+                    // ----------------------------------------------------
+                    $nuevoIdDomicilio = $this->generales_model->addDomicilios(
+                        $datosDomicilios
+                    );
+
+                    if (!$nuevoIdDomicilio) {
+                        throw new Exception(
+                            'No se pudo crear el domicilio.'
+                        );
+                    }
+
+                    // Guardar nuevo ID en portal
+                    $this->db
+                        ->where('id', $idPortal)
+                        ->update('portal', [
+                            'id_domicilios' => $nuevoIdDomicilio
+                        ]);
+                }
             }
 
-            // Actualizar el portal si se proporcionaron datos
-            if (! is_null($portal) && ! empty($portal)) {
-                $this->db->where('id', $idPortal)->update('portal', $portal);
+
+            /*
+            * ============================================================
+            * 3. DATOS DE FACTURACIÓN
+            * ============================================================
+            *
+            * Si existe ID:
+            *      → Actualizar datos de facturación.
+            *
+            * Si NO existe ID:
+            *      → Crear nuevos datos de facturación.
+            *      → Guardar el nuevo ID en portal.
+            */
+            if (!is_null($datosFacturacion) && !empty($datosFacturacion)) {
+
+                if (!empty($portalActual['id_datos_facturacion'])) {
+
+                    // ----------------------------------------------------
+                    // Ya existe facturación → ACTUALIZAR
+                    // ----------------------------------------------------
+                    $resultadoFacturacion = $this->generales_model->editDatosFacturacion(
+                        $portalActual['id_datos_facturacion'],
+                        $datosFacturacion
+                    );
+
+                    if ($resultadoFacturacion === false) {
+                        throw new Exception(
+                            'No se pudieron actualizar los datos de facturación.'
+                        );
+                    }
+
+                } else {
+
+                    // ----------------------------------------------------
+                    // No existe facturación → CREAR
+                    // ----------------------------------------------------
+                    $nuevoIdFacturacion = $this->generales_model->addDatosFacturacion(
+                        $datosFacturacion
+                    );
+
+                    if (!$nuevoIdFacturacion) {
+                        throw new Exception(
+                            'No se pudieron crear los datos de facturación.'
+                        );
+                    }
+
+                    // Guardar nuevo ID en portal
+                    $this->db
+                        ->where('id', $idPortal)
+                        ->update('portal', [
+                            'id_datos_facturacion' => $nuevoIdFacturacion
+                        ]);
+                }
             }
 
-            // Completar la transacción
+
+            /*
+            * ============================================================
+            * 4. ACTUALIZAR LOS DATOS DEL PORTAL
+            * ============================================================
+            *
+            * Aquí se actualizan solamente los campos enviados
+            * en $portal.
+            */
+            // Las relaciones de domicilio y facturación se gestionan
+            // exclusivamente con los IDs actuales obtenidos desde la BD.
+            unset(
+                $portal['id_domicilios'],
+                $portal['id_datos_facturacion']
+            );
+            if (!is_null($portal) && !empty($portal)) {
+
+                $this->db
+                    ->where('id', $idPortal)
+                    ->update('portal', $portal);
+            }
+
+
+            /*
+            * ============================================================
+            * 5. FINALIZAR TRANSACCIÓN
+            * ============================================================
+            */
             $this->db->trans_complete();
 
-            // Verificar si la transacción fue exitosa
+
+            /*
+            * ============================================================
+            * 6. VERIFICAR RESULTADO
+            * ============================================================
+            */
             if ($this->db->trans_status() === false) {
-                // Ocurrió un error durante la transacción
                 return false;
             }
 
-            // La transacción fue exitosa
             return true;
-        } catch (Exception $e) {
-            // Manejar la excepción
-            //log_message('error', 'Error en editPortal: ' . $e->getMessage());
+
+
+       } catch (Exception $e) {
+
+            $this->db->trans_rollback();
+
+            log_message(
+                'error',
+                'Error en editPortal: ' . $e->getMessage()
+            );
+
             return false;
         }
     }
+
+
+
+
 
     public function addPermiso($permiso)
     {

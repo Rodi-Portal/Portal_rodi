@@ -10,13 +10,6 @@ function addDatosGenerales($datosGenerales){
     $this->db->insert("datos_generales", $datosGenerales);
     return $this->db->insert_id();
   }
-
-function addDomicilios($datosDomicilios){
-    $this->db->insert("domicilios", $datosDomicilios);
-    return $this->db->insert_id();
-  }
-
-  
 function editDatosGenerales($idDatosGenerales, $datosGenerales){
    
     try {
@@ -29,55 +22,177 @@ function editDatosGenerales($idDatosGenerales, $datosGenerales){
     }
 }
 
-function editDomicilios($idDomicilios, $datosDomicilios) {
-    // Verifica que $datosDomicilios sea un array
-    if (!is_array($datosDomicilios) || empty($datosDomicilios)) {
-        log_message('error', 'Datos de domicilio no válidos para la actualización.');
+
+public function addDatosFacturacion($datosFacturacion)
+{
+    if (!is_array($datosFacturacion) || empty($datosFacturacion)) {
+        log_message(
+            'error',
+            'Datos de facturación no válidos para insertar.'
+        );
+
         return false;
     }
-    
-    // Intenta realizar la actualización
+
+    $this->db->insert(
+        'datos_facturacion',
+        $datosFacturacion
+    );
+
+    if ($this->db->affected_rows() <= 0) {
+        log_message(
+            'error',
+            'No se pudo insertar el registro de datos_facturacion.'
+        );
+
+        return false;
+    }
+
+    return $this->db->insert_id();
+}
+
+
+public function editDatosFacturacion(
+    $idDatosFacturacion,
+    $datosFacturacion
+) {
+    if (
+        empty($idDatosFacturacion) ||
+        !is_array($datosFacturacion) ||
+        empty($datosFacturacion)
+    ) {
+        log_message(
+            'error',
+            'Datos de facturación no válidos para actualizar.'
+        );
+
+        return false;
+    }
+
     try {
-        $this->db->where('id', $idDomicilios);
-        $this->db->update('domicilios', $datosDomicilios);
-        
-        // Verifica si se actualizó al menos una fila
-        if ($this->db->affected_rows() > 0) {
-            return true; // Actualización exitosa
-        } else {
-            log_message('error', 'No se actualizó ningún registro en domicilios.');
-            return false; // No se actualizó ningún registro
+
+        $this->db
+            ->where('id', $idDatosFacturacion)
+            ->update(
+                'datos_facturacion',
+                $datosFacturacion
+            );
+
+        /*
+         * Importante:
+         * affected_rows() puede ser 0 si los valores enviados
+         * son exactamente iguales a los existentes.
+         *
+         * Por eso verificamos el estado de la consulta,
+         * no el número de filas modificadas.
+         */
+        if ($this->db->trans_status() === false) {
+            log_message(
+                'error',
+                'Error al actualizar datos_facturacion.'
+            );
+
+            return false;
         }
+
+        return true;
+
     } catch (Exception $e) {
-        log_message('error', 'Error en editDomicilios: ' . $e->getMessage());
-        return false; // Error en la actualización
+
+        log_message(
+            'error',
+            'Error en editDatosFacturacion: ' .
+            $e->getMessage()
+        );
+
+        return false;
     }
 }
 
-function editDatosFacturacion($idDatosFacturacion, $datosFacturacion) {
-    // Verifica que $datosFacturacion sea un array
-    if (!is_array($datosFacturacion) || empty($datosFacturacion)) {
-        log_message('error', 'Datos de facturación no válidos para la actualización.');
+
+public function addDomicilios($datosDomicilios)
+{
+    if (!is_array($datosDomicilios) || empty($datosDomicilios)) {
+        log_message(
+            'error',
+            'Datos de domicilio no válidos para insertar.'
+        );
+
         return false;
     }
-    
-    // Intenta realizar la actualización
+
+    $this->db->insert(
+        'domicilios',
+        $datosDomicilios
+    );
+
+    if ($this->db->affected_rows() <= 0) {
+        log_message(
+            'error',
+            'No se pudo insertar el registro de domicilios.'
+        );
+
+        return false;
+    }
+
+    return $this->db->insert_id();
+}
+
+
+public function editDomicilios(
+    $idDomicilios,
+    $datosDomicilios
+) {
+    if (
+        empty($idDomicilios) ||
+        !is_array($datosDomicilios) ||
+        empty($datosDomicilios)
+    ) {
+        log_message(
+            'error',
+            'Datos de domicilio no válidos para actualizar.'
+        );
+
+        return false;
+    }
+
     try {
-        $this->db->where('id', $idDatosFacturacion);
-        $this->db->update('datos_facturacion', $datosFacturacion);
-        
-        // Verifica si se actualizó al menos una fila
-        if ($this->db->affected_rows() > 0) {
-            return true; // Actualización exitosa
-        } else {
-            log_message('error', 'No se actualizó ningún registro en datos_facturacion.');
-            return false; // No se actualizó ningún registro
+
+        $this->db
+            ->where('id', $idDomicilios)
+            ->update(
+                'domicilios',
+                $datosDomicilios
+            );
+
+        /*
+         * affected_rows() puede devolver 0 si no cambió ningún
+         * valor, aunque la consulta haya sido correcta.
+         */
+        if ($this->db->trans_status() === false) {
+            log_message(
+                'error',
+                'Error al actualizar domicilios.'
+            );
+
+            return false;
         }
+
+        return true;
+
     } catch (Exception $e) {
-        log_message('error', 'Error en editDatosFacturacion: ' . $e->getMessage());
-        return false; // Error en la actualización
+
+        log_message(
+            'error',
+            'Error en editDomicilios: ' .
+            $e->getMessage()
+        );
+
+        return false;
     }
 }
+
+
 
 function getPortalCliente($id_cliente){
     try {
@@ -145,10 +260,7 @@ public function telefonoExiste($telefono ,$idDatos = null, ) {
 
 
 
-function addDatosFacturacion($datosFacturacion){
-  $this->db->insert("datos_facturacion", $datosFacturacion);
-  return $this->db->insert_id();
-}
+
 
 
 public function obtenerIdDatosGenerales($id_cliente) {
