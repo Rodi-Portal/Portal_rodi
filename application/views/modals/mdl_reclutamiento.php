@@ -69,7 +69,6 @@
               <textarea class="form-control" name="domicilio" id="domicilio" rows="2"></textarea>
             </div>
           </div>
-
           <div class="row mb-3">
             <div class="col-sm-12 col-md-4">
               <label><?php echo t('rec_prog_app_f_interest_area', 'Área de interés *'); ?></label>
@@ -83,27 +82,43 @@
                 <option value=""><?php echo t('rec_common_select', 'Selecciona'); ?></option>
                 <option value="0"><?php echo t('rec_common_na', 'N/A'); ?></option>
                 <option value="otro"><?php echo t('rec_common_other', 'Otro'); ?></option>
+
                 <?php if ($medios != null): ?>
-                <?php foreach ($medios as $m): ?>
-                <option value="<?php echo $m->nombre; ?>">
-                  <?php echo $m->nombre; ?>
-                </option>
-                <?php endforeach; ?>
+                  <?php foreach ($medios as $m): ?>
+                    <option value="<?php echo $m->nombre; ?>">
+                      <?php echo $m->nombre; ?>
+                    </option>
+                  <?php endforeach; ?>
                 <?php endif; ?>
-
-
               </select>
-
-            </div>
-            <div class="col-sm-12 col-md-4 " id="medio_otro_container" style="display:none;">
-              <label><?php echo t('rec_common_specify', 'Especifica el medio'); ?></label>
-              <input type="text" name="medio_otro" id="medio_otro" class="form-control"
-                placeholder="<?php echo t('rec_common_write_here', 'Escribe aquí'); ?>">
             </div>
 
             <div class="col-sm-12 col-md-4">
               <label><?php echo t('rec_prog_app_f_phone', 'Teléfono *'); ?></label>
               <input type="text" id="telefono1" name="telefono1" class="form-control">
+            </div>
+          </div>
+
+          <div class="row mb-3" id="medio_otro_container" style="display:none;">
+            <div class="col-sm-12 col-md-4 offset-md-4">
+              <label><?php echo t('rec_common_specify', 'Especifica el medio'); ?></label>
+              <input
+                type="text"
+                name="medio_otro"
+                id="medio_otro"
+                class="form-control"
+                placeholder="<?php echo t('rec_common_write_here', 'Escribe aquí'); ?>"
+              >
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-sm-12 col-md-4">
+              <label><?php echo t('rec_prog_app_f_email', 'Correo*'); ?></label>
+              <input type="mail" id="correo1" name="correo1" class="form-control">
+
+              <input type="hidden" id="idAspirante" name="idAspirante">
+              <input type="hidden" id="idBolsa" name="idBolsa">
             </div>
           </div>
 
