@@ -116,22 +116,10 @@
             <div class="col-sm-12 col-md-4">
               <label><?php echo t('rec_prog_app_f_email', 'Correo*'); ?></label>
               <input type="mail" id="correo1" name="correo1" class="form-control">
-
               <input type="hidden" id="idAspirante" name="idAspirante">
               <input type="hidden" id="idBolsa" name="idBolsa">
             </div>
           </div>
-
-
-            <div class="col-sm-12 col-md-4">
-              <label><?php echo t('rec_prog_app_f_email', 'Correo*'); ?></label>
-              <input type="mail" id="correo1" name="correo1" class="form-control">
-
-              <input type="hidden" id="idAspirante" name="idAspirante">
-              <input type="hidden" id="idBolsa" name="idBolsa">
-            </div>
-
-
         </form>
       </div>
 
