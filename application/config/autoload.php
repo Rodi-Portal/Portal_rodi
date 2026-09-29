@@ -104,6 +104,7 @@ $autoload['helper'] = [
     'file',
     'path',
     'i18n', // 👈 AQUI
+    'talentsafe_storage',
 ];
 $autoload['helper'][] = 'authz';
 $autoload['helper'][] = 'view_perms';

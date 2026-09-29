@@ -1799,8 +1799,6 @@ function verDetallesIntake(idIntake) {
 
       // Bases para links
       const baseMap = {
-        archivo_path: ('<?php echo LINKDOCREQUICICION; ?>').replace(/\/?$/, '/'),
-        terminos_file: ('<?php echo LINKAVISOS ?>').replace(/\/?$/, '/')
       };
       const isAbsUrl = v => /^https?:\/\//i.test(v || '');
       const isAbsPath = v => (v || '').startsWith('/');
@@ -1879,10 +1877,10 @@ function verDetallesIntake(idIntake) {
 
           <div class="intake-title">${SEC_DOCS}</div>
           <div><b>${L_UPLOADED_FILE}</b><br>${
-            d.archivo_path ? link('archivo_path', d.archivo_path, TXT_OPEN_FILE) : DASH
+            d.archivo_url ? link('archivo_path', d.archivo_url, TXT_OPEN_FILE) : DASH
           }</div>
           <div><b>${L_TERMS}</b><br>${
-            d.terminos_file ? link('terminos_file', d.terminos_file, TXT_OPEN_DOC) : DASH
+            d.terminos_url ? link('terminos_file', d.terminos_url, TXT_OPEN_DOC) : DASH
           }</div>
           <div><b>${L_TERMS_OK}</b><br>${
             d.acepta_terminos==1 ? TXT_ACCEPTED : (d.acepta_terminos==0 ? TXT_NOT_ACCEPTED : DASH)
@@ -3053,10 +3051,14 @@ function renderIntakeForm(dato, opts = {}) {
 
       case 'link': {
         const filename = val(f.key);
+        const resolvedValue = f.key === 'archivo_path'
+          ? (val('archivo_url') || filename)
+          : (f.key === 'terminos_file'
+              ? (val('terminos_url') || filename)
+              : filename);
+
 
         const baseMap = {
-          archivo_path: (<?php echo json_encode(LINKDOCREQUICICION) ?> || '').replace(/\/?$/, '/'),
-          terminos_file: (<?php echo json_encode(LINKAVISOS) ?> || '').replace(/\/?$/, '/'),
         };
 
         const isAbsUrl = v => /^https?:\/\//i.test(v || '');
@@ -3067,11 +3069,11 @@ function renderIntakeForm(dato, opts = {}) {
 
         if (filename) {
           let url = '#';
-          if (isAbsUrl(filename) || isAbsPath(filename)) {
-            url = filename;
+          if (isAbsUrl(resolvedValue) || isAbsPath(resolvedValue)) {
+            url = resolvedValue;
           } else {
             const base = baseMap[f.key] || '';
-            url = base ? (base + encodeURIComponent(filename)) : '#';
+            url = base ? (base + encodeURIComponent(resolvedValue)) : '#';
           }
           $input = $(`<a id="in_${f.key}" target="_blank" rel="noopener"></a>`)
             .attr('href', url)
