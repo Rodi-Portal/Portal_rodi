@@ -314,6 +314,258 @@ class Archivo extends CI_Controller
         @readfile($fileAbs);
         exit;
     }
+    /**
+     * Sirve de forma segura el documento adjunto de una requisición.
+     *
+     * Lectura dual:
+     * - Legacy: /_const/{archivo}
+     * - Nuevo:  /storagetalentsafe/portales/{portal}/_const/requisiciones/{req}/{archivo}
+     *
+     * El navegador nunca accede directamente a storagetalentsafe.
+     */
+    /**
+     * Sirve de forma segura el documento adjunto de una requisición.
+     *
+     * BD:
+     *   requisicion_intake.archivo_path = solamente nombre de archivo.
+     *
+     * Lectura dual:
+     *
+     * Nueva:
+     *   storagetalentsafe/portales/{portal}/clientes/{cliente}/
+     *   requisiciones/{requisicion}/documentos/{archivo}
+     *
+     * Legacy:
+     *   _const/{archivo}
+     */
+    public function ver_requisicion_doc($idReq = 0)
+    {
+        if (! $this->session->userdata('id')) {
+            show_404();
+        }
+
+        $idReq    = (int) $idReq;
+        $idPortal = (int) $this->session->userdata('idPortal');
+
+        if ($idReq <= 0 || $idPortal <= 0) {
+            show_404();
+        }
+
+        /*
+         * Además de obtener el archivo, esta consulta garantiza
+         * que la requisición pertenece al portal de la sesión.
+         */
+        $row = $this->db
+            ->select(
+                'R.id,
+                 R.id_portal AS req_portal,
+                 R.id_cliente AS req_cliente,
+                 RI.id_portal AS intake_portal,
+                 RI.id_cliente AS intake_cliente,
+                 RI.archivo_path'
+            )
+            ->from('requisicion AS R')
+            ->join(
+                'requisicion_intake AS RI',
+                'RI.id = R.id_intake',
+                'inner'
+            )
+            ->where('R.id', $idReq)
+            ->where('R.id_portal', $idPortal)
+            ->where('R.eliminado', 0)
+            ->get()
+            ->row();
+
+        if (! $row) {
+            show_404();
+        }
+
+        /*
+         * El documento pertenece al intake original.
+         * Para históricos hacemos fallback a requisicion.
+         */
+        $portalDoc = (int) ($row->intake_portal ?? 0);
+
+        if ($portalDoc <= 0) {
+            $portalDoc = (int) ($row->req_portal ?? 0);
+        }
+
+        $clienteDoc = (int) ($row->intake_cliente ?? 0);
+
+        if ($clienteDoc <= 0) {
+            $clienteDoc = (int) ($row->req_cliente ?? 0);
+        }
+
+        /*
+         * Nunca permitir acceder a documentos de otro portal.
+         */
+        if (
+            $portalDoc !== $idPortal
+            || $clienteDoc <= 0
+        ) {
+            show_404();
+        }
+
+        /*
+         * Aunque algún registro histórico tuviera accidentalmente
+         * una ruta, nosotros solamente utilizamos el nombre.
+         */
+        $filename = basename(
+            str_replace(
+                '\\',
+                '/',
+                trim((string) ($row->archivo_path ?? ''))
+            )
+        );
+
+        if ($filename === '') {
+            show_404();
+        }
+
+        $ext = strtolower(
+            pathinfo($filename, PATHINFO_EXTENSION)
+        );
+
+        $allowed = [
+            'pdf',
+            'doc',
+            'docx',
+            'xls',
+            'xlsx',
+            'png',
+            'jpg',
+            'jpeg',
+            'gif',
+            'txt',
+            'csv',
+        ];
+
+        if (! in_array($ext, $allowed, true)) {
+            show_404();
+        }
+
+        $base = rtrim(FCPATH, '/\\');
+
+        /*
+         * Ruta NUEVA.
+         */
+        $newDir = $base
+            . '/storagetalentsafe/portales/'
+            . $portalDoc
+            . '/clientes/'
+            . $clienteDoc
+            . '/requisiciones/'
+            . $idReq
+            . '/documentos';
+
+        $newCandidate = $newDir
+            . '/'
+            . $filename;
+
+        /*
+         * Ruta LEGACY.
+         */
+        $legacyDir = $base . '/_const';
+
+        $legacyCandidate = $legacyDir
+            . '/'
+            . $filename;
+
+        /*
+         * Resuelve el archivo asegurando que permanezca
+         * dentro del directorio permitido.
+         */
+        $resolveInside = static function (
+            string $dir,
+            string $candidate
+        ): string {
+            $realDir  = realpath($dir);
+            $realFile = realpath($candidate);
+
+            if (! $realDir || ! $realFile) {
+                return '';
+            }
+
+            $realDirNorm = rtrim(
+                str_replace('\\', '/', $realDir),
+                '/'
+            ) . '/';
+
+            $realFileNorm = str_replace(
+                '\\',
+                '/',
+                $realFile
+            );
+
+            if (
+                stripos(
+                    $realFileNorm,
+                    $realDirNorm
+                ) !== 0
+            ) {
+                return '';
+            }
+
+            if (
+                ! is_file($realFile)
+                || ! is_readable($realFile)
+            ) {
+                return '';
+            }
+
+            return $realFile;
+        };
+
+        /*
+         * Lectura dual:
+         * primero storage nuevo, después legacy.
+         */
+        $fileAbs = $resolveInside(
+            $newDir,
+            $newCandidate
+        );
+
+        if ($fileAbs === '') {
+            $fileAbs = $resolveInside(
+                $legacyDir,
+                $legacyCandidate
+            );
+        }
+
+        if ($fileAbs === '') {
+            show_404();
+        }
+
+        $mime = $this->_detect_mime(
+            $fileAbs,
+            $ext
+        );
+
+        $safe = rawurlencode(
+            basename($fileAbs)
+        );
+
+        header('Content-Type: ' . $mime);
+        header(
+            'Content-Length: '
+            . filesize($fileAbs)
+        );
+        header(
+            'Content-Disposition: inline; filename="'
+            . $safe
+            . '"; filename*=UTF-8\'\''
+            . $safe
+        );
+        header(
+            'X-Content-Type-Options: nosniff'
+        );
+        header(
+            'Cache-Control: private, max-age=300'
+        );
+
+        @readfile($fileAbs);
+        exit;
+    }
     public function ver_portal_logo()
     {
         $id_portal = (int) $this->session->userdata('idPortal');

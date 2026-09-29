@@ -546,7 +546,30 @@ class Cat_Cliente extends CI_Controller
         $_FILES['file']['size']     = $_FILES['archivo']['size'];
 
         // Config upload
-        $config['upload_path']   = './_const/';
+        // Nueva escritura: storagetalentsafe.
+        // La lectura legacy se conserva durante la transición.
+        $idCliente = (int) $this->input->post('idCliente');
+        $idPortal  = (int) $this->session->userdata('idPortal');
+
+        if ($idCliente <= 0 || $idPortal <= 0) {
+            return $this->jsonOut([
+                'codigo' => 0,
+                'msg'    => $this->t('gd_update_failed', 'No fue posible determinar el portal o cliente.'),
+            ]);
+        }
+
+        $uploadDir = talentsafe_const_cliente_upload_dir($idPortal, $idCliente);
+
+        if (! is_dir($uploadDir) && ! @mkdir($uploadDir, 0775, true) && ! is_dir($uploadDir)) {
+            log_message('error', 'No se pudo crear directorio de constancia: ' . $uploadDir);
+
+            return $this->jsonOut([
+                'codigo' => 0,
+                'msg'    => $this->t('gd_upload_failed', 'Error al preparar el almacenamiento del archivo.'),
+            ]);
+        }
+
+        $config['upload_path']   = rtrim($uploadDir, '/\\') . DIRECTORY_SEPARATOR;
         $config['allowed_types'] = 'pdf|jpeg|jpg|png';
         $config['max_size']      = '2048';
 
@@ -570,10 +593,15 @@ class Cat_Cliente extends CI_Controller
         }
 
         $uploaded_data      = $this->upload->data();
+        $nombre_archivo      = $uploaded_data['file_name'];
+        $constanciaRelative  = talentsafe_const_cliente_relative(
+            $idPortal,
+            $idCliente,
+            $nombre_archivo
+        );
         $uploaded_file_path = $uploaded_data['full_path'];
 
         // Datos
-        $idCliente = $this->input->post('idCliente');
 
         $idDatosGenerales  = $this->input->post('idGenerales');
         $telefono          = $this->input->post('telefono');
@@ -600,7 +628,7 @@ class Cat_Cliente extends CI_Controller
 
         $dataClientes = [
             'edicion'              => $date,
-            'constancia_cliente'   => $nombre_archivo,
+            'constancia_cliente'   => $constanciaRelative,
             'id_datos_facturacion' => $idFacturacion,
             'id_domicilios'        => $idDomicilios,
             'id_datos_generales'   => $idDatosGenerales,

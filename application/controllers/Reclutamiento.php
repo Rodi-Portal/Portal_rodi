@@ -1377,19 +1377,11 @@ class Reclutamiento extends CI_Controller
         $portalMail = trim($pf->correo ?? '') ?: 'N/D';
         $portalWeb  = parse_url(base_url(), PHP_URL_HOST) ?: 'N/D'; // p.ej. rodi.com.mx
 
-        // === URLs para documentos (respeta absolutas) ===
-        $mkUrl = function ($base, $fname) {
-            if (empty($fname)) {
-                return '';
-            }
+        // === URLs para documentos ===
 
-            if (preg_match('~^https?://~i', $fname) || strpos($fname, '/') === 0) {
-                return $fname;
-            }
-
-            return rtrim($base, '/') . '/' . $fname;
-        };
-        $intake->archivo_url  = $mkUrl(LINKDOCREQUICICION, $intake->archivo_path ?? '');
+        $intake->archivo_url = ! empty($intake->archivo_path) && ! empty($intake->idReq)
+            ? base_url('Archivo/ver_requisicion_doc/' . (int) $intake->idReq)
+            : '';
         $intake->terminos_url = ! empty($intake->terminos_file)
             ? base_url('Archivo/ver_portal_doc/terminos')
             : '';
@@ -3199,6 +3191,17 @@ class Reclutamiento extends CI_Controller
     {
         $id  = $this->input->post('id');
         $res = $this->reclutamiento_model->getDetailsOrderByIdIntake($id);
+
+        if ($res) {
+            $res->archivo_url = ! empty($res->archivo_path) && ! empty($res->idReq)
+                ? base_url('Archivo/ver_requisicion_doc/' . (int) $res->idReq)
+                : '';
+
+            $res->terminos_url = ! empty($res->terminos_file)
+                ? base_url('Archivo/ver_portal_doc/terminos')
+                : '';
+        }
+
         echo json_encode($res);
     }
     public function getAspirantesRequisiciones()

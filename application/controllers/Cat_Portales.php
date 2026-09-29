@@ -635,7 +635,37 @@ class Cat_Portales extends CI_Controller
             $_FILES['file']['error']    = $_FILES['archivo']['error'];
             $_FILES['file']['size']     = $_FILES['archivo']['size'];
             // Set preference
-            $config['upload_path']   = './_const/';
+            // Nueva escritura en storagetalentsafe.
+            // El portal se obtiene del cliente real y no de la sesión.
+            $idCliente = (int) $this->input->post('idCliente');
+            $clienteStorage = $this->cat_cliente_model->getById($idCliente);
+            $idPortal = ($clienteStorage && isset($clienteStorage->id_portal))
+                ? (int) $clienteStorage->id_portal
+                : 0;
+
+            if ($idCliente <= 0 || $idPortal <= 0) {
+                log_message('error', 'No se pudo resolver portal/cliente para constancia. Cliente: ' . $idCliente);
+
+                echo json_encode([
+                    'codigo' => 2,
+                    'msg'    => 'Hubo un problema al actualizar los datos, por favor inténtalo nuevamente',
+                ]);
+                return;
+            }
+
+            $uploadDir = talentsafe_const_cliente_upload_dir($idPortal, $idCliente);
+
+            if (! is_dir($uploadDir) && ! @mkdir($uploadDir, 0775, true) && ! is_dir($uploadDir)) {
+                log_message('error', 'No se pudo crear directorio de constancia: ' . $uploadDir);
+
+                echo json_encode([
+                    'codigo' => 2,
+                    'msg'    => 'Hubo un problema al actualizar los datos, por favor inténtalo nuevamente',
+                ]);
+                return;
+            }
+
+            $config['upload_path']   = rtrim($uploadDir, '/\\') . DIRECTORY_SEPARATOR;
             $config['allowed_types'] = 'pdf|jpeg|jpg|png';
             $config['max_size']      = '2048'; // max_size in kb
             $cadena                  = substr(md5(time()), 0, 16);
@@ -655,8 +685,13 @@ class Cat_Portales extends CI_Controller
 
                 // Get the uploaded file path
                 $uploaded_data      = $this->upload->data();
+                $nombre_archivo     = $uploaded_data['file_name'];
+                $constanciaRelative = talentsafe_const_cliente_relative(
+                    $idPortal,
+                    $idCliente,
+                    $nombre_archivo
+                );
                 $uploaded_file_path = $uploaded_data['full_path'];
-                $idCliente          = $this->input->post('idCliente');
 
                 $idGenerales    = $this->input->post('idGenerales');
                 $nombre_cliente = $this->input->post('nombre');
@@ -687,7 +722,7 @@ class Cat_Portales extends CI_Controller
 
                 $dataClientes = [
                     'edicion'              => $date,
-                    'constancia_cliente'   => $nombre_archivo,
+                    'constancia_cliente'   => $constanciaRelative,
                     'id_datos_facturacion' => $idFacturacion,
                     'id_domicilios'        => $idDomicilios,
                     'id_datos_generales'   => $idDatosGenerales,
