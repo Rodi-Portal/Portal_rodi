@@ -630,53 +630,212 @@ class Archivo extends CI_Controller
 
     private function _serve_doc_aspirante(int $id, bool $forceDownload)
     {
-        if ($id <= 0) {show_404();}
-
-        // 1) Sesión obligatoria (ajusta a tu lógica)
-        if (! $this->session->userdata('id')) {show_404();}
-
-                                 // 2) Registro en BD
-        $this->load->database(); // por si no está autoload
-        $doc = $this->db->get_where('documentos_aspirante', [
-            'id'        => $id,
-            'eliminado' => 0,
-        ])->row();
-        if (! $doc) {show_404();}
-
-                                                             // 3) Ruta física correcta (carpeta + nombre)
-        $filename = basename((string) $doc->nombre_archivo); // sanitiza
-        $baseDir  = rtrim(FCPATH, '/\\') . '/_docs/';        // tu carpeta objetivo
-        $fileAbs  = $baseDir . $filename;                    // <- ¡aquí faltaba el $filename!
-
-        if (! is_file($fileAbs) || ! is_readable($fileAbs)) {
-            log_message('error', "Archivo no encontrado o no legible: {$fileAbs} (doc_id={$id})");
+        if ($id <= 0) {
             show_404();
         }
 
-        // 4) MIME, nombre y disposición
-        $ext  = strtolower(pathinfo($fileAbs, PATHINFO_EXTENSION));
-        $mime = $this->_detect_mime($fileAbs, $ext);
+        if (! $this->session->userdata('id')) {
+            show_404();
+        }
 
-        // Inline si tipo_vista == 1 y no se fuerza descarga (default inline si no existe la col)
-        $inline = (! $forceDownload && (isset($doc->tipo_vista) ? (int) $doc->tipo_vista === 1 : true));
+        $this->load->database();
 
-        // Nombre “bonito” de salida
-        $downloadName = $this->_nice_name($doc->nombre_personalizado ?: 'documento', $ext);
-        $ascii        = preg_replace('/[^A-Za-z0-9\._-]+/', '_', $downloadName);
+        /*
+         * documentos_aspirante.id_aspirante corresponde a
+         * requisicion_aspirante.id.
+         *
+         * Desde esa relación obtenemos el portal real mediante:
+         *
+         * requisicion_aspirante
+         *   -> bolsa_trabajo
+         *   -> requisicion
+         */
+        $doc = $this->db
+            ->select(
+                'DA.id,
+                 DA.id_aspirante,
+                 DA.nombre_personalizado,
+                 DA.nombre_archivo,
+                 DA.tipo_vista,
+                 RA.id_bolsa_trabajo,
+                 RA.id_requisicion,
+                 BT.id_portal AS bolsa_portal,
+                 R.id_portal AS requisicion_portal'
+            )
+            ->from('documentos_aspirante AS DA')
+            ->join(
+                'requisicion_aspirante AS RA',
+                'RA.id = DA.id_aspirante',
+                'left'
+            )
+            ->join(
+                'bolsa_trabajo AS BT',
+                'BT.id = RA.id_bolsa_trabajo',
+                'left'
+            )
+            ->join(
+                'requisicion AS R',
+                'R.id = RA.id_requisicion',
+                'left'
+            )
+            ->where('DA.id', $id)
+            ->where('DA.eliminado', 0)
+            ->get()
+            ->row();
 
-        // 5) Cabeceras y stream
+        if (! $doc) {
+            show_404();
+        }
+
+        $portalBolsa = (int) ($doc->bolsa_portal ?? 0);
+        $portalReq   = (int) ($doc->requisicion_portal ?? 0);
+        $portalSesion = (int) ($this->session->userdata('idPortal') ?? 0);
+
+        /*
+         * Si ambas relaciones existen pero pertenecen a portales
+         * diferentes, el dato es inconsistente y no se debe servir.
+         */
+        if (
+            $portalBolsa > 0
+            && $portalReq > 0
+            && $portalBolsa !== $portalReq
+        ) {
+            log_message(
+                'error',
+                sprintf(
+                    'Portal inconsistente en documento aspirante. doc_id=%d bolsa_portal=%d requisicion_portal=%d',
+                    $id,
+                    $portalBolsa,
+                    $portalReq
+                )
+            );
+
+            show_404();
+        }
+
+        /*
+         * Portal real del documento.
+         */
+        $idPortal = $portalBolsa > 0
+            ? $portalBolsa
+            : $portalReq;
+
+        /*
+         * Seguridad entre portales.
+         *
+         * Si la sesión tiene portal y el documento pertenece a otro,
+         * no permitir acceso.
+         */
+        if (
+            $portalSesion > 0
+            && $idPortal > 0
+            && $portalSesion !== $idPortal
+        ) {
+            show_404();
+        }
+
+        /*
+         * Compatibilidad con registros antiguos que eventualmente no
+         * puedan resolver portal por sus relaciones.
+         */
+        if ($idPortal <= 0) {
+            $idPortal = $portalSesion;
+        }
+
+        $filename = basename(
+            str_replace(
+                '\\',
+                '/',
+                (string) $doc->nombre_archivo
+            )
+        );
+
+        if ($filename === '') {
+            show_404();
+        }
+
+        /*
+         * Lectura dual:
+         *
+         * 1. storagetalentsafe/portales/{portal}/reclutamiento/
+         *    aspirantes/{requisicion_aspirante}/documentos/{archivo}
+         *
+         * 2. _docs/{archivo}
+         */
+        $fileAbs = talentsafe_aspirante_doc_resolve(
+            $filename,
+            $idPortal,
+            (int) $doc->id_aspirante
+        );
+
+        if (
+            $fileAbs === ''
+            || ! is_file($fileAbs)
+            || ! is_readable($fileAbs)
+        ) {
+            log_message(
+                'error',
+                sprintf(
+                    'Documento aspirante no encontrado. doc_id=%d aspirante_id=%d portal=%d archivo=%s ruta=%s',
+                    $id,
+                    (int) $doc->id_aspirante,
+                    $idPortal,
+                    $filename,
+                    $fileAbs
+                )
+            );
+
+            show_404();
+        }
+
+        $ext  = strtolower(
+            pathinfo($fileAbs, PATHINFO_EXTENSION)
+        );
+
+        $mime = $this->_detect_mime(
+            $fileAbs,
+            $ext
+        );
+
+        $inline = (
+            ! $forceDownload
+            && (
+                isset($doc->tipo_vista)
+                    ? (int) $doc->tipo_vista === 1
+                    : true
+            )
+        );
+
+        $downloadName = $this->_nice_name(
+            $doc->nombre_personalizado ?: 'documento',
+            $ext
+        );
+
+        $ascii = preg_replace(
+            '/[^A-Za-z0-9\._-]+/',
+            '_',
+            $downloadName
+        );
+
         header('Content-Type: ' . $mime);
         header('Content-Length: ' . filesize($fileAbs));
         header('X-Content-Type-Options: nosniff');
-        header('Cache-Control: private, max-age=0, must-revalidate');
+        header(
+            'Cache-Control: private, max-age=0, must-revalidate'
+        );
 
-        $disp = $inline ? 'inline' : 'attachment';
-        header("Content-Disposition: $disp; filename=\"{$ascii}\"; filename*=UTF-8''" . rawurlencode($downloadName));
+        $disp = $inline
+            ? 'inline'
+            : 'attachment';
+
+        header(
+            "Content-Disposition: {$disp}; filename=\"{$ascii}\"; filename*=UTF-8''"
+            . rawurlencode($downloadName)
+        );
 
         @readfile($fileAbs);
         exit;
     }
-
     public function ver_calendario_id($id)
     {
         $this->_serve_doc_calendario((int) $id, false); // inline (para ver)
@@ -1139,3 +1298,4 @@ class Archivo extends CI_Controller
     }
 
 }
+

@@ -179,3 +179,138 @@ if (! function_exists('talentsafe_storage_public_url')) {
             . implode('/', $segments);
     }
 }
+
+/**
+ * Ruta relativa canónica para un documento de aspirante de reclutamiento.
+ *
+ * documentos_aspirante.id_aspirante corresponde a requisicion_aspirante.id.
+ *
+ * Estructura:
+ * portales/{portal}/reclutamiento/aspirantes/{requisicion_aspirante}/documentos/{archivo}
+ */
+if (! function_exists('talentsafe_aspirante_doc_relative')) {
+    function talentsafe_aspirante_doc_relative(
+        int $idPortal,
+        int $idRequisicionAspirante,
+        string $archivo
+    ): string {
+        $archivo = basename(
+            str_replace('\\', '/', trim($archivo))
+        );
+
+        if (
+            $idPortal <= 0
+            || $idRequisicionAspirante <= 0
+            || $archivo === ''
+        ) {
+            return '';
+        }
+
+        return sprintf(
+            'portales/%d/reclutamiento/aspirantes/%d/documentos/%s',
+            $idPortal,
+            $idRequisicionAspirante,
+            $archivo
+        );
+    }
+}
+
+/**
+ * Directorio físico donde deben escribirse los nuevos documentos
+ * de documentos_aspirante.
+ */
+if (! function_exists('talentsafe_aspirante_doc_upload_dir')) {
+    function talentsafe_aspirante_doc_upload_dir(
+        int $idPortal,
+        int $idRequisicionAspirante
+    ): string {
+        if (
+            $idPortal <= 0
+            || $idRequisicionAspirante <= 0
+        ) {
+            return '';
+        }
+
+        $relative = sprintf(
+            'portales/%d/reclutamiento/aspirantes/%d/documentos',
+            $idPortal,
+            $idRequisicionAspirante
+        );
+
+        return talentsafe_storage_physical($relative);
+    }
+}
+
+/**
+ * Resuelve un documento de aspirante con lectura dual.
+ *
+ * Orden:
+ *
+ * 1. Nueva estructura:
+ *    storagetalentsafe/portales/{portal}/reclutamiento/
+ *    aspirantes/{requisicion_aspirante}/documentos/{archivo}
+ *
+ * 2. Legacy:
+ *    _docs/{archivo}
+ *
+ * También acepta en $stored una ruta relativa nueva que empiece
+ * por "portales/" para mantener compatibilidad futura.
+ */
+if (! function_exists('talentsafe_aspirante_doc_resolve')) {
+    function talentsafe_aspirante_doc_resolve(
+        string $stored,
+        int $idPortal = 0,
+        int $idRequisicionAspirante = 0
+    ): string {
+        $stored = trim(
+            str_replace('\\', '/', $stored)
+        );
+
+        if ($stored === '') {
+            return '';
+        }
+
+        /*
+         * Si la BD ya contiene una ruta relativa nueva.
+         */
+        if (strpos($stored, 'portales/') === 0) {
+            return str_replace(
+                '\\',
+                '/',
+                talentsafe_storage_physical($stored)
+            );
+        }
+
+        /*
+         * Esquema actual:
+         * documentos_aspirante.nombre_archivo contiene
+         * solamente el nombre físico.
+         */
+        $archivo = basename($stored);
+
+        if (
+            $idPortal <= 0
+            || $idRequisicionAspirante <= 0
+            || $archivo === ''
+        ) {
+            return '';
+        }
+
+        $relative = talentsafe_aspirante_doc_relative(
+            $idPortal,
+            $idRequisicionAspirante,
+            $archivo
+        );
+
+        if ($relative === '') {
+            return '';
+        }
+
+        return str_replace(
+            '\\',
+            '/',
+            talentsafe_storage_physical($relative)
+        );
+    }
+}
+
