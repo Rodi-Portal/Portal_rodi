@@ -92,8 +92,8 @@
               $logo = 'logo_nuevo.png';
       }?>
       <a class="sidebar-brand d-flex align-items-center justify-content-center">
-        <img style="max-width: 220px; max-height: 150px; background: white;"
-          src="<?php echo base_url('Archivo/ver_portal_logo'); ?>" alt="Logo">
+        <img src="<?php echo base_url('Archivo/ver_portal_logo'); ?>" alt="Logo"
+          style="max-width: 200px; width: 100%; height: auto; object-fit: contain;">
       </a>
       <hr class="sidebar-divider my-0">
       <li class="nav-item">
