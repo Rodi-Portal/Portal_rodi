@@ -34,6 +34,8 @@ class Cliente_General extends Custom_Controller
         $this->lang->load('reclutamiento_bolsa', $lang);
         $this->lang->load('registro_candidatos', $lang);
         $this->lang->load('pre_empleo', $lang);
+        $this->lang->load('modulos_description', $lang);
+        $this->lang->load('comunicacion', $lang);
         // Sesión/estatus
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
@@ -2240,7 +2242,17 @@ class Cliente_General extends Custom_Controller
                 $view = $this->load->view('moduloExEmpleados/descripcion_modulo', $data, true);
                 break;
             case 5:
-                $view = $this->load->view('moduloComunicacion/descripcion_modulo', $data, true);
+                $view = $this->load->view(
+                    'moduloComunicacion/descripcion_comunicacion_interna',
+                    $data,
+                    true
+                );
+
+                $view .= $this->load->view(
+                    'moduloComunicacion/descripcion_comunicacion_360',
+                    $data,
+                    true
+                );
                 break;
             default:
                 $view = "Módulo no encontrado.";
