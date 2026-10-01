@@ -574,16 +574,36 @@ class Archivo extends CI_Controller
             show_404();
         }
 
-        $logo = basename(
-            str_replace(
-                '\\',
-                '/',
-                trim((string) $this->session->userdata('logo'))
-            )
-        );
+        /*
+         * Resolver siempre el logo actual configurado en portal.logo.
+         * No depender del valor de logo guardado al iniciar sesión.
+         */
+        $portal = $this->db
+            ->select('logo')
+            ->from('portal')
+            ->where('id', $id_portal)
+            ->limit(1)
+            ->get()
+            ->row();
 
-        $base = rtrim(FCPATH, '/\\');
+        $logo = '';
 
+        if ($portal && isset($portal->logo)) {
+            $logo = basename(
+                str_replace(
+                    '\\',
+                    '/',
+                    trim((string) $portal->logo)
+                )
+            );
+        }
+
+        $base    = rtrim(FCPATH, '/\\');
+        $fileAbs = null;
+
+        /*
+         * Primero intentar el logo actual del portal.
+         */
         if ($logo !== '') {
             $customPath = $base
                 . '/storagetalentsafe/portales/'
@@ -596,7 +616,11 @@ class Archivo extends CI_Controller
             }
         }
 
-        if (empty($fileAbs)) {
+        /*
+         * Si no existe logo del portal, usar exactamente
+         * el mismo fallback general del Portal.
+         */
+        if ($fileAbs === null) {
             $defaultPath = $base
                 . '/storagetalentsafe/default/logo/logo_nuevo.png';
 
@@ -613,7 +637,14 @@ class Archivo extends CI_Controller
         header('Content-Type: ' . $mime);
         header('Content-Length: ' . filesize($fileAbs));
         header('X-Content-Type-Options: nosniff');
-        header('Cache-Control: private, max-age=300');
+
+        /*
+         * La URL es siempre Archivo/ver_portal_logo aunque cambie portal.logo.
+         * Evitar que el navegador conserve el logo anterior.
+         */
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
 
         @readfile($fileAbs);
         exit;
