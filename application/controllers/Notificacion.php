@@ -24,6 +24,36 @@ class Notificacion extends CI_Controller
         $this->usuario_sesion->checkStatusBD();
     }
 
+    /**
+     * Valida el token únicamente cuando el método se ejecuta por CLI.
+     * Las llamadas WEB continúan protegidas por la sesión del Portal.
+     */
+    private function validar_token_cron_cli()
+    {
+        if (! (function_exists('is_cli') && is_cli())) {
+            return true;
+        }
+
+        $tokenEsperado = trim((string) getenv('TALENTSAFE_CRON_TOKEN'));
+        $tokenRecibido = trim((string) $this->uri->segment(3));
+
+        if (
+            $tokenEsperado === ''
+            || $tokenRecibido === ''
+            || ! hash_equals($tokenEsperado, $tokenRecibido)
+        ) {
+            log_message('error', '[CRON] Token CLI invalido o no configurado.');
+
+            if (defined('STDERR')) {
+                fwrite(STDERR, "Cron no autorizado.\n");
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
 /*Notificaciones    via  Whatsapp  o correo*/
 /*
     public function obtener_estado_empleado($id_portal, $id_cliente)
@@ -99,7 +129,7 @@ class Notificacion extends CI_Controller
     {
         // --- Validación del token ---
         /* $token = $this->uri->segment(3) ?: $this->input->get('token', true);
-        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+        if ($token !== 'TOKEN_LEGACY_REMOVIDO') {
             show_404();
             return;
         }*/
@@ -175,12 +205,9 @@ class Notificacion extends CI_Controller
     }
     public function enviar_notificaciones_exempleados_cron_job()
     {
-        // --- Token de seguridad ---
-        /*  $token = $this->uri->segment(3) ?: $this->input->get('token', true);
-        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
-            show_404();
+        if (! $this->validar_token_cron_cli()) {
             return;
-        }*/
+        }
 
         log_message('info', '[CRON EX] Iniciando notificaciones de ex-empleados...');
 
@@ -290,6 +317,10 @@ class Notificacion extends CI_Controller
 
     public function enviar_notificaciones_cron_job2()
     {
+        if (! $this->validar_token_cron_cli()) {
+            return;
+        }
+
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
 
@@ -437,6 +468,10 @@ class Notificacion extends CI_Controller
 
     public function enviar_recordatorios_cron_job_run()
     {
+        if (! $this->validar_token_cron_cli()) {
+            return;
+        }
+
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
         $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
@@ -761,7 +796,7 @@ class Notificacion extends CI_Controller
     {
         $token = $this->uri->segment(3) ?: $this->input->get('token', true);
 
-        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+        if ($token !== 'TOKEN_LEGACY_REMOVIDO') {
             show_404(); // o mostrar acceso no autorizado
             return;
         }
