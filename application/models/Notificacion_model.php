@@ -80,7 +80,7 @@ class Notificacion_model extends CI_Model
         $query = $this->db->get();
         return $query->result(); // Retorna los registros obtenidos
     }
-    public function get_notificaciones_por_slot($slot)
+    public function get_notificaciones_por_slot($slot, $idPortal = null)
     {
         $slot = trim($this->db->escape_str($slot));
 
@@ -91,6 +91,10 @@ class Notificacion_model extends CI_Model
 
         $this->db->where('ne.notificacionesActivas', 1);
         $this->db->where('ne.status', 1);
+
+        if ($idPortal !== null) {
+            $this->db->where('ne.id_portal', (int) $idPortal);
+        }
 
         $this->db->group_start()
             ->where('ne.correo', 1)
@@ -112,7 +116,7 @@ class Notificacion_model extends CI_Model
 
         return $query->result();
     }
-    public function get_notificaciones_exempleados_por_slot($slot)
+    public function get_notificaciones_exempleados_por_slot($slot, $idPortal = null)
     {
         $slot = trim($this->db->escape_str($slot));
 
@@ -122,6 +126,10 @@ class Notificacion_model extends CI_Model
         $this->db->join('portal  AS P', 'P.id = ne.id_portal', 'left');
 
         $this->db->where('ne.notificacionesActivas', 2);
+
+        if ($idPortal !== null) {
+            $this->db->where('ne.id_portal', (int) $idPortal);
+        }
 
         $this->db->group_start()
             ->where('ne.correo', 1)
@@ -205,7 +213,7 @@ class Notificacion_model extends CI_Model
 
         return $query->result();
     }
-    public function get_recordatorios_para_slot_window($slot, $hoyYmd, $debug = false)
+    public function get_recordatorios_para_slot_window($slot, $hoyYmd, $debug = false, $idPortal = null)
     {
         // Normaliza el slot comparador: "9am" -> "9AM", "09:00 AM" -> "09:00AM"
         $needle = strtoupper(trim(str_replace([' ', '.'], '', $slot))); // sin espacios ni puntos
@@ -247,6 +255,10 @@ class Notificacion_model extends CI_Model
         $this->db->where('r.activo', 1);
         $this->db->where('r.eliminado', 0);
         $this->db->where('r.proxima_fecha IS NOT NULL', null, false);
+
+        if ($idPortal !== null) {
+            $this->db->where('r.id_portal', (int) $idPortal);
+        }
 
         // Ventana correcta: HOY <= proxima <= HOY + dias_anticipacion
         $hoyEsc = $this->db->escape($hoyYmd);

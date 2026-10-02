@@ -58,116 +58,55 @@ class Notificacion extends CI_Controller
      * Indica si una ejecución CLI debe redirigir todos los
      * destinatarios a las cuentas controladas de prueba.
      */
-    private function cron_modo_prueba_cli()
-    {
-        if (! (function_exists('is_cli') && is_cli())) {
-            return false;
-        }
 
-        $valor = strtolower(
-            trim((string) getenv('TALENTSAFE_CRON_TEST_MODE'))
-        );
-
-        return in_array(
-            $valor,
-            ['1', 'true', 'yes', 'on'],
-            true
-        );
-    }
 
     /**
-     * Sustituye destinatarios reales únicamente durante
-     * pruebas controladas ejecutadas por CLI.
+     * En modo TEST CLI exige el portal de prueba.
+     * Durante estas pruebas solamente se permite el portal 12.
      */
-    private function aplicar_destinatarios_prueba_cli($destinatarios, $tipo)
+    private function obtener_portal_prueba_cli()
     {
-        if (! $this->cron_modo_prueba_cli()) {
-            return $destinatarios;
+        if (! (function_exists('is_cli') && is_cli())) {
+            return null;
         }
 
-        $variable = ($tipo === 'email')
-            ? 'TALENTSAFE_CRON_TEST_EMAIL'
-            : 'TALENTSAFE_CRON_TEST_PHONE';
+        $portal = trim((string) $this->uri->segment(4));
 
-        $destinatarioPrueba = trim(
-            (string) getenv($variable)
-        );
+        // Ejecucion normal: no se especifica portal.
+        if ($portal === '') {
+            return null;
+        }
 
-        if ($destinatarioPrueba === '') {
+        // Las pruebas manuales CLI solo pueden ejecutarse sobre Portal 12.
+        if ($portal !== '12') {
             log_message(
                 'error',
-                "[CRON TEST] {$variable} no esta configurada. Envio bloqueado."
+                '[CRON TEST] Ejecucion bloqueada: solo se permite id_portal=12.'
             );
 
-            return [];
+            if (defined('STDERR')) {
+                fwrite(STDERR, "Prueba bloqueada: solo se permite portal 12.\n");
+            }
+
+            return false;
         }
 
         log_message(
             'info',
-            "[CRON TEST] Destinatarios {$tipo} sustituidos por destinatario de prueba."
+            '[CRON TEST] Ejecucion restringida al portal 12.'
         );
 
-        return [$destinatarioPrueba];
+        return 12;
     }
+    /**
+     * Sustituye destinatarios reales únicamente durante
+     * pruebas controladas ejecutadas por CLI.
+     */
 
     /**
      * En modo de prueba CLI procesa como máximo un registro.
      * En ejecución normal conserva todos los registros.
      */
-    private function limitar_registros_prueba_cli($registros)
-    {
-        if (! $this->cron_modo_prueba_cli()) {
-            return $registros;
-        }
-
-        if (! is_array($registros)) {
-            return $registros;
-        }
-
-        $idPrueba = trim((string) getenv('TALENTSAFE_CRON_TEST_RECORD_ID'));
-
-        if ($idPrueba !== '') {
-            if (! ctype_digit($idPrueba) || (int) $idPrueba <= 0) {
-                log_message(
-                    'error',
-                    '[CRON TEST] TALENTSAFE_CRON_TEST_RECORD_ID invalido.'
-                );
-
-                return [];
-            }
-
-            foreach ($registros as $registro) {
-                $idRegistro = is_object($registro)
-                    ? ($registro->id ?? null)
-                    : ($registro['id'] ?? null);
-
-                if ((string) $idRegistro === $idPrueba) {
-                    log_message(
-                        'info',
-                        '[CRON TEST] Registro seleccionado explicitamente: ID=' . $idPrueba
-                    );
-
-                    return [$registro];
-                }
-            }
-
-            log_message(
-                'error',
-                '[CRON TEST] El registro solicitado ID=' . $idPrueba . ' no existe en los resultados del slot.'
-            );
-
-            return [];
-        }
-
-        $limitados = array_slice($registros, 0, 1);
-
-        log_message(
-            'info',
-            '[CRON TEST] Registros limitados a 1 para prueba controlada.'
-        );
-
-        return $limitados;
-    }
 
 /*Notificaciones    via  Whatsapp  o correo*/
 /*
@@ -324,6 +263,12 @@ class Notificacion extends CI_Controller
             return;
         }
 
+        $idPortalPrueba = $this->obtener_portal_prueba_cli();
+
+        if ($idPortalPrueba === false) {
+            return;
+        }
+
         log_message('info', '[CRON EX] Iniciando notificaciones de ex-empleados...');
 
         // --- Determinar el horario actual (con ventana de gracia ±15 min) ---
@@ -357,8 +302,7 @@ class Notificacion extends CI_Controller
 
         // --- Cargar modelo y obtener notificaciones de ex empleados (status=2) ---
         $this->load->model('Notificacion_model');
-        $registros = $this->Notificacion_model->get_notificaciones_exempleados_por_slot($slotActual);
-        $registros = $this->limitar_registros_prueba_cli($registros);
+        $registros = $this->Notificacion_model->get_notificaciones_exempleados_por_slot($slotActual, $idPortalPrueba);
 
         if (empty($registros)) {
             log_message('info', "[CRON EX] No hay registros para procesar en {$slotActual}");
@@ -437,6 +381,12 @@ class Notificacion extends CI_Controller
             return;
         }
 
+        $idPortalPrueba = $this->obtener_portal_prueba_cli();
+
+        if ($idPortalPrueba === false) {
+            return;
+        }
+
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
 
@@ -462,8 +412,7 @@ class Notificacion extends CI_Controller
         }
 
         $this->load->model('Notificacion_model');
-        $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual);
-        $registros = $this->limitar_registros_prueba_cli($registros);
+        $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual, $idPortalPrueba);
 
         if (empty($registros)) {
             return;
@@ -529,10 +478,6 @@ class Notificacion extends CI_Controller
 
     public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
     {
-        $destinatarios = $this->aplicar_destinatarios_prueba_cli(
-            $destinatarios,
-            'email'
-        );
 
         if (empty($destinatarios)) {
             log_message('error', '[CRON TEST] Envio de correo bloqueado por falta de destinatario de prueba.');
@@ -599,6 +544,12 @@ class Notificacion extends CI_Controller
             return;
         }
 
+        $idPortalPrueba = $this->obtener_portal_prueba_cli();
+
+        if ($idPortalPrueba === false) {
+            return;
+        }
+
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
         $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
@@ -653,9 +604,8 @@ class Notificacion extends CI_Controller
 
         // Obtiene recordatorios filtrando por slot + anticipación
         $registros = $this->Notificacion_model
-            ->get_recordatorios_para_slot_window($slotActual, $hoy, false);
+            ->get_recordatorios_para_slot_window($slotActual, $hoy, false, $idPortalPrueba);
 
-        $registros = $this->limitar_registros_prueba_cli($registros);
 
         if (empty($registros)) {
             return;
@@ -728,7 +678,7 @@ class Notificacion extends CI_Controller
             // ====================================
             //          REPROGRAMAR FECHA
             // ====================================
-            if (! $this->cron_modo_prueba_cli() && $hoy === $r->proxima_fecha) {
+            if ($idPortalPrueba === null && $hoy === $r->proxima_fecha) {
                 $nueva = $this->calcularProximaFecha($r, $tz);
                 if ($nueva !== null) {
                     $this->Notificacion_model
@@ -745,10 +695,6 @@ class Notificacion extends CI_Controller
 
     private function enviar_whatsapp_recordatorio($telefonos, $portal, $cliente, $recordatorio, $mensaje, $fecha, $template = 'notificacion_recordatorio')
     {
-        $telefonos = $this->aplicar_destinatarios_prueba_cli(
-            $telefonos,
-            'phone'
-        );
 
         $base = rtrim(API_URL, '/'); // define(API_URL, 'http://localhost:8000/api'); por ejemplo
         $url  = $base . '/send-notification-recordatorio';
@@ -1017,10 +963,6 @@ class Notificacion extends CI_Controller
     // Envio de  notificaciones  whastapp
     public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
     {
-        $telefonos = $this->aplicar_destinatarios_prueba_cli(
-            $telefonos,
-            'phone'
-        );
 
         $api_url = API_URL;
         $url     = $api_url . 'send-notification';
@@ -1088,10 +1030,6 @@ class Notificacion extends CI_Controller
 
     public function enviar_whatsapp_ex($telefonos, $portal, $sucursal, $submodulos, $template)
     {
-        $telefonos = $this->aplicar_destinatarios_prueba_cli(
-            $telefonos,
-            'phone'
-        );
 
         $api_url = API_URL;
         $url     = $api_url . 'send-notification-ex';
