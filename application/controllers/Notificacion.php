@@ -625,6 +625,49 @@ class Notificacion extends CI_Controller
         foreach ($registros as $r) {
 
             // ====================================
+            //   RECUPERAR MENSUAL VENCIDO
+            // ====================================
+            // En ejecución normal, si proxima_fecha quedó atrás,
+            // primero la llevamos a su siguiente ocurrencia real.
+            // Solo se notifica si esa nueva fecha ya está dentro
+            // de la ventana de anticipación.
+            if (
+                $idPortalPrueba === null
+                && strtolower((string) $r->tipo) === 'mensual'
+                && $r->proxima_fecha < $hoy
+            ) {
+                $nueva = $this->calcularProximaFecha($r, $tz);
+
+                if ($nueva === null) {
+                    continue;
+                }
+
+                $actualizado = $this->Notificacion_model
+                    ->actualizar_proxima_fecha($r->id, $nueva);
+
+                if (! $actualizado) {
+                    log_message(
+                        'error',
+                        "[CRON] No se pudo recuperar proxima_fecha del recordatorio ID={$r->id}."
+                    );
+                    continue;
+                }
+
+                $r->proxima_fecha = $nueva;
+
+                $limiteAnticipacion = (new DateTime($hoy, $tz))
+                    ->modify('+' . max(0, (int) $r->dias_anticipacion) . ' days')
+                    ->format('Y-m-d');
+
+                if (
+                    $r->proxima_fecha < $hoy
+                    || $r->proxima_fecha > $limiteAnticipacion
+                ) {
+                    continue;
+                }
+            }
+
+            // ====================================
             //            ENVÍO POR CORREO
             // ====================================
             if ((int) $r->correo_cfg === 1) {
