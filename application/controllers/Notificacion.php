@@ -110,6 +110,30 @@ class Notificacion extends CI_Controller
         return [$destinatarioPrueba];
     }
 
+    /**
+     * En modo de prueba CLI procesa como máximo un registro.
+     * En ejecución normal conserva todos los registros.
+     */
+    private function limitar_registros_prueba_cli($registros)
+    {
+        if (! $this->cron_modo_prueba_cli()) {
+            return $registros;
+        }
+
+        if (! is_array($registros)) {
+            return $registros;
+        }
+
+        $limitados = array_slice($registros, 0, 1);
+
+        log_message(
+            'info',
+            '[CRON TEST] Registros limitados a 1 para prueba controlada.'
+        );
+
+        return $limitados;
+    }
+
 /*Notificaciones    via  Whatsapp  o correo*/
 /*
     public function obtener_estado_empleado($id_portal, $id_cliente)
@@ -299,6 +323,7 @@ class Notificacion extends CI_Controller
         // --- Cargar modelo y obtener notificaciones de ex empleados (status=2) ---
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones_exempleados_por_slot($slotActual);
+        $registros = $this->limitar_registros_prueba_cli($registros);
 
         if (empty($registros)) {
             log_message('info', "[CRON EX] No hay registros para procesar en {$slotActual}");
@@ -403,6 +428,7 @@ class Notificacion extends CI_Controller
 
         $this->load->model('Notificacion_model');
         $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual);
+        $registros = $this->limitar_registros_prueba_cli($registros);
 
         if (empty($registros)) {
             return;
@@ -594,6 +620,8 @@ class Notificacion extends CI_Controller
         $registros = $this->Notificacion_model
             ->get_recordatorios_para_slot_window($slotActual, $hoy, false);
 
+        $registros = $this->limitar_registros_prueba_cli($registros);
+
         if (empty($registros)) {
             return;
         }
@@ -665,7 +693,7 @@ class Notificacion extends CI_Controller
             // ====================================
             //          REPROGRAMAR FECHA
             // ====================================
-            if ($hoy === $r->proxima_fecha) {
+            if (! $this->cron_modo_prueba_cli() && $hoy === $r->proxima_fecha) {
                 $nueva = $this->calcularProximaFecha($r, $tz);
                 if ($nueva !== null) {
                     $this->Notificacion_model
