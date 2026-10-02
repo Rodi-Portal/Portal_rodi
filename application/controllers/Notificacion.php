@@ -124,6 +124,41 @@ class Notificacion extends CI_Controller
             return $registros;
         }
 
+        $idPrueba = trim((string) getenv('TALENTSAFE_CRON_TEST_RECORD_ID'));
+
+        if ($idPrueba !== '') {
+            if (! ctype_digit($idPrueba) || (int) $idPrueba <= 0) {
+                log_message(
+                    'error',
+                    '[CRON TEST] TALENTSAFE_CRON_TEST_RECORD_ID invalido.'
+                );
+
+                return [];
+            }
+
+            foreach ($registros as $registro) {
+                $idRegistro = is_object($registro)
+                    ? ($registro->id ?? null)
+                    : ($registro['id'] ?? null);
+
+                if ((string) $idRegistro === $idPrueba) {
+                    log_message(
+                        'info',
+                        '[CRON TEST] Registro seleccionado explicitamente: ID=' . $idPrueba
+                    );
+
+                    return [$registro];
+                }
+            }
+
+            log_message(
+                'error',
+                '[CRON TEST] El registro solicitado ID=' . $idPrueba . ' no existe en los resultados del slot.'
+            );
+
+            return [];
+        }
+
         $limitados = array_slice($registros, 0, 1);
 
         log_message(
