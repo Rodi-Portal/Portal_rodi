@@ -128,7 +128,7 @@
 
       <li class="nav-item">
         <!-- Ajusta la ruta del archivo según corresponda -->
-        <a class="nav-link" href="<?php echo base_url('_manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
+        <a class="nav-link" href="<?php echo base_url('storagetalentsafe/default/manuales/guia_usuario_v1.pdf'); ?>" target="_blank">
           <i class="fas fa-book"></i>
           <span>User guide</span>
         </a>

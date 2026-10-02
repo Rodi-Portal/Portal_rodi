@@ -8,12 +8,12 @@
       ? (
           defined('MANUAL_USUARIO_EN_URL')
               ? MANUAL_USUARIO_EN_URL
-              : base_url('_manuales/guia_usuario_v1.pdf')
+              : base_url('storagetalentsafe/default/manuales/guia_usuario_v1.pdf')
       )
       : (
           defined('MANUAL_USUARIO_ES_URL')
               ? MANUAL_USUARIO_ES_URL
-              : base_url('_manuales/guia_usuario_v1.pdf')
+              : base_url('storagetalentsafe/default/manuales/guia_usuario_v1.pdf')
       );
       $terminos_condiciones = $CI->session->userdata('terminos');
       $archivo              = $aviso_actual ? $aviso_actual : 'AV_TL_V1.pdf';
