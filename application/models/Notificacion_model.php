@@ -260,10 +260,30 @@ class Notificacion_model extends CI_Model
             $this->db->where('r.id_portal', (int) $idPortal);
         }
 
-        // Ventana correcta: HOY <= proxima <= HOY + dias_anticipacion
+        // Ventana normal:
+        // HOY <= proxima <= HOY + dias_anticipacion
+        //
+        // En ejecucion normal tambien recuperamos recordatorios
+        // mensuales cuya proxima_fecha haya quedado vencida.
+        // Las pruebas manuales por portal conservan exclusivamente
+        // la ventana vigente para no reprocesar vencidos.
         $hoyEsc = $this->db->escape($hoyYmd);
-        $this->db->where("r.proxima_fecha >= {$hoyEsc}", null, false);
-        $this->db->where("r.proxima_fecha <= DATE_ADD({$hoyEsc}, INTERVAL r.dias_anticipacion DAY)", null, false);
+
+        if ($idPortal === null) {
+            $this->db->group_start()
+                ->group_start()
+                    ->where("r.proxima_fecha >= {$hoyEsc}", null, false)
+                    ->where("r.proxima_fecha <= DATE_ADD({$hoyEsc}, INTERVAL r.dias_anticipacion DAY)", null, false)
+                ->group_end()
+                ->or_group_start()
+                    ->where('r.tipo', 'mensual')
+                    ->where("r.proxima_fecha < {$hoyEsc}", null, false)
+                ->group_end()
+            ->group_end();
+        } else {
+            $this->db->where("r.proxima_fecha >= {$hoyEsc}", null, false);
+            $this->db->where("r.proxima_fecha <= DATE_ADD({$hoyEsc}, INTERVAL r.dias_anticipacion DAY)", null, false);
+        }
 
         // Filtro flexible por horarios (solo los que tengan nr.horarios y contenga el slot normalizado)
         $this->db->group_start()

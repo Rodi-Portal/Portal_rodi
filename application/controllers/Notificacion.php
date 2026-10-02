@@ -689,7 +689,11 @@ class Notificacion extends CI_Controller
             // ====================================
             //          REPROGRAMAR FECHA
             // ====================================
-            if ($idPortalPrueba === null && $hoy === $r->proxima_fecha) {
+            if (
+                $idPortalPrueba === null
+                && strtolower((string) $r->tipo) === 'mensual'
+                && $r->proxima_fecha <= $hoy
+            ) {
                 $nueva = $this->calcularProximaFecha($r, $tz);
                 if ($nueva !== null) {
                     $this->Notificacion_model
@@ -779,31 +783,66 @@ class Notificacion extends CI_Controller
  */
     private function calcularProximaFecha($r, DateTimeZone $tz)
     {
-        // Si no es recurrente, no actualizar
-        if (isset($r->tipo) && strtolower($r->tipo) === 'unico') {
+        // Los recordatorios unicos no se reprograman.
+        if (
+            ! isset($r->tipo)
+            || strtolower((string) $r->tipo) !== 'mensual'
+        ) {
             return null;
         }
 
-        $base = null;
-        if (! empty($r->proxima_fecha)) {
-            $base = DateTime::createFromFormat('Y-m-d', $r->proxima_fecha, $tz);
-        } elseif (! empty($r->fecha_base)) {
-            $base = DateTime::createFromFormat('Y-m-d', $r->fecha_base, $tz);
+        $fechaBase = ! empty($r->fecha_base)
+            ? $r->fecha_base
+            : ($r->proxima_fecha ?? null);
+
+        if (empty($fechaBase)) {
+            return null;
         }
+
+        $base = DateTimeImmutable::createFromFormat(
+            '!Y-m-d',
+            $fechaBase,
+            $tz
+        );
 
         if (! $base) {
             return null;
         }
 
-        // Por defecto 1 mes si no viene intervalo_meses
         $intervalo = (int) ($r->intervalo_meses ?? 1);
+
         if ($intervalo <= 0) {
             $intervalo = 1;
         }
 
-        // Avanza meses
-        $base->modify("+{$intervalo} month");
-        return $base->format('Y-m-d');
+        $hoy = new DateTimeImmutable('today', $tz);
+
+        // La recurrencia siempre queda anclada al dia original.
+        // Partimos del primer dia del mes para evitar el overflow
+        // nativo de fechas como 29, 30 y 31.
+        $diaBase = (int) $base->format('d');
+        $inicioMesBase = $base->modify('first day of this month');
+
+        $ocurrencia = 0;
+
+        do {
+            $meses = $ocurrencia * $intervalo;
+
+            $inicioMes = $inicioMesBase->modify("+{$meses} months");
+
+            $ultimoDiaMes = (int) $inicioMes->format('t');
+            $dia = min($diaBase, $ultimoDiaMes);
+
+            $proxima = $inicioMes->setDate(
+                (int) $inicioMes->format('Y'),
+                (int) $inicioMes->format('m'),
+                $dia
+            );
+
+            $ocurrencia++;
+        } while ($proxima <= $hoy);
+
+        return $proxima->format('Y-m-d');
     }
 
     public function enviar_notificaciones_inmediatamente()
