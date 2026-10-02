@@ -54,6 +54,62 @@ class Notificacion extends CI_Controller
         return true;
     }
 
+    /**
+     * Indica si una ejecución CLI debe redirigir todos los
+     * destinatarios a las cuentas controladas de prueba.
+     */
+    private function cron_modo_prueba_cli()
+    {
+        if (! (function_exists('is_cli') && is_cli())) {
+            return false;
+        }
+
+        $valor = strtolower(
+            trim((string) getenv('TALENTSAFE_CRON_TEST_MODE'))
+        );
+
+        return in_array(
+            $valor,
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+    }
+
+    /**
+     * Sustituye destinatarios reales únicamente durante
+     * pruebas controladas ejecutadas por CLI.
+     */
+    private function aplicar_destinatarios_prueba_cli($destinatarios, $tipo)
+    {
+        if (! $this->cron_modo_prueba_cli()) {
+            return $destinatarios;
+        }
+
+        $variable = ($tipo === 'email')
+            ? 'TALENTSAFE_CRON_TEST_EMAIL'
+            : 'TALENTSAFE_CRON_TEST_PHONE';
+
+        $destinatarioPrueba = trim(
+            (string) getenv($variable)
+        );
+
+        if ($destinatarioPrueba === '') {
+            log_message(
+                'error',
+                "[CRON TEST] {$variable} no esta configurada. Envio bloqueado."
+            );
+
+            return [];
+        }
+
+        log_message(
+            'info',
+            "[CRON TEST] Destinatarios {$tipo} sustituidos por destinatario de prueba."
+        );
+
+        return [$destinatarioPrueba];
+    }
+
 /*Notificaciones    via  Whatsapp  o correo*/
 /*
     public function obtener_estado_empleado($id_portal, $id_cliente)
@@ -412,6 +468,16 @@ class Notificacion extends CI_Controller
 
     public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
     {
+        $destinatarios = $this->aplicar_destinatarios_prueba_cli(
+            $destinatarios,
+            'email'
+        );
+
+        if (empty($destinatarios)) {
+            log_message('error', '[CRON TEST] Envio de correo bloqueado por falta de destinatario de prueba.');
+            return;
+        }
+
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
         $this->config->load('email_private', true);
@@ -616,6 +682,11 @@ class Notificacion extends CI_Controller
 
     private function enviar_whatsapp_recordatorio($telefonos, $portal, $cliente, $recordatorio, $mensaje, $fecha, $template = 'notificacion_recordatorio')
     {
+        $telefonos = $this->aplicar_destinatarios_prueba_cli(
+            $telefonos,
+            'phone'
+        );
+
         $base = rtrim(API_URL, '/'); // define(API_URL, 'http://localhost:8000/api'); por ejemplo
         $url  = $base . '/send-notification-recordatorio';
 
@@ -883,6 +954,11 @@ class Notificacion extends CI_Controller
     // Envio de  notificaciones  whastapp
     public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
     {
+        $telefonos = $this->aplicar_destinatarios_prueba_cli(
+            $telefonos,
+            'phone'
+        );
+
         $api_url = API_URL;
         $url     = $api_url . 'send-notification';
 
@@ -949,6 +1025,11 @@ class Notificacion extends CI_Controller
 
     public function enviar_whatsapp_ex($telefonos, $portal, $sucursal, $submodulos, $template)
     {
+        $telefonos = $this->aplicar_destinatarios_prueba_cli(
+            $telefonos,
+            'phone'
+        );
+
         $api_url = API_URL;
         $url     = $api_url . 'send-notification-ex';
 
