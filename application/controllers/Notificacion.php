@@ -594,7 +594,18 @@ class Notificacion extends CI_Controller
             }
         }
 
-        // Si no estamos dentro de la ventana del horario, cancelar
+        // En una prueba manual restringida al Portal 12 usamos un slot
+        // conocido de su configuracion, sin alterar el horario del cron normal.
+        if ($idPortalPrueba === 12) {
+            $slotActual = '09:00 AM';
+
+            log_message(
+                'info',
+                '[CRON TEST] Recordatorios Portal 12 ejecutados manualmente con slot 09:00 AM.'
+            );
+        }
+
+        // En ejecucion normal se conserva la ventana horaria oficial.
         if ($slotActual === null) {
             return;
         }
