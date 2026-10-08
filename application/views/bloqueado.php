@@ -112,8 +112,8 @@
             </p>
             <div class="instructions">
                 <p>If you have already made the payment and still see this notification, please contact our technical support:</p>
-                <p>Email: support@talentsafecontrol.com</p>
-                <p>Phone: +52 33 3454 2877</p>
+              <p>Email: <?php echo html_escape(TALENTSAFE_SOPORTE_EMAIL_EN) ?></p>
+              <p>Phone: <?php echo html_escape(TALENTSAFE_SOPORTE_TELEFONO) ?></p>
             </div>
             <p>Thank you for your understanding and cooperation.</p>
         </div>
@@ -127,8 +127,8 @@
             </p>
             <div class="instructions">
                 <p>Si ya ha realizado el pago y sigue viendo esta notificación, por favor contacte a nuestro soporte técnico:</p>
-                <p>Email: soporte@talentsafecontrol.com</p>
-                <p>Teléfono: +52 33 3454 2877</p>
+             <p>Email: <?= html_escape(TALENTSAFE_SOPORTE_EMAIL_ES) ?></p>
+             <p>Teléfono: <?= html_escape(TALENTSAFE_SOPORTE_TELEFONO) ?></p>
             </div>
             <p>Gracias por su comprensión y cooperación.</p>
         </div>

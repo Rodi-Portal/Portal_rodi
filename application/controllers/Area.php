@@ -26,15 +26,15 @@ class Area extends CI_Controller
     }
     public function omitirAvisoPago()
     {
-        if (! $this->input->is_ajax_request()) {
-            show_404();
-        }
-        // Marcamos la variable que activa el modal como "pagado" para esta sesión
-        $this->session->set_userdata('notPago', 'pagado_temporal');
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode(['ok' => true]));
+        // Ya no se permite alterar temporalmente el estado de pago.
+        return $this->output
+            ->set_status_header(403)
+            ->set_content_type('application/json', 'utf-8')
+            ->set_output(json_encode([
+                'ok'      => false,
+                'error'   => 'OPERACION_NO_PERMITIDA',
+                'message' => 'Esta operación ya no está disponible.',
+            ]));
     }
     public function pasarela()
     {
@@ -56,7 +56,21 @@ class Area extends CI_Controller
         /* ===============================
      🔒 ESTADO DEL SISTEMA (CLAVE)
         =============================== */
-        $notPago = $this->session->userdata('notPago');
+        $this->load->model('avance_model');
+
+        // Los portales exentos mantienen acceso normal
+        $portalesExentos = TALENTSAFE_PORTALES_EXENTOS_PAGO;
+
+        if (in_array($id_portal, $portalesExentos, true)) {
+            $notPago = 'pagado';
+        } else {
+            $notPago = $this->avance_model->verificarPagoMesActual(
+                $id_portal,
+                false
+            );
+        }
+
+        $this->session->set_userdata('notPago', $notPago);
 
         $data['modo_sistema'] = in_array(
             $notPago,
@@ -137,9 +151,8 @@ class Area extends CI_Controller
             $this->load->view('adminpanel/pasarela', $data);
             $this->load->view('adminpanel/footer');
         } else {
-            // Sistema bloqueado → solo pasarela
-            $data['cargar_recursos'] = true;
-            $this->load->view('adminpanel/pasarela', $data);
+            // Sistema suspendido: únicamente contacto con TalentSafe
+            $this->load->view('adminpanel/suspension', $data);
         }
 
     }
