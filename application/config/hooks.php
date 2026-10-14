@@ -17,6 +17,12 @@ $hook['pre_system'][] = array(
     'filename' => 'maintenance_hook.php',
     'filepath' => 'hooks'
 );
+$hook['post_controller_constructor'][] = [
+    'class'    => 'PaymentAccessHook',
+    'function' => 'verificar',
+    'filename' => 'PaymentAccessHook.php',
+    'filepath' => 'hooks',
+];
 /*
 $hook['post_controller_constructor'][] = array(
     'class'    => 'check_user',

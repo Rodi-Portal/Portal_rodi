@@ -10,6 +10,7 @@ class Notificacion extends CI_Controller
 
         // Si se ejecuta desde CLI (cron), silenciamos y no validamos sesión
         if (function_exists('is_cli') && is_cli()) {
+            fwrite(STDERR, "[TRACE] Constructor Notificacion ejecutado\n");
             error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
             ini_set('display_errors', 0);
             // nada de validar login ni cargar usuario_sesion en CLI
@@ -23,90 +24,6 @@ class Notificacion extends CI_Controller
         $this->load->library('usuario_sesion');
         $this->usuario_sesion->checkStatusBD();
     }
-
-    /**
-     * Valida el token únicamente cuando el método se ejecuta por CLI.
-     * Las llamadas WEB continúan protegidas por la sesión del Portal.
-     */
-    private function validar_token_cron_cli()
-    {
-        if (! (function_exists('is_cli') && is_cli())) {
-            return true;
-        }
-
-        $tokenEsperado = trim((string) getenv('TALENTSAFE_CRON_TOKEN'));
-        $tokenRecibido = trim((string) $this->uri->segment(3));
-
-        if (
-            $tokenEsperado === ''
-            || $tokenRecibido === ''
-            || ! hash_equals($tokenEsperado, $tokenRecibido)
-        ) {
-            log_message('error', '[CRON] Token CLI invalido o no configurado.');
-
-            if (defined('STDERR')) {
-                fwrite(STDERR, "Cron no autorizado.\n");
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Indica si una ejecución CLI debe redirigir todos los
-     * destinatarios a las cuentas controladas de prueba.
-     */
-
-
-    /**
-     * En modo TEST CLI exige el portal de prueba.
-     * Durante estas pruebas solamente se permite el portal 12.
-     */
-    private function obtener_portal_prueba_cli()
-    {
-        if (! (function_exists('is_cli') && is_cli())) {
-            return null;
-        }
-
-        $portal = trim((string) $this->uri->segment(4));
-
-        // Ejecucion normal: no se especifica portal.
-        if ($portal === '') {
-            return null;
-        }
-
-        // Las pruebas manuales CLI solo pueden ejecutarse sobre Portal 12.
-        if ($portal !== '12') {
-            log_message(
-                'error',
-                '[CRON TEST] Ejecucion bloqueada: solo se permite id_portal=12.'
-            );
-
-            if (defined('STDERR')) {
-                fwrite(STDERR, "Prueba bloqueada: solo se permite portal 12.\n");
-            }
-
-            return false;
-        }
-
-        log_message(
-            'info',
-            '[CRON TEST] Ejecucion restringida al portal 12.'
-        );
-
-        return 12;
-    }
-    /**
-     * Sustituye destinatarios reales únicamente durante
-     * pruebas controladas ejecutadas por CLI.
-     */
-
-    /**
-     * En modo de prueba CLI procesa como máximo un registro.
-     * En ejecución normal conserva todos los registros.
-     */
 
 /*Notificaciones    via  Whatsapp  o correo*/
 /*
@@ -134,6 +51,7 @@ class Notificacion extends CI_Controller
         }
 
         // Cerrar la conexión cURL
+        curl_close($ch);
 
                                              // Decodificar la respuesta JSON
         return json_decode($response, true); // Devuelve un array con los estados de los documentos, cursos y evaluaciones
@@ -161,10 +79,12 @@ class Notificacion extends CI_Controller
         if ($response === false) {
             // Mejor log que echo en cron
             log_message('error', 'Error cURL obtener_estado_empleado: ' . curl_error($ch));
+            curl_close($ch);
             return null;
         }
 
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
         if ($httpCode < 200 || $httpCode >= 300) {
             log_message('error', "HTTP {$httpCode} en obtener_estado_empleado: {$url}");
@@ -183,7 +103,7 @@ class Notificacion extends CI_Controller
     {
         // --- Validación del token ---
         /* $token = $this->uri->segment(3) ?: $this->input->get('token', true);
-        if ($token !== 'TOKEN_LEGACY_REMOVIDO') {
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
             show_404();
             return;
         }*/
@@ -259,15 +179,12 @@ class Notificacion extends CI_Controller
     }
     public function enviar_notificaciones_exempleados_cron_job()
     {
-        if (! $this->validar_token_cron_cli()) {
+        // --- Token de seguridad ---
+        /*  $token = $this->uri->segment(3) ?: $this->input->get('token', true);
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
+            show_404();
             return;
-        }
-
-        $idPortalPrueba = $this->obtener_portal_prueba_cli();
-
-        if ($idPortalPrueba === false) {
-            return;
-        }
+        }*/
 
         log_message('info', '[CRON EX] Iniciando notificaciones de ex-empleados...');
 
@@ -275,7 +192,7 @@ class Notificacion extends CI_Controller
         $tz              = new DateTimeZone('America/Mexico_City');
         $ahora           = new DateTime('now', $tz);
         $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        $graciaMinutos   = 999;
+        $graciaMinutos   = 15;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {
@@ -302,7 +219,7 @@ class Notificacion extends CI_Controller
 
         // --- Cargar modelo y obtener notificaciones de ex empleados (status=2) ---
         $this->load->model('Notificacion_model');
-        $registros = $this->Notificacion_model->get_notificaciones_exempleados_por_slot($slotActual, $idPortalPrueba);
+        $registros = $this->Notificacion_model->get_notificaciones_exempleados_por_slot($slotActual);
 
         if (empty($registros)) {
             log_message('info', "[CRON EX] No hay registros para procesar en {$slotActual}");
@@ -377,21 +294,11 @@ class Notificacion extends CI_Controller
 
     public function enviar_notificaciones_cron_job2()
     {
-        if (! $this->validar_token_cron_cli()) {
-            return;
-        }
-
-        $idPortalPrueba = $this->obtener_portal_prueba_cli();
-
-        if ($idPortalPrueba === false) {
-            return;
-        }
-
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
 
         $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        $graciaMinutos   = 999;
+        $graciaMinutos   = 15;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {
@@ -412,7 +319,7 @@ class Notificacion extends CI_Controller
         }
 
         $this->load->model('Notificacion_model');
-        $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual, $idPortalPrueba);
+        $registros = $this->Notificacion_model->get_notificaciones_por_slot($slotActual);
 
         if (empty($registros)) {
             return;
@@ -425,13 +332,25 @@ class Notificacion extends CI_Controller
             }
 
             $modulos = [];
-            if ((int) $registro->cursos === 1 && ($estado['statusCursos'] ?? '') === 'rojo') {
+
+            if (
+                (int) $registro->cursos === 1 &&
+                in_array(($estado['statusCursos'] ?? ''), ['amarillo', 'rojo'], true)
+            ) {
                 $modulos[] = "Cursos";
             }
-            if ((int) $registro->evaluaciones === 1 && ($estado['statusEvaluaciones'] ?? '') === 'rojo') {
+
+            if (
+                (int) $registro->evaluaciones === 1 &&
+                in_array(($estado['statusEvaluaciones'] ?? ''), ['amarillo', 'rojo'], true)
+            ) {
                 $modulos[] = "Evaluaciones";
             }
-            if ((int) $registro->expediente === 1 && ($estado['statusDocuments'] ?? '') === 'rojo') {
+
+            if (
+                (int) $registro->expediente === 1 &&
+                in_array(($estado['statusDocuments'] ?? ''), ['amarillo', 'rojo'], true)
+            ) {
                 $modulos[] = "Expediente";
             }
 
@@ -478,25 +397,19 @@ class Notificacion extends CI_Controller
 
     public function enviar_correo($destinatarios, $asunto, $modulos, $nombrecliente)
     {
-
-        if (empty($destinatarios)) {
-            log_message('error', '[CRON TEST] Envio de correo bloqueado por falta de destinatario de prueba.');
-            return;
-        }
-
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
         $this->config->load('email_private', true);
-         $smtp = $this->config->item('email_private', 'email_private');
+        $smtp = $this->config->item('email_private', 'email_private');
         try {
-                                                              // Configuración del servidor SMTP
+            // Configuración del servidor SMTP
             $mail->isSMTP();
-                $mail->Host       = $smtp['host'];
-                $mail->SMTPAuth   = true;
-                $mail->Username   = $smtp['user'];
-                $mail->Password   = $smtp['pass'];
-                $mail->SMTPSecure = $smtp['secure'];
-                $mail->Port       = $smtp['port'];
+            $mail->Host       = $smtp['host'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $smtp['user'];
+            $mail->Password   = $smtp['pass'];
+            $mail->SMTPSecure = $smtp['secure'];
+            $mail->Port       = $smtp['port'];
 
             // Remitente
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
@@ -540,16 +453,6 @@ class Notificacion extends CI_Controller
 
     public function enviar_recordatorios_cron_job_run()
     {
-        if (! $this->validar_token_cron_cli()) {
-            return;
-        }
-
-        $idPortalPrueba = $this->obtener_portal_prueba_cli();
-
-        if ($idPortalPrueba === false) {
-            return;
-        }
-
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
         $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
@@ -594,18 +497,7 @@ class Notificacion extends CI_Controller
             }
         }
 
-        // En una prueba manual restringida al Portal 12 usamos un slot
-        // conocido de su configuracion, sin alterar el horario del cron normal.
-        if ($idPortalPrueba === 12) {
-            $slotActual = '09:00 AM';
-
-            log_message(
-                'info',
-                '[CRON TEST] Recordatorios Portal 12 ejecutados manualmente con slot 09:00 AM.'
-            );
-        }
-
-        // En ejecucion normal se conserva la ventana horaria oficial.
+        // Si no estamos dentro de la ventana del horario, cancelar
         if ($slotActual === null) {
             return;
         }
@@ -615,57 +507,13 @@ class Notificacion extends CI_Controller
 
         // Obtiene recordatorios filtrando por slot + anticipación
         $registros = $this->Notificacion_model
-            ->get_recordatorios_para_slot_window($slotActual, $hoy, false, $idPortalPrueba);
-
+            ->get_recordatorios_para_slot_window($slotActual, $hoy, false);
 
         if (empty($registros)) {
             return;
         }
 
         foreach ($registros as $r) {
-
-            // ====================================
-            //   RECUPERAR MENSUAL VENCIDO
-            // ====================================
-            // En ejecución normal, si proxima_fecha quedó atrás,
-            // primero la llevamos a su siguiente ocurrencia real.
-            // Solo se notifica si esa nueva fecha ya está dentro
-            // de la ventana de anticipación.
-            if (
-                $idPortalPrueba === null
-                && strtolower((string) $r->tipo) === 'mensual'
-                && $r->proxima_fecha < $hoy
-            ) {
-                $nueva = $this->calcularProximaFecha($r, $tz);
-
-                if ($nueva === null) {
-                    continue;
-                }
-
-                $actualizado = $this->Notificacion_model
-                    ->actualizar_proxima_fecha($r->id, $nueva);
-
-                if (! $actualizado) {
-                    log_message(
-                        'error',
-                        "[CRON] No se pudo recuperar proxima_fecha del recordatorio ID={$r->id}."
-                    );
-                    continue;
-                }
-
-                $r->proxima_fecha = $nueva;
-
-                $limiteAnticipacion = (new DateTime($hoy, $tz))
-                    ->modify('+' . max(0, (int) $r->dias_anticipacion) . ' days')
-                    ->format('Y-m-d');
-
-                if (
-                    $r->proxima_fecha < $hoy
-                    || $r->proxima_fecha > $limiteAnticipacion
-                ) {
-                    continue;
-                }
-            }
 
             // ====================================
             //            ENVÍO POR CORREO
@@ -732,11 +580,7 @@ class Notificacion extends CI_Controller
             // ====================================
             //          REPROGRAMAR FECHA
             // ====================================
-            if (
-                $idPortalPrueba === null
-                && strtolower((string) $r->tipo) === 'mensual'
-                && $r->proxima_fecha <= $hoy
-            ) {
+            if ($hoy === $r->proxima_fecha) {
                 $nueva = $this->calcularProximaFecha($r, $tz);
                 if ($nueva !== null) {
                     $this->Notificacion_model
@@ -746,14 +590,13 @@ class Notificacion extends CI_Controller
         }
     }
 
-        /**
-         * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
-         * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
-         */
+    /**
+     * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
+     * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
+     */
 
     private function enviar_whatsapp_recordatorio($telefonos, $portal, $cliente, $recordatorio, $mensaje, $fecha, $template = 'notificacion_recordatorio')
     {
-
         $base = rtrim(API_URL, '/'); // define(API_URL, 'http://localhost:8000/api'); por ejemplo
         $url  = $base . '/send-notification-recordatorio';
 
@@ -804,10 +647,12 @@ class Notificacion extends CI_Controller
             $response = curl_exec($ch);
             if ($response === false) {
                 log_message('error', '[WA-REC] cURL error (' . $phone . '): ' . curl_error($ch));
+                curl_close($ch);
                 continue;
             }
 
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
             $json = json_decode($response, true);
             if ($code >= 200 && $code < 300 && isset($json['status']) && $json['status'] === 'success') {
@@ -826,66 +671,31 @@ class Notificacion extends CI_Controller
  */
     private function calcularProximaFecha($r, DateTimeZone $tz)
     {
-        // Los recordatorios unicos no se reprograman.
-        if (
-            ! isset($r->tipo)
-            || strtolower((string) $r->tipo) !== 'mensual'
-        ) {
+        // Si no es recurrente, no actualizar
+        if (isset($r->tipo) && strtolower($r->tipo) === 'unico') {
             return null;
         }
 
-        $fechaBase = ! empty($r->fecha_base)
-            ? $r->fecha_base
-            : ($r->proxima_fecha ?? null);
-
-        if (empty($fechaBase)) {
-            return null;
+        $base = null;
+        if (! empty($r->proxima_fecha)) {
+            $base = DateTime::createFromFormat('Y-m-d', $r->proxima_fecha, $tz);
+        } elseif (! empty($r->fecha_base)) {
+            $base = DateTime::createFromFormat('Y-m-d', $r->fecha_base, $tz);
         }
-
-        $base = DateTimeImmutable::createFromFormat(
-            '!Y-m-d',
-            $fechaBase,
-            $tz
-        );
 
         if (! $base) {
             return null;
         }
 
+        // Por defecto 1 mes si no viene intervalo_meses
         $intervalo = (int) ($r->intervalo_meses ?? 1);
-
         if ($intervalo <= 0) {
             $intervalo = 1;
         }
 
-        $hoy = new DateTimeImmutable('today', $tz);
-
-        // La recurrencia siempre queda anclada al dia original.
-        // Partimos del primer dia del mes para evitar el overflow
-        // nativo de fechas como 29, 30 y 31.
-        $diaBase = (int) $base->format('d');
-        $inicioMesBase = $base->modify('first day of this month');
-
-        $ocurrencia = 0;
-
-        do {
-            $meses = $ocurrencia * $intervalo;
-
-            $inicioMes = $inicioMesBase->modify("+{$meses} months");
-
-            $ultimoDiaMes = (int) $inicioMes->format('t');
-            $dia = min($diaBase, $ultimoDiaMes);
-
-            $proxima = $inicioMes->setDate(
-                (int) $inicioMes->format('Y'),
-                (int) $inicioMes->format('m'),
-                $dia
-            );
-
-            $ocurrencia++;
-        } while ($proxima <= $hoy);
-
-        return $proxima->format('Y-m-d');
+        // Avanza meses
+        $base->modify("+{$intervalo} month");
+        return $base->format('Y-m-d');
     }
 
     public function enviar_notificaciones_inmediatamente()
@@ -969,7 +779,7 @@ class Notificacion extends CI_Controller
     {
         $token = $this->uri->segment(3) ?: $this->input->get('token', true);
 
-        if ($token !== 'TOKEN_LEGACY_REMOVIDO') {
+        if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
             show_404(); // o mostrar acceso no autorizado
             return;
         }
@@ -1056,7 +866,6 @@ class Notificacion extends CI_Controller
     // Envio de  notificaciones  whastapp
     public function enviar_whatsapp($telefonos, $portal, $sucursal, $submodulos, $template)
     {
-
         $api_url = API_URL;
         $url     = $api_url . 'send-notification';
 
@@ -1103,10 +912,12 @@ class Notificacion extends CI_Controller
             // Maneja errores de cURL
             if (curl_errno($ch)) {
                 log_message('error', 'Error de cURL: ' . curl_error($ch));
+                curl_close($ch);
                 continue;
             }
 
             // Cierra cURL
+            curl_close($ch);
 
             // Decodifica la respuesta
             $result = json_decode($response, true);
@@ -1123,7 +934,6 @@ class Notificacion extends CI_Controller
 
     public function enviar_whatsapp_ex($telefonos, $portal, $sucursal, $submodulos, $template)
     {
-
         $api_url = API_URL;
         $url     = $api_url . 'send-notification-ex';
 
@@ -1169,10 +979,12 @@ class Notificacion extends CI_Controller
             // Maneja errores de cURL
             if (curl_errno($ch)) {
                 log_message('error', 'Error de cURL: ' . curl_error($ch));
+                curl_close($ch);
                 continue;
             }
 
             // Cierra cURL
+            curl_close($ch);
 
             // Decodifica la respuesta
             $result = json_decode($response, true);
@@ -1190,6 +1002,42 @@ class Notificacion extends CI_Controller
     /*correos  para  notificaciones */
 
     // aqui termina   la funcion notificaciones  via  whatsapp   y correos
+    public function alertaNuevoCandidato()
+    {
+        $Pusher_Opciones = [
+            //"scheme" => "http",
+            //"host" => "tudominio.com", //"The HOST option overrides the CLUSTER option!"
+            //"port" => 80,
+            //"timeout" => 30,
+            //
+            "encrypted" => false,
+            //"cluster" => "mt1",
+            //"curl_options" => array(
+            //CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
+            //)
+        ];
+
+        $options = [
+            'cluster'   => 'mt1',
+            'useTLS'    => true,
+            "encrypted" => false,
+        ];
+        $pusher = new Pusher\Pusher(
+            '1c1dc3822919195c87be',
+            'aebe2c78bb647fffeb02',
+            '1561704',
+            $options
+        );
+
+        $Mi_Info = [
+            "notificacion" => $this->input->post('mensaje'),
+            "timestamp"    => time(),
+        ];
+
+        //$data['message'] = 'hello world';
+        $pusher->trigger('rodicontrol-channel', 'my-event', $Mi_Info);
+    }
+
     public function marcar_visto()
     {
         $id         = $this->input->post('id');
@@ -1270,6 +1118,170 @@ class Notificacion extends CI_Controller
             $data['contadorNotificaciones'] = null;
             echo json_encode($data);
         }
+    }
+
+    /**
+     * Prueba controlada de correo y WhatsApp desde CLI.
+     *
+     * Uso:
+     * php index.php Notificacion probar_envio_cli 12 correo@dominio.com 521XXXXXXXXXX
+     */
+    public function probar_envio_cli($idPortal = null, $correo = null, $telefono = null)
+    {
+        fwrite(STDERR, "[TRACE] Metodo probar_envio_cli ejecutado\n");
+        // Nunca permitir ejecución desde navegador
+        if (! function_exists('is_cli') || ! is_cli()) {
+            show_404();
+            return;
+        }
+
+        $idPortal = (string) $idPortal;
+        $correo = rawurldecode(trim((string) $correo));
+        $telefono = ltrim(trim((string) $telefono), '+');
+
+        if (
+            ! ctype_digit($idPortal) ||
+            (int) $idPortal <= 0 ||
+            ! filter_var($correo, FILTER_VALIDATE_EMAIL) ||
+            ! preg_match('/^[1-9][0-9]{9,14}$/', $telefono)
+        ) {
+            fwrite(
+                STDERR,
+                "Uso: php index.php Notificacion probar_envio_cli PORTAL CORREO TELEFONO\n" .
+                "El telefono debe incluir lada internacional, solo digitos.\n"
+            );
+            return;
+        }
+
+        $nombrePortal = 'Portal ' . $idPortal;
+
+        echo "\n===== PRUEBA CLI TALENTSAFE =====\n";
+        echo "Portal: {$idPortal}\n";
+        echo "Destinatarios: proporcionados por terminal\n";
+
+        // =================================================
+        // 1. PRUEBA DE CORREO SMTP
+        // =================================================
+
+        echo "\n===== CORREO =====\n";
+
+        try {
+            $this->load->library('phpmailer_lib');
+            $this->config->load('email_private', true);
+
+            $smtp = $this->config->item(
+                'email_private',
+                'email_private'
+            );
+
+            $mail = $this->phpmailer_lib->load();
+
+            $mail->isSMTP();
+            $mail->Host       = $smtp['host'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $smtp['user'];
+            $mail->Password   = $smtp['pass'];
+            $mail->SMTPSecure = $smtp['secure'];
+            $mail->Port       = $smtp['port'];
+
+            $mail->CharSet = 'UTF-8';
+            $mail->isHTML(true);
+
+            $mail->setFrom(
+                'soporte@talentsafecontrol.com',
+                'TalentSafe Control'
+            );
+
+            $mail->addAddress($correo);
+
+            $mail->Subject = 'Prueba CLI - TalentSafe Control';
+
+            $mail->Body =
+            '<h3>Prueba controlada TalentSafe</h3>' .
+            '<p>Verificación del servicio de correo utilizado por los CRON.</p>' .
+            '<p>Portal: ' . htmlspecialchars($nombrePortal, ENT_QUOTES, 'UTF-8') . '</p>' .
+                '<p>No se requiere ninguna acción.</p>';
+
+            if ($mail->send()) {
+                echo "[OK] SMTP acepto el mensaje.\n";
+            } else {
+                echo "[ERROR] SMTP: {$mail->ErrorInfo}\n";
+            }
+
+        } catch (\Throwable $e) {
+            echo "[ERROR] Correo: {$e->getMessage()}\n";
+        }
+
+        // =================================================
+        // 2. PRUEBA DE WHATSAPP MEDIANTE LARAVEL
+        // =================================================
+
+        echo "\n===== WHATSAPP =====\n";
+
+        // Mismo endpoint usado por enviar_whatsapp()
+        $url = API_URL . 'send-notification';
+
+        $payload = [
+            'phone'          => $telefono,
+            'template'       => 'notificacion_empleados',
+            'nombre_cliente' => $nombrePortal,
+            'submodulo'      => 'Expediente (PRUEBA CLI)',
+            'sucursales'     => 'Prueba controlada',
+        ];
+
+        $ch = curl_init();
+
+        if ($ch === false) {
+            echo "[ERROR] No se pudo inicializar cURL.\n";
+            return;
+        }
+
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_POST           => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ],
+            CURLOPT_POSTFIELDS     => json_encode($payload),
+        ]);
+
+        $response  = curl_exec($ch);
+        $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+
+        echo "HTTP: {$httpCode}\n";
+
+        if ($response === false) {
+            echo "[ERROR] cURL: {$curlError}\n";
+            return;
+        }
+
+        $result = json_decode($response, true);
+
+        if (
+            $httpCode >= 200 &&
+            $httpCode < 300 &&
+            is_array($result) &&
+            ($result['status'] ?? '') === 'success'
+        ) {
+            echo "[OK] Laravel confirmo la solicitud de WhatsApp.\n";
+        } else {
+            echo "[ERROR] Laravel no confirmo el envio.\n";
+
+            if (is_array($result)) {
+                echo "Detalle: " .
+                    ($result['message'] ?? $result['error'] ?? 'Sin detalle') .
+                    "\n";
+            } else {
+                echo "Respuesta HTTP no reconocida.\n";
+            }
+        }
+
+        echo "\n===== FIN DE PRUEBA =====\n";
     }
 
 }
