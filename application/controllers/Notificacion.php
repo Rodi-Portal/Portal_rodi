@@ -331,13 +331,25 @@ class Notificacion extends CI_Controller
             }
 
             $modulos = [];
-            if ((int) $registro->cursos === 1 && ($estado['statusCursos'] ?? '') === 'rojo') {
+
+            if (
+                (int) $registro->cursos === 1 &&
+                in_array(($estado['statusCursos'] ?? ''), ['amarillo', 'rojo'], true)
+            ) {
                 $modulos[] = "Cursos";
             }
-            if ((int) $registro->evaluaciones === 1 && ($estado['statusEvaluaciones'] ?? '') === 'rojo') {
+
+            if (
+                (int) $registro->evaluaciones === 1 &&
+                in_array(($estado['statusEvaluaciones'] ?? ''), ['amarillo', 'rojo'], true)
+            ) {
                 $modulos[] = "Evaluaciones";
             }
-            if ((int) $registro->expediente === 1 && ($estado['statusDocuments'] ?? '') === 'rojo') {
+
+            if (
+                (int) $registro->expediente === 1 &&
+                in_array(($estado['statusDocuments'] ?? ''), ['amarillo', 'rojo'], true)
+            ) {
                 $modulos[] = "Expediente";
             }
 
