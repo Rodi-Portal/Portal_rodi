@@ -1134,7 +1134,7 @@ class Notificacion extends CI_Controller
         }
 
         $idPortal = (string) $idPortal;
-        $correo   = trim((string) $correo);
+        $correo = rawurldecode(trim((string) $correo));
         $telefono = ltrim(trim((string) $telefono), '+');
 
         if (
