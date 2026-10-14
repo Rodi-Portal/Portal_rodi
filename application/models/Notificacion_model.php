@@ -98,8 +98,16 @@ class Notificacion_model extends CI_Model
             ->group_end();
 
         // 🔹 Filtro flexible por hora
+        $slotNormalizado = strtoupper(trim($slot));
+        $slotAlternativo = preg_replace('/^0(?=\d:)/', '', $slotNormalizado);
+
         $this->db->group_start();
-        $this->db->like('ne.horarios', $slot);
+        $this->db->like('ne.horarios', $slotNormalizado);
+
+        if ($slotAlternativo !== $slotNormalizado) {
+            $this->db->or_like('ne.horarios', $slotAlternativo);
+        }
+
         $this->db->group_end();
 
         // DEBUG: ver query y resultados
@@ -124,8 +132,16 @@ class Notificacion_model extends CI_Model
             ->group_end();
 
         // 🔹 Filtro flexible por hora
+        $slotNormalizado = strtoupper(trim($slot));
+        $slotAlternativo = preg_replace('/^0(?=\d:)/', '', $slotNormalizado);
+
         $this->db->group_start();
-        $this->db->like('ne.horarios', $slot);
+        $this->db->like('ne.horarios', $slotNormalizado);
+
+        if ($slotAlternativo !== $slotNormalizado) {
+            $this->db->or_like('ne.horarios', $slotAlternativo);
+        }
+
         $this->db->group_end();
 
         // DEBUG: ver query y resultados
