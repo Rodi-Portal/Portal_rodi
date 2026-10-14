@@ -5,6 +5,11 @@ class PaymentAccessHook
 {
     public function verificar()
     {
+        // Los CRON y comandos CLI no utilizan sesiones web.
+        if (function_exists('is_cli') && is_cli()) {
+            return;
+        }
+
         $CI = &get_instance();
 
         $controlador = strtolower($CI->router->fetch_class());
