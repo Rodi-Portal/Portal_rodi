@@ -10,6 +10,7 @@ class Notificacion extends CI_Controller
 
         // Si se ejecuta desde CLI (cron), silenciamos y no validamos sesión
         if (function_exists('is_cli') && is_cli()) {
+            fwrite(STDERR, "[TRACE] Constructor Notificacion ejecutado\n");
             error_reporting(E_ALL & ~E_WARNING & ~E_NOTICE & ~E_DEPRECATED);
             ini_set('display_errors', 0);
             // nada de validar login ni cargar usuario_sesion en CLI
@@ -1127,6 +1128,7 @@ class Notificacion extends CI_Controller
      */
     public function probar_envio_cli($idPortal = null, $correo = null, $telefono = null)
     {
+        fwrite(STDERR, "[TRACE] Metodo probar_envio_cli ejecutado\n");
         // Nunca permitir ejecución desde navegador
         if (! function_exists('is_cli') || ! is_cli()) {
             show_404();
