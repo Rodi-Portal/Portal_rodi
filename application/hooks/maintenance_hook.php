@@ -4,7 +4,7 @@
  *
  */
 class Maintenance_hook
-{   
+{
     public function offline_check(){
         if(file_exists(APPPATH.'config/config.php')){
             include(APPPATH.'config/config.php');
