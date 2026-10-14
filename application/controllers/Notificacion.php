@@ -399,16 +399,16 @@ class Notificacion extends CI_Controller
         $this->load->library('phpmailer_lib');
         $mail = $this->phpmailer_lib->load();
         $this->config->load('email_private', true);
-         $smtp = $this->config->item('email_private', 'email_private');
+        $smtp = $this->config->item('email_private', 'email_private');
         try {
-                                                              // Configuración del servidor SMTP
+            // Configuración del servidor SMTP
             $mail->isSMTP();
-                $mail->Host       = $smtp['host'];
-                $mail->SMTPAuth   = true;
-                $mail->Username   = $smtp['user'];
-                $mail->Password   = $smtp['pass'];
-                $mail->SMTPSecure = $smtp['secure'];
-                $mail->Port       = $smtp['port'];
+            $mail->Host       = $smtp['host'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $smtp['user'];
+            $mail->Password   = $smtp['pass'];
+            $mail->SMTPSecure = $smtp['secure'];
+            $mail->Port       = $smtp['port'];
 
             // Remitente
             $mail->setFrom('soporte@talentsafecontrol.com', 'TalentSafe Control');
@@ -589,10 +589,10 @@ class Notificacion extends CI_Controller
         }
     }
 
-        /**
-         * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
-         * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
-         */
+    /**
+     * Enviar WhatsApp para RECORDATORIOS al endpoint Laravel /send-notification-recordatorio
+     * Requiere plantilla con 5 parámetros: portal, cliente, recordatorio, mensaje, fecha.
+     */
 
     private function enviar_whatsapp_recordatorio($telefonos, $portal, $cliente, $recordatorio, $mensaje, $fecha, $template = 'notificacion_recordatorio')
     {
@@ -1117,6 +1117,169 @@ class Notificacion extends CI_Controller
             $data['contadorNotificaciones'] = null;
             echo json_encode($data);
         }
+    }
+
+    /**
+     * Prueba controlada de correo y WhatsApp desde CLI.
+     *
+     * Uso:
+     * php index.php Notificacion probar_envio_cli 12 correo@dominio.com 521XXXXXXXXXX
+     */
+    public function probar_envio_cli($idPortal = null, $correo = null, $telefono = null)
+    {
+        // Nunca permitir ejecución desde navegador
+        if (! function_exists('is_cli') || ! is_cli()) {
+            show_404();
+            return;
+        }
+
+        $idPortal = (string) $idPortal;
+        $correo   = trim((string) $correo);
+        $telefono = ltrim(trim((string) $telefono), '+');
+
+        if (
+            ! ctype_digit($idPortal) ||
+            (int) $idPortal <= 0 ||
+            ! filter_var($correo, FILTER_VALIDATE_EMAIL) ||
+            ! preg_match('/^[1-9][0-9]{9,14}$/', $telefono)
+        ) {
+            fwrite(
+                STDERR,
+                "Uso: php index.php Notificacion probar_envio_cli PORTAL CORREO TELEFONO\n" .
+                "El telefono debe incluir lada internacional, solo digitos.\n"
+            );
+            return;
+        }
+
+        $nombrePortal = 'Portal ' . $idPortal;
+
+        echo "\n===== PRUEBA CLI TALENTSAFE =====\n";
+        echo "Portal: {$idPortal}\n";
+        echo "Destinatarios: proporcionados por terminal\n";
+
+        // =================================================
+        // 1. PRUEBA DE CORREO SMTP
+        // =================================================
+
+        echo "\n===== CORREO =====\n";
+
+        try {
+            $this->load->library('phpmailer_lib');
+            $this->config->load('email_private', true);
+
+            $smtp = $this->config->item(
+                'email_private',
+                'email_private'
+            );
+
+            $mail = $this->phpmailer_lib->load();
+
+            $mail->isSMTP();
+            $mail->Host       = $smtp['host'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $smtp['user'];
+            $mail->Password   = $smtp['pass'];
+            $mail->SMTPSecure = $smtp['secure'];
+            $mail->Port       = $smtp['port'];
+
+            $mail->CharSet = 'UTF-8';
+            $mail->isHTML(true);
+
+            $mail->setFrom(
+                'soporte@talentsafecontrol.com',
+                'TalentSafe Control'
+            );
+
+            $mail->addAddress($correo);
+
+            $mail->Subject = 'Prueba CLI - TalentSafe Control';
+
+            $mail->Body =
+            '<h3>Prueba controlada TalentSafe</h3>' .
+            '<p>Verificación del servicio de correo utilizado por los CRON.</p>' .
+            '<p>Portal: ' . htmlspecialchars($nombrePortal, ENT_QUOTES, 'UTF-8') . '</p>' .
+                '<p>No se requiere ninguna acción.</p>';
+
+            if ($mail->send()) {
+                echo "[OK] SMTP acepto el mensaje.\n";
+            } else {
+                echo "[ERROR] SMTP: {$mail->ErrorInfo}\n";
+            }
+
+        } catch (\Throwable $e) {
+            echo "[ERROR] Correo: {$e->getMessage()}\n";
+        }
+
+        // =================================================
+        // 2. PRUEBA DE WHATSAPP MEDIANTE LARAVEL
+        // =================================================
+
+        echo "\n===== WHATSAPP =====\n";
+
+        // Mismo endpoint usado por enviar_whatsapp()
+        $url = API_URL . 'send-notification';
+
+        $payload = [
+            'phone'          => $telefono,
+            'template'       => 'notificacion_empleados',
+            'nombre_cliente' => $nombrePortal,
+            'submodulo'      => 'Expediente (PRUEBA CLI)',
+            'sucursales'     => 'Prueba controlada',
+        ];
+
+        $ch = curl_init();
+
+        if ($ch === false) {
+            echo "[ERROR] No se pudo inicializar cURL.\n";
+            return;
+        }
+
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_POST           => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ],
+            CURLOPT_POSTFIELDS     => json_encode($payload),
+        ]);
+
+        $response  = curl_exec($ch);
+        $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+
+        echo "HTTP: {$httpCode}\n";
+
+        if ($response === false) {
+            echo "[ERROR] cURL: {$curlError}\n";
+            return;
+        }
+
+        $result = json_decode($response, true);
+
+        if (
+            $httpCode >= 200 &&
+            $httpCode < 300 &&
+            is_array($result) &&
+            ($result['status'] ?? '') === 'success'
+        ) {
+            echo "[OK] Laravel confirmo la solicitud de WhatsApp.\n";
+        } else {
+            echo "[ERROR] Laravel no confirmo el envio.\n";
+
+            if (is_array($result)) {
+                echo "Detalle: " .
+                    ($result['message'] ?? $result['error'] ?? 'Sin detalle') .
+                    "\n";
+            } else {
+                echo "Respuesta HTTP no reconocida.\n";
+            }
+        }
+
+        echo "\n===== FIN DE PRUEBA =====\n";
     }
 
 }
