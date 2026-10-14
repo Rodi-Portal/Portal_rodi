@@ -191,7 +191,7 @@ class Notificacion extends CI_Controller
         $tz              = new DateTimeZone('America/Mexico_City');
         $ahora           = new DateTime('now', $tz);
         $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        $graciaMinutos   = 999;
+        $graciaMinutos   = 15;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {
@@ -297,7 +297,7 @@ class Notificacion extends CI_Controller
         $ahora = new DateTime('now', $tz);
 
         $horariosValidos = ['09:00 AM', '03:00 PM', '07:00 PM'];
-        $graciaMinutos   = 999;
+        $graciaMinutos   = 15;
         $slotActual      = null;
 
         foreach ($horariosValidos as $h) {

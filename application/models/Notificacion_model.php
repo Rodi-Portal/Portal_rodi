@@ -104,11 +104,6 @@ class Notificacion_model extends CI_Model
 
         // DEBUG: ver query y resultados
         $query = $this->db->get();
-        echo "<pre>";
-        echo "SQL ejecutado:\n" . $this->db->last_query() . "\n";
-        echo "Resultados: " . $query->num_rows() . "\n";
-        print_r($query->result());
-        echo "</pre>";
 
         return $query->result();
     }
