@@ -101,6 +101,10 @@ class Notificacion extends CI_Controller
     }
     public function enviar_notificaciones_cron_job()
     {
+          if (!is_cli()) {
+                show_404();
+                return;
+            }
         // --- Validación del token ---
         /* $token = $this->uri->segment(3) ?: $this->input->get('token', true);
         if ($token !== 'jlF4ELpLyE35dZ9Tq3SqdcMxPrEL1Zrf5fr7ChRJzcvAezEdFj6YGG5EVFPqVcqO') {
@@ -185,7 +189,10 @@ class Notificacion extends CI_Controller
             show_404();
             return;
         }*/
-
+        if (!is_cli()) {
+            show_404();
+            return;
+        }
         log_message('info', '[CRON EX] Iniciando notificaciones de ex-empleados...');
 
         // --- Determinar el horario actual (con ventana de gracia ±15 min) ---
@@ -294,6 +301,10 @@ class Notificacion extends CI_Controller
 
     public function enviar_notificaciones_cron_job2()
     {
+        if (!is_cli()) {
+            show_404();
+            return;
+        }
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
 
@@ -453,6 +464,10 @@ class Notificacion extends CI_Controller
 
     public function enviar_recordatorios_cron_job_run()
     {
+        if (!is_cli()) {
+            show_404();
+            return;
+        }
         $tz    = new DateTimeZone('America/Mexico_City');
         $ahora = new DateTime('now', $tz);
         $hoy   = (new DateTime('today', $tz))->format('Y-m-d');
