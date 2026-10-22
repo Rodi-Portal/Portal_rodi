@@ -104,6 +104,11 @@ class Notificacion_model extends CI_Model
         // 🔹 Filtro flexible por hora
         $this->db->group_start();
         $this->db->like('ne.horarios', $slot);
+
+        $slotAlternativo = ltrim($slot, '0');
+        if ($slotAlternativo !== $slot) {
+            $this->db->or_like('ne.horarios', $slotAlternativo);
+        }
         $this->db->group_end();
 
         // DEBUG: ver query y resultados
