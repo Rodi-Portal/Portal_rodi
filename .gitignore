@@ -16,15 +16,15 @@ application/config/constants.php
 application/config/config.php
 application/config/database.php
 application/config/keys/*
+application/config/auth_bridge_private.php
 .htaccess
 cpanel.yml
-/application/config/email_private.php
-
-config/*
+application/config/email_private.php
 user_guide_src/build/*
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
+
 /_doping/
 /_const/
 /_adjuntos/*
@@ -44,6 +44,13 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /_cursos/*
 /_documentEmpleado/*
 /_perfilEmpleado/*
+/_checadasEvidencia/*
+/_internos/*
+/_renovaciones/*
+/storagetalentsafe/*
+/portals/*
+
+
 
 /_documentosBolsa/*
 /_evaluacionesPortal/*
