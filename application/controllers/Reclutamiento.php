@@ -1882,10 +1882,10 @@ class Reclutamiento extends CI_Controller
             ];
 
             $generales = [
-                'telefono_req' => $this->input->post('telefono_req'),
-                'correo_req'   => $this->input->post('correo_req'),
-                'nombre'       => $nombre,
-                'paterno'      => $paterno,
+                'telefono' => $this->input->post('telefono_req'),
+                'correo'   => $this->input->post('correo_req'),
+                'nombre'   => $nombre,
+                'paterno'  => $paterno,
             ];
 
             $facturacion = [
