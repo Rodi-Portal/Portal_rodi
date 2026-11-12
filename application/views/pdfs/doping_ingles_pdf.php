@@ -121,7 +121,7 @@
 			$ref[] = $s->valor_referencia;		
 		} 	
 		$firma = base_url().'img/'.$area->firma;
-		$qr_consulta = base_url().'_qrconsult/'.$qr;
+		$qr_consulta = !empty($qr) ? $qr : '';
 	?>
 	<!-- HOJA 1 -->
 	<div class="w-80 flotar">

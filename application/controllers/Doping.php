@@ -1247,22 +1247,12 @@ class Doping extends CI_Controller
         }
 
         //
-        if ($doping->qr_token == null) {
-            $this->load->library('ciqrcode');
-            //QR de consulta
-            $claveAleatoria = substr(md5(microtime()), 1, 16);
-            $params['data'] = 'https://test-result.rodi.com.mx/doping/doping.php?uid=' . $claveAleatoria;
-            $params['level'] = 'H';
-            $params['size'] = 10;
-            $params['savename'] = "./_qrconsult/qr_$id_doping.png";
-            $this->ciqrcode->generate($params);
-            $data['qr'] = "qr_$id_doping.png";
-            $datos = array(
-                'qr_token' => $claveAleatoria,
-            );
-            $this->doping_model->editarDoping($datos, $id_doping);
-        } else {
-            $data['qr'] = "qr_$id_doping.png";
+        try {
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+        } catch (\Throwable $e) {
+            log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
+            show_error('No fue posible preparar el código QR del estudio.', 500);
+            return;
         }
         //
         $data['doping'] = $doping;
@@ -1334,26 +1324,12 @@ class Doping extends CI_Controller
         }
     
         // Creación del código QR para consulta en línea
-        if ($doping->qr_token !== null) {
-            $this->load->library('ciqrcode');
-            $claveAleatoria = substr(md5(microtime()), 1, 16);
-            $params['data'] = 'https://test-result.rodi.com.mx/doping/doping.php?uid=' . $claveAleatoria;
-            $params['level'] = 'H';
-            $params['size'] = 10;
-            $params['savename'] = "./_qrconsult/qr_$id_doping.png";
-    
-            try {
-                $this->ciqrcode->generate($params);
-            } catch (Exception $e) {
-                log_message('error', 'Error generating QR code: ' . $e->getMessage());
-            }
-    
-            $data['qr'] = "qr_$id_doping.png";
-    
-            $datos = array('qr_token' => $claveAleatoria);
-            $this->doping_model->editarDoping($datos, $id_doping);
-        } else {
-            $data['qr'] = "qr_$id_doping.png";
+        try {
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+        } catch (\Throwable $e) {
+            log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
+            show_error('No fue posible preparar el código QR del estudio.', 500);
+            return;
         }
     
         $data['doping'] = $doping;
@@ -1391,22 +1367,12 @@ class Doping extends CI_Controller
             $data['area'] = $this->area_model->getAreaById($doping->id_area);
         }
         //
-        if ($doping->qr_token == null) {
-            $this->load->library('ciqrcode');
-            //QR de consulta
-            $claveAleatoria = substr(md5(microtime()), 1, 16);
-            $params['data'] = 'https://test-result.rodi.com.mx/doping/doping.php?uid=' . $claveAleatoria;
-            $params['level'] = 'H';
-            $params['size'] = 10;
-            $params['savename'] = "./_qrconsult/qr_$id_doping.png";
-            $this->ciqrcode->generate($params);
-            $data['qr'] = "qr_$id_doping.png";
-            $datos = array(
-                'qr_token' => $claveAleatoria,
-            );
-            $this->doping_model->editarDoping($datos, $id_doping);
-        } else {
-            $data['qr'] = "qr_$id_doping.png";
+        try {
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+        } catch (\Throwable $e) {
+            log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
+            show_error('No fue posible preparar el código QR del estudio.', 500);
+            return;
         }
         $data['doping'] = $doping;
         $html = $this->load->view('pdfs/doping_ingles_pdf', $data, true);
@@ -1472,22 +1438,12 @@ class Doping extends CI_Controller
             $data['area'] = $this->area_model->getAreaById($doping->id_area);
         }
         //
-        if ($doping->qr_token == null) {
-            $this->load->library('ciqrcode');
-            //QR de consulta
-            $claveAleatoria = substr(md5(microtime()), 1, 16);
-            $params['data'] = 'https://test-result.rodi.com.mx/doping/doping.php?uid=' . $claveAleatoria;
-            $params['level'] = 'H';
-            $params['size'] = 10;
-            $params['savename'] = "./_qrconsult/qr_$id_doping.png";
-            $this->ciqrcode->generate($params);
-            $data['qr'] = "qr_$id_doping.png";
-            $datos = array(
-                'qr_token' => $claveAleatoria,
-            );
-            $this->doping_model->editarDoping($datos, $id_doping);
-        } else {
-            $data['qr'] = "qr_$id_doping.png";
+        try {
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+        } catch (\Throwable $e) {
+            log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
+            show_error('No fue posible preparar el código QR del estudio.', 500);
+            return;
         }
 
         $data['doping'] = $doping;
@@ -1511,22 +1467,12 @@ class Doping extends CI_Controller
             $data['area'] = $this->area_model->getAreaById($doping->id_area);
         }
         //
-        if ($doping->qr_token == null) {
-            $this->load->library('ciqrcode');
-            //QR de consulta
-            $claveAleatoria = substr(md5(microtime()), 1, 16);
-            $params['data'] = 'https://test-result.rodi.com.mx/doping/doping.php?uid=' . $claveAleatoria;
-            $params['level'] = 'H';
-            $params['size'] = 10;
-            $params['savename'] = "./_qrconsult/qr_$id_doping.png";
-            $this->ciqrcode->generate($params);
-            $data['qr'] = "qr_$id_doping.png";
-            $datos = array(
-                'qr_token' => $claveAleatoria,
-            );
-            $this->doping_model->editarDoping($datos, $id_doping);
-        } else {
-            $data['qr'] = "qr_$id_doping.png";
+        try {
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+        } catch (\Throwable $e) {
+            log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
+            show_error('No fue posible preparar el código QR del estudio.', 500);
+            return;
         }
 
         $data['doping'] = $doping;
@@ -1617,6 +1563,123 @@ class Doping extends CI_Controller
         } else {
             return true;
         }
+    }
+    private function prepararQrDopingPdf($idDoping)
+    {
+        $idDoping = (int) $idDoping;
+
+        if ($idDoping <= 0) {
+            throw new \RuntimeException('ID de Doping no válido.');
+        }
+
+        // Obtener la relación real del estudio con su candidato y portal.
+        $registro = $this->db
+            ->select('d.id_candidato, d.id_cliente, d.qr_token, cl.id_portal')
+            ->from('doping AS d')
+            ->join('cliente AS cl', 'cl.id = d.id_cliente')
+            ->where('d.id', $idDoping)
+            ->where('d.eliminado', 0)
+            ->limit(1)
+            ->get()
+            ->row();
+
+        if (!$registro) {
+            throw new \RuntimeException('No se encontró el estudio de Doping.');
+        }
+
+        $idPortal = (int) $registro->id_portal;
+        $idCandidato = (int) $registro->id_candidato;
+
+        if ($idPortal <= 0 || $idCandidato <= 0) {
+            throw new \RuntimeException('El estudio no tiene portal o candidato válido.');
+        }
+
+        $storage = rtrim(FCPATH, '/\\') . DIRECTORY_SEPARATOR . 'storagetalentsafe';
+
+        if (!is_dir($storage)) {
+            throw new \RuntimeException('No se encontró storagetalentsafe.');
+        }
+
+        $directorio = $storage
+            . '/portales/' . $idPortal
+            . '/_docs/candidatos/' . $idCandidato;
+
+        if (!is_dir($directorio) &&
+            !@mkdir($directorio, 0770, true) &&
+            !is_dir($directorio)) {
+            throw new \RuntimeException('No se pudo crear el directorio del candidato.');
+        }
+
+        $archivo = $directorio . '/'
+            . $idCandidato . '_qr_doping_' . $idDoping . '.png';
+
+        // El token existente nunca debe reemplazarse.
+        $token = trim((string) ($registro->qr_token ?? ''));
+
+        if ($token === '') {
+            $nuevoToken = bin2hex(random_bytes(8));
+
+            // Actualización condicional para no sobrescribir otro token.
+            $actualizado = $this->db
+                ->where('id', $idDoping)
+                ->group_start()
+                    ->where('qr_token', null)
+                    ->or_where('qr_token', '')
+                ->group_end()
+                ->update('doping', ['qr_token' => $nuevoToken]);
+
+            if (!$actualizado) {
+                throw new \RuntimeException('No se pudo registrar el token del QR.');
+            }
+
+            $actual = $this->db
+                ->select('qr_token')
+                ->where('id', $idDoping)
+                ->get('doping')
+                ->row();
+
+            $token = trim((string) ($actual->qr_token ?? ''));
+
+            if ($token === '') {
+                throw new \RuntimeException('No se pudo recuperar el token del QR.');
+            }
+        }
+
+        // Reconstruir el archivo cuando no exista o esté vacío.
+        clearstatcache(true, $archivo);
+
+        if (!is_file($archivo) || filesize($archivo) === 0) {
+            if (!is_writable($directorio)) {
+                throw new \RuntimeException('El directorio QR no tiene permisos de escritura.');
+            }
+
+            $this->load->library('ciqrcode');
+
+            $params = [
+                'data' => 'https://test-result.rodi.com.mx/doping/doping.php?uid='
+                    . rawurlencode($token),
+                'level' => 'H',
+                'size' => 10,
+                'savename' => $archivo
+            ];
+
+            $this->ciqrcode->generate($params);
+
+            clearstatcache(true, $archivo);
+
+            if (!is_file($archivo) || filesize($archivo) === 0) {
+                throw new \RuntimeException('No se pudo generar el PNG del QR.');
+            }
+        }
+
+        // Entregar el QR al PDF sin exponer una URL pública del EFS.
+        $contenido = @file_get_contents($archivo);
+
+        if ($contenido === false) {
+            throw new \RuntimeException('No se pudo leer el archivo QR.');
+        }
+
+        return 'data:image/png;base64,' . base64_encode($contenido);
     }
 
 }

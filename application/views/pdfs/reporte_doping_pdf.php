@@ -155,7 +155,7 @@ body { font-family: 'Arial'; font-size: 12px; }
 			$ref[] = $s->valor_referencia;		
 		} 	
 		$firma = base_url().'img/'.$area->firma;
-		$qr_consulta = base_url().'_qrconsult/'.$qr;
+		$qr_consulta = !empty($qr) ? $qr : '';
 
     //Estatus Doping
     switch ($doping->resultado) {
