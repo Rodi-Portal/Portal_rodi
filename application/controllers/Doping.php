@@ -7,7 +7,7 @@ class Doping extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->session->userdata('id')) {
+        if (! $this->session->userdata('id')) {
             redirect('Login/index');
         }
         $this->load->library('usuario_sesion');
@@ -18,25 +18,25 @@ class Doping extends CI_Controller
     /*----------------------------------------*/
     public function indexGenerales()
     {
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
         $data['submenus'] = $items;
         //$info['candidatos'] = $this->doping_model->getCandidatosSinDoping();
-        $info['paquetes'] = $this->doping_model->getPaquetesAntidoping();
-        $info['clientes'] = $this->funciones_model->getClientesActivos();
+        $info['paquetes']         = $this->doping_model->getPaquetesAntidoping();
+        $info['clientes']         = $this->funciones_model->getClientesActivos();
         $info['identificaciones'] = $this->funciones_model->getTiposIdentificaciones();
         //$info['finalizados'] = $this->doping_model->getDopingsFinalizados();
         $datos['modals'] = $this->load->view('modals/mdl_doping', $info, true);
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        $notificaciones    = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -53,9 +53,9 @@ class Doping extends CI_Controller
     }
     public function getDopingsGenerales()
     {
-        $dop['recordsTotal'] = $this->doping_model->getDopingsGeneralesTotal();
+        $dop['recordsTotal']    = $this->doping_model->getDopingsGeneralesTotal();
         $dop['recordsFiltered'] = $this->doping_model->getDopingsGeneralesTotal();
-        $dop['data'] = $this->doping_model->getDopingsGenerales();
+        $dop['data']            = $this->doping_model->getDopingsGenerales();
         $this->output->set_output(json_encode($dop));
     }
     /*----------------------------------------*/
@@ -63,23 +63,23 @@ class Doping extends CI_Controller
     /*----------------------------------------*/
     public function indexPendientes()
     {
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
-        $data['submenus'] = $items;
-        $info['paquetes'] = $this->doping_model->getPaquetesAntidoping();
-        $info['clientes'] = $this->funciones_model->getClientesActivos();
+        $data['submenus']         = $items;
+        $info['paquetes']         = $this->doping_model->getPaquetesAntidoping();
+        $info['clientes']         = $this->funciones_model->getClientesActivos();
         $info['identificaciones'] = $this->funciones_model->getTiposIdentificaciones();
-        $datos['modals'] = $this->load->view('modals/mdl_doping', $info, true);
-        $config = $this->funciones_model->getConfiguraciones();
-        $data['version'] = $config->version_sistema;
+        $datos['modals']          = $this->load->view('modals/mdl_doping', $info, true);
+        $config                   = $this->funciones_model->getConfiguraciones();
+        $data['version']          = $config->version_sistema;
 
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        $notificaciones    = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -96,9 +96,9 @@ class Doping extends CI_Controller
     }
     public function getDopingsPendientes()
     {
-        $dop['recordsTotal'] = $this->doping_model->getDopingsPendientesTotal();
+        $dop['recordsTotal']    = $this->doping_model->getDopingsPendientesTotal();
         $dop['recordsFiltered'] = $this->doping_model->getDopingsPendientesTotal();
-        $dop['data'] = $this->doping_model->getDopingsPendientes();
+        $dop['data']            = $this->doping_model->getDopingsPendientes();
         $this->output->set_output(json_encode($dop));
     }
     public function registrarPendiente()
@@ -114,26 +114,26 @@ class Doping extends CI_Controller
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date       = date('Y-m-d H:i:s');
             $id_usuario = $this->session->userdata('id');
-            $foto = '';
+            $foto       = '';
             if ($this->input->post('fecha_nacimiento') != "" && $this->input->post('fecha_nacimiento') != null) {
-                $f_nacimiento = fecha_espanol_bd($this->input->post('fecha_nacimiento'));
-                $edad = $this->calculaEdad($f_nacimiento);
-                $candidato_fnacimiento = array(
+                $f_nacimiento          = fecha_espanol_bd($this->input->post('fecha_nacimiento'));
+                $edad                  = $this->calculaEdad($f_nacimiento);
+                $candidato_fnacimiento = [
                     'fecha_nacimiento' => $f_nacimiento,
-                    'edad' => $edad,
-                );
+                    'edad'             => $edad,
+                ];
                 $this->candidato_model->editarCandidato($candidato_fnacimiento, $this->input->post('id_candidato'));
             } else {
                 $f_nacimiento = null;
-                $edad = 0;
+                $edad         = 0;
             }
             $f_doping = fecha_hora_espanol_bd($this->input->post('fecha_doping'));
             if ($this->input->post('foraneo') == 'SI') {
@@ -144,25 +144,25 @@ class Doping extends CI_Controller
 
             $data['candidato'] = $this->doping_model->getDatosCandidato($this->input->post('id_candidato'));
             foreach ($data['candidato'] as $row) {
-                $nombre = $row->nombre;
-                $paterno = $row->paterno;
-                $cliente = $row->id_cliente;
-                $subcliente = $row->id_subcliente;
-                $proyecto = $row->id_proyecto;
-                $clave_cliente = $row->claveCliente;
+                $nombre           = $row->nombre;
+                $paterno          = $row->paterno;
+                $cliente          = $row->id_cliente;
+                $subcliente       = $row->id_subcliente;
+                $proyecto         = $row->id_proyecto;
+                $clave_cliente    = $row->claveCliente;
                 $clave_subcliente = $row->claveSubcliente;
-                $paquete = $row->antidoping;
+                $paquete          = $row->antidoping;
             }
             if (isset($_FILES["foto"])) {
-                $file_ext = pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION);
-                $nombre = str_replace(' ', '', $nombre);
-                $paterno = str_replace(' ', '', $paterno);
+                $file_ext       = pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION);
+                $nombre         = str_replace(' ', '', $nombre);
+                $paterno        = str_replace(' ', '', $paterno);
                 $nombre_archivo = $this->input->post('id_candidato') . "_" . $nombre . "" . $paterno . "_Foto." . $file_ext;
 
-                $config['upload_path'] = './_doping/';
+                $config['upload_path']   = './_doping/';
                 $config['allowed_types'] = 'jpg|jpeg|png';
-                $config['overwrite'] = true;
-                $config['file_name'] = $nombre_archivo;
+                $config['overwrite']     = true;
+                $config['file_name']     = $nombre_archivo;
 
                 $this->load->library('upload', $config);
                 $this->upload->initialize($config);
@@ -172,61 +172,61 @@ class Doping extends CI_Controller
                 }
                 $foto = $nombre_archivo;
             }
-            $doping = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_candidato' => $this->input->post('id_candidato'),
-                'id_cliente' => $cliente,
-                'id_subcliente' => $subcliente,
-                'id_proyecto' => $proyecto,
-                'id_antidoping_paquete' => $paquete,
-                'fecha_doping' => $f_doping,
+            $doping = [
+                'creacion'               => $date,
+                'edicion'                => $date,
+                'id_usuario'             => $id_usuario,
+                'id_candidato'           => $this->input->post('id_candidato'),
+                'id_cliente'             => $cliente,
+                'id_subcliente'          => $subcliente,
+                'id_proyecto'            => $proyecto,
+                'id_antidoping_paquete'  => $paquete,
+                'fecha_doping'           => $f_doping,
                 'id_tipo_identificacion' => $this->input->post('identificacion'),
-                'ine' => $this->input->post('ine'),
-                'foto' => $foto,
-                'razon' => $this->input->post('razon'),
-                'medicamentos' => $this->input->post('medicamentos'),
-                'comentarios' => $this->input->post('comentarios'),
-                'id_area' => $area->id,
-                'foraneo' => $this->input->post('foraneo'),
-            );
-            $id_doping = $this->doping_model->insertDoping($doping);
-            $clave_folio = array(
-                'folio' => $id_doping,
+                'ine'                    => $this->input->post('ine'),
+                'foto'                   => $foto,
+                'razon'                  => $this->input->post('razon'),
+                'medicamentos'           => $this->input->post('medicamentos'),
+                'comentarios'            => $this->input->post('comentarios'),
+                'id_area'                => $area->id,
+                'foraneo'                => $this->input->post('foraneo'),
+            ];
+            $id_doping   = $this->doping_model->insertDoping($doping);
+            $clave_folio = [
+                'folio'         => $id_doping,
                 'codigo_prueba' => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_doping . '-' . substr(date('Y'), -2),
-            );
+            ];
             $this->doping_model->editarDoping($clave_folio, $id_doping);
-            $prueba = array(
+            $prueba = [
                 'status_doping' => 1,
-            );
+            ];
             $this->doping_model->updatePruebaCandidato($this->input->post('id_candidato'), $prueba);
 
             $data['parametros'] = $this->doping_model->getParametrosCandidato($this->input->post('id_candidato'));
             foreach ($data['parametros'] as $p) {
-                $tipo = $p->tipo_antidoping;
+                $tipo       = $p->tipo_antidoping;
                 $parametros = $p->antidoping;
             }
             if ($tipo == 1) {
                 $paquete = $this->doping_model->getPaqueteCandidato($parametros);
-                $aux = explode(',', $paquete->sustancias);
+                $aux     = explode(',', $paquete->sustancias);
                 for ($i = 0; $i < count($aux); $i++) {
                     $sustancia = $this->doping_model->getSustanciaCandidato($aux[$i]);
-                    $detalle = array(
-                        'creacion' => $date,
-                        'edicion' => $date,
-                        'id_usuario' => $id_usuario,
-                        'id_doping' => $id_doping,
+                    $detalle   = [
+                        'creacion'     => $date,
+                        'edicion'      => $date,
+                        'id_usuario'   => $id_usuario,
+                        'id_doping'    => $id_doping,
                         'id_candidato' => $this->input->post('id_candidato'),
                         'id_sustancia' => $sustancia->id,
-                    );
+                    ];
                     $this->doping_model->insertDetalleDoping($detalle);
                 }
             }
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -235,25 +235,25 @@ class Doping extends CI_Controller
     /*----------------------------------------*/
     public function indexFinalizados()
     {
-        $data['permisos'] = $this->usuario_model->getPermisos($this->session->userdata('id'));
+        $data['permisos']   = $this->usuario_model->getPermisos($this->session->userdata('id'));
         $data['submodulos'] = $this->rol_model->getMenu($this->session->userdata('idrol'));
         foreach ($data['submodulos'] as $row) {
             $items[] = $row->id_submodulo;
         }
-        $data['submenus'] = $items;
-        $info['paquetes'] = $this->doping_model->getPaquetesAntidoping();
-        $info['clientes'] = $this->funciones_model->getClientesActivos();
+        $data['submenus']         = $items;
+        $info['paquetes']         = $this->doping_model->getPaquetesAntidoping();
+        $info['clientes']         = $this->funciones_model->getClientesActivos();
         $info['identificaciones'] = $this->funciones_model->getTiposIdentificaciones();
         //$info['filtrados'] = $this->doping_model->getDopingsFinalizadosFiltrados();
 
         $datos['modals'] = $this->load->view('modals/mdl_doping', $info, true);
-        $config = $this->funciones_model->getConfiguraciones();
+        $config          = $this->funciones_model->getConfiguraciones();
         $data['version'] = $config->version_sistema;
 
         //Modals
         $modales['modals'] = $this->load->view('modals/mdl_usuario', '', true);
-        $notificaciones = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
-        if (!empty($notificaciones)) {
+        $notificaciones    = $this->notificacion_model->get_by_usuario($this->session->userdata('id'), [0, 1]);
+        if (! empty($notificaciones)) {
             $contador = 0;
             foreach ($notificaciones as $row) {
                 if ($row->visto == 0) {
@@ -270,23 +270,23 @@ class Doping extends CI_Controller
     }
     public function getDopingsFinalizadosListado()
     {
-        $dop['recordsTotal'] = $this->doping_model->getDopingsFinalizadosListadoTotal();
+        $dop['recordsTotal']    = $this->doping_model->getDopingsFinalizadosListadoTotal();
         $dop['recordsFiltered'] = $this->doping_model->getDopingsFinalizadosListadoTotal();
-        $dop['data'] = $this->doping_model->getDopingsFinalizadosListado();
+        $dop['data']            = $this->doping_model->getDopingsFinalizadosListado();
         $this->output->set_output(json_encode($dop));
     }
     public function getResultadoFiltrado()
     {
-        $nombre = $_GET['nombre'];
-        $paterno = $_GET['primero'];
-        $materno = $_GET['segundo'];
-        $numero = $_GET['numero'];
-        $cliente = $_GET['cliente'];
-        $inicio = ($_GET['inicio'] != '') ? fecha_espanol_bd($_GET['inicio']) : '';
-        $fin = ($_GET['fin'] != '') ? fecha_espanol_bd($_GET['fin']) : '';
-        $dop['recordsTotal'] = $this->doping_model->getResultadoFiltradoTotal($nombre, $paterno, $materno, $numero, $cliente, $inicio, $fin);
+        $nombre                 = $_GET['nombre'];
+        $paterno                = $_GET['primero'];
+        $materno                = $_GET['segundo'];
+        $numero                 = $_GET['numero'];
+        $cliente                = $_GET['cliente'];
+        $inicio                 = ($_GET['inicio'] != '') ? fecha_espanol_bd($_GET['inicio']) : '';
+        $fin                    = ($_GET['fin'] != '') ? fecha_espanol_bd($_GET['fin']) : '';
+        $dop['recordsTotal']    = $this->doping_model->getResultadoFiltradoTotal($nombre, $paterno, $materno, $numero, $cliente, $inicio, $fin);
         $dop['recordsFiltered'] = $this->doping_model->getResultadoFiltradoTotal($nombre, $paterno, $materno, $numero, $cliente, $inicio, $fin);
-        $dop['data'] = $this->doping_model->getResultadoFiltrado($nombre, $paterno, $materno, $numero, $cliente, $inicio, $fin);
+        $dop['data']            = $this->doping_model->getResultadoFiltrado($nombre, $paterno, $materno, $numero, $cliente, $inicio, $fin);
         $this->output->set_output(json_encode($dop));
     }
     /*----------------------------------------*/
@@ -311,65 +311,63 @@ class Doping extends CI_Controller
 
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
 
-
-            $msj = array('codigo' => 0, 'msg' => '');
-
+        $msj = ['codigo' => 0, 'msg' => ''];
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
+            $date       = date('Y-m-d H:i:s');
             $id_usuario = $this->session->userdata('id');
-            $foto = '';
+            $foto       = '';
             if ($this->input->post('fecha_nacimiento') != "" && $this->input->post('fecha_nacimiento') != null) {
                 $f_nacimiento = fecha_espanol_bd($this->input->post('fecha_nacimiento'));
-                $edad = $this->calculaEdad($f_nacimiento);
+                $edad         = $this->calculaEdad($f_nacimiento);
             } else {
                 $f_nacimiento = null;
-                $edad = 0;
+                $edad         = 0;
             }
             if ($this->input->post('foraneo') == 'SI') {
                 $area = $this->area_model->getArea('DOPING FORANEO');
             } else {
                 $area = $this->area_model->getArea('DOPING LOCAL');
             }
-            $f_doping = fecha_hora_espanol_bd($this->input->post('fecha_doping'));
-            $datos_candidato = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
+            $f_doping        = fecha_hora_espanol_bd($this->input->post('fecha_doping'));
+            $datos_candidato = [
+                'creacion'           => $date,
+                'edicion'            => $date,
+                'id_usuario'         => $id_usuario,
                 'id_usuario_cliente' => 0,
-                'id_cliente' => $this->input->post('cliente'),
-                'id_subcliente' => $this->input->post('subcliente'),
-                'id_proyecto' => $this->input->post('proyecto'),
-                'fecha_alta' => $date,
-                'nombre' => $this->input->post('nombre'),
-                'paterno' => $this->input->post('paterno'),
-                'materno' => $this->input->post('materno'),
-                'correo' => 'Sin correo',
-                'fecha_nacimiento' => $f_nacimiento,
-                'edad' => $edad,
-            );
-            $id_candidato = $this->doping_model->insertCandidato($datos_candidato);
+                'id_cliente'         => $this->input->post('cliente'),
+                'id_subcliente'      => $this->input->post('subcliente'),
+                'id_proyecto'        => $this->input->post('proyecto'),
+                'fecha_alta'         => $date,
+                'nombre'             => $this->input->post('nombre'),
+                'paterno'            => $this->input->post('paterno'),
+                'materno'            => $this->input->post('materno'),
+                'correo'             => 'Sin correo',
+                'fecha_nacimiento'   => $f_nacimiento,
+                'edad'               => $edad,
+            ];
+            $id_candidato      = $this->doping_model->insertCandidato($datos_candidato);
             $data['candidato'] = $this->doping_model->getDatosCandidato($id_candidato);
             foreach ($data['candidato'] as $row) {
-                $clave_cliente = $row->claveCliente;
+                $clave_cliente    = $row->claveCliente;
                 $clave_subcliente = $row->claveSubcliente;
             }
             if (isset($_FILES['foto'])) {
-                $file_ext = pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION);
-                $nombre = str_replace(' ', '', $this->input->post('nombre'));
-                $paterno = str_replace(' ', '', $this->input->post('paterno'));
+                $file_ext       = pathinfo($_FILES["foto"]["name"], PATHINFO_EXTENSION);
+                $nombre         = str_replace(' ', '', $this->input->post('nombre'));
+                $paterno        = str_replace(' ', '', $this->input->post('paterno'));
                 $nombre_archivo = $id_candidato . "_" . $nombre . "_" . $paterno . "_Foto." . $file_ext;
 
-                $config['upload_path'] = './_doping/';
+                $config['upload_path']   = './_doping/';
                 $config['allowed_types'] = 'jpg|jpeg|png';
-                $config['overwrite'] = true;
-                $config['file_name'] = $nombre_archivo;
+                $config['overwrite']     = true;
+                $config['file_name']     = $nombre_archivo;
 
                 $this->load->library('upload', $config);
                 $this->upload->initialize($config);
@@ -379,68 +377,67 @@ class Doping extends CI_Controller
                 }
                 $foto = $nombre_archivo;
 
-
             }
-            $doping = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
-                'id_candidato' => $id_candidato,
-                'id_cliente' => $this->input->post('cliente'),
-                'id_subcliente' => $this->input->post('subcliente'),
-                'id_proyecto' => $this->input->post('proyecto'),
-                'id_antidoping_paquete' => $this->input->post('paquete'),
-                'fecha_doping' => $f_doping,
+            $doping = [
+                'creacion'               => $date,
+                'edicion'                => $date,
+                'id_usuario'             => $id_usuario,
+                'id_candidato'           => $id_candidato,
+                'id_cliente'             => $this->input->post('cliente'),
+                'id_subcliente'          => $this->input->post('subcliente'),
+                'id_proyecto'            => $this->input->post('proyecto'),
+                'id_antidoping_paquete'  => $this->input->post('paquete'),
+                'fecha_doping'           => $f_doping,
                 'id_tipo_identificacion' => $this->input->post('identificacion'),
-                'ine' => $this->input->post('ine'),
-                'foto' => $foto,
-                'razon' => $this->input->post('razon'),
-                'medicamentos' => $this->input->post('medicamentos'),
-                'folio' => $id_candidato,
-                'codigo_prueba' => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_candidato . '-' . substr(date('Y'), -2),
-                'comentarios' => $this->input->post('comentarios'),
-                'id_area' => $area->id,
-                'foraneo' => $this->input->post('foraneo'),
-            );
-            $id_doping = $this->doping_model->insertDoping($doping);
-            $clave_folio = array(
-                'folio' => $id_doping,
+                'ine'                    => $this->input->post('ine'),
+                'foto'                   => $foto,
+                'razon'                  => $this->input->post('razon'),
+                'medicamentos'           => $this->input->post('medicamentos'),
+                'folio'                  => $id_candidato,
+                'codigo_prueba'          => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_candidato . '-' . substr(date('Y'), -2),
+                'comentarios'            => $this->input->post('comentarios'),
+                'id_area'                => $area->id,
+                'foraneo'                => $this->input->post('foraneo'),
+            ];
+            $id_doping   = $this->doping_model->insertDoping($doping);
+            $clave_folio = [
+                'folio'         => $id_doping,
                 'codigo_prueba' => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_doping . '-' . substr(date('Y'), -2),
-            );
+            ];
             $this->doping_model->editarDoping($clave_folio, $id_doping);
-            $pruebas = array(
-                'creacion' => $date,
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
+            $pruebas = [
+                'creacion'           => $date,
+                'edicion'            => $date,
+                'id_usuario'         => $id_usuario,
                 'id_usuario_cliente' => 0,
-                'id_candidato' => $id_candidato,
-                'id_cliente' => $this->input->post('cliente'),
-                'tipo_antidoping' => 1,
-                'antidoping' => $this->input->post('paquete'),
-                'status_doping' => 1,
-                'psicometrico' => 0,
-                'socioeconomico' => 0,
-            );
+                'id_candidato'       => $id_candidato,
+                'id_cliente'         => $this->input->post('cliente'),
+                'tipo_antidoping'    => 1,
+                'antidoping'         => $this->input->post('paquete'),
+                'status_doping'      => 1,
+                'psicometrico'       => 0,
+                'socioeconomico'     => 0,
+            ];
             $this->doping_model->insertCandidatoPruebas($pruebas);
 
             $paquete = $this->doping_model->getPaqueteCandidato($this->input->post('paquete'));
-            $aux = explode(',', $paquete->sustancias);
+            $aux     = explode(',', $paquete->sustancias);
             for ($i = 0; $i < count($aux); $i++) {
                 $sustancia = $this->doping_model->getSustanciaCandidato($aux[$i]);
-                $detalle = array(
-                    'creacion' => $date,
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_doping' => $id_doping,
+                $detalle   = [
+                    'creacion'     => $date,
+                    'edicion'      => $date,
+                    'id_usuario'   => $id_usuario,
+                    'id_doping'    => $id_doping,
                     'id_candidato' => $id_candidato,
                     'id_sustancia' => $sustancia->id,
-                );
+                ];
                 $this->doping_model->insertDetalleDoping($detalle);
             }
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -465,31 +462,31 @@ class Doping extends CI_Controller
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $id_usuario = $this->session->userdata('id');
+            $date         = date('Y-m-d H:i:s');
+            $id_usuario   = $this->session->userdata('id');
             $id_candidato = $this->input->post('id_candidato');
-            $id_doping = $this->input->post('id_doping');
+            $id_doping    = $this->input->post('id_doping');
 
             $f_nacimiento = fecha_espanol_bd($this->input->post('fecha_nacimiento'));
-            $edad = calculaEdad($f_nacimiento);
-            $f_doping = fecha_hora_espanol_bd($this->input->post('fecha_doping'));
+            $edad         = calculaEdad($f_nacimiento);
+            $f_doping     = fecha_hora_espanol_bd($this->input->post('fecha_doping'));
 
             $prueba = $this->candidato_model->getPruebasCandidato($id_candidato);
             if ($prueba->socioeconomico == 1) {
-                $datos_candidato = array(
+                $datos_candidato = [
                     'fecha_nacimiento' => $f_nacimiento,
-                    'edad' => $edad,
-                );
+                    'edad'             => $edad,
+                ];
                 $this->candidato_model->editarCandidato($datos_candidato, $id_candidato);
                 $data['candidato'] = $this->doping_model->getDatosCandidato($id_candidato);
                 foreach ($data['candidato'] as $row) {
-                    $clave_cliente = $row->claveCliente;
+                    $clave_cliente    = $row->claveCliente;
                     $clave_subcliente = $row->claveSubcliente;
                 }
 
@@ -501,7 +498,7 @@ class Doping extends CI_Controller
                     //Se obtiene el nuevo
                     $paquete = $this->doping_model->getPaqueteCandidato($this->input->post('paquete'));
                     //Se obtienen los parametros de ambos
-                    $aux = explode(',', $paquete->sustancias);
+                    $aux  = explode(',', $paquete->sustancias);
                     $aux2 = explode(',', $previo->sustancias);
                     //Se recorren los parametros del nuevo examen
                     for ($i = 0; $i < count($aux); $i++) {
@@ -509,8 +506,8 @@ class Doping extends CI_Controller
                         for ($j = 0; $j < count($aux2); $j++) {
                             //Se obtienen los detalles de los parametros del anterior doping
                             //y se guardan los id's de detalle_doping para despues borrarlos
-                            $sust = $this->doping_model->getSustanciaCandidato($aux2[$j]);
-                            $parametro = $this->doping_model->getDetallesParametro($id_doping, $sust->id);
+                            $sust                    = $this->doping_model->getSustanciaCandidato($aux2[$j]);
+                            $parametro               = $this->doping_model->getDetallesParametro($id_doping, $sust->id);
                             $parametros_anteriores[] = $parametro->id;
                             //Si existe coincidencia entres id's del examen anterio al nuevo, se pasa el resultado a registrar
                             //para el nuevo examen y se rompe la iteracion para recorrer el siguiente parametro; si no hay coincidencia
@@ -524,15 +521,15 @@ class Doping extends CI_Controller
                         }
                         //Se establecen los nuevos valores a colocar en el id de examen con los nuevos parametros
                         //y posibles nuevos resultados de cada uno guardados en $res_sustancia
-                        $detalle = array(
-                            'creacion' => $date,
-                            'edicion' => $date,
-                            'id_usuario' => $id_usuario,
-                            'id_doping' => $id_doping,
+                        $detalle = [
+                            'creacion'     => $date,
+                            'edicion'      => $date,
+                            'id_usuario'   => $id_usuario,
+                            'id_doping'    => $id_doping,
                             'id_candidato' => $id_candidato,
                             'id_sustancia' => $sustancia->id,
-                            'resultado' => $res_sustancia,
-                        );
+                            'resultado'    => $res_sustancia,
+                        ];
                         $this->doping_model->insertDetalleDoping($detalle);
                     }
                     //Se eliminan los anteriores parametros para dejar los nuevos ya registrados
@@ -545,45 +542,45 @@ class Doping extends CI_Controller
                 } else {
                     $area = $this->area_model->getArea('DOPING LOCAL');
                 }
-                $doping = array(
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_antidoping_paquete' => $this->input->post('paquete'),
-                    'fecha_doping' => $f_doping,
+                $doping = [
+                    'edicion'                => $date,
+                    'id_usuario'             => $id_usuario,
+                    'id_antidoping_paquete'  => $this->input->post('paquete'),
+                    'fecha_doping'           => $f_doping,
                     'id_tipo_identificacion' => $this->input->post('identificacion'),
-                    'ine' => $this->input->post('ine'),
-                    'razon' => $this->input->post('razon'),
-                    'medicamentos' => $this->input->post('medicamentos'),
-                    'codigo_prueba' => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_doping . '-' . substr(date('Y'), -2),
-                    'comentarios' => $this->input->post('comentarios'),
-                    'foraneo' => $this->input->post('foraneo'),
-                    'id_area' => $area->id,
-                    'foraneo' => $this->input->post('foraneo'),
-                );
+                    'ine'                    => $this->input->post('ine'),
+                    'razon'                  => $this->input->post('razon'),
+                    'medicamentos'           => $this->input->post('medicamentos'),
+                    'codigo_prueba'          => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_doping . '-' . substr(date('Y'), -2),
+                    'comentarios'            => $this->input->post('comentarios'),
+                    'foraneo'                => $this->input->post('foraneo'),
+                    'id_area'                => $area->id,
+                    'foraneo'                => $this->input->post('foraneo'),
+                ];
                 $this->doping_model->editarDoping($doping, $id_doping);
 
-                $pruebas = array(
-                    'edicion' => $date,
+                $pruebas = [
+                    'edicion'    => $date,
                     'id_usuario' => $id_usuario,
                     'antidoping' => $this->input->post('paquete'),
-                );
+                ];
                 $this->doping_model->updateCandidatoPruebas($pruebas, $id_candidato);
             } else {
-                $datos_candidato = array(
-                    'edicion' => $date,
-                    'id_cliente' => $this->input->post('cliente'),
-                    'id_subcliente' => $this->input->post('subcliente'),
-                    'fecha_alta' => $date,
-                    'nombre' => $this->input->post('nombre'),
-                    'paterno' => $this->input->post('paterno'),
-                    'materno' => $this->input->post('materno'),
+                $datos_candidato = [
+                    'edicion'          => $date,
+                    'id_cliente'       => $this->input->post('cliente'),
+                    'id_subcliente'    => $this->input->post('subcliente'),
+                    'fecha_alta'       => $date,
+                    'nombre'           => $this->input->post('nombre'),
+                    'paterno'          => $this->input->post('paterno'),
+                    'materno'          => $this->input->post('materno'),
                     'fecha_nacimiento' => $f_nacimiento,
-                    'edad' => $edad,
-                );
+                    'edad'             => $edad,
+                ];
                 $this->candidato_model->editarCandidato($datos_candidato, $id_candidato);
                 $data['candidato'] = $this->doping_model->getDatosCandidato($id_candidato);
                 foreach ($data['candidato'] as $row) {
-                    $clave_cliente = $row->claveCliente;
+                    $clave_cliente    = $row->claveCliente;
                     $clave_subcliente = $row->claveSubcliente;
                 }
                 //Se obtiene el anterior doping
@@ -594,7 +591,7 @@ class Doping extends CI_Controller
                     //Se obtiene el nuevo
                     $paquete = $this->doping_model->getPaqueteCandidato($this->input->post('paquete'));
                     //Se obtienen los parametros de ambos
-                    $aux = explode(',', $paquete->sustancias);
+                    $aux  = explode(',', $paquete->sustancias);
                     $aux2 = explode(',', $previo->sustancias);
                     //Se recorren los parametros del nuevo examen
                     for ($i = 0; $i < count($aux); $i++) {
@@ -602,8 +599,8 @@ class Doping extends CI_Controller
                         for ($j = 0; $j < count($aux2); $j++) {
                             //Se obtienen los detalles de los parametros del anterior doping
                             //y se guardan los id's de detalle_doping para despues borrarlos
-                            $sust = $this->doping_model->getSustanciaCandidato($aux2[$j]);
-                            $parametro = $this->doping_model->getDetallesParametro($id_doping, $sust->id);
+                            $sust                    = $this->doping_model->getSustanciaCandidato($aux2[$j]);
+                            $parametro               = $this->doping_model->getDetallesParametro($id_doping, $sust->id);
                             $parametros_anteriores[] = $parametro->id;
                             //Si existe coincidencia entres id's del examen anterio al nuevo, se pasa el resultado a registrar
                             //para el nuevo examen y se rompe la iteracion para recorrer el siguiente parametro; si no hay coincidencia
@@ -617,15 +614,15 @@ class Doping extends CI_Controller
                         }
                         //Se establecen los nuevos valores a colocar en el id de examen con los nuevos parametros
                         //y posibles nuevos resultados de cada uno guardados en $res_sustancia
-                        $detalle = array(
-                            'creacion' => $date,
-                            'edicion' => $date,
-                            'id_usuario' => $id_usuario,
-                            'id_doping' => $id_doping,
+                        $detalle = [
+                            'creacion'     => $date,
+                            'edicion'      => $date,
+                            'id_usuario'   => $id_usuario,
+                            'id_doping'    => $id_doping,
                             'id_candidato' => $id_candidato,
                             'id_sustancia' => $sustancia->id,
-                            'resultado' => $res_sustancia,
-                        );
+                            'resultado'    => $res_sustancia,
+                        ];
                         $this->doping_model->insertDetalleDoping($detalle);
                     }
                     //Se eliminan los anteriores parametros para dejar los nuevos ya registrados
@@ -638,62 +635,62 @@ class Doping extends CI_Controller
                 } else {
                     $area = $this->area_model->getArea('DOPING LOCAL');
                 }
-                $doping = array(
-                    'edicion' => $date,
-                    'id_usuario' => $id_usuario,
-                    'id_cliente' => $this->input->post('cliente'),
-                    'id_subcliente' => $this->input->post('subcliente'),
-                    'id_proyecto' => $this->input->post('proyecto'),
-                    'id_antidoping_paquete' => $this->input->post('paquete'),
-                    'fecha_doping' => $f_doping,
+                $doping = [
+                    'edicion'                => $date,
+                    'id_usuario'             => $id_usuario,
+                    'id_cliente'             => $this->input->post('cliente'),
+                    'id_subcliente'          => $this->input->post('subcliente'),
+                    'id_proyecto'            => $this->input->post('proyecto'),
+                    'id_antidoping_paquete'  => $this->input->post('paquete'),
+                    'fecha_doping'           => $f_doping,
                     'id_tipo_identificacion' => $this->input->post('identificacion'),
-                    'ine' => $this->input->post('ine'),
-                    'razon' => $this->input->post('razon'),
-                    'medicamentos' => $this->input->post('medicamentos'),
-                    'codigo_prueba' => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_doping . '-' . substr(date('Y'), -2),
-                    'comentarios' => $this->input->post('comentarios'),
-                    'foraneo' => $this->input->post('foraneo'),
-                    'id_area' => $area->id,
-                    'foraneo' => $this->input->post('foraneo'),
-                );
+                    'ine'                    => $this->input->post('ine'),
+                    'razon'                  => $this->input->post('razon'),
+                    'medicamentos'           => $this->input->post('medicamentos'),
+                    'codigo_prueba'          => 'AD-' . $clave_cliente . '-' . $clave_subcliente . '-' . $id_doping . '-' . substr(date('Y'), -2),
+                    'comentarios'            => $this->input->post('comentarios'),
+                    'foraneo'                => $this->input->post('foraneo'),
+                    'id_area'                => $area->id,
+                    'foraneo'                => $this->input->post('foraneo'),
+                ];
                 $this->doping_model->editarDoping($doping, $id_doping);
 
-                $pruebas = array(
-                    'edicion' => $date,
+                $pruebas = [
+                    'edicion'    => $date,
                     'id_usuario' => $id_usuario,
                     'id_cliente' => $this->input->post('cliente'),
                     'antidoping' => $this->input->post('paquete'),
-                );
+                ];
                 $this->doping_model->updateCandidatoPruebas($pruebas, $id_candidato);
 
             }
 
             if (isset($_FILES['foto'])) {
-                $cadena = substr(md5(time()), 0, 16);
-                $extension = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+                $cadena              = substr(md5(time()), 0, 16);
+                $extension           = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
                 $config['file_name'] = $id_candidato . '_' . $cadena . '.' . $extension;
-                $nombre_archivo = $id_candidato . '_' . $cadena . '.' . $extension;
+                $nombre_archivo      = $id_candidato . '_' . $cadena . '.' . $extension;
 
-                $config['upload_path'] = './_doping/';
+                $config['upload_path']   = './_doping/';
                 $config['allowed_types'] = 'jpg|jpeg|png';
-                $config['overwrite'] = true;
-                $config['file_name'] = $nombre_archivo;
+                $config['overwrite']     = true;
+                $config['file_name']     = $nombre_archivo;
 
                 $this->load->library('upload', $config);
                 $this->upload->initialize($config);
                 // File upload
                 if ($this->upload->do_upload('foto')) {
-                    $foto = array(
+                    $foto = [
                         'foto' => $nombre_archivo,
-                    );
+                    ];
                     $this->doping_model->editarDoping($foto, $id_doping);
                 }
             }
             //$this->doping_model->eliminarDopingDetalle($id_doping);
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -704,27 +701,27 @@ class Doping extends CI_Controller
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
 
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
             date_default_timezone_set('America/Mexico_City');
-            $date = date('Y-m-d H:i:s');
-            $id_usuario = $this->session->userdata('id');
-            $id_doping = $this->input->post('id_doping');
-            $cadena = $this->input->post('valores');
+            $date         = date('Y-m-d H:i:s');
+            $id_usuario   = $this->session->userdata('id');
+            $id_doping    = $this->input->post('id_doping');
+            $cadena       = $this->input->post('valores');
             $f_resultados = fecha_hora_espanol_bd($_POST['fecha_resultados']);
-            $valores = explode(',', $cadena);
-            $cont = 0;
-            $invalido = 0;
+            $valores      = explode(',', $cadena);
+            $cont         = 0;
+            $invalido     = 0;
             for ($i = 0; $i < count($valores); $i++) {
                 $valor = explode(':', $valores[$i]);
-                $res = array(
-                    'edicion' => $date,
+                $res   = [
+                    'edicion'    => $date,
                     'id_usuario' => $id_usuario,
-                    'resultado' => $valor[1],
-                );
+                    'resultado'  => $valor[1],
+                ];
                 $this->doping_model->updateResultadoDoping($id_doping, $valor[0], $res);
                 if ($valor[1] == 1) {
                     $cont++;
@@ -734,84 +731,84 @@ class Doping extends CI_Controller
                 }
             }
             if ($cont > 0 && $invalido == 0) {
-                $doping = array(
-                    'edicion' => $date,
+                $doping = [
+                    'edicion'         => $date,
                     //'id_usuario' => $id_usuario,
                     'fecha_resultado' => $f_resultados,
-                    'resultado' => 1,
-                );
+                    'resultado'       => 1,
+                ];
                 $this->doping_model->editarDoping($doping, $id_doping);
             }
             if ($cont == 0 && $invalido == 0) {
-                $doping = array(
-                    'edicion' => $date,
+                $doping = [
+                    'edicion'         => $date,
                     //'id_usuario' => $id_usuario,
                     'fecha_resultado' => $f_resultados,
-                    'resultado' => 0,
-                );
+                    'resultado'       => 0,
+                ];
                 $this->doping_model->editarDoping($doping, $id_doping);
             }
             if ($invalido > 0) {
-                $doping = array(
-                    'edicion' => $date,
+                $doping = [
+                    'edicion'         => $date,
                     //'id_usuario' => $id_usuario,
                     'fecha_resultado' => $f_resultados,
-                    'resultado' => 2,
-                );
+                    'resultado'       => 2,
+                ];
                 $this->doping_model->editarDoping($doping, $id_doping);
             }
 
             //* Envio de correo al finalizar el doping del candidato. Solo HCL
-            $dopingCandidato = $this->doping_model->getDopingCandidato($id_doping);
+            $dopingCandidato   = $this->doping_model->getDopingCandidato($id_doping);
             $candidato_detalle = $this->candidato_model->getDetalles($dopingCandidato->id_candidato);
             if ($candidato_detalle->id_cliente == 2) {
-                $from = $this->config->item('smtp_user');
-                $to = 'bgv.latam@hcl.com';
+                $from    = $this->config->item('smtp_user');
+                $to      = 'bgv.latam@hcl.com';
                 $subject = "Candidate drug test results - RODI (PERINTEX)";
                 //$data['usuario'] = $usuario->nombreUsuario;
                 $data['candidato'] = $candidato_detalle->candidato;
-                $message = $this->load->view('mails/doping_resultados_hcl', $data, true);
+                $message           = $this->load->view('mails/doping_resultados_hcl', $data, true);
                 $this->load->library('phpmailer_lib');
                 $mail = $this->phpmailer_lib->load();
                 $mail->isSMTP();
-                $mail->Host = 'mail.rodicontrol.com';
-                $mail->SMTPAuth = true;
-                $mail->Username = 'rodicontrol@rodicontrol.com';
-                $mail->Password = 'r49o*&rUm%91';
+                $mail->Host       = 'mail.rodicontrol.com';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = 'rodicontrol@rodicontrol.com';
+                $mail->Password   = 'r49o*&rUm%91';
                 $mail->SMTPSecure = 'ssl';
-                $mail->Port = 465;
+                $mail->Port       = 465;
                 $mail->setFrom('rodicontrol@rodicontrol.com', 'Automatic message from RODICONTROL');
                 $mail->addAddress($to);
                 $mail->Subject = $subject;
                 $mail->isHTML(true);
                 $mail->CharSet = 'UTF-8';
-                $mail->Body = $message;
+                $mail->Body    = $message;
                 $mail->send();
             }
 
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
     public function eliminarDoping()
     {
         date_default_timezone_set('America/Mexico_City');
-        $date = date('Y-m-d H:i:s');
-        $id_usuario = $this->session->userdata('id');
+        $date         = date('Y-m-d H:i:s');
+        $id_usuario   = $this->session->userdata('id');
         $id_candidato = $this->input->post('id_candidato');
-        $id_doping = $this->input->post('id_doping');
-        $prueba = $this->candidato_model->getPruebasCandidato($id_candidato);
+        $id_doping    = $this->input->post('id_doping');
+        $prueba       = $this->candidato_model->getPruebasCandidato($id_candidato);
         if ($prueba->socioeconomico == 1) {
             $this->doping_model->eliminarDoping($id_doping);
             $this->doping_model->eliminarDopingDetalle($id_doping);
-            $pruebas = array(
-                'edicion' => $date,
-                'id_usuario' => $id_usuario,
+            $pruebas = [
+                'edicion'       => $date,
+                'id_usuario'    => $id_usuario,
                 'status_doping' => 0,
-            );
+            ];
             $this->doping_model->editarPruebasCandidato($pruebas, $id_candidato);
         } else {
             $this->doping_model->eliminarDoping($id_doping);
@@ -819,10 +816,10 @@ class Doping extends CI_Controller
             $this->doping_model->eliminarCandidato($id_candidato);
             $this->doping_model->eliminarPruebasCandidato($id_candidato);
         }
-        $msj = array(
+        $msj = [
             'codigo' => 1,
-            'msg' => 'success',
-        );
+            'msg'    => 'success',
+        ];
         echo json_encode($msj);
     }
     /*----------------------------------------*/
@@ -832,7 +829,7 @@ class Doping extends CI_Controller
     {
         $data['eliminados'] = $this->doping_model->getDopingsEliminados();
         if ($data['eliminados']) {
-            $salida = '<table class="table table-striped" style="font-size: 13px">';
+            $salida  = '<table class="table table-striped" style="font-size: 13px">';
             $salida .= '<tr style="background: gray;color:white;">';
             $salida .= '<th>Fecha doping</th>';
             $salida .= '<th>Nombre</th>';
@@ -842,11 +839,11 @@ class Doping extends CI_Controller
             $salida .= '<th>Usuario</th>';
             $salida .= '</tr>';
             foreach ($data['eliminados'] as $c) {
-                $subcliente = ($c->subcliente != "" && $c->subcliente != null) ? $c->subcliente : "";
-                $proyecto = ($c->proyecto != "" && $c->proyecto != null) ? $c->proyecto : "";
-                $salida .= "<tr>";
-                $salida .= '<td>' . $c->fecha_doping . '</td>';
-                $salida .= '<td>' . $c->nombre . " " . $c->paterno . " " . $c->materno . '</td>';
+                $subcliente  = ($c->subcliente != "" && $c->subcliente != null) ? $c->subcliente : "";
+                $proyecto    = ($c->proyecto != "" && $c->proyecto != null) ? $c->proyecto : "";
+                $salida     .= "<tr>";
+                $salida     .= '<td>' . $c->fecha_doping . '</td>';
+                $salida     .= '<td>' . $c->nombre . " " . $c->paterno . " " . $c->materno . '</td>';
                 //$salida .= '<td>'.$c->cliente.'-'.$subcliente.'-'.$proyecto.'</td>';
                 $salida .= '<td>' . $c->codigo_prueba . '</td>';
                 $salida .= '<td width="30%">' . $c->motivo . '</td>';
@@ -864,7 +861,7 @@ class Doping extends CI_Controller
     public function getExamenDopingByProceso()
     {
         $data['examenes_proceso'] = $this->doping_model->getExamenDopingByProceso($this->input->post('id_previo'));
-        $salida = '';
+        $salida                   = '';
         // $salida = '<option value="">Select</option>';
         // $salida .= '<option value="0">NA</option>';
         if ($data['examenes_proceso']) {
@@ -885,7 +882,7 @@ class Doping extends CI_Controller
     public function getExamenDopingByCliente()
     {
         $data['examenes'] = $this->doping_model->getExamenDopingByCliente($this->input->post('id_cliente'));
-        $salida = '';
+        $salida           = '';
         if ($data['examenes']) {
             foreach ($data['examenes'] as $row) {
                 $salida .= '<option value="' . $row->id_antidoping_paquete . '">' . $row->nombre . ' (' . $row->conjunto . ')</option>';
@@ -904,37 +901,37 @@ class Doping extends CI_Controller
 
     public function getAntidopingCandidato()
     {
-        $id_candidato = $_POST['id_candidato'];
+        $id_candidato       = $_POST['id_candidato'];
         $data['parametros'] = $this->doping_model->getParametrosCandidato($id_candidato);
         foreach ($data['parametros'] as $p) {
-            $tipo = $p->tipo_antidoping;
+            $tipo       = $p->tipo_antidoping;
             $parametros = $p->antidoping;
         }
         if ($tipo == 1) {
-            $paquete = $this->doping_model->getPaqueteCandidato($parametros);
-            $salida = '<span><b>Examen antidoping: </b></span><br>';
-            $salida .= '<span><b>' . $paquete->nombre . '</b></span><br>';
-            $aux = explode(',', $paquete->sustancias);
-            $salida .= '<small>(';
+            $paquete  = $this->doping_model->getPaqueteCandidato($parametros);
+            $salida   = '<span><b>Examen antidoping: </b></span><br>';
+            $salida  .= '<span><b>' . $paquete->nombre . '</b></span><br>';
+            $aux      = explode(',', $paquete->sustancias);
+            $salida  .= '<small>(';
             for ($i = 0; $i < count($aux); $i++) {
-                $sustancia = $this->doping_model->getSustanciaCandidato($aux[$i]);
-                $salida .= $sustancia->abreviatura . ' ';
+                $sustancia  = $this->doping_model->getSustanciaCandidato($aux[$i]);
+                $salida    .= $sustancia->abreviatura . ' ';
             }
             $salida .= ')</small><br><br>';
             echo $salida;
 
         }
         if ($tipo == 2) {
-            $aux = explode(',', $parametros);
-            $salida = '<span><b>Doping por parámetro: </b></span><br>';
+            $aux     = explode(',', $parametros);
+            $salida  = '<span><b>Doping por parámetro: </b></span><br>';
             $salida .= '<span><b>';
-            $extra = '(';
+            $extra   = '(';
             for ($i = 0; $i < count($aux); $i++) {
-                $sustancia = $this->doping_model->getSustanciaCandidato($aux[$i]);
-                $salida .= $sustancia->abreviatura . ' ';
-                $extra .= ' ' . $sustancia->descripcion;
+                $sustancia  = $this->doping_model->getSustanciaCandidato($aux[$i]);
+                $salida    .= $sustancia->abreviatura . ' ';
+                $extra     .= ' ' . $sustancia->descripcion;
             }
-            $extra .= ' )';
+            $extra  .= ' )';
             $salida .= '</b></span><br>' . $extra . '<br><br>';
             echo $salida;
         }
@@ -942,10 +939,10 @@ class Doping extends CI_Controller
 
     public function getSubclientes()
     {
-        $id_cliente = $_POST['id_cliente'];
-        $data['subclientes'] = $this->doping_model->getSubclientes($id_cliente);
-        $salida = "<option value='0' selected>Selecciona</option>";
-        $salida .= "<option value='0'>N/A</option>";
+        $id_cliente           = $_POST['id_cliente'];
+        $data['subclientes']  = $this->doping_model->getSubclientes($id_cliente);
+        $salida               = "<option value='0' selected>Selecciona</option>";
+        $salida              .= "<option value='0'>N/A</option>";
         if ($data['subclientes']) {
             foreach ($data['subclientes'] as $row) {
                 $salida .= "<option value='" . $row->id . "'>" . $row->nombre . "</option>";
@@ -957,10 +954,10 @@ class Doping extends CI_Controller
     }
     public function getProyectos()
     {
-        $id_cliente = $_POST['id_cliente'];
-        $data['proyectos'] = $this->doping_model->getProyectos($id_cliente);
-        $salida = "<option value='0' selected>Selecciona</option>";
-        $salida .= "<option value='0'>N/A</option>";
+        $id_cliente         = $_POST['id_cliente'];
+        $data['proyectos']  = $this->doping_model->getProyectos($id_cliente);
+        $salida             = "<option value='0' selected>Selecciona</option>";
+        $salida            .= "<option value='0'>N/A</option>";
         if ($data['proyectos']) {
             foreach ($data['proyectos'] as $row) {
                 $salida .= "<option value='" . $row->id . "'>" . $row->nombre . "</option>";
@@ -972,11 +969,11 @@ class Doping extends CI_Controller
     }
     public function getProyectosSubcliente()
     {
-        $id_cliente = $_POST['id_cliente'];
-        $id_subcliente = $_POST['id_subcliente'];
-        $data['proyectos'] = $this->doping_model->getProyectosSubcliente($id_cliente, $id_subcliente);
-        $salida = "<option value=''>Selecciona</option>";
-        $salida .= "<option value='0'>N/A</option>";
+        $id_cliente         = $_POST['id_cliente'];
+        $id_subcliente      = $_POST['id_subcliente'];
+        $data['proyectos']  = $this->doping_model->getProyectosSubcliente($id_cliente, $id_subcliente);
+        $salida             = "<option value=''>Selecciona</option>";
+        $salida            .= "<option value='0'>N/A</option>";
         if ($data['proyectos']) {
             foreach ($data['proyectos'] as $row) {
                 $salida .= "<option value='" . $row->id . "'>" . $row->nombre . "</option>";
@@ -988,11 +985,11 @@ class Doping extends CI_Controller
     }
     public function getPaqueteCliente()
     {
-        $id_cliente = $_POST['id_cliente'];
-        $id_subcliente = $_POST['id_subcliente'];
-        $id_proyecto = $_POST['id_proyecto'];
+        $id_cliente       = $_POST['id_cliente'];
+        $id_subcliente    = $_POST['id_subcliente'];
+        $id_proyecto      = $_POST['id_proyecto'];
         $data['examenes'] = $this->doping_model->getPaqueteCliente($id_cliente, $id_subcliente, $id_proyecto);
-        $salida = "";
+        $salida           = "";
         if ($data['examenes']) {
             foreach ($data['examenes'] as $row) {
                 $salida .= "<option value='" . $row->id_antidoping_paquete . "'>" . $row->nombre . "</option>";
@@ -1004,11 +1001,11 @@ class Doping extends CI_Controller
     }
     public function getPaqueteSubcliente()
     {
-        $id_cliente = $_POST['id_cliente'];
+        $id_cliente    = $_POST['id_cliente'];
         $id_subcliente = $_POST['id_subcliente'];
-        $id_proyecto = $_POST['id_proyecto'];
-        $paq = $this->doping_model->getPaqueteSubcliente($id_cliente, $id_subcliente);
-        $salida = "";
+        $id_proyecto   = $_POST['id_proyecto'];
+        $paq           = $this->doping_model->getPaqueteSubcliente($id_cliente, $id_subcliente);
+        $salida        = "";
         if ($paq) {
             echo $paq->id_antidoping_paquete;
         } else {
@@ -1017,11 +1014,11 @@ class Doping extends CI_Controller
     }
     public function getPaqueteSubclienteProyecto()
     {
-        $id_cliente = $_POST['id_cliente'];
+        $id_cliente    = $_POST['id_cliente'];
         $id_subcliente = $_POST['id_subcliente'];
-        $id_proyecto = $_POST['id_proyecto'];
-        $paq = $this->doping_model->getPaqueteSubclienteProyecto($id_cliente, $id_proyecto, $id_subcliente);
-        $salida = "";
+        $id_proyecto   = $_POST['id_proyecto'];
+        $paq           = $this->doping_model->getPaqueteSubclienteProyecto($id_cliente, $id_proyecto, $id_subcliente);
+        $salida        = "";
         //$salida .= "<option value='0'>N/A</option>";
         if ($paq) {
             echo $paq->id_antidoping_paquete;
@@ -1101,32 +1098,32 @@ class Doping extends CI_Controller
     }*/
     public function getClaveCliente()
     {
-        $id_cliente = $_POST['id_cliente'];
+        $id_cliente    = $_POST['id_cliente'];
         $id_subcliente = $_POST['id_subcliente'];
-        $id_proyecto = $_POST['id_proyecto'];
+        $id_proyecto   = $_POST['id_proyecto'];
         if ($id_subcliente == 0) {
             if ($id_proyecto == 0) {
                 $cliente = $this->funciones_model->getClaveCliente($id_cliente);
-                $doping = $this->doping_model->getLastDoping();
-                $doping = ($doping == "" || $doping == null) ? 0 : $doping->id;
-                $salida = "AD-" . $cliente->clave . "--" . ($doping + 1) . "-" . substr(date('Y'), -2);
+                $doping  = $this->doping_model->getLastDoping();
+                $doping  = ($doping == "" || $doping == null) ? 0 : $doping->id;
+                $salida  = "AD-" . $cliente->clave . "--" . ($doping + 1) . "-" . substr(date('Y'), -2);
             } else {
                 $cliente = $this->funciones_model->getClaveProyecto($id_cliente, $id_proyecto);
-                $doping = $this->doping_model->getLastDoping();
-                $doping = ($doping == "" || $doping == null) ? 0 : $doping->id;
-                $salida = "AD-" . $cliente->claveCliente . "--" . ($doping + 1) . "-" . substr(date('Y'), -2);
+                $doping  = $this->doping_model->getLastDoping();
+                $doping  = ($doping == "" || $doping == null) ? 0 : $doping->id;
+                $salida  = "AD-" . $cliente->claveCliente . "--" . ($doping + 1) . "-" . substr(date('Y'), -2);
             }
         } else {
             if ($id_proyecto == 0) {
                 $cliente = $this->funciones_model->getClaveSubcliente($id_cliente, $id_subcliente);
-                $doping = $this->doping_model->getLastDoping();
-                $doping = ($doping == "" || $doping == null) ? 0 : $doping->id;
-                $salida = "AD-" . $cliente->claveCliente . "-" . $cliente->claveSubcliente . "-" . ($doping + 1) . "-" . substr(date('Y'), -2);
+                $doping  = $this->doping_model->getLastDoping();
+                $doping  = ($doping == "" || $doping == null) ? 0 : $doping->id;
+                $salida  = "AD-" . $cliente->claveCliente . "-" . $cliente->claveSubcliente . "-" . ($doping + 1) . "-" . substr(date('Y'), -2);
             } else {
                 $subcliente = $this->funciones_model->getClaveSubclienteProyecto($id_cliente, $id_proyecto, $id_subcliente);
-                $doping = $this->doping_model->getLastDoping();
-                $doping = ($doping == "" || $doping == null) ? 0 : $doping->id;
-                $salida = "AD-" . $subcliente->claveCliente . "-" . $subcliente->claveSubcliente . "-" . ($doping + 1) . "-" . substr(date('Y'), -2);
+                $doping     = $this->doping_model->getLastDoping();
+                $doping     = ($doping == "" || $doping == null) ? 0 : $doping->id;
+                $salida     = "AD-" . $subcliente->claveCliente . "-" . $subcliente->claveSubcliente . "-" . ($doping + 1) . "-" . substr(date('Y'), -2);
             }
         }
         echo $salida;
@@ -1135,24 +1132,24 @@ class Doping extends CI_Controller
     {
         $es_pendiente = $this->doping_model->checkPendienteDoping($this->input->post('nombre'), $this->input->post('paterno'), $this->input->post('materno'));
         if ($es_pendiente > 0) {
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'El candidato esta disponible en Pendientes',
-            );
+                'msg'    => 'El candidato esta disponible en Pendientes',
+            ];
         } else {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => '',
-            );
+                'msg'    => '',
+            ];
         }
         echo json_encode($msj);
     }
     public function calculaEdad($fechanacimiento)
     {
         list($ano, $mes, $dia) = explode("-", $fechanacimiento);
-        $ano_diferencia = date("Y") - $ano;
-        $mes_diferencia = date("m") - $mes;
-        $dia_diferencia = date("d") - $dia;
+        $ano_diferencia        = date("Y") - $ano;
+        $mes_diferencia        = date("m") - $mes;
+        $dia_diferencia        = date("d") - $dia;
         if ($mes_diferencia < 0 || ($mes_diferencia == 0 && $dia_diferencia < 0 || $mes_diferencia < 0)) {
             $ano_diferencia--;
         }
@@ -1161,23 +1158,23 @@ class Doping extends CI_Controller
     }
     public function getDopingCandidato()
     {
-        $id_doping = $_POST['id_doping'];
-        $id_candidato = $_POST['id_candidato'];
-        $candidato = $this->doping_model->getDopingCandidato($id_doping);
+        $id_doping          = $_POST['id_doping'];
+        $id_candidato       = $_POST['id_candidato'];
+        $candidato          = $this->doping_model->getDopingCandidato($id_doping);
         $data['parametros'] = $this->doping_model->getParametrosCandidato($id_candidato);
         foreach ($data['parametros'] as $p) {
-            $tipo = $p->tipo_antidoping;
+            $tipo       = $p->tipo_antidoping;
             $parametros = $p->antidoping;
         }
         if ($tipo == 1) {
-            $paquete = $this->doping_model->getPaqueteCandidato($parametros);
-            $doping = '<span><b>Doping: </b></span><br>';
-            $doping .= '<span><b>' . $paquete->nombre . '</b></span><br>';
-            $aux = explode(',', $paquete->sustancias);
-            $doping .= '<span>(';
+            $paquete  = $this->doping_model->getPaqueteCandidato($parametros);
+            $doping   = '<span><b>Doping: </b></span><br>';
+            $doping  .= '<span><b>' . $paquete->nombre . '</b></span><br>';
+            $aux      = explode(',', $paquete->sustancias);
+            $doping  .= '<span>(';
             for ($i = 0; $i < count($aux); $i++) {
-                $sustancia = $this->doping_model->getSustanciaCandidato($aux[$i]);
-                $doping .= $sustancia->abreviatura . ' ';
+                $sustancia  = $this->doping_model->getSustanciaCandidato($aux[$i]);
+                $doping    .= $sustancia->abreviatura . ' ';
             }
             $doping .= ')</span><br>';
         }
@@ -1186,18 +1183,18 @@ class Doping extends CI_Controller
     }
     public function getSustanciasDoping()
     {
-        $id_doping = $_POST['id_doping'];
-        $id_candidato = $_POST['id_candidato'];
-        $salida = "";
+        $id_doping          = $_POST['id_doping'];
+        $id_candidato       = $_POST['id_candidato'];
+        $salida             = "";
         $data['sustancias'] = $this->doping_model->getSustanciasDoping($id_doping);
         foreach ($data['sustancias'] as $s) {
-            $sustancia = $this->doping_model->getSustanciaCandidato($s->id_sustancia);
-            $salida .= '<div class="row">';
-            $salida .= '<div class="col-md-6 col-md-offset-1 text-center">';
-            $salida .= '<b>' . $sustancia->abreviatura . '</b><br><small>' . $sustancia->descripcion . '</small>';
-            $salida .= '</div>';
-            $salida .= '<div class="col-md-3">';
-            $salida .= '<select id="sust' . $sustancia->id . '" name="sust' . $sustancia->id . '" class="form-control es_sustancia sust_obligado">';
+            $sustancia  = $this->doping_model->getSustanciaCandidato($s->id_sustancia);
+            $salida    .= '<div class="row">';
+            $salida    .= '<div class="col-md-6 col-md-offset-1 text-center">';
+            $salida    .= '<b>' . $sustancia->abreviatura . '</b><br><small>' . $sustancia->descripcion . '</small>';
+            $salida    .= '</div>';
+            $salida    .= '<div class="col-md-3">';
+            $salida    .= '<select id="sust' . $sustancia->id . '" name="sust' . $sustancia->id . '" class="form-control es_sustancia sust_obligado">';
 
             if ($s->resultado != -1) {
                 if ($s->resultado == 0) {
@@ -1232,7 +1229,7 @@ class Doping extends CI_Controller
         $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
+        $hoy         = date("d-m-Y");
         if ($this->uri->segment(3) != null) {
             $id_doping = $this->uri->segment(3);
         } else {
@@ -1248,15 +1245,15 @@ class Doping extends CI_Controller
 
         //
         try {
-            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping, $doping);
         } catch (\Throwable $e) {
             log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
             show_error('No fue posible preparar el código QR del estudio.', 500);
             return;
         }
         //
-        $data['doping'] = $doping;
-        $html = $this->load->view('pdfs/reporte_doping_pdf', $data, true);
+        $data['doping']         = $doping;
+        $html                   = $this->load->view('pdfs/reporte_doping_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader('<div style="width: 100%; float: left;"><img style="height: 150px;" src="' . base_url() . 'img/Encabezado.png"></div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 12px;"><div style="border-bottom:1px solid gray;"><b>Teléfono:</b> (33) 2301-8599 | <b>Correo:</b> hola@rodi.com.mx | <b>Sitio web:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br><br>FOP-07 Rev. 00 <br>Fecha de Rev. 18/11/2021</p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
@@ -1274,8 +1271,8 @@ class Doping extends CI_Controller
         $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
-    
+        $hoy         = date("d-m-Y");
+
         if ($this->uri->segment(3) != null) {
             $id_doping = $this->uri->segment(3);
         } elseif (isset($_POST['idDop'])) {
@@ -1283,62 +1280,62 @@ class Doping extends CI_Controller
         } else {
             $id_doping = $this->input->get('id');
         }
-    
+
         // Primera solicitud cURL
         $url_doping = API_URL . 'doping/' . $id_doping;
-        $ch_doping = curl_init($url_doping);
+        $ch_doping  = curl_init($url_doping);
         curl_setopt($ch_doping, CURLOPT_RETURNTRANSFER, true);
         $response_doping = curl_exec($ch_doping);
-    
+
         // Verificar si ocurrió un error durante la ejecución de cURL
         if ($response_doping === false) {
-            $error_doping = curl_error($ch_doping);
+            $error_doping          = curl_error($ch_doping);
             $_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $error_doping;
             header('Location: ' . $_SERVER['HTTP_REFERER']);
             exit(); // Asegúrate de salir después de redirigir
         }
-    
+
         // Decodificar la respuesta JSON para la primera solicitud
         $doping = json_decode($response_doping);
-    
-        $directorio = '_doping';
+
+        $directorio    = '_doping';
         $nombreArchivo = $doping->foto;
-    
+
         // Segunda solicitud cURL para obtener los datos del área
-        $urlArea = ($doping->foraneo == 'SI') ? 
-                   API_URL . 'area/' . urlencode("DOPING FORANEO") : 
-                   API_URL . 'area/' . urlencode($doping->id_area);
-    
+        $urlArea = ($doping->foraneo == 'SI') ?
+        API_URL . 'area/' . urlencode("DOPING FORANEO") :
+        API_URL . 'area/' . urlencode($doping->id_area);
+
         $chArea = curl_init($urlArea);
         curl_setopt($chArea, CURLOPT_RETURNTRANSFER, true);
         $responseArea = curl_exec($chArea);
-    
+
         if ($responseArea === false) {
-            $errorArea = curl_error($chArea);
+            $errorArea             = curl_error($chArea);
             $_SESSION['errorArea'] = 'Error en la solicitud cURL para Área: ' . $errorArea;
             header('Location: ' . $_SERVER['HTTP_REFERER']);
             exit(); // Asegúrate de salir después de redirigir
         } else {
-            $area = json_decode($responseArea);
+            $area         = json_decode($responseArea);
             $data['area'] = $area;
         }
-    
+
         // Creación del código QR para consulta en línea
         try {
-            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping, $doping);
         } catch (\Throwable $e) {
             log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
             show_error('No fue posible preparar el código QR del estudio.', 500);
             return;
         }
-    
-        $data['doping'] = $doping;
-        $html = $this->load->view('pdfs/doping_pdf', $data, true);
+
+        $data['doping']         = $doping;
+        $html                   = $this->load->view('pdfs/doping_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader('<div style="width: 100%; float: left;"><img style="height: 150px;" src="' . base_url() . 'img/Encabezado.png"></div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 12px;"><div style="border-bottom:1px solid gray;"><b>Teléfono:</b> (33) 2301-8599 | <b>Correo:</b> hola@rodi.com.mx | <b>Sitio web:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br><br>FOP-07 Rev. 00 <br>Fecha de Rev. 18/11/2021</p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
         $mpdf->WriteHTML($html);
-    
+
         try {
             $mpdf->Output('doping_' . $doping->codigo_prueba . '_' . $doping->nombre . '_' . $doping->paterno . '.pdf', 'D');
         } catch (\Mpdf\MpdfException $e) {
@@ -1347,14 +1344,13 @@ class Doping extends CI_Controller
             echo 'Division by zero error: ' . $e->getMessage();
         }
     }
-    
 
     public function crearPDFIngles()
     {
         $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
+        $hoy         = date("d-m-Y");
         if ($this->uri->segment(3) != null) {
             $id_doping = $this->uri->segment(3);
         } else {
@@ -1368,14 +1364,14 @@ class Doping extends CI_Controller
         }
         //
         try {
-            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping, $doping);
         } catch (\Throwable $e) {
             log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
             show_error('No fue posible preparar el código QR del estudio.', 500);
             return;
         }
-        $data['doping'] = $doping;
-        $html = $this->load->view('pdfs/doping_ingles_pdf', $data, true);
+        $data['doping']         = $doping;
+        $html                   = $this->load->view('pdfs/doping_ingles_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader('<div style="width: 100%; float: left;"><img style="height: 150px;" src="' . base_url() . 'img/Encabezado.png"></div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 12px;"><div style="border-bottom:1px solid gray;"><b>Telephone:</b> (33) 2301-8599 | <b>Email:</b> hola@rodi.com.mx | <b>Website:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br><br>FOP-07 Rev. 00 <br>Fecha de Rev. 18/11/2021</p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
@@ -1388,17 +1384,17 @@ class Doping extends CI_Controller
         $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
-        $id_doping = $_POST['idPDF2'];
-        $doping = $this->doping_model->getDatosDoping($id_doping);
+        $hoy         = date("d-m-Y");
+        $id_doping   = $_POST['idPDF2'];
+        $doping      = $this->doping_model->getDatosDoping($id_doping);
         if ($doping->foraneo == 'SI') {
             $data['area'] = $this->area_model->getArea('DOPING FORANEO');
         } else {
             $data['area'] = $this->area_model->getAreaById($doping->id_area);
         }
 
-        $data['doping'] = $doping;
-        $html = $this->load->view('pdfs/doping_adul_pdf', $data, true);
+        $data['doping']         = $doping;
+        $html                   = $this->load->view('pdfs/doping_adul_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader('<div style="width: 100%; float: left;"><img style="height: 150px;" src="' . base_url() . 'img/Encabezado.png"></div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px; color: rgba(0,0,0,0.5);"><p style="font-size: 12px;"><div style="border-bottom:1px solid gray;"><b>Teléfono:</b> (33) 2301-8599 | <b>Correo:</b> hola@rodi.com.mx | <b>Sitio web:</b> rodi.com.mx</div><br>Calle Benito Juarez # 5693, Col. Santa María del Pueblito <br>Zapopan, Jalisco, México. C.P. 45018 <br></p></div><div style="position: absolute; right: 10px;  bottom: 13px;"><img width="" src="' . base_url() . 'img/logo2.png"></div>');
@@ -1411,12 +1407,12 @@ class Doping extends CI_Controller
         $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
-        $id_doping = $_POST['idCadena'];
-        $doping = $this->doping_model->getDatosDoping($id_doping);
+        $hoy         = date("d-m-Y");
+        $id_doping   = $_POST['idCadena'];
+        $doping      = $this->doping_model->getDatosDoping($id_doping);
 
-        $data['doping'] = $doping;
-        $html = $this->load->view('pdfs/doping_cadena_pdf', $data, true);
+        $data['doping']         = $doping;
+        $html                   = $this->load->view('pdfs/doping_cadena_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->SetHTMLHeader('<div style="width: 100%; float: left;"><img style="height: 50px;" src="' . base_url() . 'img/logo.png"></div>');
         $mpdf->SetHTMLFooter('<div style="position: absolute; left: 20px; bottom: 10px;"><p style="font-size: 12px;"><div style="width: 95%;margin-left: 20px;">AVISO DE PRIVACIDAD RO & DI GLOBAL S DE RL DE CV HACE DE SU CONOCIMIENTO QUE LA INFORMACIÓN PROPORCIONADA POR USTED EN EL PRESENTE DOCUMENTO ES PROPIEDAD DE LA EMPRESA QUIEN CONTRATÓ ESTE SERVICIO Y NOS DESLINDAMOS DEL USO QUE SE LE DÉ A LA MISMA.</p><br>FOP-03 Rev. 00 <br>Fecha de Rev. 18/11/2021</div></div>');
@@ -1429,9 +1425,9 @@ class Doping extends CI_Controller
         $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
-        $id_doping = $_POST['idDopMembretado'];
-        $doping = $this->doping_model->getDatosDoping($id_doping);
+        $hoy         = date("d-m-Y");
+        $id_doping   = $_POST['idDopMembretado'];
+        $doping      = $this->doping_model->getDatosDoping($id_doping);
         if ($doping->foraneo == 'SI') {
             $data['area'] = $this->area_model->getArea('DOPING FORANEO');
         } else {
@@ -1439,15 +1435,15 @@ class Doping extends CI_Controller
         }
         //
         try {
-            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping, $doping);
         } catch (\Throwable $e) {
             log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
             show_error('No fue posible preparar el código QR del estudio.', 500);
             return;
         }
 
-        $data['doping'] = $doping;
-        $html = $this->load->view('pdfs/doping_membretado_pdf', $data, true);
+        $data['doping']         = $doping;
+        $html                   = $this->load->view('pdfs/doping_membretado_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->WriteHTML($html);
 
@@ -1458,9 +1454,9 @@ class Doping extends CI_Controller
         $mpdf = new \Mpdf\Mpdf(['tempDir' => APPPATH . 'cache/mpdf']);
         date_default_timezone_set('America/Mexico_City');
         $data['hoy'] = date("d-m-Y");
-        $hoy = date("d-m-Y");
-        $id_doping = $_POST['idDopingMembretadoIngles'];
-        $doping = $this->doping_model->getDatosDoping($id_doping);
+        $hoy         = date("d-m-Y");
+        $id_doping   = $_POST['idDopingMembretadoIngles'];
+        $doping      = $this->doping_model->getDatosDoping($id_doping);
         if ($doping->foraneo == 'SI') {
             $data['area'] = $this->area_model->getArea('DOPING FORANEO');
         } else {
@@ -1468,15 +1464,15 @@ class Doping extends CI_Controller
         }
         //
         try {
-            $data['qr'] = $this->prepararQrDopingPdf($id_doping);
+            $data['qr'] = $this->prepararQrDopingPdf($id_doping, $doping);
         } catch (\Throwable $e) {
             log_message('error', 'Error QR Doping ' . $id_doping . ': ' . $e->getMessage());
             show_error('No fue posible preparar el código QR del estudio.', 500);
             return;
         }
 
-        $data['doping'] = $doping;
-        $html = $this->load->view('pdfs/doping_membretado_ingles_pdf', $data, true);
+        $data['doping']         = $doping;
+        $html                   = $this->load->view('pdfs/doping_membretado_ingles_pdf', $data, true);
         $mpdf->setAutoTopMargin = 'stretch';
         $mpdf->WriteHTML($html);
 
@@ -1489,21 +1485,21 @@ class Doping extends CI_Controller
 
         $this->form_validation->set_message('required', 'El campo %s es obligatorio');
 
-        $msj = array();
+        $msj = [];
         if ($this->form_validation->run() == false) {
-            $msj = array(
+            $msj = [
                 'codigo' => 0,
-                'msg' => validation_errors(),
-            );
+                'msg'    => validation_errors(),
+            ];
         } else {
-            $dop = array(
+            $dop = [
                 'laboratorio' => $this->input->post('lab'),
-            );
+            ];
             $this->doping_model->editarDoping($dop, $this->input->post('id_doping'));
-            $msj = array(
+            $msj = [
                 'codigo' => 1,
-                'msg' => 'success',
-            );
+                'msg'    => 'success',
+            ];
         }
         echo json_encode($msj);
     }
@@ -1548,7 +1544,7 @@ class Doping extends CI_Controller
     //Regla para nombres con espacios
     public function alpha_space_only($str)
     {
-        if (!preg_match("/^[a-zA-Z ]+$/", $str)) {
+        if (! preg_match("/^[a-zA-Z ]+$/", $str)) {
             $this->form_validation->set_message('alpha_space_only', 'El campo %s debe estar compuesto solo por letras y espacios y no debe estar vacío');
             return false;
         } else {
@@ -1564,122 +1560,160 @@ class Doping extends CI_Controller
             return true;
         }
     }
-    private function prepararQrDopingPdf($idDoping)
+    private function prepararQrDopingPdf($idDoping, $doping)
     {
         $idDoping = (int) $idDoping;
 
         if ($idDoping <= 0) {
-            throw new \RuntimeException('ID de Doping no válido.');
+            throw new \RuntimeException('ID de Doping inválido.');
         }
 
-        // Obtener la relación real del estudio con su candidato y portal.
-        $registro = $this->db
-            ->select('d.id_candidato, d.id_cliente, d.qr_token, cl.id_portal')
-            ->from('doping AS d')
-            ->join('cliente AS cl', 'cl.id = d.id_cliente')
-            ->where('d.id', $idDoping)
-            ->where('d.eliminado', 0)
-            ->limit(1)
-            ->get()
-            ->row();
+        // Obtener los datos desde Laravel cuando el objeto original
+        // todavía no contiene el campo id_portal.
+        if (! is_object($doping) || ! property_exists($doping, 'id_portal')) {
 
-        if (!$registro) {
-            throw new \RuntimeException('No se encontró el estudio de Doping.');
+            $ch = curl_init(API_URL . 'doping/' . $idDoping);
+
+            if ($ch === false) {
+                throw new \RuntimeException('No se pudo iniciar la consulta de Doping.');
+            }
+
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT        => 30,
+                CURLOPT_HTTPHEADER     => ['Accept: application/json'],
+            ]);
+
+            $respuesta = curl_exec($ch);
+            $estado    = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($respuesta === false || $estado !== 200) {
+                throw new \RuntimeException('No se pudieron consultar los datos de Doping en Laravel.');
+            }
+
+            $datosApi = json_decode($respuesta);
+
+            if (! is_object($datosApi) || ! property_exists($datosApi, 'id_portal')) {
+                throw new \RuntimeException(
+                    'La API de Doping todavía no proporciona id_portal.'
+                );
+            }
+
+            if (
+                is_object($doping)
+                && (int) ($doping->id_candidato ?? 0) > 0
+                && (int) $doping->id_candidato !== (int) ($datosApi->id_candidato ?? 0)
+            ) {
+                throw new \RuntimeException(
+                    'El candidato del estudio no coincide con la API.'
+                );
+            }
+
+            $doping = $datosApi;
         }
 
-        $idPortal = (int) $registro->id_portal;
-        $idCandidato = (int) $registro->id_candidato;
+        $idCandidato = (int) ($doping->id_candidato ?? 0);
+        $token       = trim((string) ($doping->qr_token ?? ''));
 
-        if ($idPortal <= 0 || $idCandidato <= 0) {
-            throw new \RuntimeException('El estudio no tiene portal o candidato válido.');
+        $portalValor = $doping->id_portal;
+
+        if (
+            $portalValor !== null
+            && $portalValor !== ''
+            && (
+                ! ctype_digit((string) $portalValor)
+                || (int) $portalValor <= 0
+            )
+        ) {
+            throw new \RuntimeException('ID de portal inválido.');
         }
 
-        $storage = rtrim(FCPATH, '/\\') . DIRECTORY_SEPARATOR . 'storagetalentsafe';
+        $idPortal = (int) $portalValor;
 
-        if (!is_dir($storage)) {
+        if ($idCandidato <= 0) {
+            throw new \RuntimeException('Candidato inválido.');
+        }
+
+        // No sustituir tokens existentes ni crear otros sin persistirlos en RODI.
+        if ($token === '') {
+            throw new \RuntimeException(
+                'El estudio no tiene un QR token registrado en RODI.'
+            );
+        }
+
+        $storage = rtrim(FCPATH, '/\\') . '/storagetalentsafe';
+
+        if (! is_dir($storage)) {
             throw new \RuntimeException('No se encontró storagetalentsafe.');
         }
 
-        $directorio = $storage
-            . '/portales/' . $idPortal
-            . '/_docs/candidatos/' . $idCandidato;
+        // Candidato vinculado a un portal TalentSafe.
+        if ($idPortal > 0) {
+            $directorio = $storage
+                . '/portales/' . $idPortal
+                . '/_docs/candidatos/' . $idCandidato;
+        } else {
+            // Candidato sin sincronización con TalentSafe.
+            $directorio = $storage
+                . '/_doping/candidatos/' . $idCandidato;
+        }
 
-        if (!is_dir($directorio) &&
-            !@mkdir($directorio, 0770, true) &&
-            !is_dir($directorio)) {
-            throw new \RuntimeException('No se pudo crear el directorio del candidato.');
+        if (
+            ! is_dir($directorio)
+            && ! @mkdir($directorio, 0770, true)
+            && ! is_dir($directorio)
+        ) {
+            throw new \RuntimeException(
+                'No fue posible crear el directorio del QR.'
+            );
         }
 
         $archivo = $directorio . '/'
-            . $idCandidato . '_qr_doping_' . $idDoping . '.png';
+            . $idCandidato
+            . '_qr_doping_'
+            . $idDoping
+            . '.png';
 
-        // El token existente nunca debe reemplazarse.
-        $token = trim((string) ($registro->qr_token ?? ''));
-
-        if ($token === '') {
-            $nuevoToken = bin2hex(random_bytes(8));
-
-            // Actualización condicional para no sobrescribir otro token.
-            $actualizado = $this->db
-                ->where('id', $idDoping)
-                ->group_start()
-                    ->where('qr_token', null)
-                    ->or_where('qr_token', '')
-                ->group_end()
-                ->update('doping', ['qr_token' => $nuevoToken]);
-
-            if (!$actualizado) {
-                throw new \RuntimeException('No se pudo registrar el token del QR.');
-            }
-
-            $actual = $this->db
-                ->select('qr_token')
-                ->where('id', $idDoping)
-                ->get('doping')
-                ->row();
-
-            $token = trim((string) ($actual->qr_token ?? ''));
-
-            if ($token === '') {
-                throw new \RuntimeException('No se pudo recuperar el token del QR.');
-            }
-        }
-
-        // Reconstruir el archivo cuando no exista o esté vacío.
         clearstatcache(true, $archivo);
 
-        if (!is_file($archivo) || filesize($archivo) === 0) {
-            if (!is_writable($directorio)) {
-                throw new \RuntimeException('El directorio QR no tiene permisos de escritura.');
+        if (! is_file($archivo) || filesize($archivo) === 0) {
+
+            if (! is_writable($directorio)) {
+                throw new \RuntimeException(
+                    'No hay permisos de escritura en el directorio QR.'
+                );
             }
 
             $this->load->library('ciqrcode');
 
             $params = [
-                'data' => 'https://test-result.rodi.com.mx/doping/doping.php?uid='
-                    . rawurlencode($token),
-                'level' => 'H',
-                'size' => 10,
-                'savename' => $archivo
+                'data'     => 'https://test-result.rodi.com.mx/doping/doping.php?uid='
+                . rawurlencode($token),
+                'level'    => 'H',
+                'size'     => 10,
+                'savename' => $archivo,
             ];
 
             $this->ciqrcode->generate($params);
 
             clearstatcache(true, $archivo);
 
-            if (!is_file($archivo) || filesize($archivo) === 0) {
-                throw new \RuntimeException('No se pudo generar el PNG del QR.');
+            if (! is_file($archivo) || filesize($archivo) === 0) {
+                throw new \RuntimeException(
+                    'No se pudo generar el archivo QR.'
+                );
             }
         }
 
-        // Entregar el QR al PDF sin exponer una URL pública del EFS.
         $contenido = @file_get_contents($archivo);
 
-        if ($contenido === false) {
-            throw new \RuntimeException('No se pudo leer el archivo QR.');
+        if ($contenido === false || $contenido === '') {
+            throw new \RuntimeException(
+                'No se pudo leer el QR desde storagetalentsafe.'
+            );
         }
 
         return 'data:image/png;base64,' . base64_encode($contenido);
     }
-
 }
