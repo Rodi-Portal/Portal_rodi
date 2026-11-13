@@ -963,69 +963,70 @@ class Archivo extends CI_Controller
         return $map[$ext] ?? 'application/octet-stream';
     }
 
-    public function ver_psico($filename = '')
+    public function ver_psico($idCandidato = 0, $filename = '')
     {
-        $filename = urldecode($filename);
-        $filename = basename($filename);
-
-        $base     = rtrim($this->base_path_psico, '/\\') . DIRECTORY_SEPARATOR;
-        $realBase = realpath($base);
-        $path     = $realBase ? realpath($base . $filename) : false;
-
-        if (! $path || strpos($path, $realBase) !== 0 || ! is_file($path)) {
-            // Si no existe, ahora sí 404 real
-            $this->output->set_status_header(404);
-            return show_404();
+        // Sesión obligatoria.
+        if (! $this->session->userdata('id')) {
+            show_404();
+            return;
         }
 
-        // Asegúrate de que el status sea 200 (evita el 404 que estás viendo)
-        // Puedes usar la Output class de CI o las funciones nativas:
-        $this->output->set_status_header(200);
+        $idPortal = (int) $this->session->userdata('idPortal');
+        $idCandidato = (int) $idCandidato;
+        $filename = rawurldecode((string) $filename);
 
-        // Evitar problemas con compresión/longitud y cualquier salida previa
-        if (function_exists('ini_set')) {
-            @ini_set('zlib.output_compression', 'Off');
+        if (
+            $idPortal <= 0 ||
+            $idCandidato <= 0 ||
+            ! preg_match('/\A[A-Za-z0-9_-]+\.pdf\z/i', $filename)
+        ) {
+            show_404();
+            return;
         }
 
-        while (ob_get_level() > 0) {@ob_end_clean();}
+        $directorio = rtrim(FCPATH, '/\\')
+            . '/storagetalentsafe/portales/'
+            . $idPortal
+            . '/_docs/candidatos/'
+            . $idCandidato;
 
-        $mime = 'application/pdf';
-        if (function_exists('mime_content_type')) {
-            $det = @mime_content_type($path);
-            if ($det) {
-                $mime = $det;
-            }
+        $baseReal = realpath($directorio);
 
+        $archivo = $baseReal
+            ? realpath($baseReal . DIRECTORY_SEPARATOR . $filename)
+            : false;
+
+        if (
+            $baseReal === false ||
+            $archivo === false ||
+            dirname($archivo) !== $baseReal ||
+            ! is_file($archivo) ||
+            ! is_readable($archivo)
+        ) {
+            show_404();
+            return;
         }
 
-        // Cabeceras
-        header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK', true, 200);
-        header('Content-Type: ' . $mime);
-        header('Content-Length: ' . filesize($path));
-        header('Content-Disposition: inline; filename="' . basename($path) . '"');
-        header('X-Content-Type-Options: nosniff');
-        header('Accept-Ranges: bytes');
-        header('Cache-Control: private, max-age=10800, must-revalidate');
-        header('Pragma: public');
+        $fp = @fopen($archivo, 'rb');
 
-        // Stream por chunks
-        $fp = fopen($path, 'rb');
         if ($fp === false) {
-            $this->output->set_status_header(500);
-            return show_error('No se pudo abrir el archivo.', 500);
+            show_error('No fue posible abrir el PDF.', 500);
+            return;
         }
 
-        $chunk = 8192;
-        while (! feof($fp)) {
-            echo fread($fp, $chunk);
-            flush();
-            if (connection_status() != CONNECTION_NORMAL) {
-                break;
-            }
-
+        while (ob_get_level() > 0) {
+            @ob_end_clean();
         }
+
+        header('Content-Type: application/pdf');
+        header('Content-Length: ' . filesize($archivo));
+        header('Content-Disposition: inline; filename="' . $filename . '"');
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: private, no-store');
+
+        fpassthru($fp);
         fclose($fp);
-        exit; // MUY importante
+        exit;
     }
     public function ver_doc_id($id = 0)
     {

@@ -87,4 +87,5 @@ $route['archivo/ver_calendario/(:any)']        = 'Archivo/ver_calendario/$1';
 
 
 /** RUTA  PARA  VER  PSICOMETRIAS   DESDE  RODI */
+$route['Archivo/ver_psico/(:num)/(:any)'] = 'Archivo/ver_psico/$1/$2';
 $route['Archivo/ver_psico/(:any)'] = 'Archivo/ver_psico/$1';

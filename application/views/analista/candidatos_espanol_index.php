@@ -1379,8 +1379,9 @@ function changeDatatable(url1) {
 
                 //* Psicometria
                 if (full.psicometrico == 1) {
-                  const HREF = '<?php echo base_url('Archivo/ver_psico/'); ?>' + encodeURIComponent((full
-                    .archivo || '').toString().trim());
+                const HREF = '<?php echo base_url('Archivo/ver_psico/'); ?>' +
+                  encodeURIComponent(full.id) + '/' +
+                  encodeURIComponent((full.archivo || '').toString().trim());
 
                   if (full.archivo) {
                     salida +=
